@@ -8,6 +8,9 @@
 
     <link rel="stylesheet" href="{% static '/app/css/base.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
     {% block extra_css %}{% endblock %}
     {% block extra_js %}
@@ -15,9 +18,36 @@
     {% endblock %}
 </head>
 <body>
-    <header>
-        <h1>MyTools</h1>
-    </header>
+    <nav>
+        <div class="logo">
+            <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
+            <span>MyTools</span>
+        </div>
+        <div class="navigation">
+            <a href="#">
+                <i class="fa-solid fa-house"></i>
+                {% translate 'Home' %}
+            </a>
+            <a href="#">
+                <i class="fa-solid fa-cloud-sun"></i>
+                {% translate 'Wetter' %}
+            </a>
+            <a href="#">
+                <i class="fa-solid fa-globe"></i>
+                {% translate 'Länder' %}
+            </a>
+            <a class="square" href="#">
+                <i class="fa-solid fa-circle-info"></i>
+                {% translate 'Über' %}
+            </a>
+        </div>
+        <div class="user-actions">
+            <button class="dark-mode-btn" id="darkmode-button" aria-label="Dark Mode umschalten">
+                <i class="fa-solid fa-moon icon-moon"></i>
+                <i class="fa-solid fa-sun icon-sun"></i>
+            </button>
+        </div>
+    </nav>
 
     <main>
         {% block content %}
@@ -25,7 +55,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 myManager</p>
+        <p>&copy; 2026 MyTools</p>
     </footer>
 </body>
 </html>
