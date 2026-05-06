@@ -1,0 +1,214 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #dce5f5;
+    color: #1a202c;
+    transition: background-color 0.4s ease, color 0.4s ease;
+    min-height: 100vh;
+}
+
+body.dark-mode {
+    background-color: #12151f;
+    color: #e2e8f0;
+}
+
+/* ── NAV ── */
+
+nav {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    padding: 0 1.25rem;
+    background: linear-gradient(100deg, #1a56d6 0%, #5aadee 100%);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 20px rgba(26, 86, 214, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+
+nav::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+body.dark-mode nav {
+    background: linear-gradient(100deg, #0e2d6e 0%, #2a6ea0 100%);
+    box-shadow: 0 4px 24px rgba(8, 16, 50, 0.45);
+}
+
+nav .logo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.01em;
+}
+
+nav .logo i { opacity: 0.9; }
+
+nav .navigation {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.82);
+    text-decoration: none;
+    padding: 7px 13px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+nav a:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.28);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+nav a.active {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #fff;
+}
+
+nav .user-actions {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ── DARK MODE BUTTON ── */
+
+.dark-mode-btn {
+    width: 44px;
+    height: 33px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 22, 64, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 9px;
+    cursor: pointer;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.15s, transform 0.15s;
+}
+
+.dark-mode-btn:hover {
+    background: rgba(10, 22, 64, 0.55);
+    transform: scale(1.05);
+}
+
+.dark-mode-btn:active { transform: scale(0.97); }
+
+/* Icon swap animation */
+.dark-mode-btn .icon-moon,
+.dark-mode-btn .icon-sun {
+    position: absolute;
+    font-size: 0.9rem;
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dark-mode-btn .icon-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.dark-mode-btn .icon-sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+}
+
+body.dark-mode .dark-mode-btn .icon-moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+}
+
+body.dark-mode .dark-mode-btn .icon-sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+/* ── RIPPLE – entfernt ── */
+
+/* ── BUTTON PULSE ── */
+@keyframes btn-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35); }
+    70%  { box-shadow: 0 0 0 7px rgba(255, 255, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+.dark-mode-btn.pulsing {
+    animation: btn-pulse 0.45s ease-out forwards;
+}
+
+/* ── THEME FLASH OVERLAY ── */
+
+.theme-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+}
+
+.theme-flash.flash-in {
+    animation: flash-fade 0.4s ease-out forwards;
+}
+
+@keyframes flash-fade {
+    0%   { opacity: 0.14; }
+    100% { opacity: 0; }
+}
+
+/* ── CONTENT ── */
+
+main {
+    padding: 2rem 1.5rem 6rem;
+}
+
+/* ── FOOTER ── */
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.82rem;
+    color: #6b7280;
+    background: #ffffff;
+    padding: 0.75rem;
+    border-radius: 12px 12px 0 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+body.dark-mode footer {
+    background: #1a1d2b;
+    border-color: rgba(255, 255, 255, 0.06);
+    color: #6b7280;
+}
