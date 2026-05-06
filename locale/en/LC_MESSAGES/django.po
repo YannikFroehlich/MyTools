@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-06 15:53+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\app\templates\app\base.html:29
+msgid "Start"
+msgstr "Home"
+
+#: .\app\templates\app\base.html:33
+msgid "Wetter"
+msgstr "Weather"
+
+#: .\app\templates\app\base.html:37
+msgid "Länder"
+msgstr "Countries"
+
+#: .\app\templates\app\base.html:41
+msgid "Über"
+msgstr "About"
+
+#: .\app\templates\app\home.html:5 .\app\templates\app\home.html:14
+msgid "Startseite"
+msgstr "Homepage"
+
+#: .\app\templates\app\home.html:13
+msgid "Willkommen bei"
+msgstr "Welcome to"
+
+#: .\app\templates\app\home.html:14
+msgid "Das hier ist der spezifische Inhalt der"
+msgstr "This is the specific thing"
