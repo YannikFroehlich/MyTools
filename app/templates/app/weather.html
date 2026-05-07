@@ -14,17 +14,20 @@
 <div class="content weather-page">
 
     <div class="weather-search-wrapper">
-        <form method="GET" class="weather-search-form">
-            <input type="text"
-                   name="city"
-                   placeholder="{% translate 'Stadt suchen...' %}"
-                   value="{{ city }}"
-                   autocomplete="off">
-
-            <button type="submit">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </form>
+        <!-- .weather-search-glow übernimmt den äußeren Glow/Focus-Ring -->
+        <!-- .weather-search-form hat overflow:hidden für saubere Ecken  -->
+        <div class="weather-search-glow">
+            <form method="GET" class="weather-search-form">
+                <input type="text"
+                       name="city"
+                       placeholder="{% translate 'Stadt suchen...' %}"
+                       value="{{ city }}"
+                       autocomplete="off">
+                <button type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+        </div>
     </div>
 
     {% if error %}
@@ -64,7 +67,6 @@
 
                     <div class="detail-item">
                         <i class="fa-solid fa-temperature-half"></i>
-
                         <div>
                             <span>{{ temperature }}°C</span>
                             <p>Temperatur</p>
@@ -73,7 +75,6 @@
 
                     <div class="detail-item">
                         <i class="fa-solid fa-droplet"></i>
-
                         <div>
                             <span>{{ humidity }}%</span>
                             <p>Luftfeuchtigkeit</p>
@@ -82,7 +83,6 @@
 
                     <div class="detail-item">
                         <i class="fa-solid fa-wind"></i>
-
                         <div>
                             <span>{{ wind_speed }} km/h</span>
                             <p>Wind</p>
@@ -91,7 +91,6 @@
 
                     <div class="detail-item">
                         <i class="fa-regular fa-clock"></i>
-
                         <div>
                             <span>{{ pressure }} hPa</span>
                             <p>Luftdruck</p>
@@ -108,30 +107,17 @@
             <h2>Stündliche Vorhersage</h2>
 
             <div class="hourly-list">
-
                 {% for hour in hourly_forecast %}
-
                     <div class="hourly-item">
-
-                        <div class="hour-time">
-                            {{ hour.time }}
-                        </div>
-
+                        <div class="hour-time">{{ hour.time }}</div>
                         <img src="https://openweathermap.org/img/wn/{{ hour.icon }}@2x.png">
-
-                        <div class="hour-temp">
-                            {{ hour.temp }}°C
-                        </div>
-
+                        <div class="hour-temp">{{ hour.temp }}°C</div>
                         <div class="hour-rain">
                             <i class="fa-solid fa-droplet"></i>
                             {{ hour.rain }}%
                         </div>
-
                     </div>
-
                 {% endfor %}
-
             </div>
         </div>
 
@@ -140,66 +126,38 @@
             <h2>5-Tage-Vorhersage</h2>
 
             <div class="forecast-list">
-
                 {% for day in forecast %}
-
                     <div class="forecast-item">
-
-                        <div class="forecast-day">
-                            {{ day.day }}
-                        </div>
-
-                        <div class="forecast-date">
-                            {{ day.date }}
-                        </div>
-
+                        <div class="forecast-day">{{ day.day }}</div>
+                        <div class="forecast-date">{{ day.date }}</div>
                         <img src="https://openweathermap.org/img/wn/{{ day.icon }}@2x.png">
-
-                        <div class="forecast-temp">
-                            {{ day.temp_max }}°C
-                        </div>
-
-                        <div class="forecast-min">
-                            {{ day.temp_min }}°C
-                        </div>
-
+                        <div class="forecast-temp">{{ day.temp_max }}°C</div>
+                        <div class="forecast-min">{{ day.temp_min }}°C</div>
                         <div class="forecast-rain">
                             <i class="fa-solid fa-droplet"></i>
                             {{ day.rain }}%
                         </div>
-
                     </div>
-
                 {% endfor %}
-
             </div>
         </div>
 
         <!-- Sonnenaufgang -->
         <div class="weather-card sun-card">
-
             <h2>Sonnenaufgang & -untergang</h2>
 
             <div class="sun-grid">
-
                 <div class="sun-item">
                     <i class="fa-solid fa-sun"></i>
-
                     <span>{{ sunrise }}</span>
-
                     <p>Sonnenaufgang</p>
                 </div>
-
                 <div class="sun-item">
                     <i class="fa-solid fa-moon"></i>
-
                     <span>{{ sunset }}</span>
-
                     <p>Sonnenuntergang</p>
                 </div>
-
             </div>
-
         </div>
 
     </div>
