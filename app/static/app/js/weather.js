@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("weather.js geladen");
 
     /* ── Search Focus ── */
     const searchInput = document.querySelector(".weather-search-form input");
@@ -7,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
             searchInput.parentElement.style.transition = "box-shadow 0.3s ease, border-color 0.3s ease, transform 0.2s ease";
         });
     }
+
 
     /* ── Temperatur-Zähler-Animation ── */
     const tempEl = document.querySelector(".temperature");

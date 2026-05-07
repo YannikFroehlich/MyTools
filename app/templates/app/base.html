@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Mein myManager{% endblock %}</title>
@@ -27,7 +28,7 @@
                 <i class="fa-solid fa-house"></i>
                 {% translate 'Start' %}
             </a>
-            <a href="#">
+            <a href="{% url 'weather' %}">
                 <i class="fa-solid fa-cloud-sun"></i>
                 {% translate 'Wetter' %}
             </a>
@@ -73,5 +74,7 @@
     <footer>
         <p>&copy; 2026 MyTools</p>
     </footer>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
