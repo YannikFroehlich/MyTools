@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-06 15:53+0200\n"
+"POT-Creation-Date: 2026-05-07 11:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,30 +17,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\app\templates\app\base.html:29
-msgid "Start"
-msgstr ""
-
-#: .\app\templates\app\base.html:33
-msgid "Wetter"
-msgstr ""
-
-#: .\app\templates\app\base.html:37
-msgid "Länder"
-msgstr ""
-
-#: .\app\templates\app\base.html:41
+#: .\app\templates\app\about.html:5 .\app\templates\app\about.html:14
+#: .\app\templates\app\base.html:40
 msgid "Über"
 msgstr ""
 
-#: .\app\templates\app\home.html:5 .\app\templates\app\home.html:14
+#: .\app\templates\app\about.html:15
+msgid "Das hier ist die About Seite"
+msgstr ""
+
+#: .\app\templates\app\base.html:28
+msgid "Start"
+msgstr ""
+
+#: .\app\templates\app\base.html:32
+msgid "Wetter"
+msgstr ""
+
+#: .\app\templates\app\base.html:36
+msgid "Länder"
+msgstr ""
+
+#: .\app\templates\app\home.html:5 .\app\templates\app\home.html:15
 msgid "Startseite"
 msgstr ""
 
-#: .\app\templates\app\home.html:13
+#: .\app\templates\app\home.html:14
 msgid "Willkommen bei"
 msgstr ""
 
-#: .\app\templates\app\home.html:14
+#: .\app\templates\app\home.html:15
 msgid "Das hier ist der spezifische Inhalt der"
 msgstr ""

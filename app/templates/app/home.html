@@ -6,6 +6,7 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -13,4 +14,8 @@
         <h1>{% translate 'Willkommen bei' %} MyTools</h1>
         <p>{% translate 'Das hier ist der spezifische Inhalt der' %} {% translate 'Startseite' %}.</p>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/home.js' %}"></script>
 {% endblock %}

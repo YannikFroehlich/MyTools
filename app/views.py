@@ -1,4 +1,9 @@
 from django.shortcuts import render
 
 def home(request):
-    return render(request, 'app/home.html')
+    template_name = 'app/home.html'
+    return render(request, template_name)
+
+def about(request):
+    template_name = 'app/about.html'
+    return render(request, template_name)

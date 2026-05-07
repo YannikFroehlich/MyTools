@@ -226,6 +226,9 @@ body.dark-mode .dark-mode-btn .icon-sun {
 
 main {
     padding: 2rem 1.5rem 6rem;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 /* ── FOOTER ── */
