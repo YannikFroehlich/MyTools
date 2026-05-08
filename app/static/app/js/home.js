@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("google-search-form");
     const input = document.getElementById("google-search-input");
     const suggestionsBox = document.getElementById("suggestions-box");
+    let currentFirstSuggestion = "";
 
     const shortcutModal = document.getElementById("shortcut-modal");
     const openShortcutModalButtons = document.querySelectorAll(".open-shortcut-modal");
@@ -13,28 +14,37 @@ document.addEventListener("DOMContentLoaded", () => {
     const openSectionModalButton = document.getElementById("open-section-modal");
     const closeSectionModalButton = document.getElementById("close-section-modal");
 
-    const suggestions = [
-        "Wetter heute",
-        "Google Maps",
-        "YouTube",
-        "Twitch",
-        "GitHub",
-        "Django Dokumentation",
-        "Python Tutorial",
-        "OpenWeather API",
-        "HTML CSS JavaScript",
-        "ChatGPT",
-        "Fritzbox VPN einrichten",
-        "CasaOS installieren",
-        "WireGuard Easy CasaOS"
-    ];
-
     if (input) {
         input.focus();
     }
 
+    let suggestions = [];
+
+    fetch("/static/app/data/suggestions.json")
+    .then(response => response.json())
+    .then(data => {
+        suggestions = data;
+        console.log("Suggestions geladen:", suggestions);
+    })
+    .catch(error => {
+        console.error("Fehler beim Laden der Suggestions:", error);
+    });
+
+    function getSuggestions(input) {
+    const search = input.toLowerCase().trim();
+
+    if (search === "") {
+        return [];
+    }
+
+    return suggestions.filter(item =>
+        item.toLowerCase().startsWith(search)
+    );
+}
+
     function renderSuggestions(value) {
         suggestionsBox.innerHTML = "";
+        currentFirstSuggestion = "";
 
         const searchValue = value.toLowerCase().trim();
 
@@ -52,9 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        filteredSuggestions.forEach(item => {
+        currentFirstSuggestion = filteredSuggestions[0];
+
+        filteredSuggestions.forEach((item, index) => {
             const suggestionItem = document.createElement("div");
             suggestionItem.classList.add("suggestion-item");
+
+            if (index === 0) {
+                suggestionItem.classList.add("active-suggestion");
+            }
 
             suggestionItem.innerHTML = `
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -85,6 +101,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     input.addEventListener("input", () => {
         renderSuggestions(input.value);
+    });
+
+    input.addEventListener("keydown", (event) => {
+        if (event.key === "Tab" && currentFirstSuggestion) {
+            event.preventDefault();
+
+            input.value = currentFirstSuggestion;
+            suggestionsBox.style.display = "none";
+            currentFirstSuggestion = "";
+        }
     });
 
     form.addEventListener("submit", (event) => {
