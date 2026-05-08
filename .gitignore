@@ -1632,6 +1632,7 @@
 /.venv/Lib/site-packages/django/contrib/contenttypes/locale/sw/LC_MESSAGES/django.mo
 /.venv/Lib/site-packages/django/contrib/contenttypes/locale/sw/LC_MESSAGES/django.po
 /.venv/Lib/site-packages/django/contrib/contenttypes/locale/ta/LC_MESSAGES/django.mo
+.env
 /.venv/Lib/site-packages/django/contrib/contenttypes/locale/ta/LC_MESSAGES/django.po
 /.venv/Lib/site-packages/django/contrib/contenttypes/locale/te/LC_MESSAGES/django.mo
 /.venv/Lib/site-packages/django/contrib/contenttypes/locale/te/LC_MESSAGES/django.po
