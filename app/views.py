@@ -1,13 +1,15 @@
 import os
 from collections import defaultdict
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 import requests
 from django.utils import translation
 from django.utils.formats import date_format
-from datetime import datetime
+from datetime import datetime, timezone
 
 from dotenv import load_dotenv
+
+from app.models import Shortcut, ShortcutSection
 
 load_dotenv()
 
@@ -15,8 +17,71 @@ api_key = os.getenv("OPENWEATHER_API_KEY")
 
 
 def home(request):
-    template_name = 'app/home.html'
-    return render(request, template_name)
+    default_section, created = ShortcutSection.objects.get_or_create(
+        name="Verknüpfungen"
+    )
+
+    # Alte Shortcuts ohne Bereich automatisch in den Standardbereich verschieben
+    Shortcut.objects.filter(section__isnull=True).update(section=default_section)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "add_section":
+            section_name = request.POST.get("section_name", "").strip()
+
+            if section_name:
+                ShortcutSection.objects.create(name=section_name)
+
+            return redirect("home")
+
+        if action == "delete_section":
+            section_id = request.POST.get("section_id")
+            section = get_object_or_404(ShortcutSection, id=section_id)
+
+            # Standardbereich nicht löschen
+            if section.name != "Verknüpfungen":
+                section.delete()
+
+            return redirect("home")
+
+        if action == "add_shortcut":
+            section_id = request.POST.get("section_id")
+            name = request.POST.get("name", "").strip()
+            url = request.POST.get("url", "").strip()
+            icon = request.POST.get("icon", "").strip()
+            custom_icon = request.POST.get("custom_icon", "").strip()
+
+            section = get_object_or_404(ShortcutSection, id=section_id)
+
+            if custom_icon:
+                icon = custom_icon
+
+            if name and url:
+                if not url.startswith(("http://", "https://")):
+                    url = "https://" + url
+
+                Shortcut.objects.create(
+                    section=section,
+                    name=name,
+                    url=url,
+                    icon=icon or "fa-solid fa-link"
+                )
+
+            return redirect("home")
+
+        if action == "delete_shortcut":
+            shortcut_id = request.POST.get("shortcut_id")
+            shortcut = get_object_or_404(Shortcut, id=shortcut_id)
+            shortcut.delete()
+
+            return redirect("home")
+
+    sections = ShortcutSection.objects.prefetch_related("shortcuts").all().order_by("created_at")
+
+    return render(request, "app/home.html", {
+        "sections": sections
+    })
 
 def about(request):
     template_name = 'app/about.html'
@@ -89,12 +154,16 @@ def weather(request):
 
             # ───── Sonnenaufgang / Untergang ─────
 
+            timezone_offset = curr_data.get("timezone", 0)
+
             sunrise = datetime.fromtimestamp(
-                curr_data['sys']['sunrise']
+                curr_data["sys"]["sunrise"] + timezone_offset,
+                tz=timezone.utc
             ).strftime("%H:%M")
 
             sunset = datetime.fromtimestamp(
-                curr_data['sys']['sunset']
+                curr_data["sys"]["sunset"] + timezone_offset,
+                tz=timezone.utc
             ).strftime("%H:%M")
 
             context = {
@@ -102,7 +171,6 @@ def weather(request):
                 'country': curr_data['sys']['country'],
 
                 'temperature': round(curr_data['main']['temp'], 1),
-
                 'description': curr_data['weather'][0]['description'],
                 'icon': curr_data['weather'][0]['icon'],
 
@@ -117,18 +185,6 @@ def weather(request):
                 'sunset': sunset,
 
                 'current_lang': current_lang,
-            }
-
-            context = {
-                'city': curr_data['name'],
-                'country': curr_data['sys']['country'],
-                'temperature': round(curr_data['main']['temp'], 1),
-                'description': curr_data['weather'][0]['description'],
-                'icon': curr_data['weather'][0]['icon'],
-                'wind_speed': curr_data['wind']['speed'],
-                'forecast': forecast_list,
-                'current_lang': current_lang,
-                'hourly_forecast': hourly_forecast,
             }
         else:
             context = {'error': "Standort nicht gefunden."}

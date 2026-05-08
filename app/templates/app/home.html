@@ -5,14 +5,264 @@
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'app/css/home.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div class="content">
-        <h1>{% translate 'Willkommen bei' %} MyTools</h1>
-        <p>{% translate 'Das hier ist der spezifische Inhalt der' %} {% translate 'Startseite' %}.</p>
+    <section class="home-container">
+        <div class="hero">
+
+            <form class="google-search-box" id="google-search-form">
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+
+                    <input
+                        type="text"
+                        id="google-search-input"
+                        placeholder="{% translate 'Bei Google suchen...' %}"
+                        autocomplete="off"
+                    >
+
+                    <button type="submit" class="search-button">
+                        {% translate 'Suchen' %}
+                    </button>
+                </div>
+
+                <div class="suggestions-box" id="suggestions-box"></div>
+            </form>
+
+            <div class="sections-wrapper">
+                {% for section in sections %}
+                    <div class="shortcuts-section">
+                        <div class="shortcuts-header">
+                            <h2>{{ section.name }}</h2>
+
+                            <div class="section-actions">
+                                <button
+                                    type="button"
+                                    class="add-shortcut-button open-shortcut-modal"
+                                    data-section-id="{{ section.id }}"
+                                    data-section-name="{{ section.name }}"
+                                >
+                                    <i class="fa-solid fa-plus"></i>
+                                    Verknüpfung
+                                </button>
+
+                                {% if section.name != "Verknüpfungen" %}
+                                    <form method="post" class="delete-section-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete_section">
+                                        <input type="hidden" name="section_id" value="{{ section.id }}">
+                                        <button type="submit" title="Bereich löschen">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="shortcuts-grid">
+                            {% for shortcut in section.shortcuts.all %}
+                                <div class="shortcut-card">
+                                    <a href="{{ shortcut.url }}" target="_blank" rel="noopener noreferrer">
+                                        <div class="shortcut-icon">
+                                            <i class="{{ shortcut.icon }}"></i>
+                                        </div>
+                                        <span>{{ shortcut.name }}</span>
+                                    </a>
+
+                                    <form method="post" class="delete-shortcut-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete_shortcut">
+                                        <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
+                                        <button type="submit" title="Löschen">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            {% empty %}
+                                <div class="empty-shortcuts">
+                                    <div class="empty-shortcuts-icon">
+                                        <i class="fa-solid fa-link"></i>
+                                    </div>
+                                    <h3>Noch keine Verknüpfungen</h3>
+                                    <p>Erstelle deine erste Schnellverknüpfung für diesen Bereich.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="add-section-card" id="open-section-modal">
+                    <div class="add-section-icon">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h3>Bereich hinzufügen</h3>
+                        <p>Erstelle einen neuen Bereich für weitere Verknüpfungen.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Verknüpfung Modal -->
+    <div class="shortcut-modal" id="shortcut-modal">
+        <div class="shortcut-modal-content">
+            <div class="shortcut-modal-header">
+                <h3>
+                    Neue Verknüpfung
+                    <span id="shortcut-modal-section-name"></span>
+                </h3>
+                <button type="button" id="close-shortcut-modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form method="post" class="shortcut-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_shortcut">
+                <input type="hidden" name="section_id" id="shortcut-section-id">
+
+                <label>
+                    Name
+                    <input type="text" name="name" placeholder="YouTube" required>
+                </label>
+
+                <label>
+                    URL
+                    <input type="text" name="url" placeholder="youtube.com" required>
+                </label>
+
+                <div class="icon-picker">
+                    <span class="icon-picker-title">Icon auswählen</span>
+
+                    <div class="icon-options">
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-brands fa-youtube" checked>
+                            <span>
+                                <i class="fa-brands fa-youtube"></i>
+                                YouTube
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-brands fa-twitch">
+                            <span>
+                                <i class="fa-brands fa-twitch"></i>
+                                Twitch
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-brands fa-github">
+                            <span>
+                                <i class="fa-brands fa-github"></i>
+                                GitHub
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-brands fa-google">
+                            <span>
+                                <i class="fa-brands fa-google"></i>
+                                Google
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-solid fa-cloud">
+                            <span>
+                                <i class="fa-solid fa-cloud"></i>
+                                Cloud
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-solid fa-gamepad">
+                            <span>
+                                <i class="fa-solid fa-gamepad"></i>
+                                Gaming
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-solid fa-code">
+                            <span>
+                                <i class="fa-solid fa-code"></i>
+                                Code
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-solid fa-server">
+                            <span>
+                                <i class="fa-solid fa-server"></i>
+                                Server
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-solid fa-link">
+                            <span>
+                                <i class="fa-solid fa-link"></i>
+                                Link
+                            </span>
+                        </label>
+
+                        <label class="icon-option">
+                            <input type="radio" name="icon" value="fa-solid fa-house">
+                            <span>
+                                <i class="fa-solid fa-house"></i>
+                                Home
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <label>
+                    Eigenes Icon, falls keins passt
+                    <input type="text" name="custom_icon" placeholder="z.B. fa-solid fa-server">
+                </label>
+
+                <button type="submit">
+                    Speichern
+                </button>
+            </form>
+
+            <p class="icon-help">
+                Beispiele: <code>fa-brands fa-youtube</code>,
+                <code>fa-brands fa-twitch</code>,
+                <code>fa-solid fa-server</code>
+            </p>
+        </div>
+    </div>
+
+    <!-- Bereich Modal -->
+    <div class="shortcut-modal" id="section-modal">
+        <div class="shortcut-modal-content">
+            <div class="shortcut-modal-header">
+                <h3>Neuer Bereich</h3>
+                <button type="button" id="close-section-modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form method="post" class="shortcut-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_section">
+
+                <label>
+                    Bereichsname
+                    <input type="text" name="section_name" placeholder="Server" required>
+                </label>
+
+                <button type="submit">
+                    Bereich erstellen
+                </button>
+            </form>
+        </div>
     </div>
 {% endblock %}
 

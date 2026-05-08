@@ -3,6 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ── Search Focus ── */
     const searchInput = document.querySelector(".weather-search-form input");
+
+    setTimeout(() => {
+        if (searchInput) {
+            searchInput.focus();
+        }
+    }, 100);
+
     if (searchInput) {
         searchInput.addEventListener("focus", () => {
             searchInput.parentElement.style.transition = "box-shadow 0.3s ease, border-color 0.3s ease, transform 0.2s ease";
@@ -64,18 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
             item.style.opacity = "1";
             item.style.transform = "translateY(0)";
         }, 300 + i * 60);
-    });
-
-    /* ── Sun Items: Fade-In ── */
-    const sunItems = document.querySelectorAll(".sun-item");
-    sunItems.forEach((item, i) => {
-        item.style.opacity = "0";
-        item.style.transform = "scale(0.9)";
-        item.style.transition = "opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)";
-        setTimeout(() => {
-            item.style.opacity = "1";
-            item.style.transform = "scale(1)";
-        }, 400 + i * 100);
     });
 
     /* ── Wetter-Icon: Glow-Pulse beim Hover ── */
