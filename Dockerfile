@@ -18,10 +18,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN useradd -m -u 1000 django && chown -R django:django /app
-
-USER django
-
 EXPOSE 8000
 
 CMD ["gunicorn", "MyTools.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "60"]
