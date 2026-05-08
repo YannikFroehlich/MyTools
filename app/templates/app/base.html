@@ -12,8 +12,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
+    {% block favicon %}
+        <link rel="icon" type="image/x-icon" href="{% static 'app/icons/cloud-solid.png' %}">
+    {% endblock %}
+
     {% block extra_css %}{% endblock %}
-    {% block extra_js %}
+    {% block scripts %}
         <script src="{% static 'app/js/base.js' %}"></script>
     {% endblock %}
 </head>
@@ -24,24 +28,37 @@
             <span>MyTools</span>
         </div>
         <div class="navigation">
-            <a href="#">
+            <a href="{% url 'home' %}">
                 <i class="fa-solid fa-house"></i>
-                {% translate 'Home' %}
+                {% translate 'Start' %}
             </a>
-            <a href="#">
+            <a href="{% url 'weather' %}">
                 <i class="fa-solid fa-cloud-sun"></i>
                 {% translate 'Wetter' %}
             </a>
-            <a href="#">
-                <i class="fa-solid fa-globe"></i>
-                {% translate 'Länder' %}
-            </a>
-            <a class="square" href="#">
+            <a href="{% url 'about' %}">
                 <i class="fa-solid fa-circle-info"></i>
                 {% translate 'Über' %}
             </a>
         </div>
         <div class="user-actions">
+            <form action="{% url 'set_language' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+
+                {% get_current_language as CURRENT_LANGUAGE %}
+                {% get_available_languages as LANGUAGES %}
+                {% get_language_info_list for LANGUAGES as languages %}
+
+                <select name="language" onchange="this.form.submit()">
+                    {% for language in languages %}
+                        <option value="{{ language.code }}"
+                            {% if language.code == CURRENT_LANGUAGE %}selected{% endif %}>
+                            {{ language.name_local }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
             <button class="dark-mode-btn" id="darkmode-button" aria-label="Dark Mode umschalten">
                 <i class="fa-solid fa-moon icon-moon"></i>
                 <i class="fa-solid fa-sun icon-sun"></i>
@@ -57,5 +74,7 @@
     <footer>
         <p>&copy; 2026 MyTools</p>
     </footer>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

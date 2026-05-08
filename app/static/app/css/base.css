@@ -7,7 +7,11 @@ body {
     background-color: #dce5f5;
     color: #1a202c;
     transition: background-color 0.4s ease, color 0.4s ease;
+
     min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
 }
 
 body.dark-mode {
@@ -95,6 +99,46 @@ nav .user-actions {
     flex: 1;
     display: flex;
     justify-content: flex-end;
+}
+
+nav .user-actions select {
+    min-width: 120px;
+    height: 33px;
+    padding: 0 30px 0 10px;
+    margin: 0 6px;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-color: rgba(10, 22, 64, 0.35);
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 9px;
+
+    color: #fff;
+    cursor: pointer;
+
+    transition: background-color 0.15s;
+}
+
+nav .user-actions select:hover {
+    background-color: rgba(10, 22, 64, 0.55);
+}
+
+/* Focus clean halten */
+nav .user-actions select:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Optional: Dropdown Optionen (eingeschränkt stylbar) */
+nav .user-actions select option {
+    color: #000; /* sonst oft weiß auf weiß */
 }
 
 /* ── DARK MODE BUTTON ── */
@@ -185,26 +229,33 @@ body.dark-mode .dark-mode-btn .icon-sun {
 /* ── CONTENT ── */
 
 main {
-    padding: 2rem 1.5rem 6rem;
+    flex: 1;
+
+    padding: 1rem 1.2rem;
+    text-align: center;
 }
 
 /* ── FOOTER ── */
 
 footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
     display: flex;
     justify-content: center;
     align-items: center;
+
     font-size: 0.82rem;
     color: #6b7280;
+
     background: #ffffff;
+
     padding: 0.75rem;
+
     border-radius: 12px 12px 0 0;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
-    transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+
+    transition:
+        background 0.4s ease,
+        color 0.4s ease,
+        border-color 0.4s ease;
 }
 
 body.dark-mode footer {

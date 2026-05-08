@@ -1,0 +1,143 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate 'Über' %} - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/about.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="about-page">
+
+        <div class="about-hero">
+            <div class="about-hero-text">
+                <span class="about-badge">
+                    <i class="fa-solid fa-sparkles"></i>
+                    MyTools
+                </span>
+
+                <h1>{% translate 'Über MyTools' %}</h1>
+
+                <p>
+                    {% translate 'MyTools ist eine persönliche Sammlung kleiner praktischer Tools, die den Alltag einfacher machen sollen.' %}
+                </p>
+
+                <div class="about-actions">
+                    <a href="{% url 'home' %}" class="about-primary-button">
+                        <i class="fa-solid fa-house"></i>
+                        Zur Startseite
+                    </a>
+                </div>
+            </div>
+
+            <div class="about-hero-card">
+                <div class="hero-card-icon">
+                    <i class="fa-solid fa-toolbox"></i>
+                </div>
+
+                <h2>Alles an einem Ort</h2>
+
+                <p>
+                    Wetter, Schnellzugriffe, kleine Helfer und weitere Funktionen können hier übersichtlich gesammelt werden.
+                </p>
+            </div>
+        </div>
+
+        <div class="about-stats">
+            <div class="about-stat-card">
+                <i class="fa-solid fa-cloud-sun"></i>
+                <strong>Wetter</strong>
+                <span>Aktuelle Wetterdaten und Vorhersage</span>
+            </div>
+
+            <div class="about-stat-card">
+                <i class="fa-solid fa-link"></i>
+                <strong>Shortcuts</strong>
+                <span>Eigene Verknüpfungen speichern</span>
+            </div>
+
+            <div class="about-stat-card">
+                <i class="fa-solid fa-moon"></i>
+                <strong>Dark Mode</strong>
+                <span>Angenehmes Design bei Nacht</span>
+            </div>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="about-card-icon">
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+
+                <h2>Ziel</h2>
+
+                <p>
+                    Diese Seite soll eine zentrale Oberfläche für nützliche Funktionen sein. Alles soll schnell erreichbar,
+                    übersichtlich und angenehm zu bedienen sein.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <div class="about-card-icon">
+                    <i class="fa-solid fa-palette"></i>
+                </div>
+
+                <h2>Design</h2>
+
+                <p>
+                    Das Design ist modern, leicht und responsive. Es funktioniert sowohl im Light Mode als auch im Dark Mode.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <div class="about-card-icon">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+
+                <h2>Backend</h2>
+
+                <p>
+                    Einige Inhalte können später direkt im Backend gespeichert werden, zum Beispiel eigene Verknüpfungen
+                    oder persönliche Einstellungen.
+                </p>
+            </div>
+        </div>
+
+        <div class="about-timeline">
+            <h2>Geplante Funktionen</h2>
+
+            <div class="timeline-list">
+                <div class="timeline-item">
+                    <span></span>
+                    <div>
+                        <h3>Mehr Tools</h3>
+                        <p>Weitere kleine Helfer wie Notizen, Rechner oder eigene Dashboards.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <span></span>
+                    <div>
+                        <h3>Personalisierung</h3>
+                        <p>Eigene Bereiche, Shortcuts und Einstellungen für die Startseite.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <span></span>
+                    <div>
+                        <h3>Sauberes Backend</h3>
+                        <p>Speicherung über Django-Models und einfache Verwaltung über die App.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/about.js' %}"></script>
+{% endblock %}
