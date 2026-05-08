@@ -409,15 +409,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 0.7rem;
+    justify-content: flex-start;
+    gap: 0.75rem;
 
-    min-height: 105px;
-    padding: 1rem;
+    min-height: 120px;
+    padding: 2.7rem 1rem 1rem;
 
     color: #1f2937;
     text-decoration: none;
     font-weight: 700;
+    box-sizing: border-box;
 }
 
 .shortcut-icon {
@@ -442,6 +443,33 @@
     top: 0.45rem;
     right: 0.45rem;
     z-index: 2;
+}
+
+.delete-shortcut-form button {
+    width: 24px;
+    height: 24px;
+
+    border: none;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.08);
+    color: #64748b;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.delete-shortcut-form button:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    transform: scale(1.05);
 }
 
 .delete-shortcut-form button {
@@ -1202,8 +1230,8 @@ body.dark-mode .icon-help code {
     }
 
     .shortcut-card a {
-        min-height: 96px;
-        padding: 0.9rem;
+        min-height: 108px;
+        padding: 2.5rem 0.9rem 0.9rem;
     }
 
     .shortcut-icon {
@@ -1285,4 +1313,410 @@ body.dark-mode .shortcut-form input[type="file"] {
 body.dark-mode .shortcut-form input[type="file"]::file-selector-button {
     background: rgba(122, 198, 250, 0.14);
     color: #7ac6fa;
+}
+
+/* ───────────────── CLEAN FEATURE ADDITIONS ───────────────── */
+
+.section-title-area {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.section-title-area h2 {
+    line-height: 1.1;
+}
+
+.section-color-dot {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #1f6eee;
+    box-shadow: 0 0 0 5px rgba(31, 110, 238, 0.1);
+}
+
+.section-color-blue .section-color-dot {
+    background: #1f6eee;
+    box-shadow: 0 0 0 5px rgba(31, 110, 238, 0.1);
+}
+
+.section-color-green .section-color-dot {
+    background: #22c55e;
+    box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.12);
+}
+
+.section-color-purple .section-color-dot {
+    background: #8b5cf6;
+    box-shadow: 0 0 0 5px rgba(139, 92, 246, 0.12);
+}
+
+.section-color-orange .section-color-dot {
+    background: #f97316;
+    box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.12);
+}
+
+.section-color-red .section-color-dot {
+    background: #ef4444;
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.12);
+}
+
+.section-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    margin-top: 0.3rem;
+    padding: 0.18rem 0.45rem;
+
+    border-radius: 999px;
+    background: rgba(31, 110, 238, 0.1);
+    color: #1f6eee;
+
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+/* Bereich einklappen */
+
+.collapse-section-form button {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: rgba(31, 110, 238, 0.1);
+    color: #1f6eee;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.collapse-section-form button:hover {
+    background: rgba(31, 110, 238, 0.16);
+    transform: translateY(-1px);
+}
+
+/* Shortcut Action Buttons */
+
+.shortcut-card-actions {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    z-index: 8;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.3rem;
+
+    padding: 0.2rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(120, 140, 180, 0.16);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+
+    opacity: 0;
+    transform: translateY(-3px);
+
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.shortcut-card:hover .shortcut-card-actions,
+.shortcut-favorite .shortcut-card-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.shortcut-card-actions form {
+    margin: 0;
+    padding: 0;
+    position: static;
+    display: flex;
+}
+
+.shortcut-card-actions .delete-shortcut-form,
+.shortcut-card-actions .favorite-shortcut-form {
+    position: static;
+    top: auto;
+    right: auto;
+    z-index: auto;
+}
+
+.shortcut-card-actions button {
+    width: 25px;
+    height: 25px;
+
+    border: none;
+    border-radius: 999px;
+
+    background: rgba(15, 23, 42, 0.08);
+    color: #64748b;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    font-size: 0.72rem;
+    line-height: 1;
+
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.shortcut-card-actions button:hover {
+    transform: scale(1.06);
+}
+
+.shortcut-drag-handle {
+    cursor: grab;
+}
+
+.shortcut-drag-handle:active {
+    cursor: grabbing;
+}
+
+.favorite-shortcut-form button:hover {
+    background: rgba(245, 158, 11, 0.16);
+    color: #f59e0b;
+}
+
+.delete-shortcut-form button:hover {
+    background: rgba(239, 68, 68, 0.14);
+    color: #ef4444;
+}
+
+/* Favorit-Zustand */
+
+.shortcut-favorite {
+    border-color: rgba(245, 158, 11, 0.35);
+    box-shadow:
+        0 12px 30px rgba(245, 158, 11, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.shortcut-favorite::before {
+    display: none;
+}
+
+.shortcut-favorite .favorite-shortcut-form button {
+    background: rgba(245, 158, 11, 0.16);
+    color: #f59e0b;
+}
+
+/* Drag & Drop States */
+
+.shortcut-card.dragging {
+    opacity: 0.45;
+    transform: scale(0.96);
+}
+
+.shortcuts-grid.drag-over {
+    outline: 2px dashed rgba(31, 110, 238, 0.35);
+    outline-offset: 6px;
+    border-radius: 18px;
+}
+
+.shortcut-card.drag-target {
+    border-color: rgba(31, 110, 238, 0.55);
+}
+
+/* Bereichsfarben im Modal */
+
+.section-color-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.section-color-picker > span {
+    font-weight: 700;
+    color: #334155;
+}
+
+.section-color-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+}
+
+.section-color-option input {
+    display: none;
+}
+
+.section-color-option span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    padding: 0.7rem 0.8rem;
+
+    border-radius: 13px;
+    border: 1px solid rgba(120, 140, 180, 0.3);
+
+    background: rgba(248, 250, 252, 0.9);
+    color: #334155;
+
+    cursor: pointer;
+    font-weight: 700;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.section-color-option span::before {
+    content: "";
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #1f6eee;
+}
+
+.section-color-option.green span::before {
+    background: #22c55e;
+}
+
+.section-color-option.purple span::before {
+    background: #8b5cf6;
+}
+
+.section-color-option.orange span::before {
+    background: #f97316;
+}
+
+.section-color-option.red span::before {
+    background: #ef4444;
+}
+
+.section-color-option span:hover {
+    background: #eef5ff;
+    transform: translateY(-1px);
+}
+
+.section-color-option input:checked + span {
+    border-color: rgba(31, 110, 238, 0.75);
+    background: rgba(31, 110, 238, 0.1);
+    color: #1f6eee;
+}
+
+/* Dark Mode */
+
+body.dark-mode .section-status-badge {
+    background: rgba(122, 198, 250, 0.14);
+    color: #7ac6fa;
+}
+
+body.dark-mode .collapse-section-form button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+body.dark-mode .collapse-section-form button:hover {
+    background: rgba(122, 198, 250, 0.16);
+}
+
+body.dark-mode .shortcut-card-actions {
+    background: rgba(15, 23, 42, 0.72);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
+}
+
+body.dark-mode .shortcut-card-actions button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+}
+
+body.dark-mode .shortcut-card-actions button:hover {
+    background: rgba(122, 198, 250, 0.14);
+    color: #ffffff;
+}
+
+body.dark-mode .favorite-shortcut-form button:hover,
+body.dark-mode .shortcut-favorite .favorite-shortcut-form button {
+    background: rgba(245, 158, 11, 0.16);
+    color: #fbbf24;
+}
+
+body.dark-mode .delete-shortcut-form button:hover {
+    background: rgba(239, 68, 68, 0.18);
+    color: #f87171;
+}
+
+body.dark-mode .shortcut-favorite {
+    border-color: rgba(245, 158, 11, 0.28);
+    box-shadow:
+        0 12px 30px rgba(245, 158, 11, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .shortcut-favorite::before {
+    display: none;
+}
+
+body.dark-mode .shortcuts-grid.drag-over {
+    outline-color: rgba(122, 198, 250, 0.4);
+}
+
+body.dark-mode .section-color-picker > span {
+    color: #e5e7eb;
+}
+
+body.dark-mode .section-color-option span {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #e5e7eb;
+}
+
+body.dark-mode .section-color-option span:hover {
+    background: #253244;
+}
+
+body.dark-mode .section-color-option input:checked + span {
+    border-color: rgba(122, 198, 250, 0.8);
+    background: rgba(122, 198, 250, 0.14);
+    color: #ffffff;
+}
+
+@media (max-width: 520px) {
+    .section-title-area {
+        width: 100%;
+    }
+
+    .shortcut-card-actions {
+        opacity: 1;
+        transform: none;
+        top: 0.42rem;
+        right: 0.42rem;
+    }
+
+    .shortcut-card-actions button {
+        width: 23px;
+        height: 23px;
+        font-size: 0.68rem;
+    }
+
+    .section-color-options {
+        grid-template-columns: 1fr;
+    }
 }

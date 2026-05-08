@@ -11,6 +11,11 @@ from dotenv import load_dotenv
 
 from app.models import Shortcut, ShortcutSection
 
+import json
+
+from django.db.models import Max
+from django.http import JsonResponse
+
 load_dotenv()
 
 api_key = os.getenv("OPENWEATHER_API_KEY")
@@ -18,20 +23,66 @@ api_key = os.getenv("OPENWEATHER_API_KEY")
 
 def home(request):
     default_section, created = ShortcutSection.objects.get_or_create(
-        name="Verknüpfungen"
+        name="Verknüpfungen",
+        defaults={
+            "color": "blue",
+            "order": 0
+        }
     )
 
-    # Alte Shortcuts ohne Bereich automatisch in den Standardbereich verschieben
     Shortcut.objects.filter(section__isnull=True).update(section=default_section)
 
     if request.method == "POST":
+        if request.content_type == "application/json":
+            try:
+                data = json.loads(request.body.decode("utf-8"))
+            except json.JSONDecodeError:
+                return JsonResponse({"success": False, "error": "Ungültiges JSON"}, status=400)
+
+            action = data.get("action")
+
+            if action == "update_shortcut_order":
+                shortcuts = data.get("shortcuts", [])
+
+                for item in shortcuts:
+                    shortcut_id = item.get("id")
+                    section_id = item.get("section_id")
+                    order = item.get("order", 0)
+
+                    Shortcut.objects.filter(id=shortcut_id).update(
+                        section_id=section_id,
+                        order=order
+                    )
+
+                return JsonResponse({"success": True})
+
+            if action == "update_section_order":
+                sections = data.get("sections", [])
+
+                for item in sections:
+                    section_id = item.get("id")
+                    order = item.get("order", 0)
+
+                    ShortcutSection.objects.filter(id=section_id).update(order=order)
+
+                return JsonResponse({"success": True})
+
+            return JsonResponse({"success": False, "error": "Unbekannte Aktion"}, status=400)
+
         action = request.POST.get("action")
 
         if action == "add_section":
             section_name = request.POST.get("section_name", "").strip()
+            section_color = request.POST.get("section_color", "blue").strip()
 
             if section_name:
-                ShortcutSection.objects.create(name=section_name)
+                max_order = ShortcutSection.objects.aggregate(Max("order"))["order__max"] or 0
+
+                ShortcutSection.objects.create(
+                    name=section_name,
+                    color=section_color,
+                    order=max_order + 1
+                )
 
             return redirect("home")
 
@@ -39,9 +90,17 @@ def home(request):
             section_id = request.POST.get("section_id")
             section = get_object_or_404(ShortcutSection, id=section_id)
 
-            # Standardbereich nicht löschen
             if section.name != "Verknüpfungen":
                 section.delete()
+
+            return redirect("home")
+
+        if action == "toggle_section_collapse":
+            section_id = request.POST.get("section_id")
+            section = get_object_or_404(ShortcutSection, id=section_id)
+
+            section.is_collapsed = not section.is_collapsed
+            section.save()
 
             return redirect("home")
 
@@ -62,12 +121,15 @@ def home(request):
                 if not url.startswith(("http://", "https://")):
                     url = "https://" + url
 
+                max_order = Shortcut.objects.filter(section=section).aggregate(Max("order"))["order__max"] or 0
+
                 Shortcut.objects.create(
                     section=section,
                     name=name,
                     url=url,
                     icon=icon or "fa-solid fa-link",
-                    image=image
+                    image=image,
+                    order=max_order + 1
                 )
 
             return redirect("home")
@@ -79,7 +141,16 @@ def home(request):
 
             return redirect("home")
 
-    sections = ShortcutSection.objects.prefetch_related("shortcuts").all().order_by("created_at")
+        if action == "toggle_favorite":
+            shortcut_id = request.POST.get("shortcut_id")
+            shortcut = get_object_or_404(Shortcut, id=shortcut_id)
+
+            shortcut.is_favorite = not shortcut.is_favorite
+            shortcut.save()
+
+            return redirect("home")
+
+    sections = ShortcutSection.objects.prefetch_related("shortcuts").all().order_by("order", "created_at")
 
     return render(request, "app/home.html", {
         "sections": sections

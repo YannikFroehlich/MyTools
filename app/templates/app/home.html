@@ -31,13 +31,43 @@
                 <div class="suggestions-box" id="suggestions-box"></div>
             </form>
 
-            <div class="sections-wrapper">
+            <div class="sections-wrapper" id="sections-wrapper">
                 {% for section in sections %}
-                    <div class="shortcuts-section">
+                    <div
+                        class="shortcuts-section section-color-{{ section.color }} {% if section.is_collapsed %}section-collapsed{% endif %}"
+                        data-section-id="{{ section.id }}"
+                    >
                         <div class="shortcuts-header">
-                            <h2>{{ section.name }}</h2>
+                            <div class="section-title-area">
+                                <span class="section-color-dot"></span>
+
+                                <div>
+                                    <h2>{{ section.name }}</h2>
+
+                                    {% if section.is_collapsed %}
+                                        <span class="section-status-badge">
+                                            <i class="fa-solid fa-folder"></i>
+                                            Eingeklappt
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
 
                             <div class="section-actions">
+                                <form method="post" class="collapse-section-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="toggle_section_collapse">
+                                    <input type="hidden" name="section_id" value="{{ section.id }}">
+
+                                    <button type="submit" title="{% if section.is_collapsed %}Bereich ausklappen{% else %}Bereich einklappen{% endif %}">
+                                        {% if section.is_collapsed %}
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-chevron-up"></i>
+                                        {% endif %}
+                                    </button>
+                                </form>
+
                                 <button
                                     type="button"
                                     class="add-shortcut-button open-shortcut-modal"
@@ -61,39 +91,67 @@
                             </div>
                         </div>
 
-                        <div class="shortcuts-grid">
-                            {% for shortcut in section.shortcuts.all %}
-                                <div class="shortcut-card">
-                                    <a href="{{ shortcut.url }}" target="_blank" rel="noopener noreferrer">
-                                        <div class="shortcut-icon {% if shortcut.image %}shortcut-image-icon{% endif %}">
-                                            {% if shortcut.image %}
-                                                <img src="{{ shortcut.image.url }}" alt="{{ shortcut.name }}">
-                                            {% else %}
-                                                <i class="{{ shortcut.icon }}"></i>
-                                            {% endif %}
-                                        </div>
-                                        <span>{{ shortcut.name }}</span>
-                                    </a>
+                        {% if not section.is_collapsed %}
+                            <div class="shortcuts-grid">
+                                {% for shortcut in section.shortcuts.all %}
+                                    <div
+                                        class="shortcut-card {% if shortcut.is_favorite %}shortcut-favorite{% endif %}"
+                                        data-shortcut-id="{{ shortcut.id }}"
+                                        draggable="true"
+                                    >
+                                        <div class="shortcut-card-actions">
+                                            <button type="button" class="shortcut-drag-handle" title="Verschieben">
+                                                <i class="fa-solid fa-grip-vertical"></i>
+                                            </button>
 
-                                    <form method="post" class="delete-shortcut-form">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="action" value="delete_shortcut">
-                                        <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
-                                        <button type="submit" title="Löschen">
-                                            <i class="fa-solid fa-xmark"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            {% empty %}
-                                <div class="empty-shortcuts">
-                                    <div class="empty-shortcuts-icon">
-                                        <i class="fa-solid fa-link"></i>
+                                            <form method="post" class="favorite-shortcut-form">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="toggle_favorite">
+                                                <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
+
+                                                <button type="submit" title="{% if shortcut.is_favorite %}Favorit entfernen{% else %}Als Favorit markieren{% endif %}">
+                                                    {% if shortcut.is_favorite %}
+                                                        <i class="fa-solid fa-star"></i>
+                                                    {% else %}
+                                                        <i class="fa-regular fa-star"></i>
+                                                    {% endif %}
+                                                </button>
+                                            </form>
+
+                                            <form method="post" class="delete-shortcut-form">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="delete_shortcut">
+                                                <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
+
+                                                <button type="submit" title="Löschen">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <a href="{{ shortcut.url }}" target="_blank" rel="noopener noreferrer">
+                                            <div class="shortcut-icon {% if shortcut.image %}shortcut-image-icon{% endif %}">
+                                                {% if shortcut.image %}
+                                                    <img src="{{ shortcut.image.url }}" alt="{{ shortcut.name }}">
+                                                {% else %}
+                                                    <i class="{{ shortcut.icon }}"></i>
+                                                {% endif %}
+                                            </div>
+
+                                            <span>{{ shortcut.name }}</span>
+                                        </a>
                                     </div>
-                                    <h3>Noch keine Verknüpfungen</h3>
-                                    <p>Erstelle deine erste Schnellverknüpfung für diesen Bereich.</p>
-                                </div>
-                            {% endfor %}
-                        </div>
+                                {% empty %}
+                                    <div class="empty-shortcuts">
+                                        <div class="empty-shortcuts-icon">
+                                            <i class="fa-solid fa-link"></i>
+                                        </div>
+                                        <h3>Noch keine Verknüpfungen</h3>
+                                        <p>Erstelle deine erste Schnellverknüpfung für diesen Bereich.</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
 
@@ -101,6 +159,7 @@
                     <div class="add-section-icon">
                         <i class="fa-solid fa-layer-group"></i>
                     </div>
+
                     <div>
                         <h3>Bereich hinzufügen</h3>
                         <p>Erstelle einen neuen Bereich für weitere Verknüpfungen.</p>
@@ -119,6 +178,7 @@
                     Neue Verknüpfung
                     <span id="shortcut-modal-section-name"></span>
                 </h3>
+
                 <button type="button" id="close-shortcut-modal">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -253,6 +313,7 @@
         <div class="shortcut-modal-content">
             <div class="shortcut-modal-header">
                 <h3>Neuer Bereich</h3>
+
                 <button type="button" id="close-section-modal">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -266,6 +327,37 @@
                     Bereichsname
                     <input type="text" name="section_name" placeholder="Server" required>
                 </label>
+
+                <div class="section-color-picker">
+                    <span>Bereichsfarbe</span>
+
+                    <div class="section-color-options">
+                        <label class="section-color-option blue">
+                            <input type="radio" name="section_color" value="blue" checked>
+                            <span>Blau</span>
+                        </label>
+
+                        <label class="section-color-option green">
+                            <input type="radio" name="section_color" value="green">
+                            <span>Grün</span>
+                        </label>
+
+                        <label class="section-color-option purple">
+                            <input type="radio" name="section_color" value="purple">
+                            <span>Lila</span>
+                        </label>
+
+                        <label class="section-color-option orange">
+                            <input type="radio" name="section_color" value="orange">
+                            <span>Orange</span>
+                        </label>
+
+                        <label class="section-color-option red">
+                            <input type="radio" name="section_color" value="red">
+                            <span>Rot</span>
+                        </label>
+                    </div>
+                </div>
 
                 <button type="submit">
                     Bereich erstellen

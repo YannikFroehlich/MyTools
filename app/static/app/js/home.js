@@ -250,4 +250,127 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+        /* ── Drag & Drop Shortcuts ── */
+
+    let draggedShortcut = null;
+
+    function getCsrfToken() {
+        const csrfInput = document.querySelector("input[name='csrfmiddlewaretoken']");
+        return csrfInput ? csrfInput.value : "";
+    }
+
+    function saveShortcutOrder() {
+        const payload = [];
+
+        document.querySelectorAll(".shortcuts-grid").forEach(grid => {
+            const sectionId = grid.dataset.sectionId;
+
+            grid.querySelectorAll(".shortcut-card").forEach((card, index) => {
+                payload.push({
+                    id: card.dataset.shortcutId,
+                    section_id: sectionId,
+                    order: index
+                });
+            });
+        });
+
+        fetch(window.location.href, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCsrfToken()
+            },
+            body: JSON.stringify({
+                action: "update_shortcut_order",
+                shortcuts: payload
+            })
+        }).catch(error => {
+            console.error("Reihenfolge konnte nicht gespeichert werden:", error);
+        });
+    }
+
+    function getDragAfterElement(container, x, y) {
+        const draggableElements = [
+            ...container.querySelectorAll(".shortcut-card:not(.dragging)")
+        ];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+
+            const offsetY = y - box.top - box.height / 2;
+            const offsetX = x - box.left - box.width / 2;
+
+            const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
+
+            if (offsetY < 0 && distance < closest.distance) {
+                return {
+                    distance: distance,
+                    element: child
+                };
+            }
+
+            return closest;
+        }, {
+            distance: Number.POSITIVE_INFINITY,
+            element: null
+        }).element;
+    }
+
+    document.querySelectorAll(".shortcut-card").forEach(card => {
+        card.addEventListener("dragstart", event => {
+            if (
+                event.target.closest("button") ||
+                event.target.closest("form")
+            ) {
+                event.preventDefault();
+                return;
+            }
+
+            draggedShortcut = card;
+            card.classList.add("dragging");
+
+            event.dataTransfer.effectAllowed = "move";
+        });
+
+        card.addEventListener("dragend", () => {
+            card.classList.remove("dragging");
+
+            document.querySelectorAll(".shortcuts-grid").forEach(grid => {
+                grid.classList.remove("drag-over");
+            });
+
+            draggedShortcut = null;
+            saveShortcutOrder();
+        });
+    });
+
+    document.querySelectorAll(".shortcuts-grid").forEach(grid => {
+        grid.addEventListener("dragover", event => {
+            event.preventDefault();
+
+            if (!draggedShortcut) {
+                return;
+            }
+
+            grid.classList.add("drag-over");
+
+            const afterElement = getDragAfterElement(grid, event.clientX, event.clientY);
+
+            if (afterElement == null) {
+                grid.appendChild(draggedShortcut);
+            } else {
+                grid.insertBefore(draggedShortcut, afterElement);
+            }
+        });
+
+        grid.addEventListener("dragleave", () => {
+            grid.classList.remove("drag-over");
+        });
+
+        grid.addEventListener("drop", () => {
+            grid.classList.remove("drag-over");
+            saveShortcutOrder();
+        });
+    });
 });

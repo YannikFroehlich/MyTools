@@ -2,8 +2,22 @@ from django.db import models
 
 
 class ShortcutSection(models.Model):
+    COLOR_CHOICES = [
+        ("blue", "Blau"),
+        ("green", "Grün"),
+        ("purple", "Lila"),
+        ("orange", "Orange"),
+        ("red", "Rot"),
+    ]
+
     name = models.CharField(max_length=60)
+    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="blue")
+    order = models.PositiveIntegerField(default=0)
+    is_collapsed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
 
     def __str__(self):
         return self.name
@@ -32,7 +46,13 @@ class Shortcut(models.Model):
         blank=True
     )
 
+    is_favorite = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-is_favorite", "order", "created_at"]
 
     def __str__(self):
         return self.name
