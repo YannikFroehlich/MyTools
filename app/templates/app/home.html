@@ -65,8 +65,12 @@
                             {% for shortcut in section.shortcuts.all %}
                                 <div class="shortcut-card">
                                     <a href="{{ shortcut.url }}" target="_blank" rel="noopener noreferrer">
-                                        <div class="shortcut-icon">
-                                            <i class="{{ shortcut.icon }}"></i>
+                                        <div class="shortcut-icon {% if shortcut.image %}shortcut-image-icon{% endif %}">
+                                            {% if shortcut.image %}
+                                                <img src="{{ shortcut.image.url }}" alt="{{ shortcut.name }}">
+                                            {% else %}
+                                                <i class="{{ shortcut.icon }}"></i>
+                                            {% endif %}
                                         </div>
                                         <span>{{ shortcut.name }}</span>
                                     </a>
@@ -120,7 +124,7 @@
                 </button>
             </div>
 
-            <form method="post" class="shortcut-form">
+            <form method="post" class="shortcut-form" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add_shortcut">
                 <input type="hidden" name="section_id" id="shortcut-section-id">
@@ -224,6 +228,11 @@
                 <label>
                     Eigenes Icon, falls keins passt
                     <input type="text" name="custom_icon" placeholder="z.B. fa-solid fa-server">
+                </label>
+
+                <label>
+                    Eigenes Bild, falls du kein Icon nutzen möchtest
+                    <input type="file" name="image" accept="image/*">
                 </label>
 
                 <button type="submit">

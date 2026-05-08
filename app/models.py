@@ -26,6 +26,12 @@ class Shortcut(models.Model):
         help_text="FontAwesome Icon-Klasse, z.B. fa-brands fa-youtube"
     )
 
+    image = models.ImageField(
+        upload_to="shortcut_icons/",
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("google-search-form");
     const input = document.getElementById("google-search-input");
     const suggestionsBox = document.getElementById("suggestions-box");
-    let currentFirstSuggestion = "";
 
     const shortcutModal = document.getElementById("shortcut-modal");
     const openShortcutModalButtons = document.querySelectorAll(".open-shortcut-modal");
@@ -14,51 +13,92 @@ document.addEventListener("DOMContentLoaded", () => {
     const openSectionModalButton = document.getElementById("open-section-modal");
     const closeSectionModalButton = document.getElementById("close-section-modal");
 
-    if (input) {
-        input.focus();
+    let suggestions = [];
+    let currentFirstSuggestion = "";
+
+    function hideSuggestions() {
+        if (suggestionsBox) {
+            suggestionsBox.innerHTML = "";
+            suggestionsBox.style.display = "none";
+        }
+
+        currentFirstSuggestion = "";
     }
 
-    let suggestions = [];
+    function focusSearchInput() {
+        if (input && !shortcutModal?.classList.contains("show") && !sectionModal?.classList.contains("show")) {
+            input.focus();
+        }
+    }
+
+    setTimeout(focusSearchInput, 100);
 
     fetch("/static/app/data/suggestions.json")
-    .then(response => response.json())
-    .then(data => {
-        suggestions = data;
-        console.log("Suggestions geladen:", suggestions);
-    })
-    .catch(error => {
-        console.error("Fehler beim Laden der Suggestions:", error);
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP Fehler: ${response.status}`);
+            }
 
-    function getSuggestions(input) {
-    const search = input.toLowerCase().trim();
+            return response.json();
+        })
+        .then(data => {
+            if (Array.isArray(data)) {
+                suggestions = data;
+            } else {
+                console.error("suggestions.json muss ein Array sein.");
+                suggestions = [];
+            }
+        })
+        .catch(error => {
+            console.error("Fehler beim Laden der Suggestions:", error);
+            suggestions = [
+                "Wetter heute",
+                "Google Maps",
+                "YouTube",
+                "Twitch",
+                "GitHub",
+                "Django Dokumentation",
+                "Python Tutorial",
+                "OpenWeather API",
+                "HTML CSS JavaScript",
+                "ChatGPT",
+                "Fritzbox VPN einrichten",
+                "CasaOS installieren",
+                "WireGuard Easy CasaOS"
+            ];
+        });
 
-    if (search === "") {
-        return [];
-    }
-
-    return suggestions.filter(item =>
-        item.toLowerCase().startsWith(search)
-    );
-}
-
-    function renderSuggestions(value) {
-        suggestionsBox.innerHTML = "";
-        currentFirstSuggestion = "";
-
+    function getFilteredSuggestions(value) {
         const searchValue = value.toLowerCase().trim();
 
         if (!searchValue) {
-            suggestionsBox.style.display = "none";
-            return;
+            return [];
         }
 
-        const filteredSuggestions = suggestions.filter(item =>
+        const startsWithMatches = suggestions.filter(item =>
+            item.toLowerCase().startsWith(searchValue)
+        );
+
+        const includesMatches = suggestions.filter(item =>
+            !item.toLowerCase().startsWith(searchValue) &&
             item.toLowerCase().includes(searchValue)
         );
 
+        return [...startsWithMatches, ...includesMatches].slice(0, 8);
+    }
+
+    function renderSuggestions(value) {
+        if (!suggestionsBox) {
+            return;
+        }
+
+        suggestionsBox.innerHTML = "";
+        currentFirstSuggestion = "";
+
+        const filteredSuggestions = getFilteredSuggestions(value);
+
         if (filteredSuggestions.length === 0) {
-            suggestionsBox.style.display = "none";
+            hideSuggestions();
             return;
         }
 
@@ -72,14 +112,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 suggestionItem.classList.add("active-suggestion");
             }
 
-            suggestionItem.innerHTML = `
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <span>${item}</span>
-            `;
+            const icon = document.createElement("i");
+            icon.className = "fa-solid fa-magnifying-glass";
+
+            const text = document.createElement("span");
+            text.textContent = item;
+
+            suggestionItem.appendChild(icon);
+            suggestionItem.appendChild(text);
 
             suggestionItem.addEventListener("click", () => {
+                if (!input) {
+                    return;
+                }
+
                 input.value = item;
-                suggestionsBox.style.display = "none";
+                hideSuggestions();
                 searchGoogle(item);
             });
 
@@ -99,28 +147,42 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = `https://www.google.com/search?q=${encodeURIComponent(trimmedQuery)}`;
     }
 
-    input.addEventListener("input", () => {
-        renderSuggestions(input.value);
-    });
+    if (input) {
+        input.addEventListener("input", () => {
+            renderSuggestions(input.value);
+        });
 
-    input.addEventListener("keydown", (event) => {
-        if (event.key === "Tab" && currentFirstSuggestion) {
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Tab" && currentFirstSuggestion) {
+                event.preventDefault();
+
+                input.value = currentFirstSuggestion;
+                hideSuggestions();
+            }
+
+            if (event.key === "Escape") {
+                hideSuggestions();
+            }
+
+            if (event.key === "Enter") {
+                hideSuggestions();
+            }
+        });
+    }
+
+    if (form) {
+        form.addEventListener("submit", (event) => {
             event.preventDefault();
 
-            input.value = currentFirstSuggestion;
-            suggestionsBox.style.display = "none";
-            currentFirstSuggestion = "";
-        }
-    });
-
-    form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        searchGoogle(input.value);
-    });
+            if (input) {
+                searchGoogle(input.value);
+            }
+        });
+    }
 
     document.addEventListener("click", (event) => {
-        if (!form.contains(event.target)) {
-            suggestionsBox.style.display = "none";
+        if (form && !form.contains(event.target)) {
+            hideSuggestions();
         }
     });
 
@@ -129,37 +191,62 @@ document.addEventListener("DOMContentLoaded", () => {
             const sectionId = button.dataset.sectionId;
             const sectionName = button.dataset.sectionName;
 
-            shortcutSectionIdInput.value = sectionId;
-            shortcutModalSectionName.textContent = `für "${sectionName}"`;
+            hideSuggestions();
 
-            shortcutModal.classList.add("show");
+            if (input) {
+                input.blur();
+            }
+
+            if (shortcutSectionIdInput) {
+                shortcutSectionIdInput.value = sectionId;
+            }
+
+            if (shortcutModalSectionName) {
+                shortcutModalSectionName.textContent = `für "${sectionName}"`;
+            }
+
+            if (shortcutModal) {
+                shortcutModal.classList.add("show");
+            }
         });
     });
 
     if (closeShortcutModalButton && shortcutModal) {
         closeShortcutModalButton.addEventListener("click", () => {
             shortcutModal.classList.remove("show");
+            setTimeout(focusSearchInput, 100);
         });
 
         shortcutModal.addEventListener("click", (event) => {
             if (event.target === shortcutModal) {
                 shortcutModal.classList.remove("show");
+                setTimeout(focusSearchInput, 100);
             }
         });
     }
 
-    if (openSectionModalButton && closeSectionModalButton && sectionModal) {
+    if (openSectionModalButton && sectionModal) {
         openSectionModalButton.addEventListener("click", () => {
+            hideSuggestions();
+
+            if (input) {
+                input.blur();
+            }
+
             sectionModal.classList.add("show");
         });
+    }
 
+    if (closeSectionModalButton && sectionModal) {
         closeSectionModalButton.addEventListener("click", () => {
             sectionModal.classList.remove("show");
+            setTimeout(focusSearchInput, 100);
         });
 
         sectionModal.addEventListener("click", (event) => {
             if (event.target === sectionModal) {
                 sectionModal.classList.remove("show");
+                setTimeout(focusSearchInput, 100);
             }
         });
     }

@@ -51,6 +51,7 @@ def home(request):
             url = request.POST.get("url", "").strip()
             icon = request.POST.get("icon", "").strip()
             custom_icon = request.POST.get("custom_icon", "").strip()
+            image = request.FILES.get("image")
 
             section = get_object_or_404(ShortcutSection, id=section_id)
 
@@ -65,7 +66,8 @@ def home(request):
                     section=section,
                     name=name,
                     url=url,
-                    icon=icon or "fa-solid fa-link"
+                    icon=icon or "fa-solid fa-link",
+                    image=image
                 )
 
             return redirect("home")
