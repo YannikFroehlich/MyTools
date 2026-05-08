@@ -1,0 +1,83 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mytools_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-mytools}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-mytools}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mytools_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: mytools_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - mytools_network
+
+  web:
+    build: .
+    container_name: mytools_web
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn MyTools.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60"
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - mytools_network
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: mytools_caddy
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+    networks:
+      - mytools_network
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
+  caddy_data:
+  caddy_config:
+
+networks:
+  mytools_network:
+    driver: bridge

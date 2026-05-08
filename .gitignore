@@ -5337,3 +5337,18 @@
 /.venv/Lib/site-packages/PIL/XpmImagePlugin.py
 /.venv/Lib/site-packages/PIL/XVThumbImagePlugin.py
 /.venv/Lib/site-packages/pillow-12.2.0.dist-info/zip-safe
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.sqlite3
+db.sqlite3
+staticfiles/
+media/
+
+# Environment
+.env
+.venv/
+venv/
