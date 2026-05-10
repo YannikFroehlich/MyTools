@@ -3,22 +3,30 @@ from collections import defaultdict
 
 from django.shortcuts import render, redirect, get_object_or_404
 import requests
+from django.conf import settings
 from django.utils import translation
 from django.utils.formats import date_format
 from datetime import datetime, timezone
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
 
-from app.models import Shortcut, ShortcutSection
+from app.models import AvatarCharacter, Shortcut, ShortcutSection
 
 import json
 
 from django.db.models import Max
+from django.db.utils import OperationalError, ProgrammingError
 from django.http import JsonResponse
 
-load_dotenv()
+env_path = settings.BASE_DIR / ".env"
+load_dotenv(env_path)
 
-api_key = os.getenv("OPENWEATHER_API_KEY")
+
+def get_env_value(name):
+    return os.getenv(name) or dotenv_values(env_path).get(name)
+
+
+openweather_api_key = get_env_value("OPENWEATHER_API_KEY")
 
 
 def home(request):
@@ -211,7 +219,7 @@ def weather(request):
     city = request.GET.get("city", "Berlin")
     current_lang = translation.get_language()
 
-    params = f"&appid={api_key}&units=metric&lang={current_lang}"
+    params = f"&appid={openweather_api_key}&units=metric&lang={current_lang}"
     location_query = f"lat={lat}&lon={lon}" if lat and lon else f"q={city}"
 
     try:
@@ -305,3 +313,241 @@ def weather(request):
 
 def obs_dashboard(request):
     return render(request, "app/obs-dashboard.html")
+
+def spritkostenrechner(request):
+    return render(request, "app/spritkostenrechner.html")
+
+
+def human_benchmark(request):
+    return render(request, "app/human_benchmark.html")
+
+
+def genius_search(request):
+    return render(request, "app/genius_search.html")
+
+
+def avatar_wiki(request):
+    return render(request, "app/avatar_wiki.html")
+
+
+def serialize_avatar_character(character):
+    return {
+        "id": character.id,
+        "name": character.name,
+        "nation": character.nation,
+        "link": character.link,
+        "description": character.description,
+        "image": character.image.url if character.image else "",
+    }
+
+
+def avatar_characters_api(request):
+    if request.method == "GET":
+        try:
+            characters = AvatarCharacter.objects.all()
+            return JsonResponse({
+                "status": "ok",
+                "characters": [serialize_avatar_character(character) for character in characters],
+            })
+        except (OperationalError, ProgrammingError):
+            return JsonResponse({
+                "status": "error",
+                "message": "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
+            }, status=500)
+
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        nation = request.POST.get("nation", "").strip()
+        link = request.POST.get("link", "").strip()
+        description = request.POST.get("description", "").strip()
+        image = request.FILES.get("image")
+
+        valid_nations = {choice[0] for choice in AvatarCharacter.NATION_CHOICES}
+
+        if not name:
+            return JsonResponse({
+                "status": "error",
+                "message": "Name fehlt."
+            }, status=400)
+
+        if nation not in valid_nations:
+            return JsonResponse({
+                "status": "error",
+                "message": "Ungültige Nation."
+            }, status=400)
+
+        if not image:
+            return JsonResponse({
+                "status": "error",
+                "message": "Bild fehlt."
+            }, status=400)
+
+        try:
+            character = AvatarCharacter.objects.create(
+                name=name,
+                nation=nation,
+                link=link,
+                description=description,
+                image=image,
+            )
+        except (OperationalError, ProgrammingError):
+            return JsonResponse({
+                "status": "error",
+                "message": "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
+            }, status=500)
+
+        return JsonResponse({
+            "status": "ok",
+            "character": serialize_avatar_character(character),
+        }, status=201)
+
+    return JsonResponse({
+        "status": "error",
+        "message": "Methode nicht erlaubt."
+    }, status=405)
+
+
+def avatar_character_detail_api(request, character_id):
+    if request.method != "DELETE":
+        return JsonResponse({
+            "status": "error",
+            "message": "Methode nicht erlaubt."
+        }, status=405)
+
+    character = get_object_or_404(AvatarCharacter, id=character_id)
+    character.delete()
+
+    return JsonResponse({
+        "status": "ok",
+    })
+
+
+def genius_search_api(request):
+    query = request.GET.get("q", "").strip()
+    page = request.GET.get("page", "1")
+    per_page = request.GET.get("per_page", "8")
+
+    if not query:
+        return JsonResponse({
+            "status": "error",
+            "message": "Suchbegriff fehlt."
+        }, status=400)
+
+    api_key = get_env_value("GENIUS_API_KEY")
+
+    if not api_key:
+        return JsonResponse({
+            "status": "error",
+            "message": "GENIUS_API_KEY fehlt in der .env."
+        }, status=500)
+
+    try:
+        page = max(1, int(page))
+        per_page = min(20, max(1, int(per_page)))
+    except ValueError:
+        return JsonResponse({
+            "status": "error",
+            "message": "Pagination-Parameter sind ungültig."
+        }, status=400)
+
+    try:
+        response = requests.get(
+            "https://api.genius.com/search",
+            params={
+                "q": query,
+                "page": page,
+                "per_page": per_page,
+            },
+            headers={
+                "Authorization": f"Bearer {api_key}",
+            },
+            timeout=10,
+        )
+        data = response.json()
+
+        if response.status_code != 200:
+            return JsonResponse({
+                "status": "error",
+                "message": data.get("meta", {}).get("message", "Genius API Fehler.")
+            }, status=response.status_code)
+
+        results = []
+        for hit in data.get("response", {}).get("hits", []):
+            song = hit.get("result", {})
+            artist = song.get("primary_artist") or {}
+
+            results.append({
+                "title": song.get("title", ""),
+                "artist": artist.get("name", ""),
+                "url": song.get("url", ""),
+                "image": song.get("song_art_image_thumbnail_url", ""),
+            })
+
+        return JsonResponse({
+            "status": "ok",
+            "results": results,
+        })
+    except requests.RequestException:
+        return JsonResponse({
+            "status": "error",
+            "message": "Genius API konnte nicht erreicht werden."
+        }, status=502)
+    except ValueError:
+        return JsonResponse({
+            "status": "error",
+            "message": "Ungültige Antwort der Genius API."
+        }, status=502)
+
+
+def tankstellen_api(request):
+    lat = request.GET.get("lat")
+    lon = request.GET.get("lon")
+
+    if not lat or not lon:
+        return JsonResponse({
+            "status": "error",
+            "message": "Latitude und Longitude fehlen."
+        }, status=400)
+
+    try:
+        lat = float(lat)
+        lon = float(lon)
+    except ValueError:
+        return JsonResponse({
+            "status": "error",
+            "message": "Latitude und Longitude müssen Zahlen sein."
+        }, status=400)
+
+    api_key = get_env_value("TANKERKOENIG_API_KEY")
+
+    if not api_key:
+        return JsonResponse({
+            "status": "error",
+            "message": "API-Key fehlt in der .env."
+        }, status=500)
+
+    url = "https://creativecommons.tankerkoenig.de/json/list.php"
+
+    params = {
+        "lat": lat,
+        "lng": lon,
+        "rad": 10,
+        "sort": "dist",
+        "type": "all",
+        "apikey": api_key,
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        data = response.json()
+        return JsonResponse(data, status=response.status_code)
+    except requests.RequestException:
+        return JsonResponse({
+            "status": "error",
+            "message": "Tankerkönig API konnte nicht erreicht werden."
+        }, status=502)
+    except ValueError:
+        return JsonResponse({
+            "status": "error",
+            "message": "Ungültige Antwort der Tankerkönig API."
+        }, status=502)

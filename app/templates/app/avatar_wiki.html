@@ -1,0 +1,90 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Avatar Wiki - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/avatar_wiki.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="avatar-page" data-characters-url="{% url 'avatar-characters-api' %}">
+        <div class="avatar-shell">
+            <div class="avatar-topbar">
+                <div class="avatar-brand">
+                    <svg class="avatar-emblem" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="18" cy="18" r="16" stroke="rgba(232,82,26,0.6)" stroke-width="1.5"/>
+                        <path d="M18 6 L24 18 L18 30 L12 18 Z" fill="rgba(232,82,26,0.35)" stroke="rgba(232,82,26,0.7)" stroke-width="1"/>
+                        <circle cx="18" cy="18" r="3" fill="rgba(232,82,26,0.8)"/>
+                    </svg>
+                    <a href="{% url 'avatar-wiki' %}">Avatar Wiki</a>
+                </div>
+
+                <button id="add-btn" class="avatar-add-btn" type="button">
+                    <span class="btn-icon">+</span>
+                    <span>{% translate 'Charakter' %}</span>
+                </button>
+            </div>
+
+            <div id="drawer-backdrop" class="avatar-backdrop"></div>
+
+            <aside id="form-drawer" class="avatar-drawer" aria-label="{% translate 'Charakter hinzufügen' %}">
+                <h2>{% translate 'Charakter hinzufügen' %}</h2>
+                <form id="characterForm">
+                    {% csrf_token %}
+                    <input type="text" id="name" placeholder="{% translate 'Name' %}" required>
+                    <select id="nation" required>
+                        <option value="" disabled selected>{% translate 'Nation wählen' %}</option>
+                        <option value="Feuer">Feuernation</option>
+                        <option value="Wasser">Wasserstamm</option>
+                        <option value="Erde">Erdkönigreich</option>
+                        <option value="Luft">Luftnomaden</option>
+                    </select>
+                    <input type="url" id="link" placeholder="{% translate 'Link (optional)' %}">
+                    <textarea id="description" placeholder="{% translate 'Beschreibung (optional)' %}"></textarea>
+                    <input type="file" id="image" accept="image/*" required>
+                    <button type="submit">{% translate 'Speichern' %}</button>
+                </form>
+            </aside>
+
+            <div id="modal-overlay" class="avatar-modal-overlay">
+                <div id="modal" class="avatar-modal">
+                    <button id="modal-close" type="button" aria-label="{% translate 'Schließen' %}">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <img id="modal-img" src="" alt="">
+                    <div id="modal-body">
+                        <div id="modal-nation-badge"></div>
+                        <h2 id="modal-name"></h2>
+                        <p id="modal-description"></p>
+                        <a id="modal-link" href="" target="_blank" rel="noopener" class="hidden">{% translate 'Mehr Infos' %}</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="avatar-main">
+                <h2>{% translate 'Charaktere' %}</h2>
+
+                <div class="avatar-search-bar">
+                    <input type="text" id="search-input" placeholder="{% translate 'Charakter suchen...' %}">
+                    <div class="avatar-filter-pills">
+                        <button class="pill active-all" type="button" data-filter="all">Alle</button>
+                        <button class="pill" type="button" data-filter="Feuer">Feuer</button>
+                        <button class="pill" type="button" data-filter="Wasser">Wasser</button>
+                        <button class="pill" type="button" data-filter="Erde">Erde</button>
+                        <button class="pill" type="button" data-filter="Luft">Luft</button>
+                    </div>
+                </div>
+
+                <div id="cards" class="avatar-cards">
+                    <div id="empty-state">Noch keine Charaktere hinzugefügt.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/avatar_wiki.js' %}"></script>
+{% endblock %}
