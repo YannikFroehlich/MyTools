@@ -68,7 +68,7 @@
                         <i class="fa-solid fa-temperature-half"></i>
                         <div>
                             <span>{{ temperature }}°C</span>
-                            <p>Temperatur</p>
+                            <p>{% translate 'Temperatur' %}</p>
                         </div>
                     </div>
 
@@ -76,7 +76,7 @@
                         <i class="fa-solid fa-droplet"></i>
                         <div>
                             <span>{{ humidity }}%</span>
-                            <p>Luftfeuchtigkeit</p>
+                            <p>{% translate 'Luftfeuchtigkeit' %}</p>
                         </div>
                     </div>
 
@@ -84,7 +84,7 @@
                         <i class="fa-solid fa-wind"></i>
                         <div>
                             <span>{{ wind_speed }} km/h</span>
-                            <p>Wind</p>
+                            <p>{% translate 'Wind' %}</p>
                         </div>
                     </div>
 
@@ -92,7 +92,7 @@
                         <i class="fa-regular fa-clock"></i>
                         <div>
                             <span>{{ pressure }} hPa</span>
-                            <p>Luftdruck</p>
+                            <p>{% translate 'Luftdruck' %}</p>
                         </div>
                     </div>
 
@@ -103,7 +103,7 @@
 
         <!-- Stündliche Vorhersage -->
         <div class="weather-card hourly-card">
-            <h2>Stündliche Vorhersage</h2>
+            <h2>{% translate 'Stündliche Vorhersage' %}</h2>
 
             <div class="hourly-list">
                 {% for hour in hourly_forecast %}
@@ -122,7 +122,7 @@
 
         <!-- 5 Tage -->
         <div class="weather-card forecast-card">
-            <h2>5-Tage-Vorhersage</h2>
+            <h2>{% translate '5-Tage-Vorhersage' %}</h2>
 
             <div class="forecast-list">
                 {% for day in forecast %}
@@ -143,18 +143,18 @@
 
         <!-- Sonnenaufgang -->
         <div class="weather-card sun-card">
-            <h2>Sonnenaufgang & -untergang</h2>
+            <h2>{% translate 'Sonnenaufgang & -untergang' %}</h2>
 
             <div class="sun-grid">
                 <div class="sun-item">
                     <i class="fa-solid fa-sun"></i>
                     <span>{{ sunrise }}</span>
-                    <p>Sonnenaufgang</p>
+                    <p>{% translate 'Sonnenaufgang' %}</p>
                 </div>
                 <div class="sun-item">
                     <i class="fa-solid fa-moon"></i>
                     <span>{{ sunset }}</span>
-                    <p>Sonnenuntergang</p>
+                    <p>{% translate 'Sonnenuntergang' %}</p>
                 </div>
             </div>
         </div>

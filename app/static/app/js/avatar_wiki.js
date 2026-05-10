@@ -14,7 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const modalOverlay = document.getElementById('modal-overlay');
     const modalClose = document.getElementById('modal-close');
+    const drawerTitle = document.getElementById('drawer-title');
+    const characterIdInput = document.getElementById('character-id');
+    const imageInput = document.getElementById('image');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const saveCharacterBtn = document.getElementById('save-character-btn');
+    const characterMap = new Map();
     let activeFilter = 'all';
+    let draggedCard = null;
 
     function getCookie(name) {
         const cookies = document.cookie ? document.cookie.split(';') : [];
@@ -61,6 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
         drawer.classList.remove('open');
         backdrop.classList.remove('open');
         addBtn.classList.remove('open');
+        resetForm();
+    }
+
+    function resetForm() {
+        form.reset();
+        characterIdInput.value = '';
+        imageInput.required = true;
+        drawerTitle.textContent = 'Charakter hinzufügen';
+        saveCharacterBtn.textContent = 'Speichern';
+        cancelEditBtn.classList.add('hidden');
     }
 
     function setEmptyMessage(message) {
@@ -157,9 +174,72 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.opacity = '0';
             window.setTimeout(() => {
                 card.remove();
+                characterMap.delete(Number(id));
                 updateEmptyState();
             }, 220);
         }
+    }
+
+    function editCharacter(id) {
+        const character = characterMap.get(Number(id));
+
+        if (!character) {
+            return;
+        }
+
+        characterIdInput.value = character.id;
+        document.getElementById('name').value = character.name;
+        document.getElementById('nation').value = character.nation;
+        document.getElementById('link').value = character.link || '';
+        document.getElementById('description').value = character.description || '';
+        imageInput.value = '';
+        imageInput.required = false;
+        drawerTitle.textContent = 'Charakter bearbeiten';
+        saveCharacterBtn.textContent = 'Aktualisieren';
+        cancelEditBtn.classList.remove('hidden');
+        openDrawer();
+    }
+
+    async function saveOrder() {
+        const characterIds = Array.from(cardsContainer.querySelectorAll('.avatar-card'))
+            .map((card) => Number(card.dataset.id));
+
+        try {
+            const response = await fetch(charactersUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    action: 'update_order',
+                    character_ids: characterIds,
+                }),
+            });
+
+            if (!response.ok) {
+                const data = await readResponse(response);
+                alert(data.message || 'Reihenfolge konnte nicht gespeichert werden.');
+            }
+        } catch (error) {
+            console.error('Reihenfolge konnte nicht gespeichert werden:', error);
+            alert('Reihenfolge konnte nicht gespeichert werden.');
+        }
+    }
+
+    function getDragAfterElement(container, y) {
+        const cards = [...container.querySelectorAll('.avatar-card:not(.is-dragging)')];
+
+        return cards.reduce((closest, card) => {
+            const box = card.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+
+            if (offset < 0 && offset > closest.offset) {
+                return { offset, element: card };
+            }
+
+            return closest;
+        }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
     }
 
     function addCard(character) {
@@ -173,12 +253,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         card.className = 'avatar-card';
         card.id = `card-${character.id}`;
+        card.draggable = true;
+        card.dataset.id = character.id;
         card.dataset.name = character.name.toLowerCase();
         card.dataset.nation = character.nation || '';
         card.innerHTML = `
-            <button class="delete-btn" type="button" title="Löschen">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <div class="avatar-card-actions">
+                <button class="edit-btn" type="button" title="Bearbeiten">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="delete-btn" type="button" title="Löschen">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
             <div class="card-img-wrap">
                 <img src="${escapeHtml(character.image)}" alt="${escapeHtml(character.name)}">
             </div>
@@ -189,6 +276,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${character.link ? `<a href="${escapeHtml(character.link)}" target="_blank" rel="noopener">Mehr Infos</a>` : ''}
             </div>
         `;
+
+        characterMap.set(Number(character.id), character);
+
+        card.querySelector('.edit-btn').addEventListener('click', (event) => {
+            event.stopPropagation();
+            editCharacter(character.id);
+        });
 
         card.querySelector('.delete-btn').addEventListener('click', (event) => {
             event.stopPropagation();
@@ -201,6 +295,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             openModal(character);
+        });
+
+        card.addEventListener('dragstart', () => {
+            draggedCard = card;
+            card.classList.add('is-dragging');
+        });
+
+        card.addEventListener('dragend', () => {
+            card.classList.remove('is-dragging');
+            draggedCard = null;
+            saveOrder();
         });
 
         cardsContainer.appendChild(card);
@@ -233,6 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             page.querySelectorAll('.avatar-card').forEach((card) => card.remove());
+            characterMap.clear();
             data.characters.forEach(addCard);
             applyFilters();
         } catch (error) {
@@ -250,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     backdrop.addEventListener('click', closeDrawer);
+    cancelEditBtn.addEventListener('click', closeDrawer);
     modalClose.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (event) => {
         if (event.target === modalOverlay) {
@@ -265,6 +372,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     searchInput.addEventListener('input', applyFilters);
+
+    cardsContainer.addEventListener('dragover', (event) => {
+        event.preventDefault();
+
+        if (!draggedCard) {
+            return;
+        }
+
+        const afterElement = getDragAfterElement(cardsContainer, event.clientY);
+
+        if (afterElement) {
+            cardsContainer.insertBefore(draggedCard, afterElement);
+        } else {
+            cardsContainer.appendChild(draggedCard);
+        }
+    });
 
     page.querySelectorAll('.pill').forEach((pill) => {
         pill.addEventListener('click', () => {
@@ -293,9 +416,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const submitButton = form.querySelector('button[type="submit"]');
         const formData = new FormData();
-        const imageFile = document.getElementById('image').files[0];
+        const imageFile = imageInput.files[0];
+        const characterId = characterIdInput.value;
 
-        if (!imageFile) {
+        if (!imageFile && !characterId) {
             return;
         }
 
@@ -303,13 +427,15 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('nation', document.getElementById('nation').value);
         formData.append('link', document.getElementById('link').value.trim());
         formData.append('description', document.getElementById('description').value.trim());
-        formData.append('image', imageFile);
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
 
         submitButton.disabled = true;
-        submitButton.textContent = 'Speichere...';
+        submitButton.textContent = characterId ? 'Aktualisiere...' : 'Speichere...';
 
         try {
-            const response = await fetch(charactersUrl, {
+            const response = await fetch(characterId ? characterDetailUrl(characterId) : charactersUrl, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': getCsrfToken(),
@@ -323,16 +449,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            addCard(data.character);
+            if (characterId) {
+                await loadCharacters();
+            } else {
+                addCard(data.character);
+            }
             applyFilters();
-            form.reset();
             closeDrawer();
         } catch (error) {
             console.error('Avatar-Charakter konnte nicht gespeichert werden:', error);
             alert('Charakter konnte nicht gespeichert werden.');
         } finally {
             submitButton.disabled = false;
-            submitButton.textContent = 'Speichern';
+            submitButton.textContent = characterIdInput.value ? 'Aktualisieren' : 'Speichern';
         }
     });
 

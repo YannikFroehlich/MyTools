@@ -71,10 +71,11 @@ class AvatarCharacter(models.Model):
     link = models.URLField(blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="avatar_characters/")
+    order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["name", "created_at"]
+        ordering = ["order", "created_at"]
 
     def __str__(self):
         return self.name

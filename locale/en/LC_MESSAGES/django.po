@@ -7,45 +7,765 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-07 11:37+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2026-05-10 23:30+0200\n"
+"PO-Revision-Date: 2026-05-10 23:45+0200\n"
+"Last-Translator: Yunnik\n"
+"Language-Team: English\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\app\templates\app\about.html:5 .\app\templates\app\about.html:14
-#: .\app\templates\app\base.html:40
+#: .\app\templates\app\about.html:5 .\app\templates\app\base.html:43
 msgid "Über"
 msgstr "About"
 
-#: .\app\templates\app\about.html:15
-msgid "Das hier ist die About Seite"
-msgstr "This is the About site"
+#: .\app\templates\app\about.html:21
+msgid "Über MyTools"
+msgstr "About MyTools"
 
-#: .\app\templates\app\base.html:28
-msgid "Start"
-msgstr "Home"
+#: .\app\templates\app\about.html:24
+msgid ""
+"MyTools ist eine persönliche Sammlung kleiner praktischer Tools, die den "
+"Alltag einfacher machen sollen."
+msgstr ""
+"MyTools is a personal collection of small practical tools designed to make "
+"everyday life easier."
 
-#: .\app\templates\app\base.html:32
+#: .\app\templates\app\about.html:30
+msgid "Zur Startseite"
+msgstr "Back to homepage"
+
+#: .\app\templates\app\about.html:40
+msgid "Alles an einem Ort"
+msgstr "Everything in one place"
+
+#: .\app\templates\app\about.html:43
+msgid ""
+"Wetter, Schnellzugriffe, kleine Helfer und weitere Funktionen können hier "
+"übersichtlich gesammelt werden."
+msgstr ""
+"Weather, shortcuts, small helpers and other features can be collected here "
+"in a clear and organized way."
+
+#: .\app\templates\app\about.html:51 .\app\templates\app\base.html:38
+#: .\app\templates\app\weather.html:5
 msgid "Wetter"
 msgstr "Weather"
 
-#: .\app\templates\app\base.html:36
-msgid "Länder"
-msgstr "Countries"
+#: .\app\templates\app\about.html:52
+msgid "Aktuelle Wetterdaten und Vorhersage"
+msgstr "Current weather data and forecast"
 
-#: .\app\templates\app\home.html:5 .\app\templates\app\home.html:15
+#: .\app\templates\app\about.html:57
+msgid "Shortcuts"
+msgstr "Shortcuts"
+
+#: .\app\templates\app\about.html:58
+msgid "Eigene Verknüpfungen speichern"
+msgstr "Save your own shortcuts"
+
+#: .\app\templates\app\about.html:63
+msgid "Dark Mode"
+msgstr "Dark Mode"
+
+#: .\app\templates\app\about.html:64
+msgid "Angenehmes Design bei Nacht"
+msgstr "Comfortable design at night"
+
+#: .\app\templates\app\about.html:74
+msgid "Ziel"
+msgstr "Goal"
+
+#: .\app\templates\app\about.html:77
+msgid ""
+"Diese Seite soll eine zentrale Oberfläche für nützliche Funktionen sein. "
+"Alles soll schnell erreichbar, übersichtlich und angenehm zu bedienen sein."
+msgstr ""
+"This site is intended to be a central interface for useful features. "
+"Everything should be quickly accessible, clearly arranged and pleasant to use."
+
+#: .\app\templates\app\about.html:89
+msgid "Design"
+msgstr "Design"
+
+#: .\app\templates\app\about.html:92
+msgid ""
+"Das Design ist modern, leicht und responsive. Es funktioniert sowohl im "
+"Light Mode als auch im Dark Mode."
+msgstr ""
+"The design is modern, lightweight and responsive. It works in both Light Mode "
+"and Dark Mode."
+
+#: .\app\templates\app\about.html:101
+msgid "Backend"
+msgstr "Backend"
+
+#: .\app\templates\app\about.html:104
+msgid ""
+"Einige Inhalte können später direkt im Backend gespeichert werden, zum "
+"Beispiel eigene Verknüpfungen oder persönliche Einstellungen."
+msgstr ""
+"Some content can later be stored directly in the backend, for example custom "
+"shortcuts or personal settings."
+
+#: .\app\templates\app\about.html:113
+msgid "Geplante Funktionen"
+msgstr "Planned features"
+
+#: .\app\templates\app\about.html:119
+msgid "Mehr Tools"
+msgstr "More tools"
+
+#: .\app\templates\app\about.html:120
+msgid "Weitere kleine Helfer wie Notizen, Rechner oder eigene Dashboards."
+msgstr "More small helpers such as notes, calculators or custom dashboards."
+
+#: .\app\templates\app\about.html:127
+msgid "Personalisierung"
+msgstr "Personalization"
+
+#: .\app\templates\app\about.html:128
+msgid "Eigene Bereiche, Shortcuts und Einstellungen für die Startseite."
+msgstr "Custom sections, shortcuts and settings for the homepage."
+
+#: .\app\templates\app\about.html:135
+msgid "Sauberes Backend"
+msgstr "Clean backend"
+
+#: .\app\templates\app\about.html:136
+msgid "Speicherung über Django-Models und einfache Verwaltung über die App."
+msgstr "Storage via Django models and simple management through the app."
+
+#: .\app\templates\app\avatar_wiki.html:5
+#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:70
+msgid "Avatar Wiki"
+msgstr "Avatar Wiki"
+
+#: .\app\templates\app\avatar_wiki.html:26
+msgid "Charakter"
+msgstr "Character"
+
+#: .\app\templates\app\avatar_wiki.html:32
+#: .\app\templates\app\avatar_wiki.html:33
+msgid "Charakter hinzufügen"
+msgstr "Add character"
+
+#: .\app\templates\app\avatar_wiki.html:37 .\app\templates\app\home.html:220
+msgid "Name"
+msgstr "Name"
+
+#: .\app\templates\app\avatar_wiki.html:39
+msgid "Nation wählen"
+msgstr "Choose nation"
+
+#: .\app\templates\app\avatar_wiki.html:40
+msgid "Feuernation"
+msgstr "Fire Nation"
+
+#: .\app\templates\app\avatar_wiki.html:41
+msgid "Wasserstamm"
+msgstr "Water Tribe"
+
+#: .\app\templates\app\avatar_wiki.html:42
+msgid "Erdkönigreich"
+msgstr "Earth Kingdom"
+
+#: .\app\templates\app\avatar_wiki.html:43
+msgid "Luftnomaden"
+msgstr "Air Nomads"
+
+#: .\app\templates\app\avatar_wiki.html:45
+msgid "Link (optional)"
+msgstr "Link optional"
+
+#: .\app\templates\app\avatar_wiki.html:46
+msgid "Beschreibung (optional)"
+msgstr "Description optional"
+
+#: .\app\templates\app\avatar_wiki.html:49
+msgid "Abbrechen"
+msgstr "Cancel"
+
+#: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\home.html:326
+msgid "Speichern"
+msgstr "Save"
+
+#: .\app\templates\app\avatar_wiki.html:57
+msgid "Schließen"
+msgstr "Close"
+
+#: .\app\templates\app\avatar_wiki.html:65
+msgid "Mehr Infos"
+msgstr "More info"
+
+#: .\app\templates\app\avatar_wiki.html:71
+msgid "Charaktere"
+msgstr "Characters"
+
+#: .\app\templates\app\avatar_wiki.html:74
+msgid "Charakter suchen..."
+msgstr "Search character..."
+
+#: .\app\templates\app\avatar_wiki.html:76
+msgid "Alle"
+msgstr "All"
+
+#: .\app\templates\app\avatar_wiki.html:77
+msgid "Feuer"
+msgstr "Fire"
+
+#: .\app\templates\app\avatar_wiki.html:78
+msgid "Wasser"
+msgstr "Water"
+
+#: .\app\templates\app\avatar_wiki.html:79
+msgid "Erde"
+msgstr "Earth"
+
+#: .\app\templates\app\avatar_wiki.html:80
+msgid "Luft"
+msgstr "Air"
+
+#: .\app\templates\app\avatar_wiki.html:85
+msgid "Noch keine Charaktere hinzugefügt."
+msgstr "No characters added yet."
+
+#: .\app\templates\app\base.html:7
+msgid "Mein myManager"
+msgstr "My myManager"
+
+#: .\app\templates\app\base.html:33 .\app\templates\app\human_benchmark.html:95
+msgid "Start"
+msgstr "Home"
+
+#: .\app\templates\app\base.html:47
+msgid "Weitere Seiten"
+msgstr "More pages"
+
+#: .\app\templates\app\base.html:54 .\app\templates\app\obs-dashboard.html:5
+#: .\app\templates\app\obs-dashboard.html:21
+msgid "OBS Dashboard"
+msgstr "OBS Dashboard"
+
+#: .\app\templates\app\base.html:58
+msgid "Spritkosten"
+msgstr "Fuel costs"
+
+#: .\app\templates\app\base.html:62 .\app\templates\app\human_benchmark.html:5
+#: .\app\templates\app\human_benchmark.html:16
+msgid "Human Benchmark"
+msgstr "Human Benchmark"
+
+#: .\app\templates\app\base.html:66 .\app\templates\app\genius_search.html:5
+#: .\app\templates\app\genius_search.html:16
+msgid "Genius Search"
+msgstr "Genius Search"
+
+#: .\app\templates\app\base.html:93
+msgid "Dark Mode umschalten"
+msgstr "Toggle Dark Mode"
+
+#: .\app\templates\app\genius_search.html:20
+msgid "Künstler oder Song suchen..."
+msgstr "Search for an artist or song..."
+
+#: .\app\templates\app\genius_search.html:23 .\app\templates\app\home.html:27
+#: .\app\templates\app\spritkostenrechner.html:30
+msgid "Suchen"
+msgstr "Search"
+
+#: .\app\templates\app\genius_search.html:29
+msgid "Suche nach einem Song oder Künstler, um Genius-Treffer zu sehen."
+msgstr "Search for a song or artist to see Genius results."
+
+#: .\app\templates\app\genius_search.html:33
+msgid "Zurück"
+msgstr "Back"
+
+#: .\app\templates\app\genius_search.html:34
+msgid "Seite 1"
+msgstr "Page 1"
+
+#: .\app\templates\app\genius_search.html:35
+msgid "Weiter"
+msgstr "Next"
+
+#: .\app\templates\app\home.html:5
 msgid "Startseite"
 msgstr "Homepage"
 
-#: .\app\templates\app\home.html:14
-msgid "Willkommen bei"
-msgstr "Welcome to"
+#: .\app\templates\app\home.html:22
+msgid "Bei Google suchen..."
+msgstr "Search on Google..."
 
-#: .\app\templates\app\home.html:15
-msgid "Das hier ist der spezifische Inhalt der"
-msgstr "This is the specific thing"
+#: .\app\templates\app\home.html:52
+msgid "Eingeklappt"
+msgstr "Collapsed"
+
+#: .\app\templates\app\home.html:60
+msgid "Bereich verschieben"
+msgstr "Move section"
+
+#: .\app\templates\app\home.html:68
+msgid "Bereich bearbeiten"
+msgstr "Edit section"
+
+#: .\app\templates\app\home.html:81
+msgid "Bereich ausklappen"
+msgstr "Expand section"
+
+#: .\app\templates\app\home.html:81
+msgid "Bereich einklappen"
+msgstr "Collapse section"
+
+#: .\app\templates\app\home.html:97
+msgid "Verknüpfung"
+msgstr "Shortcut"
+
+#: .\app\templates\app\home.html:105
+msgid "Bereich löschen"
+msgstr "Delete section"
+
+#: .\app\templates\app\home.html:125
+msgid "Verschieben"
+msgstr "Move"
+
+#: .\app\templates\app\home.html:129
+msgid "Bearbeiten"
+msgstr "Edit"
+
+#: .\app\templates\app\home.html:138
+msgid "Favorit entfernen"
+msgstr "Remove favorite"
+
+#: .\app\templates\app\home.html:138
+msgid "Als Favorit markieren"
+msgstr "Mark as favorite"
+
+#: .\app\templates\app\home.html:152
+msgid "Löschen"
+msgstr "Delete"
+
+#: .\app\templates\app\home.html:175
+msgid "Noch keine Verknüpfungen"
+msgstr "No shortcuts yet"
+
+#: .\app\templates\app\home.html:176
+msgid "Erstelle deine erste Schnellverknüpfung für diesen Bereich."
+msgstr "Create your first quick shortcut for this section."
+
+#: .\app\templates\app\home.html:190
+msgid "Bereich hinzufügen"
+msgstr "Add section"
+
+#: .\app\templates\app\home.html:191
+msgid "Erstelle einen neuen Bereich für weitere Verknüpfungen."
+msgstr "Create a new section for more shortcuts."
+
+#: .\app\templates\app\home.html:204
+msgid "Neue Verknüpfung"
+msgstr "New shortcut"
+
+#: .\app\templates\app\home.html:230
+msgid "Icon auswählen"
+msgstr "Choose icon"
+
+#: .\app\templates\app\home.html:316
+msgid "Eigenes Icon, falls keins passt"
+msgstr "Custom icon if none fits"
+
+#: .\app\templates\app\home.html:317
+msgid "z.B. fa-solid fa-server"
+msgstr "e.g. fa-solid fa-server"
+
+#: .\app\templates\app\home.html:321
+msgid "Eigenes Bild, falls du kein Icon nutzen möchtest"
+msgstr "Custom image if you do not want to use an icon"
+
+#: .\app\templates\app\home.html:331
+msgid "Beispiele:"
+msgstr "Examples:"
+
+#: .\app\templates\app\home.html:342
+msgid "Neuer Bereich"
+msgstr "New section"
+
+#: .\app\templates\app\home.html:355
+msgid "Bereichsname"
+msgstr "Section name"
+
+#: .\app\templates\app\home.html:360
+msgid "Bereichsfarbe"
+msgstr "Section color"
+
+#: .\app\templates\app\home.html:365
+msgid "Blau"
+msgstr "Blue"
+
+#: .\app\templates\app\home.html:370
+msgid "Grün"
+msgstr "Green"
+
+#: .\app\templates\app\home.html:375
+msgid "Lila"
+msgstr "Purple"
+
+#: .\app\templates\app\home.html:380
+msgid "Orange"
+msgstr "Orange"
+
+#: .\app\templates\app\home.html:385
+msgid "Rot"
+msgstr "Red"
+
+#: .\app\templates\app\home.html:391
+msgid "Bereich erstellen"
+msgstr "Create section"
+
+#: .\app\templates\app\human_benchmark.html:14
+msgid "Zum Reaktionstest wechseln"
+msgstr "Switch to reaction test"
+
+#: .\app\templates\app\human_benchmark.html:19
+msgid "Benchmark Tests"
+msgstr "Benchmark tests"
+
+#: .\app\templates\app\human_benchmark.html:20
+msgid "Reaktion"
+msgstr "Reaction"
+
+#: .\app\templates\app\human_benchmark.html:21
+msgid "Aim Trainer"
+msgstr "Aim Trainer"
+
+#: .\app\templates\app\human_benchmark.html:22
+msgid "Typing Test"
+msgstr "Typing Test"
+
+#: .\app\templates\app\human_benchmark.html:23
+#: .\app\templates\app\human_benchmark.html:93
+msgid "Visual Memory"
+msgstr "Visual Memory"
+
+#: .\app\templates\app\human_benchmark.html:30
+msgid "Reaktionstest"
+msgstr "Reaction test"
+
+#: .\app\templates\app\human_benchmark.html:31
+msgid "Klicke in das Feld, um zu starten."
+msgstr "Click inside the field to start."
+
+#: .\app\templates\app\human_benchmark.html:38
+msgid "Ziele"
+msgstr "Targets"
+
+#: .\app\templates\app\human_benchmark.html:39
+#: .\app\templates\app\human_benchmark.html:49
+#: .\app\templates\app\human_benchmark.html:65
+msgid "Zeit"
+msgstr "Time"
+
+#: .\app\templates\app\human_benchmark.html:40
+msgid "Präzision"
+msgstr "Precision"
+
+#: .\app\templates\app\human_benchmark.html:44
+msgid "Start Aim Trainer"
+msgstr "Start Aim Trainer"
+
+#: .\app\templates\app\human_benchmark.html:47
+#: .\app\templates\app\spritkostenrechner.html:57
+msgid "Ergebnis"
+msgstr "Result"
+
+#: .\app\templates\app\human_benchmark.html:50
+msgid "Genauigkeit"
+msgstr "Accuracy"
+
+#: .\app\templates\app\human_benchmark.html:51
+msgid "Misses"
+msgstr "Misses"
+
+#: .\app\templates\app\human_benchmark.html:53
+msgid "Erneut versuchen"
+msgstr "Try again"
+
+#: .\app\templates\app\human_benchmark.html:58
+msgid "Runde beenden"
+msgstr "End round"
+
+#: .\app\templates\app\human_benchmark.html:64
+msgid "WPM"
+msgstr "WPM"
+
+#: .\app\templates\app\human_benchmark.html:70
+msgid "Klicke auf Start, um den Test zu beginnen."
+msgstr "Click start to begin the test."
+
+#: .\app\templates\app\human_benchmark.html:73
+msgid "Warte auf Start..."
+msgstr "Waiting to start..."
+
+#: .\app\templates\app\human_benchmark.html:76
+msgid "Test starten"
+msgstr "Start test"
+
+#: .\app\templates\app\human_benchmark.html:81
+#: .\app\templates\app\human_benchmark.html:100
+msgid "Test abbrechen"
+msgstr "Cancel test"
+
+#: .\app\templates\app\human_benchmark.html:87
+msgid "Level"
+msgstr "Level"
+
+#: .\app\templates\app\human_benchmark.html:94
+msgid "Merke dir die blau leuchtenden Quadrate."
+msgstr "Remember the blue glowing squares."
+
+#: .\app\templates\app\obs-dashboard.html:18
+msgid "OBS WebSocket"
+msgstr "OBS WebSocket"
+
+#: .\app\templates\app\obs-dashboard.html:22
+msgid ""
+"Touch Control Panel für Szenen, Quellen, Stream, Aufnahme und Audio-Mixer."
+msgstr ""
+"Touch control panel for scenes, sources, stream, recording and audio mixer."
+
+#: .\app\templates\app\obs-dashboard.html:27
+msgid "Nicht verbunden"
+msgstr "Not connected"
+
+#: .\app\templates\app\obs-dashboard.html:36
+msgid "Verbindung"
+msgstr "Connection"
+
+#: .\app\templates\app\obs-dashboard.html:37
+msgid "Verbinde dich mit deinem OBS WebSocket Server."
+msgstr "Connect to your OBS WebSocket server."
+
+#: .\app\templates\app\obs-dashboard.html:45
+msgid "WebSocket URL"
+msgstr "WebSocket URL"
+
+#: .\app\templates\app\obs-dashboard.html:50
+msgid "Passwort"
+msgstr "Password"
+
+#: .\app\templates\app\obs-dashboard.html:51
+msgid "OBS Passwort"
+msgstr "OBS password"
+
+#: .\app\templates\app\obs-dashboard.html:56
+msgid "Verbinden"
+msgstr "Connect"
+
+#: .\app\templates\app\obs-dashboard.html:62
+msgid "Verbindung merken und automatisch wieder verbinden"
+msgstr "Remember connection and reconnect automatically"
+
+#: .\app\templates\app\obs-dashboard.html:69
+msgid "Szenen"
+msgstr "Scenes"
+
+#: .\app\templates\app\obs-dashboard.html:70
+msgid "Wechsle direkt zwischen deinen OBS-Szenen."
+msgstr "Switch directly between your OBS scenes."
+
+#: .\app\templates\app\obs-dashboard.html:73
+msgid "0 Szenen"
+msgstr "0 scenes"
+
+#: .\app\templates\app\obs-dashboard.html:78
+msgid "Noch keine Szenen geladen."
+msgstr "No scenes loaded yet."
+
+#: .\app\templates\app\obs-dashboard.html:86
+msgid "Quellen der aktuellen Szene"
+msgstr "Sources of the current scene"
+
+#: .\app\templates\app\obs-dashboard.html:87
+msgid "Blende Quellen direkt ein oder aus."
+msgstr "Show or hide sources directly."
+
+#: .\app\templates\app\obs-dashboard.html:90
+msgid "0 Quellen"
+msgstr "0 sources"
+
+#: .\app\templates\app\obs-dashboard.html:94
+msgid "Keine Szene ausgewählt"
+msgstr "No scene selected"
+
+#: .\app\templates\app\obs-dashboard.html:99
+msgid "Verbinde dich mit OBS und wähle eine Szene aus."
+msgstr "Connect to OBS and choose a scene."
+
+#: .\app\templates\app\obs-dashboard.html:107
+msgid "Live Controls"
+msgstr "Live controls"
+
+#: .\app\templates\app\obs-dashboard.html:108
+msgid "Steuere Aufnahme, Stream und Dashboard-Funktionen."
+msgstr "Control recording, stream and dashboard features."
+
+#: .\app\templates\app\obs-dashboard.html:111
+msgid "Stream & Aufnahme"
+msgstr "Stream & recording"
+
+#: .\app\templates\app\obs-dashboard.html:120
+msgid "Aufnahme"
+msgstr "Recording"
+
+#: .\app\templates\app\obs-dashboard.html:121
+#: .\app\templates\app\obs-dashboard.html:130
+#: .\app\templates\app\obs-dashboard.html:139
+msgid "Erst mit OBS verbinden"
+msgstr "Connect to OBS first"
+
+#: .\app\templates\app\obs-dashboard.html:129
+msgid "Stream"
+msgstr "Stream"
+
+#: .\app\templates\app\obs-dashboard.html:138
+msgid "Neu laden"
+msgstr "Reload"
+
+#: .\app\templates\app\obs-dashboard.html:147
+msgid "Vollbild"
+msgstr "Fullscreen"
+
+#: .\app\templates\app\obs-dashboard.html:148
+msgid "Tablet-Modus"
+msgstr "Tablet mode"
+
+#: .\app\templates\app\obs-dashboard.html:156
+msgid "Audio Mixer"
+msgstr "Audio mixer"
+
+#: .\app\templates\app\obs-dashboard.html:157
+msgid "Ändere Lautstärke und Mute-Status deiner OBS-Audioquellen."
+msgstr "Change the volume and mute status of your OBS audio sources."
+
+#: .\app\templates\app\obs-dashboard.html:160
+msgid "0 Audioquellen"
+msgstr "0 audio sources"
+
+#: .\app\templates\app\obs-dashboard.html:165
+msgid "Verbinde dich mit OBS, um Audioquellen zu laden."
+msgstr "Connect to OBS to load audio sources."
+
+#: .\app\templates\app\spritkostenrechner.html:5
+#: .\app\templates\app\spritkostenrechner.html:14
+msgid "Spritkostenrechner"
+msgstr "Fuel cost calculator"
+
+#: .\app\templates\app\spritkostenrechner.html:15
+msgid "Tankstellen finden"
+msgstr "Find gas stations"
+
+#: .\app\templates\app\spritkostenrechner.html:20
+msgid "Mein Standort"
+msgstr "My location"
+
+#: .\app\templates\app\spritkostenrechner.html:22
+msgid "Stadt eingeben..."
+msgstr "Enter city..."
+
+#: .\app\templates\app\spritkostenrechner.html:23
+msgid "Kraftstoff"
+msgstr "Fuel"
+
+#: .\app\templates\app\spritkostenrechner.html:36
+msgid "Suche Tankstellen..."
+msgstr "Searching for gas stations..."
+
+#: .\app\templates\app\spritkostenrechner.html:40
+msgid "Suche per Standort oder Stadt, um Preise in deiner Nähe zu sehen."
+msgstr "Search by location or city to see prices near you."
+
+#: .\app\templates\app\spritkostenrechner.html:45
+msgid "Kostenrechner"
+msgstr "Cost calculator"
+
+#: .\app\templates\app\spritkostenrechner.html:48
+msgid "Kilometer pro Tag"
+msgstr "Kilometers per day"
+
+#: .\app\templates\app\spritkostenrechner.html:49
+msgid "Zeitraum"
+msgstr "Period"
+
+#: .\app\templates\app\spritkostenrechner.html:50
+msgid "pro Tag"
+msgstr "per day"
+
+#: .\app\templates\app\spritkostenrechner.html:51
+msgid "pro Monat"
+msgstr "per month"
+
+#: .\app\templates\app\spritkostenrechner.html:52
+msgid "pro Jahr"
+msgstr "per year"
+
+#: .\app\templates\app\spritkostenrechner.html:54
+msgid "Verbrauch (l/100km)"
+msgstr "Consumption (l/100km)"
+
+#: .\app\templates\app\weather.html:22
+msgid "Stadt suchen..."
+msgstr "Search city..."
+
+#: .\app\templates\app\weather.html:42
+msgid "Aktuelles Wetter"
+msgstr "Current weather"
+
+#: .\app\templates\app\weather.html:71
+msgid "Temperatur"
+msgstr "Temperature"
+
+#: .\app\templates\app\weather.html:79
+msgid "Luftfeuchtigkeit"
+msgstr "Humidity"
+
+#: .\app\templates\app\weather.html:87
+msgid "Wind"
+msgstr "Wind"
+
+#: .\app\templates\app\weather.html:95
+msgid "Luftdruck"
+msgstr "Air pressure"
+
+#: .\app\templates\app\weather.html:106
+msgid "Stündliche Vorhersage"
+msgstr "Hourly forecast"
+
+#: .\app\templates\app\weather.html:125
+msgid "5-Tage-Vorhersage"
+msgstr "5-day forecast"
+
+#: .\app\templates\app\weather.html:146
+msgid "Sonnenaufgang & -untergang"
+msgstr "Sunrise & sunset"
+
+#: .\app\templates\app\weather.html:152
+msgid "Sonnenaufgang"
+msgstr "Sunrise"
+
+#: .\app\templates\app\weather.html:157
+msgid "Sonnenuntergang"
+msgstr "Sunset"
+
+#~ msgid "Das hier ist die About Seite"
+#~ msgstr "This is the About page"
+
+#~ msgid "Länder"
+#~ msgstr "Countries"
+
+#~ msgid "Willkommen bei"
+#~ msgstr "Welcome to"
+
+#~ msgid "Das hier ist der spezifische Inhalt der"
+#~ msgstr "This is the specific content of"
