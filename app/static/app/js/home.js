@@ -4,17 +4,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const suggestionsBox = document.getElementById("suggestions-box");
 
     const shortcutModal = document.getElementById("shortcut-modal");
-    const openShortcutModalButtons = document.querySelectorAll(".open-shortcut-modal");
     const closeShortcutModalButton = document.getElementById("close-shortcut-modal");
+    const shortcutModalTitle = document.getElementById("shortcut-modal-title");
+    const shortcutForm = shortcutModal?.querySelector(".shortcut-form");
+    const shortcutFormActionInput = document.getElementById("shortcut-form-action");
+    const shortcutIdInput = document.getElementById("shortcut-id");
     const shortcutSectionIdInput = document.getElementById("shortcut-section-id");
+    const shortcutNameInput = document.getElementById("shortcut-name");
+    const shortcutUrlInput = document.getElementById("shortcut-url");
+    const shortcutCustomIconInput = document.getElementById("shortcut-custom-icon");
     const shortcutModalSectionName = document.getElementById("shortcut-modal-section-name");
 
     const sectionModal = document.getElementById("section-modal");
     const openSectionModalButton = document.getElementById("open-section-modal");
     const closeSectionModalButton = document.getElementById("close-section-modal");
+    const sectionModalTitle = document.getElementById("section-modal-title");
+    const sectionForm = sectionModal?.querySelector(".shortcut-form");
+    const sectionFormActionInput = document.getElementById("section-form-action");
+    const editSectionIdInput = document.getElementById("edit-section-id");
+    const sectionNameInput = document.getElementById("section-name");
+    const sectionSubmitButton = document.getElementById("section-submit-button");
 
     let suggestions = [];
     let currentFirstSuggestion = "";
+    let activeSuggestionIndex = 0;
 
     function hideSuggestions() {
         if (suggestionsBox) {
@@ -23,12 +36,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         currentFirstSuggestion = "";
+        activeSuggestionIndex = 0;
     }
 
     function focusSearchInput() {
         if (input && !shortcutModal?.classList.contains("show") && !sectionModal?.classList.contains("show")) {
             input.focus();
         }
+    }
+
+    function closeModal(modal) {
+        modal?.classList.remove("show");
+        setTimeout(focusSearchInput, 100);
+    }
+
+    function openModal(modal) {
+        hideSuggestions();
+        input?.blur();
+        modal?.classList.add("show");
     }
 
     setTimeout(focusSearchInput, 100);
@@ -42,12 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return response.json();
         })
         .then(data => {
-            if (Array.isArray(data)) {
-                suggestions = data;
-            } else {
-                console.error("suggestions.json muss ein Array sein.");
-                suggestions = [];
-            }
+            suggestions = Array.isArray(data) ? data : [];
         })
         .catch(error => {
             console.error("Fehler beim Laden der Suggestions:", error);
@@ -87,6 +107,20 @@ document.addEventListener("DOMContentLoaded", () => {
         return [...startsWithMatches, ...includesMatches].slice(0, 8);
     }
 
+    function updateActiveSuggestion() {
+        if (!suggestionsBox) {
+            return;
+        }
+
+        const items = [...suggestionsBox.querySelectorAll(".suggestion-item")];
+
+        items.forEach((item, index) => {
+            item.classList.toggle("active-suggestion", index === activeSuggestionIndex);
+        });
+
+        currentFirstSuggestion = items[activeSuggestionIndex]?.dataset.value || "";
+    }
+
     function renderSuggestions(value) {
         if (!suggestionsBox) {
             return;
@@ -94,6 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         suggestionsBox.innerHTML = "";
         currentFirstSuggestion = "";
+        activeSuggestionIndex = 0;
 
         const filteredSuggestions = getFilteredSuggestions(value);
 
@@ -102,11 +137,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        currentFirstSuggestion = filteredSuggestions[0];
-
         filteredSuggestions.forEach((item, index) => {
             const suggestionItem = document.createElement("div");
             suggestionItem.classList.add("suggestion-item");
+            suggestionItem.dataset.value = item;
 
             if (index === 0) {
                 suggestionItem.classList.add("active-suggestion");
@@ -122,10 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
             suggestionItem.appendChild(text);
 
             suggestionItem.addEventListener("click", () => {
-                if (!input) {
-                    return;
-                }
-
                 input.value = item;
                 hideSuggestions();
                 searchGoogle(item);
@@ -134,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
             suggestionsBox.appendChild(suggestionItem);
         });
 
+        currentFirstSuggestion = filteredSuggestions[0];
         suggestionsBox.style.display = "block";
     }
 
@@ -153,18 +184,35 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         input.addEventListener("keydown", (event) => {
-            if (event.key === "Tab" && currentFirstSuggestion) {
+            const items = suggestionsBox ? [...suggestionsBox.querySelectorAll(".suggestion-item")] : [];
+
+            if ((event.key === "ArrowDown" || event.key === "ArrowUp") && items.length > 0) {
                 event.preventDefault();
 
+                activeSuggestionIndex = event.key === "ArrowDown"
+                    ? (activeSuggestionIndex + 1) % items.length
+                    : (activeSuggestionIndex - 1 + items.length) % items.length;
+
+                updateActiveSuggestion();
+                return;
+            }
+
+            if (event.key === "Tab" && currentFirstSuggestion) {
+                event.preventDefault();
                 input.value = currentFirstSuggestion;
                 hideSuggestions();
+                return;
+            }
+
+            if (event.key === "Enter" && items.length > 0 && currentFirstSuggestion) {
+                event.preventDefault();
+                input.value = currentFirstSuggestion;
+                hideSuggestions();
+                searchGoogle(currentFirstSuggestion);
+                return;
             }
 
             if (event.key === "Escape") {
-                hideSuggestions();
-            }
-
-            if (event.key === "Enter") {
                 hideSuggestions();
             }
         });
@@ -186,78 +234,175 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    openShortcutModalButtons.forEach(button => {
+    function setCheckedRadio(container, name, value, fallbackValue = "") {
+        const radios = container ? [...container.querySelectorAll(`input[name='${name}']`)] : [];
+        const selected = radios.find(radio => radio.value === value) || radios.find(radio => radio.value === fallbackValue) || radios[0];
+
+        radios.forEach(radio => {
+            radio.checked = radio === selected;
+        });
+    }
+
+    function resetShortcutForm() {
+        shortcutForm?.reset();
+
+        if (shortcutFormActionInput) shortcutFormActionInput.value = "add_shortcut";
+        if (shortcutIdInput) shortcutIdInput.value = "";
+        if (shortcutNameInput) shortcutNameInput.value = "";
+        if (shortcutUrlInput) shortcutUrlInput.value = "";
+        if (shortcutCustomIconInput) shortcutCustomIconInput.value = "";
+        if (shortcutModalTitle) shortcutModalTitle.textContent = "Neue Verknüpfung";
+        setCheckedRadio(shortcutForm, "icon", "fa-brands fa-youtube");
+    }
+
+    function openAddShortcutModal(sectionId, sectionName) {
+        resetShortcutForm();
+
+        if (shortcutSectionIdInput) shortcutSectionIdInput.value = sectionId;
+        if (shortcutModalSectionName) shortcutModalSectionName.textContent = `für "${sectionName}"`;
+
+        openModal(shortcutModal);
+        setTimeout(() => shortcutNameInput?.focus(), 100);
+    }
+
+    function openEditShortcutModal(card) {
+        resetShortcutForm();
+
+        const shortcutId = card.dataset.shortcutId || "";
+        const sectionId = card.closest(".shortcuts-grid")?.dataset.sectionId || card.dataset.shortcutSectionId || "";
+        const sectionName = card.closest(".shortcuts-section")?.querySelector("h2")?.textContent?.trim() || "";
+        const name = card.dataset.shortcutName || card.querySelector("a span")?.textContent?.trim() || "";
+        const url = card.dataset.shortcutUrl || card.querySelector("a")?.getAttribute("href") || "";
+        const icon = card.dataset.shortcutIcon || "";
+
+        if (shortcutFormActionInput) shortcutFormActionInput.value = "edit_shortcut";
+        if (shortcutIdInput) shortcutIdInput.value = shortcutId;
+        if (shortcutSectionIdInput) shortcutSectionIdInput.value = sectionId;
+        if (shortcutNameInput) shortcutNameInput.value = name;
+        if (shortcutUrlInput) shortcutUrlInput.value = url;
+        if (shortcutModalTitle) shortcutModalTitle.textContent = "Verknüpfung bearbeiten";
+        if (shortcutModalSectionName) shortcutModalSectionName.textContent = sectionName ? `in "${sectionName}"` : "";
+
+        const matchingIcon = shortcutForm?.querySelector(`input[name='icon'][value="${CSS.escape(icon)}"]`);
+
+        if (matchingIcon) {
+            setCheckedRadio(shortcutForm, "icon", icon);
+            if (shortcutCustomIconInput) shortcutCustomIconInput.value = "";
+        } else {
+            setCheckedRadio(shortcutForm, "icon", "fa-solid fa-link");
+            if (shortcutCustomIconInput) shortcutCustomIconInput.value = icon;
+        }
+
+        openModal(shortcutModal);
+        setTimeout(() => shortcutNameInput?.focus(), 100);
+    }
+
+    document.querySelectorAll(".open-shortcut-modal").forEach(button => {
         button.addEventListener("click", () => {
-            const sectionId = button.dataset.sectionId;
-            const sectionName = button.dataset.sectionName;
+            openAddShortcutModal(button.dataset.sectionId, button.dataset.sectionName);
+        });
+    });
 
-            hideSuggestions();
+    document.querySelectorAll(".edit-shortcut-button").forEach(button => {
+        button.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
 
-            if (input) {
-                input.blur();
-            }
+            const card = button.closest(".shortcut-card");
 
-            if (shortcutSectionIdInput) {
-                shortcutSectionIdInput.value = sectionId;
-            }
-
-            if (shortcutModalSectionName) {
-                shortcutModalSectionName.textContent = `für "${sectionName}"`;
-            }
-
-            if (shortcutModal) {
-                shortcutModal.classList.add("show");
+            if (card) {
+                openEditShortcutModal(card);
             }
         });
     });
 
     if (closeShortcutModalButton && shortcutModal) {
-        closeShortcutModalButton.addEventListener("click", () => {
-            shortcutModal.classList.remove("show");
-            setTimeout(focusSearchInput, 100);
-        });
-
-        shortcutModal.addEventListener("click", (event) => {
-            if (event.target === shortcutModal) {
-                shortcutModal.classList.remove("show");
-                setTimeout(focusSearchInput, 100);
-            }
+        closeShortcutModalButton.addEventListener("click", () => closeModal(shortcutModal));
+        shortcutModal.addEventListener("click", event => {
+            if (event.target === shortcutModal) closeModal(shortcutModal);
         });
     }
 
-    if (openSectionModalButton && sectionModal) {
-        openSectionModalButton.addEventListener("click", () => {
-            hideSuggestions();
+    function resetSectionForm() {
+        sectionForm?.reset();
 
-            if (input) {
-                input.blur();
-            }
-
-            sectionModal.classList.add("show");
-        });
+        if (sectionFormActionInput) sectionFormActionInput.value = "add_section";
+        if (editSectionIdInput) editSectionIdInput.value = "";
+        if (sectionNameInput) sectionNameInput.value = "";
+        if (sectionModalTitle) sectionModalTitle.textContent = "Neuer Bereich";
+        if (sectionSubmitButton) sectionSubmitButton.textContent = "Bereich erstellen";
+        setCheckedRadio(sectionForm, "section_color", "blue");
     }
+
+    function openAddSectionModal() {
+        resetSectionForm();
+        openModal(sectionModal);
+        setTimeout(() => sectionNameInput?.focus(), 100);
+    }
+
+    function openEditSectionModal(button) {
+        resetSectionForm();
+
+        if (sectionFormActionInput) sectionFormActionInput.value = "edit_section";
+        if (editSectionIdInput) editSectionIdInput.value = button.dataset.sectionId || "";
+        if (sectionNameInput) sectionNameInput.value = button.dataset.sectionName || "";
+        if (sectionModalTitle) sectionModalTitle.textContent = "Bereich bearbeiten";
+        if (sectionSubmitButton) sectionSubmitButton.textContent = "Änderungen speichern";
+
+        setCheckedRadio(sectionForm, "section_color", button.dataset.sectionColor || "blue", "blue");
+
+        openModal(sectionModal);
+        setTimeout(() => sectionNameInput?.focus(), 100);
+    }
+
+    openSectionModalButton?.addEventListener("click", openAddSectionModal);
+
+    document.querySelectorAll(".edit-section-button").forEach(button => {
+        button.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            openEditSectionModal(button);
+        });
+    });
 
     if (closeSectionModalButton && sectionModal) {
-        closeSectionModalButton.addEventListener("click", () => {
-            sectionModal.classList.remove("show");
-            setTimeout(focusSearchInput, 100);
-        });
-
-        sectionModal.addEventListener("click", (event) => {
-            if (event.target === sectionModal) {
-                sectionModal.classList.remove("show");
-                setTimeout(focusSearchInput, 100);
-            }
+        closeSectionModalButton.addEventListener("click", () => closeModal(sectionModal));
+        sectionModal.addEventListener("click", event => {
+            if (event.target === sectionModal) closeModal(sectionModal);
         });
     }
 
-        /* ── Drag & Drop Shortcuts ── */
-
-    let draggedShortcut = null;
+    /* ── Pointer Drag & Drop: Shortcuts + Sections ── */
 
     function getCsrfToken() {
         const csrfInput = document.querySelector("input[name='csrfmiddlewaretoken']");
         return csrfInput ? csrfInput.value : "";
+    }
+
+    function postJson(payload) {
+        return fetch(window.location.href, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCsrfToken()
+            },
+            body: JSON.stringify(payload)
+        }).catch(error => {
+            console.error("Änderung konnte nicht gespeichert werden:", error);
+        });
+    }
+
+    function updateEmptyStates() {
+        document.querySelectorAll(".shortcuts-grid").forEach(grid => {
+            const emptyState = grid.querySelector(".empty-shortcuts");
+            const hasShortcuts = grid.querySelectorAll(".shortcut-card").length > 0;
+
+            if (emptyState) {
+                emptyState.hidden = hasShortcuts;
+            }
+
+            grid.classList.toggle("is-empty", !hasShortcuts);
+        });
     }
 
     function saveShortcutOrder() {
@@ -267,6 +412,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const sectionId = grid.dataset.sectionId;
 
             grid.querySelectorAll(".shortcut-card").forEach((card, index) => {
+                card.dataset.shortcutSectionId = sectionId;
+
                 payload.push({
                     id: card.dataset.shortcutId,
                     section_id: sectionId,
@@ -275,102 +422,236 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        fetch(window.location.href, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCsrfToken()
-            },
-            body: JSON.stringify({
-                action: "update_shortcut_order",
-                shortcuts: payload
-            })
-        }).catch(error => {
-            console.error("Reihenfolge konnte nicht gespeichert werden:", error);
+        return postJson({
+            action: "update_shortcut_order",
+            shortcuts: payload
         });
     }
 
-    function getDragAfterElement(container, x, y) {
-        const draggableElements = [
-            ...container.querySelectorAll(".shortcut-card:not(.dragging)")
-        ];
+    function saveSectionOrder() {
+        const sections = [...document.querySelectorAll(".shortcuts-section")].map((section, index) => ({
+            id: section.dataset.sectionId,
+            order: index
+        }));
 
-        return draggableElements.reduce((closest, child) => {
-            const box = child.getBoundingClientRect();
-
-            const offsetY = y - box.top - box.height / 2;
-            const offsetX = x - box.left - box.width / 2;
-
-            const distance = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
-
-            if (offsetY < 0 && distance < closest.distance) {
-                return {
-                    distance: distance,
-                    element: child
-                };
-            }
-
-            return closest;
-        }, {
-            distance: Number.POSITIVE_INFINITY,
-            element: null
-        }).element;
+        return postJson({
+            action: "update_section_order",
+            sections
+        });
     }
 
-    document.querySelectorAll(".shortcut-card").forEach(card => {
-        card.addEventListener("dragstart", event => {
-            if (
-                event.target.closest("button") ||
-                event.target.closest("form")
-            ) {
-                event.preventDefault();
+    function createPlaceholder(element, extraClass) {
+        const rect = element.getBoundingClientRect();
+        const placeholder = document.createElement("div");
+        placeholder.className = `drag-placeholder ${extraClass}`;
+        placeholder.style.width = `${rect.width}px`;
+        placeholder.style.height = `${rect.height}px`;
+        return placeholder;
+    }
+
+    function setFloatingElement(element, rect) {
+        element.classList.add("pointer-dragging");
+        element.style.position = "fixed";
+        element.style.left = `${rect.left}px`;
+        element.style.top = `${rect.top}px`;
+        element.style.width = `${rect.width}px`;
+        element.style.height = `${rect.height}px`;
+        element.style.zIndex = "20000";
+        element.style.pointerEvents = "none";
+        element.style.margin = "0";
+    }
+
+    function moveFloatingElement(element, clientX, clientY, offsetX, offsetY) {
+        element.style.left = `${clientX - offsetX}px`;
+        element.style.top = `${clientY - offsetY}px`;
+    }
+
+    function resetFloatingElement(element) {
+        element.classList.remove("pointer-dragging");
+        element.style.position = "";
+        element.style.left = "";
+        element.style.top = "";
+        element.style.width = "";
+        element.style.height = "";
+        element.style.zIndex = "";
+        element.style.pointerEvents = "";
+        element.style.margin = "";
+    }
+
+    function getElementUnderPointer(clientX, clientY, selector) {
+        const target = document.elementFromPoint(clientX, clientY);
+        return target?.closest(selector) || null;
+    }
+
+    function getShortcutInsertBefore(grid, clientY) {
+        const cards = [...grid.querySelectorAll(".shortcut-card:not(.pointer-dragging)")];
+
+        for (const card of cards) {
+            const box = card.getBoundingClientRect();
+            const middle = box.top + box.height / 2;
+
+            if (clientY < middle) {
+                return card;
+            }
+        }
+
+        return null;
+    }
+
+    function getSectionInsertBefore(wrapper, clientY) {
+        const sections = [...wrapper.querySelectorAll(".shortcuts-section:not(.pointer-dragging)")]
+            .filter(section => section.dataset.isDefaultSection !== "true");
+
+        for (const section of sections) {
+            const box = section.getBoundingClientRect();
+            const middle = box.top + box.height / 2;
+
+            if (clientY < middle) {
+                return section;
+            }
+        }
+
+        return null;
+    }
+
+    function startPointerShortcutDrag(event, handle) {
+        if (event.button !== 0) {
+            return;
+        }
+
+        const card = handle.closest(".shortcut-card");
+        const startGrid = card?.closest(".shortcuts-grid");
+
+        if (!card || !startGrid) {
+            return;
+        }
+
+        event.preventDefault();
+        hideSuggestions();
+
+        const rect = card.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left;
+        const offsetY = event.clientY - rect.top;
+        const placeholder = createPlaceholder(card, "shortcut-placeholder");
+
+        startGrid.insertBefore(placeholder, card);
+        document.body.appendChild(card);
+        setFloatingElement(card, rect);
+        moveFloatingElement(card, event.clientX, event.clientY, offsetX, offsetY);
+        updateEmptyStates();
+
+        function onPointerMove(moveEvent) {
+            moveEvent.preventDefault();
+            moveFloatingElement(card, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
+
+            const grid = getElementUnderPointer(moveEvent.clientX, moveEvent.clientY, ".shortcuts-grid");
+
+            document.querySelectorAll(".shortcuts-grid").forEach(item => {
+                item.classList.toggle("drag-over", item === grid);
+            });
+
+            if (!grid) {
                 return;
             }
 
-            draggedShortcut = card;
-            card.classList.add("dragging");
+            const emptyState = grid.querySelector(".empty-shortcuts");
+            if (emptyState) {
+                emptyState.hidden = true;
+            }
 
-            event.dataTransfer.effectAllowed = "move";
-        });
+            const before = getShortcutInsertBefore(grid, moveEvent.clientY);
 
-        card.addEventListener("dragend", () => {
-            card.classList.remove("dragging");
+            if (before) {
+                grid.insertBefore(placeholder, before);
+            } else {
+                grid.appendChild(placeholder);
+            }
+
+            updateEmptyStates();
+        }
+
+        function onPointerUp(upEvent) {
+            document.removeEventListener("pointermove", onPointerMove);
+            document.removeEventListener("pointerup", onPointerUp);
+            document.removeEventListener("pointercancel", onPointerUp);
+
+            placeholder.replaceWith(card);
+            resetFloatingElement(card);
 
             document.querySelectorAll(".shortcuts-grid").forEach(grid => {
                 grid.classList.remove("drag-over");
             });
 
-            draggedShortcut = null;
+            updateEmptyStates();
             saveShortcutOrder();
-        });
-    });
+        }
 
-    document.querySelectorAll(".shortcuts-grid").forEach(grid => {
-        grid.addEventListener("dragover", event => {
-            event.preventDefault();
+        document.addEventListener("pointermove", onPointerMove, { passive: false });
+        document.addEventListener("pointerup", onPointerUp, { once: true });
+        document.addEventListener("pointercancel", onPointerUp, { once: true });
+    }
 
-            if (!draggedShortcut) {
-                return;
-            }
+    function startPointerSectionDrag(event, handle) {
+        if (event.button !== 0) {
+            return;
+        }
 
-            grid.classList.add("drag-over");
+        const section = handle.closest(".shortcuts-section");
+        const wrapper = document.getElementById("sections-wrapper");
+        const addSectionCard = document.getElementById("open-section-modal");
 
-            const afterElement = getDragAfterElement(grid, event.clientX, event.clientY);
+        if (!section || !wrapper || !addSectionCard || section.dataset.isDefaultSection === "true") {
+            return;
+        }
 
-            if (afterElement == null) {
-                grid.appendChild(draggedShortcut);
+        event.preventDefault();
+        hideSuggestions();
+
+        const rect = section.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left;
+        const offsetY = event.clientY - rect.top;
+        const placeholder = createPlaceholder(section, "section-placeholder");
+
+        wrapper.insertBefore(placeholder, section);
+        document.body.appendChild(section);
+        setFloatingElement(section, rect);
+        moveFloatingElement(section, event.clientX, event.clientY, offsetX, offsetY);
+
+        function onPointerMove(moveEvent) {
+            moveEvent.preventDefault();
+            moveFloatingElement(section, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
+
+            const before = getSectionInsertBefore(wrapper, moveEvent.clientY);
+
+            if (before) {
+                wrapper.insertBefore(placeholder, before);
             } else {
-                grid.insertBefore(draggedShortcut, afterElement);
+                wrapper.insertBefore(placeholder, addSectionCard);
             }
-        });
+        }
 
-        grid.addEventListener("dragleave", () => {
-            grid.classList.remove("drag-over");
-        });
+        function onPointerUp() {
+            document.removeEventListener("pointermove", onPointerMove);
+            document.removeEventListener("pointerup", onPointerUp);
+            document.removeEventListener("pointercancel", onPointerUp);
 
-        grid.addEventListener("drop", () => {
-            grid.classList.remove("drag-over");
-            saveShortcutOrder();
-        });
+            placeholder.replaceWith(section);
+            resetFloatingElement(section);
+            saveSectionOrder();
+        }
+
+        document.addEventListener("pointermove", onPointerMove, { passive: false });
+        document.addEventListener("pointerup", onPointerUp, { once: true });
+        document.addEventListener("pointercancel", onPointerUp, { once: true });
+    }
+
+    document.querySelectorAll(".shortcut-drag-handle").forEach(handle => {
+        handle.addEventListener("pointerdown", event => startPointerShortcutDrag(event, handle));
     });
+
+    document.querySelectorAll(".section-drag-handle").forEach(handle => {
+        handle.addEventListener("pointerdown", event => startPointerSectionDrag(event, handle));
+    });
+
+    updateEmptyStates();
 });

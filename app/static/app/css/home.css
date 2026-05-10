@@ -1720,3 +1720,198 @@ body.dark-mode .section-color-option input:checked + span {
         grid-template-columns: 1fr;
     }
 }
+
+/* ───────────────── EDIT + BETTER DRAG FIXES ───────────────── */
+
+.shortcuts-grid {
+    min-height: 130px;
+}
+
+.shortcuts-grid.is-empty {
+    min-height: 180px;
+}
+
+.shortcuts-grid .empty-shortcuts[hidden] {
+    display: none !important;
+}
+
+.shortcuts-grid.drag-over {
+    background: rgba(31, 110, 238, 0.035);
+}
+
+.section-drag-handle,
+.edit-section-button {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: rgba(31, 110, 238, 0.1);
+    color: #1f6eee;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background-color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.section-drag-handle {
+    cursor: grab;
+}
+
+.section-drag-handle:active {
+    cursor: grabbing;
+}
+
+.section-drag-handle:hover,
+.edit-section-button:hover {
+    background: rgba(31, 110, 238, 0.16);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(31, 110, 238, 0.1);
+}
+
+.edit-shortcut-button:hover,
+.edit-section-button:hover {
+    background: rgba(31, 110, 238, 0.16);
+    color: #1f6eee;
+}
+
+.shortcuts-section.dragging {
+    opacity: 0.55;
+    transform: scale(0.99);
+}
+
+.shortcuts-section[draggable="true"] .shortcuts-header {
+    user-select: none;
+}
+
+.shortcut-card[draggable="true"] .shortcut-drag-handle {
+    touch-action: none;
+}
+
+#section-modal-title,
+#shortcut-modal-title {
+    display: inline-block;
+}
+
+body.dark-mode .section-drag-handle,
+body.dark-mode .edit-section-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+body.dark-mode .section-drag-handle:hover,
+body.dark-mode .edit-section-button:hover {
+    background: rgba(122, 198, 250, 0.16);
+}
+
+body.dark-mode .shortcuts-grid.drag-over {
+    background: rgba(122, 198, 250, 0.045);
+}
+
+@media (max-width: 720px) {
+    .section-actions {
+        flex-wrap: wrap;
+    }
+
+    .section-drag-handle,
+    .edit-section-button,
+    .collapse-section-form button,
+    .delete-section-form button {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* ───────────────── POINTER DRAG FIX FINAL ───────────────── */
+.shortcut-card,
+.shortcuts-section {
+    -webkit-user-drag: none;
+}
+
+.shortcut-drag-handle,
+.section-drag-handle {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    touch-action: none;
+}
+
+.shortcut-drag-handle {
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.08);
+    color: #64748b;
+
+    cursor: grab;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.8rem;
+}
+
+.shortcut-drag-handle:active,
+.section-drag-handle:active {
+    cursor: grabbing;
+}
+
+.pointer-dragging {
+    opacity: 0.92;
+    transform: scale(1.02) rotate(0.4deg) !important;
+    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.28) !important;
+}
+
+.drag-placeholder {
+    border-radius: 18px;
+    border: 2px dashed rgba(31, 110, 238, 0.45);
+    background: rgba(31, 110, 238, 0.06);
+    box-sizing: border-box;
+}
+
+.shortcut-placeholder {
+    min-height: 120px;
+}
+
+.section-placeholder {
+    width: 100% !important;
+    min-height: 96px;
+    margin-bottom: 0;
+}
+
+.shortcuts-grid.drag-over {
+    outline: 2px dashed rgba(31, 110, 238, 0.32);
+    outline-offset: 8px;
+}
+
+.shortcuts-grid .empty-shortcuts[hidden] {
+    display: none !important;
+}
+
+.shortcuts-grid.is-empty {
+    min-height: 180px;
+}
+
+body.dark-mode .shortcut-drag-handle {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+}
+
+body.dark-mode .drag-placeholder {
+    border-color: rgba(122, 198, 250, 0.45);
+    background: rgba(122, 198, 250, 0.08);
+}
+
+body.dark-mode .shortcuts-grid.drag-over {
+    outline-color: rgba(122, 198, 250, 0.36);
+}

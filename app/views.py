@@ -85,6 +85,20 @@ def home(request):
                 )
 
             return redirect("home")
+        
+        if action == "edit_section":
+            section_id = request.POST.get("section_id")
+            section_name = request.POST.get("section_name", "").strip()
+            section_color = request.POST.get("section_color", "blue").strip()
+
+            section = get_object_or_404(ShortcutSection, id=section_id)
+
+            if section_name:
+                section.name = section_name
+                section.color = section_color
+                section.save()
+
+            return redirect("home")
 
         if action == "delete_section":
             section_id = request.POST.get("section_id")
@@ -131,6 +145,37 @@ def home(request):
                     image=image,
                     order=max_order + 1
                 )
+
+            return redirect("home")
+        
+        if action == "edit_shortcut":
+            shortcut_id = request.POST.get("shortcut_id")
+            section_id = request.POST.get("section_id")
+            name = request.POST.get("name", "").strip()
+            url = request.POST.get("url", "").strip()
+            icon = request.POST.get("icon", "").strip()
+            custom_icon = request.POST.get("custom_icon", "").strip()
+            image = request.FILES.get("image")
+
+            shortcut = get_object_or_404(Shortcut, id=shortcut_id)
+            section = get_object_or_404(ShortcutSection, id=section_id)
+
+            if custom_icon:
+                icon = custom_icon
+
+            if name and url:
+                if not url.startswith(("http://", "https://")):
+                    url = "https://" + url
+
+                shortcut.section = section
+                shortcut.name = name
+                shortcut.url = url
+                shortcut.icon = icon or "fa-solid fa-link"
+
+                if image:
+                    shortcut.image = image
+
+                shortcut.save()
 
             return redirect("home")
 
