@@ -1,11 +1,20 @@
-:root {
-    --obs-bg: #020617;
-    --obs-panel: rgba(15, 23, 42, 0.92);
-    --obs-panel-light: rgba(30, 41, 59, 0.92);
-    --obs-border: rgba(148, 163, 184, 0.18);
+.obs-dashboard-page {
+    --obs-bg: #eef4ff;
+    --obs-page-accent-one: rgba(37, 99, 235, 0.14);
+    --obs-page-accent-two: rgba(124, 58, 237, 0.11);
+    --obs-panel: rgba(255, 255, 255, 0.92);
+    --obs-panel-strong: rgba(255, 255, 255, 0.98);
+    --obs-panel-soft: #f8fafc;
+    --obs-card-gradient: linear-gradient(135deg, #ffffff, #eef4ff);
+    --obs-disabled-gradient: linear-gradient(135deg, #e2e8f0, #f8fafc);
+    --obs-border: rgba(37, 99, 235, 0.14);
+    --obs-divider: rgba(37, 99, 235, 0.12);
 
-    --obs-text: #f8fafc;
-    --obs-muted: #94a3b8;
+    --obs-text: #172033;
+    --obs-muted: #64748b;
+    --obs-card-muted: #64748b;
+    --obs-badge-text: #1d4ed8;
+    --obs-shadow: 0 16px 38px rgba(15, 23, 42, 0.11);
 
     --obs-blue: #2563eb;
     --obs-blue-hover: #1d4ed8;
@@ -19,7 +28,25 @@
     --obs-yellow: #eab308;
     --obs-purple: #7c3aed;
 
-    --obs-radius: 24px;
+    --obs-radius: 18px;
+}
+
+body.dark-mode .obs-dashboard-page {
+    --obs-bg: #020617;
+    --obs-page-accent-one: rgba(37, 99, 235, 0.28);
+    --obs-page-accent-two: rgba(124, 58, 237, 0.22);
+    --obs-panel: rgba(15, 23, 42, 0.92);
+    --obs-panel-strong: rgba(15, 23, 42, 0.95);
+    --obs-panel-soft: rgba(15, 23, 42, 0.9);
+    --obs-card-gradient: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+    --obs-disabled-gradient: linear-gradient(135deg, rgba(51, 65, 85, 0.95), rgba(15, 23, 42, 0.95));
+    --obs-border: rgba(148, 163, 184, 0.18);
+    --obs-divider: rgba(148, 163, 184, 0.14);
+
+    --obs-text: #f8fafc;
+    --obs-muted: #94a3b8;
+    --obs-card-muted: rgba(255, 255, 255, 0.78);
+    --obs-badge-text: #bfdbfe;
     --obs-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
 }
 
@@ -29,9 +56,10 @@
     padding: 2rem;
     color: var(--obs-text);
     background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.28), transparent 35%),
-        radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.22), transparent 35%),
-        #020617;
+        radial-gradient(circle at top left, var(--obs-page-accent-one), transparent 35%),
+        radial-gradient(circle at bottom right, var(--obs-page-accent-two), transparent 35%),
+        var(--obs-bg);
+    border-radius: 18px;
 }
 
 .obs-dashboard-page * {
@@ -61,7 +89,7 @@
     padding: 1.4rem;
     border: 1px solid var(--obs-border);
     border-radius: var(--obs-radius);
-    background: rgba(15, 23, 42, 0.72);
+    background: var(--obs-panel);
     backdrop-filter: blur(18px);
     box-shadow: var(--obs-shadow);
 
@@ -81,7 +109,7 @@
     border-radius: 999px;
     border: 1px solid rgba(147, 197, 253, 0.25);
     background: rgba(37, 99, 235, 0.18);
-    color: #bfdbfe;
+    color: var(--obs-badge-text);
 
     font-size: 0.9rem;
     font-weight: 700;
@@ -103,7 +131,7 @@
     min-height: 46px;
     padding: 0 1rem;
     border-radius: 999px;
-    background: rgba(15, 23, 42, 0.95);
+    background: var(--obs-panel-strong);
     border: 1px solid var(--obs-border);
 
     display: flex;
@@ -163,7 +191,7 @@
     gap: 1rem;
     margin-bottom: 1.35rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    border-bottom: 1px solid var(--obs-divider);
 }
 
 .obs-panel-header::before {
@@ -193,7 +221,7 @@
 .obs-panel-header p {
     max-width: 720px;
     margin: 0.45rem 0 0;
-    color: rgba(203, 213, 225, 0.78);
+    color: var(--obs-muted);
     font-size: 0.95rem;
     line-height: 1.45;
     font-weight: 500;
@@ -206,7 +234,7 @@
     border-radius: 999px;
     border: 1px solid rgba(147, 197, 253, 0.18);
     background: rgba(37, 99, 235, 0.12);
-    color: #bfdbfe;
+    color: var(--obs-badge-text);
     font-size: 0.82rem;
     font-weight: 900;
     line-height: 1;
@@ -241,7 +269,7 @@
     min-height: 54px;
     border: 1px solid var(--obs-border);
     border-radius: 16px;
-    background: rgba(15, 23, 42, 0.9);
+    background: var(--obs-panel-soft);
     color: var(--obs-text);
     padding: 0 1rem;
     outline: none;
@@ -282,12 +310,11 @@
     min-height: 110px;
     padding: 1.1rem;
     border-radius: 22px;
-    background:
-        linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+    background: var(--obs-card-gradient);
     border: 1px solid var(--obs-border);
     color: var(--obs-text);
     text-align: left;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+    box-shadow: var(--obs-shadow);
 
     display: flex;
     flex-direction: column;
@@ -331,7 +358,7 @@
     margin-bottom: 1rem;
     padding: 0.9rem 1rem;
     border-radius: 16px;
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--obs-panel-soft);
     border: 1px solid var(--obs-border);
     color: var(--obs-muted);
     font-weight: 800;
@@ -351,9 +378,8 @@
     border: 1px solid var(--obs-border);
     color: var(--obs-text);
     text-align: left;
-    background:
-        linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+    background: var(--obs-card-gradient);
+    box-shadow: var(--obs-shadow);
 
     display: flex;
     flex-direction: column;
@@ -375,8 +401,7 @@
 .obs-source-toggle-card.disabled,
 .source-toggle-card.disabled {
     opacity: 0.65;
-    background:
-        linear-gradient(135deg, rgba(51, 65, 85, 0.95), rgba(15, 23, 42, 0.95));
+    background: var(--obs-disabled-gradient);
 }
 
 .source-toggle-name,
@@ -388,9 +413,14 @@
 
 .source-toggle-status,
 .obs-source-toggle-status {
-    color: rgba(255, 255, 255, 0.78);
+    color: var(--obs-card-muted);
     font-size: 0.9rem;
     font-weight: 700;
+}
+
+.obs-source-toggle-card.enabled .obs-source-toggle-status,
+.source-toggle-card.enabled .source-toggle-status {
+    color: rgba(255, 255, 255, 0.82);
 }
 
 .obs-control-grid {
@@ -453,10 +483,9 @@
 .obs-audio-card {
     padding: 1.1rem;
     border-radius: 22px;
-    background:
-        linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+    background: var(--obs-card-gradient);
     border: 1px solid var(--obs-border);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+    box-shadow: var(--obs-shadow);
 }
 
 .audio-card.muted,

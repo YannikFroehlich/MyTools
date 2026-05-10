@@ -1,0 +1,64 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate 'Spritkostenrechner' %} - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/spritkostenrechner.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="fuel-page" data-api-url="{% url 'tankstellen-api' %}">
+        <section class="fuel-card border-accent-blue">
+            <h1>{% translate 'Spritkostenrechner' %}</h1>
+            <h2><i class="fa-solid fa-location-dot"></i> {% translate 'Tankstellen finden' %}</h2>
+
+            <div class="fuel-search-bar">
+                <button id="geo-btn" class="btn-secondary" type="button">
+                    <i class="fa-solid fa-crosshairs"></i>
+                    {% translate 'Mein Standort' %}
+                </button>
+                <input type="text" id="city-input" placeholder="{% translate 'Stadt eingeben...' %}" autocomplete="off">
+                <select id="fuel-type" aria-label="{% translate 'Kraftstoff' %}">
+                    <option value="diesel">Diesel</option>
+                    <option value="e5">Super E5</option>
+                    <option value="e10">Super E10</option>
+                </select>
+                <button id="search-btn" class="btn-primary" type="button">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    {% translate 'Suchen' %}
+                </button>
+            </div>
+
+            <div id="loading-spinner" class="spinner-container hidden">
+                <div class="spinner"></div>
+                <p>{% translate 'Suche Tankstellen...' %}</p>
+            </div>
+
+            <div id="station-list" class="station-list">
+                <p class="empty-state">{% translate 'Suche per Standort oder Stadt, um Preise in deiner Nähe zu sehen.' %}</p>
+            </div>
+        </section>
+
+        <section class="fuel-card border-accent-green">
+            <h2><i class="fa-solid fa-calculator"></i> {% translate 'Kostenrechner' %}</h2>
+
+            <div class="calc-group">
+                <input type="number" id="km-input" placeholder="{% translate 'Kilometer pro Tag' %}" min="0" step="0.1">
+                <select id="time-unit" aria-label="{% translate 'Zeitraum' %}">
+                    <option value="1">{% translate 'pro Tag' %}</option>
+                    <option value="30">{% translate 'pro Monat' %}</option>
+                    <option value="365">{% translate 'pro Jahr' %}</option>
+                </select>
+                <input type="number" id="consumption" placeholder="{% translate 'Verbrauch (l/100km)' %}" min="0" step="0.1">
+            </div>
+
+            <div id="calc-result" class="result-badge">{% translate 'Ergebnis' %}: -- €</div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/spritkostenrechner.js' %}"></script>
+{% endblock %}
