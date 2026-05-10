@@ -7,4 +7,5 @@ urlpatterns = [
     path('about/', about, name='about'),
 
     path('weather/', weather, name='weather'),
+    path("obs-dashboard/", obs_dashboard, name="obs-dashboard"),
 ]
