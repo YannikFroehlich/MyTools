@@ -1,0 +1,108 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Human Benchmark - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/human_benchmark.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="benchmark-page">
+        <div class="benchmark-topbar">
+            <div class="benchmark-logo" role="button" tabindex="0" aria-label="{% translate 'Zum Reaktionstest wechseln' %}">
+                <span class="benchmark-logo-icon"></span>
+                <h1>Human Benchmark</h1>
+            </div>
+
+            <div class="benchmark-tabs" aria-label="{% translate 'Benchmark Tests' %}">
+                <button class="benchmark-tab" type="button" data-game="reaction">Reaktion</button>
+                <button class="benchmark-tab" type="button" data-game="aim">Aim Trainer</button>
+                <button class="benchmark-tab active" type="button" data-game="typing">Typing Test</button>
+                <button class="benchmark-tab" type="button" data-game="visual">Visual Memory</button>
+            </div>
+        </div>
+
+        <section id="reaction-game" class="game-screen">
+            <div id="reaction-box" class="benchmark-card box-waiting">
+                <div class="game-ui-content">
+                    <h2 id="r-title">Reaktionstest</h2>
+                    <p id="r-desc">Klicke in das Feld, um zu starten.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="aim-game" class="game-screen">
+            <div class="benchmark-stats-bar">
+                <div class="benchmark-stat"><span>Ziele</span><strong id="aim-count">30</strong></div>
+                <div class="benchmark-stat"><span>Zeit</span><strong><span id="aim-timer">0.00</span>s</strong></div>
+                <div class="benchmark-stat"><span>Präzision</span><strong><span id="aim-accuracy-live">100</span>%</strong></div>
+            </div>
+
+            <div id="aim-area" class="benchmark-card">
+                <button id="aim-start-btn" class="benchmark-primary-btn" type="button">Start Aim Trainer</button>
+                <div id="target" class="target"></div>
+                <div id="aim-result-screen" class="result-overlay hidden">
+                    <h3>Ergebnis</h3>
+                    <div class="result-grid">
+                        <div class="res-item"><small>Zeit</small><p id="aim-final-time">--</p></div>
+                        <div class="res-item"><small>Genauigkeit</small><p id="aim-final-accuracy">--</p></div>
+                        <div class="res-item"><small>Misses</small><p id="aim-final-misses">--</p></div>
+                    </div>
+                    <button id="aim-retry-btn" class="benchmark-primary-btn" type="button">Erneut versuchen</button>
+                </div>
+            </div>
+
+            <div class="benchmark-controls">
+                <button id="aim-stop-btn" class="benchmark-outline-btn hidden" type="button">Runde beenden</button>
+            </div>
+        </section>
+
+        <section id="typing-game" class="game-screen active">
+            <div class="benchmark-stats-bar">
+                <div class="benchmark-stat"><span>WPM</span><strong id="wpm-display">--</strong></div>
+                <div class="benchmark-stat"><span>Zeit</span><strong id="typing-timer-display">0.0s</strong></div>
+            </div>
+
+            <div class="benchmark-card typing-card">
+                <div class="quote-box">
+                    <p id="quote-display">Klicke auf Start, um den Test zu beginnen.</p>
+                </div>
+                <div class="input-wrapper">
+                    <textarea id="typing-input" placeholder="Warte auf Start..." disabled></textarea>
+                </div>
+                <div class="typing-footer">
+                    <button id="typing-start-btn" class="benchmark-primary-btn" type="button">Test starten</button>
+                </div>
+            </div>
+
+            <div class="benchmark-controls">
+                <button id="typing-stop-btn" class="benchmark-outline-btn hidden" type="button">Test abbrechen</button>
+            </div>
+        </section>
+
+        <section id="visual-game" class="game-screen">
+            <div class="benchmark-stats-bar">
+                <div class="benchmark-stat"><span>Level</span><strong id="visual-level">1</strong></div>
+            </div>
+
+            <div id="visual-area" class="benchmark-card visual-grid-container">
+                <div id="visual-grid" class="visual-grid"></div>
+                <div id="visual-start-screen" class="result-overlay">
+                    <h3>Visual Memory</h3>
+                    <p>Merke dir die blau leuchtenden Quadrate.</p>
+                    <button id="visual-start-btn" class="benchmark-primary-btn" type="button">Start</button>
+                </div>
+            </div>
+
+            <div class="benchmark-controls">
+                <button id="visual-stop-btn" class="benchmark-outline-btn hidden" type="button">Test abbrechen</button>
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/human_benchmark.js' %}"></script>
+{% endblock %}

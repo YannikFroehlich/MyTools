@@ -56,3 +56,34 @@ class Shortcut(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class AvatarCharacter(models.Model):
+    NATION_CHOICES = [
+        ("Feuer", "Feuernation"),
+        ("Wasser", "Wasserstamm"),
+        ("Erde", "Erdkönigreich"),
+        ("Luft", "Luftnomaden"),
+    ]
+
+    name = models.CharField(max_length=80)
+    nation = models.CharField(max_length=20, choices=NATION_CHOICES)
+    link = models.URLField(blank=True)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to="avatar_characters/")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name", "created_at"]
+
+    def __str__(self):
+        return self.name
+
+    def delete(self, *args, **kwargs):
+        image_storage = self.image.storage if self.image else None
+        image_name = self.image.name if self.image else None
+
+        super().delete(*args, **kwargs)
+
+        if image_storage and image_name:
+            image_storage.delete(image_name)

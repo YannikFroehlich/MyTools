@@ -1,0 +1,42 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Genius Search - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/genius_search.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="genius-page" data-search-url="{% url 'genius-search-api' %}">
+        <div class="genius-header">
+            <a href="{% url 'genius-search' %}" class="genius-brand">
+                <i class="fa-solid fa-music"></i>
+                Genius Search
+            </a>
+
+            <div class="genius-search-box">
+                <input type="text" id="query" placeholder="{% translate 'Künstler oder Song suchen...' %}" autocomplete="off">
+                <button id="searchBtn" type="button">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    {% translate 'Suchen' %}
+                </button>
+            </div>
+        </div>
+
+        <div id="results" class="genius-results-grid">
+            <p class="genius-empty-state">{% translate 'Suche nach einem Song oder Künstler, um Genius-Treffer zu sehen.' %}</p>
+        </div>
+
+        <div class="genius-pagination hidden" id="pagination">
+            <button id="prevBtn" type="button" disabled>{% translate 'Zurück' %}</button>
+            <span id="pageInfo">Seite 1</span>
+            <button id="nextBtn" type="button">{% translate 'Weiter' %}</button>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/genius_search.js' %}"></script>
+{% endblock %}
