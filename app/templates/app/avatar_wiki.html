@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}Avatar Wiki - MyTools{% endblock %}
+{% block title %}{% translate 'Avatar Wiki' %} - MyTools{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/avatar_wiki.css' %}">
@@ -18,7 +18,7 @@
                         <path d="M18 6 L24 18 L18 30 L12 18 Z" fill="rgba(232,82,26,0.35)" stroke="rgba(232,82,26,0.7)" stroke-width="1"/>
                         <circle cx="18" cy="18" r="3" fill="rgba(232,82,26,0.8)"/>
                     </svg>
-                    <a href="{% url 'avatar-wiki' %}">Avatar Wiki</a>
+                    <a href="{% url 'avatar-wiki' %}">{% translate 'Avatar Wiki' %}</a>
                 </div>
 
                 <button id="add-btn" class="avatar-add-btn" type="button">
@@ -30,21 +30,25 @@
             <div id="drawer-backdrop" class="avatar-backdrop"></div>
 
             <aside id="form-drawer" class="avatar-drawer" aria-label="{% translate 'Charakter hinzufügen' %}">
-                <h2>{% translate 'Charakter hinzufügen' %}</h2>
+                <h2 id="drawer-title">{% translate 'Charakter hinzufügen' %}</h2>
                 <form id="characterForm">
                     {% csrf_token %}
+                    <input type="hidden" id="character-id">
                     <input type="text" id="name" placeholder="{% translate 'Name' %}" required>
                     <select id="nation" required>
                         <option value="" disabled selected>{% translate 'Nation wählen' %}</option>
-                        <option value="Feuer">Feuernation</option>
-                        <option value="Wasser">Wasserstamm</option>
-                        <option value="Erde">Erdkönigreich</option>
-                        <option value="Luft">Luftnomaden</option>
+                        <option value="Feuer">{% translate 'Feuernation' %}</option>
+                        <option value="Wasser">{% translate 'Wasserstamm' %}</option>
+                        <option value="Erde">{% translate 'Erdkönigreich' %}</option>
+                        <option value="Luft">{% translate 'Luftnomaden' %}</option>
                     </select>
                     <input type="url" id="link" placeholder="{% translate 'Link (optional)' %}">
                     <textarea id="description" placeholder="{% translate 'Beschreibung (optional)' %}"></textarea>
                     <input type="file" id="image" accept="image/*" required>
-                    <button type="submit">{% translate 'Speichern' %}</button>
+                    <div class="avatar-form-actions">
+                        <button type="button" id="cancel-edit-btn" class="avatar-secondary-btn hidden">{% translate 'Abbrechen' %}</button>
+                        <button type="submit" id="save-character-btn">{% translate 'Speichern' %}</button>
+                    </div>
                 </form>
             </aside>
 
@@ -69,16 +73,16 @@
                 <div class="avatar-search-bar">
                     <input type="text" id="search-input" placeholder="{% translate 'Charakter suchen...' %}">
                     <div class="avatar-filter-pills">
-                        <button class="pill active-all" type="button" data-filter="all">Alle</button>
-                        <button class="pill" type="button" data-filter="Feuer">Feuer</button>
-                        <button class="pill" type="button" data-filter="Wasser">Wasser</button>
-                        <button class="pill" type="button" data-filter="Erde">Erde</button>
-                        <button class="pill" type="button" data-filter="Luft">Luft</button>
+                        <button class="pill active-all" type="button" data-filter="all">{% translate 'Alle' %}</button>
+                        <button class="pill" type="button" data-filter="Feuer">{% translate 'Feuer' %}</button>
+                        <button class="pill" type="button" data-filter="Wasser">{% translate 'Wasser' %}</button>
+                        <button class="pill" type="button" data-filter="Erde">{% translate 'Erde' %}</button>
+                        <button class="pill" type="button" data-filter="Luft">{% translate 'Luft' %}</button>
                     </div>
                 </div>
 
                 <div id="cards" class="avatar-cards">
-                    <div id="empty-state">Noch keine Charaktere hinzugefügt.</div>
+                    <div id="empty-state">{% translate 'Noch keine Charaktere hinzugefügt.' %}</div>
                 </div>
             </div>
         </div>

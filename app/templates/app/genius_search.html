@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}Genius Search - MyTools{% endblock %}
+{% block title %}{% translate 'Genius Search' %} - MyTools{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/genius_search.css' %}">
@@ -13,7 +13,7 @@
         <div class="genius-header">
             <a href="{% url 'genius-search' %}" class="genius-brand">
                 <i class="fa-solid fa-music"></i>
-                Genius Search
+                {% translate 'Genius Search' %}
             </a>
 
             <div class="genius-search-box">
@@ -31,7 +31,7 @@
 
         <div class="genius-pagination hidden" id="pagination">
             <button id="prevBtn" type="button" disabled>{% translate 'Zurück' %}</button>
-            <span id="pageInfo">Seite 1</span>
+            <span id="pageInfo">{% translate 'Seite 1' %}</span>
             <button id="nextBtn" type="button">{% translate 'Weiter' %}</button>
         </div>
     </section>
