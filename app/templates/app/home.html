@@ -49,7 +49,7 @@
                                     {% if section.is_collapsed %}
                                         <span class="section-status-badge">
                                             <i class="fa-solid fa-folder"></i>
-                                            Eingeklappt
+                                            {% translate 'Eingeklappt' %}
                                         </span>
                                     {% endif %}
                                 </div>
@@ -57,7 +57,7 @@
 
                             <div class="section-actions">
                                 {% if section.name != "Verknüpfungen" %}
-                                    <span class="section-drag-handle" title="Bereich verschieben" role="button" tabindex="0">
+                                    <span class="section-drag-handle" title="{% translate 'Bereich verschieben' %}" role="button" tabindex="0">
                                         <i class="fa-solid fa-grip-vertical"></i>
                                     </span>
                                 {% endif %}
@@ -65,7 +65,7 @@
                                 <button
                                     type="button"
                                     class="edit-section-button"
-                                    title="Bereich bearbeiten"
+                                    title="{% translate 'Bereich bearbeiten' %}"
                                     data-section-id="{{ section.id }}"
                                     data-section-name="{{ section.name|escape }}"
                                     data-section-color="{{ section.color }}"
@@ -78,7 +78,7 @@
                                     <input type="hidden" name="action" value="toggle_section_collapse">
                                     <input type="hidden" name="section_id" value="{{ section.id }}">
 
-                                    <button type="submit" title="{% if section.is_collapsed %}Bereich ausklappen{% else %}Bereich einklappen{% endif %}">
+                                    <button type="submit" title="{% if section.is_collapsed %}{% translate 'Bereich ausklappen' %}{% else %}{% translate 'Bereich einklappen' %}{% endif %}">
                                         {% if section.is_collapsed %}
                                             <i class="fa-solid fa-chevron-down"></i>
                                         {% else %}
@@ -94,7 +94,7 @@
                                     data-section-name="{{ section.name|escape }}"
                                 >
                                     <i class="fa-solid fa-plus"></i>
-                                    Verknüpfung
+                                    {% translate 'Verknüpfung' %}
                                 </button>
 
                                 {% if section.name != "Verknüpfungen" %}
@@ -102,7 +102,7 @@
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="delete_section">
                                         <input type="hidden" name="section_id" value="{{ section.id }}">
-                                        <button type="submit" title="Bereich löschen">
+                                        <button type="submit" title="{% translate 'Bereich löschen' %}">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </form>
@@ -122,11 +122,11 @@
                                         data-shortcut-section-id="{{ section.id }}"
                                     >
                                         <div class="shortcut-card-actions">
-                                            <span class="shortcut-drag-handle" title="Verschieben" role="button" tabindex="0">
+                                            <span class="shortcut-drag-handle" title="{% translate 'Verschieben' %}" role="button" tabindex="0">
                                                 <i class="fa-solid fa-grip-vertical"></i>
                                             </span>
 
-                                            <button type="button" class="edit-shortcut-button" title="Bearbeiten">
+                                            <button type="button" class="edit-shortcut-button" title="{% translate 'Bearbeiten' %}">
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
 
@@ -135,7 +135,7 @@
                                                 <input type="hidden" name="action" value="toggle_favorite">
                                                 <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
 
-                                                <button type="submit" title="{% if shortcut.is_favorite %}Favorit entfernen{% else %}Als Favorit markieren{% endif %}">
+                                                <button type="submit" title="{% if shortcut.is_favorite %}{% translate 'Favorit entfernen' %}{% else %}{% translate 'Als Favorit markieren' %}{% endif %}">
                                                     {% if shortcut.is_favorite %}
                                                         <i class="fa-solid fa-star"></i>
                                                     {% else %}
@@ -149,7 +149,7 @@
                                                 <input type="hidden" name="action" value="delete_shortcut">
                                                 <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
 
-                                                <button type="submit" title="Löschen">
+                                                <button type="submit" title="{% translate 'Löschen' %}">
                                                     <i class="fa-solid fa-xmark"></i>
                                                 </button>
                                             </form>
@@ -172,8 +172,8 @@
                                         <div class="empty-shortcuts-icon">
                                             <i class="fa-solid fa-link"></i>
                                         </div>
-                                        <h3>Noch keine Verknüpfungen</h3>
-                                        <p>Erstelle deine erste Schnellverknüpfung für diesen Bereich.</p>
+                                        <h3>{% translate 'Noch keine Verknüpfungen' %}</h3>
+                                        <p>{% translate 'Erstelle deine erste Schnellverknüpfung für diesen Bereich.' %}</p>
                                     </div>
                                 {% endfor %}
                             </div>
@@ -187,8 +187,8 @@
                     </div>
 
                     <div>
-                        <h3>Bereich hinzufügen</h3>
-                        <p>Erstelle einen neuen Bereich für weitere Verknüpfungen.</p>
+                        <h3>{% translate 'Bereich hinzufügen' %}</h3>
+                        <p>{% translate 'Erstelle einen neuen Bereich für weitere Verknüpfungen.' %}</p>
                     </div>
                 </div>
             </div>
@@ -201,7 +201,7 @@
         <div class="shortcut-modal-content">
             <div class="shortcut-modal-header">
                 <h3>
-                    <span id="shortcut-modal-title">Neue Verknüpfung</span>
+                    <span id="shortcut-modal-title">{% translate 'Neue Verknüpfung' %}</span>
                     <span id="shortcut-modal-section-name"></span>
                 </h3>
 
@@ -217,7 +217,7 @@
                 <input type="hidden" name="section_id" id="shortcut-section-id">
 
                 <label>
-                    Name
+                    {% translate 'Name' %}
                     <input type="text" name="name" id="shortcut-name" placeholder="YouTube" required>
                 </label>
 
@@ -227,7 +227,7 @@
                 </label>
 
                 <div class="icon-picker">
-                    <span class="icon-picker-title">Icon auswählen</span>
+                    <span class="icon-picker-title">{% translate 'Icon auswählen' %}</span>
 
                     <div class="icon-options">
                         <label class="icon-option">
@@ -313,22 +313,22 @@
                 </div>
 
                 <label>
-                    Eigenes Icon, falls keins passt
-                    <input type="text" name="custom_icon" id="shortcut-custom-icon" placeholder="z.B. fa-solid fa-server">
+                    {% translate 'Eigenes Icon, falls keins passt' %}
+                    <input type="text" name="custom_icon" id="shortcut-custom-icon" placeholder="{% translate 'z.B. fa-solid fa-server' %}">
                 </label>
 
                 <label>
-                    Eigenes Bild, falls du kein Icon nutzen möchtest
+                    {% translate 'Eigenes Bild, falls du kein Icon nutzen möchtest' %}
                     <input type="file" name="image" accept="image/*">
                 </label>
 
                 <button type="submit">
-                    Speichern
+                    {% translate 'Speichern' %}
                 </button>
             </form>
 
             <p class="icon-help">
-                Beispiele: <code>fa-brands fa-youtube</code>,
+                {% translate 'Beispiele:' %} <code>fa-brands fa-youtube</code>,
                 <code>fa-brands fa-twitch</code>,
                 <code>fa-solid fa-server</code>
             </p>
@@ -339,7 +339,7 @@
     <div class="shortcut-modal" id="section-modal">
         <div class="shortcut-modal-content">
             <div class="shortcut-modal-header">
-                <h3 id="section-modal-title">Neuer Bereich</h3>
+                <h3 id="section-modal-title">{% translate 'Neuer Bereich' %}</h3>
 
                 <button type="button" id="close-section-modal">
                     <i class="fa-solid fa-xmark"></i>
@@ -352,43 +352,43 @@
                 <input type="hidden" name="section_id" id="edit-section-id">
 
                 <label>
-                    Bereichsname
+                    {% translate 'Bereichsname' %}
                     <input type="text" name="section_name" id="section-name" placeholder="Server" required>
                 </label>
 
                 <div class="section-color-picker">
-                    <span>Bereichsfarbe</span>
+                    <span>{% translate 'Bereichsfarbe' %}</span>
 
                     <div class="section-color-options">
                         <label class="section-color-option blue">
                             <input type="radio" name="section_color" value="blue" checked>
-                            <span>Blau</span>
+                            <span>{% translate 'Blau' %}</span>
                         </label>
 
                         <label class="section-color-option green">
                             <input type="radio" name="section_color" value="green">
-                            <span>Grün</span>
+                            <span>{% translate 'Grün' %}</span>
                         </label>
 
                         <label class="section-color-option purple">
                             <input type="radio" name="section_color" value="purple">
-                            <span>Lila</span>
+                            <span>{% translate 'Lila' %}</span>
                         </label>
 
                         <label class="section-color-option orange">
                             <input type="radio" name="section_color" value="orange">
-                            <span>Orange</span>
+                            <span>{% translate 'Orange' %}</span>
                         </label>
 
                         <label class="section-color-option red">
                             <input type="radio" name="section_color" value="red">
-                            <span>Rot</span>
+                            <span>{% translate 'Rot' %}</span>
                         </label>
                     </div>
                 </div>
 
                 <button type="submit" id="section-submit-button">
-                    Bereich erstellen
+                    {% translate 'Bereich erstellen' %}
                 </button>
             </form>
         </div>

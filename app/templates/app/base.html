@@ -4,7 +4,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Mein myManager{% endblock %}</title>
+    <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static '/app/css/base.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -44,30 +44,30 @@
             </a>
 
             <div class="menu-wrapper">
-                <button class="menu-button" id="menu-button" type="button" aria-label="Weitere Seiten">
+                <button class="menu-button" id="menu-button" type="button" aria-label="{% translate 'Weitere Seiten' %}">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
 
                 <div class="menu-dropdown" id="menu-dropdown">
                     <a href="{% url 'obs-dashboard' %}" class="menu-item">
                         <i class="fa-solid fa-display"></i>
-                        OBS Dashboard
+                        {% translate 'OBS Dashboard' %}
                     </a>
                     <a href="{% url 'spritkostenrechner' %}" class="menu-item">
                         <i class="fa-solid fa-gas-pump"></i>
-                        Spritkosten
+                        {% translate 'Spritkosten' %}
                     </a>
                     <a href="{% url 'human-benchmark' %}" class="menu-item">
                         <i class="fa-solid fa-stopwatch"></i>
-                        Human Benchmark
+                        {% translate 'Human Benchmark' %}
                     </a>
                     <a href="{% url 'genius-search' %}" class="menu-item">
                         <i class="fa-solid fa-music"></i>
-                        Genius Search
+                        {% translate 'Genius Search' %}
                     </a>
                     <a href="{% url 'avatar-wiki' %}" class="menu-item">
                         <i class="fa-solid fa-wind"></i>
-                        Avatar Wiki
+                        {% translate 'Avatar Wiki' %}
                     </a>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                     {% endfor %}
                 </select>
             </form>
-            <button class="dark-mode-btn" id="darkmode-button" aria-label="Dark Mode umschalten">
+            <button class="dark-mode-btn" id="darkmode-button" aria-label="{% translate 'Dark Mode umschalten' %}">
                 <i class="fa-solid fa-moon icon-moon"></i>
                 <i class="fa-solid fa-sun icon-sun"></i>
             </button>

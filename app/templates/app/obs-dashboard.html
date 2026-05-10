@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}OBS Dashboard - MyTools{% endblock %}
+{% block title %}{% translate 'OBS Dashboard' %} - MyTools{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/obs-dashboard.css' %}">
@@ -15,16 +15,16 @@
             <div>
                 <span class="obs-badge">
                     <i class="fa-solid fa-video"></i>
-                    OBS WebSocket
+                    {% translate 'OBS WebSocket' %}
                 </span>
 
-                <h1>OBS Dashboard</h1>
-                <p>Touch Control Panel für Szenen, Quellen, Stream, Aufnahme und Audio-Mixer.</p>
+                <h1>{% translate 'OBS Dashboard' %}</h1>
+                <p>{% translate 'Touch Control Panel für Szenen, Quellen, Stream, Aufnahme und Audio-Mixer.' %}</p>
             </div>
 
             <div class="obs-connection-box">
                 <span id="connectionDot" class="obs-dot offline"></span>
-                <span id="status">Nicht verbunden</span>
+                <span id="status">{% translate 'Nicht verbunden' %}</span>
             </div>
         </div>
 
@@ -33,8 +33,8 @@
             <section class="obs-panel obs-connection-panel">
                 <div class="obs-panel-header">
                     <div>
-                        <h2>Verbindung</h2>
-                        <p>Verbinde dich mit deinem OBS WebSocket Server.</p>
+                        <h2>{% translate 'Verbindung' %}</h2>
+                        <p>{% translate 'Verbinde dich mit deinem OBS WebSocket Server.' %}</p>
                     </div>
 
                     <span>Port 4455</span>
@@ -42,40 +42,40 @@
 
                 <div class="obs-connection-grid">
                     <div class="obs-input-group">
-                        <label for="url">WebSocket URL</label>
+                    <label for="url">{% translate 'WebSocket URL' %}</label>
                         <input id="url" value="ws://127.0.0.1:4455" placeholder="ws://192.168.178.50:4455">
                     </div>
 
                     <div class="obs-input-group">
-                        <label for="password">Passwort</label>
-                        <input id="password" type="password" placeholder="OBS Passwort">
+                        <label for="password">{% translate 'Passwort' %}</label>
+                        <input id="password" type="password" placeholder="{% translate 'OBS Passwort' %}">
                     </div>
 
                     <button id="connectBtn" class="obs-primary-btn">
                         <i class="fa-solid fa-plug"></i>
-                        Verbinden
+                        {% translate 'Verbinden' %}
                     </button>
                 </div>
 
                 <label class="obs-remember-row">
                     <input id="rememberConnection" type="checkbox">
-                    <span>Verbindung merken und automatisch wieder verbinden</span>
+                    <span>{% translate 'Verbindung merken und automatisch wieder verbinden' %}</span>
                 </label>
             </section>
 
             <section class="obs-panel">
                 <div class="obs-panel-header">
                     <div>
-                        <h2>Szenen</h2>
-                        <p>Wechsle direkt zwischen deinen OBS-Szenen.</p>
+                        <h2>{% translate 'Szenen' %}</h2>
+                        <p>{% translate 'Wechsle direkt zwischen deinen OBS-Szenen.' %}</p>
                     </div>
 
-                    <span id="sceneCount">0 Szenen</span>
+                    <span id="sceneCount">{% translate '0 Szenen' %}</span>
                 </div>
 
                 <div id="sceneButtons" class="obs-scene-grid">
                     <div class="obs-empty-state">
-                        Noch keine Szenen geladen.
+                        {% translate 'Noch keine Szenen geladen.' %}
                     </div>
                 </div>
             </section>
@@ -83,20 +83,20 @@
             <section class="obs-panel">
                 <div class="obs-panel-header">
                     <div>
-                        <h2>Quellen der aktuellen Szene</h2>
-                        <p>Blende Quellen direkt ein oder aus.</p>
+                        <h2>{% translate 'Quellen der aktuellen Szene' %}</h2>
+                        <p>{% translate 'Blende Quellen direkt ein oder aus.' %}</p>
                     </div>
 
-                    <span id="sourceCount">0 Quellen</span>
+                    <span id="sourceCount">{% translate '0 Quellen' %}</span>
                 </div>
 
                 <div id="currentSceneTitle" class="obs-current-scene-title">
-                    Keine Szene ausgewählt
+                    {% translate 'Keine Szene ausgewählt' %}
                 </div>
 
                 <div id="sourceButtons" class="obs-source-toggle-grid">
                     <div class="obs-empty-state">
-                        Verbinde dich mit OBS und wähle eine Szene aus.
+                        {% translate 'Verbinde dich mit OBS und wähle eine Szene aus.' %}
                     </div>
                 </div>
             </section>
@@ -104,11 +104,11 @@
             <section class="obs-panel">
                 <div class="obs-panel-header">
                     <div>
-                        <h2>Live Controls</h2>
-                        <p>Steuere Aufnahme, Stream und Dashboard-Funktionen.</p>
+                        <h2>{% translate 'Live Controls' %}</h2>
+                        <p>{% translate 'Steuere Aufnahme, Stream und Dashboard-Funktionen.' %}</p>
                     </div>
 
-                    <span>Stream & Aufnahme</span>
+                    <span>{% translate 'Stream & Aufnahme' %}</span>
                 </div>
 
                 <div class="obs-control-grid">
@@ -117,8 +117,8 @@
                             <i class="fa-solid fa-circle"></i>
                         </span>
 
-                        <span>Aufnahme</span>
-                        <small>Erst mit OBS verbinden</small>
+                        <span>{% translate 'Aufnahme' %}</span>
+                        <small>{% translate 'Erst mit OBS verbinden' %}</small>
                     </button>
 
                     <button id="toggleStreamBtn" class="obs-control-card stream" disabled>
@@ -126,8 +126,8 @@
                             <i class="fa-solid fa-tower-broadcast"></i>
                         </span>
 
-                        <span>Stream</span>
-                        <small>Erst mit OBS verbinden</small>
+                        <span>{% translate 'Stream' %}</span>
+                        <small>{% translate 'Erst mit OBS verbinden' %}</small>
                     </button>
 
                     <button id="refreshBtn" class="obs-control-card refresh" disabled>
@@ -135,8 +135,8 @@
                             <i class="fa-solid fa-rotate-right"></i>
                         </span>
 
-                        <span>Neu laden</span>
-                        <small>Erst mit OBS verbinden</small>
+                        <span>{% translate 'Neu laden' %}</span>
+                        <small>{% translate 'Erst mit OBS verbinden' %}</small>
                     </button>
 
                     <button id="fullscreenBtn" class="obs-control-card fullscreen">
@@ -144,8 +144,8 @@
                             <i class="fa-solid fa-expand"></i>
                         </span>
 
-                        <span>Vollbild</span>
-                        <small>Tablet-Modus</small>
+                        <span>{% translate 'Vollbild' %}</span>
+                        <small>{% translate 'Tablet-Modus' %}</small>
                     </button>
                 </div>
             </section>
@@ -153,16 +153,16 @@
             <section class="obs-panel">
                 <div class="obs-panel-header">
                     <div>
-                        <h2>Audio Mixer</h2>
-                        <p>Ändere Lautstärke und Mute-Status deiner OBS-Audioquellen.</p>
+                        <h2>{% translate 'Audio Mixer' %}</h2>
+                        <p>{% translate 'Ändere Lautstärke und Mute-Status deiner OBS-Audioquellen.' %}</p>
                     </div>
 
-                    <span id="audioCount">0 Audioquellen</span>
+                    <span id="audioCount">{% translate '0 Audioquellen' %}</span>
                 </div>
 
                 <div id="audioMixer" class="obs-audio-mixer-grid">
                     <div class="obs-empty-state">
-                        Verbinde dich mit OBS, um Audioquellen zu laden.
+                        {% translate 'Verbinde dich mit OBS, um Audioquellen zu laden.' %}
                     </div>
                 </div>
             </section>

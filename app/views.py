@@ -338,6 +338,7 @@ def serialize_avatar_character(character):
         "link": character.link,
         "description": character.description,
         "image": character.image.url if character.image else "",
+        "order": character.order,
     }
 
 
@@ -356,6 +357,28 @@ def avatar_characters_api(request):
             }, status=500)
 
     if request.method == "POST":
+        if request.content_type == "application/json":
+            try:
+                data = json.loads(request.body.decode("utf-8"))
+            except json.JSONDecodeError:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "Ungültiges JSON."
+                }, status=400)
+
+            if data.get("action") == "update_order":
+                character_ids = data.get("character_ids", [])
+
+                for order, character_id in enumerate(character_ids):
+                    AvatarCharacter.objects.filter(id=character_id).update(order=order)
+
+                return JsonResponse({"status": "ok"})
+
+            return JsonResponse({
+                "status": "error",
+                "message": "Unbekannte Aktion."
+            }, status=400)
+
         name = request.POST.get("name", "").strip()
         nation = request.POST.get("nation", "").strip()
         link = request.POST.get("link", "").strip()
@@ -383,12 +406,14 @@ def avatar_characters_api(request):
             }, status=400)
 
         try:
+            max_order = AvatarCharacter.objects.aggregate(Max("order"))["order__max"]
             character = AvatarCharacter.objects.create(
                 name=name,
                 nation=nation,
                 link=link,
                 description=description,
                 image=image,
+                order=(max_order + 1) if max_order is not None else 0,
             )
         except (OperationalError, ProgrammingError):
             return JsonResponse({
@@ -408,13 +433,51 @@ def avatar_characters_api(request):
 
 
 def avatar_character_detail_api(request, character_id):
+    character = get_object_or_404(AvatarCharacter, id=character_id)
+
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        nation = request.POST.get("nation", "").strip()
+        link = request.POST.get("link", "").strip()
+        description = request.POST.get("description", "").strip()
+        image = request.FILES.get("image")
+        valid_nations = {choice[0] for choice in AvatarCharacter.NATION_CHOICES}
+
+        if not name:
+            return JsonResponse({
+                "status": "error",
+                "message": "Name fehlt."
+            }, status=400)
+
+        if nation not in valid_nations:
+            return JsonResponse({
+                "status": "error",
+                "message": "Ungültige Nation."
+            }, status=400)
+
+        character.name = name
+        character.nation = nation
+        character.link = link
+        character.description = description
+
+        if image:
+            if character.image:
+                character.image.delete(save=False)
+            character.image = image
+
+        character.save()
+
+        return JsonResponse({
+            "status": "ok",
+            "character": serialize_avatar_character(character),
+        })
+
     if request.method != "DELETE":
         return JsonResponse({
             "status": "error",
             "message": "Methode nicht erlaubt."
         }, status=405)
 
-    character = get_object_or_404(AvatarCharacter, id=character_id)
     character.delete()
 
     return JsonResponse({
