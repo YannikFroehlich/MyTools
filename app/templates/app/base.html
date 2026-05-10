@@ -32,14 +32,29 @@
                 <i class="fa-solid fa-house"></i>
                 {% translate 'Start' %}
             </a>
+
             <a href="{% url 'weather' %}">
                 <i class="fa-solid fa-cloud-sun"></i>
                 {% translate 'Wetter' %}
             </a>
+
             <a href="{% url 'about' %}">
                 <i class="fa-solid fa-circle-info"></i>
                 {% translate 'Über' %}
             </a>
+
+            <div class="menu-wrapper">
+                <button class="menu-button" id="menu-button" type="button" aria-label="Weitere Seiten">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+
+                <div class="menu-dropdown" id="menu-dropdown">
+                    <a href="{% url 'obs-dashboard' %}" class="menu-item">
+                        <i class="fa-solid fa-link"></i>
+                        OBS Dashboard
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="user-actions">
             <form action="{% url 'set_language' %}" method="post">

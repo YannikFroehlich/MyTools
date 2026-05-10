@@ -302,3 +302,6 @@ def weather(request):
         context = {'error': f"Verbindungsfehler: {str(e)}"}
 
     return render(request, 'app/weather.html', context)
+
+def obs_dashboard(request):
+    return render(request, "app/obs-dashboard.html")
