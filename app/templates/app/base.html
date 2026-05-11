@@ -90,6 +90,61 @@
                     {% endfor %}
                 </select>
             </form>
+            <div class="theme-editor-wrapper">
+                <button class="theme-editor-btn" id="theme-editor-button" type="button" aria-label="{% translate 'Design anpassen' %}">
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+
+                <div class="theme-editor-panel" id="theme-editor-panel">
+                    <div class="theme-editor-header">
+                        <h2>{% translate 'Design' %}</h2>
+                        <button type="button" id="theme-editor-close" aria-label="{% translate 'Design-Men&uuml; schlie&szlig;en' %}">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="theme-preset-row" aria-label="{% translate 'Design-Vorlagen' %}">
+                        <button type="button" class="theme-preset" data-preset="sky" title="{% translate 'Blau' %}">
+                            <span style="background: linear-gradient(135deg, #1a56d6, #5aadee);"></span>
+                        </button>
+                        <button type="button" class="theme-preset" data-preset="forest" title="{% translate 'Gr&uuml;n' %}">
+                            <span style="background: linear-gradient(135deg, #0f766e, #34d399);"></span>
+                        </button>
+                        <button type="button" class="theme-preset" data-preset="rose" title="{% translate 'Rose' %}">
+                            <span style="background: linear-gradient(135deg, #be185d, #fb7185);"></span>
+                        </button>
+                        <button type="button" class="theme-preset" data-preset="graphite" title="{% translate 'Graphit' %}">
+                            <span style="background: linear-gradient(135deg, #111827, #64748b);"></span>
+                        </button>
+                    </div>
+
+                    <div class="theme-control-grid">
+                        <label>
+                            <span>{% translate 'Header links' %}</span>
+                            <input type="color" id="theme-nav-start" value="#1a56d6">
+                        </label>
+                        <label>
+                            <span>{% translate 'Header rechts' %}</span>
+                            <input type="color" id="theme-nav-end" value="#5aadee">
+                        </label>
+                        <label>
+                            <span>{% translate 'Hintergrund' %}</span>
+                            <input type="color" id="theme-page-bg" value="#dce5f5">
+                        </label>
+                        <label>
+                            <span>{% translate 'Footer' %}</span>
+                            <input type="color" id="theme-footer-bg" value="#ffffff">
+                        </label>
+                    </div>
+
+                    <div class="theme-editor-actions">
+                        <button type="button" id="theme-reset-button">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            {% translate 'Zur&uuml;cksetzen' %}
+                        </button>
+                    </div>
+                </div>
+            </div>
             <button class="dark-mode-btn" id="darkmode-button" aria-label="{% translate 'Dark Mode umschalten' %}">
                 <i class="fa-solid fa-moon icon-moon"></i>
                 <i class="fa-solid fa-sun icon-sun"></i>
