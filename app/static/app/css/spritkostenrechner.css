@@ -1,7 +1,10 @@
 .fuel-page {
-    width: min(920px, 100%);
+    width: 100%;
+    max-width: 1040px;
     margin: 0 auto;
-    color: #1f2937;
+    padding: 22px 22px 34px;
+    color: #172033;
+    text-align: left;
 }
 
 body.dark-mode .fuel-page {
@@ -9,24 +12,62 @@ body.dark-mode .fuel-page {
 }
 
 .fuel-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 0 auto 1.5rem;
-    box-shadow: 0 12px 28px rgba(31, 41, 55, 0.08);
-    text-align: left;
-    animation: fadeInSlide 0.45s ease-out forwards;
+    position: relative;
+    overflow: hidden;
+    padding: 24px;
+    margin: 0 auto 18px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(241, 247, 255, 0.82));
+    border: 1px solid rgba(120, 140, 180, 0.22);
+    border-radius: 24px;
+    box-shadow:
+        0 14px 38px rgba(31, 110, 238, 0.11),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    animation: fuelFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-body.dark-mode .fuel-card {
-    background: #1a1d2b;
-    box-shadow: 0 12px 30px rgba(5, 10, 25, 0.35);
+.fuel-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(31, 110, 238, 0.25);
+    box-shadow:
+        0 18px 44px rgba(31, 110, 238, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.fuel-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 18px;
+    right: 18px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(31, 110, 238, 0.22), transparent);
+}
+
+.fuel-card::after {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    right: -70px;
+    top: -80px;
+    background: radial-gradient(circle, rgba(122, 198, 250, 0.2), transparent 65%);
+    pointer-events: none;
+}
+
+.fuel-card > * {
+    position: relative;
+    z-index: 1;
 }
 
 .fuel-card h1 {
-    margin: 0 0 0.75rem;
-    font-size: 1.9rem;
-    line-height: 1.15;
+    margin: 0 0 0.65rem;
+    color: #111827;
+    font-size: clamp(1.8rem, 4vw, 2.7rem);
+    line-height: 1;
+    letter-spacing: 0;
 }
 
 .fuel-card h2 {
@@ -34,16 +75,21 @@ body.dark-mode .fuel-card {
     align-items: center;
     gap: 0.55rem;
     margin: 0 0 1rem;
-    font-size: 1.15rem;
+    color: #6b7a90;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
     line-height: 1.2;
+    text-transform: uppercase;
 }
 
-.border-accent-blue {
-    border-top: 5px solid #2563eb;
+.fuel-card h2 i {
+    color: #1f6eee;
 }
 
+.border-accent-blue,
 .border-accent-green {
-    border-top: 5px solid #10b981;
+    border-top: 1px solid rgba(120, 140, 180, 0.22);
 }
 
 .fuel-search-bar,
@@ -62,45 +108,40 @@ body.dark-mode .fuel-card {
 .fuel-page input,
 .fuel-page select,
 .fuel-page button {
-    min-height: 42px;
-    padding: 0.7rem 0.85rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 9px;
+    min-height: 46px;
+    padding: 0.75rem 0.9rem;
+    border-radius: 13px;
     font: inherit;
 }
 
 .fuel-page input,
 .fuel-page select {
     width: 100%;
-    background: #f8fafc;
+    border: 1px solid rgba(120, 140, 180, 0.3);
+    background: rgba(248, 250, 252, 0.9);
     color: #111827;
     outline: none;
-}
-
-body.dark-mode .fuel-page input,
-body.dark-mode .fuel-page select {
-    background: #111827;
-    border-color: #374151;
-    color: #f9fafb;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .fuel-page input:focus,
 .fuel-page select:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    border-color: rgba(31, 110, 238, 0.7);
+    box-shadow: 0 0 0 4px rgba(31, 110, 238, 0.08);
+    background: #ffffff;
 }
 
 .fuel-page button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
     border: none;
     color: #ffffff;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 800;
     white-space: nowrap;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease, background 0.15s ease;
 }
 
 .fuel-page button:hover {
@@ -108,25 +149,19 @@ body.dark-mode .fuel-page select {
 }
 
 .fuel-page button:active {
-    transform: translateY(0);
+    transform: scale(0.97);
 }
 
-.btn-primary {
-    background: #2563eb;
-}
-
-.btn-primary:hover {
-    background: #1d4ed8;
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
-}
-
+.btn-primary,
 .btn-secondary {
-    background: #10b981;
+    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
+    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.2);
 }
 
+.btn-primary:hover,
 .btn-secondary:hover {
-    background: #059669;
-    box-shadow: 0 8px 18px rgba(16, 185, 129, 0.24);
+    filter: brightness(1.06);
+    box-shadow: 0 12px 26px rgba(31, 110, 238, 0.28);
 }
 
 .station-list {
@@ -138,18 +173,14 @@ body.dark-mode .fuel-page select {
     justify-content: space-between;
     gap: 1rem;
     align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem;
+    margin-top: 0.75rem;
+    border: 1px solid rgba(120, 140, 180, 0.18);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.64);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
     opacity: 0;
-    animation: fadeInSlide 0.35s ease-out forwards;
-}
-
-body.dark-mode .station-item {
-    border-color: #374151;
-}
-
-.station-item:last-child {
-    border-bottom: none;
+    animation: fuelFadeUp 0.35s ease-out forwards;
 }
 
 .station-info {
@@ -160,6 +191,7 @@ body.dark-mode .station-item {
 }
 
 .station-info strong {
+    color: #172033;
     overflow-wrap: anywhere;
 }
 
@@ -168,18 +200,14 @@ body.dark-mode .station-item {
     font-size: 0.9rem;
 }
 
-body.dark-mode .station-address {
-    color: #a7b0c0;
-}
-
 .station-dist {
-    color: #2563eb;
+    color: #1f6eee;
     font-size: 0.85rem;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .station-price {
-    color: #059669;
+    color: #10b981;
     font-size: 1.2rem;
     font-weight: 800;
     white-space: nowrap;
@@ -188,12 +216,13 @@ body.dark-mode .station-address {
 .result-badge {
     margin-top: 1rem;
     padding: 1.15rem;
-    background: #10b981;
+    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
     color: #ffffff;
-    border-radius: 10px;
+    border-radius: 16px;
     text-align: center;
     font-size: 1.15rem;
     font-weight: 800;
+    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.18);
     transition: transform 0.18s ease;
 }
 
@@ -203,18 +232,12 @@ body.dark-mode .station-address {
 
 .empty-state {
     margin: 0;
-    padding: 1rem;
+    padding: 1.25rem;
     color: #64748b;
-    background: #f8fafc;
-    border: 1px dashed #cbd5e1;
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px dashed rgba(120, 140, 180, 0.45);
+    border-radius: 16px;
     text-align: center;
-}
-
-body.dark-mode .empty-state {
-    color: #a7b0c0;
-    background: #111827;
-    border-color: #374151;
 }
 
 .spinner-container {
@@ -227,13 +250,14 @@ body.dark-mode .empty-state {
 
 .spinner-container p {
     margin: 0;
+    color: #64748b;
 }
 
 .spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid #cbd5e1;
-    border-top-color: #2563eb;
+    border: 4px solid rgba(31, 110, 238, 0.15);
+    border-top-color: #1f6eee;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -242,17 +266,81 @@ body.dark-mode .empty-state {
     display: none !important;
 }
 
+body.dark-mode .fuel-card {
+    background: linear-gradient(145deg, rgba(15, 25, 55, 0.82), rgba(15, 23, 42, 0.88));
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 14px 42px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .fuel-card:hover {
+    border-color: rgba(122, 198, 250, 0.18);
+    box-shadow:
+        0 18px 48px rgba(0, 0, 0, 0.36),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+body.dark-mode .fuel-card::before {
+    background: linear-gradient(90deg, transparent, rgba(122, 198, 250, 0.22), transparent);
+}
+
+body.dark-mode .fuel-card::after {
+    background: radial-gradient(circle, rgba(79, 183, 255, 0.14), transparent 65%);
+}
+
+body.dark-mode .fuel-card h1,
+body.dark-mode .station-info strong {
+    color: #ffffff;
+}
+
+body.dark-mode .fuel-card h2,
+body.dark-mode .station-address,
+body.dark-mode .spinner-container p {
+    color: rgba(255, 255, 255, 0.58);
+}
+
+body.dark-mode .fuel-card h2 i,
+body.dark-mode .station-dist {
+    color: #7ac6fa;
+}
+
+body.dark-mode .fuel-page input,
+body.dark-mode .fuel-page select {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+body.dark-mode .fuel-page input:focus,
+body.dark-mode .fuel-page select:focus {
+    border-color: rgba(122, 198, 250, 0.7);
+    box-shadow: 0 0 0 4px rgba(122, 198, 250, 0.08);
+    background: #253244;
+}
+
+body.dark-mode .station-item,
+body.dark-mode .empty-state {
+    background: linear-gradient(180deg, rgba(31, 41, 70, 0.82), rgba(24, 33, 58, 0.88));
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .empty-state {
+    color: rgba(255, 255, 255, 0.58);
+}
+
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
 }
 
-@keyframes fadeInSlide {
+@keyframes fuelFadeUp {
     from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(14px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -260,13 +348,22 @@ body.dark-mode .empty-state {
 }
 
 @media (max-width: 760px) {
+    .fuel-page {
+        padding: 14px 12px 26px;
+    }
+
     .fuel-card {
-        padding: 1rem;
+        padding: 18px;
+        border-radius: 20px;
     }
 
     .fuel-search-bar,
     .calc-group {
         grid-template-columns: 1fr;
+    }
+
+    .fuel-page button {
+        width: 100%;
     }
 
     .station-item {

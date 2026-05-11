@@ -1,30 +1,87 @@
 .genius-page {
-    --genius-bg: #f6f7fb;
-    --genius-panel: #ffffff;
-    --genius-panel-soft: #f8fafc;
-    --genius-text: #151515;
+    --genius-panel: rgba(255, 255, 255, 0.92);
+    --genius-panel-soft: rgba(248, 250, 252, 0.9);
+    --genius-text: #172033;
     --genius-muted: #64748b;
-    --genius-border: rgba(15, 23, 42, 0.1);
-    --genius-yellow: #f5d90a;
-    --genius-yellow-hover: #ffe44d;
-    --genius-link: #006fc9;
-    --genius-shadow: 0 16px 38px rgba(15, 23, 42, 0.1);
+    --genius-border: rgba(120, 140, 180, 0.22);
+    --genius-primary: #1f6eee;
+    --genius-primary-soft: rgba(31, 110, 238, 0.1);
+    --genius-link: #1f6eee;
+    --genius-shadow: 0 14px 38px rgba(31, 110, 238, 0.11);
 
-    width: min(1040px, 100%);
+    width: 100%;
+    max-width: 1120px;
     margin: 0 auto;
+    padding: 22px 22px 34px;
     color: var(--genius-text);
     text-align: left;
 }
 
 body.dark-mode .genius-page {
-    --genius-bg: #141414;
-    --genius-panel: #1e1e1e;
-    --genius-panel-soft: #111111;
-    --genius-text: #f8fafc;
-    --genius-muted: #cbd5e1;
-    --genius-border: rgba(255, 255, 255, 0.1);
-    --genius-link: #38bdf8;
-    --genius-shadow: 0 18px 42px rgba(0, 0, 0, 0.36);
+    --genius-panel: rgba(15, 25, 55, 0.82);
+    --genius-panel-soft: #1f2937;
+    --genius-text: #ffffff;
+    --genius-muted: rgba(255, 255, 255, 0.58);
+    --genius-border: rgba(255, 255, 255, 0.08);
+    --genius-primary: #7ac6fa;
+    --genius-primary-soft: rgba(122, 198, 250, 0.12);
+    --genius-link: #7ac6fa;
+    --genius-shadow: 0 14px 42px rgba(0, 0, 0, 0.28);
+}
+
+.genius-header,
+.genius-card,
+.genius-empty-state {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, var(--genius-panel), rgba(241, 247, 255, 0.82));
+    border: 1px solid var(--genius-border);
+    border-radius: 24px;
+    box-shadow:
+        var(--genius-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+body.dark-mode .genius-header,
+body.dark-mode .genius-card,
+body.dark-mode .genius-empty-state {
+    background: linear-gradient(145deg, rgba(15, 25, 55, 0.82), rgba(15, 23, 42, 0.88));
+    box-shadow:
+        var(--genius-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.genius-header::before,
+.genius-card::before,
+.genius-empty-state::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 18px;
+    right: 18px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(31, 110, 238, 0.22), transparent);
+}
+
+.genius-header::after,
+.genius-card::after {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    right: -70px;
+    top: -80px;
+    background: radial-gradient(circle, rgba(122, 198, 250, 0.2), transparent 65%);
+    pointer-events: none;
+}
+
+.genius-header > *,
+.genius-card > *,
+.genius-empty-state > * {
+    position: relative;
+    z-index: 1;
 }
 
 .genius-header {
@@ -32,27 +89,34 @@ body.dark-mode .genius-page {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1rem;
+    padding: 1.15rem;
     margin-bottom: 1.5rem;
-    border-radius: 14px;
-    background: #222222;
-    box-shadow: var(--genius-shadow);
-}
-
-body.dark-mode .genius-header {
-    background: #121212;
+    animation: geniusFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .genius-brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
-    color: var(--genius-yellow);
+    gap: 0.7rem;
+    color: var(--genius-text);
     text-decoration: none;
-    font-size: clamp(1.45rem, 4vw, 2.25rem);
-    font-weight: 900;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    font-weight: 800;
     line-height: 1.1;
     white-space: nowrap;
+}
+
+.genius-brand i {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
+    color: #ffffff;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.2);
 }
 
 .genius-search-box {
@@ -66,70 +130,74 @@ body.dark-mode .genius-header {
     min-width: 0;
     min-height: 46px;
     padding: 0.75rem 0.95rem;
-    border: 1px solid var(--genius-border);
-    border-radius: 9px;
+    border: 1px solid rgba(120, 140, 180, 0.3);
+    border-radius: 13px;
     background: var(--genius-panel-soft);
     color: var(--genius-text);
     font: inherit;
     outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .genius-search-box input:focus {
-    border-color: var(--genius-yellow);
-    box-shadow: 0 0 0 3px rgba(245, 217, 10, 0.2);
+    border-color: rgba(31, 110, 238, 0.7);
+    box-shadow: 0 0 0 4px rgba(31, 110, 238, 0.08);
+    background: #ffffff;
 }
 
 .genius-page button {
     min-height: 46px;
-    padding: 0.75rem 1.25rem;
+    padding: 0.75rem 1.2rem;
     border: none;
-    border-radius: 9px;
-    background: var(--genius-yellow);
-    color: #000000;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
+    color: #ffffff;
     cursor: pointer;
     font: inherit;
-    font-weight: 900;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    font-weight: 800;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 .genius-page button:hover:not(:disabled) {
-    background: var(--genius-yellow-hover);
-    box-shadow: 0 0 14px rgba(245, 217, 10, 0.42);
+    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.24);
+    filter: brightness(1.06);
     transform: translateY(-1px);
 }
 
 .genius-page button:disabled {
-    background: #8c8c8c;
-    color: #252525;
+    background: #94a3b8;
+    color: rgba(255, 255, 255, 0.8);
     cursor: not-allowed;
 }
 
 .genius-results-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.35rem;
+    gap: 1.2rem;
     min-height: 360px;
 }
 
 .genius-card {
     padding: 0.95rem;
-    border: 1px solid var(--genius-border);
-    border-radius: 12px;
-    background: var(--genius-panel);
-    box-shadow: var(--genius-shadow);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    animation: geniusFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
 }
 
 .genius-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 18px 42px rgba(245, 217, 10, 0.16);
+    border-color: rgba(31, 110, 238, 0.25);
+    box-shadow:
+        0 18px 44px rgba(31, 110, 238, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .genius-card img {
+    position: relative;
+    z-index: 1;
     width: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    border-radius: 9px;
+    border-radius: 16px;
     background: var(--genius-panel-soft);
 }
 
@@ -159,12 +227,9 @@ body.dark-mode .genius-header {
 
 .genius-empty-state {
     grid-column: 1 / -1;
-    min-height: 150px;
+    min-height: 170px;
     margin: 0;
     padding: 1.25rem;
-    border: 1px dashed var(--genius-border);
-    border-radius: 12px;
-    background: var(--genius-panel);
     color: var(--genius-muted);
     display: flex;
     align-items: center;
@@ -190,10 +255,44 @@ body.dark-mode .genius-header {
     display: none !important;
 }
 
+body.dark-mode .genius-header::before,
+body.dark-mode .genius-card::before,
+body.dark-mode .genius-empty-state::before {
+    background: linear-gradient(90deg, transparent, rgba(122, 198, 250, 0.22), transparent);
+}
+
+body.dark-mode .genius-header::after,
+body.dark-mode .genius-card::after {
+    background: radial-gradient(circle, rgba(79, 183, 255, 0.14), transparent 65%);
+}
+
+body.dark-mode .genius-search-box input:focus {
+    border-color: rgba(122, 198, 250, 0.7);
+    box-shadow: 0 0 0 4px rgba(122, 198, 250, 0.08);
+    background: #253244;
+}
+
+@keyframes geniusFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @media (max-width: 760px) {
+    .genius-page {
+        padding: 14px 12px 26px;
+    }
+
     .genius-header {
         align-items: stretch;
         flex-direction: column;
+        border-radius: 20px;
     }
 
     .genius-search-box {
