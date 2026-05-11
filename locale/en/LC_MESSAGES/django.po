@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-10 23:30+0200\n"
+"POT-Creation-Date: 2026-05-11 23:15+0200\n"
 "PO-Revision-Date: 2026-05-10 23:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -84,9 +84,10 @@ msgid ""
 "Alles soll schnell erreichbar, übersichtlich und angenehm zu bedienen sein."
 msgstr ""
 "This site is intended to be a central interface for useful features. "
-"Everything should be quickly accessible, clearly arranged and pleasant to use."
+"Everything should be quickly accessible, clearly arranged and pleasant to "
+"use."
 
-#: .\app\templates\app\about.html:89
+#: .\app\templates\app\about.html:89 .\app\templates\app\base.html:100
 msgid "Design"
 msgstr "Design"
 
@@ -95,8 +96,8 @@ msgid ""
 "Das Design ist modern, leicht und responsive. Es funktioniert sowohl im "
 "Light Mode als auch im Dark Mode."
 msgstr ""
-"The design is modern, lightweight and responsive. It works in both Light Mode "
-"and Dark Mode."
+"The design is modern, lightweight and responsive. It works in both Light "
+"Mode and Dark Mode."
 
 #: .\app\templates\app\about.html:101
 msgid "Backend"
@@ -263,7 +264,55 @@ msgstr "Human Benchmark"
 msgid "Genius Search"
 msgstr "Genius Search"
 
-#: .\app\templates\app\base.html:93
+#: .\app\templates\app\base.html:94
+msgid "Design anpassen"
+msgstr "Adjust design"
+
+#: .\app\templates\app\base.html:101
+msgid "Design-Men&uuml; schlie&szlig;en"
+msgstr "Close design menu"
+
+#: .\app\templates\app\base.html:106
+msgid "Design-Vorlagen"
+msgstr "Design templates"
+
+#: .\app\templates\app\base.html:107 .\app\templates\app\home.html:365
+msgid "Blau"
+msgstr "Blue"
+
+#: .\app\templates\app\base.html:110
+msgid "Gr&uuml;n"
+msgstr "Green"
+
+#: .\app\templates\app\base.html:113
+msgid "Rose"
+msgstr "Pink"
+
+#: .\app\templates\app\base.html:116
+msgid "Graphit"
+msgstr "Gray"
+
+#: .\app\templates\app\base.html:123
+msgid "Header links"
+msgstr "Header left"
+
+#: .\app\templates\app\base.html:127
+msgid "Header rechts"
+msgstr "Header right"
+
+#: .\app\templates\app\base.html:131
+msgid "Hintergrund"
+msgstr "Background"
+
+#: .\app\templates\app\base.html:135
+msgid "Footer"
+msgstr "Footer"
+
+#: .\app\templates\app\base.html:143
+msgid "Zur&uuml;cksetzen"
+msgstr "Reset"
+
+#: .\app\templates\app\base.html:148
 msgid "Dark Mode umschalten"
 msgstr "Toggle Dark Mode"
 
@@ -399,10 +448,6 @@ msgstr "Section name"
 #: .\app\templates\app\home.html:360
 msgid "Bereichsfarbe"
 msgstr "Section color"
-
-#: .\app\templates\app\home.html:365
-msgid "Blau"
-msgstr "Blue"
 
 #: .\app\templates\app\home.html:370
 msgid "Grün"
@@ -757,15 +802,3 @@ msgstr "Sunrise"
 #: .\app\templates\app\weather.html:157
 msgid "Sonnenuntergang"
 msgstr "Sunset"
-
-#~ msgid "Das hier ist die About Seite"
-#~ msgstr "This is the About page"
-
-#~ msgid "Länder"
-#~ msgstr "Countries"
-
-#~ msgid "Willkommen bei"
-#~ msgstr "Welcome to"
-
-#~ msgid "Das hier ist der spezifische Inhalt der"
-#~ msgstr "This is the specific content of"

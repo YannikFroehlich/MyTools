@@ -1,27 +1,87 @@
 .benchmark-page {
-    --benchmark-bg: #f0f4f8;
-    --benchmark-card: #ffffff;
-    --benchmark-text: #2d3436;
-    --benchmark-muted: #636e72;
-    --benchmark-primary: #6c5ce7;
-    --benchmark-blue: #0984e3;
-    --benchmark-red: #ff7675;
-    --benchmark-green: #00b894;
-    --benchmark-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-    --benchmark-radius: 16px;
+    --benchmark-card: rgba(255, 255, 255, 0.92);
+    --benchmark-card-soft: rgba(248, 250, 252, 0.9);
+    --benchmark-text: #172033;
+    --benchmark-muted: #64748b;
+    --benchmark-primary: #1f6eee;
+    --benchmark-blue: #1f6eee;
+    --benchmark-red: #ef4444;
+    --benchmark-green: #10b981;
+    --benchmark-border: rgba(120, 140, 180, 0.22);
+    --benchmark-shadow: 0 14px 38px rgba(31, 110, 238, 0.11);
+    --benchmark-radius: 24px;
 
-    width: min(1000px, 100%);
+    width: 100%;
+    max-width: 1040px;
     margin: 0 auto;
+    padding: 22px 22px 34px;
     color: var(--benchmark-text);
     text-align: left;
 }
 
 body.dark-mode .benchmark-page {
-    --benchmark-bg: #111827;
-    --benchmark-card: #1a1d2b;
-    --benchmark-text: #f8fafc;
-    --benchmark-muted: #94a3b8;
-    --benchmark-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    --benchmark-card: rgba(15, 25, 55, 0.82);
+    --benchmark-card-soft: #1f2937;
+    --benchmark-text: #ffffff;
+    --benchmark-muted: rgba(255, 255, 255, 0.58);
+    --benchmark-primary: #7ac6fa;
+    --benchmark-border: rgba(255, 255, 255, 0.08);
+    --benchmark-shadow: 0 14px 42px rgba(0, 0, 0, 0.28);
+}
+
+.benchmark-topbar,
+.benchmark-card,
+.benchmark-stat {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, var(--benchmark-card), rgba(241, 247, 255, 0.82));
+    border: 1px solid var(--benchmark-border);
+    border-radius: var(--benchmark-radius);
+    box-shadow:
+        var(--benchmark-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+body.dark-mode .benchmark-topbar,
+body.dark-mode .benchmark-card,
+body.dark-mode .benchmark-stat {
+    background: linear-gradient(145deg, rgba(15, 25, 55, 0.82), rgba(15, 23, 42, 0.88));
+    box-shadow:
+        var(--benchmark-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.benchmark-topbar::before,
+.benchmark-card::before,
+.benchmark-stat::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 18px;
+    right: 18px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(31, 110, 238, 0.22), transparent);
+}
+
+.benchmark-card::after,
+.benchmark-topbar::after {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    right: -70px;
+    top: -80px;
+    background: radial-gradient(circle, rgba(122, 198, 250, 0.2), transparent 65%);
+    pointer-events: none;
+}
+
+.benchmark-topbar > *,
+.benchmark-card > *,
+.benchmark-stat > * {
+    position: relative;
+    z-index: 1;
 }
 
 .benchmark-topbar {
@@ -31,9 +91,7 @@ body.dark-mode .benchmark-page {
     gap: 1rem;
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background: var(--benchmark-card);
-    border-radius: var(--benchmark-radius);
-    box-shadow: var(--benchmark-shadow);
+    animation: benchmarkFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .benchmark-logo {
@@ -45,51 +103,52 @@ body.dark-mode .benchmark-page {
 }
 
 .benchmark-logo-icon {
-    width: 30px;
-    height: 30px;
-    background: var(--benchmark-primary);
-    border-radius: 8px;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
+    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.2);
 }
 
 .benchmark-logo h1 {
     margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.2;
+    color: var(--benchmark-text);
+    font-size: clamp(1.25rem, 3vw, 1.8rem);
+    line-height: 1.1;
 }
 
 .benchmark-tabs {
     display: flex;
     justify-content: flex-end;
-    gap: 0.35rem;
+    gap: 0.45rem;
     flex-wrap: wrap;
 }
 
 .benchmark-tab {
     border: none;
-    padding: 0.65rem 1rem;
+    padding: 0.68rem 0.95rem;
     font: inherit;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--benchmark-muted);
-    background: transparent;
-    border-radius: 10px;
+    background: rgba(31, 110, 238, 0.08);
+    border-radius: 13px;
     cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .benchmark-tab:hover {
     transform: translateY(-1px);
-    background: rgba(108, 92, 231, 0.08);
+    background: rgba(31, 110, 238, 0.13);
 }
 
 .benchmark-tab.active {
-    color: var(--benchmark-primary);
-    background: rgba(108, 92, 231, 0.13);
+    color: #ffffff;
+    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
+    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.2);
 }
 
 .benchmark-card {
-    background: var(--benchmark-card);
-    border-radius: var(--benchmark-radius);
-    box-shadow: var(--benchmark-shadow);
     overflow: hidden;
 }
 
@@ -114,25 +173,29 @@ body.dark-mode .benchmark-page {
     text-align: center;
 }
 
-.box-waiting {
-    background: var(--benchmark-blue);
+#reaction-box.box-waiting,
+#reaction-box.box-ready,
+#reaction-box.box-go {
     color: #ffffff;
 }
 
-.box-ready {
-    background: var(--benchmark-red);
-    color: #ffffff;
+#reaction-box.box-waiting {
+    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
 }
 
-.box-go {
-    background: var(--benchmark-green);
-    color: #ffffff;
+#reaction-box.box-ready {
+    background: linear-gradient(135deg, #ef4444, #fb7185);
+}
+
+#reaction-box.box-go {
+    background: linear-gradient(135deg, #10b981, #34d399);
 }
 
 .game-ui-content h2 {
     margin: 0;
-    font-size: 3rem;
+    font-size: clamp(2.25rem, 7vw, 3.25rem);
     line-height: 1.1;
+    letter-spacing: 0;
 }
 
 .game-ui-content p {
@@ -149,13 +212,11 @@ body.dark-mode .benchmark-page {
 
 .benchmark-stat {
     min-width: 130px;
-    padding: 0.8rem 1.35rem;
-    background: var(--benchmark-card);
-    border-radius: 14px;
-    box-shadow: var(--benchmark-shadow);
+    padding: 0.85rem 1.35rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-radius: 18px;
 }
 
 .benchmark-stat span {
@@ -175,8 +236,8 @@ body.dark-mode .benchmark-page {
 
 .quote-box {
     padding: 2rem;
-    background: rgba(108, 92, 231, 0.04);
-    border-bottom: 1px solid rgba(108, 92, 231, 0.12);
+    background: rgba(31, 110, 238, 0.05);
+    border-bottom: 1px solid rgba(31, 110, 238, 0.12);
 }
 
 #quote-display {
@@ -195,18 +256,20 @@ body.dark-mode .benchmark-page {
     width: 100%;
     height: 120px;
     resize: none;
-    border: 2px solid rgba(108, 92, 231, 0.13);
-    border-radius: 12px;
+    border: 1px solid rgba(120, 140, 180, 0.3);
+    border-radius: 16px;
     padding: 1rem;
     font: inherit;
     font-size: 1.05rem;
     color: var(--benchmark-text);
-    background: var(--benchmark-bg);
+    background: var(--benchmark-card-soft);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 #typing-input:focus {
-    outline: none;
-    border-color: var(--benchmark-primary);
+    border-color: rgba(31, 110, 238, 0.7);
+    box-shadow: 0 0 0 4px rgba(31, 110, 238, 0.08);
 }
 
 .typing-footer,
@@ -223,11 +286,10 @@ body.dark-mode .benchmark-page {
     height: 500px;
     position: relative;
     cursor: crosshair;
-    border: 2px solid rgba(108, 92, 231, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: radial-gradient(circle, rgba(108, 92, 231, 0.09) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(31, 110, 238, 0.09) 1px, transparent 1px);
     background-size: 30px 30px;
 }
 
@@ -239,7 +301,7 @@ body.dark-mode .benchmark-page {
     position: absolute;
     display: none;
     z-index: 10;
-    box-shadow: 0 4px 15px rgba(255, 118, 117, 0.4);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
 .result-overlay {
@@ -257,7 +319,12 @@ body.dark-mode .benchmark-page {
 
 .result-overlay h3 {
     margin: 0 0 0.5rem;
+    color: var(--benchmark-text);
     font-size: 1.5rem;
+}
+
+.result-overlay p {
+    color: var(--benchmark-muted);
 }
 
 .result-grid {
@@ -277,19 +344,19 @@ body.dark-mode .benchmark-page {
 
 .benchmark-primary-btn,
 .benchmark-outline-btn {
-    border-radius: 12px;
+    border-radius: 13px;
     cursor: pointer;
     font: inherit;
     font-weight: 800;
-    transition: transform 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.15s ease, filter 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .benchmark-primary-btn {
     border: none;
-    padding: 1rem 2.4rem;
+    padding: 0.9rem 2rem;
     color: #ffffff;
-    background: var(--benchmark-primary);
-    box-shadow: 0 10px 25px rgba(108, 92, 231, 0.22);
+    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
+    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.22);
 }
 
 .benchmark-primary-btn:hover {
@@ -298,10 +365,10 @@ body.dark-mode .benchmark-page {
 }
 
 .benchmark-outline-btn {
-    border: 2px solid rgba(108, 92, 231, 0.2);
+    border: 1px solid rgba(31, 110, 238, 0.25);
     padding: 0.7rem 1.4rem;
     color: var(--benchmark-muted);
-    background: transparent;
+    background: rgba(31, 110, 238, 0.08);
 }
 
 .benchmark-outline-btn:hover {
@@ -326,8 +393,9 @@ body.dark-mode .benchmark-page {
 .visual-tile {
     width: 50px;
     height: 50px;
-    background: rgba(108, 92, 231, 0.12);
-    border-radius: 8px;
+    background: rgba(31, 110, 238, 0.12);
+    border: 1px solid rgba(31, 110, 238, 0.12);
+    border-radius: 12px;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.2s ease;
 }
@@ -349,11 +417,40 @@ body.dark-mode .benchmark-page {
     display: none !important;
 }
 
+body.dark-mode .benchmark-topbar::before,
+body.dark-mode .benchmark-card::before,
+body.dark-mode .benchmark-stat::before {
+    background: linear-gradient(90deg, transparent, rgba(122, 198, 250, 0.22), transparent);
+}
+
+body.dark-mode .benchmark-card::after,
+body.dark-mode .benchmark-topbar::after {
+    background: radial-gradient(circle, rgba(79, 183, 255, 0.14), transparent 65%);
+}
+
+body.dark-mode #typing-input {
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+body.dark-mode #typing-input:focus {
+    border-color: rgba(122, 198, 250, 0.7);
+    box-shadow: 0 0 0 4px rgba(122, 198, 250, 0.08);
+}
+
+body.dark-mode .benchmark-tab {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .benchmark-tab:hover {
+    background: rgba(122, 198, 250, 0.14);
+}
+
 @keyframes benchmarkFadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(12px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -361,9 +458,14 @@ body.dark-mode .benchmark-page {
 }
 
 @media (max-width: 760px) {
+    .benchmark-page {
+        padding: 14px 12px 26px;
+    }
+
     .benchmark-topbar {
         align-items: flex-start;
         flex-direction: column;
+        border-radius: 20px;
     }
 
     .benchmark-tabs {
@@ -380,10 +482,7 @@ body.dark-mode .benchmark-page {
     #aim-area,
     .visual-grid-container {
         min-height: 380px;
-    }
-
-    .game-ui-content h2 {
-        font-size: 2.2rem;
+        border-radius: 20px;
     }
 
     .visual-tile {
