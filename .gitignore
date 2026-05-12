@@ -73,3 +73,4 @@ pnpm-debug.log*
 
 # Uploaded/static user files, falls im Projekt erzeugt
 uploads/
+.ai/mcp/mcp.json
