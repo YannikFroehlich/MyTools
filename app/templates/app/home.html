@@ -36,7 +36,7 @@
                     <div
                         class="shortcuts-section section-color-{{ section.color }} {% if section.is_collapsed %}section-collapsed{% endif %}"
                         data-section-id="{{ section.id }}"
-                        data-section-name="{{ section.name|escape }}"
+                        data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
                         {% if section.name == "Verknüpfungen" %}data-is-default-section="true"{% endif %}
                     >
                         <div class="shortcuts-header">
@@ -44,7 +44,13 @@
                                 <span class="section-color-dot"></span>
 
                                 <div>
-                                    <h2>{{ section.name }}</h2>
+                                    <h2>
+                                        {% if section.name == "Verknüpfungen" %}
+                                            {% translate 'Verknüpfungen' %}
+                                        {% else %}
+                                            {{ section.name }}
+                                        {% endif %}
+                                    </h2>
 
                                     {% if section.is_collapsed %}
                                         <span class="section-status-badge">
@@ -67,7 +73,7 @@
                                     class="edit-section-button"
                                     title="{% translate 'Bereich bearbeiten' %}"
                                     data-section-id="{{ section.id }}"
-                                    data-section-name="{{ section.name|escape }}"
+                                    data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
                                     data-section-color="{{ section.color }}"
                                 >
                                     <i class="fa-solid fa-pen"></i>
@@ -91,7 +97,7 @@
                                     type="button"
                                     class="add-shortcut-button open-shortcut-modal"
                                     data-section-id="{{ section.id }}"
-                                    data-section-name="{{ section.name|escape }}"
+                                    data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
                                 >
                                     <i class="fa-solid fa-plus"></i>
                                     {% translate 'Verknüpfung' %}
@@ -266,7 +272,7 @@
                             <input type="radio" name="icon" value="fa-solid fa-cloud">
                             <span>
                                 <i class="fa-solid fa-cloud"></i>
-                                Cloud
+                                {% translate 'Cloud' %}
                             </span>
                         </label>
 
@@ -274,7 +280,7 @@
                             <input type="radio" name="icon" value="fa-solid fa-gamepad">
                             <span>
                                 <i class="fa-solid fa-gamepad"></i>
-                                Gaming
+                                {% translate 'Gaming' %}
                             </span>
                         </label>
 
@@ -282,7 +288,7 @@
                             <input type="radio" name="icon" value="fa-solid fa-code">
                             <span>
                                 <i class="fa-solid fa-code"></i>
-                                Code
+                                {% translate 'Code' %}
                             </span>
                         </label>
 
@@ -290,7 +296,7 @@
                             <input type="radio" name="icon" value="fa-solid fa-server">
                             <span>
                                 <i class="fa-solid fa-server"></i>
-                                Server
+                                {% translate 'Server' %}
                             </span>
                         </label>
 
@@ -298,7 +304,7 @@
                             <input type="radio" name="icon" value="fa-solid fa-link">
                             <span>
                                 <i class="fa-solid fa-link"></i>
-                                Link
+                                {% translate 'Link' %}
                             </span>
                         </label>
 
@@ -306,7 +312,7 @@
                             <input type="radio" name="icon" value="fa-solid fa-house">
                             <span>
                                 <i class="fa-solid fa-house"></i>
-                                Home
+                                {% translate 'Home' %}
                             </span>
                         </label>
                     </div>
@@ -319,7 +325,16 @@
 
                 <label>
                     {% translate 'Eigenes Bild, falls du kein Icon nutzen möchtest' %}
-                    <input type="file" name="image" accept="image/*">
+                    <span class="shortcut-file-picker">
+                        <input type="file" name="image" id="shortcut-image" accept="image/*">
+                        <span class="shortcut-file-button" aria-hidden="true">
+                            <i class="fa-solid fa-image"></i>
+                            {% translate 'Bild auswählen' %}
+                        </span>
+                        <span class="shortcut-file-name" id="shortcut-file-name">
+                            {% translate 'Keine Datei ausgewählt' %}
+                        </span>
+                    </span>
                 </label>
 
                 <button type="submit">
@@ -396,5 +411,6 @@
 {% endblock %}
 
 {% block extra_js %}
+    {{ home_labels|json_script:"home-labels" }}
     <script src="{% static 'app/js/home.js' %}"></script>
 {% endblock %}

@@ -9,7 +9,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="benchmark-page">
+    {% get_current_language as CURRENT_LANGUAGE %}
+    <div class="benchmark-page" data-language="{{ CURRENT_LANGUAGE }}">
         <div class="benchmark-topbar">
             <div class="benchmark-logo" role="button" tabindex="0" aria-label="{% translate 'Zum Reaktionstest wechseln' %}">
                 <span class="benchmark-logo-icon"></span>
@@ -104,5 +105,6 @@
 {% endblock %}
 
 {% block extra_js %}
+    {{ benchmark_labels|json_script:"benchmark-labels" }}
     <script src="{% static 'app/js/human_benchmark.js' %}"></script>
 {% endblock %}
