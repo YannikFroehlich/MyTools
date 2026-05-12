@@ -1,0 +1,122 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Einheitenrechner" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/unit_converter.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="converter-page">
+    <section class="converter-hero">
+        <div class="converter-hero-content">
+            <div class="converter-hero-icon">
+                <i class="fa-solid fa-calculator"></i>
+            </div>
+
+            <div class="converter-hero-text">
+                <p class="converter-eyebrow">MyTools</p>
+                <h1>{% translate "Einheitenrechner" %}</h1>
+                <p>
+                    {% translate "Rechne schnell Speichergrößen, Zeiten, Strecken und monatliche Kosten um." %}
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="converter-shell">
+        <div class="converter-tabs" role="tablist">
+            <button class="converter-tab active" data-category="storage" type="button">
+                <i class="fa-solid fa-hard-drive"></i>
+                {% translate "Speicher" %}
+            </button>
+
+            <button class="converter-tab" data-category="time" type="button">
+                <i class="fa-regular fa-clock"></i>
+                {% translate "Zeit" %}
+            </button>
+
+            <button class="converter-tab" data-category="distance" type="button">
+                <i class="fa-solid fa-road"></i>
+                {% translate "Strecke" %}
+            </button>
+
+            <button class="converter-tab" data-category="money" type="button">
+                <i class="fa-solid fa-euro-sign"></i>
+                {% translate "Kosten" %}
+            </button>
+        </div>
+
+        <div class="converter-card">
+            <div class="converter-input-grid">
+                <div class="converter-field">
+                    <label for="converter-value">{% translate "Wert" %}</label>
+                    <input
+                        id="converter-value"
+                        class="converter-input"
+                        type="number"
+                        inputmode="decimal"
+                        step="any"
+                        placeholder="{% translate 'Zahl eingeben...' %}"
+                    >
+                </div>
+
+                <div class="converter-field">
+                    <label for="converter-from">{% translate "Von" %}</label>
+                    <select id="converter-from" class="converter-select"></select>
+                </div>
+
+                <button id="converter-swap" class="converter-swap-btn" type="button" title="{% translate 'Einheiten tauschen' %}">
+                    <i class="fa-solid fa-right-left"></i>
+                </button>
+
+                <div class="converter-field">
+                    <label for="converter-to">{% translate "Nach" %}</label>
+                    <select id="converter-to" class="converter-select"></select>
+                </div>
+            </div>
+
+            <div class="converter-result-box">
+                <span>{% translate "Ergebnis" %}</span>
+                <strong id="converter-result">-</strong>
+                <small id="converter-formula">{% translate "Gib einen Wert ein, um die Umrechnung zu starten." %}</small>
+            </div>
+        </div>
+
+        <section class="converter-examples">
+            <div class="converter-section-title">
+                <p>{% translate "Schnellbeispiele" %}</p>
+                <h2>{% translate "Häufige Umrechnungen" %}</h2>
+            </div>
+
+            <div class="converter-example-grid">
+                <button class="converter-example" type="button" data-category="storage" data-value="1024" data-from="mb" data-to="gb">
+                    <span>1024 MB</span>
+                    <strong>GB</strong>
+                </button>
+
+                <button class="converter-example" type="button" data-category="time" data-value="3600" data-from="seconds" data-to="hours">
+                    <span>3600 s</span>
+                    <strong>{% translate "Stunden" %}</strong>
+                </button>
+
+                <button class="converter-example" type="button" data-category="distance" data-value="10" data-from="km" data-to="mi">
+                    <span>10 km</span>
+                    <strong>{% translate "Meilen" %}</strong>
+                </button>
+
+                <button class="converter-example" type="button" data-category="money" data-value="9.99" data-from="monthly" data-to="yearly">
+                    <span>9,99 € / {% translate "Monat" %}</span>
+                    <strong>{% translate "Jahr" %}</strong>
+                </button>
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+    {{ converter_labels|json_script:"converter-labels" }}
+    <script src="{% static 'app/js/unit_converter.js' %}"></script>
+{% endblock %}

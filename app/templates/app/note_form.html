@@ -1,0 +1,194 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/notes.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="notes-page">
+    <section class="notes-form-shell">
+        <div class="notes-form-header">
+            <a href="{% url 'notes' %}" class="notes-back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+                {% translate "Zurück zu den Notizen" %}
+            </a>
+
+            <div class="notes-header-content">
+                <div class="notes-header-icon">
+                    <i class="fa-regular fa-note-sticky"></i>
+                </div>
+
+                <div>
+                    <p class="notes-eyebrow">{% translate "MyTools Workspace" %}</p>
+                    <h1>{{ form_title }}</h1>
+                    <p class="notes-subtitle">
+                        {% translate "Speichere Gedanken, Aufgaben, Befehle oder Ideen dauerhaft auf deinem Server." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" class="notes-form-card">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="notes-form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="notes-form-group">
+                <label for="{{ form.title.id_for_label }}">{% translate "Titel" %}</label>
+                {{ form.title }}
+                {{ form.title.errors }}
+            </div>
+
+            <div class="notes-form-group">
+                <label for="note-editor">{% translate "Inhalt" %}</label>
+
+                <div class="notes-editor-shell">
+                    <div class="notes-editor-toolbar">
+                        <button type="button" class="editor-btn" data-command="bold" title="{% translate 'Fett' %}">
+                            <i class="fa-solid fa-bold"></i>
+                        </button>
+
+                        <button type="button" class="editor-btn" data-command="italic" title="{% translate 'Kursiv' %}">
+                            <i class="fa-solid fa-italic"></i>
+                        </button>
+
+                        <button type="button" class="editor-btn" data-command="underline" title="{% translate 'Unterstrichen' %}">
+                            <i class="fa-solid fa-underline"></i>
+                        </button>
+
+                        <button type="button" class="editor-btn" data-command="strikeThrough" title="{% translate 'Durchgestrichen' %}">
+                            <i class="fa-solid fa-strikethrough"></i>
+                        </button>
+
+                        <span class="editor-separator"></span>
+
+                        <button type="button" class="editor-btn" data-command="insertUnorderedList" title="{% translate 'Liste' %}">
+                            <i class="fa-solid fa-list-ul"></i>
+                        </button>
+
+                        <button type="button" class="editor-btn" data-command="insertOrderedList" title="{% translate 'Nummerierte Liste' %}">
+                            <i class="fa-solid fa-list-ol"></i>
+                        </button>
+
+                        <span class="editor-separator"></span>
+
+                        <button type="button" class="editor-btn" data-command="justifyLeft" title="{% translate 'Linksbündig' %}">
+                            <i class="fa-solid fa-align-left"></i>
+                        </button>
+
+                        <button type="button" class="editor-btn" data-command="justifyCenter" title="{% translate 'Zentriert' %}">
+                            <i class="fa-solid fa-align-center"></i>
+                        </button>
+
+                        <button type="button" class="editor-btn" data-command="justifyRight" title="{% translate 'Rechtsbündig' %}">
+                            <i class="fa-solid fa-align-right"></i>
+                        </button>
+
+                        <button type="button" class="editor-btn" data-command="justifyFull" title="{% translate 'Blocksatz' %}">
+                            <i class="fa-solid fa-align-justify"></i>
+                        </button>
+
+                        <span class="editor-separator"></span>
+
+                        <select id="editor-heading" class="editor-select" title="{% translate 'Textformat' %}">
+                            <option value="p">{% translate "Normal" %}</option>
+                            <option value="h2">{% translate "Große Überschrift" %}</option>
+                            <option value="h3">{% translate "Kleine Überschrift" %}</option>
+                            <option value="blockquote">{% translate "Zitat" %}</option>
+                            <option value="pre">{% translate "Codeblock" %}</option>
+                        </select>
+
+                        <select id="editor-font-size" class="editor-select" title="{% translate 'Schriftgröße' %}">
+                            <option value="">{% translate "Schriftgröße" %}</option>
+                            <option value="0.85rem">{% translate "Klein" %}</option>
+                            <option value="1rem">{% translate "Normal" %}</option>
+                            <option value="1.2rem">{% translate "Groß" %}</option>
+                            <option value="1.45rem">{% translate "Sehr groß" %}</option>
+                        </select>
+                    </div>
+
+                    <div
+                        id="note-editor"
+                        class="notes-rich-editor"
+                        contenteditable="true"
+                        data-placeholder="{% translate 'Schreib hier deine Notiz...' %}"
+                    >{{ form.content.value|default_if_none:""|safe }}</div>
+                </div>
+
+                {{ form.content }}
+                {{ form.content.errors }}
+            </div>
+
+            <div class="notes-form-row">
+                <div class="notes-form-group">
+                    <label for="{{ form.tags.id_for_label }}">{% translate "Tags" %}</label>
+                    {{ form.tags }}
+                    <small>{% translate "Mehrere Tags mit Komma trennen." %}</small>
+                    {{ form.tags.errors }}
+                </div>
+
+                <div class="notes-form-group">
+                    <label for="{{ form.color.id_for_label }}">{% translate "Farbe" %}</label>
+                    {{ form.color }}
+                    {{ form.color.errors }}
+                </div>
+            </div>
+
+            <div class="notes-checks">
+                <label class="notes-check">
+                    {{ form.is_pinned }}
+                    <span>
+                        <strong>{% translate "Anpinnen" %}</strong>
+                        <small>{% translate "Die Notiz erscheint oben." %}</small>
+                    </span>
+                </label>
+
+                <label class="notes-check">
+                    {{ form.is_archived }}
+                    <span>
+                        <strong>{% translate "Archivieren" %}</strong>
+                        <small>{% translate "Die Notiz wird aus der Hauptansicht entfernt." %}</small>
+                    </span>
+                </label>
+            </div>
+
+            <div class="notes-form-actions">
+                <button type="submit" class="notes-primary-btn">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {{ submit_text }}
+                </button>
+
+                <a href="{% url 'notes' %}" class="notes-secondary-btn">
+                    {% translate "Abbrechen" %}
+                </a>
+            </div>
+        </form>
+
+        {% if note %}
+            <form method="post" action="{% url 'note_delete' note.pk %}" class="notes-danger-zone note-delete-form">
+                {% csrf_token %}
+                <div>
+                    <h3>{% translate "Notiz löschen" %}</h3>
+                    <p>{% translate "Diese Aktion kann nicht rückgängig gemacht werden." %}</p>
+                </div>
+
+                <button type="submit" class="notes-danger-btn">
+                    <i class="fa-solid fa-trash"></i>
+                    {% translate "Endgültig löschen" %}
+                </button>
+            </form>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'app/js/notes.js' %}"></script>
+{% endblock %}

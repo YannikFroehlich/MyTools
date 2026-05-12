@@ -1,0 +1,542 @@
+/* ───────────────── UNIT CONVERTER ───────────────── */
+
+.converter-page {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 3rem 2rem 4rem;
+    box-sizing: border-box;
+}
+
+.converter-hero {
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+    padding: 2rem;
+    border-radius: 2rem;
+    background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.22), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.18), transparent 36%),
+        rgba(255, 255, 255, 0.66);
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(22px);
+}
+
+body.dark-mode .converter-hero {
+    background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.24), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.16), transparent 36%),
+        rgba(24, 24, 27, 0.68);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.converter-hero-content {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: center;
+    gap: 1.15rem;
+    text-align: left;
+}
+
+.converter-hero-text {
+    min-width: 0;
+    text-align: left;
+}
+
+.converter-hero-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 1.35rem;
+    color: #ffffff;
+    font-size: 1.7rem;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    box-shadow: 0 18px 42px rgba(37, 99, 235, 0.28);
+}
+
+.converter-eyebrow {
+    margin: 0 0 0.45rem;
+    font-size: 0.74rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #7c3aed;
+}
+
+.converter-hero h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
+    color: #111827;
+}
+
+.converter-hero p:not(.converter-eyebrow) {
+    max-width: 680px;
+    margin: 0.8rem 0 0;
+    color: #6b7280;
+    font-size: 0.98rem;
+    line-height: 1.65;
+}
+
+body.dark-mode .converter-hero h1 {
+    color: #f9fafb;
+}
+
+body.dark-mode .converter-hero p:not(.converter-eyebrow) {
+    color: #a1a1aa;
+}
+
+/* ───────────────── SHELL ───────────────── */
+
+.converter-shell {
+    display: grid;
+    gap: 1rem;
+}
+
+.converter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.9rem;
+    border-radius: 1.6rem;
+    background: rgba(255, 255, 255, 0.56);
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.07);
+    backdrop-filter: blur(18px);
+}
+
+body.dark-mode .converter-tabs {
+    background: rgba(24, 24, 27, 0.58);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.converter-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    color: #111827;
+    background: rgba(255, 255, 255, 0.76);
+    font: inherit;
+    font-weight: 900;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.converter-tab:hover {
+    transform: translateY(-2px);
+}
+
+.converter-tab.active {
+    color: #ffffff;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.35), transparent 34%),
+        linear-gradient(135deg, #7c3aed, #2563eb);
+    border-color: transparent;
+    box-shadow: 0 18px 42px rgba(37, 99, 235, 0.22);
+}
+
+body.dark-mode .converter-tab {
+    color: #f9fafb;
+    background: rgba(39, 39, 42, 0.74);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .converter-tab.active {
+    color: #ffffff;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.22), transparent 34%),
+        linear-gradient(135deg, #7c3aed, #2563eb);
+}
+
+/* ───────────────── CARD ───────────────── */
+
+.converter-card {
+    padding: 1.4rem;
+    border-radius: 1.8rem;
+    background: rgba(255, 255, 255, 0.68);
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.1);
+    backdrop-filter: blur(18px);
+}
+
+body.dark-mode .converter-card {
+    background: rgba(24, 24, 27, 0.68);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.converter-input-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px 52px 220px;
+    align-items: end;
+    gap: 1rem;
+}
+
+.converter-field {
+    display: grid;
+    gap: 0.45rem;
+    text-align: left;
+}
+
+.converter-field label {
+    display: block;
+    margin: 0;
+    color: #111827;
+    font-weight: 950;
+    text-align: left;
+    line-height: 1.2;
+}
+
+body.dark-mode .converter-field label {
+    color: #f9fafb;
+}
+
+.converter-input,
+.converter-select {
+    width: 100%;
+    min-height: 52px;
+    border-radius: 1.1rem;
+    border: 1px solid rgba(17, 24, 39, 0.1);
+    outline: none;
+    padding: 0.9rem 1rem;
+    font: inherit;
+    color: #111827;
+    background: rgba(255, 255, 255, 0.78);
+    box-sizing: border-box;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.converter-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 3rem;
+    background-color: rgba(255, 255, 255, 0.78);
+    background-image:
+        linear-gradient(45deg, transparent 50%, #374151 50%),
+        linear-gradient(135deg, #374151 50%, transparent 50%);
+    background-position:
+        calc(100% - 22px) 50%,
+        calc(100% - 16px) 50%;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+}
+
+.converter-input:focus,
+.converter-select:focus {
+    border-color: rgba(124, 58, 237, 0.58);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+body.dark-mode .converter-input {
+    color: #f9fafb;
+    background: rgba(39, 39, 42, 0.82);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .converter-select {
+    color: #f9fafb;
+    background-color: rgba(39, 39, 42, 0.82);
+    border-color: rgba(255, 255, 255, 0.08);
+    background-image:
+        linear-gradient(45deg, transparent 50%, #f9fafb 50%),
+        linear-gradient(135deg, #f9fafb 50%, transparent 50%);
+}
+
+.converter-swap-btn {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 1.1rem;
+    border: none;
+    color: #ffffff;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    box-shadow: 0 14px 34px rgba(37, 99, 235, 0.22);
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.converter-swap-btn:hover {
+    transform: translateY(-2px) rotate(180deg);
+    box-shadow: 0 18px 42px rgba(37, 99, 235, 0.28);
+}
+
+.converter-result-box {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 1.2rem;
+    padding: 1.25rem;
+    border-radius: 1.4rem;
+    text-align: left;
+    background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.12), transparent 40%),
+        rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+body.dark-mode .converter-result-box {
+    background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.16), transparent 40%),
+        rgba(39, 39, 42, 0.58);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.converter-result-box span {
+    color: #7c3aed;
+    font-size: 0.76rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+}
+
+.converter-result-box strong {
+    color: #111827;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -0.055em;
+    word-break: break-word;
+}
+
+.converter-result-box small {
+    color: #6b7280;
+    font-weight: 750;
+}
+
+body.dark-mode .converter-result-box strong {
+    color: #f9fafb;
+}
+
+body.dark-mode .converter-result-box small {
+    color: #a1a1aa;
+}
+
+/* ───────────────── EXAMPLES ───────────────── */
+
+.converter-examples {
+    margin-top: 1.4rem;
+}
+
+.converter-section-title {
+    display: grid;
+    gap: 0.2rem;
+    margin-bottom: 1rem;
+}
+
+.converter-section-title p {
+    margin: 0;
+    color: #7c3aed;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.converter-section-title h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 1.45rem;
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+}
+
+body.dark-mode .converter-section-title h2 {
+    color: #f9fafb;
+}
+
+.converter-example-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.converter-example {
+    display: grid;
+    gap: 0.4rem;
+    min-height: 110px;
+    padding: 1rem;
+    text-align: left;
+    border-radius: 1.4rem;
+    border: 1px solid rgba(17, 24, 39, 0.08);
+    background: rgba(255, 255, 255, 0.68);
+    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.07);
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.converter-example span,
+.converter-example strong {
+    text-align: left;
+}
+
+.converter-example:hover {
+    transform: translateY(-3px);
+    border-color: rgba(124, 58, 237, 0.22);
+    background: rgba(255, 255, 255, 0.86);
+}
+
+.converter-example span {
+    color: #6b7280;
+    font-weight: 850;
+}
+
+.converter-example strong {
+    color: #111827;
+    font-size: 1.25rem;
+    letter-spacing: -0.035em;
+}
+
+body.dark-mode .converter-example {
+    background: rgba(24, 24, 27, 0.68);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .converter-example:hover {
+    background: rgba(39, 39, 42, 0.82);
+    border-color: rgba(124, 58, 237, 0.28);
+}
+
+body.dark-mode .converter-example span {
+    color: #a1a1aa;
+}
+
+body.dark-mode .converter-example strong {
+    color: #f9fafb;
+}
+
+/* ───────────────── ALIGNMENT FIX ───────────────── */
+
+.converter-page,
+.converter-hero,
+.converter-hero-content,
+.converter-hero-text,
+.converter-shell,
+.converter-card,
+.converter-field,
+.converter-result-box,
+.converter-examples,
+.converter-section-title,
+.converter-example {
+    text-align: left;
+}
+
+.converter-eyebrow,
+.converter-hero h1,
+.converter-hero p,
+.converter-field label,
+.converter-result-box span,
+.converter-result-box strong,
+.converter-result-box small,
+.converter-section-title p,
+.converter-section-title h2,
+.converter-example span,
+.converter-example strong {
+    text-align: left;
+}
+
+.converter-tabs {
+    justify-content: flex-start;
+}
+
+.converter-tab,
+.converter-swap-btn,
+.converter-hero-icon {
+    text-align: center;
+}
+
+.converter-input,
+.converter-select {
+    text-align: left;
+}
+
+/* ───────────────── RESPONSIVE ───────────────── */
+
+@media (max-width: 1000px) {
+    .converter-input-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .converter-swap-btn {
+        order: 4;
+        width: 100%;
+    }
+
+    .converter-example-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .converter-page {
+        padding: 2rem 1rem 3rem;
+    }
+
+    .converter-hero {
+        padding: 1.3rem;
+        border-radius: 1.6rem;
+    }
+
+    .converter-hero-content {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
+    .converter-hero-icon {
+        width: 64px;
+        height: 64px;
+    }
+
+    .converter-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .converter-input-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .converter-swap-btn {
+        order: initial;
+    }
+
+    .converter-example-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .converter-hero-content,
+    .converter-hero-text,
+    .converter-field,
+    .converter-result-box,
+    .converter-section-title,
+    .converter-example {
+        text-align: left;
+    }
+
+    .converter-tabs {
+        justify-content: flex-start;
+    }
+
+    .converter-tab {
+        justify-content: center;
+        text-align: center;
+    }
+}

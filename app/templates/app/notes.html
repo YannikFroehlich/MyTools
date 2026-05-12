@@ -1,0 +1,169 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Notizen" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/notes.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="notes-page">
+
+    <section class="notes-dashboard-header">
+        <div class="notes-header-content">
+            <div class="notes-header-icon">
+                <i class="fa-regular fa-note-sticky"></i>
+            </div>
+
+            <div class="notes-header-text">
+                <p class="notes-eyebrow">{% translate "MyTools Workspace" %}</p>
+                <h1>{% translate "Notizen" %}</h1>
+                <p class="notes-subtitle">
+                    {% translate "Speichere Ideen, Aufgaben, Code-Snippets, Server-Befehle oder alles, was du später wiederfinden willst." %}
+                </p>
+            </div>
+        </div>
+
+        <div class="notes-header-actions">
+            <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                <i class="fa-solid fa-plus"></i>
+                {% translate "Neue Notiz" %}
+            </a>
+        </div>
+    </section>
+
+    {% if messages %}
+        <div class="notes-messages">
+            {% for message in messages %}
+                <div class="notes-message {{ message.tags }}">
+                    <i class="fa-solid fa-circle-check"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="notes-control-panel">
+        <form method="get" class="notes-search-form">
+            {% if show_archived %}
+                <input type="hidden" name="archived" value="1">
+            {% endif %}
+
+            <div class="notes-search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ query }}"
+                    placeholder="{% translate 'Titel, Inhalt oder Tags suchen...' %}"
+                    autocomplete="off"
+                >
+            </div>
+
+            <button type="submit" class="notes-secondary-btn">
+                {% translate "Suchen" %}
+            </button>
+
+            {% if query %}
+                <a href="{% url 'notes' %}{% if show_archived %}?archived=1{% endif %}" class="notes-ghost-btn">
+                    {% translate "Zurücksetzen" %}
+                </a>
+            {% endif %}
+        </form>
+
+        <div class="notes-filter-actions">
+            <div class="notes-stat-card">
+                <span>{{ note_count }}</span>
+                <small>
+                    {% blocktranslate count counter=note_count %}Notiz{% plural %}Notizen{% endblocktranslate %}
+                </small>
+            </div>
+
+            {% if show_archived %}
+                <a href="{% url 'notes' %}" class="notes-secondary-btn">
+                    <i class="fa-solid fa-layer-group"></i>
+                    {% translate "Aktive" %}
+                </a>
+            {% else %}
+                <a href="{% url 'notes' %}?archived=1" class="notes-secondary-btn">
+                    <i class="fa-solid fa-box-archive"></i>
+                    {% translate "Archiv" %}
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    {% if pinned_notes %}
+        <section class="notes-section">
+            <div class="notes-section-title">
+                <div>
+                    <p>{% translate "Angepinnt" %}</p>
+                    <h2>{% translate "Wichtige Notizen" %}</h2>
+                </div>
+                <span>{{ pinned_notes|length }}</span>
+            </div>
+
+            <div class="notes-grid featured">
+                {% for note in pinned_notes %}
+                    {% include "app/partials/note_card.html" %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="notes-section">
+        <div class="notes-section-title">
+            <div>
+                {% if show_archived %}
+                    <p>{% translate "Archiv" %}</p>
+                    <h2>{% translate "Archivierte Notizen" %}</h2>
+                {% else %}
+                    <p>{% translate "Sammlung" %}</p>
+                    <h2>{% translate "Alle Notizen" %}</h2>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if normal_notes %}
+            <div class="notes-grid">
+                {% for note in normal_notes %}
+                    {% include "app/partials/note_card.html" %}
+                {% endfor %}
+            </div>
+        {% elif not pinned_notes %}
+            <div class="notes-empty">
+                <div class="notes-empty-icon">
+                    {% if query %}
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    {% elif show_archived %}
+                        <i class="fa-solid fa-box-archive"></i>
+                    {% else %}
+                        <i class="fa-regular fa-note-sticky"></i>
+                    {% endif %}
+                </div>
+
+                {% if query %}
+                    <h3>{% translate "Keine Treffer gefunden" %}</h3>
+                    <p>{% translate "Versuch es mit einem anderen Suchbegriff oder entferne den Filter." %}</p>
+                {% elif show_archived %}
+                    <h3>{% translate "Archiv ist leer" %}</h3>
+                    <p>{% translate "Wenn du Notizen archivierst, erscheinen sie hier." %}</p>
+                {% else %}
+                    <h3>{% translate "Noch keine Notizen vorhanden" %}</h3>
+                    <p>{% translate "Erstelle deine erste Notiz und speichere sie direkt auf deinem Server." %}</p>
+                    <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                        <i class="fa-solid fa-plus"></i>
+                        {% translate "Erste Notiz erstellen" %}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </section>
+
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'app/js/notes.js' %}"></script>
+{% endblock %}

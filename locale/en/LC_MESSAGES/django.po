@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-11 23:15+0200\n"
+"POT-Creation-Date: 2026-05-12 15:28+0200\n"
 "PO-Revision-Date: 2026-05-10 23:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -87,7 +87,7 @@ msgstr ""
 "Everything should be quickly accessible, clearly arranged and pleasant to "
 "use."
 
-#: .\app\templates\app\about.html:89 .\app\templates\app\base.html:100
+#: .\app\templates\app\about.html:89 .\app\templates\app\base.html:108
 msgid "Design"
 msgstr "Design"
 
@@ -186,6 +186,7 @@ msgid "Beschreibung (optional)"
 msgstr "Description optional"
 
 #: .\app\templates\app\avatar_wiki.html:49
+#: .\app\templates\app\note_form.html:169
 msgid "Abbrechen"
 msgstr "Cancel"
 
@@ -264,55 +265,65 @@ msgstr "Human Benchmark"
 msgid "Genius Search"
 msgstr "Genius Search"
 
-#: .\app\templates\app\base.html:94
+#: .\app\templates\app\base.html:74 .\app\templates\app\notes.html:4
+#: .\app\templates\app\notes.html:21
+msgid "Notizen"
+msgstr "Notes"
+
+#: .\app\templates\app\base.html:78 .\app\templates\app\unit_converter.html:4
+#: .\app\templates\app\unit_converter.html:20
+msgid "Einheitenrechner"
+msgstr "Unit Converter"
+
+#: .\app\templates\app\base.html:102
 msgid "Design anpassen"
 msgstr "Adjust design"
 
-#: .\app\templates\app\base.html:101
+#: .\app\templates\app\base.html:109
 msgid "Design-Men&uuml; schlie&szlig;en"
 msgstr "Close design menu"
 
-#: .\app\templates\app\base.html:106
+#: .\app\templates\app\base.html:114
 msgid "Design-Vorlagen"
 msgstr "Design templates"
 
-#: .\app\templates\app\base.html:107 .\app\templates\app\home.html:365
+#: .\app\templates\app\base.html:115 .\app\templates\app\home.html:365
 msgid "Blau"
 msgstr "Blue"
 
-#: .\app\templates\app\base.html:110
+#: .\app\templates\app\base.html:118
 msgid "Gr&uuml;n"
 msgstr "Green"
 
-#: .\app\templates\app\base.html:113
+#: .\app\templates\app\base.html:121
 msgid "Rose"
 msgstr "Pink"
 
-#: .\app\templates\app\base.html:116
+#: .\app\templates\app\base.html:124
 msgid "Graphit"
 msgstr "Gray"
 
-#: .\app\templates\app\base.html:123
+#: .\app\templates\app\base.html:131
 msgid "Header links"
 msgstr "Header left"
 
-#: .\app\templates\app\base.html:127
+#: .\app\templates\app\base.html:135
 msgid "Header rechts"
 msgstr "Header right"
 
-#: .\app\templates\app\base.html:131
+#: .\app\templates\app\base.html:139
 msgid "Hintergrund"
 msgstr "Background"
 
-#: .\app\templates\app\base.html:135
+#: .\app\templates\app\base.html:143
 msgid "Footer"
 msgstr "Footer"
 
-#: .\app\templates\app\base.html:143
+#: .\app\templates\app\base.html:151
 msgid "Zur&uuml;cksetzen"
 msgstr "Reset"
 
-#: .\app\templates\app\base.html:148
+#: .\app\templates\app\base.html:156
 msgid "Dark Mode umschalten"
 msgstr "Toggle Dark Mode"
 
@@ -321,6 +332,7 @@ msgid "Künstler oder Song suchen..."
 msgstr "Search for an artist or song..."
 
 #: .\app\templates\app\genius_search.html:23 .\app\templates\app\home.html:27
+#: .\app\templates\app\notes.html:65
 #: .\app\templates\app\spritkostenrechner.html:30
 msgid "Suchen"
 msgstr "Search"
@@ -382,6 +394,7 @@ msgid "Verschieben"
 msgstr "Move"
 
 #: .\app\templates\app\home.html:129
+#: .\app\templates\app\partials\note_card.html:62
 msgid "Bearbeiten"
 msgstr "Edit"
 
@@ -394,6 +407,7 @@ msgid "Als Favorit markieren"
 msgstr "Mark as favorite"
 
 #: .\app\templates\app\home.html:152
+#: .\app\templates\app\partials\note_card.html:79
 msgid "Löschen"
 msgstr "Delete"
 
@@ -509,6 +523,7 @@ msgstr "Targets"
 #: .\app\templates\app\human_benchmark.html:39
 #: .\app\templates\app\human_benchmark.html:49
 #: .\app\templates\app\human_benchmark.html:65
+#: .\app\templates\app\unit_converter.html:37
 msgid "Zeit"
 msgstr "Time"
 
@@ -522,6 +537,7 @@ msgstr "Start Aim Trainer"
 
 #: .\app\templates\app\human_benchmark.html:47
 #: .\app\templates\app\spritkostenrechner.html:57
+#: .\app\templates\app\unit_converter.html:81
 msgid "Ergebnis"
 msgstr "Result"
 
@@ -569,6 +585,238 @@ msgstr "Level"
 #: .\app\templates\app\human_benchmark.html:94
 msgid "Merke dir die blau leuchtenden Quadrate."
 msgstr "Remember the blue glowing squares."
+
+#: .\app\templates\app\note_form.html:16
+msgid "Zurück zu den Notizen"
+msgstr "Back to notes"
+
+#: .\app\templates\app\note_form.html:25 .\app\templates\app\notes.html:20
+msgid "MyTools Workspace"
+msgstr "MyTools Workspace"
+
+#: .\app\templates\app\note_form.html:28
+msgid ""
+"Speichere Gedanken, Aufgaben, Befehle oder Ideen dauerhaft auf deinem Server."
+msgstr "Save thoughts, tasks, commands, or ideas permanently on your server"
+
+#: .\app\templates\app\note_form.html:44
+msgid "Titel"
+msgstr "Title"
+
+#: .\app\templates\app\note_form.html:50
+msgid "Inhalt"
+msgstr "Content"
+
+#: .\app\templates\app\note_form.html:54
+msgid "Fett"
+msgstr "Bold"
+
+#: .\app\templates\app\note_form.html:58
+msgid "Kursiv"
+msgstr "Italic"
+
+#: .\app\templates\app\note_form.html:62
+msgid "Unterstrichen"
+msgstr "Underlined"
+
+#: .\app\templates\app\note_form.html:66
+msgid "Durchgestrichen"
+msgstr "Underlined"
+
+#: .\app\templates\app\note_form.html:72
+msgid "Liste"
+msgstr "List"
+
+#: .\app\templates\app\note_form.html:76
+msgid "Nummerierte Liste"
+msgstr "Numeric list"
+
+#: .\app\templates\app\note_form.html:82
+msgid "Linksbündig"
+msgstr "Left-aligned"
+
+#: .\app\templates\app\note_form.html:86
+msgid "Zentriert"
+msgstr "Centered"
+
+#: .\app\templates\app\note_form.html:90
+msgid "Rechtsbündig"
+msgstr "Right-aligned"
+
+#: .\app\templates\app\note_form.html:94
+msgid "Blocksatz"
+msgstr "Justified text"
+
+#: .\app\templates\app\note_form.html:100
+msgid "Textformat"
+msgstr "Text format"
+
+#: .\app\templates\app\note_form.html:101
+#: .\app\templates\app\note_form.html:111
+msgid "Normal"
+msgstr "Normal"
+
+#: .\app\templates\app\note_form.html:102
+msgid "Große Überschrift"
+msgstr "Large headline"
+
+#: .\app\templates\app\note_form.html:103
+msgid "Kleine Überschrift"
+msgstr "Subheading"
+
+#: .\app\templates\app\note_form.html:104
+msgid "Zitat"
+msgstr "Quote"
+
+#: .\app\templates\app\note_form.html:105
+msgid "Codeblock"
+msgstr "Code block"
+
+#: .\app\templates\app\note_form.html:108
+#: .\app\templates\app\note_form.html:109
+msgid "Schriftgröße"
+msgstr "Font size"
+
+#: .\app\templates\app\note_form.html:110
+msgid "Klein"
+msgstr "Small"
+
+#: .\app\templates\app\note_form.html:112
+msgid "Groß"
+msgstr "Large"
+
+#: .\app\templates\app\note_form.html:113
+msgid "Sehr groß"
+msgstr "Very large"
+
+#: .\app\templates\app\note_form.html:121
+msgid "Schreib hier deine Notiz..."
+msgstr "Write your note here..."
+
+#: .\app\templates\app\note_form.html:131
+msgid "Tags"
+msgstr "Tags"
+
+#: .\app\templates\app\note_form.html:133
+msgid "Mehrere Tags mit Komma trennen."
+msgstr "Separate multiple tags with commas."
+
+#: .\app\templates\app\note_form.html:138
+msgid "Farbe"
+msgstr "Color"
+
+#: .\app\templates\app\note_form.html:148
+#: .\app\templates\app\partials\note_card.html:34
+msgid "Anpinnen"
+msgstr "Pin"
+
+#: .\app\templates\app\note_form.html:149
+msgid "Die Notiz erscheint oben."
+msgstr "The note appears at the top."
+
+#: .\app\templates\app\note_form.html:156
+#: .\app\templates\app\partials\note_card.html:68
+msgid "Archivieren"
+msgstr "Archive"
+
+#: .\app\templates\app\note_form.html:157
+msgid "Die Notiz wird aus der Hauptansicht entfernt."
+msgstr "The note will be removed from the main view."
+
+#: .\app\templates\app\note_form.html:178
+msgid "Notiz löschen"
+msgstr "Delete note"
+
+#: .\app\templates\app\note_form.html:179
+msgid "Diese Aktion kann nicht rückgängig gemacht werden."
+msgstr "This action cannot be undone."
+
+#: .\app\templates\app\note_form.html:184
+msgid "Endgültig löschen"
+msgstr "Delete permanently"
+
+#: .\app\templates\app\notes.html:23
+msgid ""
+"Speichere Ideen, Aufgaben, Code-Snippets, Server-Befehle oder alles, was du "
+"später wiederfinden willst."
+msgstr ""
+"Save ideas, tasks, code snippets, server commands, or anything else you want "
+"to find later."
+
+#: .\app\templates\app\notes.html:31
+msgid "Neue Notiz"
+msgstr "New note"
+
+#: .\app\templates\app\notes.html:59
+msgid "Titel, Inhalt oder Tags suchen..."
+msgstr "Search for title, content, or tags..."
+
+#: .\app\templates\app\notes.html:70
+msgid "Zurücksetzen"
+msgstr "Reset"
+
+#: .\app\templates\app\notes.html:79
+msgid "Notiz"
+msgid_plural "Notizen"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\app\templates\app\notes.html:86
+msgid "Aktive"
+msgstr "Active"
+
+#: .\app\templates\app\notes.html:91 .\app\templates\app\notes.html:119
+msgid "Archiv"
+msgstr "Archive"
+
+#: .\app\templates\app\notes.html:101
+#: .\app\templates\app\partials\note_card.html:11
+msgid "Angepinnt"
+msgstr "Pinned"
+
+#: .\app\templates\app\notes.html:102
+msgid "Wichtige Notizen"
+msgstr "Important Notes"
+
+#: .\app\templates\app\notes.html:120
+msgid "Archivierte Notizen"
+msgstr "Archived Notes"
+
+#: .\app\templates\app\notes.html:122
+msgid "Sammlung"
+msgstr "Collection"
+
+#: .\app\templates\app\notes.html:123
+msgid "Alle Notizen"
+msgstr "All notes"
+
+#: .\app\templates\app\notes.html:147
+msgid "Keine Treffer gefunden"
+msgstr "No results found"
+
+#: .\app\templates\app\notes.html:148
+msgid "Versuch es mit einem anderen Suchbegriff oder entferne den Filter."
+msgstr "Try using a different search term or remove the filter."
+
+#: .\app\templates\app\notes.html:150
+msgid "Archiv ist leer"
+msgstr "The archive is empty"
+
+#: .\app\templates\app\notes.html:151
+msgid "Wenn du Notizen archivierst, erscheinen sie hier."
+msgstr "When you archive notes, they appear here."
+
+#: .\app\templates\app\notes.html:153
+msgid "Noch keine Notizen vorhanden"
+msgstr "No notes yet"
+
+#: .\app\templates\app\notes.html:154
+msgid "Erstelle deine erste Notiz und speichere sie direkt auf deinem Server."
+msgstr "Create your first note and save it directly to your server."
+
+#: .\app\templates\app\notes.html:157
+msgid "Erste Notiz erstellen"
+msgstr "Create your first note"
 
 #: .\app\templates\app\obs-dashboard.html:18
 msgid "OBS WebSocket"
@@ -702,6 +950,22 @@ msgstr "0 audio sources"
 msgid "Verbinde dich mit OBS, um Audioquellen zu laden."
 msgstr "Connect to OBS to load audio sources."
 
+#: .\app\templates\app\partials\note_card.html:19
+msgid "Unbenannte Notiz"
+msgstr "Untitled Note"
+
+#: .\app\templates\app\partials\note_card.html:34
+msgid "Nicht mehr anpinnen"
+msgstr "Unpin"
+
+#: .\app\templates\app\partials\note_card.html:47
+msgid "Diese Notiz hat noch keinen Inhalt."
+msgstr "This note does not yet have any content."
+
+#: .\app\templates\app\partials\note_card.html:68
+msgid "Wiederherstellen"
+msgstr "Restore"
+
 #: .\app\templates\app\spritkostenrechner.html:5
 #: .\app\templates\app\spritkostenrechner.html:14
 msgid "Spritkostenrechner"
@@ -759,6 +1023,72 @@ msgstr "per year"
 msgid "Verbrauch (l/100km)"
 msgstr "Consumption (l/100km)"
 
+#: .\app\templates\app\unit_converter.html:22
+msgid ""
+"Rechne schnell Speichergrößen, Zeiten, Strecken und monatliche Kosten um."
+msgstr ""
+"Quickly convert storage sizes, durations, distances, and monthly costs."
+
+#: .\app\templates\app\unit_converter.html:32
+msgid "Speicher"
+msgstr "Save"
+
+#: .\app\templates\app\unit_converter.html:42
+msgid "Strecke"
+msgstr "Stream"
+
+#: .\app\templates\app\unit_converter.html:47
+msgid "Kosten"
+msgstr "Costs"
+
+#: .\app\templates\app\unit_converter.html:54
+msgid "Wert"
+msgstr "Value"
+
+#: .\app\templates\app\unit_converter.html:61
+msgid "Zahl eingeben..."
+msgstr "Enter a number..."
+
+#: .\app\templates\app\unit_converter.html:66
+msgid "Von"
+msgstr "From"
+
+#: .\app\templates\app\unit_converter.html:70
+msgid "Einheiten tauschen"
+msgstr "Swap units"
+
+#: .\app\templates\app\unit_converter.html:75
+msgid "Nach"
+msgstr "To"
+
+#: .\app\templates\app\unit_converter.html:83 .\app\views.py:752
+msgid "Gib einen Wert ein, um die Umrechnung zu starten."
+msgstr "Enter a value to start the conversion."
+
+#: .\app\templates\app\unit_converter.html:89
+msgid "Schnellbeispiele"
+msgstr "Quick Examples"
+
+#: .\app\templates\app\unit_converter.html:90
+msgid "Häufige Umrechnungen"
+msgstr "Common Conversions"
+
+#: .\app\templates\app\unit_converter.html:101 .\app\views.py:735
+msgid "Stunden"
+msgstr "Hours"
+
+#: .\app\templates\app\unit_converter.html:106 .\app\views.py:743
+msgid "Meilen"
+msgstr "Miles"
+
+#: .\app\templates\app\unit_converter.html:110
+msgid "Monat"
+msgstr "Month"
+
+#: .\app\templates\app\unit_converter.html:111
+msgid "Jahr"
+msgstr "Year"
+
 #: .\app\templates\app\weather.html:22
 msgid "Stadt suchen..."
 msgstr "Search city..."
@@ -802,3 +1132,63 @@ msgstr "Sunrise"
 #: .\app\templates\app\weather.html:157
 msgid "Sonnenuntergang"
 msgstr "Sunset"
+
+#: .\app\views.py:727
+msgid "Kilobyte (KB)"
+msgstr "Kilobyte (KB)"
+
+#: .\app\views.py:728
+msgid "Megabyte (MB)"
+msgstr "Megabyte (MB)"
+
+#: .\app\views.py:729
+msgid "Gigabyte (GB)"
+msgstr "Gigabyte (GB)"
+
+#: .\app\views.py:730
+msgid "Terabyte (TB)"
+msgstr "Terabyte (TB)"
+
+#: .\app\views.py:733
+msgid "Sekunden"
+msgstr "Seconds"
+
+#: .\app\views.py:734
+msgid "Minuten"
+msgstr "Minutes"
+
+#: .\app\views.py:736
+msgid "Tage"
+msgstr "Days"
+
+#: .\app\views.py:739
+msgid "Millimeter"
+msgstr "Millimeter"
+
+#: .\app\views.py:740
+msgid "Zentimeter"
+msgstr "Centered"
+
+#: .\app\views.py:741
+msgid "Meter"
+msgstr "Meter"
+
+#: .\app\views.py:742
+msgid "Kilometer"
+msgstr "Kilometer"
+
+#: .\app\views.py:746
+msgid "Euro pro Tag"
+msgstr "Euros per day"
+
+#: .\app\views.py:747
+msgid "Euro pro Woche"
+msgstr "Euros per week"
+
+#: .\app\views.py:748
+msgid "Euro pro Monat"
+msgstr "per month"
+
+#: .\app\views.py:749
+msgid "Euro pro Jahr"
+msgstr "Euros per year"
