@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils import translation
 from django.utils.formats import date_format
 from datetime import datetime, timezone
+from django.utils.translation import gettext_lazy as _
 
 from dotenv import dotenv_values, load_dotenv
 
@@ -719,3 +720,39 @@ def note_toggle_archive_view(request, pk):
         messages.success(request, "Notiz wurde wiederhergestellt.")
 
     return redirect("notes")
+
+def unit_converter_view(request):
+    converter_labels = {
+        "storage": {
+            "kb": _("Kilobyte (KB)"),
+            "mb": _("Megabyte (MB)"),
+            "gb": _("Gigabyte (GB)"),
+            "tb": _("Terabyte (TB)"),
+        },
+        "time": {
+            "seconds": _("Sekunden"),
+            "minutes": _("Minuten"),
+            "hours": _("Stunden"),
+            "days": _("Tage"),
+        },
+        "distance": {
+            "mm": _("Millimeter"),
+            "cm": _("Zentimeter"),
+            "m": _("Meter"),
+            "km": _("Kilometer"),
+            "mi": _("Meilen"),
+        },
+        "money": {
+            "daily": _("Euro pro Tag"),
+            "weekly": _("Euro pro Woche"),
+            "monthly": _("Euro pro Monat"),
+            "yearly": _("Euro pro Jahr"),
+        },
+        "messages": {
+            "empty": _("Gib einen Wert ein, um die Umrechnung zu starten."),
+        },
+    }
+
+    return render(request, "app/unit_converter.html", {
+        "converter_labels": converter_labels,
+    })

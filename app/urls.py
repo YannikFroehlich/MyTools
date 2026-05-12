@@ -23,4 +23,6 @@ urlpatterns = [
     path("notes/<int:pk>/delete/", note_delete_view, name="note_delete"),
     path("notes/<int:pk>/pin/", note_toggle_pin_view, name="note_toggle_pin"),
     path("notes/<int:pk>/archive/", note_toggle_archive_view, name="note_toggle_archive"),
+
+    path("einheitenrechner/", unit_converter_view, name="unit_converter"),
 ]

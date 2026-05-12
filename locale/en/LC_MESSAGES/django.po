@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-12 14:36+0200\n"
+"POT-Creation-Date: 2026-05-12 15:28+0200\n"
 "PO-Revision-Date: 2026-05-10 23:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -87,7 +87,7 @@ msgstr ""
 "Everything should be quickly accessible, clearly arranged and pleasant to "
 "use."
 
-#: .\app\templates\app\about.html:89 .\app\templates\app\base.html:104
+#: .\app\templates\app\about.html:89 .\app\templates\app\base.html:108
 msgid "Design"
 msgstr "Design"
 
@@ -265,55 +265,65 @@ msgstr "Human Benchmark"
 msgid "Genius Search"
 msgstr "Genius Search"
 
-#: .\app\templates\app\base.html:98
+#: .\app\templates\app\base.html:74 .\app\templates\app\notes.html:4
+#: .\app\templates\app\notes.html:21
+msgid "Notizen"
+msgstr "Notes"
+
+#: .\app\templates\app\base.html:78 .\app\templates\app\unit_converter.html:4
+#: .\app\templates\app\unit_converter.html:20
+msgid "Einheitenrechner"
+msgstr "Unit Converter"
+
+#: .\app\templates\app\base.html:102
 msgid "Design anpassen"
 msgstr "Adjust design"
 
-#: .\app\templates\app\base.html:105
+#: .\app\templates\app\base.html:109
 msgid "Design-Men&uuml; schlie&szlig;en"
 msgstr "Close design menu"
 
-#: .\app\templates\app\base.html:110
+#: .\app\templates\app\base.html:114
 msgid "Design-Vorlagen"
 msgstr "Design templates"
 
-#: .\app\templates\app\base.html:111 .\app\templates\app\home.html:365
+#: .\app\templates\app\base.html:115 .\app\templates\app\home.html:365
 msgid "Blau"
 msgstr "Blue"
 
-#: .\app\templates\app\base.html:114
+#: .\app\templates\app\base.html:118
 msgid "Gr&uuml;n"
 msgstr "Green"
 
-#: .\app\templates\app\base.html:117
+#: .\app\templates\app\base.html:121
 msgid "Rose"
 msgstr "Pink"
 
-#: .\app\templates\app\base.html:120
+#: .\app\templates\app\base.html:124
 msgid "Graphit"
 msgstr "Gray"
 
-#: .\app\templates\app\base.html:127
+#: .\app\templates\app\base.html:131
 msgid "Header links"
 msgstr "Header left"
 
-#: .\app\templates\app\base.html:131
+#: .\app\templates\app\base.html:135
 msgid "Header rechts"
 msgstr "Header right"
 
-#: .\app\templates\app\base.html:135
+#: .\app\templates\app\base.html:139
 msgid "Hintergrund"
 msgstr "Background"
 
-#: .\app\templates\app\base.html:139
+#: .\app\templates\app\base.html:143
 msgid "Footer"
 msgstr "Footer"
 
-#: .\app\templates\app\base.html:147
+#: .\app\templates\app\base.html:151
 msgid "Zur&uuml;cksetzen"
 msgstr "Reset"
 
-#: .\app\templates\app\base.html:152
+#: .\app\templates\app\base.html:156
 msgid "Dark Mode umschalten"
 msgstr "Toggle Dark Mode"
 
@@ -513,6 +523,7 @@ msgstr "Targets"
 #: .\app\templates\app\human_benchmark.html:39
 #: .\app\templates\app\human_benchmark.html:49
 #: .\app\templates\app\human_benchmark.html:65
+#: .\app\templates\app\unit_converter.html:37
 msgid "Zeit"
 msgstr "Time"
 
@@ -526,6 +537,7 @@ msgstr "Start Aim Trainer"
 
 #: .\app\templates\app\human_benchmark.html:47
 #: .\app\templates\app\spritkostenrechner.html:57
+#: .\app\templates\app\unit_converter.html:81
 msgid "Ergebnis"
 msgstr "Result"
 
@@ -722,10 +734,6 @@ msgstr "This action cannot be undone."
 #: .\app\templates\app\note_form.html:184
 msgid "Endgültig löschen"
 msgstr "Delete permanently"
-
-#: .\app\templates\app\notes.html:4 .\app\templates\app\notes.html:21
-msgid "Notizen"
-msgstr "Notes"
 
 #: .\app\templates\app\notes.html:23
 msgid ""
@@ -1015,6 +1023,72 @@ msgstr "per year"
 msgid "Verbrauch (l/100km)"
 msgstr "Consumption (l/100km)"
 
+#: .\app\templates\app\unit_converter.html:22
+msgid ""
+"Rechne schnell Speichergrößen, Zeiten, Strecken und monatliche Kosten um."
+msgstr ""
+"Quickly convert storage sizes, durations, distances, and monthly costs."
+
+#: .\app\templates\app\unit_converter.html:32
+msgid "Speicher"
+msgstr "Save"
+
+#: .\app\templates\app\unit_converter.html:42
+msgid "Strecke"
+msgstr "Stream"
+
+#: .\app\templates\app\unit_converter.html:47
+msgid "Kosten"
+msgstr "Costs"
+
+#: .\app\templates\app\unit_converter.html:54
+msgid "Wert"
+msgstr "Value"
+
+#: .\app\templates\app\unit_converter.html:61
+msgid "Zahl eingeben..."
+msgstr "Enter a number..."
+
+#: .\app\templates\app\unit_converter.html:66
+msgid "Von"
+msgstr "From"
+
+#: .\app\templates\app\unit_converter.html:70
+msgid "Einheiten tauschen"
+msgstr "Swap units"
+
+#: .\app\templates\app\unit_converter.html:75
+msgid "Nach"
+msgstr "To"
+
+#: .\app\templates\app\unit_converter.html:83 .\app\views.py:752
+msgid "Gib einen Wert ein, um die Umrechnung zu starten."
+msgstr "Enter a value to start the conversion."
+
+#: .\app\templates\app\unit_converter.html:89
+msgid "Schnellbeispiele"
+msgstr "Quick Examples"
+
+#: .\app\templates\app\unit_converter.html:90
+msgid "Häufige Umrechnungen"
+msgstr "Common Conversions"
+
+#: .\app\templates\app\unit_converter.html:101 .\app\views.py:735
+msgid "Stunden"
+msgstr "Hours"
+
+#: .\app\templates\app\unit_converter.html:106 .\app\views.py:743
+msgid "Meilen"
+msgstr "Miles"
+
+#: .\app\templates\app\unit_converter.html:110
+msgid "Monat"
+msgstr "Month"
+
+#: .\app\templates\app\unit_converter.html:111
+msgid "Jahr"
+msgstr "Year"
+
 #: .\app\templates\app\weather.html:22
 msgid "Stadt suchen..."
 msgstr "Search city..."
@@ -1058,3 +1132,63 @@ msgstr "Sunrise"
 #: .\app\templates\app\weather.html:157
 msgid "Sonnenuntergang"
 msgstr "Sunset"
+
+#: .\app\views.py:727
+msgid "Kilobyte (KB)"
+msgstr "Kilobyte (KB)"
+
+#: .\app\views.py:728
+msgid "Megabyte (MB)"
+msgstr "Megabyte (MB)"
+
+#: .\app\views.py:729
+msgid "Gigabyte (GB)"
+msgstr "Gigabyte (GB)"
+
+#: .\app\views.py:730
+msgid "Terabyte (TB)"
+msgstr "Terabyte (TB)"
+
+#: .\app\views.py:733
+msgid "Sekunden"
+msgstr "Seconds"
+
+#: .\app\views.py:734
+msgid "Minuten"
+msgstr "Minutes"
+
+#: .\app\views.py:736
+msgid "Tage"
+msgstr "Days"
+
+#: .\app\views.py:739
+msgid "Millimeter"
+msgstr "Millimeter"
+
+#: .\app\views.py:740
+msgid "Zentimeter"
+msgstr "Centered"
+
+#: .\app\views.py:741
+msgid "Meter"
+msgstr "Meter"
+
+#: .\app\views.py:742
+msgid "Kilometer"
+msgstr "Kilometer"
+
+#: .\app\views.py:746
+msgid "Euro pro Tag"
+msgstr "Euros per day"
+
+#: .\app\views.py:747
+msgid "Euro pro Woche"
+msgstr "Euros per week"
+
+#: .\app\views.py:748
+msgid "Euro pro Monat"
+msgstr "per month"
+
+#: .\app\views.py:749
+msgid "Euro pro Jahr"
+msgstr "Euros per year"
