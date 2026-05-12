@@ -7,7 +7,7 @@ from django.conf import settings
 from django.utils import translation
 from django.utils.formats import date_format
 from datetime import datetime, timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
@@ -34,10 +34,30 @@ def get_env_value(name):
     return os.getenv(name) or dotenv_values(env_path).get(name)
 
 
-openweather_api_key = get_env_value("OPENWEATHER_API_KEY")
+def missing_env_message(name):
+    return _("%(name)s fehlt in der .env.") % {"name": name}
+
+
+def api_error_response(message, status=400):
+    return JsonResponse({
+        "status": "error",
+        "message": message,
+    }, status=status)
 
 
 def home(request):
+    home_labels = {
+        "newShortcut": _("Neue Verknüpfung"),
+        "shortcutForSection": _("für \"%(section)s\""),
+        "editShortcut": _("Verknüpfung bearbeiten"),
+        "shortcutInSection": _("in \"%(section)s\""),
+        "newSection": _("Neuer Bereich"),
+        "createSection": _("Bereich erstellen"),
+        "editSection": _("Bereich bearbeiten"),
+        "saveChanges": _("Änderungen speichern"),
+        "noFileSelected": _("Keine Datei ausgewählt"),
+    }
+
     default_section, created = ShortcutSection.objects.get_or_create(
         name="Verknüpfungen",
         defaults={
@@ -53,7 +73,7 @@ def home(request):
             try:
                 data = json.loads(request.body.decode("utf-8"))
             except json.JSONDecodeError:
-                return JsonResponse({"success": False, "error": "Ungültiges JSON"}, status=400)
+                return JsonResponse({"success": False, "error": _("Ungültiges JSON")}, status=400)
 
             action = data.get("action")
 
@@ -83,7 +103,7 @@ def home(request):
 
                 return JsonResponse({"success": True})
 
-            return JsonResponse({"success": False, "error": "Unbekannte Aktion"}, status=400)
+            return JsonResponse({"success": False, "error": _("Unbekannte Aktion")}, status=400)
 
         action = request.POST.get("action")
 
@@ -214,7 +234,8 @@ def home(request):
     sections = ShortcutSection.objects.prefetch_related("shortcuts").all().order_by("order", "created_at")
 
     return render(request, "app/home.html", {
-        "sections": sections
+        "sections": sections,
+        "home_labels": home_labels,
     })
 
 def about(request):
@@ -226,19 +247,38 @@ def weather(request):
     lon = request.GET.get("lon")
     city = request.GET.get("city", "Berlin")
     current_lang = translation.get_language()
+    api_key = get_env_value("OPENWEATHER_API_KEY")
 
-    params = f"&appid={openweather_api_key}&units=metric&lang={current_lang}"
+    if not api_key:
+        return render(request, 'app/weather.html', {
+            "city": city,
+            "error": missing_env_message("OPENWEATHER_API_KEY"),
+        })
+
+    params = f"&appid={api_key}&units=metric&lang={current_lang}"
     location_query = f"lat={lat}&lon={lon}" if lat and lon else f"q={city}"
 
     try:
         curr_url = f"http://api.openweathermap.org/data/2.5/weather?{location_query}{params}"
-        curr_response = requests.get(curr_url)
+        curr_response = requests.get(curr_url, timeout=10)
         curr_data = curr_response.json()
+
+        if not isinstance(curr_data, dict):
+            context = {'error': _("Ungültige Antwort der OpenWeather API.")}
+            return render(request, 'app/weather.html', context)
 
         if curr_response.status_code == 200:
             fore_url = f"http://api.openweathermap.org/data/2.5/forecast?{location_query}{params}"
-            fore_response = requests.get(fore_url)
+            fore_response = requests.get(fore_url, timeout=10)
             fore_data = fore_response.json()
+
+            if not isinstance(fore_data, dict):
+                context = {'error': _("Ungültige Antwort der OpenWeather API.")}
+                return render(request, 'app/weather.html', context)
+
+            if fore_response.status_code != 200:
+                context = {'error': _("Wettervorhersage konnte nicht geladen werden.")}
+                return render(request, 'app/weather.html', context)
 
             daily_groups = defaultdict(list)
             for item in fore_data.get('list', []):
@@ -312,10 +352,22 @@ def weather(request):
                 'current_lang': current_lang,
             }
         else:
-            context = {'error': "Standort nicht gefunden."}
+            api_message = curr_data.get("message")
+            if curr_response.status_code == 401:
+                context = {'error': _("OpenWeather API-Key ist ungültig.")}
+            elif curr_response.status_code == 404:
+                context = {'error': _("Standort nicht gefunden.")}
+            elif api_message:
+                context = {'error': _("OpenWeather Fehler: %(message)s") % {"message": api_message}}
+            else:
+                context = {'error': _("Standort nicht gefunden.")}
 
+    except requests.RequestException as e:
+        context = {'error': _("Verbindungsfehler: %(error)s") % {"error": str(e)}}
+    except (KeyError, IndexError, TypeError, ValueError):
+        context = {'error': _("Ungültige Antwort der OpenWeather API.")}
     except Exception as e:
-        context = {'error': f"Verbindungsfehler: {str(e)}"}
+        context = {'error': _("Verbindungsfehler: %(error)s") % {"error": str(e)}}
 
     return render(request, 'app/weather.html', context)
 
@@ -327,7 +379,17 @@ def spritkostenrechner(request):
 
 
 def human_benchmark(request):
-    return render(request, "app/human_benchmark.html")
+    benchmark_labels = {
+        "loading": _("Lade Text..."),
+        "translating": _("Übersetze..."),
+        "nextTest": _("Nächster Test"),
+        "loadingButton": _("Lädt..."),
+        "startTest": _("Test starten"),
+    }
+
+    return render(request, "app/human_benchmark.html", {
+        "benchmark_labels": benchmark_labels,
+    })
 
 
 def genius_search(request):
@@ -361,7 +423,7 @@ def avatar_characters_api(request):
         except (OperationalError, ProgrammingError):
             return JsonResponse({
                 "status": "error",
-                "message": "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
+                "message": _("Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate")
             }, status=500)
 
     if request.method == "POST":
@@ -371,7 +433,7 @@ def avatar_characters_api(request):
             except json.JSONDecodeError:
                 return JsonResponse({
                     "status": "error",
-                    "message": "Ungültiges JSON."
+                    "message": _("Ungültiges JSON.")
                 }, status=400)
 
             if data.get("action") == "update_order":
@@ -384,7 +446,7 @@ def avatar_characters_api(request):
 
             return JsonResponse({
                 "status": "error",
-                "message": "Unbekannte Aktion."
+                "message": _("Unbekannte Aktion.")
             }, status=400)
 
         name = request.POST.get("name", "").strip()
@@ -398,19 +460,19 @@ def avatar_characters_api(request):
         if not name:
             return JsonResponse({
                 "status": "error",
-                "message": "Name fehlt."
+                "message": _("Name fehlt.")
             }, status=400)
 
         if nation not in valid_nations:
             return JsonResponse({
                 "status": "error",
-                "message": "Ungültige Nation."
+                "message": _("Ungültige Nation.")
             }, status=400)
 
         if not image:
             return JsonResponse({
                 "status": "error",
-                "message": "Bild fehlt."
+                "message": _("Bild fehlt.")
             }, status=400)
 
         try:
@@ -426,7 +488,7 @@ def avatar_characters_api(request):
         except (OperationalError, ProgrammingError):
             return JsonResponse({
                 "status": "error",
-                "message": "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
+                "message": _("Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate")
             }, status=500)
 
         return JsonResponse({
@@ -436,7 +498,7 @@ def avatar_characters_api(request):
 
     return JsonResponse({
         "status": "error",
-        "message": "Methode nicht erlaubt."
+        "message": _("Methode nicht erlaubt.")
     }, status=405)
 
 
@@ -454,13 +516,13 @@ def avatar_character_detail_api(request, character_id):
         if not name:
             return JsonResponse({
                 "status": "error",
-                "message": "Name fehlt."
+                "message": _("Name fehlt.")
             }, status=400)
 
         if nation not in valid_nations:
             return JsonResponse({
                 "status": "error",
-                "message": "Ungültige Nation."
+                "message": _("Ungültige Nation.")
             }, status=400)
 
         character.name = name
@@ -483,7 +545,7 @@ def avatar_character_detail_api(request, character_id):
     if request.method != "DELETE":
         return JsonResponse({
             "status": "error",
-            "message": "Methode nicht erlaubt."
+            "message": _("Methode nicht erlaubt.")
         }, status=405)
 
     character.delete()
@@ -501,16 +563,13 @@ def genius_search_api(request):
     if not query:
         return JsonResponse({
             "status": "error",
-            "message": "Suchbegriff fehlt."
+            "message": _("Suchbegriff fehlt.")
         }, status=400)
 
     api_key = get_env_value("GENIUS_API_KEY")
 
     if not api_key:
-        return JsonResponse({
-            "status": "error",
-            "message": "GENIUS_API_KEY fehlt in der .env."
-        }, status=500)
+        return api_error_response(missing_env_message("GENIUS_API_KEY"), status=500)
 
     try:
         page = max(1, int(page))
@@ -518,7 +577,7 @@ def genius_search_api(request):
     except ValueError:
         return JsonResponse({
             "status": "error",
-            "message": "Pagination-Parameter sind ungültig."
+            "message": _("Pagination-Parameter sind ungültig.")
         }, status=400)
 
     try:
@@ -536,10 +595,16 @@ def genius_search_api(request):
         )
         data = response.json()
 
+        if not isinstance(data, dict):
+            return JsonResponse({
+                "status": "error",
+                "message": _("Ungültige Antwort der Genius API.")
+            }, status=502)
+
         if response.status_code != 200:
             return JsonResponse({
                 "status": "error",
-                "message": data.get("meta", {}).get("message", "Genius API Fehler.")
+                "message": data.get("meta", {}).get("message", _("Genius API Fehler."))
             }, status=response.status_code)
 
         results = []
@@ -561,12 +626,12 @@ def genius_search_api(request):
     except requests.RequestException:
         return JsonResponse({
             "status": "error",
-            "message": "Genius API konnte nicht erreicht werden."
+            "message": _("Genius API konnte nicht erreicht werden.")
         }, status=502)
     except ValueError:
         return JsonResponse({
             "status": "error",
-            "message": "Ungültige Antwort der Genius API."
+            "message": _("Ungültige Antwort der Genius API.")
         }, status=502)
 
 
@@ -577,7 +642,7 @@ def tankstellen_api(request):
     if not lat or not lon:
         return JsonResponse({
             "status": "error",
-            "message": "Latitude und Longitude fehlen."
+            "message": _("Latitude und Longitude fehlen.")
         }, status=400)
 
     try:
@@ -586,16 +651,13 @@ def tankstellen_api(request):
     except ValueError:
         return JsonResponse({
             "status": "error",
-            "message": "Latitude und Longitude müssen Zahlen sein."
+            "message": _("Latitude und Longitude müssen Zahlen sein.")
         }, status=400)
 
     api_key = get_env_value("TANKERKOENIG_API_KEY")
 
     if not api_key:
-        return JsonResponse({
-            "status": "error",
-            "message": "API-Key fehlt in der .env."
-        }, status=500)
+        return api_error_response(missing_env_message("TANKERKOENIG_API_KEY"), status=500)
 
     url = "https://creativecommons.tankerkoenig.de/json/list.php"
 
@@ -611,16 +673,26 @@ def tankstellen_api(request):
     try:
         response = requests.get(url, params=params, timeout=10)
         data = response.json()
+
+        if not isinstance(data, dict):
+            return api_error_response(_("Ungültige Antwort der Tankerkönig API."), status=502)
+
+        if response.status_code != 200:
+            return api_error_response(
+                data.get("message", _("Tankerkönig API Fehler.")),
+                status=response.status_code
+            )
+
         return JsonResponse(data, status=response.status_code)
     except requests.RequestException:
         return JsonResponse({
             "status": "error",
-            "message": "Tankerkönig API konnte nicht erreicht werden."
+            "message": _("Tankerkönig API konnte nicht erreicht werden.")
         }, status=502)
     except ValueError:
         return JsonResponse({
             "status": "error",
-            "message": "Ungültige Antwort der Tankerkönig API."
+            "message": _("Ungültige Antwort der Tankerkönig API.")
         }, status=502)
 
 
@@ -657,15 +729,15 @@ def note_create_view(request):
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Notiz wurde erstellt.")
+            messages.success(request, _("Notiz wurde erstellt."))
             return redirect("notes")
     else:
         form = NoteForm()
 
     return render(request, "app/note_form.html", {
         "form": form,
-        "form_title": "Neue Notiz",
-        "submit_text": "Notiz speichern",
+        "form_title": _("Neue Notiz"),
+        "submit_text": _("Notiz speichern"),
     })
 
 
@@ -677,7 +749,7 @@ def note_edit_view(request, pk):
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Notiz wurde aktualisiert.")
+            messages.success(request, _("Notiz wurde aktualisiert."))
             return redirect("notes")
     else:
         form = NoteForm(instance=note)
@@ -685,8 +757,8 @@ def note_edit_view(request, pk):
     return render(request, "app/note_form.html", {
         "form": form,
         "note": note,
-        "form_title": "Notiz bearbeiten",
-        "submit_text": "Änderungen speichern",
+        "form_title": _("Notiz bearbeiten"),
+        "submit_text": _("Änderungen speichern"),
     })
 
 
@@ -695,7 +767,7 @@ def note_delete_view(request, pk):
     note = get_object_or_404(Note, pk=pk)
     note.delete()
 
-    messages.success(request, "Notiz wurde gelöscht.")
+    messages.success(request, _("Notiz wurde gelöscht."))
     return redirect("notes")
 
 
@@ -715,9 +787,9 @@ def note_toggle_archive_view(request, pk):
     note.save()
 
     if note.is_archived:
-        messages.success(request, "Notiz wurde archiviert.")
+        messages.success(request, _("Notiz wurde archiviert."))
     else:
-        messages.success(request, "Notiz wurde wiederhergestellt.")
+        messages.success(request, _("Notiz wurde wiederhergestellt."))
 
     return redirect("notes")
 

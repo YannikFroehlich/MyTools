@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 import bleach
 from bleach.css_sanitizer import CSSSanitizer
 
@@ -39,6 +40,15 @@ ALLOWED_CSS_PROPERTIES = [
     "text-align",
 ]
 
+NOTE_COLOR_CHOICES = [
+    ("blue", _("Blau")),
+    ("purple", _("Lila")),
+    ("green", _("Grün")),
+    ("orange", _("Orange")),
+    ("red", _("Rot")),
+    ("gray", _("Grau")),
+]
+
 
 class NoteForm(forms.ModelForm):
     content = forms.CharField(
@@ -62,11 +72,11 @@ class NoteForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={
                 "class": "notes-input",
-                "placeholder": "Titel deiner Notiz..."
+                "placeholder": _("Titel deiner Notiz...")
             }),
             "tags": forms.TextInput(attrs={
                 "class": "notes-input",
-                "placeholder": "Tags, z. B. Schule, Server, Idee"
+                "placeholder": _("Tags, z. B. Schule, Server, Idee")
             }),
             "color": forms.Select(attrs={
                 "class": "notes-select"
@@ -78,6 +88,21 @@ class NoteForm(forms.ModelForm):
                 "class": "notes-checkbox"
             }),
         }
+
+        labels = {
+            "title": _("Titel"),
+            "content": _("Inhalt"),
+            "tags": _("Tags"),
+            "color": _("Farbe"),
+            "is_pinned": _("Anpinnen"),
+            "is_archived": _("Archivieren"),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["color"].choices = NOTE_COLOR_CHOICES
+        self.fields["title"].widget.attrs["placeholder"] = _("Titel deiner Notiz...")
+        self.fields["tags"].widget.attrs["placeholder"] = _("Tags, z. B. Schule, Server, Idee")
 
     def clean_content(self):
         content = self.cleaned_data.get("content", "")
