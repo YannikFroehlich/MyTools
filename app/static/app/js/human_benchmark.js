@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    const labelsElement = document.getElementById('benchmark-labels');
+    const labels = labelsElement ? JSON.parse(labelsElement.textContent) : {};
+    const currentLanguage = (page.dataset.language || '').toLowerCase();
+    const shouldTranslateQuotes = currentLanguage.startsWith('de');
+
     let audioCtx;
 
     function getAudioContext() {
@@ -277,6 +282,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'Der einzige Weg, großartige Arbeit zu leisten, ist zu lieben, was man tut.',
         'Probleme sind keine Stoppschilder, sie sind Wegweiser.',
     ];
+    const fallbackEnglishQuotes = [
+        'It does not matter how slowly you go as long as you do not stop.',
+        'The only way to do great work is to love what you do.',
+        'Problems are not stop signs, they are guidelines.',
+    ];
     let tStart;
     let tInterval;
     let currentQuote = '';
@@ -285,17 +295,24 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const controller = new AbortController();
             const timeoutId = window.setTimeout(() => controller.abort(), 3000);
-            tDisplay.textContent = 'Lade Text...';
+            tDisplay.textContent = labels.loading || 'Lade Text...';
             const response = await fetch('https://dummyjson.com/quotes/random', { signal: controller.signal });
             const data = await response.json();
             const englishQuote = data.quote;
-            tDisplay.textContent = 'Übersetze...';
+
+            if (!shouldTranslateQuotes) {
+                window.clearTimeout(timeoutId);
+                return englishQuote;
+            }
+
+            tDisplay.textContent = labels.translating || 'Übersetze...';
             const transRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(englishQuote)}&langpair=en|de`, { signal: controller.signal });
             const transData = await transRes.json();
             window.clearTimeout(timeoutId);
             return transData.responseData.translatedText || englishQuote;
         } catch (error) {
-            return fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
+            const quotes = shouldTranslateQuotes ? fallbackQuotes : fallbackEnglishQuotes;
+            return quotes[Math.floor(Math.random() * quotes.length)];
         }
     }
 
@@ -307,16 +324,16 @@ document.addEventListener('DOMContentLoaded', () => {
         tInput.disabled = true;
         tStopBtn.classList.add('hidden');
         tBtn.classList.remove('hidden');
-        tBtn.textContent = 'Nächster Test';
+        tBtn.textContent = labels.nextTest || 'Nächster Test';
     }
 
     tBtn.addEventListener('click', async () => {
         playSound('click');
         tBtn.disabled = true;
-        tBtn.textContent = 'Lädt...';
+        tBtn.textContent = labels.loadingButton || 'Lädt...';
         currentQuote = await getRandomQuote();
         tBtn.disabled = false;
-        tBtn.textContent = 'Test starten';
+        tBtn.textContent = labels.startTest || 'Test starten';
         tDisplay.textContent = currentQuote;
         tInput.disabled = false;
         tInput.value = '';

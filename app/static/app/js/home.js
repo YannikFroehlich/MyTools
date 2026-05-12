@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("google-search-form");
     const input = document.getElementById("google-search-input");
     const suggestionsBox = document.getElementById("suggestions-box");
+    const labelsElement = document.getElementById("home-labels");
+    const labels = labelsElement ? JSON.parse(labelsElement.textContent) : {};
 
     const shortcutModal = document.getElementById("shortcut-modal");
     const closeShortcutModalButton = document.getElementById("close-shortcut-modal");
@@ -13,6 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const shortcutNameInput = document.getElementById("shortcut-name");
     const shortcutUrlInput = document.getElementById("shortcut-url");
     const shortcutCustomIconInput = document.getElementById("shortcut-custom-icon");
+    const shortcutImageInput = document.getElementById("shortcut-image");
+    const shortcutFileName = document.getElementById("shortcut-file-name");
     const shortcutModalSectionName = document.getElementById("shortcut-modal-section-name");
 
     const sectionModal = document.getElementById("section-modal");
@@ -28,6 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let suggestions = [];
     let currentFirstSuggestion = "";
     let activeSuggestionIndex = 0;
+
+    function formatLabel(template, replacements = {}) {
+        return Object.entries(replacements).reduce(
+            (text, [key, value]) => text.replaceAll(`%(${key})s`, value),
+            template
+        );
+    }
 
     function hideSuggestions() {
         if (suggestionsBox) {
@@ -251,15 +262,28 @@ document.addEventListener("DOMContentLoaded", () => {
         if (shortcutNameInput) shortcutNameInput.value = "";
         if (shortcutUrlInput) shortcutUrlInput.value = "";
         if (shortcutCustomIconInput) shortcutCustomIconInput.value = "";
-        if (shortcutModalTitle) shortcutModalTitle.textContent = "Neue Verknüpfung";
+        if (shortcutFileName) shortcutFileName.textContent = labels.noFileSelected || "Keine Datei ausgewählt";
+        if (shortcutModalTitle) shortcutModalTitle.textContent = labels.newShortcut || "Neue Verknüpfung";
         setCheckedRadio(shortcutForm, "icon", "fa-brands fa-youtube");
     }
+
+    shortcutImageInput?.addEventListener("change", () => {
+        const fileName = shortcutImageInput.files?.[0]?.name;
+        if (shortcutFileName) {
+            shortcutFileName.textContent = fileName || labels.noFileSelected || "Keine Datei ausgewählt";
+        }
+    });
 
     function openAddShortcutModal(sectionId, sectionName) {
         resetShortcutForm();
 
         if (shortcutSectionIdInput) shortcutSectionIdInput.value = sectionId;
-        if (shortcutModalSectionName) shortcutModalSectionName.textContent = `für "${sectionName}"`;
+        if (shortcutModalSectionName) {
+            shortcutModalSectionName.textContent = formatLabel(
+                labels.shortcutForSection || 'für "%(section)s"',
+                { section: sectionName }
+            );
+        }
 
         openModal(shortcutModal);
         setTimeout(() => shortcutNameInput?.focus(), 100);
@@ -280,8 +304,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (shortcutSectionIdInput) shortcutSectionIdInput.value = sectionId;
         if (shortcutNameInput) shortcutNameInput.value = name;
         if (shortcutUrlInput) shortcutUrlInput.value = url;
-        if (shortcutModalTitle) shortcutModalTitle.textContent = "Verknüpfung bearbeiten";
-        if (shortcutModalSectionName) shortcutModalSectionName.textContent = sectionName ? `in "${sectionName}"` : "";
+        if (shortcutModalTitle) shortcutModalTitle.textContent = labels.editShortcut || "Verknüpfung bearbeiten";
+        if (shortcutModalSectionName) {
+            shortcutModalSectionName.textContent = sectionName
+                ? formatLabel(labels.shortcutInSection || 'in "%(section)s"', { section: sectionName })
+                : "";
+        }
 
         const matchingIcon = shortcutForm?.querySelector(`input[name='icon'][value="${CSS.escape(icon)}"]`);
 
@@ -329,8 +357,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sectionFormActionInput) sectionFormActionInput.value = "add_section";
         if (editSectionIdInput) editSectionIdInput.value = "";
         if (sectionNameInput) sectionNameInput.value = "";
-        if (sectionModalTitle) sectionModalTitle.textContent = "Neuer Bereich";
-        if (sectionSubmitButton) sectionSubmitButton.textContent = "Bereich erstellen";
+        if (sectionModalTitle) sectionModalTitle.textContent = labels.newSection || "Neuer Bereich";
+        if (sectionSubmitButton) sectionSubmitButton.textContent = labels.createSection || "Bereich erstellen";
         setCheckedRadio(sectionForm, "section_color", "blue");
     }
 
@@ -346,8 +374,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sectionFormActionInput) sectionFormActionInput.value = "edit_section";
         if (editSectionIdInput) editSectionIdInput.value = button.dataset.sectionId || "";
         if (sectionNameInput) sectionNameInput.value = button.dataset.sectionName || "";
-        if (sectionModalTitle) sectionModalTitle.textContent = "Bereich bearbeiten";
-        if (sectionSubmitButton) sectionSubmitButton.textContent = "Änderungen speichern";
+        if (sectionModalTitle) sectionModalTitle.textContent = labels.editSection || "Bereich bearbeiten";
+        if (sectionSubmitButton) sectionSubmitButton.textContent = labels.saveChanges || "Änderungen speichern";
 
         setCheckedRadio(sectionForm, "section_color", button.dataset.sectionColor || "blue", "blue");
 

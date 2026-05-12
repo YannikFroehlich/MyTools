@@ -354,6 +354,17 @@ class WeatherViewTests(TestCase):
         self.assertEqual(len(response.context["hourly_forecast"]), 6)
 
     @patch("app.views.requests.get")
+    @patch("app.views.get_env_value", return_value="")
+    def test_weather_page_handles_missing_api_key(self, mock_get_env_value, mock_get):
+        response = self.client.get(reverse("weather"), {
+            "city": "Berlin"
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["error"], "OPENWEATHER_API_KEY fehlt in der .env.")
+        mock_get.assert_not_called()
+
+    @patch("app.views.requests.get")
     def test_weather_page_uses_default_city(self, mock_get):
         mock_get.side_effect = [
             self.mocked_current_weather_response(),
@@ -415,3 +426,26 @@ class WeatherViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Verbindungsfehler", response.context["error"])
         self.assertIn("API nicht erreichbar", response.context["error"])
+
+
+class GeniusSearchApiTests(TestCase):
+    @patch("app.views.get_env_value", return_value="")
+    def test_genius_search_api_handles_missing_api_key(self, mock_get_env_value):
+        response = self.client.get(reverse("genius-search-api"), {
+            "q": "Daft Punk"
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json()["message"], "GENIUS_API_KEY fehlt in der .env.")
+
+
+class TankstellenApiTests(TestCase):
+    @patch("app.views.get_env_value", return_value="")
+    def test_tankstellen_api_handles_missing_api_key(self, mock_get_env_value):
+        response = self.client.get(reverse("tankstellen-api"), {
+            "lat": "52.52",
+            "lon": "13.405"
+        })
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json()["message"], "TANKERKOENIG_API_KEY fehlt in der .env.")
