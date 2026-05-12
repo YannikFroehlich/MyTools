@@ -18,6 +18,13 @@ from django.db.models import Max
 from django.db.utils import OperationalError, ProgrammingError
 from django.http import JsonResponse
 
+from django.contrib import messages
+from django.db.models import Q
+from django.views.decorators.http import require_POST
+
+from .models import Note
+from .forms import NoteForm
+
 env_path = settings.BASE_DIR / ".env"
 load_dotenv(env_path)
 
@@ -614,3 +621,101 @@ def tankstellen_api(request):
             "status": "error",
             "message": "Ungültige Antwort der Tankerkönig API."
         }, status=502)
+
+
+def notes_view(request):
+    query = request.GET.get("q", "").strip()
+    show_archived = request.GET.get("archived") == "1"
+
+    notes = Note.objects.filter(is_archived=show_archived)
+
+    if query:
+        notes = notes.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__icontains=query)
+        )
+
+    pinned_notes = notes.filter(is_pinned=True)
+    normal_notes = notes.filter(is_pinned=False)
+
+    context = {
+        "pinned_notes": pinned_notes,
+        "normal_notes": normal_notes,
+        "query": query,
+        "show_archived": show_archived,
+        "note_count": notes.count(),
+    }
+
+    return render(request, "app/notes.html", context)
+
+
+def note_create_view(request):
+    if request.method == "POST":
+        form = NoteForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Notiz wurde erstellt.")
+            return redirect("notes")
+    else:
+        form = NoteForm()
+
+    return render(request, "app/note_form.html", {
+        "form": form,
+        "form_title": "Neue Notiz",
+        "submit_text": "Notiz speichern",
+    })
+
+
+def note_edit_view(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+
+    if request.method == "POST":
+        form = NoteForm(request.POST, instance=note)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Notiz wurde aktualisiert.")
+            return redirect("notes")
+    else:
+        form = NoteForm(instance=note)
+
+    return render(request, "app/note_form.html", {
+        "form": form,
+        "note": note,
+        "form_title": "Notiz bearbeiten",
+        "submit_text": "Änderungen speichern",
+    })
+
+
+@require_POST
+def note_delete_view(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+    note.delete()
+
+    messages.success(request, "Notiz wurde gelöscht.")
+    return redirect("notes")
+
+
+@require_POST
+def note_toggle_pin_view(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+    note.is_pinned = not note.is_pinned
+    note.save()
+
+    return redirect("notes")
+
+
+@require_POST
+def note_toggle_archive_view(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+    note.is_archived = not note.is_archived
+    note.save()
+
+    if note.is_archived:
+        messages.success(request, "Notiz wurde archiviert.")
+    else:
+        messages.success(request, "Notiz wurde wiederhergestellt.")
+
+    return redirect("notes")

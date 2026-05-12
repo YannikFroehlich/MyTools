@@ -88,3 +88,40 @@ class AvatarCharacter(models.Model):
 
         if image_storage and image_name:
             image_storage.delete(image_name)
+
+class Note(models.Model):
+    COLOR_CHOICES = [
+        ("blue", "Blau"),
+        ("purple", "Lila"),
+        ("green", "Grün"),
+        ("orange", "Orange"),
+        ("red", "Rot"),
+        ("gray", "Grau"),
+    ]
+
+    title = models.CharField(max_length=120, blank=True)
+    content = models.TextField(blank=True)
+    tags = models.CharField(max_length=255, blank=True)
+
+    color = models.CharField(
+        max_length=20,
+        choices=COLOR_CHOICES,
+        default="blue"
+    )
+
+    is_pinned = models.BooleanField(default=False)
+    is_archived = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-is_pinned", "-updated_at"]
+        verbose_name = "Notiz"
+        verbose_name_plural = "Notizen"
+
+    def __str__(self):
+        return self.title or "Unbenannte Notiz"
+
+    def tag_list(self):
+        return [tag.strip() for tag in self.tags.split(",") if tag.strip()]
