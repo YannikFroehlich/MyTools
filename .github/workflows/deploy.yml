@@ -1,18 +1,83 @@
-name: Deploy MyTools
+name: Test, Build and Deploy MyTools
 
 on:
   workflow_dispatch:
+
   push:
     branches:
+      - "**"
+
+  pull_request:
+    branches:
       - main
+      - develop
+      - addfeature
+
+concurrency:
+  group: mytools-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  test:
+    name: Test Django App
+    runs-on: self-hosted
+
+    env:
+      USE_SQLITE: "True"
+      DEBUG: "True"
+      ALLOWED_HOSTS: "localhost,127.0.0.1"
+      CSRF_TRUSTED_ORIGINS: ""
+      OPENWEATHER_API_KEY: "dummy-for-tests"
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Abhängigkeiten installieren
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Django Systemcheck ausführen
+        run: |
+          python manage.py check
+
+      - name: Prüfen ob Migrationen fehlen
+        run: |
+          python manage.py makemigrations --check --dry-run
+
+      - name: Django Tests ausführen
+        run: |
+          python manage.py test app --verbosity 2
+
+  build:
+    name: Build Docker Image
+    runs-on: self-hosted
+    needs: test
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Docker Image bauen
+        run: |
+          docker compose build --pull web
+
   deploy:
     name: Deploy on yfserver
     runs-on: self-hosted
+    needs: build
+
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - name: Deploy MyTools
+      - name: MyTools auf Server deployen
         run: |
           set -e
 
@@ -22,8 +87,31 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-          echo "Baue und starte Docker Container..."
-          docker compose up -d --build
+          echo "Starte Docker Deployment..."
+          docker compose pull db redis caddy || true
+          docker compose up -d --build --remove-orphans
+
+          echo "Warte kurz bis der Webserver antwortet..."
+          for i in {1..20}; do
+            if curl -fsS http://localhost:8090 > /dev/null; then
+              echo "Webserver ist erreichbar."
+              break
+            fi
+
+            echo "Webserver noch nicht erreichbar, Versuch $i/20..."
+            sleep 3
+
+            if [ "$i" -eq 20 ]; then
+              echo "Fehler: Webserver ist nach dem Deployment nicht erreichbar."
+              docker compose ps
+              docker compose logs --tail=80 web
+              docker compose logs --tail=80 caddy
+              exit 1
+            fi
+          done
+
+          echo "Container Status:"
+          docker compose ps
 
           echo "Räume alte Docker Images auf..."
           docker image prune -f
