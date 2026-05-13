@@ -67,6 +67,8 @@ jobs:
     runs-on: self-hosted
     needs: test
 
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
     steps:
       - name: Repository auschecken
         uses: actions/checkout@v4
