@@ -33,27 +33,33 @@ jobs:
       - name: Repository auschecken
         uses: actions/checkout@v4
 
-      - name: Python einrichten
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: "pip"
+      - name: Python Version anzeigen
+        run: |
+          python3 --version
+
+      - name: Virtuelle Umgebung erstellen
+        run: |
+          python3 -m venv .venv
 
       - name: Abhängigkeiten installieren
         run: |
+          . .venv/bin/activate
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Django Systemcheck ausführen
         run: |
+          . .venv/bin/activate
           python manage.py check
 
       - name: Prüfen ob Migrationen fehlen
         run: |
+          . .venv/bin/activate
           python manage.py makemigrations --check --dry-run
 
       - name: Django Tests ausführen
         run: |
+          . .venv/bin/activate
           python manage.py test app --verbosity 2
 
   build:
