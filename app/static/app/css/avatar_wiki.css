@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
 
 .avatar-page {
-    --avatar-fire: #e8521a;
-    --avatar-fire-glow: #ff7043;
+    --avatar-fire: var(--theme-accent-start);
+    --avatar-fire-glow: var(--theme-accent-end);
     --avatar-overlay: linear-gradient(180deg, rgba(250, 240, 225, 0.55) 0%, rgba(255, 248, 235, 0.4) 40%, rgba(245, 235, 215, 0.62) 100%);
     --avatar-header-bg: rgba(255, 248, 232, 0.86);
     --avatar-panel-bg: rgba(255, 249, 235, 0.82);
@@ -102,7 +102,7 @@ body.dark-mode .avatar-page {
     letter-spacing: 0.16em;
     text-decoration: none;
     text-transform: uppercase;
-    text-shadow: 0 0 30px rgba(232, 82, 26, 0.35);
+    text-shadow: 0 0 30px rgba(var(--theme-accent-rgb), 0.35);
 }
 
 .avatar-add-btn,
@@ -113,9 +113,9 @@ body.dark-mode .avatar-page {
     gap: 0.5rem;
     border: none;
     border-radius: 9px;
-    color: #ffffff;
-    background: linear-gradient(135deg, #e8521a, #c43d0f);
-    box-shadow: 0 6px 22px rgba(232, 82, 26, 0.34);
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 6px 22px rgba(var(--theme-accent-rgb), 0.34);
     cursor: pointer;
     font-family: 'Cinzel', serif;
     font-weight: 700;
@@ -134,7 +134,7 @@ body.dark-mode .avatar-page {
 #characterForm button[type="submit"]:hover {
     transform: translateY(-1px);
     filter: brightness(1.08);
-    box-shadow: 0 8px 28px rgba(232, 82, 26, 0.5);
+    box-shadow: 0 8px 28px rgba(var(--theme-accent-rgb), 0.5);
 }
 
 .avatar-add-btn .btn-icon {
@@ -213,7 +213,7 @@ body.dark-mode .avatar-page {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, rgba(232, 82, 26, 0.45), transparent);
+    background: linear-gradient(90deg, rgba(var(--theme-accent-rgb), 0.45), transparent);
 }
 
 .avatar-search-bar {
@@ -246,7 +246,7 @@ body.dark-mode .avatar-page {
 
 #search-input:focus {
     width: 330px;
-    border-color: rgba(232, 82, 26, 0.5);
+    border-color: rgba(var(--theme-accent-rgb), 0.5);
     background: var(--avatar-input-focus);
 }
 
@@ -279,10 +279,10 @@ body.dark-mode .avatar-page {
 
 .pill:hover {
     color: var(--avatar-text);
-    border-color: rgba(232, 82, 26, 0.36);
+    border-color: rgba(var(--theme-accent-rgb), 0.36);
 }
 
-.pill.active-all { color: var(--avatar-fire); border-color: rgba(232,82,26,0.5); background: rgba(232,82,26,0.12); }
+.pill.active-all { color: var(--avatar-fire); border-color: rgba(var(--theme-accent-rgb), 0.5); background: rgba(var(--theme-accent-rgb), 0.12); }
 .pill.active-fire { color: #e8521a; border-color: #e8521a; background: rgba(232,82,26,0.15); }
 .pill.active-water { color: #4a9aba; border-color: #4a9aba; background: rgba(74,154,186,0.15); }
 .pill.active-earth { color: #7b9f3b; border-color: #8db050; background: rgba(141,176,80,0.15); }
@@ -303,9 +303,9 @@ body.dark-mode .avatar-page {
 #characterForm input:focus,
 #characterForm textarea:focus,
 #characterForm select:focus {
-    border-color: rgba(232, 82, 26, 0.52);
+    border-color: rgba(var(--theme-accent-rgb), 0.52);
     background: var(--avatar-input-focus);
-    box-shadow: 0 0 0 3px rgba(232, 82, 26, 0.12);
+    box-shadow: 0 0 0 3px rgba(var(--theme-accent-rgb), 0.12);
 }
 
 #characterForm select option {
@@ -375,7 +375,7 @@ body.dark-mode .avatar-page {
 
 .avatar-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(232, 82, 26, 0.2);
+    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(var(--theme-accent-rgb), 0.2);
 }
 
 .avatar-card.hidden {
@@ -490,8 +490,8 @@ body.dark-mode .avatar-page {
 }
 
 .edit-btn:hover {
-    background: rgba(232, 82, 26, 0.78);
-    color: #ffffff;
+    background: rgba(var(--theme-accent-rgb), 0.78);
+    color: var(--theme-accent-text);
 }
 
 .delete-btn:hover {
@@ -579,7 +579,7 @@ body.dark-mode .avatar-page {
     display: inline-flex;
     margin-top: 1rem;
     padding: 0.55rem 1rem;
-    border: 1px solid rgba(232, 82, 26, 0.4);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.4);
     border-radius: 9px;
 }
 

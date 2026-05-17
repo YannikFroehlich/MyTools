@@ -5,6 +5,11 @@
     --theme-text: #1a202c;
     --theme-nav-start: #1a56d6;
     --theme-nav-end: #5aadee;
+    --theme-accent-start: #1a56d6;
+    --theme-accent-end: #5aadee;
+    --theme-accent-text: #ffffff;
+    --theme-accent-rgb: 26, 86, 214;
+    --theme-accent-end-rgb: 90, 173, 238;
     --theme-nav-shadow: rgba(26, 86, 214, 0.2);
     --theme-footer-bg: #ffffff;
     --theme-footer-text: #6b7280;
@@ -30,6 +35,11 @@ body.dark-mode:not(.custom-theme) {
     --theme-text: #e2e8f0;
     --theme-nav-start: #0e2d6e;
     --theme-nav-end: #2a6ea0;
+    --theme-accent-start: #0e2d6e;
+    --theme-accent-end: #2a6ea0;
+    --theme-accent-text: #ffffff;
+    --theme-accent-rgb: 14, 45, 110;
+    --theme-accent-end-rgb: 42, 110, 160;
     --theme-nav-shadow: rgba(8, 16, 50, 0.45);
     --theme-footer-bg: #1a1d2b;
     --theme-footer-text: #6b7280;
@@ -306,15 +316,15 @@ nav .user-actions select option {
     gap: 8px;
     border: none;
     border-radius: 13px;
-    background: rgba(31, 110, 238, 0.1);
-    color: #1f6eee;
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    color: var(--theme-accent-start);
     cursor: pointer;
     font-family: inherit;
     font-weight: 800;
 }
 
 .theme-editor-actions button:hover {
-    background: rgba(31, 110, 238, 0.16);
+    background: rgba(var(--theme-accent-rgb), 0.16);
 }
 
 body.dark-mode .theme-editor-panel {
@@ -341,8 +351,8 @@ body.dark-mode .theme-control-grid label {
 }
 
 body.dark-mode .theme-editor-actions button {
-    background: rgba(122, 198, 250, 0.14);
-    color: #7ac6fa;
+    background: rgba(var(--theme-accent-end-rgb), 0.14);
+    color: var(--theme-accent-end);
 }
 
 /* ── DARK MODE BUTTON ── */
@@ -459,11 +469,11 @@ body.dark-mode .dark-mode-btn .icon-sun {
     min-width: 210px;
     padding: 6px;
 
-    background: rgba(26, 86, 214, 0.96);
+    background: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.96), rgba(var(--theme-accent-end-rgb), 0.96));
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
 
-    box-shadow: 0 12px 30px rgba(26, 86, 214, 0.35);
+    box-shadow: 0 12px 30px rgba(var(--theme-accent-rgb), 0.35);
     backdrop-filter: blur(10px);
 
     display: flex;
@@ -523,9 +533,9 @@ body.dark-mode .dark-mode-btn .icon-sun {
 }
 
 body.dark-mode .menu-dropdown {
-    background: rgba(14, 45, 110, 0.97);
+    background: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.97), rgba(var(--theme-accent-end-rgb), 0.97));
     border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 12px 30px rgba(8, 16, 50, 0.45);
+    box-shadow: 0 12px 30px rgba(var(--theme-accent-rgb), 0.45);
 }
 
 /* ── THEME FLASH OVERLAY ── */
