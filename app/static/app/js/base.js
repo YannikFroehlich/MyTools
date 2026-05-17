@@ -89,16 +89,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return colorDistance(backgroundColor, '#ffffff') < 210 ? '#1a202c' : '#e2e8f0';
     }
 
+    function rgbString(hex) {
+        const { r, g, b } = hexToRgb(hex);
+
+        return `${r}, ${g}, ${b}`;
+    }
+
     function applyCustomTheme(theme) {
         body.classList.add('custom-theme');
         document.documentElement.style.setProperty('--theme-nav-start', theme.navStart);
         document.documentElement.style.setProperty('--theme-nav-end', theme.navEnd);
+        document.documentElement.style.setProperty('--theme-accent-start', theme.navStart);
+        document.documentElement.style.setProperty('--theme-accent-end', theme.navEnd);
+        document.documentElement.style.setProperty('--theme-accent-text', readableTextColor(theme.navStart));
+        document.documentElement.style.setProperty('--theme-accent-rgb', rgbString(theme.navStart));
+        document.documentElement.style.setProperty('--theme-accent-end-rgb', rgbString(theme.navEnd));
         document.documentElement.style.setProperty('--theme-page-bg', theme.pageBg);
         document.documentElement.style.setProperty('--theme-footer-bg', theme.footerBg);
         document.documentElement.style.setProperty('--theme-text', readableTextColor(theme.pageBg));
         document.documentElement.style.setProperty('--theme-footer-text', readableTextColor(theme.footerBg));
         document.documentElement.style.setProperty('--theme-footer-border', 'rgba(0, 0, 0, 0.08)');
-        document.documentElement.style.setProperty('--theme-nav-shadow', 'rgba(15, 23, 42, 0.22)');
+        document.documentElement.style.setProperty('--theme-nav-shadow', `rgba(${rgbString(theme.navStart)}, 0.28)`);
     }
 
     function clearCustomTheme() {
@@ -106,6 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
         [
             '--theme-nav-start',
             '--theme-nav-end',
+            '--theme-accent-start',
+            '--theme-accent-end',
+            '--theme-accent-text',
+            '--theme-accent-rgb',
+            '--theme-accent-end-rgb',
             '--theme-page-bg',
             '--theme-footer-bg',
             '--theme-text',
