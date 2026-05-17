@@ -78,11 +78,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (weatherIcon) {
         weatherIcon.addEventListener("mouseenter", () => {
             weatherIcon.style.transition = "filter 0.3s ease, transform 0.3s ease";
-            weatherIcon.style.filter = "drop-shadow(0 4px 24px rgba(79, 183, 255, 0.65))";
+            weatherIcon.style.filter = "drop-shadow(0 4px 24px rgba(var(--theme-accent-end-rgb), 0.65))";
             weatherIcon.style.transform = "scale(1.08)";
         });
         weatherIcon.addEventListener("mouseleave", () => {
-            weatherIcon.style.filter = "drop-shadow(0 4px 16px rgba(79, 183, 255, 0.35))";
+            weatherIcon.style.filter = "drop-shadow(0 4px 16px rgba(var(--theme-accent-end-rgb), 0.35))";
             weatherIcon.style.transform = "scale(1)";
         });
     }

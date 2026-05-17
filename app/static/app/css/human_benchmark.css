@@ -3,12 +3,12 @@
     --benchmark-card-soft: rgba(248, 250, 252, 0.9);
     --benchmark-text: #172033;
     --benchmark-muted: #64748b;
-    --benchmark-primary: #1f6eee;
-    --benchmark-blue: #1f6eee;
+    --benchmark-primary: var(--theme-accent-start);
+    --benchmark-blue: var(--theme-accent-start);
     --benchmark-red: #ef4444;
     --benchmark-green: #10b981;
     --benchmark-border: rgba(120, 140, 180, 0.22);
-    --benchmark-shadow: 0 14px 38px rgba(31, 110, 238, 0.11);
+    --benchmark-shadow: 0 14px 38px rgba(var(--theme-accent-rgb), 0.11);
     --benchmark-radius: 24px;
 
     width: 100%;
@@ -20,12 +20,12 @@
 }
 
 body.dark-mode .benchmark-page {
-    --benchmark-card: rgba(15, 25, 55, 0.82);
-    --benchmark-card-soft: #1f2937;
+    --benchmark-card: rgba(var(--theme-accent-rgb), 0.2);
+    --benchmark-card-soft: rgba(var(--theme-accent-rgb), 0.22);
     --benchmark-text: #ffffff;
-    --benchmark-muted: rgba(255, 255, 255, 0.58);
-    --benchmark-primary: #7ac6fa;
-    --benchmark-border: rgba(255, 255, 255, 0.08);
+    --benchmark-muted: rgba(255, 255, 255, 0.72);
+    --benchmark-primary: var(--theme-accent-end);
+    --benchmark-border: rgba(var(--theme-accent-end-rgb), 0.3);
     --benchmark-shadow: 0 14px 42px rgba(0, 0, 0, 0.28);
 }
 
@@ -47,7 +47,7 @@ body.dark-mode .benchmark-page {
 body.dark-mode .benchmark-topbar,
 body.dark-mode .benchmark-card,
 body.dark-mode .benchmark-stat {
-    background: linear-gradient(145deg, rgba(15, 25, 55, 0.82), rgba(15, 23, 42, 0.88));
+    background: linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.2), rgba(0, 0, 0, 0.34));
     box-shadow:
         var(--benchmark-shadow),
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -62,7 +62,7 @@ body.dark-mode .benchmark-stat {
     left: 18px;
     right: 18px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(31, 110, 238, 0.22), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--theme-accent-rgb), 0.22), transparent);
 }
 
 .benchmark-card::after,
@@ -73,7 +73,7 @@ body.dark-mode .benchmark-stat {
     height: 170px;
     right: -70px;
     top: -80px;
-    background: radial-gradient(circle, rgba(122, 198, 250, 0.2), transparent 65%);
+    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.2), transparent 65%);
     pointer-events: none;
 }
 
@@ -107,8 +107,8 @@ body.dark-mode .benchmark-stat {
     height: 48px;
     display: inline-flex;
     border-radius: 16px;
-    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
-    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.2);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 10px 22px rgba(var(--theme-accent-rgb), 0.2);
 }
 
 .benchmark-logo h1 {
@@ -131,7 +131,7 @@ body.dark-mode .benchmark-stat {
     font: inherit;
     font-weight: 800;
     color: var(--benchmark-muted);
-    background: rgba(31, 110, 238, 0.08);
+    background: rgba(var(--theme-accent-rgb), 0.08);
     border-radius: 13px;
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
@@ -139,13 +139,13 @@ body.dark-mode .benchmark-stat {
 
 .benchmark-tab:hover {
     transform: translateY(-1px);
-    background: rgba(31, 110, 238, 0.13);
+    background: rgba(var(--theme-accent-rgb), 0.13);
 }
 
 .benchmark-tab.active {
-    color: #ffffff;
-    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
-    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.2);
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 10px 22px rgba(var(--theme-accent-rgb), 0.2);
 }
 
 .benchmark-card {
@@ -180,7 +180,7 @@ body.dark-mode .benchmark-stat {
 }
 
 #reaction-box.box-waiting {
-    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
 }
 
 #reaction-box.box-ready {
@@ -236,8 +236,8 @@ body.dark-mode .benchmark-stat {
 
 .quote-box {
     padding: 2rem;
-    background: rgba(31, 110, 238, 0.05);
-    border-bottom: 1px solid rgba(31, 110, 238, 0.12);
+    background: rgba(var(--theme-accent-rgb), 0.05);
+    border-bottom: 1px solid rgba(var(--theme-accent-rgb), 0.12);
 }
 
 #quote-display {
@@ -268,8 +268,8 @@ body.dark-mode .benchmark-stat {
 }
 
 #typing-input:focus {
-    border-color: rgba(31, 110, 238, 0.7);
-    box-shadow: 0 0 0 4px rgba(31, 110, 238, 0.08);
+    border-color: rgba(var(--theme-accent-rgb), 0.7);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.08);
 }
 
 .typing-footer,
@@ -289,7 +289,7 @@ body.dark-mode .benchmark-stat {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: radial-gradient(circle, rgba(31, 110, 238, 0.09) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(var(--theme-accent-rgb), 0.09) 1px, transparent 1px);
     background-size: 30px 30px;
 }
 
@@ -354,9 +354,9 @@ body.dark-mode .benchmark-stat {
 .benchmark-primary-btn {
     border: none;
     padding: 0.9rem 2rem;
-    color: #ffffff;
-    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
-    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.22);
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 10px 22px rgba(var(--theme-accent-rgb), 0.22);
 }
 
 .benchmark-primary-btn:hover {
@@ -365,10 +365,10 @@ body.dark-mode .benchmark-stat {
 }
 
 .benchmark-outline-btn {
-    border: 1px solid rgba(31, 110, 238, 0.25);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.25);
     padding: 0.7rem 1.4rem;
     color: var(--benchmark-muted);
-    background: rgba(31, 110, 238, 0.08);
+    background: rgba(var(--theme-accent-rgb), 0.08);
 }
 
 .benchmark-outline-btn:hover {
@@ -393,8 +393,8 @@ body.dark-mode .benchmark-stat {
 .visual-tile {
     width: 50px;
     height: 50px;
-    background: rgba(31, 110, 238, 0.12);
-    border: 1px solid rgba(31, 110, 238, 0.12);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.12);
     border-radius: 12px;
     cursor: pointer;
     transition: background 0.2s ease, transform 0.2s ease;
@@ -420,12 +420,12 @@ body.dark-mode .benchmark-stat {
 body.dark-mode .benchmark-topbar::before,
 body.dark-mode .benchmark-card::before,
 body.dark-mode .benchmark-stat::before {
-    background: linear-gradient(90deg, transparent, rgba(122, 198, 250, 0.22), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--theme-accent-end-rgb), 0.22), transparent);
 }
 
 body.dark-mode .benchmark-card::after,
 body.dark-mode .benchmark-topbar::after {
-    background: radial-gradient(circle, rgba(79, 183, 255, 0.14), transparent 65%);
+    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.14), transparent 65%);
 }
 
 body.dark-mode #typing-input {
@@ -433,16 +433,16 @@ body.dark-mode #typing-input {
 }
 
 body.dark-mode #typing-input:focus {
-    border-color: rgba(122, 198, 250, 0.7);
-    box-shadow: 0 0 0 4px rgba(122, 198, 250, 0.08);
+    border-color: rgba(var(--theme-accent-end-rgb), 0.7);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-end-rgb), 0.08);
 }
 
 body.dark-mode .benchmark-tab {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--theme-accent-end-rgb), 0.18);
 }
 
 body.dark-mode .benchmark-tab:hover {
-    background: rgba(122, 198, 250, 0.14);
+    background: rgba(var(--theme-accent-end-rgb), 0.28);
 }
 
 @keyframes benchmarkFadeIn {

@@ -36,6 +36,8 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
     ""
 ).split(",") if os.getenv("CSRF_TRUSTED_ORIGINS") else []
 
+FONTAWESOME_KIT_KEY = os.getenv("FONTAWESOME_KIT_KEY", "")
+
 if os.getenv("USE_SQLITE", "False") == "True":
     DATABASES = {
         "default": {
@@ -92,6 +94,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'app.context_processors.fontawesome_kit',
             ],
         },
     },
