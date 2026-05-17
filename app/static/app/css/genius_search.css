@@ -4,10 +4,10 @@
     --genius-text: #172033;
     --genius-muted: #64748b;
     --genius-border: rgba(120, 140, 180, 0.22);
-    --genius-primary: #1f6eee;
-    --genius-primary-soft: rgba(31, 110, 238, 0.1);
-    --genius-link: #1f6eee;
-    --genius-shadow: 0 14px 38px rgba(31, 110, 238, 0.11);
+    --genius-primary: var(--theme-accent-start);
+    --genius-primary-soft: rgba(var(--theme-accent-rgb), 0.1);
+    --genius-link: var(--theme-accent-start);
+    --genius-shadow: 0 14px 38px rgba(var(--theme-accent-rgb), 0.11);
 
     width: 100%;
     max-width: 1120px;
@@ -18,14 +18,14 @@
 }
 
 body.dark-mode .genius-page {
-    --genius-panel: rgba(15, 25, 55, 0.82);
-    --genius-panel-soft: #1f2937;
+    --genius-panel: rgba(var(--theme-accent-rgb), 0.2);
+    --genius-panel-soft: rgba(var(--theme-accent-rgb), 0.22);
     --genius-text: #ffffff;
-    --genius-muted: rgba(255, 255, 255, 0.58);
-    --genius-border: rgba(255, 255, 255, 0.08);
-    --genius-primary: #7ac6fa;
-    --genius-primary-soft: rgba(122, 198, 250, 0.12);
-    --genius-link: #7ac6fa;
+    --genius-muted: rgba(255, 255, 255, 0.72);
+    --genius-border: rgba(var(--theme-accent-end-rgb), 0.3);
+    --genius-primary: var(--theme-accent-end);
+    --genius-primary-soft: rgba(var(--theme-accent-end-rgb), 0.12);
+    --genius-link: var(--theme-accent-end);
     --genius-shadow: 0 14px 42px rgba(0, 0, 0, 0.28);
 }
 
@@ -47,7 +47,7 @@ body.dark-mode .genius-page {
 body.dark-mode .genius-header,
 body.dark-mode .genius-card,
 body.dark-mode .genius-empty-state {
-    background: linear-gradient(145deg, rgba(15, 25, 55, 0.82), rgba(15, 23, 42, 0.88));
+    background: linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.2), rgba(0, 0, 0, 0.34));
     box-shadow:
         var(--genius-shadow),
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -62,7 +62,7 @@ body.dark-mode .genius-empty-state {
     left: 18px;
     right: 18px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(31, 110, 238, 0.22), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--theme-accent-rgb), 0.22), transparent);
 }
 
 .genius-header::after,
@@ -73,7 +73,7 @@ body.dark-mode .genius-empty-state {
     height: 150px;
     right: -70px;
     top: -80px;
-    background: radial-gradient(circle, rgba(122, 198, 250, 0.2), transparent 65%);
+    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.2), transparent 65%);
     pointer-events: none;
 }
 
@@ -113,10 +113,10 @@ body.dark-mode .genius-empty-state {
     align-items: center;
     justify-content: center;
     border-radius: 16px;
-    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text);
     font-size: 1.1rem;
-    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.2);
+    box-shadow: 0 10px 22px rgba(var(--theme-accent-rgb), 0.2);
 }
 
 .genius-search-box {
@@ -140,8 +140,8 @@ body.dark-mode .genius-empty-state {
 }
 
 .genius-search-box input:focus {
-    border-color: rgba(31, 110, 238, 0.7);
-    box-shadow: 0 0 0 4px rgba(31, 110, 238, 0.08);
+    border-color: rgba(var(--theme-accent-rgb), 0.7);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.08);
     background: #ffffff;
 }
 
@@ -150,8 +150,8 @@ body.dark-mode .genius-empty-state {
     padding: 0.75rem 1.2rem;
     border: none;
     border-radius: 13px;
-    background: linear-gradient(135deg, #1f6eee, #7ac6fa);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text);
     cursor: pointer;
     font: inherit;
     font-weight: 800;
@@ -159,7 +159,7 @@ body.dark-mode .genius-empty-state {
 }
 
 .genius-page button:hover:not(:disabled) {
-    box-shadow: 0 10px 22px rgba(31, 110, 238, 0.24);
+    box-shadow: 0 10px 22px rgba(var(--theme-accent-rgb), 0.24);
     filter: brightness(1.06);
     transform: translateY(-1px);
 }
@@ -185,9 +185,9 @@ body.dark-mode .genius-empty-state {
 
 .genius-card:hover {
     transform: translateY(-3px);
-    border-color: rgba(31, 110, 238, 0.25);
+    border-color: rgba(var(--theme-accent-rgb), 0.25);
     box-shadow:
-        0 18px 44px rgba(31, 110, 238, 0.16),
+        0 18px 44px rgba(var(--theme-accent-rgb), 0.16),
         inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
@@ -258,18 +258,18 @@ body.dark-mode .genius-empty-state {
 body.dark-mode .genius-header::before,
 body.dark-mode .genius-card::before,
 body.dark-mode .genius-empty-state::before {
-    background: linear-gradient(90deg, transparent, rgba(122, 198, 250, 0.22), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--theme-accent-end-rgb), 0.22), transparent);
 }
 
 body.dark-mode .genius-header::after,
 body.dark-mode .genius-card::after {
-    background: radial-gradient(circle, rgba(79, 183, 255, 0.14), transparent 65%);
+    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.14), transparent 65%);
 }
 
 body.dark-mode .genius-search-box input:focus {
-    border-color: rgba(122, 198, 250, 0.7);
-    box-shadow: 0 0 0 4px rgba(122, 198, 250, 0.08);
-    background: #253244;
+    border-color: rgba(var(--theme-accent-end-rgb), 0.7);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-end-rgb), 0.08);
+    background: rgba(var(--theme-accent-rgb), 0.28);
 }
 
 @keyframes geniusFadeUp {
