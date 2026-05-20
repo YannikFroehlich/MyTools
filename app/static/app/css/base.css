@@ -95,32 +95,95 @@ nav .navigation {
     gap: 4px;
 }
 
-nav a {
+/* Normale Header-Links: nur direkte Links in der Navigation, nicht die Dropdown-Items */
+nav .navigation > a {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+
+    min-height: 35px;
+    padding: 7px 13px;
+
     font-size: 0.875rem;
     font-weight: 500;
+    font-family: inherit;
+
     color: rgba(255, 255, 255, 0.82);
     text-decoration: none;
-    padding: 7px 13px;
-    border-radius: 9px;
+
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid transparent;
-    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+    border-radius: 9px;
+
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
-nav a:hover {
+nav .navigation > a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+}
+
+nav .navigation > a:hover {
     background: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.28);
     color: #fff;
     transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(10, 22, 64, 0.16);
 }
 
-nav a.active {
+nav .navigation > a:hover::before {
+    opacity: 1;
+}
+
+nav .navigation > a:active {
+    transform: scale(0.97);
+    box-shadow: none;
+}
+
+nav .navigation > a:focus-visible {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow:
+        0 0 0 3px rgba(255, 255, 255, 0.18),
+        0 8px 18px rgba(10, 22, 64, 0.16);
+}
+
+nav .navigation > a.active {
     background: rgba(255, 255, 255, 0.22);
     border-color: rgba(255, 255, 255, 0.35);
     color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+nav .navigation > a i {
+    position: relative;
+    z-index: 1;
+    font-size: 0.92rem;
+    transition: transform 0.15s ease;
+}
+
+nav .navigation > a:hover i {
+    transform: translateY(-1px) scale(1.04);
+}
+
+nav .navigation > a span {
+    position: relative;
+    z-index: 1;
 }
 
 nav .user-actions {
@@ -153,22 +216,26 @@ nav .user-actions select {
     color: #fff;
     cursor: pointer;
 
-    transition: background-color 0.15s;
+    transition: background-color 0.15s, transform 0.15s, border-color 0.15s;
 }
 
 nav .user-actions select:hover {
     background-color: rgba(10, 22, 64, 0.55);
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
 }
 
-/* Focus clean halten */
+nav .user-actions select:active {
+    transform: scale(0.97);
+}
+
 nav .user-actions select:focus {
     outline: none;
     box-shadow: none;
 }
 
-/* Optional: Dropdown Optionen (eingeschränkt stylbar) */
 nav .user-actions select option {
-    color: #000; /* sonst oft weiß auf weiß */
+    color: #000;
 }
 
 /* ── THEME EDITOR ── */
@@ -191,11 +258,12 @@ nav .user-actions select option {
     border-radius: 9px;
     cursor: pointer;
     color: #fff;
-    transition: background 0.15s, transform 0.15s;
+    transition: background 0.15s, transform 0.15s, border-color 0.15s;
 }
 
 .theme-editor-btn:hover {
     background: rgba(10, 22, 64, 0.55);
+    border-color: rgba(255, 255, 255, 0.28);
     transform: translateY(-1px);
 }
 
@@ -370,17 +438,17 @@ body.dark-mode .theme-editor-actions button {
     color: #fff;
     position: relative;
     overflow: hidden;
-    transition: background 0.15s, transform 0.15s;
+    transition: background 0.15s, transform 0.15s, border-color 0.15s;
 }
 
 .dark-mode-btn:hover {
     background: rgba(10, 22, 64, 0.55);
-    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
 }
 
 .dark-mode-btn:active { transform: scale(0.97); }
 
-/* Icon swap animation */
 .dark-mode-btn .icon-moon,
 .dark-mode-btn .icon-sun {
     position: absolute;
@@ -407,8 +475,6 @@ body.dark-mode .dark-mode-btn .icon-sun {
     opacity: 1;
     transform: rotate(0deg) scale(1);
 }
-
-/* ── RIPPLE – entfernt ── */
 
 /* ── BUTTON PULSE ── */
 @keyframes btn-pulse {
@@ -438,6 +504,9 @@ body.dark-mode .dark-mode-btn .icon-sun {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 7px;
+
+    padding: 0 12px;
 
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid transparent;
@@ -445,9 +514,29 @@ body.dark-mode .dark-mode-btn .icon-sun {
 
     cursor: pointer;
     color: rgba(255, 255, 255, 0.82);
-    font-size: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: inherit;
 
-    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.menu-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
 }
 
 .menu-button:hover {
@@ -455,22 +544,47 @@ body.dark-mode .dark-mode-btn .icon-sun {
     border-color: rgba(255, 255, 255, 0.28);
     color: #fff;
     transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(10, 22, 64, 0.16);
+}
+
+.menu-button:hover::before {
+    opacity: 1;
 }
 
 .menu-button:active {
     transform: scale(0.97);
+    box-shadow: none;
+}
+
+.menu-button:focus-visible {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow:
+        0 0 0 3px rgba(255, 255, 255, 0.18),
+        0 8px 18px rgba(10, 22, 64, 0.16);
+}
+
+.menu-button i,
+.menu-button span {
+    position: relative;
+    z-index: 1;
+}
+
+.menu-button i {
+    transition: transform 0.15s ease;
+}
+
+.menu-button:hover i {
+    transform: translateY(-1px) scale(1.04);
 }
 
 .games-menu-button {
-    gap: 7px;
-    padding: 0 13px;
-    font-size: 0.875rem;
+    min-width: auto;
 }
 
 .games-menu-chevron {
-    font-size: 0.68rem;
-    opacity: 0.78;
-    transition: transform 0.15s ease;
+    font-size: 0.72rem;
+    opacity: 0.8;
 }
 
 .games-menu-button[aria-expanded="true"] .games-menu-chevron {
@@ -482,7 +596,7 @@ body.dark-mode .dark-mode-btn .icon-sun {
     top: calc(100% + 10px);
     right: 0;
 
-    min-width: 210px;
+    min-width: 230px;
     padding: 6px;
 
     background: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.96), rgba(var(--theme-accent-end-rgb), 0.96));
@@ -521,6 +635,7 @@ body.dark-mode .dark-mode-btn .icon-sun {
 .menu-dropdown .menu-item {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 10px;
 
     width: 100%;
@@ -531,6 +646,7 @@ body.dark-mode .dark-mode-btn .icon-sun {
 
     font-size: 0.875rem;
     font-weight: 500;
+    font-family: inherit;
 
     border-radius: 9px;
     background: transparent;
@@ -538,14 +654,44 @@ body.dark-mode .dark-mode-btn .icon-sun {
 
     cursor: pointer;
     text-align: left;
+    position: relative;
+    overflow: visible;
 
     transition: background 0.12s, color 0.12s, transform 0.12s;
+}
+
+.menu-dropdown .menu-item::before {
+    display: none;
+}
+
+.menu-dropdown .menu-item i {
+    width: 22px;
+    min-width: 22px;
+    text-align: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    transition: transform 0.12s ease;
 }
 
 .menu-dropdown .menu-item:hover {
     background: rgba(255, 255, 255, 0.16);
     color: #fff;
     transform: translateX(2px);
+    box-shadow: none;
+}
+
+.menu-dropdown .menu-item:hover i {
+    transform: none;
+}
+
+.menu-dropdown .menu-item:active {
+    transform: scale(0.98);
+}
+
+.menu-dropdown .menu-item:focus-visible {
+    outline: none;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
 }
 
 body.dark-mode .menu-dropdown {
