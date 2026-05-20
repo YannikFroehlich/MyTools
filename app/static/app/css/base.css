@@ -461,6 +461,22 @@ body.dark-mode .dark-mode-btn .icon-sun {
     transform: scale(0.97);
 }
 
+.games-menu-button {
+    gap: 7px;
+    padding: 0 13px;
+    font-size: 0.875rem;
+}
+
+.games-menu-chevron {
+    font-size: 0.68rem;
+    opacity: 0.78;
+    transition: transform 0.15s ease;
+}
+
+.games-menu-button[aria-expanded="true"] .games-menu-chevron {
+    transform: rotate(180deg);
+}
+
 .menu-dropdown {
     position: absolute;
     top: calc(100% + 10px);

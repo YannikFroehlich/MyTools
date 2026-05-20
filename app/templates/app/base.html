@@ -45,6 +45,25 @@
             </a>
 
             <div class="menu-wrapper">
+                <button class="menu-button games-menu-button" id="games-menu-button" type="button" aria-label="{% translate 'Spiele-Menü öffnen' %}">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <span>{% translate 'Spiele' %}</span>
+                    <i class="fa-solid fa-chevron-down games-menu-chevron"></i>
+                </button>
+
+                <div class="menu-dropdown" id="games-menu-dropdown">
+                    <a href="{% url 'human-benchmark' %}" class="menu-item">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        {% translate 'Human Benchmark' %}
+                    </a>
+                    <a href="" class="menu-item">
+                        <i class="fa-solid fa-car-side"></i>
+                        {% translate 'Racing Game' %}
+                    </a>
+                </div>
+            </div>
+
+            <div class="menu-wrapper">
                 <button class="menu-button" id="menu-button" type="button" aria-label="{% translate 'Weitere Seiten' %}">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
@@ -57,10 +76,6 @@
                     <a href="{% url 'spritkostenrechner' %}" class="menu-item">
                         <i class="fa-solid fa-gas-pump"></i>
                         {% translate 'Spritkosten' %}
-                    </a>
-                    <a href="{% url 'human-benchmark' %}" class="menu-item">
-                        <i class="fa-solid fa-stopwatch"></i>
-                        {% translate 'Human Benchmark' %}
                     </a>
                     <a href="{% url 'genius-search' %}" class="menu-item">
                         <i class="fa-solid fa-music"></i>
