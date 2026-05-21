@@ -910,3 +910,6 @@ def unit_converter_view(request):
     return render(request, "app/unit_converter.html", {
         "converter_labels": converter_labels,
     })
+
+def drift_circuit(request):
+    return render(request, "app/drift_circuit.html")

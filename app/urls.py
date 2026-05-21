@@ -25,4 +25,6 @@ urlpatterns = [
     path("notes/<int:pk>/archive/", note_toggle_archive_view, name="note_toggle_archive"),
 
     path("einheitenrechner/", unit_converter_view, name="unit_converter"),
+
+    path("drift-circuit/", drift_circuit, name="drift-circuit"),
 ]
