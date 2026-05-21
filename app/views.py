@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, Shortcut, ShortcutSection
+from app.models import AvatarCharacter, Shortcut, ShortcutSection, WeatherLocation
 
 import json
 
@@ -249,9 +249,44 @@ def weather(request):
     current_lang = translation.get_language()
     api_key = get_env_value("OPENWEATHER_API_KEY")
 
+    # ───── Gespeicherte Wetter-Orte: Hinzufügen / Löschen ─────
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "add_weather_location":
+            location_name = request.POST.get("location_name", "").strip()
+
+            if location_name:
+                max_order = WeatherLocation.objects.aggregate(Max("order"))["order__max"] or 0
+
+                WeatherLocation.objects.get_or_create(
+                    name=location_name,
+                    defaults={
+                        "order": max_order + 1
+                    }
+                )
+
+                return redirect(f"{request.path}?city={location_name}")
+
+            return redirect(request.path)
+
+        if action == "delete_weather_location":
+            location_id = request.POST.get("location_id")
+            current_city = request.POST.get("current_city", city).strip() or "Berlin"
+
+            if location_id:
+                WeatherLocation.objects.filter(id=location_id).delete()
+
+            return redirect(f"{request.path}?city={current_city}")
+
+        return redirect(request.path)
+
+    saved_locations = WeatherLocation.objects.all()
+
     if not api_key:
         return render(request, 'app/weather.html', {
             "city": city,
+            "saved_locations": saved_locations,
             "error": missing_env_message("OPENWEATHER_API_KEY"),
         })
 
@@ -264,7 +299,11 @@ def weather(request):
         curr_data = curr_response.json()
 
         if not isinstance(curr_data, dict):
-            context = {'error': _("Ungültige Antwort der OpenWeather API.")}
+            context = {
+                'city': city,
+                'saved_locations': saved_locations,
+                'error': _("Ungültige Antwort der OpenWeather API.")
+            }
             return render(request, 'app/weather.html', context)
 
         if curr_response.status_code == 200:
@@ -273,14 +312,23 @@ def weather(request):
             fore_data = fore_response.json()
 
             if not isinstance(fore_data, dict):
-                context = {'error': _("Ungültige Antwort der OpenWeather API.")}
+                context = {
+                    'city': city,
+                    'saved_locations': saved_locations,
+                    'error': _("Ungültige Antwort der OpenWeather API.")
+                }
                 return render(request, 'app/weather.html', context)
 
             if fore_response.status_code != 200:
-                context = {'error': _("Wettervorhersage konnte nicht geladen werden.")}
+                context = {
+                    'city': city,
+                    'saved_locations': saved_locations,
+                    'error': _("Wettervorhersage konnte nicht geladen werden.")
+                }
                 return render(request, 'app/weather.html', context)
 
             daily_groups = defaultdict(list)
+
             for item in fore_data.get('list', []):
                 date_key = item['dt_txt'].split(' ')[0]
                 daily_groups[date_key].append(item)
@@ -288,6 +336,7 @@ def weather(request):
             # ───── 5 Tage Forecast ─────
 
             forecast_list = []
+
             for date_str, items in list(daily_groups.items())[:5]:
                 temps = [i['main']['temp'] for i in items]
 
@@ -311,8 +360,10 @@ def weather(request):
             # ───── Stündliche Vorhersage ─────
 
             hourly_forecast = []
+
             for item in fore_data['list'][:8]:
                 dt_obj = datetime.fromtimestamp(item['dt'])
+
                 hourly_forecast.append({
                     'time': dt_obj.strftime("%H:%M"),
                     'temp': round(item['main']['temp']),
@@ -334,8 +385,6 @@ def weather(request):
                 tz=timezone.utc
             ).strftime("%H:%M")
 
-            # ───── Vollständiger Context (kein Duplikat mehr) ─────
-
             context = {
                 'city': curr_data['name'],
                 'country': curr_data['sys']['country'],
@@ -350,24 +399,57 @@ def weather(request):
                 'sunrise': sunrise,
                 'sunset': sunset,
                 'current_lang': current_lang,
+                'saved_locations': saved_locations,
             }
+
         else:
             api_message = curr_data.get("message")
+
             if curr_response.status_code == 401:
-                context = {'error': _("OpenWeather API-Key ist ungültig.")}
+                context = {
+                    'city': city,
+                    'saved_locations': saved_locations,
+                    'error': _("OpenWeather API-Key ist ungültig.")
+                }
             elif curr_response.status_code == 404:
-                context = {'error': _("Standort nicht gefunden.")}
+                context = {
+                    'city': city,
+                    'saved_locations': saved_locations,
+                    'error': _("Standort nicht gefunden.")
+                }
             elif api_message:
-                context = {'error': _("OpenWeather Fehler: %(message)s") % {"message": api_message}}
+                context = {
+                    'city': city,
+                    'saved_locations': saved_locations,
+                    'error': _("OpenWeather Fehler: %(message)s") % {"message": api_message}
+                }
             else:
-                context = {'error': _("Standort nicht gefunden.")}
+                context = {
+                    'city': city,
+                    'saved_locations': saved_locations,
+                    'error': _("Standort nicht gefunden.")
+                }
 
     except requests.RequestException as e:
-        context = {'error': _("Verbindungsfehler: %(error)s") % {"error": str(e)}}
+        context = {
+            'city': city,
+            'saved_locations': saved_locations,
+            'error': _("Verbindungsfehler: %(error)s") % {"error": str(e)}
+        }
+
     except (KeyError, IndexError, TypeError, ValueError):
-        context = {'error': _("Ungültige Antwort der OpenWeather API.")}
+        context = {
+            'city': city,
+            'saved_locations': saved_locations,
+            'error': _("Ungültige Antwort der OpenWeather API.")
+        }
+
     except Exception as e:
-        context = {'error': _("Verbindungsfehler: %(error)s") % {"error": str(e)}}
+        context = {
+            'city': city,
+            'saved_locations': saved_locations,
+            'error': _("Verbindungsfehler: %(error)s") % {"error": str(e)}
+        }
 
     return render(request, 'app/weather.html', context)
 
