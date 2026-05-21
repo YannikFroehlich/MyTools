@@ -27,4 +27,6 @@ urlpatterns = [
     path("einheitenrechner/", unit_converter_view, name="unit_converter"),
 
     path("drift-circuit/", drift_circuit, name="drift-circuit"),
+
+    path("stream-deck/", stream_deck, name="stream-deck"),
 ]

@@ -913,3 +913,6 @@ def unit_converter_view(request):
 
 def drift_circuit(request):
     return render(request, "app/drift_circuit.html")
+
+def stream_deck(request):
+    return render(request, "app/stream_deck.html")
