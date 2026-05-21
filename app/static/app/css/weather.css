@@ -673,348 +673,6 @@
     text-transform: uppercase;
 }
 
-
-/* ───────────────── SAVED LOCATIONS ───────────────── */
-
-.saved-locations-card {
-    position: relative;
-    overflow: hidden;
-
-    width: 100%;
-    margin: -6px auto 24px;
-    padding: 18px;
-
-    background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(var(--theme-accent-end-rgb), 0.11));
-    border: 1px solid rgba(120, 140, 180, 0.2);
-    border-radius: 24px;
-
-    box-shadow:
-        0 14px 34px rgba(var(--theme-accent-rgb), 0.09),
-        inset 0 1px 0 rgba(255, 255, 255, 0.78);
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-
-    animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.saved-locations-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at top right, rgba(var(--theme-accent-end-rgb), 0.16), transparent 34%),
-        radial-gradient(circle at bottom left, rgba(var(--theme-accent-rgb), 0.08), transparent 32%);
-    pointer-events: none;
-}
-
-.saved-locations-header,
-.saved-locations-actions,
-.saved-locations-list,
-.saved-locations-empty {
-    position: relative;
-    z-index: 1;
-}
-
-.saved-locations-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 14px;
-}
-
-.saved-locations-header h2 {
-    margin: 0 0 4px;
-    color: #172033;
-    font-size: 16px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-}
-
-.saved-locations-header p {
-    margin: 0;
-    max-width: 540px;
-    color: #728196;
-    font-size: 13px;
-    line-height: 1.45;
-}
-
-.save-current-location-button,
-.saved-location-add-form button,
-.saved-location-chip,
-.saved-location-delete {
-    border: none;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.save-current-location-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 42px;
-    padding: 0 15px;
-    flex-shrink: 0;
-
-    color: var(--theme-accent-text);
-    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
-    border-radius: 14px;
-
-    box-shadow: 0 10px 24px rgba(var(--theme-accent-rgb), 0.16);
-
-    transition:
-        transform 0.22s ease,
-        filter 0.2s ease,
-        box-shadow 0.22s ease;
-}
-
-.save-current-location-button:hover {
-    filter: brightness(1.06);
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(var(--theme-accent-rgb), 0.22);
-}
-
-.save-current-location-button:active {
-    transform: scale(0.97);
-}
-
-
-.save-current-location-button.is-success {
-    filter: brightness(1.08);
-    box-shadow:
-        0 14px 30px rgba(var(--theme-accent-rgb), 0.22),
-        0 0 0 4px rgba(var(--theme-accent-rgb), 0.08);
-}
-
-
-.saved-location-add-form {
-    display: flex;
-    gap: 10px;
-    max-width: 620px;
-}
-
-.saved-location-add-form input {
-    flex: 1;
-    min-width: 0;
-    height: 44px;
-    padding: 0 15px;
-
-    color: #172033;
-    background: rgba(255, 255, 255, 0.74);
-    border: 1px solid rgba(120, 140, 180, 0.22);
-    border-radius: 15px;
-    outline: none;
-
-    font-size: 14px;
-    font-family: inherit;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background-color 0.2s ease;
-}
-
-.saved-location-add-form input:focus {
-    background: rgba(255, 255, 255, 0.92);
-    border-color: rgba(var(--theme-accent-rgb), 0.5);
-    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.08);
-}
-
-.saved-location-add-form button {
-    height: 44px;
-    padding: 0 15px;
-
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-
-    color: #172033;
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(120, 140, 180, 0.22);
-    border-radius: 15px;
-
-    font-weight: 700;
-
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        background-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.saved-location-add-form button:hover {
-    background: rgba(var(--theme-accent-end-rgb), 0.16);
-    border-color: rgba(var(--theme-accent-rgb), 0.28);
-    box-shadow: 0 8px 20px rgba(var(--theme-accent-rgb), 0.09);
-    transform: translateY(-2px);
-}
-
-.saved-locations-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.saved-location-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-
-    padding: 5px;
-    border-radius: 999px;
-
-    background: rgba(255, 255, 255, 0.68);
-    border: 1px solid rgba(120, 140, 180, 0.2);
-
-    box-shadow: 0 8px 18px rgba(var(--theme-accent-rgb), 0.06);
-
-    animation: savedLocationPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-.saved-location-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-
-    min-height: 34px;
-    padding: 0 10px 0 12px;
-
-    color: #172033;
-    background: transparent;
-    border-radius: 999px;
-
-    font-size: 13px;
-    font-weight: 800;
-
-    transition:
-        color 0.2s ease,
-        background-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.saved-location-chip i {
-    color: var(--theme-accent-start);
-    font-size: 12px;
-}
-
-.saved-location-chip:hover {
-    color: var(--theme-accent-start);
-    background: rgba(var(--theme-accent-rgb), 0.08);
-    transform: translateY(-1px);
-}
-
-.saved-location-delete {
-    width: 31px;
-    height: 31px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    color: #94a3b8;
-    background: rgba(255, 255, 255, 0.64);
-    border-radius: 50%;
-
-    transition:
-        color 0.2s ease,
-        background-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.saved-location-delete:hover {
-    color: #ef4444;
-    background: rgba(239, 68, 68, 0.1);
-    transform: rotate(8deg) scale(1.04);
-}
-
-.saved-locations-empty {
-    display: none;
-    margin: 13px 0 0;
-    color: #728196;
-    font-size: 13px;
-}
-
-.saved-locations-empty.is-visible {
-    display: block;
-}
-
-@keyframes savedLocationPop {
-    from {
-        opacity: 0;
-        transform: translateY(8px) scale(0.96);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-body.dark-mode .saved-locations-card {
-    background:
-        linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.18), rgba(0, 0, 0, 0.34));
-    border-color: rgba(var(--theme-accent-end-rgb), 0.24);
-
-    box-shadow:
-        0 14px 36px rgba(0, 0, 0, 0.24),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-body.dark-mode .saved-locations-header h2,
-body.dark-mode .saved-location-add-form button,
-body.dark-mode .saved-location-chip {
-    color: #ffffff;
-}
-
-body.dark-mode .saved-locations-header p,
-body.dark-mode .saved-locations-empty {
-    color: rgba(255, 255, 255, 0.68);
-}
-
-body.dark-mode .saved-location-add-form input,
-body.dark-mode .saved-location-add-form button,
-body.dark-mode .saved-location-item,
-body.dark-mode .saved-location-delete {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(var(--theme-accent-end-rgb), 0.22);
-}
-
-body.dark-mode .saved-location-add-form input {
-    color: #ffffff;
-}
-
-body.dark-mode .saved-location-add-form input::placeholder {
-    color: rgba(255, 255, 255, 0.42);
-}
-
-body.dark-mode .saved-location-add-form input:focus {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(var(--theme-accent-end-rgb), 0.48);
-    box-shadow: 0 0 0 4px rgba(var(--theme-accent-end-rgb), 0.08);
-}
-
-body.dark-mode .saved-location-add-form button:hover,
-body.dark-mode .saved-location-chip:hover {
-    background: rgba(var(--theme-accent-end-rgb), 0.12);
-}
-
-body.dark-mode .saved-location-chip i {
-    color: var(--theme-accent-end);
-}
-
-body.dark-mode .saved-location-delete {
-    color: rgba(255, 255, 255, 0.52);
-}
-
-body.dark-mode .saved-location-delete:hover {
-    color: #fecaca;
-    background: rgba(239, 68, 68, 0.14);
-}
-
 /* ───────────────── ERROR ───────────────── */
 
 .weather-error {
@@ -1280,25 +938,6 @@ body.dark-mode .weather-error {
     }
 }
 
-@media (max-width: 700px) {
-    .saved-locations-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .save-current-location-button {
-        width: 100%;
-    }
-
-    .saved-location-add-form {
-        flex-direction: column;
-    }
-
-    .saved-location-add-form button {
-        justify-content: center;
-    }
-}
-
 @media (max-width: 560px) {
     .weather-page {
         padding: 14px 12px 22px;
@@ -1414,238 +1053,163 @@ body.dark-mode .weather-error {
     }
 }
 
-/* ───────────────── SAVED WEATHER LOCATIONS ───────────────── */
+/* ───────────────── COMPACT SAVED LOCATIONS NEXT TO SEARCH ───────────────── */
 
 .weather-page {
     text-align: left;
 }
 
-.saved-locations-card {
-    width: 100%;
-    margin-bottom: 22px;
-    padding: 24px;
-
-    text-align: left;
-
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.saved-locations-header {
-    position: relative;
-    z-index: 1;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 18px;
-}
-
-.saved-locations-header h2 {
-    margin: 0 0 7px;
-
-    color: #172033;
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    text-transform: none;
-}
-
-.saved-locations-header p {
-    margin: 0;
-
-    color: #64748b;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 1.5;
-}
-
-.saved-locations-body {
-    position: relative;
-    z-index: 1;
-
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.saved-location-add-form {
-    display: grid;
-    grid-template-columns: minmax(220px, 1fr) auto;
-    gap: 12px;
+.weather-search-with-saved {
+    justify-content: center;
     align-items: center;
+    gap: 14px;
+    margin-bottom: 26px;
 }
 
-.saved-location-add-input {
-    width: 100%;
-    height: 52px;
+.weather-search-with-saved .weather-search-glow {
+    flex: 0 1 590px;
+    min-width: 280px;
+}
 
-    padding: 0 18px;
+.compact-saved-locations {
+    min-width: 0;
+    max-width: min(620px, 42vw);
 
-    border: 1px solid rgba(120, 140, 180, 0.26);
-    border-radius: 17px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-    background: rgba(255, 255, 255, 0.72);
-    color: #172033;
+.compact-save-current-form,
+.compact-location-open-form,
+.compact-location-delete-form {
+    margin: 0;
+    display: flex;
+}
 
+.compact-save-current-button,
+.compact-location-button,
+.compact-location-delete {
     font-family: inherit;
-    font-size: 15px;
-    font-weight: 600;
-
+    border: none;
     outline: none;
-
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.8),
-        0 10px 24px rgba(var(--theme-accent-rgb), 0.06);
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background-color 0.2s ease,
-        transform 0.2s ease;
 }
 
-.saved-location-add-input::placeholder {
-    color: #8a94a6;
-}
-
-.saved-location-add-input:hover {
-    border-color: rgba(var(--theme-accent-rgb), 0.34);
-    background: rgba(255, 255, 255, 0.86);
-}
-
-.saved-location-add-input:focus {
-    border-color: rgba(var(--theme-accent-rgb), 0.58);
-    background: rgba(255, 255, 255, 0.94);
-    box-shadow:
-        0 0 0 4px rgba(var(--theme-accent-rgb), 0.08),
-        0 14px 30px rgba(var(--theme-accent-rgb), 0.12);
-    transform: translateY(-1px);
-}
-
-.saved-location-add-button,
-.save-current-location-button,
-.saved-location-button,
-.saved-location-delete {
-    font-family: inherit;
-}
-
-.saved-location-add-button,
-.save-current-location-button {
-    min-height: 52px;
+.compact-save-current-button {
+    width: 52px;
+    height: 52px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
 
-    padding: 0 20px;
-
-    border: 1px solid rgba(var(--theme-accent-rgb), 0.25);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.28);
     border-radius: 17px;
 
     background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
     color: var(--theme-accent-text);
 
-    font-size: 15px;
-    font-weight: 800;
-    white-space: nowrap;
-
+    font-size: 17px;
     cursor: pointer;
 
     box-shadow:
         0 14px 30px rgba(var(--theme-accent-rgb), 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
     transition:
         transform 0.18s ease,
-        box-shadow 0.18s ease,
         filter 0.18s ease,
-        border-color 0.18s ease;
+        box-shadow 0.18s ease;
 }
 
-.saved-location-add-button:hover,
-.save-current-location-button:hover {
-    filter: brightness(1.07);
+.compact-save-current-button:hover {
+    filter: brightness(1.08);
     transform: translateY(-2px);
     box-shadow:
         0 18px 38px rgba(var(--theme-accent-rgb), 0.28),
         inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
-.saved-location-add-button:active,
-.save-current-location-button:active {
-    transform: scale(0.97);
+.compact-save-current-button:active {
+    transform: scale(0.96);
 }
 
-.saved-location-add-button:disabled,
-.save-current-location-button:disabled {
-    cursor: wait;
-    opacity: 0.75;
-    transform: none;
-}
+.compact-location-scroll {
+    min-width: 0;
+    max-width: 100%;
 
-.saved-location-list {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 4px 2px 7px;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--theme-accent-rgb), 0.36) transparent;
 }
 
-.saved-location-item {
+.compact-location-scroll::-webkit-scrollbar {
+    height: 5px;
+}
+
+.compact-location-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.compact-location-scroll::-webkit-scrollbar-thumb {
+    background: rgba(var(--theme-accent-rgb), 0.36);
+    border-radius: 999px;
+}
+
+.compact-location-item {
+    flex: 0 0 auto;
+
     display: inline-flex;
     align-items: center;
 
-    border: 1px solid rgba(120, 140, 180, 0.22);
+    min-height: 48px;
+
+    border: 1px solid rgba(120, 140, 180, 0.24);
     border-radius: 999px;
 
-    background: rgba(255, 255, 255, 0.66);
+    background: rgba(255, 255, 255, 0.68);
 
     overflow: hidden;
 
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.75),
-        0 8px 18px rgba(var(--theme-accent-rgb), 0.07);
+        inset 0 1px 0 rgba(255, 255, 255, 0.78),
+        0 8px 20px rgba(var(--theme-accent-rgb), 0.08);
 
     transition:
         transform 0.18s ease,
-        box-shadow 0.18s ease,
         border-color 0.18s ease,
+        box-shadow 0.18s ease,
         background-color 0.18s ease;
 }
 
-.saved-location-item:hover {
+.compact-location-item:hover {
     transform: translateY(-2px);
-    border-color: rgba(var(--theme-accent-rgb), 0.32);
-    background: rgba(255, 255, 255, 0.86);
+    border-color: rgba(var(--theme-accent-rgb), 0.34);
+    background: rgba(255, 255, 255, 0.9);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.85),
-        0 12px 26px rgba(var(--theme-accent-rgb), 0.12);
+        inset 0 1px 0 rgba(255, 255, 255, 0.88),
+        0 12px 28px rgba(var(--theme-accent-rgb), 0.13);
 }
 
-.saved-location-open-form,
-.saved-location-delete-form,
-.save-current-location-form {
-    margin: 0;
-}
-
-.saved-location-open-form {
-    margin: 0;
-    display: flex;
-}
-
-.saved-location-button {
-    min-height: 42px;
-    height: 100%;
+.compact-location-button {
+    max-width: 155px;
+    min-height: 48px;
 
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
     gap: 8px;
 
-    padding: 0 14px 0 16px;
+    padding: 0 13px 0 16px;
 
-    border: none;
     border-radius: 999px 0 0 999px;
 
     background: transparent;
@@ -1662,33 +1226,34 @@ body.dark-mode .weather-error {
         background-color 0.18s ease;
 }
 
-.saved-location-button:hover {
+.compact-location-button:hover {
     color: var(--theme-accent-start);
-    background: rgba(var(--theme-accent-rgb), 0.06);
+    background: rgba(var(--theme-accent-rgb), 0.07);
 }
 
-.saved-location-button i {
+.compact-location-button i {
+    flex-shrink: 0;
     color: var(--theme-accent-start);
     font-size: 13px;
 }
 
-.saved-location-button:hover {
-    color: var(--theme-accent-start);
-    background: rgba(var(--theme-accent-rgb), 0.06);
+.compact-location-button span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.saved-location-delete {
-    width: 38px;
-    min-height: 42px;
+.compact-location-delete {
+    width: 42px;
+    min-height: 48px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    border: none;
     border-left: 1px solid rgba(120, 140, 180, 0.18);
 
-    background: rgba(15, 23, 42, 0.03);
+    background: rgba(15, 23, 42, 0.035);
     color: #94a3b8;
 
     cursor: pointer;
@@ -1698,156 +1263,107 @@ body.dark-mode .weather-error {
         color 0.18s ease;
 }
 
-.saved-location-delete:hover {
+.compact-location-delete:hover {
     background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
 }
 
-.saved-location-empty {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-
-    width: fit-content;
-
-    margin: 0;
-    padding: 11px 14px;
-
-    border: 1px dashed rgba(120, 140, 180, 0.32);
-    border-radius: 15px;
-
-    background: rgba(255, 255, 255, 0.44);
-    color: #728196;
-
-    font-size: 14px;
-    font-weight: 700;
+/* Optional: falls in der HTML noch der alte große Block steht, nicht mehr anzeigen */
+.saved-locations-card {
+    display: none;
 }
 
-.saved-location-empty i {
-    color: var(--theme-accent-start);
-}
+/* ───────────────── COMPACT SAVED LOCATIONS DARK MODE ───────────────── */
 
-/* ───────────────── SAVED LOCATIONS DARK MODE ───────────────── */
-
-body.dark-mode .saved-locations-header h2 {
-    color: #ffffff;
-}
-
-body.dark-mode .saved-locations-header p {
-    color: rgba(255, 255, 255, 0.68);
-}
-
-body.dark-mode .saved-location-add-input {
+body.dark-mode .compact-location-item {
     background: rgba(15, 23, 42, 0.52);
-    border-color: rgba(var(--theme-accent-end-rgb), 0.24);
-    color: #ffffff;
-
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.05),
-        0 10px 24px rgba(0, 0, 0, 0.12);
-}
-
-body.dark-mode .saved-location-add-input::placeholder {
-    color: rgba(255, 255, 255, 0.42);
-}
-
-body.dark-mode .saved-location-add-input:hover,
-body.dark-mode .saved-location-add-input:focus {
-    background: rgba(15, 23, 42, 0.72);
-    border-color: rgba(var(--theme-accent-end-rgb), 0.44);
-}
-
-body.dark-mode .saved-location-item {
-    background: rgba(15, 23, 42, 0.48);
-    border-color: rgba(var(--theme-accent-end-rgb), 0.2);
+    border-color: rgba(var(--theme-accent-end-rgb), 0.22);
 
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.04),
-        0 8px 18px rgba(0, 0, 0, 0.18);
+        0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
-body.dark-mode .saved-location-item:hover {
-    background: rgba(15, 23, 42, 0.68);
-    border-color: rgba(var(--theme-accent-end-rgb), 0.34);
+body.dark-mode .compact-location-item:hover {
+    background: rgba(15, 23, 42, 0.74);
+    border-color: rgba(var(--theme-accent-end-rgb), 0.38);
 }
 
-body.dark-mode .saved-location-button {
+body.dark-mode .compact-location-button {
     color: #ffffff;
 }
 
-body.dark-mode .saved-location-button i,
-body.dark-mode .saved-location-empty i {
-    color: var(--theme-accent-end);
-}
-
-body.dark-mode .saved-location-button:hover {
+body.dark-mode .compact-location-button:hover {
     color: var(--theme-accent-end);
     background: rgba(var(--theme-accent-end-rgb), 0.08);
 }
 
-body.dark-mode .saved-location-delete {
+body.dark-mode .compact-location-button i {
+    color: var(--theme-accent-end);
+}
+
+body.dark-mode .compact-location-delete {
     border-left-color: rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.035);
     color: rgba(255, 255, 255, 0.48);
 }
 
-body.dark-mode .saved-location-delete:hover {
+body.dark-mode .compact-location-delete:hover {
     background: rgba(248, 113, 113, 0.12);
     color: #fca5a5;
 }
 
-body.dark-mode .saved-location-empty {
-    background: rgba(15, 23, 42, 0.36);
-    border-color: rgba(var(--theme-accent-end-rgb), 0.22);
-    color: rgba(255, 255, 255, 0.66);
-}
+/* ───────────────── COMPACT SAVED LOCATIONS RESPONSIVE ───────────────── */
 
-/* ───────────────── SAVED LOCATIONS RESPONSIVE ───────────────── */
-
-@media (max-width: 760px) {
-    .saved-locations-card {
-        padding: 18px;
+@media (max-width: 1100px) {
+    .weather-search-with-saved {
+        flex-wrap: wrap;
     }
 
-    .saved-locations-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .save-current-location-form,
-    .save-current-location-button {
+    .compact-saved-locations {
         width: 100%;
+        max-width: 590px;
+        justify-content: flex-start;
     }
 
-    .saved-location-add-form {
-        grid-template-columns: 1fr;
-    }
-
-    .saved-location-add-button {
-        width: 100%;
-    }
-}
-
-@media (max-width: 420px) {
-    .saved-locations-header h2 {
-        font-size: 19px;
-    }
-
-    .saved-locations-header p {
-        font-size: 14px;
-    }
-
-    .saved-location-item {
-        width: 100%;
-        border-radius: 16px;
-    }
-
-    .saved-location-open-form {
+    .compact-location-scroll {
         flex: 1;
     }
+}
 
-    .saved-location-button {
-        width: 100%;
-        justify-content: flex-start;
+@media (max-width: 560px) {
+    .weather-search-with-saved {
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .weather-search-with-saved .weather-search-glow {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    .compact-saved-locations {
+        max-width: 100%;
+    }
+
+    .compact-save-current-button {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+    }
+
+    .compact-location-item {
+        min-height: 44px;
+    }
+
+    .compact-location-button {
+        max-width: 130px;
+        min-height: 44px;
+        font-size: 13px;
+    }
+
+    .compact-location-delete {
+        width: 38px;
+        min-height: 44px;
     }
 }

@@ -12,7 +12,7 @@
 {% block content %}
 <div class="content weather-page">
 
-    <div class="weather-search-wrapper">
+    <div class="weather-search-wrapper weather-search-with-saved">
         <div class="weather-search-glow">
             <form method="GET" class="weather-search-form">
                 <input type="text"
@@ -25,65 +25,43 @@
                 </button>
             </form>
         </div>
-    </div>
 
-    <div class="weather-card saved-locations-card">
-        <div class="saved-locations-header">
-            <div>
-                <h2>{% translate 'Gespeicherte Orte' %}</h2>
-                <p>{% translate 'Speichere deine Lieblingsorte und rufe sie mit einem Klick wieder auf.' %}</p>
-            </div>
-
+        <div class="compact-saved-locations" aria-label="{% translate 'Gespeicherte Orte' %}">
             {% if city %}
-                <form method="POST" class="save-current-location-form">
+                <form method="POST" class="compact-save-current-form">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="add_weather_location">
                     <input type="hidden" name="location_name" value="{{ city }}">
-                    <button type="submit" class="save-current-location-button">
+                    <button type="submit"
+                            class="compact-save-current-button"
+                            title="{% translate 'Aktuellen Ort speichern' %}">
                         <i class="fa-solid fa-plus"></i>
-                        <span>{% translate 'Aktuellen Ort speichern' %}</span>
                     </button>
                 </form>
             {% endif %}
-        </div>
-
-        <div class="saved-locations-body">
-            <form method="POST" class="saved-location-add-form">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="add_weather_location">
-
-                <input type="text"
-                       name="location_name"
-                       class="saved-location-add-input"
-                       placeholder="{% translate 'Ort hinzufügen, z.B. Osnabrück' %}"
-                       autocomplete="off">
-
-                <button type="submit" class="saved-location-add-button">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>{% translate 'Hinzufügen' %}</span>
-                </button>
-            </form>
 
             {% if saved_locations %}
-                <div class="saved-location-list">
+                <div class="compact-location-scroll">
                     {% for location in saved_locations %}
-                        <div class="saved-location-item">
-                            <form method="GET" class="saved-location-open-form">
+                        <div class="compact-location-item">
+                            <form method="GET" class="compact-location-open-form">
                                 <input type="hidden" name="city" value="{{ location.name }}">
-                                <button type="submit" class="saved-location-button">
+                                <button type="submit"
+                                        class="compact-location-button"
+                                        title="{{ location.name }}">
                                     <i class="fa-solid fa-location-dot"></i>
                                     <span>{{ location.name }}</span>
                                 </button>
                             </form>
 
-                            <form method="POST" class="saved-location-delete-form">
+                            <form method="POST" class="compact-location-delete-form">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="delete_weather_location">
                                 <input type="hidden" name="location_id" value="{{ location.id }}">
                                 <input type="hidden" name="current_city" value="{{ city }}">
 
                                 <button type="submit"
-                                        class="saved-location-delete"
+                                        class="compact-location-delete"
                                         data-location-name="{{ location.name }}"
                                         aria-label="{% translate 'Ort löschen' %}">
                                     <i class="fa-solid fa-xmark"></i>
@@ -91,11 +69,6 @@
                             </form>
                         </div>
                     {% endfor %}
-                </div>
-            {% else %}
-                <div class="saved-location-empty">
-                    <i class="fa-regular fa-bookmark"></i>
-                    <span>{% translate 'Noch keine Orte gespeichert.' %}</span>
                 </div>
             {% endif %}
         </div>
