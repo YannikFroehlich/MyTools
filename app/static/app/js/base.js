@@ -2,18 +2,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const themeStorageKey = 'customTheme';
     const themePresetStorageKey = 'customThemePreset';
+
     const defaultTheme = {
         navStart: '#1a56d6',
         navEnd: '#5aadee',
         pageBg: '#dce5f5',
         footerBg: '#ffffff',
     };
+
     const darkDefaultTheme = {
         navStart: '#0e2d6e',
         navEnd: '#2a6ea0',
         pageBg: '#12151f',
         footerBg: '#1a1d2b',
     };
+
     const themePresets = {
         light: {
             sky: defaultTheme,
@@ -97,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyCustomTheme(theme) {
         body.classList.add('custom-theme');
+
         document.documentElement.style.setProperty('--theme-nav-start', theme.navStart);
         document.documentElement.style.setProperty('--theme-nav-end', theme.navEnd);
         document.documentElement.style.setProperty('--theme-accent-start', theme.navStart);
@@ -114,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearCustomTheme() {
         body.classList.remove('custom-theme');
+
         [
             '--theme-nav-start',
             '--theme-nav-end',
@@ -217,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeEditorPanel = document.getElementById('theme-editor-panel');
     const themeEditorClose = document.getElementById('theme-editor-close');
     const themeResetButton = document.getElementById('theme-reset-button');
+
     const themeInputs = {
         navStart: document.getElementById('theme-nav-start'),
         navEnd: document.getElementById('theme-nav-end'),
@@ -244,6 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveThemeFromInputs() {
         activeThemePreset = null;
         localStorage.removeItem(themePresetStorageKey);
+
         activeCustomTheme = readThemeInputs();
         applyCustomTheme(activeCustomTheme);
         localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
@@ -272,7 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 syncThemeInputs(preset);
                 activeThemePreset = button.dataset.preset;
                 activeCustomTheme = { ...preset };
+
                 applyCustomTheme(activeCustomTheme);
+
                 localStorage.setItem(themePresetStorageKey, activeThemePreset);
                 localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
             });
@@ -281,8 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
         themeResetButton?.addEventListener('click', () => {
             activeCustomTheme = null;
             activeThemePreset = null;
+
             localStorage.removeItem(themeStorageKey);
             localStorage.removeItem(themePresetStorageKey);
+
             syncThemeInputs(defaultThemeForMode());
             clearCustomTheme();
         });
@@ -303,35 +314,62 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* ── MENU BUTTON ── */
-    const menuButton = document.getElementById('menu-button');
-    const menuDropdown = document.getElementById('menu-dropdown');
+    /* ── DROPDOWN MENÜS ── */
 
-    if (menuButton && menuDropdown) {
-        menuButton.addEventListener('click', (event) => {
+    function setupDropdown(buttonId, dropdownId, otherDropdownIds = []) {
+        const button = document.getElementById(buttonId);
+        const dropdown = document.getElementById(dropdownId);
+
+        if (!button || !dropdown) return;
+
+        button.addEventListener('click', (event) => {
             event.stopPropagation();
-            menuDropdown.classList.toggle('open');
+
+            otherDropdownIds.forEach((id) => {
+                const otherDropdown = document.getElementById(id);
+
+                if (otherDropdown) {
+                    otherDropdown.classList.remove('open');
+                }
+            });
+
+            dropdown.classList.toggle('open');
+        });
+
+        dropdown.querySelectorAll('a, button').forEach((item) => {
+            item.addEventListener('click', () => {
+                dropdown.classList.remove('open');
+            });
         });
 
         document.addEventListener('click', (event) => {
-            const clickedInsideDropdown = menuDropdown.contains(event.target);
-            const clickedMenuButton = menuButton.contains(event.target);
+            const clickedInsideDropdown = dropdown.contains(event.target);
+            const clickedButton = button.contains(event.target);
 
-            if (!clickedInsideDropdown && !clickedMenuButton) {
-                menuDropdown.classList.remove('open');
+            if (!clickedInsideDropdown && !clickedButton) {
+                dropdown.classList.remove('open');
             }
-        });
-
-        menuDropdown.querySelectorAll('a, button').forEach((item) => {
-            item.addEventListener('click', () => {
-                menuDropdown.classList.remove('open');
-            });
         });
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
-                menuDropdown.classList.remove('open');
+                dropdown.classList.remove('open');
             }
         });
     }
+
+    setupDropdown('games-menu-button', 'games-menu-dropdown', [
+        'menu-dropdown',
+        'google-apps-menu-dropdown'
+    ]);
+
+    setupDropdown('google-apps-menu-button', 'google-apps-menu-dropdown', [
+        'menu-dropdown',
+        'games-menu-dropdown'
+    ]);
+
+    setupDropdown('menu-button', 'menu-dropdown', [
+        'games-menu-dropdown',
+        'google-apps-menu-dropdown'
+    ]);
 });

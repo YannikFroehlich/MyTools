@@ -8,10 +8,6 @@ on:
       - "**"
 
   pull_request:
-    branches:
-      - main
-      - develop
-      - addfeature
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -21,9 +17,94 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  osv_scan:
+    name: OSV Security Scan
+    runs-on: self-hosted
+
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: OSV Scanner installieren
+        run: |
+          set -e
+
+          OSV_VERSION="v2.3.8"
+
+          curl -L \
+            "https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}/osv-scanner_linux_amd64" \
+            -o osv-scanner
+
+          chmod +x osv-scanner
+
+          ./osv-scanner --version
+
+      - name: OSV Scanner ausführen
+        run: |
+          echo ""
+          echo "============================================================"
+          echo "Starte OSV Security Scan..."
+          echo "Dieser Schritt ist nur eine Warnung und blockiert den Workflow nicht."
+          echo "============================================================"
+          echo ""
+
+          set +e
+
+          ./osv-scanner scan source -r . \
+            --no-resolve \
+            --skip-git \
+            --skip-path .venv \
+            --skip-path venv \
+            --skip-path node_modules \
+            --skip-path staticfiles \
+            --skip-path media \
+            --skip-path .git
+
+          OSV_EXIT_CODE=$?
+
+          echo ""
+          echo "============================================================"
+          echo "OSV Scan beendet mit Exit-Code: $OSV_EXIT_CODE"
+          echo ""
+          echo "Wichtig:"
+          echo "- Dieser Exit-Code wird ignoriert."
+          echo "- Der Workflow läuft weiter."
+          echo "- Wenn Schwachstellen gefunden wurden, stehen sie oben im Log."
+          echo "============================================================"
+
+          exit 0
+
+      - name: Hinweis zum OSV Scan
+        if: always()
+        run: |
+          echo ""
+          echo "============================================================"
+          echo "OSV Security Scan wurde ausgeführt."
+          echo ""
+          echo "Wenn Sicherheitslücken gefunden wurden, findest du sie im Log vom Schritt:"
+          echo "'OSV Scanner ausführen'"
+          echo ""
+          echo "Dort stehen normalerweise:"
+          echo "- Paketname"
+          echo "- installierte Version"
+          echo "- OSV-ID"
+          echo "- CVE-ID, falls vorhanden"
+          echo "- Link zur Schwachstelle"
+          echo "- betroffene Versionen"
+          echo "- mögliche Fix-Versionen"
+          echo ""
+          echo "Der Workflow läuft trotz Funden weiter."
+          echo "============================================================"
+          echo ""
+
   test:
     name: Test Django App
     runs-on: self-hosted
+    needs: osv_scan
 
     env:
       USE_SQLITE: "True"
