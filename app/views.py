@@ -252,9 +252,14 @@ def weather(request):
         units = "metric"
 
     temperature_unit = "°F" if units == "imperial" else "°C"
-    wind_unit = "mph" if units == "imperial" else "km/h"
+    wind_unit = "mph" if units == "imperial" else "m/s"
     current_lang = translation.get_language()
     api_key = get_env_value("OPENWEATHER_API_KEY")
+
+    def weather_redirect_url(**params):
+        if units != "metric":
+            params["units"] = units
+        return f"{request.path}?{urlencode(params)}"
 
     def weather_context(**extra):
         context = {
@@ -283,7 +288,7 @@ def weather(request):
                     }
                 )
 
-                return redirect(f"{request.path}?{urlencode({'city': location_name, 'units': units})}")
+                return redirect(weather_redirect_url(city=location_name))
 
             return redirect(request.path)
 
@@ -294,7 +299,7 @@ def weather(request):
             if location_id:
                 WeatherLocation.objects.filter(id=location_id).delete()
 
-            return redirect(f"{request.path}?{urlencode({'city': current_city, 'units': units})}")
+            return redirect(weather_redirect_url(city=current_city))
 
         return redirect(request.path)
 
@@ -404,10 +409,6 @@ def weather(request):
                 tz=timezone.utc
             ).strftime("%H:%M")
 
-            wind_speed = curr_data['wind']['speed']
-            if units == "metric":
-                wind_speed = wind_speed * 3.6
-
             context = {
                 'city': curr_data['name'],
                 'country': curr_data['sys']['country'],
@@ -415,7 +416,7 @@ def weather(request):
                 'temperature_unit': temperature_unit,
                 'description': curr_data['weather'][0]['description'],
                 'icon': curr_data['weather'][0]['icon'],
-                'wind_speed': round(wind_speed, 1),
+                'wind_speed': round(curr_data['wind']['speed'], 1),
                 'wind_unit': wind_unit,
                 'humidity': curr_data['main']['humidity'],
                 'pressure': curr_data['main']['pressure'],
