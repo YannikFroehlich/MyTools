@@ -166,7 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const tempEl = document.querySelector(".temperature");
 
     if (tempEl) {
-        const target = parseFloat(tempEl.textContent);
+        const originalTemperatureText = tempEl.textContent.trim();
+        const temperatureSuffix = originalTemperatureText.replace(/^[\d.,\-\s]+/, "") || "°C";
+        const target = parseFloat(originalTemperatureText.replace(",", "."));
 
         if (!isNaN(target)) {
             let start = target - 12;
@@ -178,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const eased = 1 - Math.pow(1 - progress, 3);
                 const current = Math.round(start + (target - start) * eased);
 
-                tempEl.textContent = current + "°C";
+                tempEl.textContent = current + temperatureSuffix;
 
                 if (progress < 1) {
                     requestAnimationFrame(tick);
