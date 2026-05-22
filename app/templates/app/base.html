@@ -241,8 +241,42 @@
         {% endblock %}
     </main>
 
-    <footer>
-        <p>&copy; 2026 MyTools</p>
+    <footer class="site-footer">
+        <div class="footer-glow" aria-hidden="true"></div>
+
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo" aria-hidden="true">
+                    <i class="fa-solid fa-cloud"></i>
+                </div>
+                <div>
+                    <strong>MyTools</strong>
+                </div>
+            </div>
+
+            <div class="footer-links" aria-label="{% translate 'Footer Navigation' %}">
+                <a href="{% url 'home' %}">
+                    <i class="fa-solid fa-house"></i>
+                    {% translate 'Start' %}
+                </a>
+                <a href="{% url 'weather' %}">
+                    <i class="fa-solid fa-cloud-sun"></i>
+                    {% translate 'Wetter' %}
+                </a>
+                <a href="{% url 'notes' %}">
+                    <i class="fa-regular fa-note-sticky"></i>
+                    {% translate 'Notizen' %}
+                </a>
+                <a href="{% url 'about' %}">
+                    <i class="fa-solid fa-circle-info"></i>
+                    {% translate 'Über' %}
+                </a>
+            </div>
+
+            <div class="footer-meta">
+                <span>&copy; 2026 MyTools</span>
+            </div>
+        </div>
     </footer>
 
     {% block extra_js %}{% endblock %}
