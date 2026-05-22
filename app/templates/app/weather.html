@@ -12,9 +12,7 @@
 {% block content %}
 <div class="content weather-page">
 
-    <div class="weather-search-wrapper">
-        <!-- .weather-search-glow übernimmt den äußeren Glow/Focus-Ring -->
-        <!-- .weather-search-form hat overflow:hidden für saubere Ecken  -->
+    <div class="weather-search-wrapper weather-search-with-saved">
         <div class="weather-search-glow">
             <form method="GET" class="weather-search-form">
                 <input type="text"
@@ -22,10 +20,57 @@
                        placeholder="{% translate 'Stadt suchen...' %}"
                        value="{{ city }}"
                        autocomplete="off">
-                <button type="submit">
+                <button type="submit" aria-label="{% translate 'Suchen' %}">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
             </form>
+        </div>
+
+        <div class="compact-saved-locations" aria-label="{% translate 'Gespeicherte Orte' %}">
+            {% if city %}
+                <form method="POST" class="compact-save-current-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_weather_location">
+                    <input type="hidden" name="location_name" value="{{ city }}">
+                    <button type="submit"
+                            class="compact-save-current-button"
+                            title="{% translate 'Aktuellen Ort speichern' %}">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </form>
+            {% endif %}
+
+            {% if saved_locations %}
+                <div class="compact-location-scroll">
+                    {% for location in saved_locations %}
+                        <div class="compact-location-item">
+                            <form method="GET" class="compact-location-open-form">
+                                <input type="hidden" name="city" value="{{ location.name }}">
+                                <button type="submit"
+                                        class="compact-location-button"
+                                        title="{{ location.name }}">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>{{ location.name }}</span>
+                                </button>
+                            </form>
+
+                            <form method="POST" class="compact-location-delete-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete_weather_location">
+                                <input type="hidden" name="location_id" value="{{ location.id }}">
+                                <input type="hidden" name="current_city" value="{{ city }}">
+
+                                <button type="submit"
+                                        class="compact-location-delete"
+                                        data-location-name="{{ location.name }}"
+                                        aria-label="{% translate 'Ort löschen' %}">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -49,7 +94,8 @@
             <div class="current-weather-content">
 
                 <div class="current-main">
-                    <img src="https://openweathermap.org/img/wn/{{ icon }}@4x.png">
+                    <img src="https://openweathermap.org/img/wn/{{ icon }}@4x.png"
+                         alt="{{ description|capfirst }}">
 
                     <div>
                         <div class="temperature">
@@ -109,7 +155,8 @@
                 {% for hour in hourly_forecast %}
                     <div class="hourly-item">
                         <div class="hour-time">{{ hour.time }}</div>
-                        <img src="https://openweathermap.org/img/wn/{{ hour.icon }}@2x.png">
+                        <img src="https://openweathermap.org/img/wn/{{ hour.icon }}@2x.png"
+                             alt="">
                         <div class="hour-temp">{{ hour.temp }}°C</div>
                         <div class="hour-rain">
                             <i class="fa-solid fa-droplet"></i>
@@ -129,7 +176,8 @@
                     <div class="forecast-item">
                         <div class="forecast-day">{{ day.day }}</div>
                         <div class="forecast-date">{{ day.date }}</div>
-                        <img src="https://openweathermap.org/img/wn/{{ day.icon }}@2x.png">
+                        <img src="https://openweathermap.org/img/wn/{{ day.icon }}@2x.png"
+                             alt="{{ day.description|capfirst }}">
                         <div class="forecast-temp">{{ day.temp_max }}°C</div>
                         <div class="forecast-min">{{ day.temp_min }}°C</div>
                         <div class="forecast-rain">
@@ -151,6 +199,7 @@
                     <span>{{ sunrise }}</span>
                     <p>{% translate 'Sonnenaufgang' %}</p>
                 </div>
+
                 <div class="sun-item">
                     <i class="fa-solid fa-moon"></i>
                     <span>{{ sunset }}</span>

@@ -1,0 +1,18 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Stream Deck" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/stream_deck.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'app/js/stream_deck.js' %}"></script>
+{% endblock %}

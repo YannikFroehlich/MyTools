@@ -125,3 +125,16 @@ class Note(models.Model):
 
     def tag_list(self):
         return [tag.strip() for tag in self.tags.split(",") if tag.strip()]
+
+class WeatherLocation(models.Model):
+    name = models.CharField(max_length=120, unique=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        verbose_name = "Wetter-Ort"
+        verbose_name_plural = "Wetter-Orte"
+
+    def __str__(self):
+        return self.name
