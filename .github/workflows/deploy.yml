@@ -23,19 +23,37 @@ jobs:
 
     permissions:
       contents: read
-      security-events: write
       actions: read
 
     steps:
       - name: Repository auschecken
         uses: actions/checkout@v4
 
+      - name: OSV Scanner installieren
+        run: |
+          set -e
+
+          OSV_VERSION="v2.3.8"
+
+          curl -L \
+            "https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}/osv-scanner_linux_amd64" \
+            -o osv-scanner
+
+          chmod +x osv-scanner
+
+          ./osv-scanner --version
+
       - name: OSV Scanner ausführen
-        uses: google/osv-scanner-action/osv-scanner-action@v2
         continue-on-error: true
-        with:
-          scan-args: |-
-            scan source -r .
+        run: |
+          echo ""
+          echo "============================================================"
+          echo "Starte OSV Security Scan..."
+          echo "Dieser Schritt ist nur eine Warnung und blockiert den Workflow nicht."
+          echo "============================================================"
+          echo ""
+
+          ./osv-scanner scan source -r .
 
       - name: Hinweis zum OSV Scan
         if: always()
@@ -44,15 +62,19 @@ jobs:
           echo "============================================================"
           echo "OSV Security Scan wurde ausgeführt."
           echo ""
-          echo "Wichtig:"
-          echo "- Dieser Scan ist absichtlich nur eine WARNUNG."
-          echo "- Der Workflow läuft weiter, auch wenn Sicherheitslücken gefunden wurden."
-          echo "- Wenn OSV etwas gefunden hat, stehen die betroffenen Pakete,"
-          echo "  OSV-IDs, CVEs und Links direkt im Log vom Schritt:"
-          echo "  'OSV Scanner ausführen'"
+          echo "Wenn Sicherheitslücken gefunden wurden, findest du sie im Log vom Schritt:"
+          echo "'OSV Scanner ausführen'"
           echo ""
-          echo "Dort siehst du dann auch, welche Version betroffen ist"
-          echo "und auf welche Version du aktualisieren solltest."
+          echo "Dort stehen normalerweise:"
+          echo "- Paketname"
+          echo "- installierte Version"
+          echo "- OSV-ID"
+          echo "- CVE-ID, falls vorhanden"
+          echo "- Link zur Schwachstelle"
+          echo "- betroffene Versionen"
+          echo "- mögliche Fix-Versionen"
+          echo ""
+          echo "Der Workflow läuft trotz Funden weiter."
           echo "============================================================"
           echo ""
 
