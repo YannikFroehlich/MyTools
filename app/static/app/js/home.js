@@ -344,6 +344,58 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) {
+        document.querySelectorAll(".shortcut-card").forEach(card => {
+            let revealTimer = null;
+            let suppressNextClick = false;
+
+            card.addEventListener("pointerdown", event => {
+                if (event.pointerType === "mouse" || event.target.closest(".shortcut-card-actions")) {
+                    return;
+                }
+
+                revealTimer = window.setTimeout(() => {
+                    document.querySelectorAll(".shortcut-card.actions-open").forEach(openCard => {
+                        if (openCard !== card) {
+                            openCard.classList.remove("actions-open");
+                        }
+                    });
+
+                    card.classList.add("actions-open");
+                    suppressNextClick = true;
+                }, 450);
+            });
+
+            card.addEventListener("pointerup", () => {
+                window.clearTimeout(revealTimer);
+            });
+
+            card.addEventListener("pointercancel", () => {
+                window.clearTimeout(revealTimer);
+            });
+
+            card.addEventListener("click", event => {
+                if (!suppressNextClick) {
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+                suppressNextClick = false;
+            }, true);
+        });
+
+        document.addEventListener("click", event => {
+            if (event.target.closest(".shortcut-card")) {
+                return;
+            }
+
+            document.querySelectorAll(".shortcut-card.actions-open").forEach(card => {
+                card.classList.remove("actions-open");
+            });
+        });
+    }
+
     if (closeShortcutModalButton && shortcutModal) {
         closeShortcutModalButton.addEventListener("click", () => closeModal(shortcutModal));
         shortcutModal.addEventListener("click", event => {

@@ -47,6 +47,51 @@
         background-color 0.22s ease;
 }
 
+.weather-search-glow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 760px;
+}
+
+.weather-unit-form {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.weather-unit-toggle {
+    height: 52px;
+    min-width: 142px;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 12px;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(120, 140, 180, 0.28);
+    box-shadow:
+        0 14px 34px rgba(var(--theme-accent-rgb), 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.weather-unit-toggle i {
+    color: var(--theme-accent-start);
+    font-size: 0.92rem;
+}
+
+.weather-unit-toggle select {
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #172033;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
 .weather-search-form:hover {
     border-color: rgba(var(--theme-accent-rgb), 0.34);
     box-shadow:
@@ -702,6 +747,26 @@ body.dark-mode .weather-search-form {
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+body.dark-mode .weather-unit-toggle {
+    background: linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.18), rgba(0, 0, 0, 0.34));
+    border-color: rgba(var(--theme-accent-end-rgb), 0.24);
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .weather-unit-toggle i {
+    color: var(--theme-accent-end);
+}
+
+body.dark-mode .weather-unit-toggle select {
+    color: #ffffff;
+}
+
+body.dark-mode .weather-unit-toggle select option {
+    color: #111827;
+}
+
 body.dark-mode .weather-search-form:hover {
     border-color: rgba(var(--theme-accent-end-rgb), 0.24);
     box-shadow:
@@ -1067,7 +1132,7 @@ body.dark-mode .weather-error {
 }
 
 .weather-search-with-saved .weather-search-glow {
-    flex: 0 1 590px;
+    flex: 0 1 760px;
     min-width: 280px;
 }
 
@@ -1322,7 +1387,7 @@ body.dark-mode .compact-location-delete:hover {
 
     .compact-saved-locations {
         width: 100%;
-        max-width: 590px;
+        max-width: 760px;
         justify-content: flex-start;
     }
 
@@ -1340,6 +1405,24 @@ body.dark-mode .compact-location-delete:hover {
     .weather-search-with-saved .weather-search-glow {
         flex: 1 1 100%;
         min-width: 0;
+        max-width: 100%;
+    }
+
+    .weather-search-glow {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .weather-unit-form,
+    .weather-unit-toggle {
+        width: 100%;
+    }
+
+    .weather-unit-toggle {
+        height: 44px;
+        justify-content: center;
+        border-radius: 15px;
     }
 
     .compact-saved-locations {

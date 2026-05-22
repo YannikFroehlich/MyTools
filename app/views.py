@@ -1,5 +1,6 @@
 import os
 from collections import defaultdict
+from urllib.parse import urlencode
 
 from django.shortcuts import render, redirect, get_object_or_404
 import requests
@@ -246,8 +247,29 @@ def weather(request):
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
     city = request.GET.get("city", "Berlin")
+    units = request.GET.get("units") or request.POST.get("units") or "metric"
+    if units not in {"metric", "imperial"}:
+        units = "metric"
+
+    temperature_unit = "°F" if units == "imperial" else "°C"
+    wind_unit = "mph" if units == "imperial" else "m/s"
     current_lang = translation.get_language()
     api_key = get_env_value("OPENWEATHER_API_KEY")
+
+    def weather_redirect_url(**params):
+        if units != "metric":
+            params["units"] = units
+        return f"{request.path}?{urlencode(params)}"
+
+    def weather_context(**extra):
+        context = {
+            "city": city,
+            "units": units,
+            "temperature_unit": temperature_unit,
+            "wind_unit": wind_unit,
+        }
+        context.update(extra)
+        return context
 
     # ───── Gespeicherte Wetter-Orte: Hinzufügen / Löschen ─────
     if request.method == "POST":
@@ -266,7 +288,7 @@ def weather(request):
                     }
                 )
 
-                return redirect(f"{request.path}?city={location_name}")
+                return redirect(weather_redirect_url(city=location_name))
 
             return redirect(request.path)
 
@@ -277,20 +299,19 @@ def weather(request):
             if location_id:
                 WeatherLocation.objects.filter(id=location_id).delete()
 
-            return redirect(f"{request.path}?city={current_city}")
+            return redirect(weather_redirect_url(city=current_city))
 
         return redirect(request.path)
 
     saved_locations = WeatherLocation.objects.all()
 
     if not api_key:
-        return render(request, 'app/weather.html', {
-            "city": city,
-            "saved_locations": saved_locations,
-            "error": missing_env_message("OPENWEATHER_API_KEY"),
-        })
+        return render(request, 'app/weather.html', weather_context(
+            saved_locations=saved_locations,
+            error=missing_env_message("OPENWEATHER_API_KEY"),
+        ))
 
-    params = f"&appid={api_key}&units=metric&lang={current_lang}"
+    params = f"&appid={api_key}&units={units}&lang={current_lang}"
     location_query = f"lat={lat}&lon={lon}" if lat and lon else f"q={city}"
 
     try:
@@ -304,6 +325,7 @@ def weather(request):
                 'saved_locations': saved_locations,
                 'error': _("Ungültige Antwort der OpenWeather API.")
             }
+            context.update(weather_context())
             return render(request, 'app/weather.html', context)
 
         if curr_response.status_code == 200:
@@ -317,6 +339,7 @@ def weather(request):
                     'saved_locations': saved_locations,
                     'error': _("Ungültige Antwort der OpenWeather API.")
                 }
+                context.update(weather_context())
                 return render(request, 'app/weather.html', context)
 
             if fore_response.status_code != 200:
@@ -325,6 +348,7 @@ def weather(request):
                     'saved_locations': saved_locations,
                     'error': _("Wettervorhersage konnte nicht geladen werden.")
                 }
+                context.update(weather_context())
                 return render(request, 'app/weather.html', context)
 
             daily_groups = defaultdict(list)
@@ -389,15 +413,18 @@ def weather(request):
                 'city': curr_data['name'],
                 'country': curr_data['sys']['country'],
                 'temperature': round(curr_data['main']['temp'], 1),
+                'temperature_unit': temperature_unit,
                 'description': curr_data['weather'][0]['description'],
                 'icon': curr_data['weather'][0]['icon'],
-                'wind_speed': curr_data['wind']['speed'],
+                'wind_speed': round(curr_data['wind']['speed'], 1),
+                'wind_unit': wind_unit,
                 'humidity': curr_data['main']['humidity'],
                 'pressure': curr_data['main']['pressure'],
                 'forecast': forecast_list,
                 'hourly_forecast': hourly_forecast,
                 'sunrise': sunrise,
                 'sunset': sunset,
+                'units': units,
                 'current_lang': current_lang,
                 'saved_locations': saved_locations,
             }
@@ -451,6 +478,7 @@ def weather(request):
             'error': _("Verbindungsfehler: %(error)s") % {"error": str(e)}
         }
 
+    context.update(weather_context(**context))
     return render(request, 'app/weather.html', context)
 
 def obs_dashboard(request):
@@ -915,4 +943,7 @@ def drift_circuit(request):
     return render(request, "app/drift_circuit.html")
 
 def stream_deck(request):
-    return render(request, "app/stream_deck.html")
+    return render(request, "app/stream_deck.html", {
+        "spotify_client_id": get_env_value("SPOTIFY_CLIENT_ID") or "",
+        "spotify_redirect_uri": get_env_value("SPOTIFY_REDIRECT_URI") or request.build_absolute_uri(request.path),
+    })
