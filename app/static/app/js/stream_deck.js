@@ -891,23 +891,37 @@ async function spotifyLogin() {
         return;
     }
 
-    console.info("Spotify Redirect URI:", SPOTIFY_REDIRECT_URI);
+    if (!isSpotifyRedirectUriAllowed(SPOTIFY_REDIRECT_URI)) {
+        const message = "Spotify Login braucht HTTPS. HTTP ist nur mit 127.0.0.1 oder ::1 erlaubt.";
+        console.warn(message, SPOTIFY_REDIRECT_URI);
+        showToast(message);
+        addLog(`Spotify Login abgebrochen: ungültige Redirect URI ${SPOTIFY_REDIRECT_URI}`);
+        return;
+    }
 
-    const codeVerifier = generateRandomString(64);
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
+    try {
+        console.info("Spotify Redirect URI:", SPOTIFY_REDIRECT_URI);
 
-    localStorage.setItem("spotify_code_verifier", codeVerifier);
+        const codeVerifier = generateRandomString(64);
+        const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    const params = new URLSearchParams({
-        response_type: "code",
-        client_id: SPOTIFY_CLIENT_ID,
-        scope: SPOTIFY_SCOPES.join(" "),
-        redirect_uri: SPOTIFY_REDIRECT_URI,
-        code_challenge_method: "S256",
-        code_challenge: codeChallenge
-    });
+        localStorage.setItem("spotify_code_verifier", codeVerifier);
 
-    window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
+        const params = new URLSearchParams({
+            response_type: "code",
+            client_id: SPOTIFY_CLIENT_ID,
+            scope: SPOTIFY_SCOPES.join(" "),
+            redirect_uri: SPOTIFY_REDIRECT_URI,
+            code_challenge_method: "S256",
+            code_challenge: codeChallenge
+        });
+
+        window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
+    } catch (error) {
+        console.error("Spotify Login Fehler:", error);
+        showToast(error.message || "Spotify Login konnte nicht gestartet werden.");
+        addLog(`Spotify Login Fehler: ${error.message || "Unbekannter Fehler"}`);
+    }
 }
 
 async function handleSpotifyRedirect() {
@@ -989,6 +1003,10 @@ function generateRandomString(length) {
 }
 
 async function generateCodeChallenge(codeVerifier) {
+    if (!crypto?.subtle) {
+        throw new Error("Spotify Login braucht einen sicheren Browser-Kontext. Nutze HTTPS oder lokal 127.0.0.1.");
+    }
+
     const data = new TextEncoder().encode(codeVerifier);
     const digest = await crypto.subtle.digest("SHA-256", data);
 
@@ -996,6 +1014,23 @@ async function generateCodeChallenge(codeVerifier) {
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
         .replace(/=+$/, "");
+}
+
+function isSpotifyRedirectUriAllowed(redirectUri) {
+    try {
+        const url = new URL(redirectUri);
+        const hostname = url.hostname.toLowerCase();
+
+        if (url.protocol === "https:") return true;
+
+        return url.protocol === "http:" && (
+            hostname === "127.0.0.1" ||
+            hostname === "::1" ||
+            hostname === "[::1]"
+        );
+    } catch {
+        return false;
+    }
 }
 
 async function getValidSpotifyAccessToken() {
