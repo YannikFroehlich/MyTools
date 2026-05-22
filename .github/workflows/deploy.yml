@@ -8,10 +8,6 @@ on:
       - "**"
 
   pull_request:
-    branches:
-      - main
-      - develop
-      - addfeature
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -21,9 +17,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  osv_scan:
+    name: OSV Security Scan
+    runs-on: self-hosted
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: OSV Scanner ausführen
+        uses: google/osv-scanner-action/osv-scanner-action@v2
+        continue-on-error: true
+        with:
+          scan-args: |-
+            scan source -r .
+
+      - name: Hinweis zum OSV Scan
+        if: always()
+        run: |
+          echo ""
+          echo "============================================================"
+          echo "OSV Security Scan wurde ausgeführt."
+          echo ""
+          echo "Wichtig:"
+          echo "- Dieser Scan ist absichtlich nur eine WARNUNG."
+          echo "- Der Workflow läuft weiter, auch wenn Sicherheitslücken gefunden wurden."
+          echo "- Wenn OSV etwas gefunden hat, stehen die betroffenen Pakete,"
+          echo "  OSV-IDs, CVEs und Links direkt im Log vom Schritt:"
+          echo "  'OSV Scanner ausführen'"
+          echo ""
+          echo "Dort siehst du dann auch, welche Version betroffen ist"
+          echo "und auf welche Version du aktualisieren solltest."
+          echo "============================================================"
+          echo ""
+
   test:
     name: Test Django App
     runs-on: self-hosted
+    needs: osv_scan
 
     env:
       USE_SQLITE: "True"
