@@ -14,14 +14,17 @@
         <div class="about-hero">
             <div class="about-hero-text">
                 <span class="about-badge">
-                    <i class="fa-solid fa-sparkles"></i>
-                    MyTools
+                    <i class="fa-solid fa-toolbox"></i>
+                    {% translate 'Persönliches Dashboard' %}
                 </span>
 
                 <h1>{% translate 'Über MyTools' %}</h1>
 
                 <p>
-                    {% translate 'MyTools ist eine persönliche Sammlung kleiner praktischer Tools, die den Alltag einfacher machen sollen.' %}
+                    {% blocktranslate trimmed %}
+                        MyTools ist eine persönliche Tool-Zentrale für Alltag, Homelab, Streaming und kleine Web-Helfer.
+                        Die App bündelt Schnellzugriffe, Wetter, Notizen, Rechner, Dashboards und Mini-Games in einer modernen Django-Oberfläche.
+                    {% endblocktranslate %}
                 </p>
 
                 <div class="about-actions">
@@ -29,111 +32,179 @@
                         <i class="fa-solid fa-house"></i>
                         {% translate 'Zur Startseite' %}
                     </a>
+
+                    <a href="{% url 'notes' %}" class="about-secondary-button">
+                        <i class="fa-regular fa-note-sticky"></i>
+                        {% translate 'Notizen öffnen' %}
+                    </a>
                 </div>
             </div>
 
             <div class="about-hero-card">
                 <div class="hero-card-icon">
-                    <i class="fa-solid fa-toolbox"></i>
+                    <i class="fa-solid fa-layer-group"></i>
                 </div>
 
                 <h2>{% translate 'Alles an einem Ort' %}</h2>
 
                 <p>
-                    {% translate 'Wetter, Schnellzugriffe, kleine Helfer und weitere Funktionen können hier übersichtlich gesammelt werden.' %}
+                    {% blocktranslate trimmed %}
+                        Von lokalen Server-Links bis zu API-Tools: MyTools soll die wichtigsten kleinen Helfer zentral,
+                        schnell erreichbar und angenehm bedienbar machen.
+                    {% endblocktranslate %}
                 </p>
             </div>
         </div>
 
         <div class="about-stats">
             <div class="about-stat-card">
+                <i class="fa-solid fa-border-all"></i>
+                <strong>{% translate 'Dashboard' %}</strong>
+                <span>{% translate 'Shortcuts, Favoriten, Bereiche und Drag & Drop' %}</span>
+            </div>
+
+            <div class="about-stat-card">
                 <i class="fa-solid fa-cloud-sun"></i>
-                <strong>{% translate 'Wetter' %}</strong>
-                <span>{% translate 'Aktuelle Wetterdaten und Vorhersage' %}</span>
+                <strong>{% translate 'Wetter & APIs' %}</strong>
+                <span>{% translate 'OpenWeather, Tankerkönig und Genius integriert' %}</span>
             </div>
 
             <div class="about-stat-card">
-                <i class="fa-solid fa-link"></i>
-                <strong>{% translate 'Shortcuts' %}</strong>
-                <span>{% translate 'Eigene Verknüpfungen speichern' %}</span>
-            </div>
-
-            <div class="about-stat-card">
-                <i class="fa-solid fa-moon"></i>
-                <strong>{% translate 'Dark Mode' %}</strong>
-                <span>{% translate 'Angenehmes Design bei Nacht' %}</span>
+                <i class="fa-solid fa-palette"></i>
+                <strong>{% translate 'Design' %}</strong>
+                <span>{% translate 'Dark Mode, Theme-Editor und responsive Layouts' %}</span>
             </div>
         </div>
 
         <div class="about-grid">
             <div class="about-card">
                 <div class="about-card-icon">
-                    <i class="fa-solid fa-bullseye"></i>
+                    <i class="fa-solid fa-link"></i>
                 </div>
 
-                <h2>{% translate 'Ziel' %}</h2>
+                <h2>{% translate 'Schnellzugriffe' %}</h2>
 
                 <p>
                     {% blocktranslate trimmed %}
-                        Diese Seite soll eine zentrale Oberfläche für nützliche Funktionen sein. Alles soll schnell erreichbar,
-                        übersichtlich und angenehm zu bedienen sein.
+                        Eigene Links können mit Icons, Bildern, Favoriten und Kategorien gespeichert werden.
+                        Bereiche lassen sich sortieren, einklappen und farblich markieren.
                     {% endblocktranslate %}
                 </p>
             </div>
 
             <div class="about-card">
                 <div class="about-card-icon">
-                    <i class="fa-solid fa-palette"></i>
+                    <i class="fa-solid fa-display"></i>
                 </div>
 
-                <h2>{% translate 'Design' %}</h2>
+                <h2>{% translate 'OBS & Streaming' %}</h2>
 
                 <p>
-                    {% translate 'Das Design ist modern, leicht und responsive. Es funktioniert sowohl im Light Mode als auch im Dark Mode.' %}
+                    {% blocktranslate trimmed %}
+                        Das OBS Dashboard verbindet sich mit OBS WebSocket und kann Szenen, Quellen, Audio,
+                        Aufnahme und Streaming lokal steuern.
+                    {% endblocktranslate %}
                 </p>
             </div>
 
             <div class="about-card">
                 <div class="about-card-icon">
-                    <i class="fa-solid fa-database"></i>
+                    <i class="fa-solid fa-gamepad"></i>
                 </div>
 
-                <h2>{% translate 'Backend' %}</h2>
+                <h2>{% translate 'Mini-Tools & Games' %}</h2>
 
                 <p>
                     {% blocktranslate trimmed %}
-                        Einige Inhalte können später direkt im Backend gespeichert werden, zum Beispiel eigene Verknüpfungen
-                        oder persönliche Einstellungen.
+                        Einheitenrechner, Human Benchmark, Avatar Wiki, Notizen und Drift Circuit Pro erweitern
+                        das Dashboard um praktische und spielerische Funktionen.
                     {% endblocktranslate %}
                 </p>
             </div>
         </div>
 
+        <div class="about-feature-section">
+            <div class="about-section-heading">
+                <span>{% translate 'Aktuelle Module' %}</span>
+                <h2>{% translate 'Was aktuell eingebaut ist' %}</h2>
+            </div>
+
+            <div class="about-feature-grid">
+                <a href="{% url 'weather' %}" class="about-feature-card">
+                    <i class="fa-solid fa-cloud-sun"></i>
+                    <div>
+                        <strong>{% translate 'Wetter' %}</strong>
+                        <span>{% translate 'Aktuelle Wetterdaten, Vorhersage und gespeicherte Orte.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'spritkostenrechner' %}" class="about-feature-card">
+                    <i class="fa-solid fa-gas-pump"></i>
+                    <div>
+                        <strong>{% translate 'Spritkosten' %}</strong>
+                        <span>{% translate 'Tankstellen- und Preisabfrage über Tankerkönig.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'genius-search' %}" class="about-feature-card">
+                    <i class="fa-solid fa-music"></i>
+                    <div>
+                        <strong>{% translate 'Genius Search' %}</strong>
+                        <span>{% translate 'Song- und Künstler-Suche über die Genius API.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'notes' %}" class="about-feature-card">
+                    <i class="fa-regular fa-note-sticky"></i>
+                    <div>
+                        <strong>{% translate 'Notizen' %}</strong>
+                        <span>{% translate 'Notizen mit Pins, Archiv, Farben und Tags.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'unit_converter' %}" class="about-feature-card">
+                    <i class="fa-solid fa-calculator"></i>
+                    <div>
+                        <strong>{% translate 'Einheitenrechner' %}</strong>
+                        <span>{% translate 'Speicher, Zeit, Entfernung und Geld-Zeiträume umrechnen.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'drift-circuit' %}" class="about-feature-card">
+                    <i class="fa-solid fa-car-side"></i>
+                    <div>
+                        <strong>{% translate 'Drift Circuit Pro' %}</strong>
+                        <span>{% translate 'Canvas-Racing-Game mit großen Maps, Nitro und Drift-Score.' %}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <div class="about-timeline">
-            <h2>{% translate 'Geplante Funktionen' %}</h2>
+            <h2>{% translate 'Projektstand' %}</h2>
 
             <div class="timeline-list">
                 <div class="timeline-item">
                     <span></span>
                     <div>
-                        <h3>{% translate 'Mehr Tools' %}</h3>
-                        <p>{% translate 'Weitere kleine Helfer wie Notizen, Rechner oder eigene Dashboards.' %}</p>
+                        <h3>{% translate 'Produktiv nutzbares Dashboard' %}</h3>
+                        <p>{% translate 'Startseite, Shortcuts, Wetter, Notizen und mehrere Tools sind bereits eingebunden.' %}</p>
                     </div>
                 </div>
 
                 <div class="timeline-item">
                     <span></span>
                     <div>
-                        <h3>{% translate 'Personalisierung' %}</h3>
-                        <p>{% translate 'Eigene Bereiche, Shortcuts und Einstellungen für die Startseite.' %}</p>
+                        <h3>{% translate 'Docker-Deployment vorbereitet' %}</h3>
+                        <p>{% translate 'Das Projekt läuft mit Django, Gunicorn, PostgreSQL, Redis und Caddy per Docker Compose.' %}</p>
                     </div>
                 </div>
 
                 <div class="timeline-item">
                     <span></span>
                     <div>
-                        <h3>{% translate 'Sauberes Backend' %}</h3>
-                        <p>{% translate 'Speicherung über Django-Models und einfache Verwaltung über die App.' %}</p>
+                        <h3>{% translate 'Nächste Ausbaustufe' %}</h3>
+                        <p>{% translate 'Das vorbereitete Stream Deck kann als nächstes mit eigenen Buttons, Aktionen und Integrationen gefüllt werden.' %}</p>
                     </div>
                 </div>
             </div>

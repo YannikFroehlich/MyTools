@@ -1,48 +1,81 @@
 # 🧰 MyTools
 
-**MyTools** ist ein persönliches Django-Dashboard für kleine Alltags-, Server- und Web-Tools.  
-Das Projekt läuft lokal in der Entwicklung oder produktiv auf einem Server per Docker Compose mit Django/Gunicorn, PostgreSQL, Redis und Caddy.
+**MyTools** ist ein persönliches Django-Dashboard für kleine Alltags-, Server-, Web- und Streaming-Tools.  
+Die App bündelt Schnellzugriffe, Wetterdaten, Notizen, Rechner, kleine Browser-Spiele und API-basierte Helfer in einer modernen Oberfläche.
 
-Die Anwendung ist als private Tool-Zentrale gedacht: Startseite, eigene Schnellzugriffe, Wetter, OBS-Steuerung, Spritkosten, Notizen, Einheitenrechner und weitere kleine Tools können zentral über eine moderne Oberfläche genutzt werden.
+Das Projekt kann lokal in der Entwicklung laufen oder produktiv per Docker Compose mit **Django/Gunicorn**, **PostgreSQL**, **Redis** und **Caddy** betrieben werden.
 
 ---
 
-## ✨ Features
+## ✨ Aktueller Stand
 
-### 🏠 Startseite mit Schnellzugriffen
+MyTools ist inzwischen mehr als nur eine Startseite. Der aktuelle Stand enthält:
 
-Auf der Startseite können eigene Verknüpfungen gespeichert und sortiert werden.
-
-- eigene Links mit Name, URL und Icon
-- optionale eigene Bilder für Shortcuts
-- Favoriten
-- eigene Bereiche/Kategorien
-- Drag & Drop Sortierung
-- Bereiche ein- und ausklappen
+- Startseite mit eigenen Shortcut-Bereichen
+- Schnellzugriffe mit FontAwesome-Icons oder eigenen Bildern
+- Favoriten, Drag & Drop Sortierung und einklappbare Bereiche
+- Wetterseite mit OpenWeather API und gespeicherten Orten
+- OBS Dashboard für lokale OBS-WebSocket-Steuerung
+- Spritkostenrechner mit Tankerkönig API
+- Genius Search mit Genius API
+- Notizen-App mit Pins, Archiv, Farben und Tags
+- Einheitenrechner
+- Human Benchmark
+- Avatar Wiki mit Charakterverwaltung
+- Drift Circuit Pro als browserbasiertes Racing-Game
+- Google-Apps-Menü mit externen Links
+- Theme-Editor mit Farbvorgaben und eigener Farbwahl
 - Dark Mode
-- Suchleiste mit Vorschlägen
+- Deutsch/Englisch über Django i18n
+- Docker-Setup für produktiven Betrieb
 
-Beispiele für Shortcuts:
+---
+
+## 🏠 Startseite & Shortcuts
+
+Die Startseite ist die zentrale Oberfläche für eigene Links und lokale Dienste.
+
+Funktionen:
+
+- eigene Verknüpfungen mit Name, URL und Icon
+- optional eigene Bilder für Shortcuts
+- eigene Bereiche/Kategorien
+- Bereiche farblich markieren
+- Bereiche ein- und ausklappen
+- Favoriten markieren
+- Drag & Drop Sortierung für Shortcuts
+- Drag & Drop Sortierung für Bereiche
+- Suchleiste mit Vorschlägen
+- Dark Mode und Theme-Anpassung
+
+Beispiele für typische Shortcuts:
 
 - CasaOS
 - Nextcloud
 - Crafty
 - GitHub
 - Django Docs
-- eigene lokale Dienste
+- lokale Serverdienste im Heimnetz
 
 ---
 
-### 🌦️ Wetter
+## 🌦️ Wetter
 
-Die Wetterseite nutzt die OpenWeather API.
+Die Wetterseite nutzt die **OpenWeather API**.
+
+Funktionen:
 
 - aktuelles Wetter
 - Temperatur und Beschreibung
 - Wetter-Icons
 - Tagesdaten
+- Vorhersage
 - Sonnenaufgang und Sonnenuntergang
-- Fehlerhinweis, wenn der API-Key fehlt oder die API nicht erreichbar ist
+- Suche nach Städten
+- Nutzung von Koordinaten über `lat` und `lon`
+- gespeicherte Wetter-Orte über Django-Model
+- kompakte Anzeige der gespeicherten Orte neben der Suche
+- Fehlerhinweise, wenn API-Key, Stadt oder API-Antwort fehlerhaft sind
 
 Benötigter `.env` Wert:
 
@@ -52,28 +85,35 @@ OPENWEATHER_API_KEY=dein_openweather_api_key
 
 ---
 
-### 🎛️ OBS Dashboard
+## 🎛️ OBS Dashboard
 
 Das OBS Dashboard ist als lokale Steuerzentrale für OBS gedacht.
+
+Funktionen:
 
 - Verbindung zu OBS WebSocket
 - Szenen anzeigen und wechseln
 - Quellen anzeigen und umschalten
 - Audio-Mixer anzeigen
+- Mute/Volume-Steuerung
 - Stream-/Aufnahme-Steuerung
+- Reload- und Vollbildfunktionen
 - Offline-/Leerzustände, wenn keine Verbindung besteht
 
-Die Seite eignet sich z. B. für ein Tablet als Wand- oder Stream-Controller.
+Die Seite eignet sich besonders gut für ein Tablet als lokales Stream-Control-Panel.
 
 ---
 
-### ⛽ Spritkostenrechner
+## ⛽ Spritkostenrechner
 
-Der Spritkostenrechner kann Tankstellen über die Tankerkönig API abfragen.
+Der Spritkostenrechner nutzt die **Tankerkönig API**.
 
-- Standortbasierte Tankstellenabfrage
+Funktionen:
+
+- Tankstellenabfrage über Standortdaten
 - Preisübersicht
-- API-Fehlermeldung, wenn der Key fehlt
+- API-Endpunkt unter `/api/tankstellen/`
+- Fehlermeldung, wenn der API-Key fehlt oder die API nicht erreichbar ist
 
 Benötigter `.env` Wert:
 
@@ -83,13 +123,16 @@ TANKERKOENIG_API_KEY=dein_tankerkoenig_api_key
 
 ---
 
-### 🎵 Genius Search
+## 🎵 Genius Search
 
-Die Genius Search durchsucht Songs über die Genius API.
+Die Genius Search durchsucht Songs über die **Genius API**.
 
-- Suche nach Songs/Künstlern
+Funktionen:
+
+- Suche nach Songs und Künstlern
 - Ergebnisliste mit Titel, Künstler, Cover und Link
-- klare Fehlermeldung, wenn der API-Key fehlt
+- API-Endpunkt unter `/api/genius/search/`
+- saubere Fehlerausgabe bei fehlendem API-Key oder API-Problemen
 
 Benötigter `.env` Wert:
 
@@ -99,21 +142,24 @@ GENIUS_API_KEY=dein_genius_api_key
 
 ---
 
-### 📝 Notizen
+## 📝 Notizen
 
 Eine einfache Notizen-App direkt im Dashboard.
+
+Funktionen:
 
 - Notizen erstellen
 - Notizen bearbeiten
 - Notizen löschen
 - Notizen anpinnen
-- Notizen archivieren/wiederherstellen
-- Farben
-- Tags
+- Notizen archivieren und wiederherstellen
+- Farben pro Notiz
+- Tags pro Notiz
+- Sortierung nach angepinnten und zuletzt aktualisierten Notizen
 
 ---
 
-### 🧮 Einheitenrechner
+## 🧮 Einheitenrechner
 
 Ein kleiner Rechner zum Umrechnen verschiedener Werte.
 
@@ -124,28 +170,107 @@ Aktuell enthalten:
 - Entfernung
 - Geld-/Zeitraum-Werte
 
-Die Labels sind über Django-Übersetzungen eingebunden.
+Die Oberfläche und Labels sind für Django-Übersetzungen vorbereitet.
 
 ---
 
-### ⚡ Human Benchmark
+## ⚡ Human Benchmark
 
 Kleine Benchmark-/Reaktions-Tools im Browser.
 
+Enthalten sind browserbasierte Mini-Tests, Sounds und eine moderne Oberfläche für schnelle Reaktions- und Eingabeübungen.
+
 ---
 
-### 🌊 Avatar Wiki
+## 🌊 Avatar Wiki
 
 Ein kleines Avatar-Wiki mit Charakteren.
 
+Funktionen:
+
 - Charaktere verwalten
 - Nationen/Farben
-- Bilder
-- Detaildaten per API
+- Bilder pro Charakter
+- Reihenfolge über `order`
+- API für Charakterliste
+- API für Charakterdetails
+
+API-Endpunkte:
+
+```text
+/api/avatar-characters/
+/api/avatar-characters/<id>/
+```
 
 ---
 
-### 🌍 Mehrsprachigkeit
+## 🏎️ Drift Circuit Pro
+
+Ein browserbasiertes 2D-Racing-Game mit HTML5 Canvas.
+
+Funktionen:
+
+- große Maps
+- Kamera folgt dem Auto
+- mehrere Strecken
+- Time Trial, Checkpoint Rush und freies Fahren
+- Nitro
+- Drift-Score
+- Checkpoints
+- Minimap
+- Touch-Buttons für mobile Nutzung
+
+Route:
+
+```text
+/drift-circuit/
+```
+
+---
+
+## 🎚️ Stream Deck
+
+Die Route für ein eigenes Stream-Deck-Tool ist bereits vorbereitet.
+
+Aktueller Status:
+
+- Template vorhanden
+- CSS/JS-Dateien vorbereitet
+- Route im Menü eingebunden
+- Inhalt kann noch ausgebaut werden
+
+Route:
+
+```text
+/stream-deck/
+```
+
+---
+
+## 🎨 Design & Bedienung
+
+MyTools besitzt eine moderne Oberfläche mit anpassbarem Look.
+
+Funktionen:
+
+- Light Mode
+- Dark Mode
+- Theme-Editor
+- Presets für Blau, Grün, Rose und Graphit
+- eigene Farben für Header, Hintergrund und Footer
+- responsive Layouts
+- Dropdown-Menüs für Tools, Spiele und Google-Apps
+- externe Links werden in einem neuen Tab geöffnet
+
+Für FontAwesome kann optional ein Kit-Key aus der `.env` genutzt werden:
+
+```env
+FONTAWESOME_KIT_KEY=dein_fontawesome_kit_key
+```
+
+---
+
+## 🌍 Mehrsprachigkeit
 
 Das Projekt nutzt Django i18n.
 
@@ -243,6 +368,7 @@ DB_PORT=5432
 REDIS_URL=redis://redis:6379/0
 DOMAIN=localhost
 
+FONTAWESOME_KIT_KEY=
 OPENWEATHER_API_KEY=
 GENIUS_API_KEY=
 TANKERKOENIG_API_KEY=
@@ -434,7 +560,10 @@ docker compose restart
 | Genius Search | `/genius-search/` |
 | Avatar Wiki | `/avatar-wiki/` |
 | Notizen | `/notes/` |
+| Neue Notiz | `/notes/new/` |
 | Einheitenrechner | `/einheitenrechner/` |
+| Drift Circuit Pro | `/drift-circuit/` |
+| Stream Deck | `/stream-deck/` |
 | Admin | `/admin/` |
 
 ---
@@ -602,6 +731,7 @@ CasaOS-Port: 8080
 - Änderungen an Models brauchen Migrationen.
 - Änderungen an CSS/JS/Templates können je nach Browser Cache erst nach Cache-Leeren sichtbar sein.
 - Für externe APIs müssen die jeweiligen API-Keys gesetzt sein.
+- Nach neuen Übersetzungstexten müssen `makemessages` und `compilemessages` erneut laufen.
 
 ---
 
