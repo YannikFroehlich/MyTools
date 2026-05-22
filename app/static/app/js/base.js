@@ -358,6 +358,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    setupDropdown('games-menu-button', 'games-menu-dropdown', ['menu-dropdown']);
-    setupDropdown('menu-button', 'menu-dropdown', ['games-menu-dropdown']);
+    setupDropdown('games-menu-button', 'games-menu-dropdown', [
+        'menu-dropdown',
+        'google-apps-menu-dropdown'
+    ]);
+
+    setupDropdown('google-apps-menu-button', 'google-apps-menu-dropdown', [
+        'menu-dropdown',
+        'games-menu-dropdown'
+    ]);
+
+    setupDropdown('menu-button', 'menu-dropdown', [
+        'games-menu-dropdown',
+        'google-apps-menu-dropdown'
+    ]);
 });
