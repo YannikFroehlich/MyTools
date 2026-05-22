@@ -56,10 +56,13 @@ nav {
     background: linear-gradient(100deg, var(--theme-nav-start) 0%, var(--theme-nav-end) 100%);
     border-radius: 0 0 16px 16px;
     box-shadow: 0 4px 20px var(--theme-nav-shadow);
-    position: relative;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
     overflow: visible;
     transition: background 0.5s ease, box-shadow 0.5s ease;
-    z-index: 2000;
+    z-index: 5000;
 }
 
 nav::after {
