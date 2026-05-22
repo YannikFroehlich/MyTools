@@ -1,18 +1,408 @@
 {% extends "app/base.html" %}
 {% load static i18n %}
 
-{% block title %}{% translate "Stream Deck" %}{% endblock %}
+{% block title %}{% translate "Stream Deck" %} - MyTools{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'app/css/stream_deck.css' %}">
 {% endblock %}
 
 {% block content %}
-<main>
+<section class="stream-deck-page" data-spotify-client-id="{{ spotify_client_id|escape }}" data-spotify-redirect-uri="{{ spotify_redirect_uri|escape }}">
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-circle-notch"></i>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title">OBS + Spotify</div>
+                    <div class="brand-subtitle">Stream Deck Control</div>
+                </div>
+            </div>
 
-</main>
+            <div class="connection-group">
+                <div class="field">
+                    <label for="obs-address">OBS WebSocket Adresse</label>
+                    <input id="obs-address" type="text" placeholder="ws://127.0.0.1:4455" />
+                </div>
+
+                <div class="field">
+                    <label for="obs-password">Passwort</label>
+                    <div class="password-wrap">
+                        <input id="obs-password" type="password" placeholder="Passwort" />
+                        <button id="toggle-password-btn" class="ghost-icon-btn" type="button" aria-label="Passwort anzeigen">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="connect-btn" class="primary-btn" type="button">
+                    <i class="fa-solid fa-link"></i>
+                    <span>Verbinden</span>
+                </button>
+            </div>
+
+            <div class="topbar-actions">
+                <button id="edit-toggle-btn" class="outline-btn" type="button">
+                    <i class="fa-solid fa-pen"></i>
+                    <span>Bearbeiten</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <section class="dashboard-panel">
+                <div class="deck-panel">
+                    <div class="deck-header">
+                        <div class="deck-logo">
+                            <i class="fa-regular fa-circle-play"></i>
+                        </div>
+                        <h1>STREAM DECK</h1>
+                    </div>
+
+                    <div id="button-grid" class="button-grid"></div>
+
+                    <div class="deck-footer-row">
+                        <button id="add-button-btn" class="small-btn" type="button">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Button hinzufÃ¼gen</span>
+                        </button>
+
+                        <button id="reset-buttons-btn" class="small-btn danger" type="button">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset</span>
+                        </button>
+                    </div>
+                </div>
+
+                <aside class="status-sidebar">
+                    <div class="sidebar-card">
+                        <h2>VERBINDUNGSSTATUS</h2>
+
+                        <div class="status-line">
+                            <span class="status-dot online" id="obs-status-dot"></span>
+                            <span id="obs-status-label">Nicht verbunden</span>
+                        </div>
+
+                        <div class="small-muted" id="obs-address-preview">ws://127.0.0.1:4455</div>
+
+                        <button id="disconnect-btn" class="sidebar-btn" type="button">
+                            <i class="fa-solid fa-link-slash"></i>
+                            <span>Verbindung trennen</span>
+                        </button>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h2>SPOTIFY</h2>
+
+                        <div class="status-line">
+                            <span class="status-dot" id="spotify-status-dot"></span>
+                            <span id="spotify-status-text">Nicht verbunden</span>
+                        </div>
+
+                        <div class="spotify-track">
+                            <div class="spotify-cover" id="spotify-cover">
+                                <i class="fa-brands fa-spotify"></i>
+                            </div>
+
+                            <div class="spotify-meta">
+                                <div class="track-title" id="spotify-track-title">Kein Titel</div>
+                                <div class="track-artist" id="spotify-track-artist">Kein KÃ¼nstler</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-wrap">
+                            <div class="progress-bar">
+                                <div id="spotify-progress-fill" class="progress-fill"></div>
+                            </div>
+                            <div class="progress-time">
+                                <span id="spotify-current-time">0:00</span>
+                                <span id="spotify-total-time">0:00</span>
+                            </div>
+                        </div>
+
+                        <div class="spotify-controls">
+                            <button data-spotify-control="previous" class="round-btn" type="button">
+                                <i class="fa-solid fa-backward-step"></i>
+                            </button>
+                            <button data-spotify-control="toggle" class="round-btn big" type="button">
+                                <i class="fa-solid fa-play"></i>
+                            </button>
+                            <button data-spotify-control="next" class="round-btn" type="button">
+                                <i class="fa-solid fa-forward-step"></i>
+                            </button>
+                        </div>
+
+                        <button id="spotify-token-btn" class="sidebar-btn" type="button">
+                            <i class="fa-brands fa-spotify"></i>
+                            <span>Mit Spotify verbinden</span>
+                        </button>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h2>SYSTEM</h2>
+
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span>OBS Version</span>
+                                <strong id="obs-version-text">-</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>WebSocket</span>
+                                <strong>5.x</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Spotify Status</span>
+                                <strong id="spotify-system-status">-</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Letzte Aktion</span>
+                                <strong id="last-action-text">-</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Bearbeiten</span>
+                                <strong id="edit-mode-status">Aus</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Buttons</span>
+                                <strong id="button-count-text">0</strong>
+                            </div>
+                        </div>
+
+                        <button id="show-log-btn" class="sidebar-btn" type="button">
+                            <i class="fa-regular fa-file-lines"></i>
+                            <span>Protokoll anzeigen</span>
+                        </button>
+                    </div>
+                </aside>
+            </section>
+        </div>
+    </div>
+
+    <!-- Editor Modal -->
+    <div id="editor-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div>
+                    <h3>Button bearbeiten</h3>
+                    <p>Lege fest, was der Button machen soll.</p>
+                </div>
+
+                <button id="close-editor-btn" class="ghost-icon-btn" type="button">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-grid">
+                    <div class="field">
+                        <label for="edit-title">Titel</label>
+                        <input id="edit-title" type="text" placeholder="z. B. Stream starten" />
+                    </div>
+
+                    <div class="field">
+                        <label for="edit-icon">Icon</label>
+                        <select id="edit-icon">
+                            <option value="fa-brands fa-youtube">YouTube</option>
+                            <option value="fa-solid fa-comments">Chat</option>
+                            <option value="fa-solid fa-circle-notch">OBS</option>
+                            <option value="fa-brands fa-spotify">Spotify</option>
+                            <option value="fa-brands fa-discord">Discord</option>
+                            <option value="fa-brands fa-twitch">Twitch</option>
+                            <option value="fa-solid fa-microphone">Mikrofon</option>
+                            <option value="fa-solid fa-volume-high">LautstÃ¤rke</option>
+                            <option value="fa-solid fa-crown">Krone</option>
+                            <option value="fa-solid fa-pause">Pause</option>
+                            <option value="fa-solid fa-stop">Stop</option>
+                            <option value="fa-solid fa-headphones">Monitoring</option>
+                            <option value="fa-regular fa-window-maximize">Szene</option>
+                            <option value="fa-solid fa-table-cells-large">Studio</option>
+                            <option value="fa-solid fa-video">Kamera</option>
+                            <option value="fa-solid fa-desktop">Bildschirm</option>
+                            <option value="fa-solid fa-play">Play</option>
+                            <option value="fa-solid fa-forward-step">Weiter</option>
+                            <option value="fa-solid fa-backward-step">ZurÃ¼ck</option>
+                            <option value="fa-solid fa-heart">Herz</option>
+                            <option value="fa-solid fa-shuffle">Shuffle</option>
+                            <option value="fa-solid fa-repeat">Repeat</option>
+                            <option value="fa-solid fa-user">Follower</option>
+                            <option value="fa-solid fa-star">Star</option>
+                            <option value="fa-solid fa-dollar-sign">Dollar</option>
+                            <option value="fa-regular fa-message">Nachricht</option>
+                            <option value="fa-regular fa-clock">Timer</option>
+                            <option value="fa-solid fa-clapperboard">Clip</option>
+                            <option value="fa-solid fa-plus">Plus</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="edit-color">Farbe</label>
+                        <input id="edit-color" type="color" value="#4c6fff" />
+                    </div>
+
+                    <div class="field">
+                        <label for="edit-action-type">Aktion</label>
+                        <select id="edit-action-type">
+                            <option value="none">Keine Aktion</option>
+                            <option value="obs-request">OBS Request</option>
+                            <option value="obs-scene">OBS Szene wechseln</option>
+                            <option value="obs-source-toggle">OBS Quelle toggeln</option>
+                            <option value="spotify">Spotify</option>
+                            <option value="open-url">URL Ã¶ffnen</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="obs-request-fields" class="dynamic-section hidden">
+                    <div class="field">
+                        <label for="edit-obs-request">OBS Request</label>
+                        <select id="edit-obs-request">
+                            <option value="StartStream">Stream starten</option>
+                            <option value="StopStream">Stream stoppen</option>
+                            <option value="ToggleStream">Stream toggeln</option>
+                            <option value="StartRecord">Aufnahme starten</option>
+                            <option value="StopRecord">Aufnahme stoppen</option>
+                            <option value="ToggleRecord">Aufnahme toggeln</option>
+                            <option value="PauseRecord">Aufnahme pausieren</option>
+                            <option value="ResumeRecord">Aufnahme fortsetzen</option>
+                            <option value="TriggerStudioModeTransition">Studio Transition</option>
+                            <option value="ToggleStudioMode">Studio-Modus toggeln</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="obs-scene-fields" class="dynamic-section hidden">
+                    <div class="field">
+                        <label for="edit-scene-name">Szenenname</label>
+                        <input id="edit-scene-name" type="text" placeholder="z. B. Gameplay" />
+                    </div>
+                </div>
+
+                <div id="obs-source-fields" class="dynamic-section hidden">
+                    <div class="field">
+                        <label for="edit-source-scene">Szene</label>
+                        <input id="edit-source-scene" type="text" placeholder="z. B. Gameplay" />
+                    </div>
+
+                    <div class="field">
+                        <label for="edit-source-name">Quelle</label>
+                        <input id="edit-source-name" type="text" placeholder="z. B. Webcam" />
+                    </div>
+                </div>
+
+                <div id="spotify-fields" class="dynamic-section hidden">
+                    <div class="field">
+                        <label for="edit-spotify-action">Spotify Aktion</label>
+                        <select id="edit-spotify-action">
+                            <option value="play">Play</option>
+                            <option value="pause">Pause</option>
+                            <option value="next">NÃ¤chstes Lied</option>
+                            <option value="previous">Vorheriges Lied</option>
+                            <option value="toggle">Play/Pause Toggle</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="url-fields" class="dynamic-section hidden">
+                    <div class="field">
+                        <label for="edit-url">URL</label>
+                        <input id="edit-url" type="text" placeholder="https://..." />
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="delete-button-btn" class="danger-btn" type="button">
+                    <i class="fa-solid fa-trash"></i>
+                    <span>LÃ¶schen</span>
+                </button>
+
+                <div class="modal-footer-right">
+                    <button id="cancel-editor-btn" class="outline-btn" type="button">Abbrechen</button>
+                    <button id="save-editor-btn" class="primary-btn" type="button">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Speichern</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spotify Modal -->
+    <div id="spotify-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+
+        <div class="modal-dialog small">
+            <div class="modal-header">
+                <div>
+                    <h3>Spotify Token</h3>
+                    <p>FÃ¼ge deinen Spotify Access Token ein.</p>
+                </div>
+
+                <button id="close-spotify-btn" class="ghost-icon-btn" type="button">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="field">
+                    <label for="spotify-token-input">Access Token</label>
+                    <textarea id="spotify-token-input" rows="8" placeholder="Spotify Access Token hier einfÃ¼gen"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="clear-spotify-token-btn" class="danger-btn" type="button">
+                    <i class="fa-solid fa-trash"></i>
+                    <span>Entfernen</span>
+                </button>
+
+                <div class="modal-footer-right">
+                    <button id="save-spotify-token-btn" class="primary-btn" type="button">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Speichern</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Modal -->
+    <div id="log-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+
+        <div class="modal-dialog small">
+            <div class="modal-header">
+                <div>
+                    <h3>Protokoll</h3>
+                    <p>Letzte Aktionen und Hinweise</p>
+                </div>
+
+                <button id="close-log-btn" class="ghost-icon-btn" type="button">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="log-list" class="log-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+</section>
+
+
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'app/js/stream_deck.js' %}"></script>
+<script type="module" src="{% static 'app/js/stream_deck.js' %}"></script>
 {% endblock %}
