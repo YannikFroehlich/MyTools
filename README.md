@@ -372,6 +372,8 @@ FONTAWESOME_KIT_KEY=
 OPENWEATHER_API_KEY=
 GENIUS_API_KEY=
 TANKERKOENIG_API_KEY=
+SPOTIFY_CLIENT_ID=
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/stream-deck/
 ```
 
 > Die echte `.env` sollte nicht ins Git-Repository committed werden.

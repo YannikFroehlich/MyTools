@@ -942,4 +942,7 @@ def drift_circuit(request):
     return render(request, "app/drift_circuit.html")
 
 def stream_deck(request):
-    return render(request, "app/stream_deck.html")
+    return render(request, "app/stream_deck.html", {
+        "spotify_client_id": get_env_value("SPOTIFY_CLIENT_ID") or "",
+        "spotify_redirect_uri": get_env_value("SPOTIFY_REDIRECT_URI") or request.build_absolute_uri(request.path),
+    })
