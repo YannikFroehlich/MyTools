@@ -185,9 +185,10 @@ jobs:
           docker compose pull db redis caddy || true
           docker compose up -d --build --remove-orphans
 
-          echo "Warte kurz bis der Webserver antwortet..."
+          echo "Warte kurz bis der Webserver über Port 80 antwortet..."
+
           for i in {1..20}; do
-            if curl -fsS http://localhost:8090 > /dev/null; then
+            if curl -fsS http://localhost > /dev/null; then
               echo "Webserver ist erreichbar."
               break
             fi
@@ -197,9 +198,22 @@ jobs:
 
             if [ "$i" -eq 20 ]; then
               echo "Fehler: Webserver ist nach dem Deployment nicht erreichbar."
+              echo ""
+              echo "Container Status:"
               docker compose ps
-              docker compose logs --tail=80 web
-              docker compose logs --tail=80 caddy
+
+              echo ""
+              echo "============================================================"
+              echo "Web-Logs"
+              echo "============================================================"
+              docker compose logs --tail=100 web
+
+              echo ""
+              echo "============================================================"
+              echo "Caddy-Logs"
+              echo "============================================================"
+              docker compose logs --tail=100 caddy
+
               exit 1
             fi
           done
