@@ -17,23 +17,41 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 
+def env_list(name, default=""):
+    return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
+
+
+def hostname_from_value(value):
+    if not value:
+        return ""
+    value = value.strip().removeprefix("https://").removeprefix("http://")
+    return value.split("/", 1)[0].split(":", 1)[0]
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-only-change-me")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if host.strip()
-]
+DOMAIN = hostname_from_value(os.getenv("DOMAIN", ""))
 
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
-    if origin.strip()
+ALLOWED_HOSTS = [
+    host
+    for host in (
+        hostname_from_value(value)
+        for value in env_list("ALLOWED_HOSTS", "localhost,127.0.0.1")
+    )
+    if host
 ]
+if DOMAIN and DOMAIN not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(DOMAIN)
+
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
+if DOMAIN and DOMAIN not in {"localhost", "127.0.0.1"}:
+    origin = f"https://{DOMAIN}"
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
 
 FONTAWESOME_KIT_KEY = os.getenv("FONTAWESOME_KIT_KEY", "")
 
