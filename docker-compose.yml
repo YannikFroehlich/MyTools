@@ -68,7 +68,7 @@ services:
     environment:
       DOMAIN: ${DOMAIN:-localhost}
 
-    cloudflared:
+  cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: mytools_cloudflared
     restart: unless-stopped
