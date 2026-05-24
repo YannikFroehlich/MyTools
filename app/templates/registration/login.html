@@ -1,0 +1,72 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{% translate 'Login' %} | MyTools</title>
+    <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/auth.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('auth-dark');
+        }
+    </script>
+</head>
+<body class="auth-page">
+    <button class="auth-theme-button dark-mode-btn" id="darkmode-button" type="button" aria-label="{% translate 'Dark Mode umschalten' %}">
+        <i class="fa-solid fa-moon icon-moon"></i>
+        <i class="fa-solid fa-sun icon-sun"></i>
+    </button>
+
+    <main class="auth-main">
+        <section class="auth-panel" aria-labelledby="login-title">
+            <div class="auth-brand">
+                <span class="auth-logo" aria-hidden="true">
+                    <i class="fa-solid fa-cloud"></i>
+                </span>
+                <div>
+                    <h1 id="login-title">MyTools</h1>
+                    <p>{% translate 'Melde dich an, um deine Tools zu nutzen.' %}</p>
+                </div>
+            </div>
+
+            {% if form.errors %}
+                <p class="auth-error">{% translate 'Benutzername oder Passwort stimmt nicht.' %}</p>
+            {% endif %}
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+
+                <label for="{{ form.username.id_for_label }}">
+                    <span>{% translate 'Benutzername' %}</span>
+                    {{ form.username }}
+                </label>
+
+                <label for="{{ form.password.id_for_label }}">
+                    <span>{% translate 'Passwort' %}</span>
+                    {{ form.password }}
+                </label>
+
+                <button type="submit">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    {% translate 'Einloggen' %}
+                </button>
+            </form>
+
+            <p class="auth-switch">
+                {% translate 'Noch keinen Account?' %}
+                <a href="{% url 'signup' %}">{% translate 'Account erstellen' %}</a>
+            </p>
+        </section>
+    </main>
+    <script src="{% static 'app/js/base.js' %}"></script>
+    <script src="{% static 'app/js/auth.js' %}"></script>
+</body>
+</html>
