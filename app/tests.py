@@ -5,7 +5,9 @@ from unittest.mock import Mock, patch
 
 import requests
 
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db.models.signals import pre_save
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -18,10 +20,37 @@ TEST_MEDIA_ROOT = tempfile.mkdtemp()
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class BaseTestCase(TestCase):
+    user_scoped_models = (AvatarCharacter, Note, Shortcut, ShortcutSection, WeatherLocation)
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEST_MEDIA_ROOT, ignore_errors=True)
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="testuser",
+            password="testpass-123",
+        )
+        self.client.force_login(self.user)
+        self._connect_user_signal()
+
+    def tearDown(self):
+        self._disconnect_user_signal()
+        super().tearDown()
+
+    def _connect_user_signal(self):
+        def assign_test_user(sender, instance, **kwargs):
+            if getattr(instance, "user_id", None) is None:
+                instance.user = self.user
+
+        self._assign_test_user = assign_test_user
+        for model in self.user_scoped_models:
+            pre_save.connect(self._assign_test_user, sender=model, weak=False)
+
+    def _disconnect_user_signal(self):
+        for model in self.user_scoped_models:
+            pre_save.disconnect(self._assign_test_user, sender=model)
 
     def get_test_image(self, name="test.png"):
         return SimpleUploadedFile(
@@ -91,6 +120,29 @@ class ModelTests(BaseTestCase):
         )
 
         self.assertEqual(str(character), "Aang")
+
+
+class AuthViewTests(BaseTestCase):
+    def test_signup_page_loads_without_login(self):
+        self.client.logout()
+
+        response = self.client.get(reverse("signup"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "registration/signup.html")
+
+    def test_signup_creates_user_and_logs_in(self):
+        self.client.logout()
+
+        response = self.client.post(reverse("signup"), {
+            "username": "neueruser",
+            "email": "neu@example.com",
+            "password1": "complex-test-pass-123",
+            "password2": "complex-test-pass-123",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertTrue(get_user_model().objects.filter(username="neueruser").exists())
 
 
 class HomeViewTests(BaseTestCase):
