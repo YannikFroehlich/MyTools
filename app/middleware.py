@@ -6,7 +6,7 @@ from django.urls import reverse
 
 
 class LoginRequiredMiddleware:
-    """Require a logged-in user for the app while keeping auth/static endpoints open."""
+    """Require a logged-in user for the app while keeping auth/static/i18n endpoints open."""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -22,6 +22,7 @@ class LoginRequiredMiddleware:
         exempt_prefixes = (
             "/accounts/",
             reverse("signup"),
+            "/i18n/",
             "/admin/",
             settings.STATIC_URL,
             settings.MEDIA_URL,
