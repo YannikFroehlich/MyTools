@@ -171,7 +171,7 @@
             </div>
         </form>
 
-        {% if note %}
+        {% if note and note_access.can_delete_notes %}
             <form method="post" action="{% url 'note_delete' note.pk %}" class="notes-danger-zone note-delete-form">
                 {% csrf_token %}
                 <div>

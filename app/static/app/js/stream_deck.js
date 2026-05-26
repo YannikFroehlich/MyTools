@@ -1,9 +1,5 @@
 import OBSWebSocket from "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm";
 
-const streamDeckPage = document.querySelector(".stream-deck-page");
-const USER_STORAGE_SUFFIX = streamDeckPage?.dataset.userId ? `_user_${streamDeckPage.dataset.userId}` : "";
-const scopedStorageKey = (key) => `${key}${USER_STORAGE_SUFFIX}`;
-
 const STORAGE_KEYS = {
     buttons: "obs_streamdeck_buttons_v2",
     obsAddress: "obs_streamdeck_address_v2",
@@ -12,14 +8,7 @@ const STORAGE_KEYS = {
     logs: "obs_streamdeck_logs_v2"
 };
 
-Object.keys(STORAGE_KEYS).forEach((key) => {
-    STORAGE_KEYS[key] = scopedStorageKey(STORAGE_KEYS[key]);
-});
-
-const SPOTIFY_REFRESH_TOKEN_KEY = scopedStorageKey("spotify_refresh_token");
-const SPOTIFY_TOKEN_EXPIRES_AT_KEY = scopedStorageKey("spotify_token_expires_at");
-const SPOTIFY_CODE_VERIFIER_KEY = scopedStorageKey("spotify_code_verifier");
-
+const streamDeckPage = document.querySelector(".stream-deck-page");
 const SPOTIFY_CLIENT_ID = streamDeckPage?.dataset.spotifyClientId || "";
 const SPOTIFY_REDIRECT_URI = streamDeckPage?.dataset.spotifyRedirectUri || window.location.href.split("?")[0];
 
@@ -611,9 +600,9 @@ function saveSpotifyToken() {
 
 function clearSpotifyToken() {
     localStorage.removeItem(STORAGE_KEYS.spotifyToken);
-    localStorage.removeItem(SPOTIFY_REFRESH_TOKEN_KEY);
-    localStorage.removeItem(SPOTIFY_TOKEN_EXPIRES_AT_KEY);
-    localStorage.removeItem(SPOTIFY_CODE_VERIFIER_KEY);
+    localStorage.removeItem("spotify_refresh_token");
+    localStorage.removeItem("spotify_token_expires_at");
+    localStorage.removeItem("spotify_code_verifier");
 
     elements.spotifyTokenInput.value = "";
 
@@ -916,7 +905,7 @@ async function spotifyLogin() {
         const codeVerifier = generateRandomString(64);
         const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-        localStorage.setItem(SPOTIFY_CODE_VERIFIER_KEY, codeVerifier);
+        localStorage.setItem("spotify_code_verifier", codeVerifier);
 
         const params = new URLSearchParams({
             response_type: "code",
@@ -948,7 +937,7 @@ async function handleSpotifyRedirect() {
 
     if (!code) return;
 
-    const codeVerifier = localStorage.getItem(SPOTIFY_CODE_VERIFIER_KEY);
+    const codeVerifier = localStorage.getItem("spotify_code_verifier");
 
     if (!codeVerifier) {
         showToast("Spotify Login fehlgeschlagen: Code Verifier fehlt.");
@@ -984,13 +973,13 @@ async function handleSpotifyRedirect() {
         localStorage.setItem(STORAGE_KEYS.spotifyToken, data.access_token);
 
         if (data.refresh_token) {
-            localStorage.setItem(SPOTIFY_REFRESH_TOKEN_KEY, data.refresh_token);
+            localStorage.setItem("spotify_refresh_token", data.refresh_token);
         }
 
         const expiresAt = Date.now() + ((data.expires_in || 3600) * 1000);
-        localStorage.setItem(SPOTIFY_TOKEN_EXPIRES_AT_KEY, String(expiresAt));
+        localStorage.setItem("spotify_token_expires_at", String(expiresAt));
 
-        localStorage.removeItem(SPOTIFY_CODE_VERIFIER_KEY);
+        localStorage.removeItem("spotify_code_verifier");
 
         window.history.replaceState({}, document.title, SPOTIFY_REDIRECT_URI);
 
@@ -1046,8 +1035,8 @@ function isSpotifyRedirectUriAllowed(redirectUri) {
 
 async function getValidSpotifyAccessToken() {
     const token = localStorage.getItem(STORAGE_KEYS.spotifyToken);
-    const refreshToken = localStorage.getItem(SPOTIFY_REFRESH_TOKEN_KEY);
-    const expiresAt = Number(localStorage.getItem(SPOTIFY_TOKEN_EXPIRES_AT_KEY) || "0");
+    const refreshToken = localStorage.getItem("spotify_refresh_token");
+    const expiresAt = Number(localStorage.getItem("spotify_token_expires_at") || "0");
 
     if (token && Date.now() < expiresAt - 60000) {
         return token;
@@ -1081,8 +1070,8 @@ async function refreshSpotifyAccessToken(refreshToken) {
             console.error("Spotify Refresh Token Fehler:", errorText);
 
             localStorage.removeItem(STORAGE_KEYS.spotifyToken);
-            localStorage.removeItem(SPOTIFY_REFRESH_TOKEN_KEY);
-            localStorage.removeItem(SPOTIFY_TOKEN_EXPIRES_AT_KEY);
+            localStorage.removeItem("spotify_refresh_token");
+            localStorage.removeItem("spotify_token_expires_at");
 
             return null;
         }
@@ -1092,11 +1081,11 @@ async function refreshSpotifyAccessToken(refreshToken) {
         localStorage.setItem(STORAGE_KEYS.spotifyToken, data.access_token);
 
         if (data.refresh_token) {
-            localStorage.setItem(SPOTIFY_REFRESH_TOKEN_KEY, data.refresh_token);
+            localStorage.setItem("spotify_refresh_token", data.refresh_token);
         }
 
         const expiresAt = Date.now() + ((data.expires_in || 3600) * 1000);
-        localStorage.setItem(SPOTIFY_TOKEN_EXPIRES_AT_KEY, String(expiresAt));
+        localStorage.setItem("spotify_token_expires_at", String(expiresAt));
 
         return data.access_token;
     } catch (error) {

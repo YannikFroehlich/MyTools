@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
-import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -18,45 +17,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 
-def env_list(name, default=""):
-    return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
-
-
-def hostname_from_value(value):
-    if not value:
-        return ""
-    value = value.strip().removeprefix("https://").removeprefix("http://")
-    return value.split("/", 1)[0].split(":", 1)[0]
-
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-only-change-me")
+SECRET_KEY = 'django-insecure-#=kss!iuam*xwnrpfh*zdgmns_dowfe581k@4i$a8ma#4_lp4h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
-RUNSERVER_SERVE_STATIC = (
-    "runserver" in sys.argv
-    and os.getenv("RUNSERVER_SERVE_STATIC", "True") == "True"
-)
+DEBUG = True
 
-DOMAIN = hostname_from_value(os.getenv("DOMAIN", ""))
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1"
+).split(",")
 
-ALLOWED_HOSTS = [
-    host
-    for host in (
-        hostname_from_value(value)
-        for value in env_list("ALLOWED_HOSTS", "localhost,127.0.0.1")
-    )
-    if host
-]
-if DOMAIN and DOMAIN not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(DOMAIN)
-
-CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
-if DOMAIN and DOMAIN not in {"localhost", "127.0.0.1"}:
-    origin = f"https://{DOMAIN}"
-    if origin not in CSRF_TRUSTED_ORIGINS:
-        CSRF_TRUSTED_ORIGINS.append(origin)
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    ""
+).split(",") if os.getenv("CSRF_TRUSTED_ORIGINS") else []
 
 FONTAWESOME_KIT_KEY = os.getenv("FONTAWESOME_KIT_KEY", "")
 
@@ -99,7 +77,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'app.middleware.LoginRequiredMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -109,7 +86,8 @@ ROOT_URLCONF = 'MyTools.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates']
+        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,6 +95,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processors.fontawesome_kit',
+                'app.context_processors.note_access',
             ],
         },
     },
@@ -176,10 +155,6 @@ LOCALE_PATHS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "login"
-
 if os.getenv("USE_LOCAL_CACHE", "False") == "True":
     CACHES = {
         "default": {
@@ -196,47 +171,3 @@ else:
             },
         }
     }
-
-# ------------------------------------------------------------
-# E-Mail / Passwort zurücksetzen
-# ------------------------------------------------------------
-
-EMAIL_BACKEND_MODE = os.getenv("EMAIL_BACKEND_MODE", "console")
-
-if EMAIL_BACKEND_MODE == "smtp":
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
-    EMAIL_HOST = os.getenv("EMAIL_HOST", "")
-    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "465"))
-
-    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "yes")
-    EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True").lower() in ("true", "1", "yes")
-
-    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
-
-    DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
-    SERVER_EMAIL = os.getenv("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "MyTools <noreply@localhost>")
-    SERVER_EMAIL = DEFAULT_FROM_EMAIL
-
-
-# HTTPS / Reverse Proxy Settings
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-
-# Bei Cloudflare Tunnel macht Cloudflare außen HTTPS.
-# Intern läuft Cloudflare Tunnel -> Caddy -> Django über HTTP.
-# Deshalb hier nicht automatisch redirecten, sonst kann es bei lokalen Checks nerven.
-SECURE_SSL_REDIRECT = False
-
-SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-SECURE_HSTS_PRELOAD = False
-
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = "DENY"

@@ -465,36 +465,6 @@ body.dark-mode .theme-editor-actions button {
     transition: background 0.15s, transform 0.15s, border-color 0.15s;
 }
 
-.logout-form {
-    display: flex;
-    align-items: center;
-    margin: 0;
-}
-
-.logout-btn {
-    width: 38px;
-    height: 33px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(10, 22, 64, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 9px;
-    cursor: pointer;
-    color: #fff;
-    transition: background 0.15s, transform 0.15s, border-color 0.15s;
-}
-
-.logout-btn:hover {
-    background: rgba(10, 22, 64, 0.55);
-    border-color: rgba(255, 255, 255, 0.28);
-    transform: translateY(-1px);
-}
-
-.logout-btn:active {
-    transform: scale(0.97);
-}
-
 .dark-mode-btn:hover {
     background: rgba(10, 22, 64, 0.55);
     border-color: rgba(255, 255, 255, 0.28);
@@ -1083,8 +1053,7 @@ body.dark-mode .footer-links a:hover {
     }
 
     .theme-editor-btn,
-    .dark-mode-btn,
-    .logout-btn {
+    .dark-mode-btn {
         width: 40px;
         height: 38px;
     }

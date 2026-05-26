@@ -5,14 +5,13 @@ from unittest.mock import Mock, patch
 
 import requests
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db.models.signals import pre_save
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from app.forms import NoteForm
-from app.models import AvatarCharacter, Note, Shortcut, ShortcutSection, WeatherLocation
+from app.models import AvatarCharacter, Note, Shortcut, ShortcutSection, UserNotePermission, WeatherLocation
 
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
@@ -20,37 +19,10 @@ TEST_MEDIA_ROOT = tempfile.mkdtemp()
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class BaseTestCase(TestCase):
-    user_scoped_models = (AvatarCharacter, Note, Shortcut, ShortcutSection, WeatherLocation)
-
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEST_MEDIA_ROOT, ignore_errors=True)
-
-    def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            username="testuser",
-            password="testpass-123",
-        )
-        self.client.force_login(self.user)
-        self._connect_user_signal()
-
-    def tearDown(self):
-        self._disconnect_user_signal()
-        super().tearDown()
-
-    def _connect_user_signal(self):
-        def assign_test_user(sender, instance, **kwargs):
-            if getattr(instance, "user_id", None) is None:
-                instance.user = self.user
-
-        self._assign_test_user = assign_test_user
-        for model in self.user_scoped_models:
-            pre_save.connect(self._assign_test_user, sender=model, weak=False)
-
-    def _disconnect_user_signal(self):
-        for model in self.user_scoped_models:
-            pre_save.disconnect(self._assign_test_user, sender=model)
 
     def get_test_image(self, name="test.png"):
         return SimpleUploadedFile(
@@ -120,29 +92,6 @@ class ModelTests(BaseTestCase):
         )
 
         self.assertEqual(str(character), "Aang")
-
-
-class AuthViewTests(BaseTestCase):
-    def test_signup_page_loads_without_login(self):
-        self.client.logout()
-
-        response = self.client.get(reverse("signup"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "registration/signup.html")
-
-    def test_signup_creates_user_and_logs_in(self):
-        self.client.logout()
-
-        response = self.client.post(reverse("signup"), {
-            "username": "neueruser",
-            "email": "neu@example.com",
-            "password1": "complex-test-pass-123",
-            "password2": "complex-test-pass-123",
-        })
-
-        self.assertRedirects(response, reverse("home"))
-        self.assertTrue(get_user_model().objects.filter(username="neueruser").exists())
 
 
 class HomeViewTests(BaseTestCase):
@@ -878,6 +827,61 @@ class NotesViewTests(BaseTestCase):
         note.refresh_from_db()
 
         self.assertTrue(note.is_archived)
+
+    def test_user_without_note_permission_row_can_use_notes_by_default(self):
+        user = User.objects.create_user(username="normal", password="secret")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("notes"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["note_access"]["can_view_notes"])
+
+    def test_revoked_view_permission_blocks_notes_page(self):
+        user = User.objects.create_user(username="blocked-view", password="secret")
+        UserNotePermission.objects.create(user=user, can_view_notes=False)
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("notes"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_revoked_create_permission_blocks_note_creation(self):
+        user = User.objects.create_user(username="blocked-create", password="secret")
+        UserNotePermission.objects.create(user=user, can_create_notes=False)
+        self.client.force_login(user)
+
+        response = self.client.post(reverse("note_create"), {
+            "title": "Soll nicht erstellt werden",
+            "content": "<p>Hallo</p>",
+            "tags": "",
+            "color": "blue",
+        })
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Note.objects.filter(title="Soll nicht erstellt werden").exists())
+
+    def test_revoked_action_permissions_block_direct_note_actions(self):
+        user = User.objects.create_user(username="blocked-actions", password="secret")
+        UserNotePermission.objects.create(
+            user=user,
+            can_edit_notes=False,
+            can_delete_notes=False,
+            can_pin_notes=False,
+            can_archive_notes=False,
+        )
+        note = Note.objects.create(title="Geschuetzt")
+        self.client.force_login(user)
+
+        self.assertEqual(self.client.get(reverse("note_edit", args=[note.id])).status_code, 403)
+        self.assertEqual(self.client.post(reverse("note_delete", args=[note.id])).status_code, 403)
+        self.assertEqual(self.client.post(reverse("note_toggle_pin", args=[note.id])).status_code, 403)
+        self.assertEqual(self.client.post(reverse("note_toggle_archive", args=[note.id])).status_code, 403)
+
+        note.refresh_from_db()
+
+        self.assertFalse(note.is_pinned)
+        self.assertFalse(note.is_archived)
 
 
 class AvatarApiTests(BaseTestCase):

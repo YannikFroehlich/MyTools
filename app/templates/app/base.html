@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'app/css/icons/custom_icons.css' %}">
+    <link rel="stylesheet" href="{% static '/app/css/base.css' %}">
+    <link rel="stylesheet" href="{% static '/app/css/icons/custom_icons.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -142,16 +142,18 @@
                         <i class="fa-solid fa-wind"></i>
                         {% translate 'Avatar Wiki' %}
                     </a>
-                    <a href="{% url 'notes' %}" class="menu-item">
-                        <i class="fa-regular fa-note-sticky"></i>
-                        {% translate 'Notizen' %}
-                    </a>
+                    {% if note_access.can_view_notes %}
+                        <a href="{% url 'notes' %}" class="menu-item">
+                            <i class="fa-regular fa-note-sticky"></i>
+                            {% translate 'Notizen' %}
+                        </a>
+                    {% endif %}
                     <a href="{% url 'unit_converter' %}" class="menu-item">
                         <i class="fa-solid fa-calculator"></i>
                         {% translate 'Einheitenrechner' %}
                     </a>
                     <a href="{% url 'stream-deck' %}" class="menu-item">
-                        <i class="fa-solid fa-table-cells-large"></i>
+                        <i class="fa-solid fa-calculator"></i>
                         {% translate 'Stream Deck' %}
                     </a>
                 </div>
@@ -234,14 +236,6 @@
                 <i class="fa-solid fa-moon icon-moon"></i>
                 <i class="fa-solid fa-sun icon-sun"></i>
             </button>
-            {% if request.user.is_authenticated %}
-                <form action="{% url 'logout' %}" method="post" class="logout-form">
-                    {% csrf_token %}
-                    <button class="logout-btn" type="submit" aria-label="{% translate 'Abmelden' %}">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </form>
-            {% endif %}
         </div>
     </nav>
 
@@ -272,10 +266,12 @@
                     <i class="fa-solid fa-cloud-sun"></i>
                     {% translate 'Wetter' %}
                 </a>
-                <a href="{% url 'notes' %}">
-                    <i class="fa-regular fa-note-sticky"></i>
-                    {% translate 'Notizen' %}
-                </a>
+                {% if note_access.can_view_notes %}
+                    <a href="{% url 'notes' %}">
+                        <i class="fa-regular fa-note-sticky"></i>
+                        {% translate 'Notizen' %}
+                    </a>
+                {% endif %}
                 <a href="{% url 'about' %}">
                     <i class="fa-solid fa-circle-info"></i>
                     {% translate 'Über' %}

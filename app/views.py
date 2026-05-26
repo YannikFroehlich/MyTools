@@ -16,17 +16,18 @@ from app.models import AvatarCharacter, Shortcut, ShortcutSection, WeatherLocati
 
 import json
 
-from django.db.models import Max, Prefetch
+from django.db.models import Max
 from django.db.utils import OperationalError, ProgrammingError
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 
 from django.contrib import messages
-from django.contrib.auth import login
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 
 from .models import Note
-from .forms import NoteForm, SignUpForm
+from .forms import NoteForm
+from .permissions import get_note_access, user_can_access_notes
 
 env_path = settings.BASE_DIR / ".env"
 load_dotenv(env_path)
@@ -47,28 +48,7 @@ def api_error_response(message, status=400):
     }, status=status)
 
 
-def signup(request):
-    if request.user.is_authenticated:
-        return redirect("home")
-
-    if request.method == "POST":
-        form = SignUpForm(request.POST)
-
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, _("Dein Account wurde erstellt."))
-            return redirect("home")
-    else:
-        form = SignUpForm()
-
-    return render(request, "registration/signup.html", {
-        "form": form,
-    })
-
-
 def home(request):
-    user = request.user
     home_labels = {
         "newShortcut": _("Neue Verknüpfung"),
         "shortcutForSection": _("für \"%(section)s\""),
@@ -82,7 +62,6 @@ def home(request):
     }
 
     default_section, created = ShortcutSection.objects.get_or_create(
-        user=user,
         name="Verknüpfungen",
         defaults={
             "color": "blue",
@@ -90,7 +69,7 @@ def home(request):
         }
     )
 
-    Shortcut.objects.filter(user=user, section__isnull=True).update(section=default_section)
+    Shortcut.objects.filter(section__isnull=True).update(section=default_section)
 
     if request.method == "POST":
         if request.content_type == "application/json":
@@ -109,10 +88,7 @@ def home(request):
                     section_id = item.get("section_id")
                     order = item.get("order", 0)
 
-                    if section_id and not ShortcutSection.objects.filter(id=section_id, user=user).exists():
-                        continue
-
-                    Shortcut.objects.filter(id=shortcut_id, user=user).update(
+                    Shortcut.objects.filter(id=shortcut_id).update(
                         section_id=section_id,
                         order=order
                     )
@@ -126,7 +102,7 @@ def home(request):
                     section_id = item.get("id")
                     order = item.get("order", 0)
 
-                    ShortcutSection.objects.filter(id=section_id, user=user).update(order=order)
+                    ShortcutSection.objects.filter(id=section_id).update(order=order)
 
                 return JsonResponse({"success": True})
 
@@ -139,10 +115,9 @@ def home(request):
             section_color = request.POST.get("section_color", "blue").strip()
 
             if section_name:
-                max_order = ShortcutSection.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
+                max_order = ShortcutSection.objects.aggregate(Max("order"))["order__max"] or 0
 
                 ShortcutSection.objects.create(
-                    user=user,
                     name=section_name,
                     color=section_color,
                     order=max_order + 1
@@ -155,7 +130,7 @@ def home(request):
             section_name = request.POST.get("section_name", "").strip()
             section_color = request.POST.get("section_color", "blue").strip()
 
-            section = get_object_or_404(ShortcutSection, id=section_id, user=user)
+            section = get_object_or_404(ShortcutSection, id=section_id)
 
             if section_name:
                 section.name = section_name
@@ -166,7 +141,7 @@ def home(request):
 
         if action == "delete_section":
             section_id = request.POST.get("section_id")
-            section = get_object_or_404(ShortcutSection, id=section_id, user=user)
+            section = get_object_or_404(ShortcutSection, id=section_id)
 
             if section.name != "Verknüpfungen":
                 section.delete()
@@ -175,7 +150,7 @@ def home(request):
 
         if action == "toggle_section_collapse":
             section_id = request.POST.get("section_id")
-            section = get_object_or_404(ShortcutSection, id=section_id, user=user)
+            section = get_object_or_404(ShortcutSection, id=section_id)
 
             section.is_collapsed = not section.is_collapsed
             section.save()
@@ -190,7 +165,7 @@ def home(request):
             custom_icon = request.POST.get("custom_icon", "").strip()
             image = request.FILES.get("image")
 
-            section = get_object_or_404(ShortcutSection, id=section_id, user=user)
+            section = get_object_or_404(ShortcutSection, id=section_id)
 
             if custom_icon:
                 icon = custom_icon
@@ -199,10 +174,9 @@ def home(request):
                 if not url.startswith(("http://", "https://")):
                     url = "https://" + url
 
-                max_order = Shortcut.objects.filter(user=user, section=section).aggregate(Max("order"))["order__max"] or 0
+                max_order = Shortcut.objects.filter(section=section).aggregate(Max("order"))["order__max"] or 0
 
                 Shortcut.objects.create(
-                    user=user,
                     section=section,
                     name=name,
                     url=url,
@@ -222,8 +196,8 @@ def home(request):
             custom_icon = request.POST.get("custom_icon", "").strip()
             image = request.FILES.get("image")
 
-            shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
-            section = get_object_or_404(ShortcutSection, id=section_id, user=user)
+            shortcut = get_object_or_404(Shortcut, id=shortcut_id)
+            section = get_object_or_404(ShortcutSection, id=section_id)
 
             if custom_icon:
                 icon = custom_icon
@@ -246,26 +220,21 @@ def home(request):
 
         if action == "delete_shortcut":
             shortcut_id = request.POST.get("shortcut_id")
-            shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
+            shortcut = get_object_or_404(Shortcut, id=shortcut_id)
             shortcut.delete()
 
             return redirect("home")
 
         if action == "toggle_favorite":
             shortcut_id = request.POST.get("shortcut_id")
-            shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
+            shortcut = get_object_or_404(Shortcut, id=shortcut_id)
 
             shortcut.is_favorite = not shortcut.is_favorite
             shortcut.save()
 
             return redirect("home")
 
-    sections = (
-        ShortcutSection.objects
-        .filter(user=user)
-        .prefetch_related(Prefetch("shortcuts", queryset=Shortcut.objects.filter(user=user)))
-        .order_by("order", "created_at")
-    )
+    sections = ShortcutSection.objects.prefetch_related("shortcuts").all().order_by("order", "created_at")
 
     return render(request, "app/home.html", {
         "sections": sections,
@@ -277,7 +246,6 @@ def about(request):
     return render(request, template_name)
 
 def weather(request):
-    user = request.user
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
     city = request.GET.get("city", "Berlin")
@@ -313,10 +281,9 @@ def weather(request):
             location_name = request.POST.get("location_name", "").strip()
 
             if location_name:
-                max_order = WeatherLocation.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
+                max_order = WeatherLocation.objects.aggregate(Max("order"))["order__max"] or 0
 
                 WeatherLocation.objects.get_or_create(
-                    user=user,
                     name=location_name,
                     defaults={
                         "order": max_order + 1
@@ -332,13 +299,13 @@ def weather(request):
             current_city = request.POST.get("current_city", city).strip() or "Berlin"
 
             if location_id:
-                WeatherLocation.objects.filter(id=location_id, user=user).delete()
+                WeatherLocation.objects.filter(id=location_id).delete()
 
             return redirect(weather_redirect_url(city=current_city))
 
         return redirect(request.path)
 
-    saved_locations = WeatherLocation.objects.filter(user=user)
+    saved_locations = WeatherLocation.objects.all()
 
     if not api_key:
         return render(request, 'app/weather.html', weather_context(
@@ -558,11 +525,9 @@ def serialize_avatar_character(character):
 
 
 def avatar_characters_api(request):
-    user = request.user
-
     if request.method == "GET":
         try:
-            characters = AvatarCharacter.objects.filter(user=user)
+            characters = AvatarCharacter.objects.all()
             return JsonResponse({
                 "status": "ok",
                 "characters": [serialize_avatar_character(character) for character in characters],
@@ -587,7 +552,7 @@ def avatar_characters_api(request):
                 character_ids = data.get("character_ids", [])
 
                 for order, character_id in enumerate(character_ids):
-                    AvatarCharacter.objects.filter(id=character_id, user=user).update(order=order)
+                    AvatarCharacter.objects.filter(id=character_id).update(order=order)
 
                 return JsonResponse({"status": "ok"})
 
@@ -623,9 +588,8 @@ def avatar_characters_api(request):
             }, status=400)
 
         try:
-            max_order = AvatarCharacter.objects.filter(user=user).aggregate(Max("order"))["order__max"]
+            max_order = AvatarCharacter.objects.aggregate(Max("order"))["order__max"]
             character = AvatarCharacter.objects.create(
-                user=user,
                 name=name,
                 nation=nation,
                 link=link,
@@ -651,7 +615,7 @@ def avatar_characters_api(request):
 
 
 def avatar_character_detail_api(request, character_id):
-    character = get_object_or_404(AvatarCharacter, id=character_id, user=request.user)
+    character = get_object_or_404(AvatarCharacter, id=character_id)
 
     if request.method == "POST":
         name = request.POST.get("name", "").strip()
@@ -845,10 +809,13 @@ def tankstellen_api(request):
 
 
 def notes_view(request):
+    if not user_can_access_notes(request.user, "view"):
+        raise PermissionDenied
+
     query = request.GET.get("q", "").strip()
     show_archived = request.GET.get("archived") == "1"
 
-    notes = Note.objects.filter(user=request.user, is_archived=show_archived)
+    notes = Note.objects.filter(is_archived=show_archived)
 
     if query:
         notes = notes.filter(
@@ -866,19 +833,21 @@ def notes_view(request):
         "query": query,
         "show_archived": show_archived,
         "note_count": notes.count(),
+        "note_access": get_note_access(request.user),
     }
 
     return render(request, "app/notes.html", context)
 
 
 def note_create_view(request):
+    if not user_can_access_notes(request.user, "create"):
+        raise PermissionDenied
+
     if request.method == "POST":
         form = NoteForm(request.POST)
 
         if form.is_valid():
-            note = form.save(commit=False)
-            note.user = request.user
-            note.save()
+            form.save()
             messages.success(request, _("Notiz wurde erstellt."))
             return redirect("notes")
     else:
@@ -892,7 +861,10 @@ def note_create_view(request):
 
 
 def note_edit_view(request, pk):
-    note = get_object_or_404(Note, pk=pk, user=request.user)
+    if not user_can_access_notes(request.user, "edit"):
+        raise PermissionDenied
+
+    note = get_object_or_404(Note, pk=pk)
 
     if request.method == "POST":
         form = NoteForm(request.POST, instance=note)
@@ -914,7 +886,10 @@ def note_edit_view(request, pk):
 
 @require_POST
 def note_delete_view(request, pk):
-    note = get_object_or_404(Note, pk=pk, user=request.user)
+    if not user_can_access_notes(request.user, "delete"):
+        raise PermissionDenied
+
+    note = get_object_or_404(Note, pk=pk)
     note.delete()
 
     messages.success(request, _("Notiz wurde gelöscht."))
@@ -923,7 +898,10 @@ def note_delete_view(request, pk):
 
 @require_POST
 def note_toggle_pin_view(request, pk):
-    note = get_object_or_404(Note, pk=pk, user=request.user)
+    if not user_can_access_notes(request.user, "pin"):
+        raise PermissionDenied
+
+    note = get_object_or_404(Note, pk=pk)
     note.is_pinned = not note.is_pinned
     note.save()
 
@@ -932,7 +910,10 @@ def note_toggle_pin_view(request, pk):
 
 @require_POST
 def note_toggle_archive_view(request, pk):
-    note = get_object_or_404(Note, pk=pk, user=request.user)
+    if not user_can_access_notes(request.user, "archive"):
+        raise PermissionDenied
+
+    note = get_object_or_404(Note, pk=pk)
     note.is_archived = not note.is_archived
     note.save()
 

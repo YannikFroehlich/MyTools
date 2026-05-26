@@ -13,9 +13,6 @@
      ```python
      DEBUG = os.getenv('DEBUG', 'False') == 'True'
      ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
-     DOMAIN = os.getenv('DOMAIN', '')
-     if DOMAIN:
-         ALLOWED_HOSTS.append(DOMAIN)
      SECRET_KEY = os.getenv('SECRET_KEY')
      DATABASES = {
          'default': {
@@ -84,9 +81,9 @@ docker-compose down -v
 
 ## Zugriff
 
-- **Web-Anwendung**: https://deine-domain.example (mit Cloudflare Tunnel)
-- **Django Admin**: https://deine-domain.example/admin
-- **Lokaler Caddy-Test**: http://localhost:8090
+- **Web-Anwendung**: http://localhost oder https://localhost (mit Caddy)
+- **Django Admin**: http://localhost/admin
+- **API/Backend**: http://localhost:8000 (direkt)
 
 ## Troubleshooting
 
@@ -103,17 +100,16 @@ docker-compose down -v
 docker-compose up -d
 ```
 
-### Cloudflare Tunnel prüfen
-Setze `DOMAIN` und `CLOUDFLARE_TUNNEL_TOKEN` in `.env`. Cloudflare stellt außen HTTPS bereit,
-intern leitet der Tunnel an Caddy weiter.
+### Caddy SSL-Fehler (lokal)
+Caddy erstellt automatisch selbstsignierte Zertifikate für localhost. Browser-Warnung ist normal.
 
 ## Production Deployment
 
 1. Secrets in `.env` setzen (nicht commiten!)
 2. `DEBUG=False` in `.env`
 3. Gültigen `SECRET_KEY` generieren
-4. Echte Domain in `DOMAIN` Variable setzen
-5. Optional zusätzliche Hosts in `ALLOWED_HOSTS` konfigurieren
+4. `ALLOWED_HOSTS` konfigurieren
+5. Echte Domain in `DOMAIN` Variable setzen
 6. `docker-compose up -d` ausführen
 
-Bei Cloudflare Tunnel muss Caddy selbst kein Let's-Encrypt-Zertifikat beziehen.
+Caddy bezieht automatisch Let's Encrypt Zertifikate für echte Domains.
