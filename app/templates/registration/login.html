@@ -58,6 +58,10 @@
                     <i class="fa-solid fa-right-to-bracket"></i>
                     {% translate 'Einloggen' %}
                 </button>
+                <a class="auth-forgot-link" href="{% url 'password_reset' %}">
+                    <i class="fa-solid fa-key"></i>
+                    {% translate 'Passwort vergessen?' %}
+                </a>
             </form>
 
             <p class="auth-switch">

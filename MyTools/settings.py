@@ -215,3 +215,5 @@ SECURE_HSTS_PRELOAD = False
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

@@ -203,6 +203,28 @@ html.auth-dark .auth-panel,
     transform: scale(0.98);
 }
 
+.auth-forgot-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    margin-top: 0.25rem;
+    color: var(--auth-link);
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.auth-forgot-link:hover {
+    opacity: 0.82;
+    text-decoration: underline;
+}
+
+.auth-forgot-link:active {
+    transform: scale(0.98);
+}
+
 .auth-switch {
     margin: 1rem 0 0;
     color: var(--auth-muted);
