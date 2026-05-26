@@ -11,6 +11,13 @@ class ShortcutSection(models.Model):
         ("red", "Rot"),
     ]
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="shortcut_sections",
+        null=True,
+        blank=True,
+    )
     name = models.CharField(max_length=60)
     color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="blue")
     order = models.PositiveIntegerField(default=0)
@@ -25,6 +32,13 @@ class ShortcutSection(models.Model):
 
 
 class Shortcut(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="shortcuts",
+        null=True,
+        blank=True,
+    )
     section = models.ForeignKey(
         ShortcutSection,
         on_delete=models.CASCADE,
@@ -67,6 +81,13 @@ class AvatarCharacter(models.Model):
         ("Luft", "Luftnomaden"),
     ]
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="avatar_characters",
+        null=True,
+        blank=True,
+    )
     name = models.CharField(max_length=80)
     nation = models.CharField(max_length=20, choices=NATION_CHOICES)
     link = models.URLField(blank=True)
@@ -100,6 +121,13 @@ class Note(models.Model):
         ("gray", "Grau"),
     ]
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="notes",
+        null=True,
+        blank=True,
+    )
     title = models.CharField(max_length=120, blank=True)
     content = models.TextField(blank=True)
     tags = models.CharField(max_length=255, blank=True)
@@ -127,30 +155,15 @@ class Note(models.Model):
     def tag_list(self):
         return [tag.strip() for tag in self.tags.split(",") if tag.strip()]
 
-
-class UserNotePermission(models.Model):
-    user = models.OneToOneField(
+class WeatherLocation(models.Model):
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="note_permissions",
+        related_name="weather_locations",
+        null=True,
+        blank=True,
     )
-    can_view_notes = models.BooleanField(default=True)
-    can_create_notes = models.BooleanField(default=True)
-    can_edit_notes = models.BooleanField(default=True)
-    can_delete_notes = models.BooleanField(default=True)
-    can_pin_notes = models.BooleanField(default=True)
-    can_archive_notes = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = "Notiz-Recht"
-        verbose_name_plural = "Notiz-Rechte"
-
-    def __str__(self):
-        return f"Notiz-Rechte fuer {self.user}"
-
-
-class WeatherLocation(models.Model):
-    name = models.CharField(max_length=120, unique=True)
+    name = models.CharField(max_length=120)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -158,6 +171,9 @@ class WeatherLocation(models.Model):
         ordering = ["order", "created_at"]
         verbose_name = "Wetter-Ort"
         verbose_name_plural = "Wetter-Orte"
+        constraints = [
+            models.UniqueConstraint(fields=["user", "name"], name="unique_weather_location_per_user"),
+        ]
 
     def __str__(self):
         return self.name

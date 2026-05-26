@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-26 13:55+0200\n"
-"PO-Revision-Date: 2026-05-10 23:45+0200\n"
-"Last-Translator: Yunnik\n"
-"Language-Team: English\n"
-"Language: en\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,110 +21,110 @@ msgstr ""
 #: .\app\forms.py:46 .\app\templates\app\base.html:192
 #: .\app\templates\app\home.html:380
 msgid "Blau"
-msgstr "Blue"
+msgstr ""
 
 #: .\app\forms.py:47 .\app\templates\app\home.html:390
 msgid "Lila"
-msgstr "Purple"
+msgstr ""
 
 #: .\app\forms.py:48 .\app\templates\app\home.html:385
 msgid "Grün"
-msgstr "Green"
+msgstr ""
 
 #: .\app\forms.py:49 .\app\templates\app\home.html:395
 msgid "Orange"
-msgstr "Orange"
+msgstr ""
 
 #: .\app\forms.py:50 .\app\templates\app\home.html:400
 msgid "Rot"
-msgstr "Red"
+msgstr ""
 
 #: .\app\forms.py:51
 msgid "Grau"
-msgstr "Gray"
+msgstr ""
 
 #: .\app\forms.py:58 .\app\templates\registration\signup.html:61
 msgid "E-Mail"
-msgstr "Email"
+msgstr ""
 
 #: .\app\forms.py:60
 msgid "Bitte gib eine E-Mail-Adresse ein."
-msgstr "Please enter an email address."
+msgstr ""
 
 #: .\app\forms.py:61
 msgid "Bitte gib eine gültige E-Mail-Adresse ein."
-msgstr "Please enter a valid email address."
+msgstr ""
 
 #: .\app\forms.py:65 .\app\templates\app\auth\password_reset_form.html:55
 msgid "E-Mail-Adresse"
-msgstr "Email address"
+msgstr ""
 
 #: .\app\forms.py:78
 msgid "Diese E-Mail-Adresse wird bereits verwendet."
-msgstr "This email address is already in use."
+msgstr ""
 
 #: .\app\forms.py:86 .\app\templates\registration\login.html:48
 #: .\app\templates\registration\signup.html:56
 msgid "Benutzername"
-msgstr "Username"
+msgstr ""
 
 #: .\app\forms.py:90 .\app\templates\app\obs-dashboard.html:50
 #: .\app\templates\registration\login.html:53
 #: .\app\templates\registration\signup.html:66
 msgid "Passwort"
-msgstr "Password"
+msgstr ""
 
 #: .\app\forms.py:94 .\app\templates\app\auth\password_reset_confirm.html:66
 #: .\app\templates\registration\signup.html:71
 msgid "Passwort wiederholen"
-msgstr "Re-enter password"
+msgstr ""
 
 #: .\app\forms.py:120 .\app\forms.py:149
 msgid "Titel deiner Notiz..."
-msgstr "Title of your note..."
+msgstr ""
 
 #: .\app\forms.py:124 .\app\forms.py:150
 msgid "Tags, z. B. Schule, Server, Idee"
-msgstr "Tags, e.g., School, Server, Idea"
+msgstr ""
 
 #: .\app\forms.py:138 .\app\templates\app\note_form.html:44
 msgid "Titel"
-msgstr "Title"
+msgstr ""
 
 #: .\app\forms.py:139 .\app\templates\app\note_form.html:50
 msgid "Inhalt"
-msgstr "Content"
+msgstr ""
 
 #: .\app\forms.py:140 .\app\templates\app\note_form.html:131
 msgid "Tags"
-msgstr "Tags"
+msgstr ""
 
 #: .\app\forms.py:141 .\app\templates\app\note_form.html:138
 msgid "Farbe"
-msgstr "Color"
+msgstr ""
 
 #: .\app\forms.py:142 .\app\templates\app\note_form.html:148
 #: .\app\templates\app\partials\note_card.html:34
 msgid "Anpinnen"
-msgstr "Pin"
+msgstr ""
 
 #: .\app\forms.py:143 .\app\templates\app\note_form.html:156
 #: .\app\templates\app\partials\note_card.html:68
 msgid "Archivieren"
-msgstr "Archive"
+msgstr ""
 
 #: .\app\templates\app\about.html:5 .\app\templates\app\base.html:46
 #: .\app\templates\app\base.html:281
 msgid "Über"
-msgstr "About"
+msgstr ""
 
 #: .\app\templates\app\about.html:18
 msgid "Persönliches Dashboard"
-msgstr "Personal Dashboard"
+msgstr ""
 
 #: .\app\templates\app\about.html:21
 msgid "Über MyTools"
-msgstr "About MyTools"
+msgstr ""
 
 #: .\app\templates\app\about.html:24
 msgid ""
@@ -131,195 +132,180 @@ msgid ""
 "und kleine Web-Helfer. Die App bündelt Schnellzugriffe, Wetter, Notizen, "
 "Rechner, Dashboards und Mini-Games in einer modernen Django-Oberfläche."
 msgstr ""
-"MyTools is a personal hub for everyday tasks, homelabs, streaming, "
-"and small web tools. The app combines shortcuts, weather, notes, "
-"calculators, dashboards, and mini-games in a modern Django interface."
 
 #: .\app\templates\app\about.html:33
 msgid "Zur Startseite"
-msgstr "Back to homepage"
+msgstr ""
 
 #: .\app\templates\app\about.html:38
 msgid "Notizen öffnen"
-msgstr "Open Notes"
+msgstr ""
 
 #: .\app\templates\app\about.html:48
 msgid "Alles an einem Ort"
-msgstr "Everything in one place"
+msgstr ""
 
 #: .\app\templates\app\about.html:51
 msgid ""
 "Von lokalen Server-Links bis zu API-Tools: MyTools soll die wichtigsten "
 "kleinen Helfer zentral, schnell erreichbar und angenehm bedienbar machen."
 msgstr ""
-"From local server links to API tools: MyTools is designed to make the most important "
-"small helpers centrally accessible, quick to find, and easy to use."
 
 #: .\app\templates\app\about.html:62
 msgid "Dashboard"
-msgstr "Dashboard"
+msgstr ""
 
 #: .\app\templates\app\about.html:63
 msgid "Shortcuts, Favoriten, Bereiche und Drag & Drop"
-msgstr "Shortcuts, Favorites, Panels, and Drag & Drop"
+msgstr ""
 
 #: .\app\templates\app\about.html:68
 msgid "Wetter & APIs"
-msgstr "Weather & APIs"
+msgstr ""
 
 #: .\app\templates\app\about.html:69
 msgid "OpenWeather, Tankerkönig und Genius integriert"
-msgstr "OpenWeather, Tankerkönig, and Genius integrated"
+msgstr ""
 
 #: .\app\templates\app\about.html:74 .\app\templates\app\base.html:185
 msgid "Design"
-msgstr "Design"
+msgstr ""
 
 #: .\app\templates\app\about.html:75
 msgid "Dark Mode, Theme-Editor und responsive Layouts"
-msgstr "Dark Mode, Theme Editor, and Responsive Layouts"
+msgstr ""
 
 #: .\app\templates\app\about.html:85
 msgid "Schnellzugriffe"
-msgstr "Quick Links"
+msgstr ""
 
 #: .\app\templates\app\about.html:88
 msgid ""
 "Eigene Links können mit Icons, Bildern, Favoriten und Kategorien gespeichert "
 "werden. Bereiche lassen sich sortieren, einklappen und farblich markieren."
 msgstr ""
-"You can save your own links with icons, images, favorites, and categories. "
-"Sections can be sorted, collapsed, and color-coded."
 
 #: .\app\templates\app\about.html:100
 msgid "OBS & Streaming"
-msgstr "OBS & Streaming"
+msgstr ""
 
 #: .\app\templates\app\about.html:103
 msgid ""
 "Das OBS Dashboard verbindet sich mit OBS WebSocket und kann Szenen, Quellen, "
 "Audio, Aufnahme und Streaming lokal steuern."
 msgstr ""
-"The OBS Dashboard connects to OBS WebSocket and can control scenes, sources, "
-"audio, recording, and streaming locally."
 
 #: .\app\templates\app\about.html:115
 msgid "Mini-Tools & Games"
-msgstr "Mini-Tools & Games"
+msgstr ""
 
 #: .\app\templates\app\about.html:118
 msgid ""
 "Einheitenrechner, Human Benchmark, Avatar Wiki, Notizen und Drift Circuit "
 "Pro erweitern das Dashboard um praktische und spielerische Funktionen."
 msgstr ""
-"Unit Converter, Human Benchmark, Avatar Wiki, Notes, and Drift Circuit "
-"Pro add practical and fun features to the dashboard."
 
 #: .\app\templates\app\about.html:128
 msgid "Aktuelle Module"
-msgstr "Current Modules"
+msgstr ""
 
 #: .\app\templates\app\about.html:129
 msgid "Was aktuell eingebaut ist"
-msgstr "What is currently installed"
+msgstr ""
 
 #: .\app\templates\app\about.html:136 .\app\templates\app\base.html:41
 #: .\app\templates\app\base.html:273 .\app\templates\app\weather.html:5
 msgid "Wetter"
-msgstr "Weather"
+msgstr ""
 
 #: .\app\templates\app\about.html:137
 msgid "Aktuelle Wetterdaten, Vorhersage und gespeicherte Orte."
-msgstr "Current weather data, forecasts, and saved locations."
+msgstr ""
 
 #: .\app\templates\app\about.html:144 .\app\templates\app\base.html:135
 msgid "Spritkosten"
-msgstr "Fuel costs"
+msgstr ""
 
 #: .\app\templates\app\about.html:145
 msgid "Tankstellen- und Preisabfrage über Tankerkönig."
-msgstr "Find gas stations and check prices with Tankerkönig."
+msgstr ""
 
 #: .\app\templates\app\about.html:152 .\app\templates\app\base.html:139
 #: .\app\templates\app\genius_search.html:5
 #: .\app\templates\app\genius_search.html:16
 msgid "Genius Search"
-msgstr "Genius Search"
+msgstr ""
 
 #: .\app\templates\app\about.html:153
 msgid "Song- und Künstler-Suche über die Genius API."
-msgstr "Search for songs and artists using the Genius API."
+msgstr ""
 
 #: .\app\templates\app\about.html:160 .\app\templates\app\base.html:147
 #: .\app\templates\app\base.html:277 .\app\templates\app\notes.html:4
 #: .\app\templates\app\notes.html:21
 msgid "Notizen"
-msgstr "Notes"
+msgstr ""
 
 #: .\app\templates\app\about.html:161
 msgid "Notizen mit Pins, Archiv, Farben und Tags."
-msgstr "Notes with pins, an archive, colors, and tags."
+msgstr ""
 
 #: .\app\templates\app\about.html:168 .\app\templates\app\base.html:151
 #: .\app\templates\app\unit_converter.html:4
 #: .\app\templates\app\unit_converter.html:20
 msgid "Einheitenrechner"
-msgstr "Unit Converter"
+msgstr ""
 
 #: .\app\templates\app\about.html:169
 msgid "Speicher, Zeit, Entfernung und Geld-Zeiträume umrechnen."
-msgstr "Convert units of measurement, time, distance, and currency."
+msgstr ""
 
 #: .\app\templates\app\about.html:176
 msgid "Drift Circuit Pro"
-msgstr "Drift Circuit Pro"
+msgstr ""
 
 #: .\app\templates\app\about.html:177
 msgid "Canvas-Racing-Game mit großen Maps, Nitro und Drift-Score."
-msgstr "A canvas racing game with large maps, nitro, and a drift score."
+msgstr ""
 
 #: .\app\templates\app\about.html:184
 msgid "Projektstand"
-msgstr "Project Status"
+msgstr ""
 
 #: .\app\templates\app\about.html:190
 msgid "Produktiv nutzbares Dashboard"
-msgstr "A practical dashboard"
+msgstr ""
 
 #: .\app\templates\app\about.html:191
 msgid ""
 "Startseite, Shortcuts, Wetter, Notizen und mehrere Tools sind bereits "
 "eingebunden."
 msgstr ""
-"The home screen, shortcuts, weather, notes, and several tools are already "
-"built in."
 
 #: .\app\templates\app\about.html:198
 msgid "Docker-Deployment vorbereitet"
-msgstr "Docker deployment prepared"
+msgstr ""
 
 #: .\app\templates\app\about.html:199
 msgid ""
 "Das Projekt läuft mit Django, Gunicorn, PostgreSQL, Redis und Caddy per "
 "Docker Compose."
 msgstr ""
-"The project runs on Django, Gunicorn, PostgreSQL, Redis, and Caddy using "
-"Docker Compose."
 
 #: .\app\templates\app\about.html:206
 msgid "Nächste Ausbaustufe"
-msgstr "Next expansion stage"
+msgstr ""
 
 #: .\app\templates\app\about.html:207
 msgid ""
 "Das vorbereitete Stream Deck kann als nächstes mit eigenen Buttons, Aktionen "
 "und Integrationen gefüllt werden."
-msgstr "The prepared Stream Deck can be filled next with custom buttons, actions, and integrations."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_complete.html:8
 #: .\app\templates\app\auth\password_reset_complete.html:38
 msgid "Passwort geändert"
-msgstr "Password changed"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_complete.html:25
 #: .\app\templates\app\auth\password_reset_confirm.html:25
@@ -328,1511 +314,1431 @@ msgstr "Password changed"
 #: .\app\templates\app\base.html:233 .\app\templates\registration\login.html:22
 #: .\app\templates\registration\signup.html:22
 msgid "Dark Mode umschalten"
-msgstr "Toggle Dark Mode"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_complete.html:39
 msgid "Du kannst dich jetzt mit deinem neuen Passwort einloggen."
-msgstr "You can now log in with your new password."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_complete.html:46
 msgid "Zum Login"
-msgstr "Go to login"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_confirm.html:8
 msgid "Neues Passwort setzen"
-msgstr "Set new password"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_confirm.html:38
 #: .\app\templates\app\auth\password_reset_confirm.html:61
 msgid "Neues Passwort"
-msgstr "New password"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_confirm.html:39
 msgid "Gib dein neues Passwort ein und bestätige es danach."
-msgstr "Enter your new password and confirm it afterwards."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_confirm.html:72
 msgid "Passwort speichern"
-msgstr "Save password"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_confirm.html:77
 msgid "Der Link ist ungültig oder abgelaufen."
-msgstr "The link is invalid or has expired."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_confirm.html:83
 msgid "Neuen Link anfordern"
-msgstr "Request a new link"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_done.html:8
 #: .\app\templates\app\auth\password_reset_done.html:38
 msgid "E-Mail gesendet"
-msgstr "Email sent"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_done.html:39
 msgid ""
 "Falls ein Account mit dieser E-Mail existiert, wurde ein Link zum "
 "Zurücksetzen gesendet."
-msgstr "If an account with this email exists, a reset link has been sent."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_done.html:45
 msgid "Prüfe auch deinen Spam-Ordner, falls keine Mail ankommt."
-msgstr "Also check your spam folder if no email arrives."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_done.html:51
 #: .\app\templates\app\auth\password_reset_form.html:68
 msgid "Zurück zum Login"
-msgstr "Back to login"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_email.html:3
 msgid ""
 "Du erhältst diese E-Mail, weil für deinen MyTools-Account ein Passwort-Reset "
 "angefordert wurde."
-msgstr "You are receiving this email because a password reset was requested for your MyTools account."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_email.html:5
 msgid "Klicke auf den folgenden Link, um dein Passwort zurückzusetzen:"
-msgstr "Click the following link to reset your password:"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_email.html:9
 msgid "Falls du das nicht warst, kannst du diese E-Mail einfach ignorieren."
-msgstr "If this was not you, you can simply ignore this email."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_form.html:8
 msgid "Passwort zurücksetzen"
-msgstr "Reset password"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_form.html:38
 #: .\app\templates\registration\login.html:63
 msgid "Passwort vergessen?"
-msgstr "Forgot password?"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_form.html:39
 msgid ""
 "Gib deine E-Mail-Adresse ein. Wir senden dir einen Link zum Zurücksetzen."
-msgstr "Enter your email address. We will send you a reset link."
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_form.html:61
 msgid "Reset-Link senden"
-msgstr "Send reset link"
+msgstr ""
 
 #: .\app\templates\app\auth\password_reset_subject.txt:1
 msgid "Passwort für MyTools zurücksetzen"
-msgstr "Reset your MyTools password"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:5
 #: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:143
 msgid "Avatar Wiki"
-msgstr "Avatar Wiki"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:26
 msgid "Charakter"
-msgstr "Character"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:32
 #: .\app\templates\app\avatar_wiki.html:33
 msgid "Charakter hinzufügen"
-msgstr "Add character"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:37 .\app\templates\app\home.html:226
 msgid "Name"
-msgstr "Name"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:39
 msgid "Nation wählen"
-msgstr "Choose nation"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:40
 msgid "Feuernation"
-msgstr "Fire Nation"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:41
 msgid "Wasserstamm"
-msgstr "Water Tribe"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:42
 msgid "Erdkönigreich"
-msgstr "Earth Kingdom"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:43
 msgid "Luftnomaden"
-msgstr "Air Nomads"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:45
 msgid "Link (optional)"
-msgstr "Link optional"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:46
 msgid "Beschreibung (optional)"
-msgstr "Description optional"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:49
 #: .\app\templates\app\note_form.html:169
 msgid "Abbrechen"
-msgstr "Cancel"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\home.html:341
 msgid "Speichern"
-msgstr "Save"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:57
 msgid "Schließen"
-msgstr "Close"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:65
 msgid "Mehr Infos"
-msgstr "More info"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:71
 msgid "Charaktere"
-msgstr "Characters"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:74
 msgid "Charakter suchen..."
-msgstr "Search character..."
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:76
 msgid "Alle"
-msgstr "All"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:77
 msgid "Feuer"
-msgstr "Fire"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:78
 msgid "Wasser"
-msgstr "Water"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:79
 msgid "Erde"
-msgstr "Earth"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:80
 msgid "Luft"
-msgstr "Air"
+msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:85
 msgid "Noch keine Charaktere hinzugefügt."
-msgstr "No characters added yet."
+msgstr ""
 
 #: .\app\templates\app\base.html:8
 msgid "Mein myManager"
-msgstr "My myManager"
+msgstr ""
 
 #: .\app\templates\app\base.html:36 .\app\templates\app\base.html:269
 #: .\app\templates\app\human_benchmark.html:96
 msgid "Start"
-msgstr "Home"
+msgstr ""
 
 #: .\app\templates\app\base.html:50
 msgid "Spiele-Menü öffnen"
-msgstr "Open games menu"
+msgstr ""
 
 #: .\app\templates\app\base.html:52
 msgid "Spiele"
-msgstr "Games"
+msgstr ""
 
 #: .\app\templates\app\base.html:59 .\app\templates\app\human_benchmark.html:5
 #: .\app\templates\app\human_benchmark.html:17
 msgid "Human Benchmark"
-msgstr "Human Benchmark"
+msgstr ""
 
 #: .\app\templates\app\base.html:63
 msgid "Racing Game"
-msgstr "Racing Game"
+msgstr ""
 
 #: .\app\templates\app\base.html:69
 msgid "Google-Apps-Menü öffnen"
-msgstr "Open Google apps menu"
+msgstr ""
 
 #: .\app\templates\app\base.html:71
 msgid "Google"
-msgstr "Google"
+msgstr ""
 
 #: .\app\templates\app\base.html:78
 msgid "Suche"
-msgstr "Search"
+msgstr ""
 
 #: .\app\templates\app\base.html:82
 msgid "Maps"
-msgstr "Maps"
+msgstr ""
 
 #: .\app\templates\app\base.html:86
 msgid "Youtube"
-msgstr "YouTube"
+msgstr ""
 
 #: .\app\templates\app\base.html:90
 msgid "Play"
-msgstr "Play"
+msgstr ""
 
 #: .\app\templates\app\base.html:94
 msgid "Gmail"
-msgstr "Gmail"
+msgstr ""
 
 #: .\app\templates\app\base.html:98
 msgid "Drive"
-msgstr "Drive"
+msgstr ""
 
 #: .\app\templates\app\base.html:102
 msgid "Kalender"
-msgstr "Calendar"
+msgstr ""
 
 #: .\app\templates\app\base.html:106
 msgid "Translator"
-msgstr "Translator"
+msgstr ""
 
 #: .\app\templates\app\base.html:110
 msgid "Gemini"
-msgstr "Gemini"
+msgstr ""
 
 #: .\app\templates\app\base.html:114
 msgid "News"
-msgstr "News"
+msgstr ""
 
 #: .\app\templates\app\base.html:118
 msgid "Fotos"
-msgstr "Photos"
+msgstr ""
 
 #: .\app\templates\app\base.html:124
 msgid "Weitere Seiten"
-msgstr "More pages"
+msgstr ""
 
 #: .\app\templates\app\base.html:131 .\app\templates\app\obs-dashboard.html:5
 #: .\app\templates\app\obs-dashboard.html:21
 msgid "OBS Dashboard"
-msgstr "OBS Dashboard"
+msgstr ""
 
 #: .\app\templates\app\base.html:155 .\app\templates\app\stream_deck.html:4
 msgid "Stream Deck"
-msgstr "Stream Deck"
+msgstr ""
 
 #: .\app\templates\app\base.html:179
 msgid "Design anpassen"
-msgstr "Customize design"
+msgstr ""
 
 #: .\app\templates\app\base.html:186
 msgid "Design-Men&uuml; schlie&szlig;en"
-msgstr "Close design menu"
+msgstr ""
 
 #: .\app\templates\app\base.html:191
 msgid "Design-Vorlagen"
-msgstr "Design templates"
+msgstr ""
 
 #: .\app\templates\app\base.html:195
 msgid "Gr&uuml;n"
-msgstr "Green"
+msgstr ""
 
 #: .\app\templates\app\base.html:198
 msgid "Rose"
-msgstr "Pink"
+msgstr ""
 
 #: .\app\templates\app\base.html:201
 msgid "Graphit"
-msgstr "Graphite"
+msgstr ""
 
 #: .\app\templates\app\base.html:208
 msgid "Header links"
-msgstr "Header left"
+msgstr ""
 
 #: .\app\templates\app\base.html:212
 msgid "Header rechts"
-msgstr "Header right"
+msgstr ""
 
 #: .\app\templates\app\base.html:216
 msgid "Hintergrund"
-msgstr "Background"
+msgstr ""
 
 #: .\app\templates\app\base.html:220
 msgid "Footer"
-msgstr "Footer"
+msgstr ""
 
 #: .\app\templates\app\base.html:228
 msgid "Zur&uuml;cksetzen"
-msgstr "Reset"
+msgstr ""
 
 #: .\app\templates\app\base.html:240
 msgid "Abmelden"
-msgstr "Log out"
+msgstr ""
 
 #: .\app\templates\app\base.html:266
 msgid "Footer Navigation"
-msgstr "Footer navigation"
+msgstr ""
 
 #: .\app\templates\app\genius_search.html:20
 msgid "Künstler oder Song suchen..."
-msgstr "Search for an artist or song..."
+msgstr ""
 
 #: .\app\templates\app\genius_search.html:23 .\app\templates\app\home.html:27
 #: .\app\templates\app\notes.html:65
 #: .\app\templates\app\spritkostenrechner.html:30
 #: .\app\templates\app\weather.html:39
 msgid "Suchen"
-msgstr "Search"
+msgstr ""
 
 #: .\app\templates\app\genius_search.html:29
 msgid "Suche nach einem Song oder Künstler, um Genius-Treffer zu sehen."
-msgstr "Search for a song or artist to see Genius results."
+msgstr ""
 
 #: .\app\templates\app\genius_search.html:33
 msgid "Zurück"
-msgstr "Back"
+msgstr ""
 
 #: .\app\templates\app\genius_search.html:34
 msgid "Seite 1"
-msgstr "Page 1"
+msgstr ""
 
 #: .\app\templates\app\genius_search.html:35
 msgid "Weiter"
-msgstr "Next"
+msgstr ""
 
 #: .\app\templates\app\home.html:5
 msgid "Startseite"
-msgstr "Homepage"
+msgstr ""
 
 #: .\app\templates\app\home.html:22
 msgid "Bei Google suchen..."
-msgstr "Search on Google..."
+msgstr ""
 
 #: .\app\templates\app\home.html:39 .\app\templates\app\home.html:49
 #: .\app\templates\app\home.html:76 .\app\templates\app\home.html:100
 msgid "Verknüpfungen"
-msgstr "Shortcuts"
+msgstr ""
 
 #: .\app\templates\app\home.html:58
 msgid "Eingeklappt"
-msgstr "Collapsed"
+msgstr ""
 
 #: .\app\templates\app\home.html:66
 msgid "Bereich verschieben"
-msgstr "Move section"
+msgstr ""
 
 #: .\app\templates\app\home.html:74 .\app\views.py:79
 msgid "Bereich bearbeiten"
-msgstr "Edit section"
+msgstr ""
 
 #: .\app\templates\app\home.html:87
 msgid "Bereich ausklappen"
-msgstr "Expand section"
+msgstr ""
 
 #: .\app\templates\app\home.html:87
 msgid "Bereich einklappen"
-msgstr "Collapse section"
+msgstr ""
 
 #: .\app\templates\app\home.html:103
 msgid "Verknüpfung"
-msgstr "Shortcuts"
+msgstr ""
 
 #: .\app\templates\app\home.html:111
 msgid "Bereich löschen"
-msgstr "Delete section"
+msgstr ""
 
 #: .\app\templates\app\home.html:131
 msgid "Verschieben"
-msgstr "Move"
+msgstr ""
 
 #: .\app\templates\app\home.html:135
 #: .\app\templates\app\partials\note_card.html:62
 msgid "Bearbeiten"
-msgstr "Edit"
+msgstr ""
 
 #: .\app\templates\app\home.html:144
 msgid "Favorit entfernen"
-msgstr "Remove favorite"
+msgstr ""
 
 #: .\app\templates\app\home.html:144
 msgid "Als Favorit markieren"
-msgstr "Mark as favorite"
+msgstr ""
 
 #: .\app\templates\app\home.html:158
 #: .\app\templates\app\partials\note_card.html:79
 msgid "Löschen"
-msgstr "Delete"
+msgstr ""
 
 #: .\app\templates\app\home.html:181
 msgid "Noch keine Verknüpfungen"
-msgstr "No shortcuts yet"
+msgstr ""
 
 #: .\app\templates\app\home.html:182
 msgid "Erstelle deine erste Schnellverknüpfung für diesen Bereich."
-msgstr "Create your first quick shortcut for this section."
+msgstr ""
 
 #: .\app\templates\app\home.html:196
 msgid "Bereich hinzufügen"
-msgstr "Add section"
+msgstr ""
 
 #: .\app\templates\app\home.html:197
 msgid "Erstelle einen neuen Bereich für weitere Verknüpfungen."
-msgstr "Create a new section for more shortcuts."
+msgstr ""
 
 #: .\app\templates\app\home.html:210 .\app\views.py:73
 msgid "Neue Verknüpfung"
-msgstr "New shortcut"
+msgstr ""
 
 #: .\app\templates\app\home.html:236
 msgid "Icon auswählen"
-msgstr "Choose icon"
+msgstr ""
 
 #: .\app\templates\app\home.html:275
 msgid "Cloud"
-msgstr "Cloud"
+msgstr ""
 
 #: .\app\templates\app\home.html:283
 msgid "Gaming"
-msgstr "Gaming"
+msgstr ""
 
 #: .\app\templates\app\home.html:291
 msgid "Code"
-msgstr "Code"
+msgstr ""
 
 #: .\app\templates\app\home.html:299
 msgid "Server"
-msgstr "Server"
+msgstr ""
 
 #: .\app\templates\app\home.html:307
 msgid "Link"
-msgstr "Link"
+msgstr ""
 
 #: .\app\templates\app\home.html:315
 msgid "Home"
-msgstr "Home"
+msgstr ""
 
 #: .\app\templates\app\home.html:322
 msgid "Eigenes Icon, falls keins passt"
-msgstr "Custom icon if none fits"
+msgstr ""
 
 #: .\app\templates\app\home.html:323
 msgid "z.B. fa-solid fa-server"
-msgstr "e.g. fa-solid fa-server"
+msgstr ""
 
 #: .\app\templates\app\home.html:327
 msgid "Eigenes Bild, falls du kein Icon nutzen möchtest"
-msgstr "Custom image if you do not want to use an icon"
+msgstr ""
 
 #: .\app\templates\app\home.html:332
 msgid "Bild auswählen"
-msgstr "Choose image"
+msgstr ""
 
 #: .\app\templates\app\home.html:335 .\app\views.py:81
 msgid "Keine Datei ausgewählt"
-msgstr "No file selected"
+msgstr ""
 
 #: .\app\templates\app\home.html:346
 msgid "Beispiele:"
-msgstr "Examples:"
+msgstr ""
 
 #: .\app\templates\app\home.html:357 .\app\views.py:77
 msgid "Neuer Bereich"
-msgstr "New section"
+msgstr ""
 
 #: .\app\templates\app\home.html:370
 msgid "Bereichsname"
-msgstr "Section name"
+msgstr ""
 
 #: .\app\templates\app\home.html:375
 msgid "Bereichsfarbe"
-msgstr "Section color"
+msgstr ""
 
 #: .\app\templates\app\home.html:406 .\app\views.py:78
 msgid "Bereich erstellen"
-msgstr "Create section"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:15
 msgid "Zum Reaktionstest wechseln"
-msgstr "Switch to reaction test"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:20
 msgid "Benchmark Tests"
-msgstr "Benchmark tests"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:21
 msgid "Reaktion"
-msgstr "Reaction"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:22
 msgid "Aim Trainer"
-msgstr "Aim Trainer"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:23
 msgid "Typing Test"
-msgstr "Typing Test"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:24
 #: .\app\templates\app\human_benchmark.html:94
 msgid "Visual Memory"
-msgstr "Visual Memory"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:31
 msgid "Reaktionstest"
-msgstr "Reaction test"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:32
 msgid "Klicke in das Feld, um zu starten."
-msgstr "Click inside the field to start."
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:39
 msgid "Ziele"
-msgstr "Targets"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:40
 #: .\app\templates\app\human_benchmark.html:50
 #: .\app\templates\app\human_benchmark.html:66
 #: .\app\templates\app\unit_converter.html:37
 msgid "Zeit"
-msgstr "Time"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:41
 msgid "Präzision"
-msgstr "Precision"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:45
 msgid "Start Aim Trainer"
-msgstr "Start Aim Trainer"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:48
 #: .\app\templates\app\spritkostenrechner.html:57
 #: .\app\templates\app\unit_converter.html:81
 msgid "Ergebnis"
-msgstr "Result"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:51
 msgid "Genauigkeit"
-msgstr "Accuracy"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:52
 msgid "Misses"
-msgstr "Misses"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:54
 msgid "Erneut versuchen"
-msgstr "Try again"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:59
 msgid "Runde beenden"
-msgstr "End round"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:65
 msgid "WPM"
-msgstr "WPM"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:71
 msgid "Klicke auf Start, um den Test zu beginnen."
-msgstr "Click start to begin the test."
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:74
 msgid "Warte auf Start..."
-msgstr "Waiting to start..."
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:77 .\app\views.py:532
 msgid "Test starten"
-msgstr "Start test"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:82
 #: .\app\templates\app\human_benchmark.html:101
 msgid "Test abbrechen"
-msgstr "Cancel test"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:88
 msgid "Level"
-msgstr "Level"
+msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:95
 msgid "Merke dir die blau leuchtenden Quadrate."
-msgstr "Remember the blue glowing squares."
+msgstr ""
 
 #: .\app\templates\app\note_form.html:16
 msgid "Zurück zu den Notizen"
-msgstr "Back to notes"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:25 .\app\templates\app\notes.html:20
 msgid "MyTools Workspace"
-msgstr "MyTools Workspace"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:28
 msgid ""
 "Speichere Gedanken, Aufgaben, Befehle oder Ideen dauerhaft auf deinem Server."
-msgstr "Save thoughts, tasks, commands, or ideas permanently on your server"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:54
 msgid "Fett"
-msgstr "Bold"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:58
 msgid "Kursiv"
-msgstr "Italic"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:62
 msgid "Unterstrichen"
-msgstr "Underlined"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:66
 msgid "Durchgestrichen"
-msgstr "Strikethrough"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:72
 msgid "Liste"
-msgstr "List"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:76
 msgid "Nummerierte Liste"
-msgstr "Numeric list"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:82
 msgid "Linksbündig"
-msgstr "Left-aligned"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:86
 msgid "Zentriert"
-msgstr "Centered"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:90
 msgid "Rechtsbündig"
-msgstr "Right-aligned"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:94
 msgid "Blocksatz"
-msgstr "Justified text"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:100
 msgid "Textformat"
-msgstr "Text format"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:101
 #: .\app\templates\app\note_form.html:111
 msgid "Normal"
-msgstr "Normal"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:102
 msgid "Große Überschrift"
-msgstr "Large headline"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:103
 msgid "Kleine Überschrift"
-msgstr "Subheading"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:104
 msgid "Zitat"
-msgstr "Quote"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:105
 msgid "Codeblock"
-msgstr "Code block"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:108
 #: .\app\templates\app\note_form.html:109
 msgid "Schriftgröße"
-msgstr "Font size"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:110
 msgid "Klein"
-msgstr "Small"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:112
 msgid "Groß"
-msgstr "Large"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:113
 msgid "Sehr groß"
-msgstr "Very large"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:121
 msgid "Schreib hier deine Notiz..."
-msgstr "Write your note here..."
+msgstr ""
 
 #: .\app\templates\app\note_form.html:133
 msgid "Mehrere Tags mit Komma trennen."
-msgstr "Separate multiple tags with commas."
+msgstr ""
 
 #: .\app\templates\app\note_form.html:149
 msgid "Die Notiz erscheint oben."
-msgstr "The note appears at the top."
+msgstr ""
 
 #: .\app\templates\app\note_form.html:157
 msgid "Die Notiz wird aus der Hauptansicht entfernt."
-msgstr "The note will be removed from the main view."
+msgstr ""
 
 #: .\app\templates\app\note_form.html:178
 msgid "Notiz löschen"
-msgstr "Delete note"
+msgstr ""
 
 #: .\app\templates\app\note_form.html:179
 msgid "Diese Aktion kann nicht rückgängig gemacht werden."
-msgstr "This action cannot be undone."
+msgstr ""
 
 #: .\app\templates\app\note_form.html:184
 msgid "Endgültig löschen"
-msgstr "Delete permanently"
+msgstr ""
 
 #: .\app\templates\app\notes.html:23
 msgid ""
 "Speichere Ideen, Aufgaben, Code-Snippets, Server-Befehle oder alles, was du "
 "später wiederfinden willst."
 msgstr ""
-"Save ideas, tasks, code snippets, server commands, or anything else you want "
-"to find later."
 
 #: .\app\templates\app\notes.html:31 .\app\views.py:889
 msgid "Neue Notiz"
-msgstr "New note"
+msgstr ""
 
 #: .\app\templates\app\notes.html:59
 msgid "Titel, Inhalt oder Tags suchen..."
-msgstr "Search for title, content, or tags..."
+msgstr ""
 
 #: .\app\templates\app\notes.html:70
 msgid "Zurücksetzen"
-msgstr "Reset"
+msgstr ""
 
 #: .\app\templates\app\notes.html:79
 msgid "Notiz"
 msgid_plural "Notizen"
-msgstr[0] "Note"
-msgstr[1] "Notes"
+msgstr[0] ""
+msgstr[1] ""
 
 #: .\app\templates\app\notes.html:86
 msgid "Aktive"
-msgstr "Active"
+msgstr ""
 
 #: .\app\templates\app\notes.html:91 .\app\templates\app\notes.html:119
 msgid "Archiv"
-msgstr "Archive"
+msgstr ""
 
 #: .\app\templates\app\notes.html:101
 #: .\app\templates\app\partials\note_card.html:11
 msgid "Angepinnt"
-msgstr "Pinned"
+msgstr ""
 
 #: .\app\templates\app\notes.html:102
 msgid "Wichtige Notizen"
-msgstr "Important Notes"
+msgstr ""
 
 #: .\app\templates\app\notes.html:120
 msgid "Archivierte Notizen"
-msgstr "Archived Notes"
+msgstr ""
 
 #: .\app\templates\app\notes.html:122
 msgid "Sammlung"
-msgstr "Collection"
+msgstr ""
 
 #: .\app\templates\app\notes.html:123
 msgid "Alle Notizen"
-msgstr "All notes"
+msgstr ""
 
 #: .\app\templates\app\notes.html:147
 msgid "Keine Treffer gefunden"
-msgstr "No results found"
+msgstr ""
 
 #: .\app\templates\app\notes.html:148
 msgid "Versuch es mit einem anderen Suchbegriff oder entferne den Filter."
-msgstr "Try using a different search term or remove the filter."
+msgstr ""
 
 #: .\app\templates\app\notes.html:150
 msgid "Archiv ist leer"
-msgstr "The archive is empty"
+msgstr ""
 
 #: .\app\templates\app\notes.html:151
 msgid "Wenn du Notizen archivierst, erscheinen sie hier."
-msgstr "When you archive notes, they appear here."
+msgstr ""
 
 #: .\app\templates\app\notes.html:153
 msgid "Noch keine Notizen vorhanden"
-msgstr "No notes yet"
+msgstr ""
 
 #: .\app\templates\app\notes.html:154
 msgid "Erstelle deine erste Notiz und speichere sie direkt auf deinem Server."
-msgstr "Create your first note and save it directly to your server."
+msgstr ""
 
 #: .\app\templates\app\notes.html:157
 msgid "Erste Notiz erstellen"
-msgstr "Create your first note"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:18
 msgid "OBS WebSocket"
-msgstr "OBS WebSocket"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:22
 msgid ""
 "Touch Control Panel für Szenen, Quellen, Stream, Aufnahme und Audio-Mixer."
 msgstr ""
-"Touch control panel for scenes, sources, stream, recording and audio mixer."
 
 #: .\app\templates\app\obs-dashboard.html:27
 msgid "Nicht verbunden"
-msgstr "Not connected"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:36
 msgid "Verbindung"
-msgstr "Connection"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:37
 msgid "Verbinde dich mit deinem OBS WebSocket Server."
-msgstr "Connect to your OBS WebSocket server."
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:45
 msgid "WebSocket URL"
-msgstr "WebSocket URL"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:51
 msgid "OBS Passwort"
-msgstr "OBS password"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:56
 msgid "Verbinden"
-msgstr "Connect"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:62
 msgid "Verbindung merken und automatisch wieder verbinden"
-msgstr "Remember connection and reconnect automatically"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:69
 msgid "Szenen"
-msgstr "Scenes"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:70
 msgid "Wechsle direkt zwischen deinen OBS-Szenen."
-msgstr "Switch directly between your OBS scenes."
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:73
 msgid "0 Szenen"
-msgstr "0 scenes"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:78
 msgid "Noch keine Szenen geladen."
-msgstr "No scenes loaded yet."
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:86
 msgid "Quellen der aktuellen Szene"
-msgstr "Sources of the current scene"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:87
 msgid "Blende Quellen direkt ein oder aus."
-msgstr "Show or hide sources directly."
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:90
 msgid "0 Quellen"
-msgstr "0 sources"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:94
 msgid "Keine Szene ausgewählt"
-msgstr "No scene selected"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:99
 msgid "Verbinde dich mit OBS und wähle eine Szene aus."
-msgstr "Connect to OBS and choose a scene."
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:107
 msgid "Live Controls"
-msgstr "Live controls"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:108
 msgid "Steuere Aufnahme, Stream und Dashboard-Funktionen."
-msgstr "Control recording, stream and dashboard features."
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:111
 msgid "Stream & Aufnahme"
-msgstr "Stream & recording"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:120
 msgid "Aufnahme"
-msgstr "Recording"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:121
 #: .\app\templates\app\obs-dashboard.html:130
 #: .\app\templates\app\obs-dashboard.html:139
 msgid "Erst mit OBS verbinden"
-msgstr "Connect to OBS first"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:129
 msgid "Stream"
-msgstr "Stream"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:138
 msgid "Neu laden"
-msgstr "Reload"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:147
 msgid "Vollbild"
-msgstr "Fullscreen"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:148
 msgid "Tablet-Modus"
-msgstr "Tablet mode"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:156
 msgid "Audio Mixer"
-msgstr "Audio mixer"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:157
 msgid "Ändere Lautstärke und Mute-Status deiner OBS-Audioquellen."
-msgstr "Change the volume and mute status of your OBS audio sources."
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:160
 msgid "0 Audioquellen"
-msgstr "0 audio sources"
+msgstr ""
 
 #: .\app\templates\app\obs-dashboard.html:165
 msgid "Verbinde dich mit OBS, um Audioquellen zu laden."
-msgstr "Connect to OBS to load audio sources."
+msgstr ""
 
 #: .\app\templates\app\partials\note_card.html:19
 msgid "Unbenannte Notiz"
-msgstr "Untitled Note"
+msgstr ""
 
 #: .\app\templates\app\partials\note_card.html:34
 msgid "Nicht mehr anpinnen"
-msgstr "Unpin"
+msgstr ""
 
 #: .\app\templates\app\partials\note_card.html:47
 msgid "Diese Notiz hat noch keinen Inhalt."
-msgstr "This note does not yet have any content."
+msgstr ""
 
 #: .\app\templates\app\partials\note_card.html:68
 msgid "Wiederherstellen"
-msgstr "Restore"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:5
 #: .\app\templates\app\spritkostenrechner.html:14
 msgid "Spritkostenrechner"
-msgstr "Fuel cost calculator"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:15
 msgid "Tankstellen finden"
-msgstr "Find gas stations"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:20
 msgid "Mein Standort"
-msgstr "My location"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:22
 msgid "Stadt eingeben..."
-msgstr "Enter city..."
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:23
 msgid "Kraftstoff"
-msgstr "Fuel"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:24
 msgid "Diesel"
-msgstr "Diesel"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:25
 msgid "Super E5"
-msgstr "Super E5"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:26
 msgid "Super E10"
-msgstr "Super E10"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:36
 msgid "Suche Tankstellen..."
-msgstr "Searching for gas stations..."
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:40
 msgid "Suche per Standort oder Stadt, um Preise in deiner Nähe zu sehen."
-msgstr "Search by location or city to see prices near you."
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:45
 msgid "Kostenrechner"
-msgstr "Cost calculator"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:48
 msgid "Kilometer pro Tag"
-msgstr "Kilometers per day"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:49
 msgid "Zeitraum"
-msgstr "Period"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:50
 msgid "pro Tag"
-msgstr "per day"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:51
 msgid "pro Monat"
-msgstr "per month"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:52
 msgid "pro Jahr"
-msgstr "per year"
+msgstr ""
 
 #: .\app\templates\app\spritkostenrechner.html:54
 msgid "Verbrauch (l/100km)"
-msgstr "Consumption (l/100km)"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:22
 msgid ""
 "Rechne schnell Speichergrößen, Zeiten, Strecken und monatliche Kosten um."
 msgstr ""
-"Quickly convert storage sizes, durations, distances, and monthly costs."
 
 #: .\app\templates\app\unit_converter.html:32
 msgid "Speicher"
-msgstr "Storage"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:42
 msgid "Strecke"
-msgstr "Distance"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:47
 msgid "Kosten"
-msgstr "Costs"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:54
 msgid "Wert"
-msgstr "Value"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:61
 msgid "Zahl eingeben..."
-msgstr "Enter a number..."
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:66
 msgid "Von"
-msgstr "From"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:70
 msgid "Einheiten tauschen"
-msgstr "Swap units"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:75
 msgid "Nach"
-msgstr "To"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:83 .\app\views.py:974
 msgid "Gib einen Wert ein, um die Umrechnung zu starten."
-msgstr "Enter a value to start the conversion."
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:89
 msgid "Schnellbeispiele"
-msgstr "Quick Examples"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:90
 msgid "Häufige Umrechnungen"
-msgstr "Common Conversions"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:101 .\app\views.py:957
 msgid "Stunden"
-msgstr "Hours"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:106 .\app\views.py:965
 msgid "Meilen"
-msgstr "Miles"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:110
 msgid "Monat"
-msgstr "Month"
+msgstr ""
 
 #: .\app\templates\app\unit_converter.html:111
 msgid "Jahr"
-msgstr "Year"
+msgstr ""
 
 #: .\app\templates\app\weather.html:17
 msgid "Einheitensystem"
-msgstr "Unit system"
+msgstr ""
 
 #: .\app\templates\app\weather.html:23
 msgid "Metrisch"
-msgstr "Metric"
+msgstr ""
 
 #: .\app\templates\app\weather.html:26
 msgid "Imperial"
-msgstr "Imperial"
+msgstr ""
 
 #: .\app\templates\app\weather.html:36
 msgid "Stadt suchen..."
-msgstr "Search city..."
+msgstr ""
 
 #: .\app\templates\app\weather.html:45
 msgid "Gespeicherte Orte"
-msgstr "Saved locations"
+msgstr ""
 
 #: .\app\templates\app\weather.html:54
 msgid "Aktuellen Ort speichern"
-msgstr "Save current location"
+msgstr ""
 
 #: .\app\templates\app\weather.html:85
 msgid "Ort löschen"
-msgstr "Delete location"
+msgstr ""
 
 #: .\app\templates\app\weather.html:106
 msgid "Aktuelles Wetter"
-msgstr "Current weather"
+msgstr ""
 
 #: .\app\templates\app\weather.html:136
 msgid "Temperatur"
-msgstr "Temperature"
+msgstr ""
 
 #: .\app\templates\app\weather.html:144
 msgid "Luftfeuchtigkeit"
-msgstr "Humidity"
+msgstr ""
 
 #: .\app\templates\app\weather.html:152
 msgid "Wind"
-msgstr "Wind"
+msgstr ""
 
 #: .\app\templates\app\weather.html:160
 msgid "Luftdruck"
-msgstr "Air pressure"
+msgstr ""
 
 #: .\app\templates\app\weather.html:171
 msgid "Stündliche Vorhersage"
-msgstr "Hourly forecast"
+msgstr ""
 
 #: .\app\templates\app\weather.html:191
 msgid "5-Tage-Vorhersage"
-msgstr "5-day forecast"
+msgstr ""
 
 #: .\app\templates\app\weather.html:213
 msgid "Sonnenaufgang & -untergang"
-msgstr "Sunrise & sunset"
+msgstr ""
 
 #: .\app\templates\app\weather.html:219
 msgid "Sonnenaufgang"
-msgstr "Sunrise"
+msgstr ""
 
 #: .\app\templates\app\weather.html:225
 msgid "Sonnenuntergang"
-msgstr "Sunset"
+msgstr ""
 
 #: .\app\templates\registration\login.html:8
 msgid "Login"
-msgstr "Login"
+msgstr ""
 
 #: .\app\templates\registration\login.html:35
 msgid "Melde dich an, um deine Tools zu nutzen."
-msgstr "Log in to use your tools."
+msgstr ""
 
 #: .\app\templates\registration\login.html:40
 msgid "Benutzername oder Passwort stimmt nicht."
-msgstr "Username or password is incorrect."
+msgstr ""
 
 #: .\app\templates\registration\login.html:59
 #: .\app\templates\registration\signup.html:83
 msgid "Einloggen"
-msgstr "Log in"
+msgstr ""
 
 #: .\app\templates\registration\login.html:68
 msgid "Noch keinen Account?"
-msgstr "Don't have an account yet?"
+msgstr ""
 
 #: .\app\templates\registration\login.html:69
 #: .\app\templates\registration\signup.html:8
 #: .\app\templates\registration\signup.html:34
 #: .\app\templates\registration\signup.html:77
 msgid "Account erstellen"
-msgstr "Create account"
+msgstr ""
 
 #: .\app\templates\registration\signup.html:35
 msgid "Erstelle deinen eigenen MyTools-Zugang."
-msgstr "Create your own MyTools account."
+msgstr ""
 
 #: .\app\templates\registration\signup.html:82
 msgid "Schon einen Account?"
-msgstr "Already have an account?"
+msgstr ""
 
 #: .\app\views.py:40
 #, python-format
 msgid "%(name)s fehlt in der .env."
-msgstr "%(name)s is missing in the .env."
+msgstr ""
 
 #: .\app\views.py:60
 msgid "Dein Account wurde erstellt."
-msgstr "Your account has been created."
+msgstr ""
 
 #: .\app\views.py:74
 #, python-format
 msgid "für \"%(section)s\""
-msgstr "for \"%(section)s\""
+msgstr ""
 
 #: .\app\views.py:75
 msgid "Verknüpfung bearbeiten"
-msgstr "Edit shortcut"
+msgstr ""
 
 #: .\app\views.py:76
 #, python-format
 msgid "in \"%(section)s\""
-msgstr "in \"%(section)s\""
+msgstr ""
 
 #: .\app\views.py:80 .\app\views.py:911
 msgid "Änderungen speichern"
-msgstr "Save changes"
+msgstr ""
 
 #: .\app\views.py:100
 msgid "Ungültiges JSON"
-msgstr "Invalid JSON"
+msgstr ""
 
 #: .\app\views.py:133
 msgid "Unbekannte Aktion"
-msgstr "Unknown action"
+msgstr ""
 
 #: .\app\views.py:361 .\app\views.py:375 .\app\views.py:506
 msgid "Ungültige Antwort der OpenWeather API."
-msgstr "Invalid response from OpenWeather API."
+msgstr ""
 
 #: .\app\views.py:384
 msgid "Wettervorhersage konnte nicht geladen werden."
-msgstr "Weather forecast could not be loaded."
+msgstr ""
 
 #: .\app\views.py:474
 msgid "OpenWeather API-Key ist ungültig."
-msgstr "OpenWeather API-Key is invalid."
+msgstr ""
 
 #: .\app\views.py:480 .\app\views.py:492
 msgid "Standort nicht gefunden."
-msgstr "Location not found."
+msgstr ""
 
 #: .\app\views.py:486
 #, python-format
 msgid "OpenWeather Fehler: %(message)s"
-msgstr "OpenWeather Error: %(message)s"
+msgstr ""
 
 #: .\app\views.py:499 .\app\views.py:513
 #, python-format
 msgid "Verbindungsfehler: %(error)s"
-msgstr "Connection error: %(error)s"
+msgstr ""
 
 #: .\app\views.py:528
 msgid "Lade Text..."
-msgstr "Loading text..."
+msgstr ""
 
 #: .\app\views.py:529
 msgid "Übersetze..."
-msgstr "Translating..."
+msgstr ""
 
 #: .\app\views.py:530
 msgid "Nächster Test"
-msgstr "Next test"
+msgstr ""
 
 #: .\app\views.py:531
 msgid "Lädt..."
-msgstr "Loading..."
+msgstr ""
 
 #: .\app\views.py:573 .\app\views.py:639
 msgid ""
 "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
-msgstr "Database table missing. Please run migration: python manage.py migrate"
+msgstr ""
 
 #: .\app\views.py:583
 msgid "Ungültiges JSON."
-msgstr "Invalid JSON"
+msgstr ""
 
 #: .\app\views.py:596
 msgid "Unbekannte Aktion."
-msgstr "Unknown action"
+msgstr ""
 
 #: .\app\views.py:610 .\app\views.py:667
 msgid "Name fehlt."
-msgstr "Name is missing."
+msgstr ""
 
 #: .\app\views.py:616 .\app\views.py:673
 msgid "Ungültige Nation."
-msgstr "Invalid nation."
+msgstr ""
 
 #: .\app\views.py:622
 msgid "Bild fehlt."
-msgstr "Picture is missing."
+msgstr ""
 
 #: .\app\views.py:649 .\app\views.py:696
 msgid "Methode nicht erlaubt."
-msgstr "Method not allowed."
+msgstr ""
 
 #: .\app\views.py:714
 msgid "Suchbegriff fehlt."
-msgstr "Search term is missing."
+msgstr ""
 
 #: .\app\views.py:728
 msgid "Pagination-Parameter sind ungültig."
-msgstr "Pagination parameters are invalid."
+msgstr ""
 
 #: .\app\views.py:749 .\app\views.py:782
 msgid "Ungültige Antwort der Genius API."
-msgstr "Invalid response from Genius API."
+msgstr ""
 
 #: .\app\views.py:755
 msgid "Genius API Fehler."
-msgstr "Genius API error."
+msgstr ""
 
 #: .\app\views.py:777
 msgid "Genius API konnte nicht erreicht werden."
-msgstr "Genius API could not be reached."
+msgstr ""
 
 #: .\app\views.py:793
 msgid "Latitude und Longitude fehlen."
-msgstr "Latitude and longitude are missing."
+msgstr ""
 
 #: .\app\views.py:802
 msgid "Latitude und Longitude müssen Zahlen sein."
-msgstr "Latitude and longitude must be numbers."
+msgstr ""
 
 #: .\app\views.py:826 .\app\views.py:843
 msgid "Ungültige Antwort der Tankerkönig API."
-msgstr "Invalid response from Tankerkönig API."
+msgstr ""
 
 #: .\app\views.py:830
 msgid "Tankerkönig API Fehler."
-msgstr "Tankerkönig API error."
+msgstr ""
 
 #: .\app\views.py:838
 msgid "Tankerkönig API konnte nicht erreicht werden."
-msgstr "Tankerkönig API could not be reached."
+msgstr ""
 
 #: .\app\views.py:882
 msgid "Notiz wurde erstellt."
-msgstr "Note created."
+msgstr ""
 
 #: .\app\views.py:890
 msgid "Notiz speichern"
-msgstr "Save note"
+msgstr ""
 
 #: .\app\views.py:902
 msgid "Notiz wurde aktualisiert."
-msgstr "Note updated."
+msgstr ""
 
 #: .\app\views.py:910
 msgid "Notiz bearbeiten"
-msgstr "Edit note"
+msgstr ""
 
 #: .\app\views.py:920
 msgid "Notiz wurde gelöscht."
-msgstr "Note deleted."
+msgstr ""
 
 #: .\app\views.py:940
 msgid "Notiz wurde archiviert."
-msgstr "Note archived."
+msgstr ""
 
 #: .\app\views.py:942
 msgid "Notiz wurde wiederhergestellt."
-msgstr "Note restored."
+msgstr ""
 
 #: .\app\views.py:949
 msgid "Kilobyte (KB)"
-msgstr "Kilobyte (KB)"
+msgstr ""
 
 #: .\app\views.py:950
 msgid "Megabyte (MB)"
-msgstr "Megabyte (MB)"
+msgstr ""
 
 #: .\app\views.py:951
 msgid "Gigabyte (GB)"
-msgstr "Gigabyte (GB)"
+msgstr ""
 
 #: .\app\views.py:952
 msgid "Terabyte (TB)"
-msgstr "Terabyte (TB)"
+msgstr ""
 
 #: .\app\views.py:955
 msgid "Sekunden"
-msgstr "Seconds"
+msgstr ""
 
 #: .\app\views.py:956
 msgid "Minuten"
-msgstr "Minutes"
+msgstr ""
 
 #: .\app\views.py:958
 msgid "Tage"
-msgstr "Days"
+msgstr ""
 
 #: .\app\views.py:961
 msgid "Millimeter"
-msgstr "Millimeter"
+msgstr ""
 
 #: .\app\views.py:962
 msgid "Zentimeter"
-msgstr "Centimeters"
+msgstr ""
 
 #: .\app\views.py:963
 msgid "Meter"
-msgstr "Meter"
+msgstr ""
 
 #: .\app\views.py:964
 msgid "Kilometer"
-msgstr "Kilometer"
+msgstr ""
 
 #: .\app\views.py:968
 msgid "Euro pro Tag"
-msgstr "Euros per day"
+msgstr ""
 
 #: .\app\views.py:969
 msgid "Euro pro Woche"
-msgstr "Euros per week"
+msgstr ""
 
 #: .\app\views.py:970
 msgid "Euro pro Monat"
-msgstr "Euros per month"
+msgstr ""
 
 #: .\app\views.py:971
 msgid "Euro pro Jahr"
-msgstr "Euros per year"
-
-#~ msgid ""
-#~ "MyTools ist eine persönliche Sammlung kleiner praktischer Tools, die den "
-#~ "Alltag einfacher machen sollen."
-#~ msgstr ""
-#~ "MyTools is a personal collection of small practical tools designed to "
-#~ "make everyday life easier."
-
-#~ msgid ""
-#~ "Wetter, Schnellzugriffe, kleine Helfer und weitere Funktionen können hier "
-#~ "übersichtlich gesammelt werden."
-#~ msgstr ""
-#~ "Weather, shortcuts, small helpers and other features can be collected "
-#~ "here in a clear and organized way."
-
-#~ msgid "Shortcuts"
-#~ msgstr "Shortcuts"
-
-#~ msgid "Eigene Verknüpfungen speichern"
-#~ msgstr "Save your own shortcuts"
-
-#~ msgid "Dark Mode"
-#~ msgstr "Dark Mode"
-
-#~ msgid "Angenehmes Design bei Nacht"
-#~ msgstr "Comfortable design at night"
-
-#~ msgid "Ziel"
-#~ msgstr "Goal"
-
-#~ msgid ""
-#~ "Diese Seite soll eine zentrale Oberfläche für nützliche Funktionen sein. "
-#~ "Alles soll schnell erreichbar, übersichtlich und angenehm zu bedienen "
-#~ "sein."
-#~ msgstr ""
-#~ "This site is intended to be a central interface for useful features. "
-#~ "Everything should be quickly accessible, clearly arranged and pleasant to "
-#~ "use."
-
-#~ msgid ""
-#~ "Das Design ist modern, leicht und responsive. Es funktioniert sowohl im "
-#~ "Light Mode als auch im Dark Mode."
-#~ msgstr ""
-#~ "The design is modern, lightweight and responsive. It works in both Light "
-#~ "Mode and Dark Mode."
-
-#~ msgid "Backend"
-#~ msgstr "Backend"
-
-#~ msgid ""
-#~ "Einige Inhalte können später direkt im Backend gespeichert werden, zum "
-#~ "Beispiel eigene Verknüpfungen oder persönliche Einstellungen."
-#~ msgstr ""
-#~ "Some content can later be stored directly in the backend, for example "
-#~ "custom shortcuts or personal settings."
-
-#~ msgid "Geplante Funktionen"
-#~ msgstr "Planned features"
-
-#~ msgid "Mehr Tools"
-#~ msgstr "More tools"
-
-#~ msgid "Weitere kleine Helfer wie Notizen, Rechner oder eigene Dashboards."
-#~ msgstr "More small helpers such as notes, calculators or custom dashboards."
-
-#~ msgid "Personalisierung"
-#~ msgstr "Personalization"
-
-#~ msgid "Eigene Bereiche, Shortcuts und Einstellungen für die Startseite."
-#~ msgstr "Custom sections, shortcuts and settings for the homepage."
-
-#~ msgid "Sauberes Backend"
-#~ msgstr "Clean backend"
-
-#~ msgid "Speicherung über Django-Models und einfache Verwaltung über die App."
-#~ msgstr "Storage via Django models and simple management through the app."
+msgstr ""

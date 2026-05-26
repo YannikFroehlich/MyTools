@@ -25,14 +25,12 @@
             </div>
         </div>
 
-        {% if note_access.can_create_notes %}
-            <div class="notes-header-actions">
-                <a href="{% url 'note_create' %}" class="notes-primary-btn">
-                    <i class="fa-solid fa-plus"></i>
-                    {% translate "Neue Notiz" %}
-                </a>
-            </div>
-        {% endif %}
+        <div class="notes-header-actions">
+            <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                <i class="fa-solid fa-plus"></i>
+                {% translate "Neue Notiz" %}
+            </a>
+        </div>
     </section>
 
     {% if messages %}
@@ -154,12 +152,10 @@
                 {% else %}
                     <h3>{% translate "Noch keine Notizen vorhanden" %}</h3>
                     <p>{% translate "Erstelle deine erste Notiz und speichere sie direkt auf deinem Server." %}</p>
-                    {% if note_access.can_create_notes %}
-                        <a href="{% url 'note_create' %}" class="notes-primary-btn">
-                            <i class="fa-solid fa-plus"></i>
-                            {% translate "Erste Notiz erstellen" %}
-                        </a>
-                    {% endif %}
+                    <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                        <i class="fa-solid fa-plus"></i>
+                        {% translate "Erste Notiz erstellen" %}
+                    </a>
                 {% endif %}
             </div>
         {% endif %}
