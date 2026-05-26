@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="de">
+<html lang="{{ LANGUAGE_CODE|default:'de' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -19,6 +19,28 @@
     </script>
 </head>
 <body class="auth-page">
+    <form class="auth-language-form" action="{% url 'set_language' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+        {% get_current_language as CURRENT_LANGUAGE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+
+        <label class="auth-language-label" for="auth-language-select">
+            <i class="fa-solid fa-language"></i>
+            <span class="sr-only">{% translate 'Sprache auswählen' %}</span>
+        </label>
+
+        <select id="auth-language-select" name="language" onchange="this.form.submit()">
+            {% for language in languages %}
+                <option value="{{ language.code }}" {% if language.code == CURRENT_LANGUAGE %}selected{% endif %}>
+                    {{ language.name_local }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
     <button class="auth-theme-button dark-mode-btn" id="darkmode-button" type="button" aria-label="{% translate 'Dark Mode umschalten' %}">
         <i class="fa-solid fa-moon icon-moon"></i>
         <i class="fa-solid fa-sun icon-sun"></i>
@@ -58,6 +80,7 @@
                     <i class="fa-solid fa-right-to-bracket"></i>
                     {% translate 'Einloggen' %}
                 </button>
+
                 <a class="auth-forgot-link" href="{% url 'password_reset' %}">
                     <i class="fa-solid fa-key"></i>
                     {% translate 'Passwort vergessen?' %}

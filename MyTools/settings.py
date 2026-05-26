@@ -197,6 +197,31 @@ else:
         }
     }
 
+# ------------------------------------------------------------
+# E-Mail / Passwort zurücksetzen
+# ------------------------------------------------------------
+
+EMAIL_BACKEND_MODE = os.getenv("EMAIL_BACKEND_MODE", "console")
+
+if EMAIL_BACKEND_MODE == "smtp":
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "465"))
+
+    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "yes")
+    EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True").lower() in ("true", "1", "yes")
+
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+
+    DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
+    SERVER_EMAIL = os.getenv("SERVER_EMAIL", DEFAULT_FROM_EMAIL)
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "MyTools <noreply@localhost>")
+    SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
 
 # HTTPS / Reverse Proxy Settings
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

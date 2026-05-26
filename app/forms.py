@@ -54,17 +54,30 @@ NOTE_COLOR_CHOICES = [
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
-        required=False,
+        required=True,
         label=_("E-Mail"),
+        error_messages={
+            "required": _("Bitte gib eine E-Mail-Adresse ein."),
+            "invalid": _("Bitte gib eine gültige E-Mail-Adresse ein."),
+        },
         widget=forms.EmailInput(attrs={
             "autocomplete": "email",
-            "placeholder": _("Optional"),
+            "placeholder": _("E-Mail-Adresse"),
+            "required": "required",
         }),
     )
 
     class Meta:
         model = User
         fields = ("username", "email", "password1", "password2")
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email", "").strip().lower()
+
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(_("Diese E-Mail-Adresse wird bereits verwendet."))
+
+        return email
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
