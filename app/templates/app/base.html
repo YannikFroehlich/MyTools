@@ -142,10 +142,12 @@
                         <i class="fa-solid fa-wind"></i>
                         {% translate 'Avatar Wiki' %}
                     </a>
-                    <a href="{% url 'notes' %}" class="menu-item">
-                        <i class="fa-regular fa-note-sticky"></i>
-                        {% translate 'Notizen' %}
-                    </a>
+                    {% if note_access.can_view_notes %}
+                        <a href="{% url 'notes' %}" class="menu-item">
+                            <i class="fa-regular fa-note-sticky"></i>
+                            {% translate 'Notizen' %}
+                        </a>
+                    {% endif %}
                     <a href="{% url 'unit_converter' %}" class="menu-item">
                         <i class="fa-solid fa-calculator"></i>
                         {% translate 'Einheitenrechner' %}
@@ -264,10 +266,12 @@
                     <i class="fa-solid fa-cloud-sun"></i>
                     {% translate 'Wetter' %}
                 </a>
-                <a href="{% url 'notes' %}">
-                    <i class="fa-regular fa-note-sticky"></i>
-                    {% translate 'Notizen' %}
-                </a>
+                {% if note_access.can_view_notes %}
+                    <a href="{% url 'notes' %}">
+                        <i class="fa-regular fa-note-sticky"></i>
+                        {% translate 'Notizen' %}
+                    </a>
+                {% endif %}
                 <a href="{% url 'about' %}">
                     <i class="fa-solid fa-circle-info"></i>
                     {% translate 'Über' %}

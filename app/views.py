@@ -18,6 +18,7 @@ import json
 
 from django.db.models import Max
 from django.db.utils import OperationalError, ProgrammingError
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 
 from django.contrib import messages
@@ -26,6 +27,7 @@ from django.views.decorators.http import require_POST
 
 from .models import Note
 from .forms import NoteForm
+from .permissions import get_note_access, user_can_access_notes
 
 env_path = settings.BASE_DIR / ".env"
 load_dotenv(env_path)
@@ -807,6 +809,9 @@ def tankstellen_api(request):
 
 
 def notes_view(request):
+    if not user_can_access_notes(request.user, "view"):
+        raise PermissionDenied
+
     query = request.GET.get("q", "").strip()
     show_archived = request.GET.get("archived") == "1"
 
@@ -828,12 +833,16 @@ def notes_view(request):
         "query": query,
         "show_archived": show_archived,
         "note_count": notes.count(),
+        "note_access": get_note_access(request.user),
     }
 
     return render(request, "app/notes.html", context)
 
 
 def note_create_view(request):
+    if not user_can_access_notes(request.user, "create"):
+        raise PermissionDenied
+
     if request.method == "POST":
         form = NoteForm(request.POST)
 
@@ -852,6 +861,9 @@ def note_create_view(request):
 
 
 def note_edit_view(request, pk):
+    if not user_can_access_notes(request.user, "edit"):
+        raise PermissionDenied
+
     note = get_object_or_404(Note, pk=pk)
 
     if request.method == "POST":
@@ -874,6 +886,9 @@ def note_edit_view(request, pk):
 
 @require_POST
 def note_delete_view(request, pk):
+    if not user_can_access_notes(request.user, "delete"):
+        raise PermissionDenied
+
     note = get_object_or_404(Note, pk=pk)
     note.delete()
 
@@ -883,6 +898,9 @@ def note_delete_view(request, pk):
 
 @require_POST
 def note_toggle_pin_view(request, pk):
+    if not user_can_access_notes(request.user, "pin"):
+        raise PermissionDenied
+
     note = get_object_or_404(Note, pk=pk)
     note.is_pinned = not note.is_pinned
     note.save()
@@ -892,6 +910,9 @@ def note_toggle_pin_view(request, pk):
 
 @require_POST
 def note_toggle_archive_view(request, pk):
+    if not user_can_access_notes(request.user, "archive"):
+        raise PermissionDenied
+
     note = get_object_or_404(Note, pk=pk)
     note.is_archived = not note.is_archived
     note.save()

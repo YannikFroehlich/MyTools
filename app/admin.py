@@ -1,6 +1,24 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
-from .models import AvatarCharacter, Shortcut, ShortcutSection
+from .models import AvatarCharacter, Shortcut, ShortcutSection, UserNotePermission
+
+
+class UserNotePermissionInline(admin.StackedInline):
+    model = UserNotePermission
+    can_delete = False
+    extra = 1
+    max_num = 1
+    verbose_name_plural = "Notiz-Rechte"
+
+
+admin.site.unregister(User)
+
+
+@admin.register(User)
+class CustomUserAdmin(UserAdmin):
+    inlines = (UserNotePermissionInline,)
 
 
 @admin.register(AvatarCharacter)

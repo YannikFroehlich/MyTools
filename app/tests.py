@@ -5,12 +5,13 @@ from unittest.mock import Mock, patch
 
 import requests
 
+from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from app.forms import NoteForm
-from app.models import AvatarCharacter, Note, Shortcut, ShortcutSection, WeatherLocation
+from app.models import AvatarCharacter, Note, Shortcut, ShortcutSection, UserNotePermission, WeatherLocation
 
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
@@ -826,6 +827,61 @@ class NotesViewTests(BaseTestCase):
         note.refresh_from_db()
 
         self.assertTrue(note.is_archived)
+
+    def test_user_without_note_permission_row_can_use_notes_by_default(self):
+        user = User.objects.create_user(username="normal", password="secret")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("notes"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["note_access"]["can_view_notes"])
+
+    def test_revoked_view_permission_blocks_notes_page(self):
+        user = User.objects.create_user(username="blocked-view", password="secret")
+        UserNotePermission.objects.create(user=user, can_view_notes=False)
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("notes"))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_revoked_create_permission_blocks_note_creation(self):
+        user = User.objects.create_user(username="blocked-create", password="secret")
+        UserNotePermission.objects.create(user=user, can_create_notes=False)
+        self.client.force_login(user)
+
+        response = self.client.post(reverse("note_create"), {
+            "title": "Soll nicht erstellt werden",
+            "content": "<p>Hallo</p>",
+            "tags": "",
+            "color": "blue",
+        })
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Note.objects.filter(title="Soll nicht erstellt werden").exists())
+
+    def test_revoked_action_permissions_block_direct_note_actions(self):
+        user = User.objects.create_user(username="blocked-actions", password="secret")
+        UserNotePermission.objects.create(
+            user=user,
+            can_edit_notes=False,
+            can_delete_notes=False,
+            can_pin_notes=False,
+            can_archive_notes=False,
+        )
+        note = Note.objects.create(title="Geschuetzt")
+        self.client.force_login(user)
+
+        self.assertEqual(self.client.get(reverse("note_edit", args=[note.id])).status_code, 403)
+        self.assertEqual(self.client.post(reverse("note_delete", args=[note.id])).status_code, 403)
+        self.assertEqual(self.client.post(reverse("note_toggle_pin", args=[note.id])).status_code, 403)
+        self.assertEqual(self.client.post(reverse("note_toggle_archive", args=[note.id])).status_code, 403)
+
+        note.refresh_from_db()
+
+        self.assertFalse(note.is_pinned)
+        self.assertFalse(note.is_archived)
 
 
 class AvatarApiTests(BaseTestCase):

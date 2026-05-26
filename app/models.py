@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -125,6 +126,28 @@ class Note(models.Model):
 
     def tag_list(self):
         return [tag.strip() for tag in self.tags.split(",") if tag.strip()]
+
+
+class UserNotePermission(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="note_permissions",
+    )
+    can_view_notes = models.BooleanField(default=True)
+    can_create_notes = models.BooleanField(default=True)
+    can_edit_notes = models.BooleanField(default=True)
+    can_delete_notes = models.BooleanField(default=True)
+    can_pin_notes = models.BooleanField(default=True)
+    can_archive_notes = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Notiz-Recht"
+        verbose_name_plural = "Notiz-Rechte"
+
+    def __str__(self):
+        return f"Notiz-Rechte fuer {self.user}"
+
 
 class WeatherLocation(models.Model):
     name = models.CharField(max_length=120, unique=True)
