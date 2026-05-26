@@ -353,8 +353,9 @@ Beispiel:
 DEBUG=True
 SECRET_KEY=bitte-einen-eigenen-secret-key-setzen
 
-ALLOWED_HOSTS=localhost,127.0.0.1,192.168.178.99
-CSRF_TRUSTED_ORIGINS=http://192.168.178.99:8090
+DOMAIN=tools.example.com
+ALLOWED_HOSTS=localhost,127.0.0.1
+CSRF_TRUSTED_ORIGINS=https://tools.example.com
 
 USE_SQLITE=False
 USE_LOCAL_CACHE=False
@@ -366,14 +367,13 @@ DB_HOST=db
 DB_PORT=5432
 
 REDIS_URL=redis://redis:6379/0
-DOMAIN=localhost
 
 FONTAWESOME_KIT_KEY=
 OPENWEATHER_API_KEY=
 GENIUS_API_KEY=
 TANKERKOENIG_API_KEY=
 SPOTIFY_CLIENT_ID=
-SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/stream-deck/
+SPOTIFY_REDIRECT_URI=https://tools.example.com/stream-deck/
 ```
 
 > Die echte `.env` sollte nicht ins Git-Repository committed werden.
@@ -451,6 +451,9 @@ USE_SQLITE=False
 USE_LOCAL_CACHE=False
 DB_HOST=db
 REDIS_URL=redis://redis:6379/0
+DOMAIN=tools.example.com
+CLOUDFLARE_TUNNEL_TOKEN=dein-cloudflare-token
+SPOTIFY_REDIRECT_URI=https://tools.example.com/stream-deck/
 ```
 
 ### 2. Container bauen und starten
@@ -481,10 +484,10 @@ docker compose ps
 
 ### 5. App öffnen
 
-Auf dem Server ist MyTools über Caddy auf Port `8090` erreichbar:
+Mit Cloudflare Tunnel ist MyTools unter deiner Domain erreichbar:
 
 ```text
-http://192.168.178.99:8090/
+https://tools.example.com/
 ```
 
 Lokal auf demselben Server kannst du testen mit:
@@ -506,7 +509,7 @@ docker compose exec web python manage.py createsuperuser
 Admin öffnen:
 
 ```text
-http://192.168.178.99:8090/admin/
+https://tools.example.com/admin/
 ```
 
 ---
