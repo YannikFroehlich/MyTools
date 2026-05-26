@@ -33,12 +33,10 @@
                         {% translate 'Zur Startseite' %}
                     </a>
 
-                    {% if note_access.can_view_notes %}
-                        <a href="{% url 'notes' %}" class="about-secondary-button">
-                            <i class="fa-regular fa-note-sticky"></i>
-                            {% translate 'Notizen öffnen' %}
-                        </a>
-                    {% endif %}
+                    <a href="{% url 'notes' %}" class="about-secondary-button">
+                        <i class="fa-regular fa-note-sticky"></i>
+                        {% translate 'Notizen öffnen' %}
+                    </a>
                 </div>
             </div>
 
@@ -156,15 +154,13 @@
                     </div>
                 </a>
 
-                {% if note_access.can_view_notes %}
-                    <a href="{% url 'notes' %}" class="about-feature-card">
-                        <i class="fa-regular fa-note-sticky"></i>
-                        <div>
-                            <strong>{% translate 'Notizen' %}</strong>
-                            <span>{% translate 'Notizen mit Pins, Archiv, Farben und Tags.' %}</span>
-                        </div>
-                    </a>
-                {% endif %}
+                <a href="{% url 'notes' %}" class="about-feature-card">
+                    <i class="fa-regular fa-note-sticky"></i>
+                    <div>
+                        <strong>{% translate 'Notizen' %}</strong>
+                        <span>{% translate 'Notizen mit Pins, Archiv, Farben und Tags.' %}</span>
+                    </div>
+                </a>
 
                 <a href="{% url 'unit_converter' %}" class="about-feature-card">
                     <i class="fa-solid fa-calculator"></i>

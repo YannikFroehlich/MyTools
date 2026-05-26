@@ -108,7 +108,9 @@ jobs:
 
     env:
       USE_SQLITE: "True"
+      USE_LOCAL_CACHE: "True"
       DEBUG: "True"
+      SECRET_KEY: "test-secret-key-only-for-ci"
       ALLOWED_HOSTS: "localhost,127.0.0.1"
       CSRF_TRUSTED_ORIGINS: ""
       OPENWEATHER_API_KEY: "dummy-for-tests"
@@ -182,10 +184,11 @@ jobs:
           git reset --hard origin/main
 
           echo "Starte Docker Deployment..."
-          docker compose pull db redis caddy || true
+          docker compose pull db redis caddy cloudflared || true
           docker compose up -d --build --remove-orphans
 
-          echo "Warte kurz bis der Webserver antwortet..."
+          echo "Warte kurz bis der Webserver über Port 8090 antwortet..."
+
           for i in {1..20}; do
             if curl -fsS http://localhost:8090 > /dev/null; then
               echo "Webserver ist erreichbar."
@@ -197,9 +200,28 @@ jobs:
 
             if [ "$i" -eq 20 ]; then
               echo "Fehler: Webserver ist nach dem Deployment nicht erreichbar."
+              echo ""
+              echo "Container Status:"
               docker compose ps
-              docker compose logs --tail=80 web
-              docker compose logs --tail=80 caddy
+
+              echo ""
+              echo "============================================================"
+              echo "Web-Logs"
+              echo "============================================================"
+              docker compose logs --tail=100 web
+
+              echo ""
+              echo "============================================================"
+              echo "Caddy-Logs"
+              echo "============================================================"
+              docker compose logs --tail=100 caddy
+
+              echo ""
+              echo "============================================================"
+              echo "Cloudflared-Logs"
+              echo "============================================================"
+              docker compose logs --tail=100 cloudflared || true
+
               exit 1
             fi
           done

@@ -3,6 +3,9 @@ import OBSWebSocket from "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+e
 console.log("script.js wurde geladen");
 
 const obs = new OBSWebSocket();
+const obsDashboardPage = document.querySelector(".obs-dashboard-page");
+const USER_STORAGE_SUFFIX = obsDashboardPage?.dataset.userId ? `_user_${obsDashboardPage.dataset.userId}` : "";
+const storageKey = (key) => `${key}${USER_STORAGE_SUFFIX}`;
 
 const urlInput = document.getElementById("url");
 const passwordInput = document.getElementById("password");
@@ -86,13 +89,13 @@ async function connectToObs(showAlerts = false) {
         updateControlButtons();
 
         if (rememberConnection.checked) {
-            localStorage.setItem("obsDashboardRemember", "true");
-            localStorage.setItem("obsDashboardUrl", url);
-            localStorage.setItem("obsDashboardPassword", password);
+            localStorage.setItem(storageKey("obsDashboardRemember"), "true");
+            localStorage.setItem(storageKey("obsDashboardUrl"), url);
+            localStorage.setItem(storageKey("obsDashboardPassword"), password);
         } else {
-            localStorage.removeItem("obsDashboardRemember");
-            localStorage.removeItem("obsDashboardUrl");
-            localStorage.removeItem("obsDashboardPassword");
+            localStorage.removeItem(storageKey("obsDashboardRemember"));
+            localStorage.removeItem(storageKey("obsDashboardUrl"));
+            localStorage.removeItem(storageKey("obsDashboardPassword"));
         }
 
         await loadScenes();
@@ -525,9 +528,9 @@ function escapeHtml(value) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const savedRemember = localStorage.getItem("obsDashboardRemember") === "true";
-    const savedUrl = localStorage.getItem("obsDashboardUrl");
-    const savedPassword = localStorage.getItem("obsDashboardPassword");
+    const savedRemember = localStorage.getItem(storageKey("obsDashboardRemember")) === "true";
+    const savedUrl = localStorage.getItem(storageKey("obsDashboardUrl"));
+    const savedPassword = localStorage.getItem(storageKey("obsDashboardPassword"));
 
     if (savedUrl) {
         urlInput.value = savedUrl;

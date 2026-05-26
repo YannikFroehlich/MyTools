@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="stream-deck-page" data-spotify-client-id="{{ spotify_client_id|escape }}" data-spotify-redirect-uri="{{ spotify_redirect_uri|escape }}">
+<section class="stream-deck-page" data-user-id="{{ request.user.id }}" data-spotify-client-id="{{ spotify_client_id|escape }}" data-spotify-redirect-uri="{{ spotify_redirect_uri|escape }}">
     <div class="app-shell">
         <header class="topbar">
             <div class="brand">
