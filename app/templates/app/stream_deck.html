@@ -1,14 +1,17 @@
 {% extends "app/base.html" %}
 {% load static i18n %}
 
-{% block title %}{% translate "Stream Deck" %} - MyTools{% endblock %}
+{% block title %}{% translate "Stream-Deck" %} - MyTools{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'app/css/stream_deck.css' %}">
 {% endblock %}
 
 {% block content %}
-<section class="stream-deck-page" data-user-id="{{ request.user.id }}" data-spotify-client-id="{{ spotify_client_id|escape }}" data-spotify-redirect-uri="{{ spotify_redirect_uri|escape }}">
+<section class="stream-deck-page"
+         data-user-id="{{ request.user.id }}"
+         data-spotify-client-id="{{ spotify_client_id|escape }}"
+         data-spotify-redirect-uri="{{ spotify_redirect_uri|escape }}">
     <div class="app-shell">
         <header class="topbar">
             <div class="brand">
@@ -16,22 +19,22 @@
                     <i class="fa-solid fa-circle-notch"></i>
                 </div>
                 <div class="brand-text">
-                    <div class="brand-title">OBS + Spotify</div>
-                    <div class="brand-subtitle">Stream Deck Control</div>
+                    <div class="brand-title">{% translate "OBS + Spotify" %}</div>
+                    <div class="brand-subtitle">{% translate "Stream-Deck-Steuerung" %}</div>
                 </div>
             </div>
 
             <div class="connection-group">
                 <div class="field">
-                    <label for="obs-address">OBS WebSocket Adresse</label>
+                    <label for="obs-address">{% translate "OBS-WebSocket-Adresse" %}</label>
                     <input id="obs-address" type="text" placeholder="ws://127.0.0.1:4455" />
                 </div>
 
                 <div class="field">
-                    <label for="obs-password">Passwort</label>
+                    <label for="obs-password">{% translate "Passwort" %}</label>
                     <div class="password-wrap">
-                        <input id="obs-password" type="password" placeholder="Passwort" />
-                        <button id="toggle-password-btn" class="ghost-icon-btn" type="button" aria-label="Passwort anzeigen">
+                        <input id="obs-password" type="password" placeholder="{% translate 'Passwort' %}" />
+                        <button id="toggle-password-btn" class="ghost-icon-btn" type="button" aria-label="{% translate 'Passwort anzeigen' %}">
                             <i class="fa-regular fa-eye"></i>
                         </button>
                     </div>
@@ -39,14 +42,14 @@
 
                 <button id="connect-btn" class="primary-btn" type="button">
                     <i class="fa-solid fa-link"></i>
-                    <span>Verbinden</span>
+                    <span>{% translate "Verbinden" %}</span>
                 </button>
             </div>
 
             <div class="topbar-actions">
                 <button id="edit-toggle-btn" class="outline-btn" type="button">
                     <i class="fa-solid fa-pen"></i>
-                    <span>Bearbeiten</span>
+                    <span>{% translate "Bearbeiten" %}</span>
                 </button>
             </div>
         </header>
@@ -58,7 +61,7 @@
                         <div class="deck-logo">
                             <i class="fa-regular fa-circle-play"></i>
                         </div>
-                        <h1>STREAM DECK</h1>
+                        <h1>{% translate "Stream-Deck" %}</h1>
                     </div>
 
                     <div id="button-grid" class="button-grid"></div>
@@ -66,39 +69,39 @@
                     <div class="deck-footer-row">
                         <button id="add-button-btn" class="small-btn" type="button">
                             <i class="fa-solid fa-plus"></i>
-                            <span>Button hinzufÃ¼gen</span>
+                            <span>{% translate "Button hinzufügen" %}</span>
                         </button>
 
                         <button id="reset-buttons-btn" class="small-btn danger" type="button">
                             <i class="fa-solid fa-rotate-left"></i>
-                            <span>Reset</span>
+                            <span>{% translate "Zurücksetzen" %}</span>
                         </button>
                     </div>
                 </div>
 
                 <aside class="status-sidebar">
                     <div class="sidebar-card">
-                        <h2>VERBINDUNGSSTATUS</h2>
+                        <h2>{% translate "Verbindungsstatus" %}</h2>
 
                         <div class="status-line">
                             <span class="status-dot online" id="obs-status-dot"></span>
-                            <span id="obs-status-label">Nicht verbunden</span>
+                            <span id="obs-status-label">{% translate "Nicht verbunden" %}</span>
                         </div>
 
                         <div class="small-muted" id="obs-address-preview">ws://127.0.0.1:4455</div>
 
                         <button id="disconnect-btn" class="sidebar-btn" type="button">
                             <i class="fa-solid fa-link-slash"></i>
-                            <span>Verbindung trennen</span>
+                            <span>{% translate "Verbindung trennen" %}</span>
                         </button>
                     </div>
 
                     <div class="sidebar-card">
-                        <h2>SPOTIFY</h2>
+                        <h2>{% translate "Spotify" %}</h2>
 
                         <div class="status-line">
                             <span class="status-dot" id="spotify-status-dot"></span>
-                            <span id="spotify-status-text">Nicht verbunden</span>
+                            <span id="spotify-status-text">{% translate "Nicht verbunden" %}</span>
                         </div>
 
                         <div class="spotify-track">
@@ -107,8 +110,8 @@
                             </div>
 
                             <div class="spotify-meta">
-                                <div class="track-title" id="spotify-track-title">Kein Titel</div>
-                                <div class="track-artist" id="spotify-track-artist">Kein KÃ¼nstler</div>
+                                <div class="track-title" id="spotify-track-title">{% translate "Kein Titel" %}</div>
+                                <div class="track-artist" id="spotify-track-artist">{% translate "Kein Künstler" %}</div>
                             </div>
                         </div>
 
@@ -123,61 +126,61 @@
                         </div>
 
                         <div class="spotify-controls">
-                            <button data-spotify-control="previous" class="round-btn" type="button">
+                            <button data-spotify-control="previous" class="round-btn" type="button" aria-label="{% translate 'Vorheriger Titel' %}">
                                 <i class="fa-solid fa-backward-step"></i>
                             </button>
-                            <button data-spotify-control="toggle" class="round-btn big" type="button">
+                            <button data-spotify-control="toggle" class="round-btn big" type="button" aria-label="{% translate 'Wiedergabe umschalten' %}">
                                 <i class="fa-solid fa-play"></i>
                             </button>
-                            <button data-spotify-control="next" class="round-btn" type="button">
+                            <button data-spotify-control="next" class="round-btn" type="button" aria-label="{% translate 'Nächster Titel' %}">
                                 <i class="fa-solid fa-forward-step"></i>
                             </button>
                         </div>
 
                         <button id="spotify-token-btn" class="sidebar-btn" type="button">
                             <i class="fa-brands fa-spotify"></i>
-                            <span>Mit Spotify verbinden</span>
+                            <span>{% translate "Mit Spotify verbinden" %}</span>
                         </button>
                     </div>
 
                     <div class="sidebar-card">
-                        <h2>SYSTEM</h2>
+                        <h2>{% translate "System" %}</h2>
 
                         <div class="info-list">
                             <div class="info-item">
-                                <span>OBS Version</span>
+                                <span>{% translate "OBS-Version" %}</span>
                                 <strong id="obs-version-text">-</strong>
                             </div>
 
                             <div class="info-item">
-                                <span>WebSocket</span>
+                                <span>{% translate "WebSocket" %}</span>
                                 <strong>5.x</strong>
                             </div>
 
                             <div class="info-item">
-                                <span>Spotify Status</span>
+                                <span>{% translate "Spotify-Status" %}</span>
                                 <strong id="spotify-system-status">-</strong>
                             </div>
 
                             <div class="info-item">
-                                <span>Letzte Aktion</span>
+                                <span>{% translate "Letzte Aktion" %}</span>
                                 <strong id="last-action-text">-</strong>
                             </div>
 
                             <div class="info-item">
-                                <span>Bearbeiten</span>
-                                <strong id="edit-mode-status">Aus</strong>
+                                <span>{% translate "Bearbeiten" %}</span>
+                                <strong id="edit-mode-status">{% translate "Aus" %}</strong>
                             </div>
 
                             <div class="info-item">
-                                <span>Buttons</span>
+                                <span>{% translate "Buttons" %}</span>
                                 <strong id="button-count-text">0</strong>
                             </div>
                         </div>
 
                         <button id="show-log-btn" class="sidebar-btn" type="button">
                             <i class="fa-regular fa-file-lines"></i>
-                            <span>Protokoll anzeigen</span>
+                            <span>{% translate "Protokoll anzeigen" %}</span>
                         </button>
                     </div>
                 </aside>
@@ -185,18 +188,17 @@
         </div>
     </div>
 
-    <!-- Editor Modal -->
     <div id="editor-modal" class="modal hidden">
         <div class="modal-backdrop"></div>
 
         <div class="modal-dialog">
             <div class="modal-header">
                 <div>
-                    <h3>Button bearbeiten</h3>
-                    <p>Lege fest, was der Button machen soll.</p>
+                    <h3>{% translate "Button bearbeiten" %}</h3>
+                    <p>{% translate "Lege fest, was der Button machen soll." %}</p>
                 </div>
 
-                <button id="close-editor-btn" class="ghost-icon-btn" type="button">
+                <button id="close-editor-btn" class="ghost-icon-btn" type="button" aria-label="{% translate 'Editor schließen' %}">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -204,116 +206,116 @@
             <div class="modal-body">
                 <div class="modal-grid">
                     <div class="field">
-                        <label for="edit-title">Titel</label>
-                        <input id="edit-title" type="text" placeholder="z. B. Stream starten" />
+                        <label for="edit-title">{% translate "Titel" %}</label>
+                        <input id="edit-title" type="text" placeholder="{% translate 'z. B. Stream starten' %}" />
                     </div>
 
                     <div class="field">
-                        <label for="edit-icon">Icon</label>
+                        <label for="edit-icon">{% translate "Symbol" %}</label>
                         <select id="edit-icon">
                             <option value="fa-brands fa-youtube">YouTube</option>
-                            <option value="fa-solid fa-comments">Chat</option>
+                            <option value="fa-solid fa-comments">{% translate "Chat" %}</option>
                             <option value="fa-solid fa-circle-notch">OBS</option>
                             <option value="fa-brands fa-spotify">Spotify</option>
                             <option value="fa-brands fa-discord">Discord</option>
                             <option value="fa-brands fa-twitch">Twitch</option>
-                            <option value="fa-solid fa-microphone">Mikrofon</option>
-                            <option value="fa-solid fa-volume-high">LautstÃ¤rke</option>
-                            <option value="fa-solid fa-crown">Krone</option>
-                            <option value="fa-solid fa-pause">Pause</option>
-                            <option value="fa-solid fa-stop">Stop</option>
-                            <option value="fa-solid fa-headphones">Monitoring</option>
-                            <option value="fa-regular fa-window-maximize">Szene</option>
-                            <option value="fa-solid fa-table-cells-large">Studio</option>
-                            <option value="fa-solid fa-video">Kamera</option>
-                            <option value="fa-solid fa-desktop">Bildschirm</option>
-                            <option value="fa-solid fa-play">Play</option>
-                            <option value="fa-solid fa-forward-step">Weiter</option>
-                            <option value="fa-solid fa-backward-step">ZurÃ¼ck</option>
-                            <option value="fa-solid fa-heart">Herz</option>
-                            <option value="fa-solid fa-shuffle">Shuffle</option>
-                            <option value="fa-solid fa-repeat">Repeat</option>
-                            <option value="fa-solid fa-user">Follower</option>
-                            <option value="fa-solid fa-star">Star</option>
-                            <option value="fa-solid fa-dollar-sign">Dollar</option>
-                            <option value="fa-regular fa-message">Nachricht</option>
-                            <option value="fa-regular fa-clock">Timer</option>
-                            <option value="fa-solid fa-clapperboard">Clip</option>
-                            <option value="fa-solid fa-plus">Plus</option>
+                            <option value="fa-solid fa-microphone">{% translate "Mikrofon" %}</option>
+                            <option value="fa-solid fa-volume-high">{% translate "Lautstärke" %}</option>
+                            <option value="fa-solid fa-crown">{% translate "Krone" %}</option>
+                            <option value="fa-solid fa-pause">{% translate "Pause" %}</option>
+                            <option value="fa-solid fa-stop">{% translate "Stopp" %}</option>
+                            <option value="fa-solid fa-headphones">{% translate "Überwachung" %}</option>
+                            <option value="fa-regular fa-window-maximize">{% translate "Szene" %}</option>
+                            <option value="fa-solid fa-table-cells-large">{% translate "Studio" %}</option>
+                            <option value="fa-solid fa-video">{% translate "Kamera" %}</option>
+                            <option value="fa-solid fa-desktop">{% translate "Bildschirm" %}</option>
+                            <option value="fa-solid fa-play">{% translate "Wiedergabe" %}</option>
+                            <option value="fa-solid fa-forward-step">{% translate "Weiter" %}</option>
+                            <option value="fa-solid fa-backward-step">{% translate "Zurück" %}</option>
+                            <option value="fa-solid fa-heart">{% translate "Herz" %}</option>
+                            <option value="fa-solid fa-shuffle">{% translate "Zufällig" %}</option>
+                            <option value="fa-solid fa-repeat">{% translate "Wiederholen" %}</option>
+                            <option value="fa-solid fa-user">{% translate "Follower" %}</option>
+                            <option value="fa-solid fa-star">{% translate "Stern" %}</option>
+                            <option value="fa-solid fa-dollar-sign">{% translate "Dollar" %}</option>
+                            <option value="fa-regular fa-message">{% translate "Nachricht" %}</option>
+                            <option value="fa-regular fa-clock">{% translate "Zeitmesser" %}</option>
+                            <option value="fa-solid fa-clapperboard">{% translate "Clip" %}</option>
+                            <option value="fa-solid fa-plus">{% translate "Plus" %}</option>
                         </select>
                     </div>
 
                     <div class="field">
-                        <label for="edit-color">Farbe</label>
+                        <label for="edit-color">{% translate "Farbe" %}</label>
                         <input id="edit-color" type="color" value="#4c6fff" />
                     </div>
 
                     <div class="field">
-                        <label for="edit-action-type">Aktion</label>
+                        <label for="edit-action-type">{% translate "Aktion" %}</label>
                         <select id="edit-action-type">
-                            <option value="none">Keine Aktion</option>
-                            <option value="obs-request">OBS Request</option>
-                            <option value="obs-scene">OBS Szene wechseln</option>
-                            <option value="obs-source-toggle">OBS Quelle toggeln</option>
+                            <option value="none">{% translate "Keine Aktion" %}</option>
+                            <option value="obs-request">{% translate "OBS-Anfrage" %}</option>
+                            <option value="obs-scene">{% translate "OBS-Szene wechseln" %}</option>
+                            <option value="obs-source-toggle">{% translate "OBS-Quelle umschalten" %}</option>
                             <option value="spotify">Spotify</option>
-                            <option value="open-url">URL Ã¶ffnen</option>
+                            <option value="open-url">{% translate "URL öffnen" %}</option>
                         </select>
                     </div>
                 </div>
 
                 <div id="obs-request-fields" class="dynamic-section hidden">
                     <div class="field">
-                        <label for="edit-obs-request">OBS Request</label>
+                        <label for="edit-obs-request">{% translate "OBS-Anfrage" %}</label>
                         <select id="edit-obs-request">
-                            <option value="StartStream">Stream starten</option>
-                            <option value="StopStream">Stream stoppen</option>
-                            <option value="ToggleStream">Stream toggeln</option>
-                            <option value="StartRecord">Aufnahme starten</option>
-                            <option value="StopRecord">Aufnahme stoppen</option>
-                            <option value="ToggleRecord">Aufnahme toggeln</option>
-                            <option value="PauseRecord">Aufnahme pausieren</option>
-                            <option value="ResumeRecord">Aufnahme fortsetzen</option>
-                            <option value="TriggerStudioModeTransition">Studio Transition</option>
-                            <option value="ToggleStudioMode">Studio-Modus toggeln</option>
+                            <option value="StartStream">{% translate "Stream starten" %}</option>
+                            <option value="StopStream">{% translate "Stream stoppen" %}</option>
+                            <option value="ToggleStream">{% translate "Stream umschalten" %}</option>
+                            <option value="StartRecord">{% translate "Aufnahme starten" %}</option>
+                            <option value="StopRecord">{% translate "Aufnahme stoppen" %}</option>
+                            <option value="ToggleRecord">{% translate "Aufnahme umschalten" %}</option>
+                            <option value="PauseRecord">{% translate "Aufnahme pausieren" %}</option>
+                            <option value="ResumeRecord">{% translate "Aufnahme fortsetzen" %}</option>
+                            <option value="TriggerStudioModeTransition">{% translate "Studio-Übergang auslösen" %}</option>
+                            <option value="ToggleStudioMode">{% translate "Studio-Modus umschalten" %}</option>
                         </select>
                     </div>
                 </div>
 
                 <div id="obs-scene-fields" class="dynamic-section hidden">
                     <div class="field">
-                        <label for="edit-scene-name">Szenenname</label>
-                        <input id="edit-scene-name" type="text" placeholder="z. B. Gameplay" />
+                        <label for="edit-scene-name">{% translate "Szenenname" %}</label>
+                        <input id="edit-scene-name" type="text" placeholder="{% translate 'z. B. Gameplay' %}" />
                     </div>
                 </div>
 
                 <div id="obs-source-fields" class="dynamic-section hidden">
                     <div class="field">
-                        <label for="edit-source-scene">Szene</label>
-                        <input id="edit-source-scene" type="text" placeholder="z. B. Gameplay" />
+                        <label for="edit-source-scene">{% translate "Szene" %}</label>
+                        <input id="edit-source-scene" type="text" placeholder="{% translate 'z. B. Gameplay' %}" />
                     </div>
 
                     <div class="field">
-                        <label for="edit-source-name">Quelle</label>
-                        <input id="edit-source-name" type="text" placeholder="z. B. Webcam" />
+                        <label for="edit-source-name">{% translate "Quelle" %}</label>
+                        <input id="edit-source-name" type="text" placeholder="{% translate 'z. B. Webcam' %}" />
                     </div>
                 </div>
 
                 <div id="spotify-fields" class="dynamic-section hidden">
                     <div class="field">
-                        <label for="edit-spotify-action">Spotify Aktion</label>
+                        <label for="edit-spotify-action">{% translate "Spotify-Aktion" %}</label>
                         <select id="edit-spotify-action">
-                            <option value="play">Play</option>
-                            <option value="pause">Pause</option>
-                            <option value="next">NÃ¤chstes Lied</option>
-                            <option value="previous">Vorheriges Lied</option>
-                            <option value="toggle">Play/Pause Toggle</option>
+                            <option value="play">{% translate "Wiedergabe" %}</option>
+                            <option value="pause">{% translate "Pause" %}</option>
+                            <option value="next">{% translate "Nächstes Lied" %}</option>
+                            <option value="previous">{% translate "Vorheriges Lied" %}</option>
+                            <option value="toggle">{% translate "Wiedergabe/Pause umschalten" %}</option>
                         </select>
                     </div>
                 </div>
 
                 <div id="url-fields" class="dynamic-section hidden">
                     <div class="field">
-                        <label for="edit-url">URL</label>
+                        <label for="edit-url">{% translate "URL" %}</label>
                         <input id="edit-url" type="text" placeholder="https://..." />
                     </div>
                 </div>
@@ -322,71 +324,69 @@
             <div class="modal-footer">
                 <button id="delete-button-btn" class="danger-btn" type="button">
                     <i class="fa-solid fa-trash"></i>
-                    <span>LÃ¶schen</span>
+                    <span>{% translate "Löschen" %}</span>
                 </button>
 
                 <div class="modal-footer-right">
-                    <button id="cancel-editor-btn" class="outline-btn" type="button">Abbrechen</button>
+                    <button id="cancel-editor-btn" class="outline-btn" type="button">{% translate "Abbrechen" %}</button>
                     <button id="save-editor-btn" class="primary-btn" type="button">
                         <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Speichern</span>
+                        <span>{% translate "Speichern" %}</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Spotify Modal -->
     <div id="spotify-modal" class="modal hidden">
         <div class="modal-backdrop"></div>
 
         <div class="modal-dialog small">
             <div class="modal-header">
                 <div>
-                    <h3>Spotify Token</h3>
-                    <p>FÃ¼ge deinen Spotify Access Token ein.</p>
+                    <h3>{% translate "Spotify-Zugriffstoken" %}</h3>
+                    <p>{% translate "Füge deinen Spotify-Zugriffstoken ein." %}</p>
                 </div>
 
-                <button id="close-spotify-btn" class="ghost-icon-btn" type="button">
+                <button id="close-spotify-btn" class="ghost-icon-btn" type="button" aria-label="{% translate 'Spotify-Fenster schließen' %}">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
             <div class="modal-body">
                 <div class="field">
-                    <label for="spotify-token-input">Access Token</label>
-                    <textarea id="spotify-token-input" rows="8" placeholder="Spotify Access Token hier einfÃ¼gen"></textarea>
+                    <label for="spotify-token-input">{% translate "Zugriffstoken" %}</label>
+                    <textarea id="spotify-token-input" rows="8" placeholder="{% translate 'Spotify-Zugriffstoken hier einfügen' %}"></textarea>
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button id="clear-spotify-token-btn" class="danger-btn" type="button">
                     <i class="fa-solid fa-trash"></i>
-                    <span>Entfernen</span>
+                    <span>{% translate "Entfernen" %}</span>
                 </button>
 
                 <div class="modal-footer-right">
                     <button id="save-spotify-token-btn" class="primary-btn" type="button">
                         <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Speichern</span>
+                        <span>{% translate "Speichern" %}</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Log Modal -->
     <div id="log-modal" class="modal hidden">
         <div class="modal-backdrop"></div>
 
         <div class="modal-dialog small">
             <div class="modal-header">
                 <div>
-                    <h3>Protokoll</h3>
-                    <p>Letzte Aktionen und Hinweise</p>
+                    <h3>{% translate "Protokoll" %}</h3>
+                    <p>{% translate "Letzte Aktionen und Hinweise" %}</p>
                 </div>
 
-                <button id="close-log-btn" class="ghost-icon-btn" type="button">
+                <button id="close-log-btn" class="ghost-icon-btn" type="button" aria-label="{% translate 'Protokoll schließen' %}">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -399,8 +399,6 @@
 
     <div id="toast" class="toast hidden"></div>
 </section>
-
-
 {% endblock %}
 
 {% block extra_js %}
