@@ -671,7 +671,7 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(widget.title, "Neue Notizen")
         self.assertEqual(widget.widget_type, HomeWidget.WIDGET_NOTES)
         self.assertEqual(widget.color, "purple")
-        self.assertIsNone(widget.weather_location)
+        self.assertEqual(widget.weather_location, new_location)
 
     def test_delete_widget(self):
         widget = HomeWidget.objects.create(
