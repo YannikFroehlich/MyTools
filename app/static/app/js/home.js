@@ -91,19 +91,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(focusSearchInput, 100);
 
+    function getCurrentLocale() {
+        const htmlLang = document.documentElement.lang || "de";
+
+        if (htmlLang.toLowerCase().startsWith("en")) {
+            return "en-US";
+        }
+
+        return "de-DE";
+    }
+
     function updateClockWidgets() {
         const now = new Date();
-        const time = new Intl.DateTimeFormat("de-DE", {
+        const locale = getCurrentLocale();
+
+        const time = new Intl.DateTimeFormat(locale, {
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
         }).format(now);
-        const date = new Intl.DateTimeFormat("de-DE", {
+        const date = new Intl.DateTimeFormat(locale, {
             day: "2-digit",
             month: "long",
             year: "numeric",
         }).format(now);
-        const weekday = new Intl.DateTimeFormat("de-DE", {
+        const weekday = new Intl.DateTimeFormat(locale, {
             weekday: "long",
         }).format(now);
 

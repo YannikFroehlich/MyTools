@@ -2812,3 +2812,43 @@ msgstr "Euros per year"
 
 #~ msgid "Speicherung über Django-Models und einfache Verwaltung über die App."
 #~ msgstr "Storage via Django models and simple management through the app."
+
+#: .\app\models.py
+msgid "Minimal"
+msgstr "Minimal"
+
+#: .\app\models.py
+msgid "Glass"
+msgstr "Glass"
+
+#: .\app\models.py
+msgid "Neon"
+msgstr "Neon"
+
+#: .\app\models.py
+msgid "Flip"
+msgstr "Flip"
+
+#: .\app\models.py
+msgid "Terminal"
+msgstr "Terminal"
+
+#: .\app\models.py
+msgid "Klassisch"
+msgstr "Classic"
+
+#: .\app\models.py
+msgid "Kompakt"
+msgstr "Compact"
+
+#: .\app\models.py
+msgid "Datum links"
+msgstr "Date on the left"
+
+#: .\app\models.py
+msgid "Analog"
+msgstr "Analog"
+
+#: .\app\models.py
+msgid "Analog + Digital"
+msgstr "Analog + Digital"

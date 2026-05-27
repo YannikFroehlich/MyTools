@@ -1,5 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
+    /* ── FIXED HEADER ABSTAND ──
+       Der Header ist fixed, damit er beim Scrollen immer sichtbar bleibt.
+       Da die Header-Höhe auf Handy/Tablet durch Umbruch größer werden kann,
+       wird der Abstand darunter automatisch gemessen.
+    */
+    function syncFixedHeaderOffset() {
+        const nav = document.querySelector('nav');
+
+        if (!nav) {
+            return;
+        }
+
+        document.documentElement.style.setProperty('--nav-height', `${nav.offsetHeight}px`);
+    }
+
+    syncFixedHeaderOffset();
+    window.addEventListener('resize', syncFixedHeaderOffset);
+
+    if ('ResizeObserver' in window) {
+        const nav = document.querySelector('nav');
+
+        if (nav) {
+            new ResizeObserver(syncFixedHeaderOffset).observe(nav);
+        }
+    }
+
     const themeStorageKey = 'customTheme';
     const themePresetStorageKey = 'customThemePreset';
 

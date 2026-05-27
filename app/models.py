@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class UserProfile(models.Model):
@@ -48,11 +49,11 @@ class UserProfile(models.Model):
 
 class ShortcutSection(models.Model):
     COLOR_CHOICES = [
-        ("blue", "Blau"),
-        ("green", "Grün"),
-        ("purple", "Lila"),
-        ("orange", "Orange"),
-        ("red", "Rot"),
+        ("blue", _("Blau")),
+        ("green", _("Grün")),
+        ("purple", _("Lila")),
+        ("orange", _("Orange")),
+        ("red", _("Rot")),
     ]
 
     user = models.ForeignKey(
@@ -158,11 +159,11 @@ class AvatarCharacter(models.Model):
 
 class Note(models.Model):
     COLOR_CHOICES = [
-        ("blue", "Blau"),
-        ("purple", "Lila"),
-        ("green", "Grün"),
-        ("orange", "Orange"),
-        ("red", "Rot"),
+        ("blue", _("Blau")),
+        ("purple", _("Lila")),
+        ("green", _("Grün")),
+        ("orange", _("Orange")),
+        ("red", _("Rot")),
         ("gray", "Grau"),
     ]
 
@@ -380,11 +381,11 @@ class HomeWidget(models.Model):
     WIDGET_CLOCK = "clock"
 
     WIDGET_CHOICES = [
-        (WIDGET_WEATHER, "Wetter"),
-        (WIDGET_NOTES, "Notizen"),
-        (WIDGET_BENCHMARK, "Human Benchmark"),
-        (WIDGET_STATS, "Schnellstatistiken"),
-        (WIDGET_CLOCK, "Uhr"),
+        (WIDGET_WEATHER, _("Wetter")),
+        (WIDGET_NOTES, _("Notizen")),
+        (WIDGET_BENCHMARK, _("Human Benchmark")),
+        (WIDGET_STATS, _("Schnellstatistiken")),
+        (WIDGET_CLOCK, _("Uhr")),
     ]
 
     CLOCK_DESIGN_MINIMAL = "minimal"
@@ -394,11 +395,11 @@ class HomeWidget(models.Model):
     CLOCK_DESIGN_TERMINAL = "terminal"
 
     CLOCK_DESIGN_CHOICES = [
-        (CLOCK_DESIGN_MINIMAL, "Minimal"),
-        (CLOCK_DESIGN_GLASS, "Glass"),
-        (CLOCK_DESIGN_NEON, "Neon"),
-        (CLOCK_DESIGN_FLIP, "Flip"),
-        (CLOCK_DESIGN_TERMINAL, "Terminal"),
+        (CLOCK_DESIGN_MINIMAL, _("Minimal")),
+        (CLOCK_DESIGN_GLASS, _("Glass")),
+        (CLOCK_DESIGN_NEON, _("Neon")),
+        (CLOCK_DESIGN_FLIP, _("Flip")),
+        (CLOCK_DESIGN_TERMINAL, _("Terminal")),
     ]
 
     CLOCK_STYLE_CLASSIC = "classic"
@@ -408,19 +409,19 @@ class HomeWidget(models.Model):
     CLOCK_STYLE_HYBRID = "hybrid"
 
     CLOCK_STYLE_CHOICES = [
-        (CLOCK_STYLE_CLASSIC, "Klassisch"),
-        (CLOCK_STYLE_COMPACT, "Kompakt"),
-        (CLOCK_STYLE_SPLIT, "Datum links"),
-        (CLOCK_STYLE_ANALOG, "Analog"),
-        (CLOCK_STYLE_HYBRID, "Analog + Digital"),
+        (CLOCK_STYLE_CLASSIC, _("Klassisch")),
+        (CLOCK_STYLE_COMPACT, _("Kompakt")),
+        (CLOCK_STYLE_SPLIT, _("Datum links")),
+        (CLOCK_STYLE_ANALOG, _("Analog")),
+        (CLOCK_STYLE_HYBRID, _("Analog + Digital")),
     ]
 
     COLOR_CHOICES = [
-        ("blue", "Blau"),
-        ("green", "Grün"),
-        ("purple", "Lila"),
-        ("orange", "Orange"),
-        ("red", "Rot"),
+        ("blue", _("Blau")),
+        ("green", _("Grün")),
+        ("purple", _("Lila")),
+        ("orange", _("Orange")),
+        ("red", _("Rot")),
     ]
 
     user = models.ForeignKey(
