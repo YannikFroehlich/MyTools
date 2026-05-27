@@ -278,6 +278,24 @@ class HomeWidget(models.Model):
     def __str__(self):
         return f"{self.title} · {self.get_widget_type_display()}"
 
+
+class HomeLayoutPreference(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="home_layout_preference",
+    )
+    widget_area_order = models.PositiveIntegerField(default=1)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Home-Layout-Einstellung"
+        verbose_name_plural = "Home-Layout-Einstellungen"
+
+    def __str__(self):
+        return f"Home-Layout von {self.user}"
+
+
 class HumanBenchmarkScore(models.Model):
     GAME_REACTION = "reaction"
     GAME_AIM = "aim"

@@ -32,194 +32,201 @@
             </form>
 
             <div class="primary-shortcuts-wrapper">
-                {% for section in sections %}
-                    {% if section.name == "Verknüpfungen" %}
-                        {% include 'app/partials/home_section_card.html' %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <div class="home-dashboard">
-                <div class="dashboard-header dashboard-header-compact">
-                    <button type="button" class="add-widget-button" id="open-widget-modal">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        {% translate 'Widget hinzufügen' %}
-                    </button>
-                </div>
-
-                <div class="widgets-grid" id="widgets-grid">
-                    {% for item in home_widgets %}
-                        {% with widget=item.widget data=item.data %}
-                            <article
-                                class="home-widget widget-color-{{ widget.color }}"
-                                data-widget-id="{{ widget.id }}"
-                                data-widget-title="{{ widget.title|escape }}"
-                                data-widget-type="{{ widget.widget_type }}"
-                                data-widget-color="{{ widget.color }}"
-                                data-widget-weather-location="{% if widget.weather_location %}{{ widget.weather_location.id }}{% endif %}"
-                            >
-                                <div class="widget-topbar">
-                                    <span class="widget-drag-handle" title="{% translate 'Widget verschieben' %}" role="button" tabindex="0">
-                                        <i class="fa-solid fa-grip-vertical"></i>
-                                    </span>
-
-                                    <div class="widget-title">
-                                        {% if widget.widget_type == "weather" %}
-                                            <i class="fa-solid fa-cloud-sun"></i>
-                                        {% elif widget.widget_type == "notes" %}
-                                            <i class="fa-solid fa-note-sticky"></i>
-                                        {% elif widget.widget_type == "benchmark" %}
-                                            <i class="fa-solid fa-chart-simple"></i>
-                                        {% else %}
-                                            <i class="fa-solid fa-gauge-high"></i>
-                                        {% endif %}
-                                        <h3>{{ widget.title }}</h3>
-                                    </div>
-
-                                    <div class="widget-actions">
-                                        <button type="button" class="edit-widget-button" title="{% translate 'Widget bearbeiten' %}">
-                                            <i class="fa-solid fa-pen"></i>
-                                        </button>
-
-                                        <form method="post" class="delete-widget-form">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="action" value="delete_widget">
-                                            <input type="hidden" name="widget_id" value="{{ widget.id }}">
-                                            <button type="submit" title="{% translate 'Widget löschen' %}">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-
-                                {% if widget.widget_type == "weather" %}
-                                    <div class="weather-widget-content">
-                                        {% if data.error %}
-                                            <div class="widget-empty-state">
-                                                <i class="fa-solid fa-cloud-bolt"></i>
-                                                <strong>{{ data.city }}</strong>
-                                                <span>{{ data.error }}</span>
-                                            </div>
-                                        {% else %}
-                                            <div class="weather-main-row">
-                                                <div>
-                                                    <span class="weather-city">{{ data.city }}</span>
-                                                    <strong>{{ data.temperature }}{{ data.temperature_unit }}</strong>
-                                                    <small>{{ data.description|capfirst }}</small>
-                                                </div>
-
-                                                {% if data.icon %}
-                                                    <img src="https://openweathermap.org/img/wn/{{ data.icon }}@2x.png" alt="{{ data.description }}">
-                                                {% else %}
-                                                    <i class="fa-solid fa-cloud-sun weather-fallback-icon"></i>
-                                                {% endif %}
-                                            </div>
-
-                                            <div class="weather-mini-stats">
-                                                <span>
-                                                    <i class="fa-solid fa-temperature-half"></i>
-                                                    {% translate 'Gefühlt' %}: {{ data.feels_like }}{{ data.temperature_unit }}
-                                                </span>
-                                                <span>
-                                                    <i class="fa-solid fa-droplet"></i>
-                                                    {{ data.humidity }}%
-                                                </span>
-                                                <span>
-                                                    <i class="fa-solid fa-wind"></i>
-                                                    {{ data.wind }} {{ data.wind_unit }}
-                                                </span>
-                                            </div>
-                                        {% endif %}
-
-                                        <a href="{% url 'weather' %}" class="widget-link">
-                                            {% translate 'Wetterseite öffnen' %}
-                                            <i class="fa-solid fa-arrow-right"></i>
-                                        </a>
-                                    </div>
-                                {% elif widget.widget_type == "notes" %}
-                                    <div class="notes-widget-content">
-                                        <div class="widget-big-number">
-                                            <strong>{{ data.note_count }}</strong>
-                                            <span>{% translate 'aktive Notizen' %}</span>
-                                        </div>
-
-                                        {% if data.pinned_notes %}
-                                            <div class="pinned-notes-list">
-                                                {% for note in data.pinned_notes %}
-                                                    <a href="{% url 'note_edit' note.pk %}">
-                                                        <i class="fa-solid fa-thumbtack"></i>
-                                                        <span>{% if note.title %}{{ note.title }}{% else %}{% translate 'Unbenannte Notiz' %}{% endif %}</span>
-                                                    </a>
-                                                {% endfor %}
-                                            </div>
-                                        {% else %}
-                                            <div class="widget-empty-state compact">
-                                                <i class="fa-regular fa-note-sticky"></i>
-                                                <span>{% translate 'Noch keine angepinnten Notizen.' %}</span>
-                                            </div>
-                                        {% endif %}
-
-                                        <a href="{% url 'notes' %}" class="widget-link">
-                                            {% translate 'Notizen öffnen' %}
-                                            <i class="fa-solid fa-arrow-right"></i>
-                                        </a>
-                                    </div>
-                                {% elif widget.widget_type == "benchmark" %}
-                                    <div class="benchmark-widget-content">
-                                        {% for row in data.rows %}
-                                            <div class="benchmark-row">
-                                                <span>{{ row.name }}</span>
-                                                {% if row.highscore %}
-                                                    <strong>{{ row.highscore.display_score }}</strong>
-                                                {% else %}
-                                                    <em>{% translate 'Noch kein Score' %}</em>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-
-                                        <a href="{% url 'human-benchmark' %}" class="widget-link">
-                                            {% translate 'Human Benchmark öffnen' %}
-                                            <i class="fa-solid fa-arrow-right"></i>
-                                        </a>
-                                    </div>
-                                {% else %}
-                                    <div class="stats-widget-content">
-                                        <div class="stats-grid">
-                                            <div>
-                                                <strong>{{ data.shortcut_count }}</strong>
-                                                <span>{% translate 'Links' %}</span>
-                                            </div>
-                                            <div>
-                                                <strong>{{ data.section_count }}</strong>
-                                                <span>{% translate 'Bereiche' %}</span>
-                                            </div>
-                                            <div>
-                                                <strong>{{ data.note_count }}</strong>
-                                                <span>{% translate 'Notizen' %}</span>
-                                            </div>
-                                            <div>
-                                                <strong>{{ data.weather_location_count }}</strong>
-                                                <span>{% translate 'Wetter-Orte' %}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </article>
-                        {% endwith %}
-                    {% empty %}
-                        <div class="empty-widgets">
-                            <i class="fa-solid fa-table-cells-large"></i>
-                            <h3>{% translate 'Noch keine Widgets' %}</h3>
-                            <p>{% translate 'Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard.' %}</p>
-                        </div>
-                    {% endfor %}
-                </div>
+                {% with section=default_section %}
+                    {% include 'app/partials/home_section_card.html' %}
+                {% endwith %}
             </div>
 
             <div class="sections-wrapper" id="sections-wrapper">
-                {% for section in sections %}
-                    {% if section.name != "Verknüpfungen" %}
-                        {% include 'app/partials/home_section_card.html' %}
+                {% for item in movable_home_items %}
+                    {% if item.type == "widgets" %}
+                        <div
+                            class="home-dashboard home-layout-item"
+                            data-layout-item-type="widgets"
+                        >
+                            <div class="dashboard-header dashboard-header-compact">
+                                <span class="section-drag-handle widget-area-drag-handle" title="{% translate 'Widget-Bereich verschieben' %}" role="button" tabindex="0">
+                                    <i class="fa-solid fa-grip-vertical"></i>
+                                </span>
+
+                                <button type="button" class="add-widget-button" id="open-widget-modal">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    {% translate 'Widget hinzufügen' %}
+                                </button>
+                            </div>
+
+                            <div class="widgets-grid" id="widgets-grid">
+                                {% for widget_item in home_widgets %}
+                                    {% with widget=widget_item.widget data=widget_item.data %}
+                                        <article
+                                            class="home-widget widget-color-{{ widget.color }}"
+                                            data-widget-id="{{ widget.id }}"
+                                            data-widget-title="{{ widget.title|escape }}"
+                                            data-widget-type="{{ widget.widget_type }}"
+                                            data-widget-color="{{ widget.color }}"
+                                            data-widget-weather-location="{% if widget.weather_location %}{{ widget.weather_location.id }}{% endif %}"
+                                        >
+                                            <div class="widget-topbar">
+                                                <span class="widget-drag-handle" title="{% translate 'Widget verschieben' %}" role="button" tabindex="0">
+                                                    <i class="fa-solid fa-grip-vertical"></i>
+                                                </span>
+
+                                                <div class="widget-title">
+                                                    {% if widget.widget_type == "weather" %}
+                                                        <i class="fa-solid fa-cloud-sun"></i>
+                                                    {% elif widget.widget_type == "notes" %}
+                                                        <i class="fa-solid fa-note-sticky"></i>
+                                                    {% elif widget.widget_type == "benchmark" %}
+                                                        <i class="fa-solid fa-chart-simple"></i>
+                                                    {% else %}
+                                                        <i class="fa-solid fa-gauge-high"></i>
+                                                    {% endif %}
+                                                    <h3>{{ widget.title }}</h3>
+                                                </div>
+
+                                                <div class="widget-actions">
+                                                    <button type="button" class="edit-widget-button" title="{% translate 'Widget bearbeiten' %}">
+                                                        <i class="fa-solid fa-pen"></i>
+                                                    </button>
+
+                                                    <form method="post" class="delete-widget-form">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="action" value="delete_widget">
+                                                        <input type="hidden" name="widget_id" value="{{ widget.id }}">
+                                                        <button type="submit" title="{% translate 'Widget löschen' %}">
+                                                            <i class="fa-solid fa-xmark"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            {% if widget.widget_type == "weather" %}
+                                                <div class="weather-widget-content">
+                                                    {% if data.error %}
+                                                        <div class="widget-empty-state">
+                                                            <i class="fa-solid fa-cloud-bolt"></i>
+                                                            <strong>{{ data.city }}</strong>
+                                                            <span>{{ data.error }}</span>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="weather-main-row">
+                                                            <div>
+                                                                <span class="weather-city">{{ data.city }}</span>
+                                                                <strong>{{ data.temperature }}{{ data.temperature_unit }}</strong>
+                                                                <small>{{ data.description|capfirst }}</small>
+                                                            </div>
+
+                                                            {% if data.icon %}
+                                                                <img src="https://openweathermap.org/img/wn/{{ data.icon }}@2x.png" alt="{{ data.description }}">
+                                                            {% else %}
+                                                                <i class="fa-solid fa-cloud-sun weather-fallback-icon"></i>
+                                                            {% endif %}
+                                                        </div>
+
+                                                        <div class="weather-mini-stats">
+                                                            <span>
+                                                                <i class="fa-solid fa-temperature-half"></i>
+                                                                {% translate 'Gefühlt' %}: {{ data.feels_like }}{{ data.temperature_unit }}
+                                                            </span>
+                                                            <span>
+                                                                <i class="fa-solid fa-droplet"></i>
+                                                                {{ data.humidity }}%
+                                                            </span>
+                                                            <span>
+                                                                <i class="fa-solid fa-wind"></i>
+                                                                {{ data.wind }} {{ data.wind_unit }}
+                                                            </span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'weather' %}" class="widget-link">
+                                                        {% translate 'Wetterseite öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "notes" %}
+                                                <div class="notes-widget-content">
+                                                    <div class="widget-big-number">
+                                                        <strong>{{ data.note_count }}</strong>
+                                                        <span>{% translate 'aktive Notizen' %}</span>
+                                                    </div>
+
+                                                    {% if data.pinned_notes %}
+                                                        <div class="pinned-notes-list">
+                                                            {% for note in data.pinned_notes %}
+                                                                <a href="{% url 'note_edit' note.pk %}">
+                                                                    <i class="fa-solid fa-thumbtack"></i>
+                                                                    <span>{% if note.title %}{{ note.title }}{% else %}{% translate 'Unbenannte Notiz' %}{% endif %}</span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-regular fa-note-sticky"></i>
+                                                            <span>{% translate 'Noch keine angepinnten Notizen.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'notes' %}" class="widget-link">
+                                                        {% translate 'Notizen öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "benchmark" %}
+                                                <div class="benchmark-widget-content">
+                                                    {% for row in data.rows %}
+                                                        <div class="benchmark-row">
+                                                            <span>{{ row.name }}</span>
+                                                            {% if row.highscore %}
+                                                                <strong>{{ row.highscore.display_score }}</strong>
+                                                            {% else %}
+                                                                <em>{% translate 'Noch kein Score' %}</em>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endfor %}
+
+                                                    <a href="{% url 'human-benchmark' %}" class="widget-link">
+                                                        {% translate 'Human Benchmark öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% else %}
+                                                <div class="stats-widget-content">
+                                                    <div class="stats-grid">
+                                                        <div>
+                                                            <strong>{{ data.shortcut_count }}</strong>
+                                                            <span>{% translate 'Links' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.section_count }}</strong>
+                                                            <span>{% translate 'Bereiche' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.note_count }}</strong>
+                                                            <span>{% translate 'Notizen' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.weather_location_count }}</strong>
+                                                            <span>{% translate 'Wetter-Orte' %}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </article>
+                                    {% endwith %}
+                                {% empty %}
+                                    <div class="empty-widgets">
+                                        <i class="fa-solid fa-table-cells-large"></i>
+                                        <h3>{% translate 'Noch keine Widgets' %}</h3>
+                                        <p>{% translate 'Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard.' %}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        {% with section=item.section %}
+                            {% include 'app/partials/home_section_card.html' %}
+                        {% endwith %}
                     {% endif %}
                 {% endfor %}
 
@@ -234,7 +241,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 

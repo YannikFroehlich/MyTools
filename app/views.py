@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
+from app.models import AvatarCharacter, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
     ShortcutSection, WeatherLocation
 
 import json
@@ -69,36 +69,6 @@ def signup(request):
         "form": form,
     })
 
-
-def create_default_home_widgets(user):
-    if HomeWidget.objects.filter(user=user).exists():
-        return
-
-    default_widgets = [
-        {
-            "title": _("Wetter"),
-            "widget_type": HomeWidget.WIDGET_WEATHER,
-            "color": "blue",
-            "order": 0,
-        },
-        {
-            "title": _("Notizen"),
-            "widget_type": HomeWidget.WIDGET_NOTES,
-            "color": "purple",
-            "order": 1,
-        },
-        {
-            "title": _("Human Benchmark"),
-            "widget_type": HomeWidget.WIDGET_BENCHMARK,
-            "color": "green",
-            "order": 2,
-        },
-    ]
-
-    HomeWidget.objects.bulk_create([
-        HomeWidget(user=user, **widget_data)
-        for widget_data in default_widgets
-    ])
 
 
 def get_home_weather_data(request, user, widget):
@@ -165,8 +135,6 @@ def get_home_weather_data(request, user, widget):
 
 
 def build_home_widget_data(request, user):
-    create_default_home_widgets(user)
-
     widgets = list(
         HomeWidget.objects
         .filter(user=user, is_enabled=True)
@@ -292,7 +260,36 @@ def home(request):
                     section_id = item.get("id")
                     order = item.get("order", 0)
 
-                    ShortcutSection.objects.filter(id=section_id, user=user).update(order=order)
+                    ShortcutSection.objects.filter(
+                        id=section_id,
+                        user=user,
+                    ).exclude(name="Verknüpfungen").update(order=order)
+
+                ShortcutSection.objects.filter(id=default_section.id, user=user).update(order=0)
+
+                return JsonResponse({"success": True})
+
+            if action == "update_home_layout_order":
+                items = data.get("items", [])
+                layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
+
+                for item in items:
+                    item_type = item.get("type")
+                    order = item.get("order", 1)
+
+                    if item_type == "widgets":
+                        layout_preference.widget_area_order = order
+                        continue
+
+                    if item_type == "section":
+                        section_id = item.get("id")
+                        ShortcutSection.objects.filter(
+                            id=section_id,
+                            user=user,
+                        ).exclude(name="Verknüpfungen").update(order=order)
+
+                layout_preference.save(update_fields=["widget_area_order", "updated_at"])
+                ShortcutSection.objects.filter(id=default_section.id, user=user).update(order=0)
 
                 return JsonResponse({"success": True})
 
@@ -387,7 +384,9 @@ def home(request):
             section_color = request.POST.get("section_color", "blue").strip()
 
             if section_name:
-                max_order = ShortcutSection.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
+                layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
+                max_section_order = ShortcutSection.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
+                max_order = max(max_section_order, layout_preference.widget_area_order)
 
                 ShortcutSection.objects.create(
                     user=user,
@@ -406,7 +405,8 @@ def home(request):
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
 
             if section_name:
-                section.name = section_name
+                if section.name != "Verknüpfungen":
+                    section.name = section_name
                 section.color = section_color
                 section.save()
 
@@ -509,18 +509,42 @@ def home(request):
 
             return redirect("home")
 
-    sections = (
+    sections = list(
         ShortcutSection.objects
         .filter(user=user)
         .prefetch_related(Prefetch("shortcuts", queryset=Shortcut.objects.filter(user=user)))
         .order_by("order", "created_at")
     )
 
+    default_section = next((section for section in sections if section.name == "Verknüpfungen"), default_section)
+    custom_sections = [section for section in sections if section.name != "Verknüpfungen"]
+
+    layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
     home_widgets = build_home_widget_data(request, user)
     weather_locations = WeatherLocation.objects.filter(user=user)
 
+    movable_home_items = [
+        {
+            "type": "widgets",
+            "order": layout_preference.widget_area_order,
+        }
+    ]
+
+    movable_home_items.extend(
+        {
+            "type": "section",
+            "section": section,
+            "order": section.order,
+        }
+        for section in custom_sections
+    )
+
+    movable_home_items.sort(key=lambda item: (item["order"], 0 if item["type"] == "widgets" else 1))
+
     return render(request, "app/home.html", {
         "sections": sections,
+        "default_section": default_section,
+        "movable_home_items": movable_home_items,
         "home_widgets": home_widgets,
         "weather_locations": weather_locations,
         "widget_types": [(value, _(label)) for value, label in HomeWidget.WIDGET_CHOICES],

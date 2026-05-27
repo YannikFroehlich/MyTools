@@ -599,16 +599,23 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function saveSectionOrder() {
-        const sections = [...document.querySelectorAll(".shortcuts-section")].map((section, index) => ({
-            id: section.dataset.sectionId,
-            order: index
-        }));
+    function saveHomeLayoutOrder() {
+        const items = [...document.querySelectorAll("#sections-wrapper > .home-layout-item")]
+            .filter(item => item.dataset.isDefaultSection !== "true")
+            .map((item, index) => ({
+                type: item.dataset.layoutItemType,
+                id: item.dataset.sectionId || "",
+                order: index + 1
+            }));
 
         return postJson({
-            action: "update_section_order",
-            sections
+            action: "update_home_layout_order",
+            items
         });
+    }
+
+    function saveSectionOrder() {
+        return saveHomeLayoutOrder();
     }
 
     function saveWidgetOrder() {
@@ -681,16 +688,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return null;
     }
 
-    function getSectionInsertBefore(wrapper, clientY) {
-        const sections = [...wrapper.querySelectorAll(".shortcuts-section:not(.pointer-dragging)")]
-            .filter(section => section.dataset.isDefaultSection !== "true");
+    function getLayoutInsertBefore(wrapper, clientY) {
+        const items = [...wrapper.querySelectorAll(":scope > .home-layout-item:not(.pointer-dragging)")]
+            .filter(item => item.dataset.isDefaultSection !== "true");
 
-        for (const section of sections) {
-            const box = section.getBoundingClientRect();
+        for (const item of items) {
+            const box = item.getBoundingClientRect();
             const middle = box.top + box.height / 2;
 
             if (clientY < middle) {
-                return section;
+                return item;
             }
         }
 
@@ -779,32 +786,32 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const section = handle.closest(".shortcuts-section");
+        const layoutItem = handle.closest(".home-layout-item");
         const wrapper = document.getElementById("sections-wrapper");
         const addSectionCard = document.getElementById("open-section-modal");
 
-        if (!section || !wrapper || !addSectionCard || section.dataset.isDefaultSection === "true") {
+        if (!layoutItem || !wrapper || !addSectionCard || layoutItem.dataset.isDefaultSection === "true") {
             return;
         }
 
         event.preventDefault();
         hideSuggestions();
 
-        const rect = section.getBoundingClientRect();
+        const rect = layoutItem.getBoundingClientRect();
         const offsetX = event.clientX - rect.left;
         const offsetY = event.clientY - rect.top;
-        const placeholder = createPlaceholder(section, "section-placeholder");
+        const placeholder = createPlaceholder(layoutItem, "section-placeholder");
 
-        wrapper.insertBefore(placeholder, section);
-        document.body.appendChild(section);
-        setFloatingElement(section, rect);
-        moveFloatingElement(section, event.clientX, event.clientY, offsetX, offsetY);
+        wrapper.insertBefore(placeholder, layoutItem);
+        document.body.appendChild(layoutItem);
+        setFloatingElement(layoutItem, rect);
+        moveFloatingElement(layoutItem, event.clientX, event.clientY, offsetX, offsetY);
 
         function onPointerMove(moveEvent) {
             moveEvent.preventDefault();
-            moveFloatingElement(section, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
+            moveFloatingElement(layoutItem, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
 
-            const before = getSectionInsertBefore(wrapper, moveEvent.clientY);
+            const before = getLayoutInsertBefore(wrapper, moveEvent.clientY);
 
             if (before) {
                 wrapper.insertBefore(placeholder, before);
@@ -818,9 +825,9 @@ document.addEventListener("DOMContentLoaded", () => {
             document.removeEventListener("pointerup", onPointerUp);
             document.removeEventListener("pointercancel", onPointerUp);
 
-            placeholder.replaceWith(section);
-            resetFloatingElement(section);
-            saveSectionOrder();
+            placeholder.replaceWith(layoutItem);
+            resetFloatingElement(layoutItem);
+            saveHomeLayoutOrder();
         }
 
         document.addEventListener("pointermove", onPointerMove, { passive: false });

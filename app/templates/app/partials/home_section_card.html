@@ -1,7 +1,8 @@
 {% load i18n %}
 
 <div
-    class="shortcuts-section section-color-{{ section.color }} {% if section.is_collapsed %}section-collapsed{% endif %}"
+    class="shortcuts-section home-layout-item section-color-{{ section.color }} {% if section.is_collapsed %}section-collapsed{% endif %}"
+    data-layout-item-type="section"
     data-section-id="{{ section.id }}"
     data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
     {% if section.name == "Verknüpfungen" %}data-is-default-section="true"{% endif %}

@@ -194,6 +194,10 @@
 
 /* ───────────────── SECTIONS ───────────────── */
 
+.primary-shortcuts-wrapper {
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
 .sections-wrapper {
     position: relative;
     z-index: 1;
@@ -2947,4 +2951,27 @@ body.dark-mode .shortcut-menu-danger:focus-visible i {
         min-height: 2.15rem;
         font-size: 0.84rem;
     }
+}
+
+/* ───────────────── MOVABLE HOME LAYOUT ───────────────── */
+
+.sections-wrapper > .home-dashboard {
+    margin-bottom: 0;
+}
+
+.widget-area-drag-handle {
+    flex: 0 0 auto;
+}
+
+.dashboard-header-compact {
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.dashboard-header-compact .widget-area-drag-handle + .add-widget-button {
+    margin-left: 0.2rem;
+}
+
+.home-layout-item.pointer-dragging {
+    max-width: min(1120px, calc(100vw - 2rem));
 }
