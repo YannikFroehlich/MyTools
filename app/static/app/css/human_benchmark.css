@@ -490,3 +490,164 @@ body.dark-mode .benchmark-tab:hover {
         height: 36px;
     }
 }
+
+.benchmark-scoreboard {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+}
+
+.scoreboard-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.scoreboard-kicker {
+    margin: 0 0 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.scoreboard-header h2 {
+    margin: 0;
+    font-size: 1.45rem;
+}
+
+.score-save-status {
+    margin: 0;
+    min-height: 1.4rem;
+    font-weight: 800;
+    color: var(--benchmark-green);
+    text-align: right;
+}
+
+.scoreboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr) minmax(0, 1.2fr);
+    gap: 1rem;
+}
+
+.score-panel {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 1.25rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.score-panel-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.score-panel-title span {
+    font-size: 0.9rem;
+    font-weight: 800;
+    opacity: 0.75;
+}
+
+.score-panel-title strong {
+    font-size: 1.35rem;
+}
+
+.score-panel-hint {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.68;
+}
+
+.score-list,
+.leaderboard-list {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.score-list.empty,
+.leaderboard-list.empty {
+    padding: 0.85rem;
+    border-radius: 0.9rem;
+    background: rgba(148, 163, 184, 0.1);
+    font-weight: 700;
+    opacity: 0.7;
+}
+
+.score-row,
+.leaderboard-row {
+    display: grid;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.85rem;
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.score-row {
+    grid-template-columns: 1fr auto;
+}
+
+.score-row strong,
+.leaderboard-row strong {
+    font-size: 0.95rem;
+}
+
+.score-row span,
+.leaderboard-row span {
+    font-size: 0.85rem;
+    opacity: 0.72;
+}
+
+.leaderboard-row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.leaderboard-rank {
+    font-weight: 900;
+    opacity: 1 !important;
+}
+
+.leaderboard-user {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.dark-mode .score-panel {
+    background: rgba(15, 23, 42, 0.42);
+}
+
+@media (max-width: 980px) {
+    .scoreboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .scoreboard-header {
+        flex-direction: column;
+    }
+
+    .score-save-status {
+        text-align: left;
+    }
+}
+
+.score-row-detailed {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.score-row-detailed div {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.score-row-detailed small {
+    font-size: 0.78rem;
+    line-height: 1.35;
+    opacity: 0.68;
+}

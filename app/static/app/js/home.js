@@ -29,6 +29,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const sectionNameInput = document.getElementById("section-name");
     const sectionSubmitButton = document.getElementById("section-submit-button");
 
+    const widgetModal = document.getElementById("widget-modal");
+    const openWidgetModalButton = document.getElementById("open-widget-modal");
+    const closeWidgetModalButton = document.getElementById("close-widget-modal");
+    const widgetModalTitle = document.getElementById("widget-modal-title");
+    const widgetForm = widgetModal?.querySelector(".shortcut-form");
+    const widgetFormActionInput = document.getElementById("widget-form-action");
+    const widgetIdInput = document.getElementById("widget-id");
+    const widgetTitleInput = document.getElementById("widget-title");
+    const widgetTypeInput = document.getElementById("widget-type");
+    const widgetWeatherLocationInput = document.getElementById("widget-weather-location");
+    const widgetWeatherLocationField = document.getElementById("widget-weather-location-field");
+    const widgetSubmitButton = document.getElementById("widget-submit-button");
+
     let suggestions = [];
     let currentFirstSuggestion = "";
     let activeSuggestionIndex = 0;
@@ -51,7 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function focusSearchInput() {
-        if (input && !shortcutModal?.classList.contains("show") && !sectionModal?.classList.contains("show")) {
+        if (
+            input &&
+            !shortcutModal?.classList.contains("show") &&
+            !sectionModal?.classList.contains("show") &&
+            !widgetModal?.classList.contains("show")
+        ) {
             input.focus();
         }
     }
@@ -396,6 +414,79 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
+    function toggleWidgetWeatherField() {
+        const isWeatherWidget = widgetTypeInput?.value === "weather";
+
+        if (widgetWeatherLocationField) {
+            widgetWeatherLocationField.style.display = isWeatherWidget ? "" : "none";
+        }
+
+        if (widgetWeatherLocationInput) {
+            widgetWeatherLocationInput.disabled = !isWeatherWidget;
+        }
+    }
+
+    function resetWidgetForm() {
+        widgetForm?.reset();
+
+        if (widgetFormActionInput) widgetFormActionInput.value = "add_widget";
+        if (widgetIdInput) widgetIdInput.value = "";
+        if (widgetTitleInput) widgetTitleInput.value = "";
+        if (widgetTypeInput) widgetTypeInput.value = "weather";
+        if (widgetWeatherLocationInput) widgetWeatherLocationInput.value = "";
+        if (widgetModalTitle) widgetModalTitle.textContent = labels.newWidget || "Neues Widget";
+        if (widgetSubmitButton) widgetSubmitButton.textContent = labels.addWidget || "Widget hinzufügen";
+
+        setCheckedRadio(widgetForm, "widget_color", "blue");
+        toggleWidgetWeatherField();
+    }
+
+    function openAddWidgetModal() {
+        resetWidgetForm();
+        openModal(widgetModal);
+        setTimeout(() => widgetTitleInput?.focus(), 100);
+    }
+
+    function openEditWidgetModal(button) {
+        const widgetCard = button.closest(".home-widget");
+        if (!widgetCard) return;
+
+        resetWidgetForm();
+
+        if (widgetFormActionInput) widgetFormActionInput.value = "edit_widget";
+        if (widgetIdInput) widgetIdInput.value = widgetCard.dataset.widgetId || "";
+        if (widgetTitleInput) widgetTitleInput.value = widgetCard.dataset.widgetTitle || "";
+        if (widgetTypeInput) widgetTypeInput.value = widgetCard.dataset.widgetType || "weather";
+        if (widgetWeatherLocationInput) widgetWeatherLocationInput.value = widgetCard.dataset.widgetWeatherLocation || "";
+        if (widgetModalTitle) widgetModalTitle.textContent = labels.editWidget || "Widget bearbeiten";
+        if (widgetSubmitButton) widgetSubmitButton.textContent = labels.saveWidget || "Widget speichern";
+
+        setCheckedRadio(widgetForm, "widget_color", widgetCard.dataset.widgetColor || "blue", "blue");
+        toggleWidgetWeatherField();
+
+        openModal(widgetModal);
+        setTimeout(() => widgetTitleInput?.focus(), 100);
+    }
+
+    openWidgetModalButton?.addEventListener("click", openAddWidgetModal);
+    widgetTypeInput?.addEventListener("change", toggleWidgetWeatherField);
+
+    document.querySelectorAll(".edit-widget-button").forEach(button => {
+        button.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            openEditWidgetModal(button);
+        });
+    });
+
+    if (closeWidgetModalButton && widgetModal) {
+        closeWidgetModalButton.addEventListener("click", () => closeModal(widgetModal));
+        widgetModal.addEventListener("click", event => {
+            if (event.target === widgetModal) closeModal(widgetModal);
+        });
+    }
+
     if (closeShortcutModalButton && shortcutModal) {
         closeShortcutModalButton.addEventListener("click", () => closeModal(shortcutModal));
         shortcutModal.addEventListener("click", event => {
@@ -508,15 +599,34 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function saveHomeLayoutOrder() {
+        const items = [...document.querySelectorAll("#sections-wrapper > .home-layout-item")]
+            .filter(item => item.dataset.isDefaultSection !== "true")
+            .map((item, index) => ({
+                type: item.dataset.layoutItemType,
+                id: item.dataset.sectionId || "",
+                order: index + 1
+            }));
+
+        return postJson({
+            action: "update_home_layout_order",
+            items
+        });
+    }
+
     function saveSectionOrder() {
-        const sections = [...document.querySelectorAll(".shortcuts-section")].map((section, index) => ({
-            id: section.dataset.sectionId,
+        return saveHomeLayoutOrder();
+    }
+
+    function saveWidgetOrder() {
+        const widgets = [...document.querySelectorAll(".home-widget")].map((widget, index) => ({
+            id: widget.dataset.widgetId,
             order: index
         }));
 
         return postJson({
-            action: "update_section_order",
-            sections
+            action: "update_widget_order",
+            widgets
         });
     }
 
@@ -578,16 +688,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return null;
     }
 
-    function getSectionInsertBefore(wrapper, clientY) {
-        const sections = [...wrapper.querySelectorAll(".shortcuts-section:not(.pointer-dragging)")]
-            .filter(section => section.dataset.isDefaultSection !== "true");
+    function getLayoutInsertBefore(wrapper, clientY) {
+        const items = [...wrapper.querySelectorAll(":scope > .home-layout-item:not(.pointer-dragging)")]
+            .filter(item => item.dataset.isDefaultSection !== "true");
 
-        for (const section of sections) {
-            const box = section.getBoundingClientRect();
+        for (const item of items) {
+            const box = item.getBoundingClientRect();
             const middle = box.top + box.height / 2;
 
             if (clientY < middle) {
-                return section;
+                return item;
             }
         }
 
@@ -676,32 +786,32 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const section = handle.closest(".shortcuts-section");
+        const layoutItem = handle.closest(".home-layout-item");
         const wrapper = document.getElementById("sections-wrapper");
         const addSectionCard = document.getElementById("open-section-modal");
 
-        if (!section || !wrapper || !addSectionCard || section.dataset.isDefaultSection === "true") {
+        if (!layoutItem || !wrapper || !addSectionCard || layoutItem.dataset.isDefaultSection === "true") {
             return;
         }
 
         event.preventDefault();
         hideSuggestions();
 
-        const rect = section.getBoundingClientRect();
+        const rect = layoutItem.getBoundingClientRect();
         const offsetX = event.clientX - rect.left;
         const offsetY = event.clientY - rect.top;
-        const placeholder = createPlaceholder(section, "section-placeholder");
+        const placeholder = createPlaceholder(layoutItem, "section-placeholder");
 
-        wrapper.insertBefore(placeholder, section);
-        document.body.appendChild(section);
-        setFloatingElement(section, rect);
-        moveFloatingElement(section, event.clientX, event.clientY, offsetX, offsetY);
+        wrapper.insertBefore(placeholder, layoutItem);
+        document.body.appendChild(layoutItem);
+        setFloatingElement(layoutItem, rect);
+        moveFloatingElement(layoutItem, event.clientX, event.clientY, offsetX, offsetY);
 
         function onPointerMove(moveEvent) {
             moveEvent.preventDefault();
-            moveFloatingElement(section, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
+            moveFloatingElement(layoutItem, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
 
-            const before = getSectionInsertBefore(wrapper, moveEvent.clientY);
+            const before = getLayoutInsertBefore(wrapper, moveEvent.clientY);
 
             if (before) {
                 wrapper.insertBefore(placeholder, before);
@@ -715,9 +825,73 @@ document.addEventListener("DOMContentLoaded", () => {
             document.removeEventListener("pointerup", onPointerUp);
             document.removeEventListener("pointercancel", onPointerUp);
 
-            placeholder.replaceWith(section);
-            resetFloatingElement(section);
-            saveSectionOrder();
+            placeholder.replaceWith(layoutItem);
+            resetFloatingElement(layoutItem);
+            saveHomeLayoutOrder();
+        }
+
+        document.addEventListener("pointermove", onPointerMove, { passive: false });
+        document.addEventListener("pointerup", onPointerUp, { once: true });
+        document.addEventListener("pointercancel", onPointerUp, { once: true });
+    }
+
+
+    function startPointerWidgetDrag(event, handle) {
+        if (event.button !== undefined && event.button !== 0) return;
+
+        const widget = handle.closest(".home-widget");
+        const grid = document.getElementById("widgets-grid");
+
+        if (!widget || !grid) return;
+
+        event.preventDefault();
+        handle.setPointerCapture?.(event.pointerId);
+
+        const rect = widget.getBoundingClientRect();
+        const pointerOffsetX = event.clientX - rect.left;
+        const pointerOffsetY = event.clientY - rect.top;
+        const placeholder = createPlaceholder(widget, "widget-placeholder");
+
+        widget.before(placeholder);
+        setFloatingElement(widget, rect);
+        widget.classList.add("widget-dragging");
+        document.body.appendChild(widget);
+
+        function onPointerMove(moveEvent) {
+            moveEvent.preventDefault();
+
+            widget.style.left = `${moveEvent.clientX - pointerOffsetX}px`;
+            widget.style.top = `${moveEvent.clientY - pointerOffsetY}px`;
+
+            const widgetCards = [...grid.querySelectorAll(".home-widget")];
+            const afterElement = widgetCards.find(card => {
+                const cardRect = card.getBoundingClientRect();
+                const cardMiddleY = cardRect.top + cardRect.height / 2;
+                const cardMiddleX = cardRect.left + cardRect.width / 2;
+
+                if (moveEvent.clientY < cardRect.top || moveEvent.clientY > cardRect.bottom) {
+                    return false;
+                }
+
+                return moveEvent.clientY < cardMiddleY || moveEvent.clientX < cardMiddleX;
+            });
+
+            if (afterElement) {
+                grid.insertBefore(placeholder, afterElement);
+            } else {
+                grid.appendChild(placeholder);
+            }
+        }
+
+        function onPointerUp() {
+            document.removeEventListener("pointermove", onPointerMove);
+            document.removeEventListener("pointerup", onPointerUp);
+            document.removeEventListener("pointercancel", onPointerUp);
+
+            widget.classList.remove("widget-dragging");
+            placeholder.replaceWith(widget);
+            resetFloatingElement(widget);
+            saveWidgetOrder();
         }
 
         document.addEventListener("pointermove", onPointerMove, { passive: false });
@@ -733,5 +907,65 @@ document.addEventListener("DOMContentLoaded", () => {
         handle.addEventListener("pointerdown", event => startPointerSectionDrag(event, handle));
     });
 
+    document.querySelectorAll(".widget-drag-handle").forEach(handle => {
+        handle.addEventListener("pointerdown", event => startPointerWidgetDrag(event, handle));
+    });
+
     updateEmptyStates();
+    toggleWidgetWeatherField();
 });
+
+
+/* ───────────────── Shortcut Drei-Punkte-Menü ───────────────── */
+
+(function setupShortcutActionMenus() {
+    const closeAllShortcutMenus = () => {
+        document.querySelectorAll('.shortcut-card.actions-open').forEach((card) => {
+            card.classList.remove('actions-open');
+            const toggle = card.querySelector('.shortcut-menu-toggle');
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    };
+
+    document.addEventListener('click', (event) => {
+        const toggle = event.target.closest('.shortcut-menu-toggle');
+
+        if (toggle) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const card = toggle.closest('.shortcut-card');
+            const isOpen = card?.classList.contains('actions-open');
+
+            closeAllShortcutMenus();
+
+            if (card && !isOpen) {
+                card.classList.add('actions-open');
+                toggle.setAttribute('aria-expanded', 'true');
+            }
+
+            return;
+        }
+
+        if (!event.target.closest('.shortcut-actions-menu')) {
+            closeAllShortcutMenus();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeAllShortcutMenus();
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        const menuButton = event.target.closest('.shortcut-actions-menu button');
+        const menuForm = event.target.closest('.shortcut-actions-menu form');
+
+        if (menuButton && !menuForm) {
+            closeAllShortcutMenus();
+        }
+    });
+})();

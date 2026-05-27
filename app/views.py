@@ -12,7 +12,8 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, Shortcut, ShortcutSection, WeatherLocation
+from app.models import AvatarCharacter, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
+    ShortcutSection, WeatherLocation
 
 import json
 
@@ -27,6 +28,8 @@ from django.views.decorators.http import require_POST
 
 from .models import Note
 from .forms import NoteForm, SignUpForm
+
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 env_path = settings.BASE_DIR / ".env"
 load_dotenv(env_path)
@@ -67,6 +70,133 @@ def signup(request):
     })
 
 
+
+def get_home_weather_data(request, user, widget):
+    api_key = get_env_value("OPENWEATHER_API_KEY")
+    units = request.GET.get("units", "metric")
+    if units not in {"metric", "imperial"}:
+        units = "metric"
+
+    location = widget.weather_location or WeatherLocation.objects.filter(user=user).first()
+    city = location.name if location else "Berlin"
+    current_lang = translation.get_language()
+    temperature_unit = "°F" if units == "imperial" else "°C"
+
+    if not api_key:
+        return {
+            "city": city,
+            "temperature_unit": temperature_unit,
+            "error": missing_env_message("OPENWEATHER_API_KEY"),
+        }
+
+    try:
+        params = {
+            "q": city,
+            "appid": api_key,
+            "units": units,
+            "lang": current_lang,
+        }
+        response = requests.get(
+            "http://api.openweathermap.org/data/2.5/weather",
+            params=params,
+            timeout=6,
+        )
+        data = response.json()
+
+        if response.status_code != 200:
+            return {
+                "city": city,
+                "temperature_unit": temperature_unit,
+                "error": data.get("message") or _("Wetter konnte nicht geladen werden."),
+            }
+
+        weather_info = (data.get("weather") or [{}])[0]
+        main_info = data.get("main") or {}
+        wind_info = data.get("wind") or {}
+
+        return {
+            "city": data.get("name") or city,
+            "temperature": round(main_info.get("temp", 0)),
+            "feels_like": round(main_info.get("feels_like", 0)),
+            "description": weather_info.get("description", _("Keine Beschreibung")),
+            "icon": weather_info.get("icon"),
+            "humidity": main_info.get("humidity"),
+            "wind": round(wind_info.get("speed", 0), 1),
+            "temperature_unit": temperature_unit,
+            "wind_unit": "mph" if units == "imperial" else "m/s",
+            "url": f"{request.path.rstrip('/')}/weather/" if False else None,
+        }
+    except (requests.RequestException, ValueError):
+        return {
+            "city": city,
+            "temperature_unit": temperature_unit,
+            "error": _("Wetter konnte nicht geladen werden."),
+        }
+
+
+def build_home_widget_data(request, user):
+    widgets = list(
+        HomeWidget.objects
+        .filter(user=user, is_enabled=True)
+        .select_related("weather_location")
+        .order_by("order", "created_at")
+    )
+
+    note_count = Note.objects.filter(user=user, is_archived=False).count()
+    pinned_notes = Note.objects.filter(user=user, is_archived=False, is_pinned=True).order_by("-updated_at")[:3]
+
+    benchmark_highscores = {
+        highscore.game: highscore
+        for highscore in HumanBenchmarkHighScore.objects.filter(user=user)
+    }
+    benchmark_rows = [
+        {
+            "key": game_key,
+            "name": game_name,
+            "highscore": benchmark_highscores.get(game_key),
+        }
+        for game_key, game_name in HumanBenchmarkScore.GAME_CHOICES
+    ]
+
+    shortcut_count = Shortcut.objects.filter(user=user).count()
+    section_count = ShortcutSection.objects.filter(user=user).count()
+    weather_location_count = WeatherLocation.objects.filter(user=user).count()
+
+    widget_context = []
+
+    for widget in widgets:
+        data = {}
+
+        if widget.widget_type == HomeWidget.WIDGET_WEATHER:
+            data = get_home_weather_data(request, user, widget)
+
+        elif widget.widget_type == HomeWidget.WIDGET_NOTES:
+            data = {
+                "note_count": note_count,
+                "pinned_notes": pinned_notes,
+            }
+
+        elif widget.widget_type == HomeWidget.WIDGET_BENCHMARK:
+            data = {
+                "rows": benchmark_rows,
+            }
+
+        elif widget.widget_type == HomeWidget.WIDGET_STATS:
+            data = {
+                "shortcut_count": shortcut_count,
+                "section_count": section_count,
+                "note_count": note_count,
+                "weather_location_count": weather_location_count,
+            }
+
+        widget_context.append({
+            "widget": widget,
+            "data": data,
+        })
+
+    return widget_context
+
+
 def home(request):
     user = request.user
     home_labels = {
@@ -79,6 +209,10 @@ def home(request):
         "editSection": _("Bereich bearbeiten"),
         "saveChanges": _("Änderungen speichern"),
         "noFileSelected": _("Keine Datei ausgewählt"),
+        "newWidget": _("Neues Widget"),
+        "editWidget": _("Widget bearbeiten"),
+        "addWidget": _("Widget hinzufügen"),
+        "saveWidget": _("Widget speichern"),
     }
 
     default_section, created = ShortcutSection.objects.get_or_create(
@@ -126,7 +260,47 @@ def home(request):
                     section_id = item.get("id")
                     order = item.get("order", 0)
 
-                    ShortcutSection.objects.filter(id=section_id, user=user).update(order=order)
+                    ShortcutSection.objects.filter(
+                        id=section_id,
+                        user=user,
+                    ).exclude(name="Verknüpfungen").update(order=order)
+
+                ShortcutSection.objects.filter(id=default_section.id, user=user).update(order=0)
+
+                return JsonResponse({"success": True})
+
+            if action == "update_home_layout_order":
+                items = data.get("items", [])
+                layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
+
+                for item in items:
+                    item_type = item.get("type")
+                    order = item.get("order", 1)
+
+                    if item_type == "widgets":
+                        layout_preference.widget_area_order = order
+                        continue
+
+                    if item_type == "section":
+                        section_id = item.get("id")
+                        ShortcutSection.objects.filter(
+                            id=section_id,
+                            user=user,
+                        ).exclude(name="Verknüpfungen").update(order=order)
+
+                layout_preference.save(update_fields=["widget_area_order", "updated_at"])
+                ShortcutSection.objects.filter(id=default_section.id, user=user).update(order=0)
+
+                return JsonResponse({"success": True})
+
+            if action == "update_widget_order":
+                widgets = data.get("widgets", [])
+
+                for item in widgets:
+                    widget_id = item.get("id")
+                    order = item.get("order", 0)
+
+                    HomeWidget.objects.filter(id=widget_id, user=user).update(order=order)
 
                 return JsonResponse({"success": True})
 
@@ -134,12 +308,85 @@ def home(request):
 
         action = request.POST.get("action")
 
+        if action == "add_widget":
+            title = request.POST.get("widget_title", "").strip()
+            widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
+            widget_color = request.POST.get("widget_color", "blue").strip()
+            weather_location_id = request.POST.get("weather_location") or None
+
+            valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
+            valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
+
+            if widget_type not in valid_widget_types:
+                widget_type = HomeWidget.WIDGET_WEATHER
+
+            if widget_color not in valid_colors:
+                widget_color = "blue"
+
+            if not title:
+                title = dict(HomeWidget.WIDGET_CHOICES).get(widget_type, _("Widget"))
+
+            max_order = HomeWidget.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
+
+            weather_location = None
+            if weather_location_id:
+                weather_location = WeatherLocation.objects.filter(id=weather_location_id, user=user).first()
+
+            HomeWidget.objects.create(
+                user=user,
+                title=title,
+                widget_type=widget_type,
+                color=widget_color,
+                weather_location=weather_location,
+                order=max_order + 1,
+            )
+
+            return redirect("home")
+
+        if action == "edit_widget":
+            widget_id = request.POST.get("widget_id")
+            title = request.POST.get("widget_title", "").strip()
+            widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
+            widget_color = request.POST.get("widget_color", "blue").strip()
+            weather_location_id = request.POST.get("weather_location") or None
+
+            widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
+            valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
+            valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
+
+            if widget_type not in valid_widget_types:
+                widget_type = HomeWidget.WIDGET_WEATHER
+
+            if widget_color not in valid_colors:
+                widget_color = "blue"
+
+            weather_location = None
+            if weather_location_id:
+                weather_location = WeatherLocation.objects.filter(id=weather_location_id, user=user).first()
+
+            widget.title = title or dict(HomeWidget.WIDGET_CHOICES).get(widget_type, _("Widget"))
+            widget.widget_type = widget_type
+            widget.color = widget_color
+            widget.weather_location = weather_location
+            widget.save()
+
+            return redirect("home")
+
+        if action == "delete_widget":
+            widget_id = request.POST.get("widget_id")
+            widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
+            widget.delete()
+
+            return redirect("home")
+
         if action == "add_section":
             section_name = request.POST.get("section_name", "").strip()
             section_color = request.POST.get("section_color", "blue").strip()
 
             if section_name:
-                max_order = ShortcutSection.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
+                layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
+                max_section_order = ShortcutSection.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
+                max_order = max(max_section_order, layout_preference.widget_area_order)
 
                 ShortcutSection.objects.create(
                     user=user,
@@ -149,7 +396,7 @@ def home(request):
                 )
 
             return redirect("home")
-        
+
         if action == "edit_section":
             section_id = request.POST.get("section_id")
             section_name = request.POST.get("section_name", "").strip()
@@ -158,7 +405,8 @@ def home(request):
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
 
             if section_name:
-                section.name = section_name
+                if section.name != "Verknüpfungen":
+                    section.name = section_name
                 section.color = section_color
                 section.save()
 
@@ -199,7 +447,8 @@ def home(request):
                 if not url.startswith(("http://", "https://")):
                     url = "https://" + url
 
-                max_order = Shortcut.objects.filter(user=user, section=section).aggregate(Max("order"))["order__max"] or 0
+                max_order = Shortcut.objects.filter(user=user, section=section).aggregate(Max("order"))[
+                                "order__max"] or 0
 
                 Shortcut.objects.create(
                     user=user,
@@ -212,7 +461,7 @@ def home(request):
                 )
 
             return redirect("home")
-        
+
         if action == "edit_shortcut":
             shortcut_id = request.POST.get("shortcut_id")
             section_id = request.POST.get("section_id")
@@ -260,21 +509,54 @@ def home(request):
 
             return redirect("home")
 
-    sections = (
+    sections = list(
         ShortcutSection.objects
         .filter(user=user)
         .prefetch_related(Prefetch("shortcuts", queryset=Shortcut.objects.filter(user=user)))
         .order_by("order", "created_at")
     )
 
+    default_section = next((section for section in sections if section.name == "Verknüpfungen"), default_section)
+    custom_sections = [section for section in sections if section.name != "Verknüpfungen"]
+
+    layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
+    home_widgets = build_home_widget_data(request, user)
+    weather_locations = WeatherLocation.objects.filter(user=user)
+
+    movable_home_items = [
+        {
+            "type": "widgets",
+            "order": layout_preference.widget_area_order,
+        }
+    ]
+
+    movable_home_items.extend(
+        {
+            "type": "section",
+            "section": section,
+            "order": section.order,
+        }
+        for section in custom_sections
+    )
+
+    movable_home_items.sort(key=lambda item: (item["order"], 0 if item["type"] == "widgets" else 1))
+
     return render(request, "app/home.html", {
         "sections": sections,
+        "default_section": default_section,
+        "movable_home_items": movable_home_items,
+        "home_widgets": home_widgets,
+        "weather_locations": weather_locations,
+        "widget_types": [(value, _(label)) for value, label in HomeWidget.WIDGET_CHOICES],
+        "widget_colors": [(value, _(label)) for value, label in HomeWidget.COLOR_CHOICES],
         "home_labels": home_labels,
     })
+
 
 def about(request):
     template_name = 'app/about.html'
     return render(request, template_name)
+
 
 def weather(request):
     user = request.user
@@ -516,13 +798,114 @@ def weather(request):
     context.update(weather_context(**context))
     return render(request, 'app/weather.html', context)
 
+
 def obs_dashboard(request):
     return render(request, "app/obs-dashboard.html")
+
 
 def spritkostenrechner(request):
     return render(request, "app/spritkostenrechner.html")
 
 
+HUMAN_BENCHMARK_GAMES = ["reaction", "aim", "typing", "visual"]
+
+HUMAN_BENCHMARK_LOWER_IS_BETTER = {
+    "reaction": True,
+    "aim": True,
+    "typing": False,
+    "visual": False,
+}
+
+HUMAN_BENCHMARK_GAME_LABELS = {
+    "reaction": _("Reaktion"),
+    "aim": _("Aim Trainer"),
+    "typing": _("Typing Test"),
+    "visual": _("Visual Memory"),
+}
+
+
+def is_better_human_benchmark_score(game, new_score, old_score):
+    if old_score is None:
+        return True
+
+    if HUMAN_BENCHMARK_LOWER_IS_BETTER.get(game, False):
+        return new_score < old_score
+
+    return new_score > old_score
+
+
+def serialize_human_benchmark_score(score):
+    score_date = getattr(score, "created_at", None) or getattr(score, "achieved_at", None)
+
+    return {
+        "game": score.game,
+        "score": score.score,
+        "display_score": score.display_score,
+        "details": score.details or {},
+        "created_at": date_format(score_date, "d.m.Y H:i") if score_date else "",
+    }
+
+
+def get_human_benchmark_score_data(user):
+    data = {
+        "games": {
+            game: {
+                "label": str(HUMAN_BENCHMARK_GAME_LABELS.get(game, game)),
+                "lower_is_better": HUMAN_BENCHMARK_LOWER_IS_BETTER.get(game, False),
+                "recent": [],
+                "highscore": None,
+                "leaderboard": [],
+            }
+            for game in HUMAN_BENCHMARK_GAMES
+        }
+    }
+
+    for game in HUMAN_BENCHMARK_GAMES:
+        recent_scores = HumanBenchmarkScore.objects.filter(
+            user=user,
+            game=game,
+        ).order_by("-created_at")[:10]
+
+        highscore = HumanBenchmarkHighScore.objects.filter(
+            user=user,
+            game=game,
+        ).first()
+
+        order_field = "score" if HUMAN_BENCHMARK_LOWER_IS_BETTER.get(game, False) else "-score"
+
+        leaderboard = (
+            HumanBenchmarkHighScore.objects
+            .filter(game=game)
+            .select_related("user")
+            .order_by(order_field, "achieved_at")[:10]
+        )
+
+        data["games"][game]["recent"] = [
+            serialize_human_benchmark_score(score)
+            for score in recent_scores
+        ]
+
+        data["games"][game]["highscore"] = (
+            serialize_human_benchmark_score(highscore)
+            if highscore
+            else None
+        )
+
+        data["games"][game]["leaderboard"] = [
+            {
+                "rank": index + 1,
+                "username": entry.user.get_full_name() or entry.user.username,
+                "display_score": entry.display_score,
+                "score": entry.score,
+                "achieved_at": date_format(entry.achieved_at, "d.m.Y H:i"),
+            }
+            for index, entry in enumerate(leaderboard)
+        ]
+
+    return data
+
+
+@ensure_csrf_cookie
 def human_benchmark(request):
     benchmark_labels = {
         "loading": _("Lade Text..."),
@@ -530,10 +913,79 @@ def human_benchmark(request):
         "nextTest": _("Nächster Test"),
         "loadingButton": _("Lädt..."),
         "startTest": _("Test starten"),
+        "newHighscore": _("Neuer Highscore!"),
+        "saved": _("Ergebnis gespeichert."),
+        "noResults": _("Noch keine Ergebnisse."),
+        "rank": _("Platz"),
+        "player": _("Nutzer"),
+        "score": _("Score"),
+        "date": _("Datum"),
     }
 
     return render(request, "app/human_benchmark.html", {
         "benchmark_labels": benchmark_labels,
+        "score_data": get_human_benchmark_score_data(request.user),
+    })
+
+
+@require_POST
+def human_benchmark_score_api(request):
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return api_error_response(_("Ungültige Anfrage."), status=400)
+
+    game = payload.get("game")
+
+    if game not in HUMAN_BENCHMARK_GAMES:
+        return api_error_response(_("Unbekannter Spielmodus."), status=400)
+
+    try:
+        score_value = float(payload.get("score"))
+    except (TypeError, ValueError):
+        return api_error_response(_("Ungültiger Score."), status=400)
+
+    if score_value < 0:
+        return api_error_response(_("Ungültiger Score."), status=400)
+
+    display_score = str(payload.get("display_score") or score_value)[:80]
+    details = payload.get("details") if isinstance(payload.get("details"), dict) else {}
+
+    score = HumanBenchmarkScore.objects.create(
+        user=request.user,
+        game=game,
+        score=score_value,
+        display_score=display_score,
+        details=details,
+    )
+
+    highscore, created = HumanBenchmarkHighScore.objects.get_or_create(
+        user=request.user,
+        game=game,
+        defaults={
+            "score": score_value,
+            "display_score": display_score,
+            "details": details,
+        },
+    )
+
+    is_new_highscore = created or is_better_human_benchmark_score(
+        game,
+        score_value,
+        highscore.score,
+    )
+
+    if is_new_highscore and not created:
+        highscore.score = score_value
+        highscore.display_score = display_score
+        highscore.details = details
+        highscore.save(update_fields=["score", "display_score", "details", "achieved_at"])
+
+    return JsonResponse({
+        "status": "ok",
+        "new_highscore": is_new_highscore,
+        "saved_score": serialize_human_benchmark_score(score),
+        "score_data": get_human_benchmark_score_data(request.user),
     })
 
 
@@ -943,6 +1395,7 @@ def note_toggle_archive_view(request, pk):
 
     return redirect("notes")
 
+
 def unit_converter_view(request):
     converter_labels = {
         "storage": {
@@ -979,8 +1432,10 @@ def unit_converter_view(request):
         "converter_labels": converter_labels,
     })
 
+
 def drift_circuit(request):
     return render(request, "app/drift_circuit.html")
+
 
 def stream_deck(request):
     return render(request, "app/stream_deck.html", {
