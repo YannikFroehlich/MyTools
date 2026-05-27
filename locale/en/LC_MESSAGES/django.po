@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-27 11:12+0200\n"
+"POT-Creation-Date: 2026-05-27 11:45+0200\n"
 "PO-Revision-Date: 2026-05-10 23:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -70,6 +70,8 @@ msgid "Benutzername"
 msgstr "Username"
 
 #: .\app\forms.py:90 .\app\templates\app\obs-dashboard.html:50
+#: .\app\templates\app\stream_deck.html:34
+#: .\app\templates\app\stream_deck.html:36
 #: .\app\templates\registration\login.html:71
 #: .\app\templates\registration\signup.html:84
 msgid "Passwort"
@@ -89,6 +91,7 @@ msgid "Tags, z. B. Schule, Server, Idee"
 msgstr "Tags, e.g., School, Server, Idea"
 
 #: .\app\forms.py:138 .\app\templates\app\note_form.html:44
+#: .\app\templates\app\stream_deck.html:209
 msgid "Titel"
 msgstr "Title"
 
@@ -101,6 +104,7 @@ msgid "Tags"
 msgstr "Tags"
 
 #: .\app\forms.py:141 .\app\templates\app\note_form.html:138
+#: .\app\templates\app\stream_deck.html:249
 msgid "Farbe"
 msgstr "Color"
 
@@ -481,11 +485,14 @@ msgstr "Description optional"
 
 #: .\app\templates\app\avatar_wiki.html:49
 #: .\app\templates\app\note_form.html:169 .\app\templates\app\profile.html:233
+#: .\app\templates\app\stream_deck.html:331
 msgid "Abbrechen"
 msgstr "Cancel"
 
 #: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\home.html:341
 #: .\app\templates\app\profile.html:94 .\app\templates\app\profile.html:198
+#: .\app\templates\app\stream_deck.html:334
+#: .\app\templates\app\stream_deck.html:372
 msgid "Speichern"
 msgstr "Save"
 
@@ -622,7 +629,7 @@ msgstr "Users"
 msgid "OBS Dashboard"
 msgstr "OBS Dashboard"
 
-#: .\app\templates\app\base.html:179 .\app\templates\app\stream_deck.html:4
+#: .\app\templates\app\base.html:179
 msgid "Stream Deck"
 msgstr "Stream Deck"
 
@@ -709,6 +716,7 @@ msgid "Suche nach einem Song oder Künstler, um Genius-Treffer zu sehen."
 msgstr "Search for a song or artist to see Genius results."
 
 #: .\app\templates\app\genius_search.html:33
+#: .\app\templates\app\stream_deck.html:234
 msgid "Zurück"
 msgstr "Back"
 
@@ -717,6 +725,7 @@ msgid "Seite 1"
 msgstr "Page 1"
 
 #: .\app\templates\app\genius_search.html:35
+#: .\app\templates\app\stream_deck.html:233
 msgid "Weiter"
 msgstr "Next"
 
@@ -767,6 +776,8 @@ msgstr "Move"
 
 #: .\app\templates\app\home.html:135
 #: .\app\templates\app\partials\note_card.html:62
+#: .\app\templates\app\stream_deck.html:52
+#: .\app\templates\app\stream_deck.html:171
 msgid "Bearbeiten"
 msgstr "Edit"
 
@@ -780,6 +791,7 @@ msgstr "Mark as favorite"
 
 #: .\app\templates\app\home.html:158
 #: .\app\templates\app\partials\note_card.html:79
+#: .\app\templates\app\stream_deck.html:327
 msgid "Löschen"
 msgstr "Delete"
 
@@ -1113,7 +1125,7 @@ msgstr "New note"
 msgid "Titel, Inhalt oder Tags suchen..."
 msgstr "Search for title, content, or tags..."
 
-#: .\app\templates\app\notes.html:70
+#: .\app\templates\app\notes.html:70 .\app\templates\app\stream_deck.html:77
 msgid "Zurücksetzen"
 msgstr "Reset"
 
@@ -1191,6 +1203,8 @@ msgstr ""
 "Touch control panel for scenes, sources, stream, recording and audio mixer."
 
 #: .\app\templates\app\obs-dashboard.html:27
+#: .\app\templates\app\stream_deck.html:88
+#: .\app\templates\app\stream_deck.html:104
 msgid "Nicht verbunden"
 msgstr "Not connected"
 
@@ -1211,6 +1225,7 @@ msgid "OBS Passwort"
 msgstr "OBS password"
 
 #: .\app\templates\app\obs-dashboard.html:56
+#: .\app\templates\app\stream_deck.html:45
 msgid "Verbinden"
 msgstr "Connect"
 
@@ -1492,6 +1507,379 @@ msgstr "per year"
 msgid "Verbrauch (l/100km)"
 msgstr "Consumption (l/100km)"
 
+#: .\app\templates\app\stream_deck.html:4
+#: .\app\templates\app\stream_deck.html:64
+#| msgid "Stream Deck"
+msgid "Stream-Deck"
+msgstr "Stream Deck"
+
+#: .\app\templates\app\stream_deck.html:22
+msgid "OBS + Spotify"
+msgstr "OBS + Spotify"
+
+#: .\app\templates\app\stream_deck.html:23
+#| msgid "Stream Deck"
+msgid "Stream-Deck-Steuerung"
+msgstr "Stream Deck Control"
+
+#: .\app\templates\app\stream_deck.html:29
+#| msgid "OBS WebSocket"
+msgid "OBS-WebSocket-Adresse"
+msgstr "OBS WebSocket Address"
+
+#: .\app\templates\app\stream_deck.html:37
+#| msgid "Passwort speichern"
+msgid "Passwort anzeigen"
+msgstr "Show password"
+
+#: .\app\templates\app\stream_deck.html:72
+#| msgid "Bereich hinzufügen"
+msgid "Button hinzufügen"
+msgstr "Add button"
+
+#: .\app\templates\app\stream_deck.html:84
+#| msgid "Verbindung"
+msgid "Verbindungsstatus"
+msgstr "Connection status"
+
+#: .\app\templates\app\stream_deck.html:95
+#| msgid "Verbindung"
+msgid "Verbindung trennen"
+msgstr "Disconnect"
+
+#: .\app\templates\app\stream_deck.html:100
+msgid "Spotify"
+msgstr "Spotify"
+
+#: .\app\templates\app\stream_deck.html:113
+#| msgid "Titel"
+msgid "Kein Titel"
+msgstr "No title"
+
+#: .\app\templates\app\stream_deck.html:114
+msgid "Kein Künstler"
+msgstr "No artist"
+
+#: .\app\templates\app\stream_deck.html:129
+msgid "Vorheriger Titel"
+msgstr "Previous track"
+
+#: .\app\templates\app\stream_deck.html:132
+#| msgid "Dark Mode umschalten"
+msgid "Wiedergabe umschalten"
+msgstr "Toggle playback"
+
+#: .\app\templates\app\stream_deck.html:135
+#| msgid "Nächster Test"
+msgid "Nächster Titel"
+msgstr "Next track"
+
+#: .\app\templates\app\stream_deck.html:142
+#| msgid "Erst mit OBS verbinden"
+msgid "Mit Spotify verbinden"
+msgstr "Connect Spotify"
+
+#: .\app\templates\app\stream_deck.html:147
+msgid "System"
+msgstr "System"
+
+#: .\app\templates\app\stream_deck.html:151
+msgid "OBS-Version"
+msgstr "OBS version"
+
+#: .\app\templates\app\stream_deck.html:156
+#| msgid "OBS WebSocket"
+msgid "WebSocket"
+msgstr "WebSocket"
+
+#: .\app\templates\app\stream_deck.html:161
+msgid "Spotify-Status"
+msgstr "Spotify status"
+
+#: .\app\templates\app\stream_deck.html:166
+#| msgid "Unbekannte Aktion"
+msgid "Letzte Aktion"
+msgstr "Last action"
+
+#: .\app\templates\app\stream_deck.html:172
+msgid "Aus"
+msgstr "Off"
+
+#: .\app\templates\app\stream_deck.html:176
+msgid "Buttons"
+msgstr "Buttons"
+
+#: .\app\templates\app\stream_deck.html:183
+#| msgid "Profil ansehen"
+msgid "Protokoll anzeigen"
+msgstr "Show log"
+
+#: .\app\templates\app\stream_deck.html:197
+#| msgid "Bearbeiten"
+msgid "Button bearbeiten"
+msgstr "Edit button"
+
+#: .\app\templates\app\stream_deck.html:198
+msgid "Lege fest, was der Button machen soll."
+msgstr "Choose what the button should do."
+
+#: .\app\templates\app\stream_deck.html:201
+#| msgid "Schließen"
+msgid "Editor schließen"
+msgstr "Close editor"
+
+#: .\app\templates\app\stream_deck.html:210
+msgid "z. B. Stream starten"
+msgstr "e.g., start stream"
+
+#: .\app\templates\app\stream_deck.html:214
+msgid "Symbol"
+msgstr "Icon"
+
+#: .\app\templates\app\stream_deck.html:217
+msgid "Chat"
+msgstr "Chat"
+
+#: .\app\templates\app\stream_deck.html:222
+msgid "Mikrofon"
+msgstr "Microphone"
+
+#: .\app\templates\app\stream_deck.html:223
+msgid "Lautstärke"
+msgstr "Volume"
+
+#: .\app\templates\app\stream_deck.html:224
+msgid "Krone"
+msgstr "Crown"
+
+#: .\app\templates\app\stream_deck.html:225
+#: .\app\templates\app\stream_deck.html:308
+msgid "Pause"
+msgstr "Pause"
+
+#: .\app\templates\app\stream_deck.html:226
+#| msgid "Stop"
+msgid "Stopp"
+msgstr "Stop"
+
+#: .\app\templates\app\stream_deck.html:227
+#| msgid "Über mich"
+msgid "Überwachung"
+msgstr "Monitoring"
+
+#: .\app\templates\app\stream_deck.html:228
+#: .\app\templates\app\stream_deck.html:293
+msgid "Szene"
+msgstr "Scene"
+
+#: .\app\templates\app\stream_deck.html:229
+msgid "Studio"
+msgstr "Studio"
+
+#: .\app\templates\app\stream_deck.html:230
+msgid "Kamera"
+msgstr "Camera"
+
+#: .\app\templates\app\stream_deck.html:231
+msgid "Bildschirm"
+msgstr "Screen"
+
+#: .\app\templates\app\stream_deck.html:232
+#: .\app\templates\app\stream_deck.html:307
+#| msgid "Dark Mode umschalten"
+msgid "Wiedergabe"
+msgstr "Playback"
+
+#: .\app\templates\app\stream_deck.html:235
+msgid "Herz"
+msgstr "Heart"
+
+#: .\app\templates\app\stream_deck.html:236
+msgid "Zufällig"
+msgstr "Shuffle"
+
+#: .\app\templates\app\stream_deck.html:237
+#| msgid "Wiederherstellen"
+msgid "Wiederholen"
+msgstr "Repeat"
+
+#: .\app\templates\app\stream_deck.html:238
+msgid "Follower"
+msgstr "Follower"
+
+#: .\app\templates\app\stream_deck.html:239
+msgid "Stern"
+msgstr "Star"
+
+#: .\app\templates\app\stream_deck.html:240
+msgid "Dollar"
+msgstr "Dollar"
+
+#: .\app\templates\app\stream_deck.html:241
+msgid "Nachricht"
+msgstr "Message"
+
+#: .\app\templates\app\stream_deck.html:242
+msgid "Zeitmesser"
+msgstr "Timer"
+
+#: .\app\templates\app\stream_deck.html:243
+msgid "Clip"
+msgstr "Clip"
+
+#: .\app\templates\app\stream_deck.html:244
+msgid "Plus"
+msgstr "Plus"
+
+#: .\app\templates\app\stream_deck.html:254
+msgid "Aktion"
+msgstr "Action"
+
+#: .\app\templates\app\stream_deck.html:256
+msgid "Keine Aktion"
+msgstr "No action"
+
+#: .\app\templates\app\stream_deck.html:257
+#: .\app\templates\app\stream_deck.html:268
+msgid "OBS-Anfrage"
+msgstr "OBS request"
+
+#: .\app\templates\app\stream_deck.html:258
+#| msgid "OBS Szene wechseln"
+msgid "OBS-Szene wechseln"
+msgstr "Switch OBS scene"
+
+#: .\app\templates\app\stream_deck.html:259
+#| msgid "OBS Quelle toggeln"
+msgid "OBS-Quelle umschalten"
+msgstr "Toggle OBS source"
+
+#: .\app\templates\app\stream_deck.html:261
+msgid "URL öffnen"
+msgstr "Open URL"
+
+#: .\app\templates\app\stream_deck.html:270
+msgid "Stream starten"
+msgstr "Start stream"
+
+#: .\app\templates\app\stream_deck.html:271
+msgid "Stream stoppen"
+msgstr "Stop stream"
+
+#: .\app\templates\app\stream_deck.html:272
+#| msgid "Stream starten"
+msgid "Stream umschalten"
+msgstr "Toggle stream"
+
+#: .\app\templates\app\stream_deck.html:273
+msgid "Aufnahme starten"
+msgstr "Start recording"
+
+#: .\app\templates\app\stream_deck.html:274
+msgid "Aufnahme stoppen"
+msgstr "Stop recording"
+
+#: .\app\templates\app\stream_deck.html:275
+#| msgid "Aufnahme starten"
+msgid "Aufnahme umschalten"
+msgstr "Toggle recording"
+
+#: .\app\templates\app\stream_deck.html:276
+msgid "Aufnahme pausieren"
+msgstr "Pause recording"
+
+#: .\app\templates\app\stream_deck.html:277
+msgid "Aufnahme fortsetzen"
+msgstr "Resume recording"
+
+#: .\app\templates\app\stream_deck.html:278
+msgid "Studio-Übergang auslösen"
+msgstr "Trigger studio transition"
+
+#: .\app\templates\app\stream_deck.html:279
+#| msgid "Studio-Modus toggeln"
+msgid "Studio-Modus umschalten"
+msgstr "Toggle studio mode"
+
+#: .\app\templates\app\stream_deck.html:286
+msgid "Szenenname"
+msgstr "Scene name"
+
+#: .\app\templates\app\stream_deck.html:287
+#: .\app\templates\app\stream_deck.html:294
+msgid "z. B. Gameplay"
+msgstr "e.g., Gameplay"
+
+#: .\app\templates\app\stream_deck.html:298
+msgid "Quelle"
+msgstr "Source"
+
+#: .\app\templates\app\stream_deck.html:299
+msgid "z. B. Webcam"
+msgstr "e.g., Webcam"
+
+#: .\app\templates\app\stream_deck.html:305
+#| msgid "Spotify Aktion"
+msgid "Spotify-Aktion"
+msgstr "Spotify action"
+
+#: .\app\templates\app\stream_deck.html:309
+msgid "Nächstes Lied"
+msgstr "Next song"
+
+#: .\app\templates\app\stream_deck.html:310
+msgid "Vorheriges Lied"
+msgstr "Previous song"
+
+#: .\app\templates\app\stream_deck.html:311
+#| msgid "Dark Mode umschalten"
+msgid "Wiedergabe/Pause umschalten"
+msgstr "Toggle playback/pause"
+
+#: .\app\templates\app\stream_deck.html:318
+msgid "URL"
+msgstr "URL"
+
+#: .\app\templates\app\stream_deck.html:347
+#| msgid "Spotify Token"
+msgid "Spotify-Zugriffstoken"
+msgstr "Spotify access token"
+
+#: .\app\templates\app\stream_deck.html:348
+#| msgid "Füge deinen Spotify Access Token ein."
+msgid "Füge deinen Spotify-Zugriffstoken ein."
+msgstr "Enter your Spotify access token."
+
+#: .\app\templates\app\stream_deck.html:351
+#| msgid "Spotify Modal schließen"
+msgid "Spotify-Fenster schließen"
+msgstr "Close Spotify window"
+
+#: .\app\templates\app\stream_deck.html:358
+msgid "Zugriffstoken"
+msgstr "Access token"
+
+#: .\app\templates\app\stream_deck.html:359
+#| msgid "Spotify Access Token hier einfügen"
+msgid "Spotify-Zugriffstoken hier einfügen"
+msgstr "Paste your Spotify access token here"
+
+#: .\app\templates\app\stream_deck.html:366
+msgid "Entfernen"
+msgstr "Remove"
+
+#: .\app\templates\app\stream_deck.html:385
+msgid "Protokoll"
+msgstr "Log"
+
+#: .\app\templates\app\stream_deck.html:386
+msgid "Letzte Aktionen und Hinweise"
+msgstr "Recent actions and notes"
+
+#: .\app\templates\app\stream_deck.html:389
+msgid "Protokoll schließen"
+msgstr "Close log"
+
 #: .\app\templates\app\unit_converter.html:22
 msgid ""
 "Rechne schnell Speichergrößen, Zeiten, Strecken und monatliche Kosten um."
@@ -1566,7 +1954,8 @@ msgstr "User overview"
 msgid ""
 "Hier siehst du alle Nutzer von MyTools und kannst dir deren öffentliche "
 "Profilseite anschauen."
-msgstr "Here you can see all MyTools users and view each user’s public profile page."
+msgstr ""
+"Here you can see all MyTools users and view each user’s public profile page."
 
 #: .\app\templates\app\users.html:34
 msgid "Nach Nutzern suchen..."
@@ -1946,6 +2335,50 @@ msgstr "Euros per month"
 #: .\app\views.py:971
 msgid "Euro pro Jahr"
 msgstr "Euros per year"
+
+#, fuzzy
+#~| msgid "Stream Deck"
+#~ msgid "Stream Deck Control"
+#~ msgstr "Stream Deck"
+
+#~ msgid "Icon"
+#~ msgstr "Icon"
+
+#~ msgid "YouTube"
+#~ msgstr "YouTube"
+
+#~ msgid "OBS"
+#~ msgstr "OBS"
+
+#~ msgid "Discord"
+#~ msgstr "Discord"
+
+#~ msgid "Twitch"
+#~ msgstr "Twitch"
+
+#~ msgid "Monitoring"
+#~ msgstr "Monitoring"
+
+#~ msgid "Timer"
+#~ msgstr "Timer"
+
+#~ msgid "OBS Request"
+#~ msgstr "OBS Request"
+
+#~ msgid "Stream toggeln"
+#~ msgstr "Toggle stream"
+
+#~ msgid "Aufnahme toggeln"
+#~ msgstr "Toggle recording"
+
+#~ msgid "Studio Transition"
+#~ msgstr "Studio Transition"
+
+#~ msgid "Play/Pause Toggle"
+#~ msgstr "Play/Pause Toggle"
+
+#~ msgid "Access Token"
+#~ msgstr "Access Token"
 
 #~ msgid ""
 #~ "MyTools ist eine persönliche Sammlung kleiner praktischer Tools, die den "
