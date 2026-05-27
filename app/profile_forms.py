@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from .models import UserProfile
 
 User = get_user_model()
+MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
 
 
 class ProfileForm(forms.ModelForm):
@@ -45,13 +46,18 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ["avatar", "bio"]
+        fields = ["avatar", "profile_banner", "bio"]
         labels = {
             "avatar": "Profilbild",
+            "profile_banner": "Profilbanner",
             "bio": "Über mich",
         }
         widgets = {
             "avatar": forms.ClearableFileInput(attrs={
+                "class": "profile-file-input",
+                "accept": "image/*",
+            }),
+            "profile_banner": forms.ClearableFileInput(attrs={
                 "class": "profile-file-input",
                 "accept": "image/*",
             }),
@@ -86,6 +92,28 @@ class ProfileForm(forms.ModelForm):
             raise forms.ValidationError("Diese E-Mail-Adresse wird bereits verwendet.")
 
         return email
+
+    def clean_avatar(self):
+        return self.clean_profile_image("avatar", "Das Profilbild")
+
+    def clean_profile_banner(self):
+        return self.clean_profile_image("profile_banner", "Das Profilbanner")
+
+    def clean_profile_image(self, field_name, label):
+        image = self.cleaned_data.get(field_name)
+
+        if not image:
+            return image
+
+        if getattr(image, "size", 0) > MAX_PROFILE_IMAGE_SIZE:
+            raise forms.ValidationError(f"{label} darf maximal 5 MB groß sein.")
+
+        content_type = getattr(image, "content_type", "")
+
+        if content_type and not content_type.startswith("image/"):
+            raise forms.ValidationError(f"{label} muss eine Bilddatei sein.")
+
+        return image
 
     def save(self, commit=True):
         profile = super().save(commit=False)

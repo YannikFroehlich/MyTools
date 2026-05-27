@@ -57,7 +57,11 @@
     {% if profiles %}
         <div class="users-grid">
             {% for profile in profiles %}
-                <a href="{% url 'public_profile' profile.user.id %}" class="user-card">
+                <a
+                    href="{% url 'public_profile' profile.user.id %}"
+                    class="user-card {% if profile.profile_banner %}has-profile-banner{% endif %}"
+                    {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner.url }}');"{% endif %}
+                >
                     <div class="user-avatar">
                         {% if profile.avatar %}
                             <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">

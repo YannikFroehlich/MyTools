@@ -17,7 +17,10 @@
 
 {% block content %}
 <section class="public-profile-page">
-    <div class="public-profile-hero">
+    <div
+        class="public-profile-hero {% if profile.profile_banner %}has-profile-banner{% endif %}"
+        {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner.url }}');"{% endif %}
+    >
         <a href="{% url 'users' %}" class="public-profile-back">
             <i class="fa-solid fa-arrow-left"></i>
             {% translate "Zurück zu Nutzer" %}
@@ -77,6 +80,7 @@
             {% endif %}
         </aside>
 
+        <div class="public-profile-main">
         <article class="public-profile-card public-profile-about-card">
             <p class="users-kicker">{% translate "Über mich" %}</p>
             <h2>{% translate "Beschreibung" %}</h2>
@@ -90,6 +94,50 @@
                 </div>
             {% endif %}
         </article>
+
+        <article class="public-profile-card public-profile-benchmark-card">
+            <div class="public-profile-section-header">
+                <div>
+                    <p class="users-kicker">{% translate "Human Benchmark" %}</p>
+                    <h2>{% translate "Highscores" %}</h2>
+                </div>
+
+                <a href="{% url 'human-benchmark' %}" class="public-profile-benchmark-link">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    {% translate "Spielen" %}
+                </a>
+            </div>
+
+            <div class="public-profile-benchmark-grid">
+                {% for item in benchmark_highscores %}
+                    <div class="public-profile-benchmark-score {% if not item.highscore %}is-empty{% endif %}">
+                        <div class="public-profile-benchmark-icon">
+                            {% if item.game == "reaction" %}
+                                <i class="fa-solid fa-bolt"></i>
+                            {% elif item.game == "aim" %}
+                                <i class="fa-solid fa-crosshairs"></i>
+                            {% elif item.game == "typing" %}
+                                <i class="fa-solid fa-keyboard"></i>
+                            {% else %}
+                                <i class="fa-solid fa-table-cells"></i>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <span>{{ item.label }}</span>
+                            {% if item.highscore %}
+                                <strong>{{ item.highscore.display_score }}</strong>
+                                <small>{{ item.highscore.achieved_at|date:"d.m.Y H:i" }}</small>
+                            {% else %}
+                                <strong>--</strong>
+                                <small>{% translate "Noch kein Highscore" %}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+        </div>
     </div>
 </section>
 {% endblock %}

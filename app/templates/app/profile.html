@@ -10,7 +10,10 @@
 
 {% block content %}
 <section class="profile-page">
-    <div class="profile-hero">
+    <div
+        class="profile-hero {% if profile.profile_banner %}has-profile-banner{% endif %}"
+        {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner.url }}');"{% endif %}
+    >
         <div class="profile-hero-content">
             <div class="profile-avatar-preview">
                 {% if profile.avatar %}
@@ -178,6 +181,55 @@
                     </div>
 
                     {{ form.avatar.errors }}
+                </div>
+
+                <div class="profile-field profile-field-full">
+                    <label for="id_profile_banner">{{ form.profile_banner.label }}</label>
+
+                    <div class="profile-avatar-upload-card profile-banner-upload-card">
+                        <div class="profile-banner-upload-preview">
+                            {% if profile.profile_banner %}
+                                <img src="{{ profile.profile_banner.url }}" alt="{% translate 'Aktuelles Profilbanner' %}">
+                            {% else %}
+                                <i class="fa-solid fa-image"></i>
+                            {% endif %}
+                        </div>
+
+                        <div class="profile-avatar-upload-content">
+                            {% if profile.profile_banner %}
+                                <div class="profile-current-file">
+                                    <span>{% translate "Aktuelles Banner" %}</span>
+                                    <a href="{{ profile.profile_banner.url }}" target="_blank" rel="noopener">
+                                        {{ profile.profile_banner.name }}
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="profile-current-file">
+                                    <span>{% translate "Noch kein Banner" %}</span>
+                                    <strong>{% translate "Wähle ein breites Bild aus, das oben in deinem Profil angezeigt wird." %}</strong>
+                                </div>
+                            {% endif %}
+
+                            <label class="profile-file-picker" for="id_profile_banner">
+                                <i class="fa-solid fa-image"></i>
+                                {% translate "Banner auswählen" %}
+                            </label>
+
+                            <input
+                                type="file"
+                                name="profile_banner"
+                                accept="image/*"
+                                id="id_profile_banner"
+                                class="profile-file-input-hidden"
+                            >
+
+                            <small class="profile-avatar-hint">
+                                {% translate "Maximal 5 MB. Dein bestehendes Banner bleibt erhalten, solange du kein neues Bild hochlädst." %}
+                            </small>
+                        </div>
+                    </div>
+
+                    {{ form.profile_banner.errors }}
                 </div>
 
                 <div class="profile-field profile-field-full">

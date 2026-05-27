@@ -191,9 +191,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const highscoreHint = document.getElementById('current-highscore-hint');
         const recentList = document.getElementById('recent-scores-list');
         const leaderboardList = document.getElementById('leaderboard-list');
+        const currentGameElement = document.getElementById('scoreboard-current-game');
 
         if (!highscoreElement || !highscoreHint || !recentList || !leaderboardList) {
             return;
+        }
+
+        const activeTab = page.querySelector(`.benchmark-tab[data-game="${CSS.escape(game)}"]`);
+
+        if (currentGameElement) {
+            currentGameElement.textContent = activeTab?.textContent?.trim() || game;
         }
 
         if (gameData.highscore) {
@@ -217,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>${escapeHtml(entry.display_score)}</strong>
                     <small>${escapeHtml(formatScoreDetails(game, entry.details || {}))}</small>
                 </div>
-                <span>${escapeHtml(entry.created_at || '')}</span>
+                <time>${escapeHtml(entry.created_at || '')}</time>
             </div>
         `).join('');
         }
@@ -232,7 +239,10 @@ document.addEventListener('DOMContentLoaded', () => {
             leaderboardList.innerHTML = leaderboard.map((entry) => `
                 <div class="leaderboard-row">
                     <span class="leaderboard-rank">#${escapeHtml(entry.rank)}</span>
-                    <span class="leaderboard-user">${escapeHtml(entry.username)}</span>
+                    <span class="leaderboard-user">
+                        <i class="fa-solid fa-user"></i>
+                        ${escapeHtml(entry.username)}
+                    </span>
                     <strong>${escapeHtml(entry.display_score)}</strong>
                 </div>
             `).join('');
