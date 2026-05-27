@@ -1,11 +1,14 @@
 from django.urls import path
+
 from .views import *
+from .profile_views import profile_view
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
     path('', home, name='home'),
     path('home/', home, name='home'),
     path('about/', about, name='about'),
+    path('profile/', profile_view, name='profile'),
 
     path('weather/', weather, name='weather'),
     path("obs-dashboard/", obs_dashboard, name="obs-dashboard"),
