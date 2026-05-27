@@ -295,9 +295,11 @@
                 <label>
                     {% translate 'Widget-Typ' %}
                     <select name="widget_type" id="widget-type">
-                        {% for value, label in widget_types %}
-                            <option value="{{ value }}">{{ label }}</option>
-                        {% endfor %}
+                        <option value="weather">{% translate 'Wetter' %}</option>
+                        <option value="notes">{% translate 'Notizen' %}</option>
+                        <option value="clock">{% translate 'Uhr' %}</option>
+                        <option value="benchmark">{% translate 'Human Benchmark' %}</option>
+                        <option value="quick_stats">{% translate 'Schnellstatistiken' %}</option>
                     </select>
                 </label>
 
