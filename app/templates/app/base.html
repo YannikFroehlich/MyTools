@@ -139,6 +139,11 @@
                 </button>
 
                 <div class="menu-dropdown" id="menu-dropdown">
+                    <a href="{% url 'clock' %}" class="menu-item">
+                        <i class="fa-regular fa-clock"></i>
+                        {% translate 'Uhr' %}
+                    </a>
+
                     <a href="{% url 'users' %}" class="menu-item">
                         <i class="fa-solid fa-users"></i>
                         {% translate 'Nutzer' %}

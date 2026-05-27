@@ -226,6 +226,151 @@ class WeatherLocation(models.Model):
 
 
 
+def clock_sound_upload_path(instance, filename):
+    suffix = filename.rsplit(".", 1)[-1].lower() if "." in filename else "mp3"
+    return f"clock_sounds/user_{instance.user_id}/custom_timer_sound.{suffix}"
+
+
+def validate_clock_sound_size(file):
+    from django.core.exceptions import ValidationError
+
+    max_size = 5 * 1024 * 1024
+    if file.size > max_size:
+        raise ValidationError("Der eigene Klingelton darf maximal 5 MB groß sein.")
+
+
+class ClockWorldCity(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="clock_world_cities",
+    )
+    label = models.CharField(max_length=80)
+    timezone = models.CharField(max_length=80)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        indexes = [
+            models.Index(fields=["user", "order", "created_at"]),
+        ]
+        verbose_name = "Weltuhr-Ort"
+        verbose_name_plural = "Weltuhr-Orte"
+
+    def __str__(self):
+        return f"{self.label} · {self.timezone}"
+
+
+class ClockTimerPreset(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="clock_timer_presets",
+    )
+    name = models.CharField(max_length=80)
+    hours = models.PositiveSmallIntegerField(default=0)
+    minutes = models.PositiveSmallIntegerField(default=0)
+    seconds = models.PositiveSmallIntegerField(default=0)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        indexes = [
+            models.Index(fields=["user", "order", "created_at"]),
+        ]
+        verbose_name = "Timer-Vorlage"
+        verbose_name_plural = "Timer-Vorlagen"
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def total_seconds(self):
+        return (self.hours * 3600) + (self.minutes * 60) + self.seconds
+
+    @property
+    def display_duration(self):
+        parts = []
+        if self.hours:
+            parts.append(f"{self.hours} h")
+        if self.minutes:
+            parts.append(f"{self.minutes} min")
+        if self.seconds:
+            parts.append(f"{self.seconds} s")
+        return " ".join(parts) or "0 s"
+
+
+class ClockSettings(models.Model):
+    RINGTONE_BELL = "bell"
+    RINGTONE_CHIME = "chime"
+    RINGTONE_DIGITAL = "digital"
+    RINGTONE_SOFT = "soft"
+    RINGTONE_ALARM = "alarm"
+    RINGTONE_CUSTOM = "custom"
+
+    RINGTONE_CHOICES = [
+        (RINGTONE_BELL, "Bell"),
+        (RINGTONE_CHIME, "Chime"),
+        (RINGTONE_DIGITAL, "Digital"),
+        (RINGTONE_SOFT, "Soft"),
+        (RINGTONE_ALARM, "Alarm"),
+        (RINGTONE_CUSTOM, "Eigener Ton"),
+    ]
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="clock_settings",
+    )
+    volume = models.PositiveSmallIntegerField(default=80)
+    ringtone = models.CharField(max_length=20, choices=RINGTONE_CHOICES, default=RINGTONE_BELL)
+    custom_sound = models.FileField(
+        upload_to=clock_sound_upload_path,
+        validators=[validate_clock_sound_size],
+        null=True,
+        blank=True,
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Uhr-Einstellung"
+        verbose_name_plural = "Uhr-Einstellungen"
+
+    def __str__(self):
+        return f"Uhr-Einstellungen von {self.user}"
+
+    @property
+    def custom_sound_url(self):
+        if self.custom_sound:
+            return self.custom_sound.url
+        return ""
+
+    def save(self, *args, **kwargs):
+        old_sound_name = None
+        if self.pk:
+            old_sound_name = (
+                ClockSettings.objects
+                .filter(pk=self.pk)
+                .values_list("custom_sound", flat=True)
+                .first()
+            )
+
+        super().save(*args, **kwargs)
+
+        if old_sound_name and self.custom_sound and old_sound_name != self.custom_sound.name:
+            self.custom_sound.storage.delete(old_sound_name)
+
+    def delete(self, *args, **kwargs):
+        sound_storage = self.custom_sound.storage if self.custom_sound else None
+        sound_name = self.custom_sound.name if self.custom_sound else None
+
+        super().delete(*args, **kwargs)
+
+        if sound_storage and sound_name:
+            sound_storage.delete(sound_name)
+
 
 class HomeWidget(models.Model):
     WIDGET_WEATHER = "weather"

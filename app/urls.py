@@ -8,6 +8,7 @@ urlpatterns = [
     path('', home, name='home'),
     path('home/', home, name='home'),
     path('about/', about, name='about'),
+    path('uhr/', clock_view, name='clock'),
 
     path('profile/', profile_view, name='profile'),
     path('users/', users_view, name='users'),
