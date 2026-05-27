@@ -31,160 +31,196 @@
                 <div class="suggestions-box" id="suggestions-box"></div>
             </form>
 
-            <div class="sections-wrapper" id="sections-wrapper">
+            <div class="primary-shortcuts-wrapper">
                 {% for section in sections %}
-                    <div
-                        class="shortcuts-section section-color-{{ section.color }} {% if section.is_collapsed %}section-collapsed{% endif %}"
-                        data-section-id="{{ section.id }}"
-                        data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
-                        {% if section.name == "Verknüpfungen" %}data-is-default-section="true"{% endif %}
-                    >
-                        <div class="shortcuts-header">
-                            <div class="section-title-area">
-                                <span class="section-color-dot"></span>
+                    {% if section.name == "Verknüpfungen" %}
+                        {% include 'app/partials/home_section_card.html' %}
+                    {% endif %}
+                {% endfor %}
+            </div>
 
-                                <div>
-                                    <h2>
-                                        {% if section.name == "Verknüpfungen" %}
-                                            {% translate 'Verknüpfungen' %}
-                                        {% else %}
-                                            {{ section.name }}
-                                        {% endif %}
-                                    </h2>
+            <div class="home-dashboard">
+                <div class="dashboard-header dashboard-header-compact">
+                    <button type="button" class="add-widget-button" id="open-widget-modal">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        {% translate 'Widget hinzufügen' %}
+                    </button>
+                </div>
 
-                                    {% if section.is_collapsed %}
-                                        <span class="section-status-badge">
-                                            <i class="fa-solid fa-folder"></i>
-                                            {% translate 'Eingeklappt' %}
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="section-actions">
-                                {% if section.name != "Verknüpfungen" %}
-                                    <span class="section-drag-handle" title="{% translate 'Bereich verschieben' %}" role="button" tabindex="0">
+                <div class="widgets-grid" id="widgets-grid">
+                    {% for item in home_widgets %}
+                        {% with widget=item.widget data=item.data %}
+                            <article
+                                class="home-widget widget-color-{{ widget.color }}"
+                                data-widget-id="{{ widget.id }}"
+                                data-widget-title="{{ widget.title|escape }}"
+                                data-widget-type="{{ widget.widget_type }}"
+                                data-widget-color="{{ widget.color }}"
+                                data-widget-weather-location="{% if widget.weather_location %}{{ widget.weather_location.id }}{% endif %}"
+                            >
+                                <div class="widget-topbar">
+                                    <span class="widget-drag-handle" title="{% translate 'Widget verschieben' %}" role="button" tabindex="0">
                                         <i class="fa-solid fa-grip-vertical"></i>
                                     </span>
-                                {% endif %}
 
-                                <button
-                                    type="button"
-                                    class="edit-section-button"
-                                    title="{% translate 'Bereich bearbeiten' %}"
-                                    data-section-id="{{ section.id }}"
-                                    data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
-                                    data-section-color="{{ section.color }}"
-                                >
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-
-                                <form method="post" class="collapse-section-form">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="toggle_section_collapse">
-                                    <input type="hidden" name="section_id" value="{{ section.id }}">
-
-                                    <button type="submit" title="{% if section.is_collapsed %}{% translate 'Bereich ausklappen' %}{% else %}{% translate 'Bereich einklappen' %}{% endif %}">
-                                        {% if section.is_collapsed %}
-                                            <i class="fa-solid fa-chevron-down"></i>
+                                    <div class="widget-title">
+                                        {% if widget.widget_type == "weather" %}
+                                            <i class="fa-solid fa-cloud-sun"></i>
+                                        {% elif widget.widget_type == "notes" %}
+                                            <i class="fa-solid fa-note-sticky"></i>
+                                        {% elif widget.widget_type == "benchmark" %}
+                                            <i class="fa-solid fa-chart-simple"></i>
                                         {% else %}
-                                            <i class="fa-solid fa-chevron-up"></i>
+                                            <i class="fa-solid fa-gauge-high"></i>
                                         {% endif %}
-                                    </button>
-                                </form>
+                                        <h3>{{ widget.title }}</h3>
+                                    </div>
 
-                                <button
-                                    type="button"
-                                    class="add-shortcut-button open-shortcut-modal"
-                                    data-section-id="{{ section.id }}"
-                                    data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
-                                >
-                                    <i class="fa-solid fa-plus"></i>
-                                    {% translate 'Verknüpfung' %}
-                                </button>
-
-                                {% if section.name != "Verknüpfungen" %}
-                                    <form method="post" class="delete-section-form">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="action" value="delete_section">
-                                        <input type="hidden" name="section_id" value="{{ section.id }}">
-                                        <button type="submit" title="{% translate 'Bereich löschen' %}">
-                                            <i class="fa-solid fa-trash"></i>
+                                    <div class="widget-actions">
+                                        <button type="button" class="edit-widget-button" title="{% translate 'Widget bearbeiten' %}">
+                                            <i class="fa-solid fa-pen"></i>
                                         </button>
-                                    </form>
-                                {% endif %}
-                            </div>
-                        </div>
 
-                        {% if not section.is_collapsed %}
-                            <div class="shortcuts-grid" data-section-id="{{ section.id }}">
-                                {% for shortcut in section.shortcuts.all %}
-                                    <div
-                                        class="shortcut-card {% if shortcut.is_favorite %}shortcut-favorite{% endif %}"
-                                        data-shortcut-id="{{ shortcut.id }}"
-                                        data-shortcut-name="{{ shortcut.name|escape }}"
-                                        data-shortcut-url="{{ shortcut.url|escape }}"
-                                        data-shortcut-icon="{{ shortcut.icon|escape }}"
-                                        data-shortcut-section-id="{{ section.id }}"
-                                    >
-                                        <div class="shortcut-card-actions">
-                                            <span class="shortcut-drag-handle" title="{% translate 'Verschieben' %}" role="button" tabindex="0">
-                                                <i class="fa-solid fa-grip-vertical"></i>
-                                            </span>
-
-                                            <button type="button" class="edit-shortcut-button" title="{% translate 'Bearbeiten' %}">
-                                                <i class="fa-solid fa-pen"></i>
+                                        <form method="post" class="delete-widget-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete_widget">
+                                            <input type="hidden" name="widget_id" value="{{ widget.id }}">
+                                            <button type="submit" title="{% translate 'Widget löschen' %}">
+                                                <i class="fa-solid fa-xmark"></i>
                                             </button>
+                                        </form>
+                                    </div>
+                                </div>
 
-                                            <form method="post" class="favorite-shortcut-form">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="action" value="toggle_favorite">
-                                                <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
+                                {% if widget.widget_type == "weather" %}
+                                    <div class="weather-widget-content">
+                                        {% if data.error %}
+                                            <div class="widget-empty-state">
+                                                <i class="fa-solid fa-cloud-bolt"></i>
+                                                <strong>{{ data.city }}</strong>
+                                                <span>{{ data.error }}</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="weather-main-row">
+                                                <div>
+                                                    <span class="weather-city">{{ data.city }}</span>
+                                                    <strong>{{ data.temperature }}{{ data.temperature_unit }}</strong>
+                                                    <small>{{ data.description|capfirst }}</small>
+                                                </div>
 
-                                                <button type="submit" title="{% if shortcut.is_favorite %}{% translate 'Favorit entfernen' %}{% else %}{% translate 'Als Favorit markieren' %}{% endif %}">
-                                                    {% if shortcut.is_favorite %}
-                                                        <i class="fa-solid fa-star"></i>
-                                                    {% else %}
-                                                        <i class="fa-regular fa-star"></i>
-                                                    {% endif %}
-                                                </button>
-                                            </form>
-
-                                            <form method="post" class="delete-shortcut-form">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="action" value="delete_shortcut">
-                                                <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
-
-                                                <button type="submit" title="{% translate 'Löschen' %}">
-                                                    <i class="fa-solid fa-xmark"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-
-                                        <a href="{{ shortcut.url }}" target="_blank" rel="noopener noreferrer">
-                                            <div class="shortcut-icon {% if shortcut.image %}shortcut-image-icon{% endif %}">
-                                                {% if shortcut.image %}
-                                                    <img src="{{ shortcut.image.url }}" alt="{{ shortcut.name }}">
+                                                {% if data.icon %}
+                                                    <img src="https://openweathermap.org/img/wn/{{ data.icon }}@2x.png" alt="{{ data.description }}">
                                                 {% else %}
-                                                    <i class="{{ shortcut.icon }}"></i>
+                                                    <i class="fa-solid fa-cloud-sun weather-fallback-icon"></i>
                                                 {% endif %}
                                             </div>
 
-                                            <span>{{ shortcut.name }}</span>
+                                            <div class="weather-mini-stats">
+                                                <span>
+                                                    <i class="fa-solid fa-temperature-half"></i>
+                                                    {% translate 'Gefühlt' %}: {{ data.feels_like }}{{ data.temperature_unit }}
+                                                </span>
+                                                <span>
+                                                    <i class="fa-solid fa-droplet"></i>
+                                                    {{ data.humidity }}%
+                                                </span>
+                                                <span>
+                                                    <i class="fa-solid fa-wind"></i>
+                                                    {{ data.wind }} {{ data.wind_unit }}
+                                                </span>
+                                            </div>
+                                        {% endif %}
+
+                                        <a href="{% url 'weather' %}" class="widget-link">
+                                            {% translate 'Wetterseite öffnen' %}
+                                            <i class="fa-solid fa-arrow-right"></i>
                                         </a>
                                     </div>
-                                {% empty %}
-                                    <div class="empty-shortcuts">
-                                        <div class="empty-shortcuts-icon">
-                                            <i class="fa-solid fa-link"></i>
+                                {% elif widget.widget_type == "notes" %}
+                                    <div class="notes-widget-content">
+                                        <div class="widget-big-number">
+                                            <strong>{{ data.note_count }}</strong>
+                                            <span>{% translate 'aktive Notizen' %}</span>
                                         </div>
-                                        <h3>{% translate 'Noch keine Verknüpfungen' %}</h3>
-                                        <p>{% translate 'Erstelle deine erste Schnellverknüpfung für diesen Bereich.' %}</p>
+
+                                        {% if data.pinned_notes %}
+                                            <div class="pinned-notes-list">
+                                                {% for note in data.pinned_notes %}
+                                                    <a href="{% url 'note_edit' note.pk %}">
+                                                        <i class="fa-solid fa-thumbtack"></i>
+                                                        <span>{% if note.title %}{{ note.title }}{% else %}{% translate 'Unbenannte Notiz' %}{% endif %}</span>
+                                                    </a>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            <div class="widget-empty-state compact">
+                                                <i class="fa-regular fa-note-sticky"></i>
+                                                <span>{% translate 'Noch keine angepinnten Notizen.' %}</span>
+                                            </div>
+                                        {% endif %}
+
+                                        <a href="{% url 'notes' %}" class="widget-link">
+                                            {% translate 'Notizen öffnen' %}
+                                            <i class="fa-solid fa-arrow-right"></i>
+                                        </a>
                                     </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                                {% elif widget.widget_type == "benchmark" %}
+                                    <div class="benchmark-widget-content">
+                                        {% for row in data.rows %}
+                                            <div class="benchmark-row">
+                                                <span>{{ row.name }}</span>
+                                                {% if row.highscore %}
+                                                    <strong>{{ row.highscore.display_score }}</strong>
+                                                {% else %}
+                                                    <em>{% translate 'Noch kein Score' %}</em>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+
+                                        <a href="{% url 'human-benchmark' %}" class="widget-link">
+                                            {% translate 'Human Benchmark öffnen' %}
+                                            <i class="fa-solid fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="stats-widget-content">
+                                        <div class="stats-grid">
+                                            <div>
+                                                <strong>{{ data.shortcut_count }}</strong>
+                                                <span>{% translate 'Links' %}</span>
+                                            </div>
+                                            <div>
+                                                <strong>{{ data.section_count }}</strong>
+                                                <span>{% translate 'Bereiche' %}</span>
+                                            </div>
+                                            <div>
+                                                <strong>{{ data.note_count }}</strong>
+                                                <span>{% translate 'Notizen' %}</span>
+                                            </div>
+                                            <div>
+                                                <strong>{{ data.weather_location_count }}</strong>
+                                                <span>{% translate 'Wetter-Orte' %}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </article>
+                        {% endwith %}
+                    {% empty %}
+                        <div class="empty-widgets">
+                            <i class="fa-solid fa-table-cells-large"></i>
+                            <h3>{% translate 'Noch keine Widgets' %}</h3>
+                            <p>{% translate 'Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard.' %}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="sections-wrapper" id="sections-wrapper">
+                {% for section in sections %}
+                    {% if section.name != "Verknüpfungen" %}
+                        {% include 'app/partials/home_section_card.html' %}
+                    {% endif %}
                 {% endfor %}
 
                 <div class="add-section-card" id="open-section-modal">
@@ -201,6 +237,85 @@
 
         </div>
     </section>
+
+    <!-- Widget Modal -->
+    <div class="shortcut-modal" id="widget-modal">
+        <div class="shortcut-modal-content">
+            <div class="shortcut-modal-header">
+                <h3 id="widget-modal-title">{% translate 'Neues Widget' %}</h3>
+
+                <button type="button" id="close-widget-modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form method="post" class="shortcut-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_widget" id="widget-form-action">
+                <input type="hidden" name="widget_id" id="widget-id">
+
+                <label>
+                    {% translate 'Widget-Titel' %}
+                    <input type="text" name="widget_title" id="widget-title" placeholder="{% translate 'Mein Widget' %}" required>
+                </label>
+
+                <label>
+                    {% translate 'Widget-Typ' %}
+                    <select name="widget_type" id="widget-type">
+                        {% for value, label in widget_types %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="widget-weather-location-field" id="widget-weather-location-field">
+                    {% translate 'Wetter-Ort' %}
+                    <select name="weather_location" id="widget-weather-location">
+                        <option value="">{% translate 'Ersten gespeicherten Ort oder Berlin nutzen' %}</option>
+                        {% for location in weather_locations %}
+                            <option value="{{ location.id }}">{{ location.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <small>{% translate 'Du kannst weitere Orte auf der Wetterseite speichern.' %}</small>
+                </label>
+
+                <div class="section-color-picker">
+                    <span>{% translate 'Widget-Farbe' %}</span>
+
+                    <div class="section-color-options">
+                        <label class="section-color-option blue">
+                            <input type="radio" name="widget_color" value="blue" checked>
+                            <span>{% translate 'Blau' %}</span>
+                        </label>
+
+                        <label class="section-color-option green">
+                            <input type="radio" name="widget_color" value="green">
+                            <span>{% translate 'Grün' %}</span>
+                        </label>
+
+                        <label class="section-color-option purple">
+                            <input type="radio" name="widget_color" value="purple">
+                            <span>{% translate 'Lila' %}</span>
+                        </label>
+
+                        <label class="section-color-option orange">
+                            <input type="radio" name="widget_color" value="orange">
+                            <span>{% translate 'Orange' %}</span>
+                        </label>
+
+                        <label class="section-color-option red">
+                            <input type="radio" name="widget_color" value="red">
+                            <span>{% translate 'Rot' %}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" id="widget-submit-button">
+                    {% translate 'Widget hinzufügen' %}
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Verknüpfung Modal -->
     <div class="shortcut-modal" id="shortcut-modal">

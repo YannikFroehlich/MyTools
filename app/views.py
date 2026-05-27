@@ -12,7 +12,8 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, ShortcutSection, WeatherLocation
+from app.models import AvatarCharacter, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
+    ShortcutSection, WeatherLocation
 
 import json
 
@@ -69,6 +70,165 @@ def signup(request):
     })
 
 
+def create_default_home_widgets(user):
+    if HomeWidget.objects.filter(user=user).exists():
+        return
+
+    default_widgets = [
+        {
+            "title": _("Wetter"),
+            "widget_type": HomeWidget.WIDGET_WEATHER,
+            "color": "blue",
+            "order": 0,
+        },
+        {
+            "title": _("Notizen"),
+            "widget_type": HomeWidget.WIDGET_NOTES,
+            "color": "purple",
+            "order": 1,
+        },
+        {
+            "title": _("Human Benchmark"),
+            "widget_type": HomeWidget.WIDGET_BENCHMARK,
+            "color": "green",
+            "order": 2,
+        },
+    ]
+
+    HomeWidget.objects.bulk_create([
+        HomeWidget(user=user, **widget_data)
+        for widget_data in default_widgets
+    ])
+
+
+def get_home_weather_data(request, user, widget):
+    api_key = get_env_value("OPENWEATHER_API_KEY")
+    units = request.GET.get("units", "metric")
+    if units not in {"metric", "imperial"}:
+        units = "metric"
+
+    location = widget.weather_location or WeatherLocation.objects.filter(user=user).first()
+    city = location.name if location else "Berlin"
+    current_lang = translation.get_language()
+    temperature_unit = "°F" if units == "imperial" else "°C"
+
+    if not api_key:
+        return {
+            "city": city,
+            "temperature_unit": temperature_unit,
+            "error": missing_env_message("OPENWEATHER_API_KEY"),
+        }
+
+    try:
+        params = {
+            "q": city,
+            "appid": api_key,
+            "units": units,
+            "lang": current_lang,
+        }
+        response = requests.get(
+            "http://api.openweathermap.org/data/2.5/weather",
+            params=params,
+            timeout=6,
+        )
+        data = response.json()
+
+        if response.status_code != 200:
+            return {
+                "city": city,
+                "temperature_unit": temperature_unit,
+                "error": data.get("message") or _("Wetter konnte nicht geladen werden."),
+            }
+
+        weather_info = (data.get("weather") or [{}])[0]
+        main_info = data.get("main") or {}
+        wind_info = data.get("wind") or {}
+
+        return {
+            "city": data.get("name") or city,
+            "temperature": round(main_info.get("temp", 0)),
+            "feels_like": round(main_info.get("feels_like", 0)),
+            "description": weather_info.get("description", _("Keine Beschreibung")),
+            "icon": weather_info.get("icon"),
+            "humidity": main_info.get("humidity"),
+            "wind": round(wind_info.get("speed", 0), 1),
+            "temperature_unit": temperature_unit,
+            "wind_unit": "mph" if units == "imperial" else "m/s",
+            "url": f"{request.path.rstrip('/')}/weather/" if False else None,
+        }
+    except (requests.RequestException, ValueError):
+        return {
+            "city": city,
+            "temperature_unit": temperature_unit,
+            "error": _("Wetter konnte nicht geladen werden."),
+        }
+
+
+def build_home_widget_data(request, user):
+    create_default_home_widgets(user)
+
+    widgets = list(
+        HomeWidget.objects
+        .filter(user=user, is_enabled=True)
+        .select_related("weather_location")
+        .order_by("order", "created_at")
+    )
+
+    note_count = Note.objects.filter(user=user, is_archived=False).count()
+    pinned_notes = Note.objects.filter(user=user, is_archived=False, is_pinned=True).order_by("-updated_at")[:3]
+
+    benchmark_highscores = {
+        highscore.game: highscore
+        for highscore in HumanBenchmarkHighScore.objects.filter(user=user)
+    }
+    benchmark_rows = [
+        {
+            "key": game_key,
+            "name": game_name,
+            "highscore": benchmark_highscores.get(game_key),
+        }
+        for game_key, game_name in HumanBenchmarkScore.GAME_CHOICES
+    ]
+
+    shortcut_count = Shortcut.objects.filter(user=user).count()
+    section_count = ShortcutSection.objects.filter(user=user).count()
+    weather_location_count = WeatherLocation.objects.filter(user=user).count()
+
+    widget_context = []
+
+    for widget in widgets:
+        data = {}
+
+        if widget.widget_type == HomeWidget.WIDGET_WEATHER:
+            data = get_home_weather_data(request, user, widget)
+
+        elif widget.widget_type == HomeWidget.WIDGET_NOTES:
+            data = {
+                "note_count": note_count,
+                "pinned_notes": pinned_notes,
+            }
+
+        elif widget.widget_type == HomeWidget.WIDGET_BENCHMARK:
+            data = {
+                "rows": benchmark_rows,
+            }
+
+        elif widget.widget_type == HomeWidget.WIDGET_STATS:
+            data = {
+                "shortcut_count": shortcut_count,
+                "section_count": section_count,
+                "note_count": note_count,
+                "weather_location_count": weather_location_count,
+            }
+
+        widget_context.append({
+            "widget": widget,
+            "data": data,
+        })
+
+    return widget_context
+
+
 def home(request):
     user = request.user
     home_labels = {
@@ -81,6 +241,10 @@ def home(request):
         "editSection": _("Bereich bearbeiten"),
         "saveChanges": _("Änderungen speichern"),
         "noFileSelected": _("Keine Datei ausgewählt"),
+        "newWidget": _("Neues Widget"),
+        "editWidget": _("Widget bearbeiten"),
+        "addWidget": _("Widget hinzufügen"),
+        "saveWidget": _("Widget speichern"),
     }
 
     default_section, created = ShortcutSection.objects.get_or_create(
@@ -132,9 +296,91 @@ def home(request):
 
                 return JsonResponse({"success": True})
 
+            if action == "update_widget_order":
+                widgets = data.get("widgets", [])
+
+                for item in widgets:
+                    widget_id = item.get("id")
+                    order = item.get("order", 0)
+
+                    HomeWidget.objects.filter(id=widget_id, user=user).update(order=order)
+
+                return JsonResponse({"success": True})
+
             return JsonResponse({"success": False, "error": _("Unbekannte Aktion")}, status=400)
 
         action = request.POST.get("action")
+
+        if action == "add_widget":
+            title = request.POST.get("widget_title", "").strip()
+            widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
+            widget_color = request.POST.get("widget_color", "blue").strip()
+            weather_location_id = request.POST.get("weather_location") or None
+
+            valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
+            valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
+
+            if widget_type not in valid_widget_types:
+                widget_type = HomeWidget.WIDGET_WEATHER
+
+            if widget_color not in valid_colors:
+                widget_color = "blue"
+
+            if not title:
+                title = dict(HomeWidget.WIDGET_CHOICES).get(widget_type, _("Widget"))
+
+            max_order = HomeWidget.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
+
+            weather_location = None
+            if weather_location_id:
+                weather_location = WeatherLocation.objects.filter(id=weather_location_id, user=user).first()
+
+            HomeWidget.objects.create(
+                user=user,
+                title=title,
+                widget_type=widget_type,
+                color=widget_color,
+                weather_location=weather_location,
+                order=max_order + 1,
+            )
+
+            return redirect("home")
+
+        if action == "edit_widget":
+            widget_id = request.POST.get("widget_id")
+            title = request.POST.get("widget_title", "").strip()
+            widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
+            widget_color = request.POST.get("widget_color", "blue").strip()
+            weather_location_id = request.POST.get("weather_location") or None
+
+            widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
+            valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
+            valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
+
+            if widget_type not in valid_widget_types:
+                widget_type = HomeWidget.WIDGET_WEATHER
+
+            if widget_color not in valid_colors:
+                widget_color = "blue"
+
+            weather_location = None
+            if weather_location_id:
+                weather_location = WeatherLocation.objects.filter(id=weather_location_id, user=user).first()
+
+            widget.title = title or dict(HomeWidget.WIDGET_CHOICES).get(widget_type, _("Widget"))
+            widget.widget_type = widget_type
+            widget.color = widget_color
+            widget.weather_location = weather_location
+            widget.save()
+
+            return redirect("home")
+
+        if action == "delete_widget":
+            widget_id = request.POST.get("widget_id")
+            widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
+            widget.delete()
+
+            return redirect("home")
 
         if action == "add_section":
             section_name = request.POST.get("section_name", "").strip()
@@ -151,7 +397,7 @@ def home(request):
                 )
 
             return redirect("home")
-        
+
         if action == "edit_section":
             section_id = request.POST.get("section_id")
             section_name = request.POST.get("section_name", "").strip()
@@ -201,7 +447,8 @@ def home(request):
                 if not url.startswith(("http://", "https://")):
                     url = "https://" + url
 
-                max_order = Shortcut.objects.filter(user=user, section=section).aggregate(Max("order"))["order__max"] or 0
+                max_order = Shortcut.objects.filter(user=user, section=section).aggregate(Max("order"))[
+                                "order__max"] or 0
 
                 Shortcut.objects.create(
                     user=user,
@@ -214,7 +461,7 @@ def home(request):
                 )
 
             return redirect("home")
-        
+
         if action == "edit_shortcut":
             shortcut_id = request.POST.get("shortcut_id")
             section_id = request.POST.get("section_id")
@@ -269,14 +516,23 @@ def home(request):
         .order_by("order", "created_at")
     )
 
+    home_widgets = build_home_widget_data(request, user)
+    weather_locations = WeatherLocation.objects.filter(user=user)
+
     return render(request, "app/home.html", {
         "sections": sections,
+        "home_widgets": home_widgets,
+        "weather_locations": weather_locations,
+        "widget_types": [(value, _(label)) for value, label in HomeWidget.WIDGET_CHOICES],
+        "widget_colors": [(value, _(label)) for value, label in HomeWidget.COLOR_CHOICES],
         "home_labels": home_labels,
     })
+
 
 def about(request):
     template_name = 'app/about.html'
     return render(request, template_name)
+
 
 def weather(request):
     user = request.user
@@ -518,8 +774,10 @@ def weather(request):
     context.update(weather_context(**context))
     return render(request, 'app/weather.html', context)
 
+
 def obs_dashboard(request):
     return render(request, "app/obs-dashboard.html")
+
 
 def spritkostenrechner(request):
     return render(request, "app/spritkostenrechner.html")
@@ -1113,6 +1371,7 @@ def note_toggle_archive_view(request, pk):
 
     return redirect("notes")
 
+
 def unit_converter_view(request):
     converter_labels = {
         "storage": {
@@ -1149,8 +1408,10 @@ def unit_converter_view(request):
         "converter_labels": converter_labels,
     })
 
+
 def drift_circuit(request):
     return render(request, "app/drift_circuit.html")
+
 
 def stream_deck(request):
     return render(request, "app/stream_deck.html", {

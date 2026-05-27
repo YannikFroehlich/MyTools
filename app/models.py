@@ -225,6 +225,59 @@ class WeatherLocation(models.Model):
         return self.name
 
 
+
+
+class HomeWidget(models.Model):
+    WIDGET_WEATHER = "weather"
+    WIDGET_NOTES = "notes"
+    WIDGET_BENCHMARK = "benchmark"
+    WIDGET_STATS = "stats"
+
+    WIDGET_CHOICES = [
+        (WIDGET_WEATHER, "Wetter"),
+        (WIDGET_NOTES, "Notizen"),
+        (WIDGET_BENCHMARK, "Human Benchmark"),
+        (WIDGET_STATS, "Schnellstatistiken"),
+    ]
+
+    COLOR_CHOICES = [
+        ("blue", "Blau"),
+        ("green", "Grün"),
+        ("purple", "Lila"),
+        ("orange", "Orange"),
+        ("red", "Rot"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="home_widgets",
+    )
+    title = models.CharField(max_length=80)
+    widget_type = models.CharField(max_length=30, choices=WIDGET_CHOICES, default=WIDGET_WEATHER)
+    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="blue")
+    weather_location = models.ForeignKey(
+        WeatherLocation,
+        on_delete=models.SET_NULL,
+        related_name="home_widgets",
+        null=True,
+        blank=True,
+    )
+    order = models.PositiveIntegerField(default=0)
+    is_enabled = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        indexes = [
+            models.Index(fields=["user", "order", "created_at"]),
+        ]
+        verbose_name = "Home-Widget"
+        verbose_name_plural = "Home-Widgets"
+
+    def __str__(self):
+        return f"{self.title} · {self.get_widget_type_display()}"
+
 class HumanBenchmarkScore(models.Model):
     GAME_REACTION = "reaction"
     GAME_AIM = "aim"

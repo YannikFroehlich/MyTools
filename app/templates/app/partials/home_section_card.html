@@ -1,0 +1,171 @@
+{% load i18n %}
+
+<div
+    class="shortcuts-section section-color-{{ section.color }} {% if section.is_collapsed %}section-collapsed{% endif %}"
+    data-section-id="{{ section.id }}"
+    data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
+    {% if section.name == "Verknüpfungen" %}data-is-default-section="true"{% endif %}
+>
+    <div class="shortcuts-header">
+        <div class="section-title-area">
+            <span class="section-color-dot"></span>
+
+            <div>
+                <h2>
+                    {% if section.name == "Verknüpfungen" %}
+                        {% translate 'Verknüpfungen' %}
+                    {% else %}
+                        {{ section.name }}
+                    {% endif %}
+                </h2>
+
+                {% if section.is_collapsed %}
+                    <span class="section-status-badge">
+                        <i class="fa-solid fa-folder"></i>
+                        {% translate 'Eingeklappt' %}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section-actions">
+            {% if section.name != "Verknüpfungen" %}
+                <span class="section-drag-handle" title="{% translate 'Bereich verschieben' %}" role="button" tabindex="0">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                </span>
+            {% endif %}
+
+            <button
+                type="button"
+                class="edit-section-button"
+                title="{% translate 'Bereich bearbeiten' %}"
+                data-section-id="{{ section.id }}"
+                data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
+                data-section-color="{{ section.color }}"
+            >
+                <i class="fa-solid fa-pen"></i>
+            </button>
+
+            <form method="post" class="collapse-section-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="toggle_section_collapse">
+                <input type="hidden" name="section_id" value="{{ section.id }}">
+
+                <button type="submit" title="{% if section.is_collapsed %}{% translate 'Bereich ausklappen' %}{% else %}{% translate 'Bereich einklappen' %}{% endif %}">
+                    {% if section.is_collapsed %}
+                        <i class="fa-solid fa-chevron-down"></i>
+                    {% else %}
+                        <i class="fa-solid fa-chevron-up"></i>
+                    {% endif %}
+                </button>
+            </form>
+
+            <button
+                type="button"
+                class="add-shortcut-button open-shortcut-modal"
+                data-section-id="{{ section.id }}"
+                data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
+            >
+                <i class="fa-solid fa-plus"></i>
+                {% translate 'Verknüpfung' %}
+            </button>
+
+            {% if section.name != "Verknüpfungen" %}
+                <form method="post" class="delete-section-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_section">
+                    <input type="hidden" name="section_id" value="{{ section.id }}">
+                    <button type="submit" title="{% translate 'Bereich löschen' %}">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not section.is_collapsed %}
+        <div class="shortcuts-grid" data-section-id="{{ section.id }}">
+            {% for shortcut in section.shortcuts.all %}
+                <div
+                    class="shortcut-card {% if shortcut.is_favorite %}shortcut-favorite{% endif %}"
+                    data-shortcut-id="{{ shortcut.id }}"
+                    data-shortcut-name="{{ shortcut.name|escape }}"
+                    data-shortcut-url="{{ shortcut.url|escape }}"
+                    data-shortcut-icon="{{ shortcut.icon|escape }}"
+                    data-shortcut-section-id="{{ section.id }}"
+                >
+                    <div class="shortcut-card-actions">
+                        <button
+                            type="button"
+                            class="shortcut-menu-toggle"
+                            title="{% translate 'Optionen öffnen' %}"
+                            aria-label="{% translate 'Optionen öffnen' %}"
+                            aria-expanded="false"
+                        >
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
+
+                        <div class="shortcut-actions-menu" role="menu">
+                            <span class="shortcut-drag-handle shortcut-menu-item" title="{% translate 'Verschieben' %}" role="menuitem" tabindex="0">
+                                <i class="fa-solid fa-grip-vertical"></i>
+                                <span>{% translate 'Verschieben' %}</span>
+                            </span>
+
+                            <button type="button" class="edit-shortcut-button shortcut-menu-item" role="menuitem">
+                                <i class="fa-solid fa-pen"></i>
+                                <span>{% translate 'Bearbeiten' %}</span>
+                            </button>
+
+                            <form method="post" class="favorite-shortcut-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="toggle_favorite">
+                                <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
+
+                                <button type="submit" class="shortcut-menu-item" role="menuitem">
+                                    {% if shortcut.is_favorite %}
+                                        <i class="fa-solid fa-star"></i>
+                                        <span>{% translate 'Favorit entfernen' %}</span>
+                                    {% else %}
+                                        <i class="fa-regular fa-star"></i>
+                                        <span>{% translate 'Als Favorit markieren' %}</span>
+                                    {% endif %}
+                                </button>
+                            </form>
+
+                            <form method="post" class="delete-shortcut-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete_shortcut">
+                                <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
+
+                                <button type="submit" class="shortcut-menu-item shortcut-menu-danger" role="menuitem">
+                                    <i class="fa-solid fa-trash"></i>
+                                    <span>{% translate 'Löschen' %}</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <a href="{{ shortcut.url }}" target="_blank" rel="noopener noreferrer">
+                        <div class="shortcut-icon {% if shortcut.image %}shortcut-image-icon{% endif %}">
+                            {% if shortcut.image %}
+                                <img src="{{ shortcut.image.url }}" alt="{{ shortcut.name }}">
+                            {% else %}
+                                <i class="{{ shortcut.icon }}"></i>
+                            {% endif %}
+                        </div>
+
+                        <span>{{ shortcut.name }}</span>
+                    </a>
+                </div>
+            {% empty %}
+                <div class="empty-shortcuts">
+                    <div class="empty-shortcuts-icon">
+                        <i class="fa-solid fa-link"></i>
+                    </div>
+                    <h3>{% translate 'Noch keine Verknüpfungen' %}</h3>
+                    <p>{% translate 'Erstelle deine erste Schnellverknüpfung für diesen Bereich.' %}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
