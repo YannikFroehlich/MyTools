@@ -85,6 +85,36 @@ class BaseTestCase(TestCase):
             content_type="image/png",
         )
 
+    def get_large_test_image(self, name="large.bmp"):
+        width = 2000
+        height = 1000
+        row_size = ((24 * width + 31) // 32) * 4
+        pixel_data_size = row_size * height
+        file_size = 54 + pixel_data_size
+
+        return SimpleUploadedFile(
+            name,
+            (
+                b"BM"
+                + file_size.to_bytes(4, "little")
+                + b"\x00\x00\x00\x00"
+                + (54).to_bytes(4, "little")
+                + (40).to_bytes(4, "little")
+                + width.to_bytes(4, "little")
+                + height.to_bytes(4, "little")
+                + (1).to_bytes(2, "little")
+                + (24).to_bytes(2, "little")
+                + (0).to_bytes(4, "little")
+                + pixel_data_size.to_bytes(4, "little")
+                + (2835).to_bytes(4, "little")
+                + (2835).to_bytes(4, "little")
+                + (0).to_bytes(4, "little")
+                + (0).to_bytes(4, "little")
+                + (b"\xff\xff\xff" * width + (b"\x00" * (row_size - width * 3))) * height
+            ),
+            content_type="image/bmp",
+        )
+
 
 class ModelTests(BaseTestCase):
     def test_shortcut_section_str_returns_name(self):
@@ -245,6 +275,43 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(self.user.email, "yannik@example.com")
         self.assertEqual(profile.bio, "Meine Bio")
 
+    def test_profile_post_keeps_existing_banner_without_new_upload(self):
+        profile = UserProfile.objects.create(
+            user=self.user,
+            profile_banner=self.get_test_image("banner.png"),
+        )
+        original_banner_name = profile.profile_banner.name
+
+        response = self.client.post(reverse("profile"), {
+            "username": self.user.username,
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "bio": "Banner bleibt",
+        })
+
+        self.assertRedirects(response, reverse("profile"))
+
+        profile.refresh_from_db()
+        self.assertEqual(profile.profile_banner.name, original_banner_name)
+
+    def test_profile_banner_rejects_files_larger_than_five_mb(self):
+        response = self.client.post(reverse("profile"), {
+            "username": self.user.username,
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "bio": "",
+            "profile_banner": self.get_large_test_image(),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(
+            response.context["form"],
+            "profile_banner",
+            "Das Profilbanner darf maximal 5 MB groß sein.",
+        )
+
     def test_profile_rejects_duplicate_username(self):
         get_user_model().objects.create_user(
             username="belegt",
@@ -277,6 +344,21 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(response.context["total_users"], 2)
         self.assertTrue(UserProfile.objects.filter(user=other_user).exists())
 
+    def test_users_page_uses_profile_banner_as_card_background(self):
+        other_user = get_user_model().objects.create_user(
+            username="bannerlistuser",
+            password="testpass-123",
+        )
+        UserProfile.objects.create(
+            user=other_user,
+            profile_banner=self.get_test_image("list-banner.png"),
+        )
+
+        response = self.client.get(reverse("users"))
+
+        self.assertContains(response, "has-profile-banner")
+        self.assertContains(response, "profile_banners/list-banner")
+
     def test_users_page_search_filters_by_username(self):
         get_user_model().objects.create_user(username="serverfreund", password="testpass-123")
         get_user_model().objects.create_user(username="anderer", password="testpass-123")
@@ -302,6 +384,54 @@ class ProfileViewTests(BaseTestCase):
         self.assertTemplateUsed(response, "app/public_profile.html")
         self.assertEqual(response.context["profile_user"], other_user)
         self.assertTrue(UserProfile.objects.filter(user=other_user).exists())
+
+    def test_public_profile_uses_profile_banner(self):
+        other_user = get_user_model().objects.create_user(
+            username="banneruser",
+            password="testpass-123",
+        )
+        UserProfile.objects.create(
+            user=other_user,
+            profile_banner=self.get_test_image("profile-banner.png"),
+        )
+
+        response = self.client.get(reverse("public_profile", args=[other_user.id]))
+
+        self.assertContains(response, "has-profile-banner")
+        self.assertContains(response, "profile_banners/profile-banner")
+
+    def test_public_profile_shows_profile_users_human_benchmark_highscores(self):
+        other_user = get_user_model().objects.create_user(
+            username="benchmarkuser",
+            password="testpass-123",
+        )
+
+        HumanBenchmarkHighScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=180,
+            display_score="180 ms",
+        )
+        HumanBenchmarkHighScore.objects.create(
+            user=other_user,
+            game=HumanBenchmarkScore.GAME_TYPING,
+            score=82,
+            display_score="82 WPM",
+        )
+
+        response = self.client.get(reverse("public_profile", args=[other_user.id]))
+
+        highscores = response.context["benchmark_highscores"]
+
+        self.assertContains(response, "82 WPM")
+        self.assertNotContains(response, "180 ms")
+        self.assertEqual(len(highscores), len(HumanBenchmarkScore.GAME_CHOICES))
+        typing_row = next(
+            item for item in highscores
+            if item["game"] == HumanBenchmarkScore.GAME_TYPING
+        )
+
+        self.assertEqual(typing_row["highscore"].display_score, "82 WPM")
 
 
 class HomeViewTests(BaseTestCase):

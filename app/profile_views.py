@@ -9,10 +9,26 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
 
-from .models import UserProfile
+from .models import HumanBenchmarkHighScore, HumanBenchmarkScore, UserProfile
 from .profile_forms import ProfileForm
 
 User = get_user_model()
+
+
+def get_profile_human_benchmark_highscores(user):
+    highscores = {
+        highscore.game: highscore
+        for highscore in HumanBenchmarkHighScore.objects.filter(user=user)
+    }
+
+    return [
+        {
+            "game": game,
+            "label": label,
+            "highscore": highscores.get(game),
+        }
+        for game, label in HumanBenchmarkScore.GAME_CHOICES
+    ]
 
 
 @login_required
@@ -28,6 +44,8 @@ def profile_view(request):
         )
 
         if form.is_valid():
+            old_avatar = profile.avatar
+            old_profile_banner = profile.profile_banner
             profile = form.save(commit=False)
 
             cropped_avatar = request.POST.get("avatar_cropped", "").strip()
@@ -54,6 +72,11 @@ def profile_view(request):
                 except Exception:
                     messages.error(request, _("Das Profilbild konnte nicht verarbeitet werden."))
                     return redirect("profile")
+            elif request.FILES.get("avatar") and old_avatar and old_avatar != profile.avatar:
+                old_avatar.delete(save=False)
+
+            if request.FILES.get("profile_banner") and old_profile_banner and old_profile_banner != profile.profile_banner:
+                old_profile_banner.delete(save=False)
 
             # Profil speichern
             profile.save()
@@ -81,6 +104,7 @@ def profile_view(request):
     return render(request, "app/profile.html", {
         "form": form,
         "profile": profile,
+        "benchmark_highscores": get_profile_human_benchmark_highscores(request.user),
     })
 
 
@@ -140,4 +164,5 @@ def public_profile_view(request, user_id):
     return render(request, "app/public_profile.html", {
         "profile_user": profile_user,
         "profile": profile,
+        "benchmark_highscores": get_profile_human_benchmark_highscores(profile_user),
     })
