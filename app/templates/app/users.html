@@ -1,0 +1,120 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Nutzer" %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="users-page">
+    <div class="users-hero">
+        <div>
+            <p class="users-kicker">{% translate "Nutzerübersicht" %}</p>
+            <h1>{% translate "Nutzer" %}</h1>
+            <p>
+                {% translate "Hier siehst du alle Nutzer von MyTools und kannst dir deren öffentliche Profilseite anschauen." %}
+            </p>
+        </div>
+
+        <div class="users-hero-icon">
+            <i class="fa-solid fa-users"></i>
+        </div>
+    </div>
+
+    <div class="users-toolbar">
+        <form class="users-search" method="get">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="{% translate 'Nach Nutzern suchen...' %}"
+                autocomplete="off"
+            >
+
+            {% if query %}
+                <a href="{% url 'users' %}" class="users-clear-search">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+            {% endif %}
+        </form>
+
+        <div class="users-counter">
+            <span>{{ profiles|length }}</span>
+            <small>
+                {% if query %}
+                    {% translate "gefunden" %}
+                {% else %}
+                    {% translate "Nutzer" %}
+                {% endif %}
+            </small>
+        </div>
+    </div>
+
+    {% if profiles %}
+        <div class="users-grid">
+            {% for profile in profiles %}
+                <a href="{% url 'public_profile' profile.user.id %}" class="user-card">
+                    <div class="user-avatar">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                        {% else %}
+                            <span>{{ profile.initials }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="user-content">
+                        <div class="user-title-row">
+                            <h2>
+                                {% if profile.user.get_full_name %}
+                                    {{ profile.user.get_full_name }}
+                                {% else %}
+                                    {{ profile.user.username }}
+                                {% endif %}
+                            </h2>
+
+                            {% if profile.user == request.user %}
+                                <span class="user-own-badge">{% translate "Du" %}</span>
+                            {% endif %}
+                        </div>
+
+                        <p class="user-username">@{{ profile.user.username }}</p>
+
+                        {% if profile.bio %}
+                            <p class="user-bio">{{ profile.bio|truncatechars:120 }}</p>
+                        {% else %}
+                            <p class="user-bio user-bio-empty">
+                                {% translate "Noch keine Beschreibung hinterlegt." %}
+                            </p>
+                        {% endif %}
+
+                        <div class="user-meta">
+                            <span>
+                                <i class="fa-solid fa-calendar-days"></i>
+                                {% translate "Seit" %} {{ profile.user.date_joined|date:"d.m.Y" }}
+                            </span>
+
+                            <span class="user-open">
+                                {% translate "Profil ansehen" %}
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="users-empty">
+            <i class="fa-solid fa-user-slash"></i>
+            <h2>{% translate "Keine Nutzer gefunden" %}</h2>
+            <p>{% translate "Versuche es mit einem anderen Suchbegriff." %}</p>
+            <a href="{% url 'users' %}">
+                {% translate "Alle Nutzer anzeigen" %}
+            </a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

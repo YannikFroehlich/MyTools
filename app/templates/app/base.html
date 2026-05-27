@@ -31,6 +31,7 @@
             <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
             <span>MyTools</span>
         </div>
+
         <div class="navigation">
             <a href="{% url 'home' %}">
                 <i class="fa-solid fa-house"></i>
@@ -59,6 +60,7 @@
                         <i class="fa-solid fa-stopwatch"></i>
                         {% translate 'Human Benchmark' %}
                     </a>
+
                     <a href="{% url 'drift-circuit' %}" class="menu-item">
                         <i class="fa-solid fa-car-side"></i>
                         {% translate 'Racing Game' %}
@@ -78,42 +80,52 @@
                         <i class="fa-brands fa-google"></i>
                         {% translate 'Suche' %}
                     </a>
+
                     <a href="https://www.google.com/maps/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-solid fa-map"></i>
                         {% translate 'Maps' %}
                     </a>
+
                     <a href="https://www.youtube.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-brands fa-youtube"></i>
                         {% translate 'Youtube' %}
                     </a>
+
                     <a href="https://play.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-brands fa-google-play"></i>
                         {% translate 'Play' %}
                     </a>
+
                     <a href="https://mail.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-solid fa-envelope"></i>
                         {% translate 'Gmail' %}
                     </a>
+
                     <a href="https://drive.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-brands fa-google-drive"></i>
                         {% translate 'Drive' %}
                     </a>
+
                     <a href="https://calendar.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-solid fa-calendar"></i>
                         {% translate 'Kalender' %}
                     </a>
+
                     <a href="https://translate.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-solid fa-language"></i>
                         {% translate 'Translator' %}
                     </a>
+
                     <a href="https://gemini.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <span class="gemini-icon"></span>
                         {% translate 'Gemini' %}
                     </a>
+
                     <a href="https://news.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-solid fa-newspaper"></i>
                         {% translate 'News' %}
                     </a>
+
                     <a href="https://photos.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
                         <i class="fa-solid fa-photo-film"></i>
                         {% translate 'Fotos' %}
@@ -127,30 +139,41 @@
                 </button>
 
                 <div class="menu-dropdown" id="menu-dropdown">
+                    <a href="{% url 'users' %}" class="menu-item">
+                        <i class="fa-solid fa-users"></i>
+                        {% translate 'Nutzer' %}
+                    </a>
+
                     <a href="{% url 'obs-dashboard' %}" class="menu-item">
                         <i class="fa-solid fa-display"></i>
                         {% translate 'OBS Dashboard' %}
                     </a>
+
                     <a href="{% url 'spritkostenrechner' %}" class="menu-item">
                         <i class="fa-solid fa-gas-pump"></i>
                         {% translate 'Spritkosten' %}
                     </a>
+
                     <a href="{% url 'genius-search' %}" class="menu-item">
                         <i class="fa-solid fa-music"></i>
                         {% translate 'Genius Search' %}
                     </a>
+
                     <a href="{% url 'avatar-wiki' %}" class="menu-item">
                         <i class="fa-solid fa-wind"></i>
                         {% translate 'Avatar Wiki' %}
                     </a>
+
                     <a href="{% url 'notes' %}" class="menu-item">
                         <i class="fa-regular fa-note-sticky"></i>
                         {% translate 'Notizen' %}
                     </a>
+
                     <a href="{% url 'unit_converter' %}" class="menu-item">
                         <i class="fa-solid fa-calculator"></i>
                         {% translate 'Einheitenrechner' %}
                     </a>
+
                     <a href="{% url 'stream-deck' %}" class="menu-item">
                         <i class="fa-solid fa-table-cells-large"></i>
                         {% translate 'Stream Deck' %}
@@ -158,6 +181,7 @@
                 </div>
             </div>
         </div>
+
         <div class="user-actions">
             <form action="{% url 'set_language' %}" method="post">
                 {% csrf_token %}
@@ -176,6 +200,7 @@
                     {% endfor %}
                 </select>
             </form>
+
             <div class="theme-editor-wrapper">
                 <button class="theme-editor-btn" id="theme-editor-button" type="button" aria-label="{% translate 'Design anpassen' %}">
                     <i class="fa-solid fa-pen"></i>
@@ -193,12 +218,15 @@
                         <button type="button" class="theme-preset" data-preset="sky" title="{% translate 'Blau' %}">
                             <span style="background: linear-gradient(135deg, #1a56d6, #5aadee);"></span>
                         </button>
+
                         <button type="button" class="theme-preset" data-preset="forest" title="{% translate 'Gr&uuml;n' %}">
                             <span style="background: linear-gradient(135deg, #0f766e, #34d399);"></span>
                         </button>
+
                         <button type="button" class="theme-preset" data-preset="rose" title="{% translate 'Rose' %}">
                             <span style="background: linear-gradient(135deg, #be185d, #fb7185);"></span>
                         </button>
+
                         <button type="button" class="theme-preset" data-preset="graphite" title="{% translate 'Graphit' %}">
                             <span style="background: linear-gradient(135deg, #111827, #64748b);"></span>
                         </button>
@@ -209,14 +237,17 @@
                             <span>{% translate 'Header links' %}</span>
                             <input type="color" id="theme-nav-start" value="#1a56d6">
                         </label>
+
                         <label>
                             <span>{% translate 'Header rechts' %}</span>
                             <input type="color" id="theme-nav-end" value="#5aadee">
                         </label>
+
                         <label>
                             <span>{% translate 'Hintergrund' %}</span>
                             <input type="color" id="theme-page-bg" value="#dce5f5">
                         </label>
+
                         <label>
                             <span>{% translate 'Footer' %}</span>
                             <input type="color" id="theme-footer-bg" value="#ffffff">
@@ -231,10 +262,12 @@
                     </div>
                 </div>
             </div>
+
             <button class="dark-mode-btn" id="darkmode-button" aria-label="{% translate 'Dark Mode umschalten' %}">
                 <i class="fa-solid fa-moon icon-moon"></i>
                 <i class="fa-solid fa-sun icon-sun"></i>
             </button>
+
             {% if request.user.is_authenticated %}
                 <div class="profile-menu-wrapper">
                     <button class="profile-menu-button" id="profile-menu-button" type="button" aria-label="{% translate 'Profilmenü öffnen' %}">
@@ -261,6 +294,7 @@
                                     {{ request.user.username|slice:":2"|upper }}
                                 {% endif %}
                             </span>
+
                             <div>
                                 <strong>
                                     {% if request.user.get_full_name %}
@@ -276,6 +310,11 @@
                         <a href="{% url 'profile' %}" class="profile-menu-item">
                             <i class="fa-solid fa-user-gear"></i>
                             {% translate 'Profil öffnen' %}
+                        </a>
+
+                        <a href="{% url 'users' %}" class="profile-menu-item">
+                            <i class="fa-solid fa-users"></i>
+                            {% translate 'Nutzer' %}
                         </a>
 
                         <form action="{% url 'logout' %}" method="post" class="profile-menu-logout-form">
@@ -304,6 +343,7 @@
                 <div class="footer-logo" aria-hidden="true">
                     <i class="fa-solid fa-cloud"></i>
                 </div>
+
                 <div>
                     <strong>MyTools</strong>
                 </div>
@@ -314,14 +354,22 @@
                     <i class="fa-solid fa-house"></i>
                     {% translate 'Start' %}
                 </a>
+
                 <a href="{% url 'weather' %}">
                     <i class="fa-solid fa-cloud-sun"></i>
                     {% translate 'Wetter' %}
                 </a>
+
+                <a href="{% url 'users' %}">
+                    <i class="fa-solid fa-users"></i>
+                    {% translate 'Nutzer' %}
+                </a>
+
                 <a href="{% url 'notes' %}">
                     <i class="fa-regular fa-note-sticky"></i>
                     {% translate 'Notizen' %}
                 </a>
+
                 <a href="{% url 'about' %}">
                     <i class="fa-solid fa-circle-info"></i>
                     {% translate 'Über' %}
