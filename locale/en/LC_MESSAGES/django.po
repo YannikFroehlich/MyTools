@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-26 13:55+0200\n"
+"POT-Creation-Date: 2026-05-27 11:12+0200\n"
 "PO-Revision-Date: 2026-05-10 23:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\app\forms.py:46 .\app\templates\app\base.html:192
+#: .\app\forms.py:46 .\app\templates\app\base.html:218
 #: .\app\templates\app\home.html:380
 msgid "Blau"
 msgstr "Blue"
@@ -42,7 +42,7 @@ msgstr "Red"
 msgid "Grau"
 msgstr "Gray"
 
-#: .\app\forms.py:58 .\app\templates\registration\signup.html:61
+#: .\app\forms.py:58 .\app\templates\registration\signup.html:79
 msgid "E-Mail"
 msgstr "Email"
 
@@ -62,19 +62,21 @@ msgstr "Email address"
 msgid "Diese E-Mail-Adresse wird bereits verwendet."
 msgstr "This email address is already in use."
 
-#: .\app\forms.py:86 .\app\templates\registration\login.html:48
-#: .\app\templates\registration\signup.html:56
+#: .\app\forms.py:86 .\app\templates\app\profile.html:72
+#: .\app\templates\app\public_profile.html:57
+#: .\app\templates\registration\login.html:66
+#: .\app\templates\registration\signup.html:74
 msgid "Benutzername"
 msgstr "Username"
 
 #: .\app\forms.py:90 .\app\templates\app\obs-dashboard.html:50
-#: .\app\templates\registration\login.html:53
-#: .\app\templates\registration\signup.html:66
+#: .\app\templates\registration\login.html:71
+#: .\app\templates\registration\signup.html:84
 msgid "Passwort"
 msgstr "Password"
 
 #: .\app\forms.py:94 .\app\templates\app\auth\password_reset_confirm.html:66
-#: .\app\templates\registration\signup.html:71
+#: .\app\templates\registration\signup.html:89
 msgid "Passwort wiederholen"
 msgstr "Re-enter password"
 
@@ -112,8 +114,16 @@ msgstr "Pin"
 msgid "Archivieren"
 msgstr "Archive"
 
-#: .\app\templates\app\about.html:5 .\app\templates\app\base.html:46
-#: .\app\templates\app\base.html:281
+#: .\app\profile_views.py:55
+msgid "Das Profilbild konnte nicht verarbeitet werden."
+msgstr "The profile picture could not be processed."
+
+#: .\app\profile_views.py:76
+msgid "Dein Profil wurde gespeichert."
+msgstr "Your profile has been saved."
+
+#: .\app\templates\app\about.html:5 .\app\templates\app\base.html:48
+#: .\app\templates\app\base.html:375
 msgid "Über"
 msgstr "About"
 
@@ -131,9 +141,9 @@ msgid ""
 "und kleine Web-Helfer. Die App bündelt Schnellzugriffe, Wetter, Notizen, "
 "Rechner, Dashboards und Mini-Games in einer modernen Django-Oberfläche."
 msgstr ""
-"MyTools is a personal hub for everyday tasks, homelabs, streaming, "
-"and small web tools. The app combines shortcuts, weather, notes, "
-"calculators, dashboards, and mini-games in a modern Django interface."
+"MyTools is a personal hub for everyday tasks, homelabs, streaming, and small "
+"web tools. The app combines shortcuts, weather, notes, calculators, "
+"dashboards, and mini-games in a modern Django interface."
 
 #: .\app\templates\app\about.html:33
 msgid "Zur Startseite"
@@ -152,8 +162,8 @@ msgid ""
 "Von lokalen Server-Links bis zu API-Tools: MyTools soll die wichtigsten "
 "kleinen Helfer zentral, schnell erreichbar und angenehm bedienbar machen."
 msgstr ""
-"From local server links to API tools: MyTools is designed to make the most important "
-"small helpers centrally accessible, quick to find, and easy to use."
+"From local server links to API tools: MyTools is designed to make the most "
+"important small helpers centrally accessible, quick to find, and easy to use."
 
 #: .\app\templates\app\about.html:62
 msgid "Dashboard"
@@ -171,7 +181,7 @@ msgstr "Weather & APIs"
 msgid "OpenWeather, Tankerkönig und Genius integriert"
 msgstr "OpenWeather, Tankerkönig, and Genius integrated"
 
-#: .\app\templates\app\about.html:74 .\app\templates\app\base.html:185
+#: .\app\templates\app\about.html:74 .\app\templates\app\base.html:211
 msgid "Design"
 msgstr "Design"
 
@@ -212,8 +222,8 @@ msgid ""
 "Einheitenrechner, Human Benchmark, Avatar Wiki, Notizen und Drift Circuit "
 "Pro erweitern das Dashboard um praktische und spielerische Funktionen."
 msgstr ""
-"Unit Converter, Human Benchmark, Avatar Wiki, Notes, and Drift Circuit "
-"Pro add practical and fun features to the dashboard."
+"Unit Converter, Human Benchmark, Avatar Wiki, Notes, and Drift Circuit Pro "
+"add practical and fun features to the dashboard."
 
 #: .\app\templates\app\about.html:128
 msgid "Aktuelle Module"
@@ -223,8 +233,8 @@ msgstr "Current Modules"
 msgid "Was aktuell eingebaut ist"
 msgstr "What is currently installed"
 
-#: .\app\templates\app\about.html:136 .\app\templates\app\base.html:41
-#: .\app\templates\app\base.html:273 .\app\templates\app\weather.html:5
+#: .\app\templates\app\about.html:136 .\app\templates\app\base.html:43
+#: .\app\templates\app\base.html:360 .\app\templates\app\weather.html:5
 msgid "Wetter"
 msgstr "Weather"
 
@@ -232,7 +242,7 @@ msgstr "Weather"
 msgid "Aktuelle Wetterdaten, Vorhersage und gespeicherte Orte."
 msgstr "Current weather data, forecasts, and saved locations."
 
-#: .\app\templates\app\about.html:144 .\app\templates\app\base.html:135
+#: .\app\templates\app\about.html:144 .\app\templates\app\base.html:154
 msgid "Spritkosten"
 msgstr "Fuel costs"
 
@@ -240,7 +250,7 @@ msgstr "Fuel costs"
 msgid "Tankstellen- und Preisabfrage über Tankerkönig."
 msgstr "Find gas stations and check prices with Tankerkönig."
 
-#: .\app\templates\app\about.html:152 .\app\templates\app\base.html:139
+#: .\app\templates\app\about.html:152 .\app\templates\app\base.html:159
 #: .\app\templates\app\genius_search.html:5
 #: .\app\templates\app\genius_search.html:16
 msgid "Genius Search"
@@ -250,8 +260,8 @@ msgstr "Genius Search"
 msgid "Song- und Künstler-Suche über die Genius API."
 msgstr "Search for songs and artists using the Genius API."
 
-#: .\app\templates\app\about.html:160 .\app\templates\app\base.html:147
-#: .\app\templates\app\base.html:277 .\app\templates\app\notes.html:4
+#: .\app\templates\app\about.html:160 .\app\templates\app\base.html:169
+#: .\app\templates\app\base.html:370 .\app\templates\app\notes.html:4
 #: .\app\templates\app\notes.html:21
 msgid "Notizen"
 msgstr "Notes"
@@ -260,7 +270,7 @@ msgstr "Notes"
 msgid "Notizen mit Pins, Archiv, Farben und Tags."
 msgstr "Notes with pins, an archive, colors, and tags."
 
-#: .\app\templates\app\about.html:168 .\app\templates\app\base.html:151
+#: .\app\templates\app\about.html:168 .\app\templates\app\base.html:174
 #: .\app\templates\app\unit_converter.html:4
 #: .\app\templates\app\unit_converter.html:20
 msgid "Einheitenrechner"
@@ -314,7 +324,9 @@ msgstr "Next expansion stage"
 msgid ""
 "Das vorbereitete Stream Deck kann als nächstes mit eigenen Buttons, Aktionen "
 "und Integrationen gefüllt werden."
-msgstr "The prepared Stream Deck can be filled next with custom buttons, actions, and integrations."
+msgstr ""
+"The prepared Stream Deck can be filled next with custom buttons, actions, "
+"and integrations."
 
 #: .\app\templates\app\auth\password_reset_complete.html:8
 #: .\app\templates\app\auth\password_reset_complete.html:38
@@ -325,8 +337,8 @@ msgstr "Password changed"
 #: .\app\templates\app\auth\password_reset_confirm.html:25
 #: .\app\templates\app\auth\password_reset_done.html:25
 #: .\app\templates\app\auth\password_reset_form.html:25
-#: .\app\templates\app\base.html:233 .\app\templates\registration\login.html:22
-#: .\app\templates\registration\signup.html:22
+#: .\app\templates\app\base.html:266 .\app\templates\registration\login.html:40
+#: .\app\templates\registration\signup.html:40
 msgid "Dark Mode umschalten"
 msgstr "Toggle Dark Mode"
 
@@ -387,7 +399,9 @@ msgstr "Back to login"
 msgid ""
 "Du erhältst diese E-Mail, weil für deinen MyTools-Account ein Passwort-Reset "
 "angefordert wurde."
-msgstr "You are receiving this email because a password reset was requested for your MyTools account."
+msgstr ""
+"You are receiving this email because a password reset was requested for your "
+"MyTools account."
 
 #: .\app\templates\app\auth\password_reset_email.html:5
 msgid "Klicke auf den folgenden Link, um dein Passwort zurückzusetzen:"
@@ -402,7 +416,7 @@ msgid "Passwort zurücksetzen"
 msgstr "Reset password"
 
 #: .\app\templates\app\auth\password_reset_form.html:38
-#: .\app\templates\registration\login.html:63
+#: .\app\templates\registration\login.html:82
 msgid "Passwort vergessen?"
 msgstr "Forgot password?"
 
@@ -420,7 +434,7 @@ msgid "Passwort für MyTools zurücksetzen"
 msgstr "Reset your MyTools password"
 
 #: .\app\templates\app\avatar_wiki.html:5
-#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:143
+#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:164
 msgid "Avatar Wiki"
 msgstr "Avatar Wiki"
 
@@ -466,15 +480,16 @@ msgid "Beschreibung (optional)"
 msgstr "Description optional"
 
 #: .\app\templates\app\avatar_wiki.html:49
-#: .\app\templates\app\note_form.html:169
+#: .\app\templates\app\note_form.html:169 .\app\templates\app\profile.html:233
 msgid "Abbrechen"
 msgstr "Cancel"
 
 #: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\home.html:341
+#: .\app\templates\app\profile.html:94 .\app\templates\app\profile.html:198
 msgid "Speichern"
 msgstr "Save"
 
-#: .\app\templates\app\avatar_wiki.html:57
+#: .\app\templates\app\avatar_wiki.html:57 .\app\templates\app\profile.html:215
 msgid "Schließen"
 msgstr "Close"
 
@@ -518,142 +533,163 @@ msgstr "No characters added yet."
 msgid "Mein myManager"
 msgstr "My myManager"
 
-#: .\app\templates\app\base.html:36 .\app\templates\app\base.html:269
+#: .\app\templates\app\base.html:38 .\app\templates\app\base.html:355
 #: .\app\templates\app\human_benchmark.html:96
 msgid "Start"
 msgstr "Home"
 
-#: .\app\templates\app\base.html:50
+#: .\app\templates\app\base.html:52
 msgid "Spiele-Menü öffnen"
 msgstr "Open games menu"
 
-#: .\app\templates\app\base.html:52
+#: .\app\templates\app\base.html:54
 msgid "Spiele"
 msgstr "Games"
 
-#: .\app\templates\app\base.html:59 .\app\templates\app\human_benchmark.html:5
+#: .\app\templates\app\base.html:61 .\app\templates\app\human_benchmark.html:5
 #: .\app\templates\app\human_benchmark.html:17
 msgid "Human Benchmark"
 msgstr "Human Benchmark"
 
-#: .\app\templates\app\base.html:63
+#: .\app\templates\app\base.html:66
 msgid "Racing Game"
 msgstr "Racing Game"
 
-#: .\app\templates\app\base.html:69
+#: .\app\templates\app\base.html:72
 msgid "Google-Apps-Menü öffnen"
 msgstr "Open Google apps menu"
 
-#: .\app\templates\app\base.html:71
+#: .\app\templates\app\base.html:74
 msgid "Google"
 msgstr "Google"
 
-#: .\app\templates\app\base.html:78
+#: .\app\templates\app\base.html:81
 msgid "Suche"
 msgstr "Search"
 
-#: .\app\templates\app\base.html:82
+#: .\app\templates\app\base.html:86
 msgid "Maps"
 msgstr "Maps"
 
-#: .\app\templates\app\base.html:86
+#: .\app\templates\app\base.html:91
 msgid "Youtube"
 msgstr "YouTube"
 
-#: .\app\templates\app\base.html:90
+#: .\app\templates\app\base.html:96
 msgid "Play"
 msgstr "Play"
 
-#: .\app\templates\app\base.html:94
+#: .\app\templates\app\base.html:101
 msgid "Gmail"
 msgstr "Gmail"
 
-#: .\app\templates\app\base.html:98
+#: .\app\templates\app\base.html:106
 msgid "Drive"
 msgstr "Drive"
 
-#: .\app\templates\app\base.html:102
+#: .\app\templates\app\base.html:111
 msgid "Kalender"
 msgstr "Calendar"
 
-#: .\app\templates\app\base.html:106
+#: .\app\templates\app\base.html:116
 msgid "Translator"
 msgstr "Translator"
 
-#: .\app\templates\app\base.html:110
+#: .\app\templates\app\base.html:121
 msgid "Gemini"
 msgstr "Gemini"
 
-#: .\app\templates\app\base.html:114
+#: .\app\templates\app\base.html:126
 msgid "News"
 msgstr "News"
 
-#: .\app\templates\app\base.html:118
+#: .\app\templates\app\base.html:131
 msgid "Fotos"
 msgstr "Photos"
 
-#: .\app\templates\app\base.html:124
+#: .\app\templates\app\base.html:137
 msgid "Weitere Seiten"
 msgstr "More pages"
 
-#: .\app\templates\app\base.html:131 .\app\templates\app\obs-dashboard.html:5
+#: .\app\templates\app\base.html:144 .\app\templates\app\base.html:317
+#: .\app\templates\app\base.html:365 .\app\templates\app\users.html:5
+#: .\app\templates\app\users.html:16 .\app\templates\app\users.html:51
+msgid "Nutzer"
+msgstr "Users"
+
+#: .\app\templates\app\base.html:149 .\app\templates\app\obs-dashboard.html:5
 #: .\app\templates\app\obs-dashboard.html:21
 msgid "OBS Dashboard"
 msgstr "OBS Dashboard"
 
-#: .\app\templates\app\base.html:155 .\app\templates\app\stream_deck.html:4
+#: .\app\templates\app\base.html:179 .\app\templates\app\stream_deck.html:4
 msgid "Stream Deck"
 msgstr "Stream Deck"
 
-#: .\app\templates\app\base.html:179
+#: .\app\templates\app\base.html:205
 msgid "Design anpassen"
 msgstr "Customize design"
 
-#: .\app\templates\app\base.html:186
+#: .\app\templates\app\base.html:212
 msgid "Design-Men&uuml; schlie&szlig;en"
 msgstr "Close design menu"
 
-#: .\app\templates\app\base.html:191
+#: .\app\templates\app\base.html:217
 msgid "Design-Vorlagen"
 msgstr "Design templates"
 
-#: .\app\templates\app\base.html:195
+#: .\app\templates\app\base.html:222
 msgid "Gr&uuml;n"
 msgstr "Green"
 
-#: .\app\templates\app\base.html:198
+#: .\app\templates\app\base.html:226
 msgid "Rose"
 msgstr "Pink"
 
-#: .\app\templates\app\base.html:201
+#: .\app\templates\app\base.html:230
 msgid "Graphit"
 msgstr "Graphite"
 
-#: .\app\templates\app\base.html:208
+#: .\app\templates\app\base.html:237
 msgid "Header links"
 msgstr "Header left"
 
-#: .\app\templates\app\base.html:212
+#: .\app\templates\app\base.html:242
 msgid "Header rechts"
 msgstr "Header right"
 
-#: .\app\templates\app\base.html:216
+#: .\app\templates\app\base.html:247
 msgid "Hintergrund"
 msgstr "Background"
 
-#: .\app\templates\app\base.html:220
+#: .\app\templates\app\base.html:252
 msgid "Footer"
 msgstr "Footer"
 
-#: .\app\templates\app\base.html:228
+#: .\app\templates\app\base.html:260
 msgid "Zur&uuml;cksetzen"
 msgstr "Reset"
 
-#: .\app\templates\app\base.html:240
+#: .\app\templates\app\base.html:273
+msgid "Profilmenü öffnen"
+msgstr "Open profile menu"
+
+#: .\app\templates\app\base.html:276 .\app\templates\app\base.html:290
+#: .\app\templates\app\profile.html:17 .\app\templates\app\profile.html:54
+#: .\app\templates\app\profile.html:211
+#: .\app\templates\app\public_profile.html:29 .\app\templates\app\users.html:63
+msgid "Profilbild"
+msgstr "Profile picture"
+
+#: .\app\templates\app\base.html:312
+msgid "Profil öffnen"
+msgstr "Open profile"
+
+#: .\app\templates\app\base.html:324
 msgid "Abmelden"
 msgstr "Log out"
 
-#: .\app\templates\app\base.html:266
+#: .\app\templates\app\base.html:352
 msgid "Footer Navigation"
 msgstr "Footer navigation"
 
@@ -1288,6 +1324,105 @@ msgstr "This note does not yet have any content."
 msgid "Wiederherstellen"
 msgstr "Restore"
 
+#: .\app\templates\app\profile.html:5
+#: .\app\templates\app\public_profile.html:36
+msgid "Profil"
+msgstr "Profile"
+
+#: .\app\templates\app\profile.html:24
+msgid "Dein Account"
+msgstr "Your account"
+
+#: .\app\templates\app\profile.html:33
+msgid ""
+"Passe dein Profilbild, deinen Namen und deine persönlichen Informationen an."
+msgstr "Customize your profile picture, name, and personal information."
+
+#: .\app\templates\app\profile.html:76
+#: .\app\templates\app\public_profile.html:67
+msgid "Profil erstellt"
+msgstr "Profile created"
+
+#: .\app\templates\app\profile.html:89
+msgid "Einstellungen"
+msgstr "Settings"
+
+#: .\app\templates\app\profile.html:90
+msgid "Profil bearbeiten"
+msgstr "Edit profile"
+
+#: .\app\templates\app\profile.html:135
+msgid "Aktuelles Profilbild"
+msgstr "Current profile picture"
+
+#: .\app\templates\app\profile.html:144
+msgid "Aktuelles Bild"
+msgstr "Current picture"
+
+#: .\app\templates\app\profile.html:152
+msgid "Profilbild entfernen"
+msgstr "Remove profile picture"
+
+#: .\app\templates\app\profile.html:156
+msgid "Noch kein Profilbild"
+msgstr "No profile picture yet"
+
+#: .\app\templates\app\profile.html:157
+msgid "Wähle ein Bild aus, das in deinem Profil angezeigt wird."
+msgstr "Choose a picture to display on your profile."
+
+#: .\app\templates\app\profile.html:163
+msgid "Neues Bild auswählen"
+msgstr "Choose new picture"
+
+#: .\app\templates\app\profile.html:175
+msgid "Nach dem Auswählen kannst du den Bildausschnitt verschieben und zoomen."
+msgstr "After choosing a picture, you can move and zoom the crop area."
+
+#: .\app\templates\app\profile.html:193
+msgid "Zurück zur Startseite"
+msgstr "Back to homepage"
+
+#: .\app\templates\app\profile.html:212
+msgid "Bild zuschneiden"
+msgstr "Crop picture"
+
+#: .\app\templates\app\profile.html:227
+msgid "Zoom"
+msgstr "Zoom"
+
+#: .\app\templates\app\profile.html:238
+msgid "Übernehmen"
+msgstr "Apply"
+
+#: .\app\templates\app\public_profile.html:23
+msgid "Zurück zu Nutzer"
+msgstr "Back to users"
+
+#: .\app\templates\app\public_profile.html:53
+msgid "Infos"
+msgstr "Info"
+
+#: .\app\templates\app\public_profile.html:62
+msgid "Mitglied seit"
+msgstr "Member since"
+
+#: .\app\templates\app\public_profile.html:75
+msgid "Mein Profil bearbeiten"
+msgstr "Edit my profile"
+
+#: .\app\templates\app\public_profile.html:81
+msgid "Über mich"
+msgstr "About me"
+
+#: .\app\templates\app\public_profile.html:82
+msgid "Beschreibung"
+msgstr "Description"
+
+#: .\app\templates\app\public_profile.html:89
+msgid "Dieser Nutzer hat noch keine Beschreibung hinterlegt."
+msgstr "This user has not added a description yet."
+
 #: .\app\templates\app\spritkostenrechner.html:5
 #: .\app\templates\app\spritkostenrechner.html:14
 msgid "Spritkostenrechner"
@@ -1423,6 +1558,52 @@ msgstr "Month"
 msgid "Jahr"
 msgstr "Year"
 
+#: .\app\templates\app\users.html:15
+msgid "Nutzerübersicht"
+msgstr "User overview"
+
+#: .\app\templates\app\users.html:18
+msgid ""
+"Hier siehst du alle Nutzer von MyTools und kannst dir deren öffentliche "
+"Profilseite anschauen."
+msgstr "Here you can see all MyTools users and view each user’s public profile page."
+
+#: .\app\templates\app\users.html:34
+msgid "Nach Nutzern suchen..."
+msgstr "Search users..."
+
+#: .\app\templates\app\users.html:49
+msgid "gefunden"
+msgstr "found"
+
+#: .\app\templates\app\users.html:80
+msgid "Du"
+msgstr "You"
+
+#: .\app\templates\app\users.html:90
+msgid "Noch keine Beschreibung hinterlegt."
+msgstr "No description added yet."
+
+#: .\app\templates\app\users.html:97
+msgid "Seit"
+msgstr "Since"
+
+#: .\app\templates\app\users.html:101
+msgid "Profil ansehen"
+msgstr "View profile"
+
+#: .\app\templates\app\users.html:112
+msgid "Keine Nutzer gefunden"
+msgstr "No users found"
+
+#: .\app\templates\app\users.html:113
+msgid "Versuche es mit einem anderen Suchbegriff."
+msgstr "Try a different search term."
+
+#: .\app\templates\app\users.html:115
+msgid "Alle Nutzer anzeigen"
+msgstr "Show all users"
+
 #: .\app\templates\app\weather.html:17
 msgid "Einheitensystem"
 msgstr "Unit system"
@@ -1495,35 +1676,40 @@ msgstr "Sunset"
 msgid "Login"
 msgstr "Login"
 
-#: .\app\templates\registration\login.html:35
+#: .\app\templates\registration\login.html:31
+#: .\app\templates\registration\signup.html:31
+msgid "Sprache auswählen"
+msgstr "Choose language"
+
+#: .\app\templates\registration\login.html:53
 msgid "Melde dich an, um deine Tools zu nutzen."
 msgstr "Log in to use your tools."
 
-#: .\app\templates\registration\login.html:40
+#: .\app\templates\registration\login.html:58
 msgid "Benutzername oder Passwort stimmt nicht."
 msgstr "Username or password is incorrect."
 
-#: .\app\templates\registration\login.html:59
-#: .\app\templates\registration\signup.html:83
+#: .\app\templates\registration\login.html:77
+#: .\app\templates\registration\signup.html:101
 msgid "Einloggen"
 msgstr "Log in"
 
-#: .\app\templates\registration\login.html:68
+#: .\app\templates\registration\login.html:87
 msgid "Noch keinen Account?"
 msgstr "Don't have an account yet?"
 
-#: .\app\templates\registration\login.html:69
+#: .\app\templates\registration\login.html:88
 #: .\app\templates\registration\signup.html:8
-#: .\app\templates\registration\signup.html:34
-#: .\app\templates\registration\signup.html:77
+#: .\app\templates\registration\signup.html:52
+#: .\app\templates\registration\signup.html:95
 msgid "Account erstellen"
 msgstr "Create account"
 
-#: .\app\templates\registration\signup.html:35
+#: .\app\templates\registration\signup.html:53
 msgid "Erstelle deinen eigenen MyTools-Zugang."
 msgstr "Create your own MyTools account."
 
-#: .\app\templates\registration\signup.html:82
+#: .\app\templates\registration\signup.html:100
 msgid "Schon einen Account?"
 msgstr "Already have an account?"
 

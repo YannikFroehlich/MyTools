@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AvatarCharacter, Note, Shortcut, ShortcutSection, WeatherLocation
+from .models import AvatarCharacter, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
 
 
 @admin.register(AvatarCharacter)
@@ -37,3 +37,10 @@ class WeatherLocationAdmin(admin.ModelAdmin):
     list_display = ("name", "user", "order", "created_at")
     list_filter = ("user",)
     search_fields = ("name", "user__username")
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "updated_at", "created_at")
+    search_fields = ("user__username", "user__email", "user__first_name", "user__last_name")
+    readonly_fields = ("created_at", "updated_at")

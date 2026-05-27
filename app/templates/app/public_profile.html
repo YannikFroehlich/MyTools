@@ -1,0 +1,95 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+    {% if profile_user.get_full_name %}
+        {{ profile_user.get_full_name }}
+    {% else %}
+        {{ profile_user.username }}
+    {% endif %}
+    | MyTools
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="public-profile-page">
+    <div class="public-profile-hero">
+        <a href="{% url 'users' %}" class="public-profile-back">
+            <i class="fa-solid fa-arrow-left"></i>
+            {% translate "Zurück zu Nutzer" %}
+        </a>
+
+        <div class="public-profile-header">
+            <div class="public-profile-avatar">
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                {% else %}
+                    <span>{{ profile.initials }}</span>
+                {% endif %}
+            </div>
+
+            <div class="public-profile-title">
+                <p class="users-kicker">{% translate "Profil" %}</p>
+
+                <h1>
+                    {% if profile_user.get_full_name %}
+                        {{ profile_user.get_full_name }}
+                    {% else %}
+                        {{ profile_user.username }}
+                    {% endif %}
+                </h1>
+
+                <p>@{{ profile_user.username }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="public-profile-layout">
+        <aside class="public-profile-card public-profile-info-card">
+            <h2>{% translate "Infos" %}</h2>
+
+            <div class="public-profile-info-list">
+                <div>
+                    <span>{% translate "Benutzername" %}</span>
+                    <strong>@{{ profile_user.username }}</strong>
+                </div>
+
+                <div>
+                    <span>{% translate "Mitglied seit" %}</span>
+                    <strong>{{ profile_user.date_joined|date:"d.m.Y" }}</strong>
+                </div>
+
+                <div>
+                    <span>{% translate "Profil erstellt" %}</span>
+                    <strong>{{ profile.created_at|date:"d.m.Y" }}</strong>
+                </div>
+            </div>
+
+            {% if profile_user == request.user %}
+                <a href="{% url 'profile' %}" class="public-profile-edit-button">
+                    <i class="fa-solid fa-user-gear"></i>
+                    {% translate "Mein Profil bearbeiten" %}
+                </a>
+            {% endif %}
+        </aside>
+
+        <article class="public-profile-card public-profile-about-card">
+            <p class="users-kicker">{% translate "Über mich" %}</p>
+            <h2>{% translate "Beschreibung" %}</h2>
+
+            {% if profile.bio %}
+                <p class="public-profile-bio">{{ profile.bio|linebreaksbr }}</p>
+            {% else %}
+                <div class="public-profile-empty-bio">
+                    <i class="fa-regular fa-message"></i>
+                    <p>{% translate "Dieser Nutzer hat noch keine Beschreibung hinterlegt." %}</p>
+                </div>
+            {% endif %}
+        </article>
+    </div>
+</section>
+{% endblock %}
