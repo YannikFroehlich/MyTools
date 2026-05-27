@@ -55,7 +55,24 @@ def profile_view(request):
                     messages.error(request, _("Das Profilbild konnte nicht verarbeitet werden."))
                     return redirect("profile")
 
+            # Profil speichern
             profile.save()
+
+            # User-Daten speichern:
+            # Vorname, Nachname, E-Mail und Benutzername liegen NICHT im UserProfile,
+            # sondern direkt im Django-User.
+            request.user.username = form.cleaned_data.get("username", "").strip()
+            request.user.first_name = form.cleaned_data.get("first_name", "").strip()
+            request.user.last_name = form.cleaned_data.get("last_name", "").strip()
+            request.user.email = form.cleaned_data.get("email", "").strip()
+
+            request.user.save(update_fields=[
+                "username",
+                "first_name",
+                "last_name",
+                "email",
+            ])
+
             messages.success(request, _("Dein Profil wurde gespeichert."))
             return redirect("profile")
     else:
