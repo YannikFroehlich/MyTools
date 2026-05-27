@@ -377,12 +377,42 @@ class HomeWidget(models.Model):
     WIDGET_NOTES = "notes"
     WIDGET_BENCHMARK = "benchmark"
     WIDGET_STATS = "stats"
+    WIDGET_CLOCK = "clock"
 
     WIDGET_CHOICES = [
         (WIDGET_WEATHER, "Wetter"),
         (WIDGET_NOTES, "Notizen"),
         (WIDGET_BENCHMARK, "Human Benchmark"),
         (WIDGET_STATS, "Schnellstatistiken"),
+        (WIDGET_CLOCK, "Uhr"),
+    ]
+
+    CLOCK_DESIGN_MINIMAL = "minimal"
+    CLOCK_DESIGN_GLASS = "glass"
+    CLOCK_DESIGN_NEON = "neon"
+    CLOCK_DESIGN_FLIP = "flip"
+    CLOCK_DESIGN_TERMINAL = "terminal"
+
+    CLOCK_DESIGN_CHOICES = [
+        (CLOCK_DESIGN_MINIMAL, "Minimal"),
+        (CLOCK_DESIGN_GLASS, "Glass"),
+        (CLOCK_DESIGN_NEON, "Neon"),
+        (CLOCK_DESIGN_FLIP, "Flip"),
+        (CLOCK_DESIGN_TERMINAL, "Terminal"),
+    ]
+
+    CLOCK_STYLE_CLASSIC = "classic"
+    CLOCK_STYLE_COMPACT = "compact"
+    CLOCK_STYLE_SPLIT = "split"
+    CLOCK_STYLE_ANALOG = "analog"
+    CLOCK_STYLE_HYBRID = "hybrid"
+
+    CLOCK_STYLE_CHOICES = [
+        (CLOCK_STYLE_CLASSIC, "Klassisch"),
+        (CLOCK_STYLE_COMPACT, "Kompakt"),
+        (CLOCK_STYLE_SPLIT, "Datum links"),
+        (CLOCK_STYLE_ANALOG, "Analog"),
+        (CLOCK_STYLE_HYBRID, "Analog + Digital"),
     ]
 
     COLOR_CHOICES = [
@@ -407,6 +437,16 @@ class HomeWidget(models.Model):
         related_name="home_widgets",
         null=True,
         blank=True,
+    )
+    clock_design = models.CharField(
+        max_length=20,
+        choices=CLOCK_DESIGN_CHOICES,
+        default=CLOCK_DESIGN_MINIMAL,
+    )
+    clock_style = models.CharField(
+        max_length=20,
+        choices=CLOCK_STYLE_CHOICES,
+        default=CLOCK_STYLE_CLASSIC,
     )
     order = models.PositiveIntegerField(default=0)
     is_enabled = models.BooleanField(default=True)

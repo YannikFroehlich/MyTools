@@ -332,6 +332,9 @@ def build_home_widget_data(request, user):
                 "rows": benchmark_rows,
             }
 
+        elif widget.widget_type == HomeWidget.WIDGET_CLOCK:
+            data = {}
+
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {
                 "shortcut_count": shortcut_count,
@@ -464,15 +467,25 @@ def home(request):
             widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
             widget_color = request.POST.get("widget_color", "blue").strip()
             weather_location_id = request.POST.get("weather_location") or None
+            clock_design = request.POST.get("clock_design", HomeWidget.CLOCK_DESIGN_MINIMAL).strip()
+            clock_style = request.POST.get("clock_style", HomeWidget.CLOCK_STYLE_CLASSIC).strip()
 
             valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
             valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
+            valid_clock_designs = {choice[0] for choice in HomeWidget.CLOCK_DESIGN_CHOICES}
+            valid_clock_styles = {choice[0] for choice in HomeWidget.CLOCK_STYLE_CHOICES}
 
             if widget_type not in valid_widget_types:
                 widget_type = HomeWidget.WIDGET_WEATHER
 
             if widget_color not in valid_colors:
                 widget_color = "blue"
+
+            if clock_design not in valid_clock_designs:
+                clock_design = HomeWidget.CLOCK_DESIGN_MINIMAL
+
+            if clock_style not in valid_clock_styles:
+                clock_style = HomeWidget.CLOCK_STYLE_CLASSIC
 
             if not title:
                 title = dict(HomeWidget.WIDGET_CHOICES).get(widget_type, _("Widget"))
@@ -489,6 +502,8 @@ def home(request):
                 widget_type=widget_type,
                 color=widget_color,
                 weather_location=weather_location,
+                clock_design=clock_design,
+                clock_style=clock_style,
                 order=max_order + 1,
             )
 
@@ -500,16 +515,26 @@ def home(request):
             widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
             widget_color = request.POST.get("widget_color", "blue").strip()
             weather_location_id = request.POST.get("weather_location") or None
+            clock_design = request.POST.get("clock_design", HomeWidget.CLOCK_DESIGN_MINIMAL).strip()
+            clock_style = request.POST.get("clock_style", HomeWidget.CLOCK_STYLE_CLASSIC).strip()
 
             widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
             valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
             valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
+            valid_clock_designs = {choice[0] for choice in HomeWidget.CLOCK_DESIGN_CHOICES}
+            valid_clock_styles = {choice[0] for choice in HomeWidget.CLOCK_STYLE_CHOICES}
 
             if widget_type not in valid_widget_types:
                 widget_type = HomeWidget.WIDGET_WEATHER
 
             if widget_color not in valid_colors:
                 widget_color = "blue"
+
+            if clock_design not in valid_clock_designs:
+                clock_design = HomeWidget.CLOCK_DESIGN_MINIMAL
+
+            if clock_style not in valid_clock_styles:
+                clock_style = HomeWidget.CLOCK_STYLE_CLASSIC
 
             weather_location = None
             if weather_location_id:
@@ -519,6 +544,8 @@ def home(request):
             widget.widget_type = widget_type
             widget.color = widget_color
             widget.weather_location = weather_location
+            widget.clock_design = clock_design
+            widget.clock_style = clock_style
             widget.save()
 
             return redirect("home")
@@ -700,6 +727,8 @@ def home(request):
         "weather_locations": weather_locations,
         "widget_types": [(value, _(label)) for value, label in HomeWidget.WIDGET_CHOICES],
         "widget_colors": [(value, _(label)) for value, label in HomeWidget.COLOR_CHOICES],
+        "clock_designs": [(value, _(label)) for value, label in HomeWidget.CLOCK_DESIGN_CHOICES],
+        "clock_styles": [(value, _(label)) for value, label in HomeWidget.CLOCK_STYLE_CHOICES],
         "home_labels": home_labels,
     })
 
