@@ -15,6 +15,12 @@ class UserProfile(models.Model):
         blank=True,
         verbose_name="Profilbild",
     )
+    profile_banner = models.ImageField(
+        upload_to="profile_banners/",
+        null=True,
+        blank=True,
+        verbose_name="Profilbanner",
+    )
     bio = models.TextField(
         max_length=500,
         blank=True,

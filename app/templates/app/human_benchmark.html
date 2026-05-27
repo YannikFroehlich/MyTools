@@ -13,7 +13,9 @@
     <div class="benchmark-page" data-language="{{ CURRENT_LANGUAGE }}" data-score-url="{% url 'human-benchmark-score-api' %}">
         <div class="benchmark-topbar">
             <div class="benchmark-logo" role="button" tabindex="0" aria-label="{% translate 'Zum Reaktionstest wechseln' %}">
-                <span class="benchmark-logo-icon"></span>
+                <span class="benchmark-logo-icon">
+                    <i class="fa-solid fa-stopwatch"></i>
+                </span>
                 <h1>{% translate 'Human Benchmark' %}</h1>
             </div>
 
@@ -107,32 +109,44 @@
                 <div>
                     <p class="scoreboard-kicker">{% translate 'Deine Statistiken' %}</p>
                     <h2>{% translate 'Scores & Bestenliste' %}</h2>
+                    <span id="scoreboard-current-game" class="scoreboard-current-game">{% translate 'Typing Test' %}</span>
                 </div>
                 <p id="score-save-status" class="score-save-status" aria-live="polite"></p>
             </div>
 
-            <div class="scoreboard-grid">
-                <article class="score-panel">
+            <div class="scoreboard-layout">
+                <article class="score-panel score-panel-feature">
                     <div class="score-panel-title">
-                        <span>{% translate 'Dein Highscore' %}</span>
-                        <strong id="current-highscore">--</strong>
+                        <span>
+                            <i class="fa-solid fa-trophy"></i>
+                            {% translate 'Dein Highscore' %}
+                        </span>
                     </div>
+                    <strong id="current-highscore" class="score-feature-score">--</strong>
                     <p id="current-highscore-hint" class="score-panel-hint">{% translate 'Wähle oben einen Spielmodus aus.' %}</p>
                 </article>
 
-                <article class="score-panel">
-                    <div class="score-panel-title">
-                        <span>{% translate 'Letzte 10 Ergebnisse' %}</span>
-                    </div>
-                    <div id="recent-scores-list" class="score-list empty">{% translate 'Noch keine Ergebnisse.' %}</div>
-                </article>
+                <div class="scoreboard-lists">
+                    <article class="score-panel">
+                        <div class="score-panel-title">
+                            <span>
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                {% translate 'Letzte 10 Ergebnisse' %}
+                            </span>
+                        </div>
+                        <div id="recent-scores-list" class="score-list empty">{% translate 'Noch keine Ergebnisse.' %}</div>
+                    </article>
 
-                <article class="score-panel leaderboard-panel">
-                    <div class="score-panel-title">
-                        <span>{% translate 'Bestenliste' %}</span>
-                    </div>
-                    <div id="leaderboard-list" class="leaderboard-list empty">{% translate 'Noch keine Ergebnisse.' %}</div>
-                </article>
+                    <article class="score-panel leaderboard-panel">
+                        <div class="score-panel-title">
+                            <span>
+                                <i class="fa-solid fa-ranking-star"></i>
+                                {% translate 'Bestenliste' %}
+                            </span>
+                        </div>
+                        <div id="leaderboard-list" class="leaderboard-list empty">{% translate 'Noch keine Ergebnisse.' %}</div>
+                    </article>
+                </div>
             </div>
         </section>
     </div>

@@ -3034,46 +3034,83 @@ body.dark-mode .shortcut-card.actions-open .shortcut-menu-toggle {
 }
 
 body.dark-mode .shortcut-actions-menu {
-    background: rgba(15, 23, 42, 0.94);
-    border-color: rgba(148, 163, 184, 0.16);
+    background: rgba(17, 24, 39, 0.98);
+    border-color: rgba(148, 163, 184, 0.24);
     box-shadow:
         0 18px 42px rgba(0, 0, 0, 0.34),
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 body.dark-mode .shortcut-menu-item {
-    color: #e2e8f0;
+    color: #f8fafc !important;
+}
+
+body.dark-mode .shortcut-card-actions .delete-shortcut-form button,
+body.dark-mode .shortcut-card-actions .favorite-shortcut-form button,
+body.dark-mode .shortcut-card-actions .edit-shortcut-button {
+    color: #f8fafc !important;
 }
 
 body.dark-mode .shortcut-menu-item i {
-    color: #94a3b8;
+    color: #cbd5e1 !important;
 }
 
 body.dark-mode .shortcut-menu-item:hover,
 body.dark-mode .shortcut-menu-item:focus-visible {
-    color: #ffffff;
-    background: rgba(var(--theme-accent-end-rgb), 0.16);
+    color: #ffffff !important;
+    background: rgba(148, 163, 184, 0.16);
+}
+
+body.dark-mode .shortcut-card-actions .favorite-shortcut-form button:hover,
+body.dark-mode .shortcut-card-actions .edit-shortcut-button:hover {
+    color: #ffffff !important;
+    background: rgba(148, 163, 184, 0.16) !important;
 }
 
 body.dark-mode .shortcut-menu-item:hover i,
 body.dark-mode .shortcut-menu-item:focus-visible i {
-    color: #ffffff;
+    color: #ffffff !important;
+}
+
+body.dark-mode .shortcut-drag-handle.shortcut-menu-item,
+body.dark-mode .shortcut-drag-handle.shortcut-menu-item:hover,
+body.dark-mode .shortcut-drag-handle.shortcut-menu-item:focus-visible {
+    background: transparent !important;
+}
+
+body.dark-mode .shortcut-card.shortcut-favorite .favorite-shortcut-form .shortcut-menu-item i {
+    color: #fbbf24 !important;
 }
 
 body.dark-mode .shortcut-menu-danger,
 body.dark-mode .shortcut-menu-danger i {
-    color: #fb7185;
+    color: #fecdd3 !important;
+}
+
+body.dark-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger {
+    color: #fecdd3 !important;
+}
+
+body.dark-mode .shortcut-menu-danger i,
+body.dark-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger i {
+    color: #fb7185 !important;
 }
 
 body.dark-mode .shortcut-menu-danger:hover,
 body.dark-mode .shortcut-menu-danger:focus-visible {
-    background: rgba(244, 63, 94, 0.14);
-    color: #fecdd3;
+    background: rgba(244, 63, 94, 0.2);
+    color: #ffffff !important;
+}
+
+body.dark-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:hover,
+body.dark-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:focus-visible {
+    background: rgba(244, 63, 94, 0.2) !important;
+    color: #ffffff !important;
 }
 
 body.dark-mode .shortcut-menu-danger:hover i,
 body.dark-mode .shortcut-menu-danger:focus-visible i {
-    color: #fecdd3;
+    color: #fecdd3 !important;
 }
 
 @media (hover: none), (pointer: coarse) {
