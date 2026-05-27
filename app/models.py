@@ -2,6 +2,50 @@ from django.conf import settings
 from django.db import models
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="profile",
+    )
+    avatar = models.ImageField(
+        upload_to="profile_pictures/",
+        null=True,
+        blank=True,
+        verbose_name="Profilbild",
+    )
+    bio = models.TextField(
+        max_length=500,
+        blank=True,
+        verbose_name="Über mich",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Profil"
+        verbose_name_plural = "Profile"
+
+    def __str__(self):
+        return f"Profil von {self.user.username}"
+
+    @property
+    def avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        return ""
+
+    @property
+    def initials(self):
+        first_name = (self.user.first_name or "").strip()
+        last_name = (self.user.last_name or "").strip()
+
+        if first_name or last_name:
+            return f"{first_name[:1]}{last_name[:1]}".upper()
+
+        return (self.user.username[:2] or "MT").upper()
+
+
 class ShortcutSection(models.Model):
     COLOR_CHOICES = [
         ("blue", "Blau"),
@@ -44,7 +88,7 @@ class Shortcut(models.Model):
         on_delete=models.CASCADE,
         related_name="shortcuts",
         null=True,
-        blank=True
+        blank=True,
     )
 
     name = models.CharField(max_length=50)
@@ -52,13 +96,13 @@ class Shortcut(models.Model):
     icon = models.CharField(
         max_length=80,
         default="fa-solid fa-link",
-        help_text="FontAwesome Icon-Klasse, z.B. fa-brands fa-youtube"
+        help_text="FontAwesome Icon-Klasse, z.B. fa-brands fa-youtube",
     )
 
     image = models.ImageField(
         upload_to="shortcut_icons/",
         null=True,
-        blank=True
+        blank=True,
     )
 
     is_favorite = models.BooleanField(default=False)
@@ -111,6 +155,7 @@ class AvatarCharacter(models.Model):
         if image_storage and image_name:
             image_storage.delete(image_name)
 
+
 class Note(models.Model):
     COLOR_CHOICES = [
         ("blue", "Blau"),
@@ -135,7 +180,7 @@ class Note(models.Model):
     color = models.CharField(
         max_length=20,
         choices=COLOR_CHOICES,
-        default="blue"
+        default="blue",
     )
 
     is_pinned = models.BooleanField(default=False)
@@ -154,6 +199,7 @@ class Note(models.Model):
 
     def tag_list(self):
         return [tag.strip() for tag in self.tags.split(",") if tag.strip()]
+
 
 class WeatherLocation(models.Model):
     user = models.ForeignKey(

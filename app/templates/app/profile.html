@@ -1,0 +1,247 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Profil" %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+    <div class="profile-hero">
+        <div class="profile-hero-content">
+            <div class="profile-avatar-preview">
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                {% else %}
+                    <span>{{ profile.initials }}</span>
+                {% endif %}
+            </div>
+
+            <div class="profile-hero-text">
+                <p class="profile-kicker">{% translate "Dein Account" %}</p>
+                <h1>
+                    {% if request.user.get_full_name %}
+                        {{ request.user.get_full_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </h1>
+                <p>
+                    {% translate "Passe dein Profilbild, deinen Namen und deine persönlichen Informationen an." %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+        <div class="profile-messages">
+            {% for message in messages %}
+                <div class="profile-message profile-message-{{ message.tags }}">
+                    <i class="fa-solid fa-circle-check"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="profile-layout">
+        <aside class="profile-card profile-summary-card">
+            <div class="profile-summary-avatar">
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                {% else %}
+                    <span>{{ profile.initials }}</span>
+                {% endif %}
+            </div>
+
+            <h2>
+                {% if request.user.get_full_name %}
+                    {{ request.user.get_full_name }}
+                {% else %}
+                    {{ request.user.username }}
+                {% endif %}
+            </h2>
+
+            <p>{{ request.user.email|default:"Keine E-Mail hinterlegt" }}</p>
+
+            <div class="profile-summary-meta">
+                <div>
+                    <span>{% translate "Benutzername" %}</span>
+                    <strong>{{ request.user.username }}</strong>
+                </div>
+                <div>
+                    <span>{% translate "Profil erstellt" %}</span>
+                    <strong>{{ profile.created_at|date:"d.m.Y" }}</strong>
+                </div>
+            </div>
+        </aside>
+
+        <form class="profile-card profile-form-card" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <input type="hidden" name="avatar_cropped" id="avatar-cropped-input">
+
+            <div class="profile-form-header">
+                <div>
+                    <p class="profile-kicker">{% translate "Einstellungen" %}</p>
+                    <h2>{% translate "Profil bearbeiten" %}</h2>
+                </div>
+                <button class="profile-save-button" type="submit">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {% translate "Speichern" %}
+                </button>
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="profile-form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="profile-form-grid">
+                <div class="profile-field">
+                    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                </div>
+
+                <div class="profile-field">
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+
+                <div class="profile-field">
+                    <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                    {{ form.first_name }}
+                    {{ form.first_name.errors }}
+                </div>
+
+                <div class="profile-field">
+                    <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                    {{ form.last_name }}
+                    {{ form.last_name.errors }}
+                </div>
+
+                <div class="profile-field profile-field-full">
+                    <label for="id_avatar">{{ form.avatar.label }}</label>
+
+                    <div class="profile-avatar-upload-card">
+                        <div class="profile-avatar-upload-preview" id="profile-avatar-live-preview">
+                            {% if profile.avatar %}
+                                <img src="{{ profile.avatar.url }}" alt="{% translate 'Aktuelles Profilbild' %}">
+                            {% else %}
+                                <i class="fa-solid fa-user"></i>
+                            {% endif %}
+                        </div>
+
+                        <div class="profile-avatar-upload-content">
+                            {% if profile.avatar %}
+                                <div class="profile-current-file">
+                                    <span>{% translate "Aktuelles Bild" %}</span>
+                                    <a href="{{ profile.avatar.url }}" target="_blank" rel="noopener">
+                                        {{ profile.avatar.name }}
+                                    </a>
+                                </div>
+
+                                <label class="profile-clear-avatar">
+                                    <input type="checkbox" name="avatar-clear" id="avatar-clear_id">
+                                    <span>{% translate "Profilbild entfernen" %}</span>
+                                </label>
+                            {% else %}
+                                <div class="profile-current-file">
+                                    <span>{% translate "Noch kein Profilbild" %}</span>
+                                    <strong>{% translate "Wähle ein Bild aus, das in deinem Profil angezeigt wird." %}</strong>
+                                </div>
+                            {% endif %}
+
+                            <label class="profile-file-picker" for="id_avatar">
+                                <i class="fa-solid fa-upload"></i>
+                                {% translate "Neues Bild auswählen" %}
+                            </label>
+
+                            <input
+                                type="file"
+                                name="avatar"
+                                accept="image/*"
+                                id="id_avatar"
+                                class="profile-file-input-hidden"
+                            >
+
+                            <small class="profile-avatar-hint">
+                                {% translate "Nach dem Auswählen kannst du den Bildausschnitt verschieben und zoomen." %}
+                            </small>
+                        </div>
+                    </div>
+
+                    {{ form.avatar.errors }}
+                </div>
+
+                <div class="profile-field profile-field-full">
+                    <label for="{{ form.bio.id_for_label }}">{{ form.bio.label }}</label>
+                    {{ form.bio }}
+                    {{ form.bio.errors }}
+                </div>
+            </div>
+
+            <div class="profile-form-footer">
+                <a href="{% url 'home' %}" class="profile-secondary-button">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    {% translate "Zurück zur Startseite" %}
+                </a>
+
+                <button class="profile-save-button profile-save-button-mobile" type="submit">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {% translate "Speichern" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<div class="avatar-crop-modal" id="avatar-crop-modal" aria-hidden="true">
+    <div class="avatar-crop-backdrop" data-avatar-crop-close></div>
+
+    <div class="avatar-crop-dialog">
+        <div class="avatar-crop-header">
+            <div>
+                <p class="profile-kicker">{% translate "Profilbild" %}</p>
+                <h2>{% translate "Bild zuschneiden" %}</h2>
+            </div>
+
+            <button type="button" class="avatar-crop-close" data-avatar-crop-close aria-label="{% translate 'Schließen' %}">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="avatar-crop-area" id="avatar-crop-area">
+            <img src="" alt="" id="avatar-crop-image">
+            <div class="avatar-crop-mask"></div>
+            <div class="avatar-crop-circle"></div>
+        </div>
+
+        <div class="avatar-crop-controls">
+            <label for="avatar-zoom-range">{% translate "Zoom" %}</label>
+            <input type="range" id="avatar-zoom-range" min="1" max="3" step="0.01" value="1">
+        </div>
+
+        <div class="avatar-crop-actions">
+            <button type="button" class="profile-secondary-button" data-avatar-crop-close>
+                {% translate "Abbrechen" %}
+            </button>
+
+            <button type="button" class="profile-save-button" id="avatar-crop-apply">
+                <i class="fa-solid fa-check"></i>
+                {% translate "Übernehmen" %}
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/profile_avatar_crop.js' %}"></script>
+{% endblock %}

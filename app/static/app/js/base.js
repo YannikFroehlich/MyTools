@@ -316,60 +316,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ── DROPDOWN MENÜS ── */
 
-    function setupDropdown(buttonId, dropdownId, otherDropdownIds = []) {
-        const button = document.getElementById(buttonId);
-        const dropdown = document.getElementById(dropdownId);
-
-        if (!button || !dropdown) return;
-
-        button.addEventListener('click', (event) => {
-            event.stopPropagation();
-
-            otherDropdownIds.forEach((id) => {
-                const otherDropdown = document.getElementById(id);
-
-                if (otherDropdown) {
-                    otherDropdown.classList.remove('open');
-                }
-            });
-
-            dropdown.classList.toggle('open');
-        });
-
-        dropdown.querySelectorAll('a, button').forEach((item) => {
-            item.addEventListener('click', () => {
-                dropdown.classList.remove('open');
-            });
-        });
-
-        document.addEventListener('click', (event) => {
-            const clickedInsideDropdown = dropdown.contains(event.target);
-            const clickedButton = button.contains(event.target);
-
-            if (!clickedInsideDropdown && !clickedButton) {
+    function closeAllDropdowns(exceptDropdown = null, exceptButton = null) {
+        document.querySelectorAll('.menu-dropdown.open, .profile-menu-dropdown.open').forEach((dropdown) => {
+            if (dropdown !== exceptDropdown) {
                 dropdown.classList.remove('open');
             }
         });
 
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                dropdown.classList.remove('open');
+        document.querySelectorAll('.menu-button.active, .profile-menu-button.active').forEach((button) => {
+            if (button !== exceptButton) {
+                button.classList.remove('active');
             }
         });
     }
 
-    setupDropdown('games-menu-button', 'games-menu-dropdown', [
-        'menu-dropdown',
-        'google-apps-menu-dropdown'
-    ]);
+    function setupDropdown(buttonId, dropdownId) {
+        const button = document.getElementById(buttonId);
+        const dropdown = document.getElementById(dropdownId);
 
-    setupDropdown('google-apps-menu-button', 'google-apps-menu-dropdown', [
-        'menu-dropdown',
-        'games-menu-dropdown'
-    ]);
+        if (!button || !dropdown) {
+            return;
+        }
 
-    setupDropdown('menu-button', 'menu-dropdown', [
-        'games-menu-dropdown',
-        'google-apps-menu-dropdown'
-    ]);
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const shouldOpen = !dropdown.classList.contains('open');
+
+            closeAllDropdowns(dropdown, button);
+
+            dropdown.classList.toggle('open', shouldOpen);
+            button.classList.toggle('active', shouldOpen);
+        });
+
+        dropdown.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        dropdown.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', () => {
+                closeAllDropdowns();
+            });
+        });
+
+        dropdown.querySelectorAll('form').forEach((form) => {
+            form.addEventListener('submit', () => {
+                closeAllDropdowns();
+            });
+        });
+    }
+
+    setupDropdown('games-menu-button', 'games-menu-dropdown');
+    setupDropdown('google-apps-menu-button', 'google-apps-menu-dropdown');
+    setupDropdown('menu-button', 'menu-dropdown');
+    setupDropdown('profile-menu-button', 'profile-menu-dropdown');
+
+    document.addEventListener('click', () => {
+        closeAllDropdowns();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeAllDropdowns();
+        }
+    });
 });
