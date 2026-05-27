@@ -223,3 +223,69 @@ class WeatherLocation(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class HumanBenchmarkScore(models.Model):
+    GAME_REACTION = "reaction"
+    GAME_AIM = "aim"
+    GAME_TYPING = "typing"
+    GAME_VISUAL = "visual"
+
+    GAME_CHOICES = [
+        (GAME_REACTION, "Reaktion"),
+        (GAME_AIM, "Aim Trainer"),
+        (GAME_TYPING, "Typing Test"),
+        (GAME_VISUAL, "Visual Memory"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="human_benchmark_scores",
+    )
+    game = models.CharField(max_length=20, choices=GAME_CHOICES)
+    score = models.FloatField()
+    display_score = models.CharField(max_length=80)
+    details = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "game", "-created_at"]),
+            models.Index(fields=["game", "score"]),
+        ]
+        verbose_name = "Human Benchmark Ergebnis"
+        verbose_name_plural = "Human Benchmark Ergebnisse"
+
+    def __str__(self):
+        return f"{self.user} · {self.get_game_display()} · {self.display_score}"
+
+
+class HumanBenchmarkHighScore(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="human_benchmark_highscores",
+    )
+    game = models.CharField(max_length=20, choices=HumanBenchmarkScore.GAME_CHOICES)
+    score = models.FloatField()
+    display_score = models.CharField(max_length=80)
+    details = models.JSONField(default=dict, blank=True)
+    achieved_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "game"],
+                name="unique_human_benchmark_highscore_per_user_game",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["game", "score"]),
+        ]
+        verbose_name = "Human Benchmark Highscore"
+        verbose_name_plural = "Human Benchmark Highscores"
+
+    def __str__(self):
+        return f"{self.user} · {self.get_game_display()} · {self.display_score}"

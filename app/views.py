@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, Shortcut, ShortcutSection, WeatherLocation
+from app.models import AvatarCharacter, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, ShortcutSection, WeatherLocation
 
 import json
 
@@ -27,6 +27,8 @@ from django.views.decorators.http import require_POST
 
 from .models import Note
 from .forms import NoteForm, SignUpForm
+
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 env_path = settings.BASE_DIR / ".env"
 load_dotenv(env_path)
@@ -523,6 +525,105 @@ def spritkostenrechner(request):
     return render(request, "app/spritkostenrechner.html")
 
 
+HUMAN_BENCHMARK_GAMES = ["reaction", "aim", "typing", "visual"]
+
+HUMAN_BENCHMARK_LOWER_IS_BETTER = {
+    "reaction": True,
+    "aim": True,
+    "typing": False,
+    "visual": False,
+}
+
+HUMAN_BENCHMARK_GAME_LABELS = {
+    "reaction": _("Reaktion"),
+    "aim": _("Aim Trainer"),
+    "typing": _("Typing Test"),
+    "visual": _("Visual Memory"),
+}
+
+
+def is_better_human_benchmark_score(game, new_score, old_score):
+    if old_score is None:
+        return True
+
+    if HUMAN_BENCHMARK_LOWER_IS_BETTER.get(game, False):
+        return new_score < old_score
+
+    return new_score > old_score
+
+
+def serialize_human_benchmark_score(score):
+    score_date = getattr(score, "created_at", None) or getattr(score, "achieved_at", None)
+
+    return {
+        "game": score.game,
+        "score": score.score,
+        "display_score": score.display_score,
+        "details": score.details or {},
+        "created_at": date_format(score_date, "d.m.Y H:i") if score_date else "",
+    }
+
+
+def get_human_benchmark_score_data(user):
+    data = {
+        "games": {
+            game: {
+                "label": str(HUMAN_BENCHMARK_GAME_LABELS.get(game, game)),
+                "lower_is_better": HUMAN_BENCHMARK_LOWER_IS_BETTER.get(game, False),
+                "recent": [],
+                "highscore": None,
+                "leaderboard": [],
+            }
+            for game in HUMAN_BENCHMARK_GAMES
+        }
+    }
+
+    for game in HUMAN_BENCHMARK_GAMES:
+        recent_scores = HumanBenchmarkScore.objects.filter(
+            user=user,
+            game=game,
+        ).order_by("-created_at")[:10]
+
+        highscore = HumanBenchmarkHighScore.objects.filter(
+            user=user,
+            game=game,
+        ).first()
+
+        order_field = "score" if HUMAN_BENCHMARK_LOWER_IS_BETTER.get(game, False) else "-score"
+
+        leaderboard = (
+            HumanBenchmarkHighScore.objects
+            .filter(game=game)
+            .select_related("user")
+            .order_by(order_field, "achieved_at")[:10]
+        )
+
+        data["games"][game]["recent"] = [
+            serialize_human_benchmark_score(score)
+            for score in recent_scores
+        ]
+
+        data["games"][game]["highscore"] = (
+            serialize_human_benchmark_score(highscore)
+            if highscore
+            else None
+        )
+
+        data["games"][game]["leaderboard"] = [
+            {
+                "rank": index + 1,
+                "username": entry.user.get_full_name() or entry.user.username,
+                "display_score": entry.display_score,
+                "score": entry.score,
+                "achieved_at": date_format(entry.achieved_at, "d.m.Y H:i"),
+            }
+            for index, entry in enumerate(leaderboard)
+        ]
+
+    return data
+
+
+@ensure_csrf_cookie
 def human_benchmark(request):
     benchmark_labels = {
         "loading": _("Lade Text..."),
@@ -530,10 +631,79 @@ def human_benchmark(request):
         "nextTest": _("Nächster Test"),
         "loadingButton": _("Lädt..."),
         "startTest": _("Test starten"),
+        "newHighscore": _("Neuer Highscore!"),
+        "saved": _("Ergebnis gespeichert."),
+        "noResults": _("Noch keine Ergebnisse."),
+        "rank": _("Platz"),
+        "player": _("Nutzer"),
+        "score": _("Score"),
+        "date": _("Datum"),
     }
 
     return render(request, "app/human_benchmark.html", {
         "benchmark_labels": benchmark_labels,
+        "score_data": get_human_benchmark_score_data(request.user),
+    })
+
+
+@require_POST
+def human_benchmark_score_api(request):
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return api_error_response(_("Ungültige Anfrage."), status=400)
+
+    game = payload.get("game")
+
+    if game not in HUMAN_BENCHMARK_GAMES:
+        return api_error_response(_("Unbekannter Spielmodus."), status=400)
+
+    try:
+        score_value = float(payload.get("score"))
+    except (TypeError, ValueError):
+        return api_error_response(_("Ungültiger Score."), status=400)
+
+    if score_value < 0:
+        return api_error_response(_("Ungültiger Score."), status=400)
+
+    display_score = str(payload.get("display_score") or score_value)[:80]
+    details = payload.get("details") if isinstance(payload.get("details"), dict) else {}
+
+    score = HumanBenchmarkScore.objects.create(
+        user=request.user,
+        game=game,
+        score=score_value,
+        display_score=display_score,
+        details=details,
+    )
+
+    highscore, created = HumanBenchmarkHighScore.objects.get_or_create(
+        user=request.user,
+        game=game,
+        defaults={
+            "score": score_value,
+            "display_score": display_score,
+            "details": details,
+        },
+    )
+
+    is_new_highscore = created or is_better_human_benchmark_score(
+        game,
+        score_value,
+        highscore.score,
+    )
+
+    if is_new_highscore and not created:
+        highscore.score = score_value
+        highscore.display_score = display_score
+        highscore.details = details
+        highscore.save(update_fields=["score", "display_score", "details", "achieved_at"])
+
+    return JsonResponse({
+        "status": "ok",
+        "new_highscore": is_new_highscore,
+        "saved_score": serialize_human_benchmark_score(score),
+        "score_data": get_human_benchmark_score_data(request.user),
     })
 
 
