@@ -2533,6 +2533,14 @@ body.dark-mode .shortcuts-grid.drag-over {
     color: #22c55e;
 }
 
+
+
+/* Widget-spezifische Felder sind standardmäßig versteckt.
+   home.js zeigt sie passend zum ausgewählten Widget-Typ wieder an. */
+.widget-clock-design-field,
+.widget-clock-style-field {
+    display: none;
+}
 .widget-clock-design-field small {
     display: block;
     margin-top: 0.45rem;

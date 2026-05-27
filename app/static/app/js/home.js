@@ -475,34 +475,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    function setWidgetFieldVisible(field, input, isVisible) {
+        if (field) {
+            field.style.display = isVisible ? "flex" : "none";
+            field.hidden = !isVisible;
+        }
+
+        if (input) {
+            input.disabled = !isVisible;
+        }
+    }
+
     function toggleWidgetTypeFields() {
         const currentWidgetType = widgetTypeInput?.value || "weather";
         const isWeatherWidget = currentWidgetType === "weather";
         const isClockWidget = currentWidgetType === "clock";
 
-        if (widgetWeatherLocationField) {
-            widgetWeatherLocationField.style.display = isWeatherWidget ? "" : "none";
-        }
+        setWidgetFieldVisible(
+            widgetWeatherLocationField,
+            widgetWeatherLocationInput,
+            isWeatherWidget
+        );
 
-        if (widgetWeatherLocationInput) {
-            widgetWeatherLocationInput.disabled = !isWeatherWidget;
-        }
+        setWidgetFieldVisible(
+            widgetClockDesignField,
+            widgetClockDesignInput,
+            isClockWidget
+        );
 
-        if (widgetClockDesignField) {
-            widgetClockDesignField.style.display = isClockWidget ? "" : "none";
-        }
-
-        if (widgetClockDesignInput) {
-            widgetClockDesignInput.disabled = !isClockWidget;
-        }
-
-        if (widgetClockStyleField) {
-            widgetClockStyleField.style.display = isClockWidget ? "" : "none";
-        }
-
-        if (widgetClockStyleInput) {
-            widgetClockStyleInput.disabled = !isClockWidget;
-        }
+        setWidgetFieldVisible(
+            widgetClockStyleField,
+            widgetClockStyleInput,
+            isClockWidget
+        );
     }
 
     function resetWidgetForm() {
