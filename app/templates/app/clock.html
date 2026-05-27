@@ -1,0 +1,321 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate 'Uhr' %} · MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/clock.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="clock-page"
+         data-volume="{{ clock_settings.volume }}"
+         data-ringtone="{{ clock_settings.ringtone }}"
+         data-custom-sound-url="{{ clock_settings.custom_sound_url }}">
+    <div class="clock-hero">
+        <div>
+            <span class="clock-eyebrow"><i class="fa-regular fa-clock"></i> {% translate 'Zeit-Zentrale' %}</span>
+            <h1>{% translate 'Uhr' %}</h1>
+            <p>{% translate 'Weltuhr, Stoppuhr, gespeicherte Timer und eigene Timer-Sounds an einem Ort.' %}</p>
+        </div>
+
+        <div class="clock-hero-side">
+            <button type="button" class="clock-settings-button" data-open-clock-settings>
+                <i class="fa-solid fa-gear"></i>
+                <span>{% translate 'Einstellungen' %}</span>
+            </button>
+
+            <div class="clock-now-card">
+                <span>{% translate 'Lokale Uhrzeit' %}</span>
+                <strong data-local-time>--:--:--</strong>
+                <small data-local-date>--</small>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+        <div class="clock-messages">
+            {% for message in messages %}
+                <div class="clock-message clock-message-{{ message.tags|default:'info' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="clock-grid">
+        <section class="clock-panel clock-panel-wide">
+            <div class="clock-panel-header">
+                <div>
+                    <span class="clock-panel-kicker">{% translate 'Weltuhr' %}</span>
+                    <h2>{% translate 'Orte' %}</h2>
+                </div>
+            </div>
+
+            <form method="post" class="clock-inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_world_city">
+
+                <label>
+                    <span>{% translate 'Name' %}</span>
+                    <input type="text" name="label" maxlength="80" placeholder="z.B. Zuhause, Urlaub, Server-Zeit">
+                </label>
+
+                <label>
+                    <span>{% translate 'Zeitzone' %}</span>
+                    <select name="timezone" required>
+                        {% for timezone_value, timezone_label in timezone_choices %}
+                            <option value="{{ timezone_value }}">{{ timezone_label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <button type="submit" class="clock-button clock-button-primary">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate 'Ort hinzufügen' %}
+                </button>
+            </form>
+
+            <div class="world-clock-grid">
+                {% for city in world_cities %}
+                    <article class="world-clock-card" data-world-clock data-timezone="{{ city.timezone }}">
+                        <div class="world-clock-top">
+                            <div>
+                                <h3>{{ city.label }}</h3>
+                                <span>{{ city.timezone }}</span>
+                            </div>
+
+                            <form method="post" class="clock-delete-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete_world_city">
+                                <input type="hidden" name="city_id" value="{{ city.id }}">
+                                <button type="submit" aria-label="{% translate 'Ort löschen' %}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                        <strong data-world-time>--:--:--</strong>
+                        <small data-world-date>--</small>
+                    </article>
+                {% empty %}
+                    <p class="clock-empty">{% translate 'Noch keine Orte gespeichert.' %}</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="clock-panel">
+            <div class="clock-panel-header">
+                <div>
+                    <span class="clock-panel-kicker">{% translate 'Stoppuhr' %}</span>
+                    <h2 data-stopwatch-display>00:00.00</h2>
+                </div>
+            </div>
+
+            <div class="clock-actions">
+                <button type="button" class="clock-button clock-button-primary" data-stopwatch-start>
+                    <i class="fa-solid fa-play"></i>
+                    {% translate 'Start' %}
+                </button>
+                <button type="button" class="clock-button" data-stopwatch-lap>
+                    <i class="fa-solid fa-flag"></i>
+                    {% translate 'Runde' %}
+                </button>
+                <button type="button" class="clock-button" data-stopwatch-reset>
+                    <i class="fa-solid fa-rotate-left"></i>
+                    {% translate 'Reset' %}
+                </button>
+            </div>
+
+            <div class="lap-list-wrapper">
+                <ol class="lap-list" data-lap-list></ol>
+                <p class="clock-empty" data-lap-empty>{% translate 'Noch keine Runden gespeichert.' %}</p>
+            </div>
+        </section>
+
+        <section class="clock-panel timer-panel" data-timer-panel>
+            <div class="clock-panel-header">
+                <div>
+                    <span class="clock-panel-kicker">{% translate 'Timer' %}</span>
+                    <h2 data-timer-display>00:00:00</h2>
+                    <p class="timer-status" data-timer-status>{% translate 'Bereit' %}</p>
+                </div>
+            </div>
+
+            <div class="timer-progress" aria-hidden="true">
+                <span data-timer-progress></span>
+            </div>
+
+            <div class="timer-quick-set">
+                <label>
+                    <span>{% translate 'Stunden' %}</span>
+                    <input type="number" min="0" max="23" value="0" data-timer-hours>
+                </label>
+                <label>
+                    <span>{% translate 'Minuten' %}</span>
+                    <input type="number" min="0" max="59" value="5" data-timer-minutes>
+                </label>
+                <label>
+                    <span>{% translate 'Sekunden' %}</span>
+                    <input type="number" min="0" max="59" value="0" data-timer-seconds>
+                </label>
+            </div>
+
+            <div class="clock-actions timer-actions">
+                <button type="button" class="clock-button clock-button-primary timer-toggle-button" data-timer-toggle>
+                    <i class="fa-solid fa-play"></i>
+                    <span>{% translate 'Start' %}</span>
+                </button>
+                <button type="button" class="clock-button" data-timer-apply>
+                    <i class="fa-solid fa-check"></i>
+                    {% translate 'Zeit übernehmen' %}
+                </button>
+                <button type="button" class="clock-button" data-timer-reset>
+                    <i class="fa-solid fa-rotate-left"></i>
+                    {% translate 'Reset' %}
+                </button>
+            </div>
+
+            <form method="post" class="timer-create-form timer-save-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_timer_preset">
+                <input type="hidden" name="hours" value="0" data-save-hours>
+                <input type="hidden" name="minutes" value="5" data-save-minutes>
+                <input type="hidden" name="seconds" value="0" data-save-seconds>
+
+                <label>
+                    <span>{% translate 'Als Vorlage speichern' %}</span>
+                    <input type="text" name="timer_name" maxlength="80" placeholder="z.B. Tee, Pause, Fokus" required>
+                </label>
+
+                <button type="submit" class="clock-button clock-button-secondary">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {% translate 'Aktuelle Zeit speichern' %}
+                </button>
+            </form>
+        </section>
+
+        <section class="clock-panel clock-panel-wide">
+            <div class="clock-panel-header">
+                <div>
+                    <span class="clock-panel-kicker">{% translate 'Gespeicherte Timer' %}</span>
+                    <h2>{% translate 'Vorlagen' %}</h2>
+                </div>
+            </div>
+
+            <div class="timer-preset-grid">
+                {% for timer in timer_presets %}
+                    <article class="timer-preset-card">
+                        <div>
+                            <h3>{{ timer.name }}</h3>
+                            <span>{{ timer.display_duration }}</span>
+                        </div>
+
+                        <div class="timer-preset-actions">
+                            <button type="button"
+                                    class="clock-button clock-button-primary"
+                                    data-load-timer
+                                    data-timer-name="{{ timer.name }}"
+                                    data-timer-seconds="{{ timer.total_seconds }}">
+                                <i class="fa-solid fa-play"></i>
+                                {% translate 'Laden' %}
+                            </button>
+
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete_timer_preset">
+                                <input type="hidden" name="timer_id" value="{{ timer.id }}">
+                                <button type="submit" class="clock-icon-button" aria-label="{% translate 'Timer löschen' %}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                {% empty %}
+                    <p class="clock-empty">{% translate 'Noch keine Timer gespeichert.' %}</p>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+
+    <div class="clock-settings-modal" data-clock-settings-modal hidden>
+        <div class="clock-settings-backdrop" data-close-clock-settings></div>
+        <section class="clock-panel clock-settings-dialog" role="dialog" aria-modal="true" aria-labelledby="clock-settings-title">
+            <div class="clock-panel-header">
+                <div>
+                    <span class="clock-panel-kicker">{% translate 'Einstellungen' %}</span>
+                    <h2 id="clock-settings-title">{% translate 'Ton & Lautstärke' %}</h2>
+                </div>
+                <div class="settings-dialog-actions">
+                    <button type="button" class="clock-button" data-test-sound>
+                    <i class="fa-solid fa-volume-high"></i>
+                    {% translate 'Testen' %}
+                    </button>
+                    <button type="button" class="clock-icon-button" data-close-clock-settings aria-label="{% translate 'Einstellungen schließen' %}">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="clock-settings-form" data-clock-settings-form data-has-custom-sound="{% if clock_settings.custom_sound %}true{% else %}false{% endif %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_clock_settings">
+
+                <label class="volume-label">
+                    <span>{% translate 'Lautstärke' %}: <strong data-volume-value>{{ clock_settings.volume }}</strong>%</span>
+                    <input type="range" name="volume" min="0" max="100" value="{{ clock_settings.volume }}" data-volume-input>
+                </label>
+
+                <div class="ringtone-grid">
+                    {% for ringtone_value, ringtone_label in ringtone_choices %}
+                        <label class="ringtone-option">
+                            <input type="radio" name="ringtone" value="{{ ringtone_value }}" {% if clock_settings.ringtone == ringtone_value %}checked{% endif %}>
+                            <span>
+                                <i class="fa-solid fa-music"></i>
+                                {{ ringtone_label }}
+                            </span>
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <label class="custom-sound-upload">
+                    <span>{% translate 'Eigenen Klingelton hochladen' %}</span>
+                    <input type="file" name="custom_sound" accept="audio/*" data-custom-sound-input>
+                    <small>
+                        {% translate 'Maximal 5 MB. Wenn du einen neuen Ton hochlädst, wird der alte eigene Ton gelöscht.' %}
+                    </small>
+                    {% if clock_settings.custom_sound %}
+                        <small class="custom-sound-current">
+                            <i class="fa-solid fa-check"></i>
+                            {% translate 'Eigener Ton ist aktuell gespeichert.' %}
+                        </small>
+                    {% endif %}
+                </label>
+
+                <button type="submit" class="clock-button clock-button-primary">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {% translate 'Einstellungen speichern' %}
+                </button>
+            </form>
+
+            {% if clock_settings.custom_sound %}
+                <form method="post" class="remove-sound-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="remove_custom_sound">
+                    <button type="submit" class="clock-button clock-button-danger">
+                        <i class="fa-solid fa-trash"></i>
+                        {% translate 'Eigenen Ton löschen' %}
+                    </button>
+                </form>
+            {% endif %}
+        </section>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/clock.js' %}"></script>
+{% endblock %}

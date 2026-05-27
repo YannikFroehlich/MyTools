@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-27 11:45+0200\n"
+"POT-Creation-Date: 2026-05-27 16:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,24 +18,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\app\forms.py:46 .\app\templates\app\base.html:218
-#: .\app\templates\app\home.html:380
+#: .\app\forms.py:46 .\app\templates\app\base.html:223
+#: .\app\templates\app\home.html:343 .\app\templates\app\home.html:550
 msgid "Blau"
 msgstr ""
 
-#: .\app\forms.py:47 .\app\templates\app\home.html:390
+#: .\app\forms.py:47 .\app\templates\app\home.html:353
+#: .\app\templates\app\home.html:560
 msgid "Lila"
 msgstr ""
 
-#: .\app\forms.py:48 .\app\templates\app\home.html:385
+#: .\app\forms.py:48 .\app\templates\app\home.html:348
+#: .\app\templates\app\home.html:555
 msgid "Grün"
 msgstr ""
 
-#: .\app\forms.py:49 .\app\templates\app\home.html:395
+#: .\app\forms.py:49 .\app\templates\app\home.html:358
+#: .\app\templates\app\home.html:565
 msgid "Orange"
 msgstr ""
 
-#: .\app\forms.py:50 .\app\templates\app\home.html:400
+#: .\app\forms.py:50 .\app\templates\app\home.html:363
+#: .\app\templates\app\home.html:570
 msgid "Rot"
 msgstr ""
 
@@ -128,7 +132,7 @@ msgid "Dein Profil wurde gespeichert."
 msgstr ""
 
 #: .\app\templates\app\about.html:5 .\app\templates\app\base.html:48
-#: .\app\templates\app\base.html:375
+#: .\app\templates\app\base.html:380
 msgid "Über"
 msgstr ""
 
@@ -151,7 +155,7 @@ msgstr ""
 msgid "Zur Startseite"
 msgstr ""
 
-#: .\app\templates\app\about.html:38
+#: .\app\templates\app\about.html:38 .\app\templates\app\home.html:175
 msgid "Notizen öffnen"
 msgstr ""
 
@@ -181,7 +185,7 @@ msgstr ""
 msgid "OpenWeather, Tankerkönig und Genius integriert"
 msgstr ""
 
-#: .\app\templates\app\about.html:74 .\app\templates\app\base.html:211
+#: .\app\templates\app\about.html:74 .\app\templates\app\base.html:216
 msgid "Design"
 msgstr ""
 
@@ -228,7 +232,8 @@ msgid "Was aktuell eingebaut ist"
 msgstr ""
 
 #: .\app\templates\app\about.html:136 .\app\templates\app\base.html:43
-#: .\app\templates\app\base.html:360 .\app\templates\app\weather.html:5
+#: .\app\templates\app\base.html:365 .\app\templates\app\home.html:298
+#: .\app\templates\app\weather.html:5
 msgid "Wetter"
 msgstr ""
 
@@ -236,7 +241,7 @@ msgstr ""
 msgid "Aktuelle Wetterdaten, Vorhersage und gespeicherte Orte."
 msgstr ""
 
-#: .\app\templates\app\about.html:144 .\app\templates\app\base.html:154
+#: .\app\templates\app\about.html:144 .\app\templates\app\base.html:159
 msgid "Spritkosten"
 msgstr ""
 
@@ -244,7 +249,7 @@ msgstr ""
 msgid "Tankstellen- und Preisabfrage über Tankerkönig."
 msgstr ""
 
-#: .\app\templates\app\about.html:152 .\app\templates\app\base.html:159
+#: .\app\templates\app\about.html:152 .\app\templates\app\base.html:164
 #: .\app\templates\app\genius_search.html:5
 #: .\app\templates\app\genius_search.html:16
 msgid "Genius Search"
@@ -254,8 +259,9 @@ msgstr ""
 msgid "Song- und Künstler-Suche über die Genius API."
 msgstr ""
 
-#: .\app\templates\app\about.html:160 .\app\templates\app\base.html:169
-#: .\app\templates\app\base.html:370 .\app\templates\app\notes.html:4
+#: .\app\templates\app\about.html:160 .\app\templates\app\base.html:174
+#: .\app\templates\app\base.html:375 .\app\templates\app\home.html:233
+#: .\app\templates\app\home.html:299 .\app\templates\app\notes.html:4
 #: .\app\templates\app\notes.html:21
 msgid "Notizen"
 msgstr ""
@@ -264,7 +270,7 @@ msgstr ""
 msgid "Notizen mit Pins, Archiv, Farben und Tags."
 msgstr ""
 
-#: .\app\templates\app\about.html:168 .\app\templates\app\base.html:174
+#: .\app\templates\app\about.html:168 .\app\templates\app\base.html:179
 #: .\app\templates\app\unit_converter.html:4
 #: .\app\templates\app\unit_converter.html:20
 msgid "Einheitenrechner"
@@ -325,7 +331,7 @@ msgstr ""
 #: .\app\templates\app\auth\password_reset_confirm.html:25
 #: .\app\templates\app\auth\password_reset_done.html:25
 #: .\app\templates\app\auth\password_reset_form.html:25
-#: .\app\templates\app\base.html:266 .\app\templates\registration\login.html:40
+#: .\app\templates\app\base.html:271 .\app\templates\registration\login.html:40
 #: .\app\templates\registration\signup.html:40
 msgid "Dark Mode umschalten"
 msgstr ""
@@ -420,7 +426,7 @@ msgid "Passwort für MyTools zurücksetzen"
 msgstr ""
 
 #: .\app\templates\app\avatar_wiki.html:5
-#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:164
+#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:169
 msgid "Avatar Wiki"
 msgstr ""
 
@@ -433,7 +439,8 @@ msgstr ""
 msgid "Charakter hinzufügen"
 msgstr ""
 
-#: .\app\templates\app\avatar_wiki.html:37 .\app\templates\app\home.html:226
+#: .\app\templates\app\avatar_wiki.html:37 .\app\templates\app\clock.html:61
+#: .\app\templates\app\home.html:396
 msgid "Name"
 msgstr ""
 
@@ -471,7 +478,7 @@ msgstr ""
 msgid "Abbrechen"
 msgstr ""
 
-#: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\home.html:341
+#: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\home.html:511
 #: .\app\templates\app\profile.html:94 .\app\templates\app\profile.html:198
 #: .\app\templates\app\stream_deck.html:334
 #: .\app\templates\app\stream_deck.html:372
@@ -522,7 +529,8 @@ msgstr ""
 msgid "Mein myManager"
 msgstr ""
 
-#: .\app\templates\app\base.html:38 .\app\templates\app\base.html:355
+#: .\app\templates\app\base.html:38 .\app\templates\app\base.html:360
+#: .\app\templates\app\clock.html:119 .\app\templates\app\clock.html:168
 #: .\app\templates\app\human_benchmark.html:96
 msgid "Start"
 msgstr ""
@@ -535,7 +543,8 @@ msgstr ""
 msgid "Spiele"
 msgstr ""
 
-#: .\app\templates\app\base.html:61 .\app\templates\app\human_benchmark.html:5
+#: .\app\templates\app\base.html:61 .\app\templates\app\home.html:301
+#: .\app\templates\app\human_benchmark.html:5
 #: .\app\templates\app\human_benchmark.html:17
 msgid "Human Benchmark"
 msgstr ""
@@ -600,86 +609,241 @@ msgstr ""
 msgid "Weitere Seiten"
 msgstr ""
 
-#: .\app\templates\app\base.html:144 .\app\templates\app\base.html:317
-#: .\app\templates\app\base.html:365 .\app\templates\app\users.html:5
+#: .\app\templates\app\base.html:144 .\app\templates\app\clock.html:5
+#: .\app\templates\app\clock.html:19 .\app\templates\app\home.html:300
+msgid "Uhr"
+msgstr ""
+
+#: .\app\templates\app\base.html:149 .\app\templates\app\base.html:322
+#: .\app\templates\app\base.html:370 .\app\templates\app\users.html:5
 #: .\app\templates\app\users.html:16 .\app\templates\app\users.html:51
+#: .\app\views.py:1100
 msgid "Nutzer"
 msgstr ""
 
-#: .\app\templates\app\base.html:149 .\app\templates\app\obs-dashboard.html:5
+#: .\app\templates\app\base.html:154 .\app\templates\app\obs-dashboard.html:5
 #: .\app\templates\app\obs-dashboard.html:21
 msgid "OBS Dashboard"
 msgstr ""
 
-#: .\app\templates\app\base.html:179
+#: .\app\templates\app\base.html:184
 msgid "Stream Deck"
 msgstr ""
 
-#: .\app\templates\app\base.html:205
+#: .\app\templates\app\base.html:210
 msgid "Design anpassen"
 msgstr ""
 
-#: .\app\templates\app\base.html:212
+#: .\app\templates\app\base.html:217
 msgid "Design-Men&uuml; schlie&szlig;en"
 msgstr ""
 
-#: .\app\templates\app\base.html:217
+#: .\app\templates\app\base.html:222
 msgid "Design-Vorlagen"
 msgstr ""
 
-#: .\app\templates\app\base.html:222
+#: .\app\templates\app\base.html:227
 msgid "Gr&uuml;n"
 msgstr ""
 
-#: .\app\templates\app\base.html:226
+#: .\app\templates\app\base.html:231
 msgid "Rose"
 msgstr ""
 
-#: .\app\templates\app\base.html:230
+#: .\app\templates\app\base.html:235
 msgid "Graphit"
 msgstr ""
 
-#: .\app\templates\app\base.html:237
+#: .\app\templates\app\base.html:242
 msgid "Header links"
 msgstr ""
 
-#: .\app\templates\app\base.html:242
+#: .\app\templates\app\base.html:247
 msgid "Header rechts"
 msgstr ""
 
-#: .\app\templates\app\base.html:247
+#: .\app\templates\app\base.html:252
 msgid "Hintergrund"
 msgstr ""
 
-#: .\app\templates\app\base.html:252
+#: .\app\templates\app\base.html:257
 msgid "Footer"
 msgstr ""
 
-#: .\app\templates\app\base.html:260
+#: .\app\templates\app\base.html:265
 msgid "Zur&uuml;cksetzen"
 msgstr ""
 
-#: .\app\templates\app\base.html:273
+#: .\app\templates\app\base.html:278
 msgid "Profilmenü öffnen"
 msgstr ""
 
-#: .\app\templates\app\base.html:276 .\app\templates\app\base.html:290
+#: .\app\templates\app\base.html:281 .\app\templates\app\base.html:295
 #: .\app\templates\app\profile.html:17 .\app\templates\app\profile.html:54
 #: .\app\templates\app\profile.html:211
 #: .\app\templates\app\public_profile.html:29 .\app\templates\app\users.html:63
 msgid "Profilbild"
 msgstr ""
 
-#: .\app\templates\app\base.html:312
+#: .\app\templates\app\base.html:317
 msgid "Profil öffnen"
 msgstr ""
 
-#: .\app\templates\app\base.html:324
+#: .\app\templates\app\base.html:329
 msgid "Abmelden"
 msgstr ""
 
-#: .\app\templates\app\base.html:352
+#: .\app\templates\app\base.html:357
 msgid "Footer Navigation"
+msgstr ""
+
+#: .\app\templates\app\clock.html:18
+msgid "Zeit-Zentrale"
+msgstr ""
+
+#: .\app\templates\app\clock.html:20
+msgid ""
+"Weltuhr, Stoppuhr, gespeicherte Timer und eigene Timer-Sounds an einem Ort."
+msgstr ""
+
+#: .\app\templates\app\clock.html:26 .\app\templates\app\clock.html:248
+#: .\app\templates\app\profile.html:89
+msgid "Einstellungen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:30
+msgid "Lokale Uhrzeit"
+msgstr ""
+
+#: .\app\templates\app\clock.html:51
+msgid "Weltuhr"
+msgstr ""
+
+#: .\app\templates\app\clock.html:52
+msgid "Orte"
+msgstr ""
+
+#: .\app\templates\app\clock.html:66
+msgid "Zeitzone"
+msgstr ""
+
+#: .\app\templates\app\clock.html:76
+msgid "Ort hinzufügen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:93 .\app\templates\app\weather.html:85
+msgid "Ort löschen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:103
+msgid "Noch keine Orte gespeichert."
+msgstr ""
+
+#: .\app\templates\app\clock.html:111
+msgid "Stoppuhr"
+msgstr ""
+
+#: .\app\templates\app\clock.html:123
+msgid "Runde"
+msgstr ""
+
+#: .\app\templates\app\clock.html:127 .\app\templates\app\clock.html:176
+msgid "Reset"
+msgstr ""
+
+#: .\app\templates\app\clock.html:133
+msgid "Noch keine Runden gespeichert."
+msgstr ""
+
+#: .\app\templates\app\clock.html:140
+msgid "Timer"
+msgstr ""
+
+#: .\app\templates\app\clock.html:142
+msgid "Bereit"
+msgstr ""
+
+#: .\app\templates\app\clock.html:152
+#: .\app\templates\app\unit_converter.html:101 .\app\views.py:1590
+msgid "Stunden"
+msgstr ""
+
+#: .\app\templates\app\clock.html:156 .\app\views.py:1589
+msgid "Minuten"
+msgstr ""
+
+#: .\app\templates\app\clock.html:160 .\app\views.py:1588
+msgid "Sekunden"
+msgstr ""
+
+#: .\app\templates\app\clock.html:172
+msgid "Zeit übernehmen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:188
+msgid "Als Vorlage speichern"
+msgstr ""
+
+#: .\app\templates\app\clock.html:194
+msgid "Aktuelle Zeit speichern"
+msgstr ""
+
+#: .\app\templates\app\clock.html:202
+msgid "Gespeicherte Timer"
+msgstr ""
+
+#: .\app\templates\app\clock.html:203
+msgid "Vorlagen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:222
+msgid "Laden"
+msgstr ""
+
+#: .\app\templates\app\clock.html:229
+msgid "Timer löschen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:236
+msgid "Noch keine Timer gespeichert."
+msgstr ""
+
+#: .\app\templates\app\clock.html:249
+msgid "Ton & Lautstärke"
+msgstr ""
+
+#: .\app\templates\app\clock.html:254
+msgid "Testen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:256
+msgid "Einstellungen schließen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:267 .\app\templates\app\stream_deck.html:223
+msgid "Lautstärke"
+msgstr ""
+
+#: .\app\templates\app\clock.html:284
+msgid "Eigenen Klingelton hochladen"
+msgstr ""
+
+#: .\app\templates\app\clock.html:287
+msgid ""
+"Maximal 5 MB. Wenn du einen neuen Ton hochlädst, wird der alte eigene Ton "
+"gelöscht."
+msgstr ""
+
+#: .\app\templates\app\clock.html:292
+msgid "Eigener Ton ist aktuell gespeichert."
+msgstr ""
+
+#: .\app\templates\app\clock.html:299
+msgid "Einstellungen speichern"
+msgstr ""
+
+#: .\app\templates\app\clock.html:309
+msgid "Eigenen Ton löschen"
 msgstr ""
 
 #: .\app\templates\app\genius_search.html:20
@@ -719,149 +883,206 @@ msgstr ""
 msgid "Bei Google suchen..."
 msgstr ""
 
-#: .\app\templates\app\home.html:39 .\app\templates\app\home.html:49
-#: .\app\templates\app\home.html:76 .\app\templates\app\home.html:100
-msgid "Verknüpfungen"
+#: .\app\templates\app\home.html:48
+msgid "Widget-Bereich verschieben"
 msgstr ""
 
-#: .\app\templates\app\home.html:58
-msgid "Eingeklappt"
+#: .\app\templates\app\home.html:54 .\app\templates\app\home.html:369
+#: .\app\views.py:368
+msgid "Widget hinzufügen"
 msgstr ""
 
-#: .\app\templates\app\home.html:66
-msgid "Bereich verschieben"
+#: .\app\templates\app\home.html:72
+msgid "Widget verschieben"
 msgstr ""
 
-#: .\app\templates\app\home.html:74 .\app\views.py:79
-msgid "Bereich bearbeiten"
+#: .\app\templates\app\home.html:92 .\app\views.py:367
+msgid "Widget bearbeiten"
 msgstr ""
 
-#: .\app\templates\app\home.html:87
-msgid "Bereich ausklappen"
+#: .\app\templates\app\home.html:100
+msgid "Widget löschen"
 msgstr ""
 
-#: .\app\templates\app\home.html:87
-msgid "Bereich einklappen"
+#: .\app\templates\app\home.html:133
+msgid "Gefühlt"
 msgstr ""
 
-#: .\app\templates\app\home.html:103
-msgid "Verknüpfung"
+#: .\app\templates\app\home.html:147
+msgid "Wetterseite öffnen"
 msgstr ""
 
-#: .\app\templates\app\home.html:111
-msgid "Bereich löschen"
+#: .\app\templates\app\home.html:155
+msgid "aktive Notizen"
 msgstr ""
 
-#: .\app\templates\app\home.html:131
-msgid "Verschieben"
+#: .\app\templates\app\home.html:163
+#: .\app\templates\app\partials\note_card.html:19
+msgid "Unbenannte Notiz"
 msgstr ""
 
-#: .\app\templates\app\home.html:135
-#: .\app\templates\app\partials\note_card.html:62
-#: .\app\templates\app\stream_deck.html:52
-#: .\app\templates\app\stream_deck.html:171
-msgid "Bearbeiten"
+#: .\app\templates\app\home.html:170
+msgid "Noch keine angepinnten Notizen."
 msgstr ""
 
-#: .\app\templates\app\home.html:144
-msgid "Favorit entfernen"
+#: .\app\templates\app\home.html:210
+msgid "Noch kein Score"
 msgstr ""
 
-#: .\app\templates\app\home.html:144
-msgid "Als Favorit markieren"
+#: .\app\templates\app\home.html:216
+msgid "Human Benchmark öffnen"
 msgstr ""
 
-#: .\app\templates\app\home.html:158
-#: .\app\templates\app\partials\note_card.html:79
-#: .\app\templates\app\stream_deck.html:327
-msgid "Löschen"
+#: .\app\templates\app\home.html:225
+msgid "Links"
 msgstr ""
 
-#: .\app\templates\app\home.html:181
-msgid "Noch keine Verknüpfungen"
+#: .\app\templates\app\home.html:229
+msgid "Bereiche"
 msgstr ""
 
-#: .\app\templates\app\home.html:182
-msgid "Erstelle deine erste Schnellverknüpfung für diesen Bereich."
+#: .\app\templates\app\home.html:237
+msgid "Wetter-Orte"
 msgstr ""
 
-#: .\app\templates\app\home.html:196
+#: .\app\templates\app\home.html:247
+msgid "Noch keine Widgets"
+msgstr ""
+
+#: .\app\templates\app\home.html:248
+msgid ""
+"Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard."
+msgstr ""
+
+#: .\app\templates\app\home.html:266
 msgid "Bereich hinzufügen"
 msgstr ""
 
-#: .\app\templates\app\home.html:197
+#: .\app\templates\app\home.html:267
 msgid "Erstelle einen neuen Bereich für weitere Verknüpfungen."
 msgstr ""
 
-#: .\app\templates\app\home.html:210 .\app\views.py:73
-msgid "Neue Verknüpfung"
-msgstr ""
-
-#: .\app\templates\app\home.html:236
-msgid "Icon auswählen"
-msgstr ""
-
-#: .\app\templates\app\home.html:275
-msgid "Cloud"
-msgstr ""
-
-#: .\app\templates\app\home.html:283
-msgid "Gaming"
+#: .\app\templates\app\home.html:278 .\app\views.py:366
+msgid "Neues Widget"
 msgstr ""
 
 #: .\app\templates\app\home.html:291
-msgid "Code"
+msgid "Widget-Titel"
 msgstr ""
 
-#: .\app\templates\app\home.html:299
-msgid "Server"
+#: .\app\templates\app\home.html:292
+msgid "Mein Widget"
+msgstr ""
+
+#: .\app\templates\app\home.html:296
+msgid "Widget-Typ"
+msgstr ""
+
+#: .\app\templates\app\home.html:302
+msgid "Schnellstatistiken"
 msgstr ""
 
 #: .\app\templates\app\home.html:307
+msgid "Wetter-Ort"
+msgstr ""
+
+#: .\app\templates\app\home.html:309
+msgid "Ersten gespeicherten Ort oder Berlin nutzen"
+msgstr ""
+
+#: .\app\templates\app\home.html:314
+msgid "Du kannst weitere Orte auf der Wetterseite speichern."
+msgstr ""
+
+#: .\app\templates\app\home.html:318
+msgid "Uhr-Farbstil"
+msgstr ""
+
+#: .\app\templates\app\home.html:324
+msgid "Der Farbstil verändert nur die Optik des Uhr-Widgets."
+msgstr ""
+
+#: .\app\templates\app\home.html:328
+msgid "Uhr-Layout"
+msgstr ""
+
+#: .\app\templates\app\home.html:334
+msgid "Hier wählst du die Anordnung, zum Beispiel digital oder analog."
+msgstr ""
+
+#: .\app\templates\app\home.html:338
+msgid "Widget-Farbe"
+msgstr ""
+
+#: .\app\templates\app\home.html:380 .\app\views.py:357
+msgid "Neue Verknüpfung"
+msgstr ""
+
+#: .\app\templates\app\home.html:406
+msgid "Icon auswählen"
+msgstr ""
+
+#: .\app\templates\app\home.html:445
+msgid "Cloud"
+msgstr ""
+
+#: .\app\templates\app\home.html:453
+msgid "Gaming"
+msgstr ""
+
+#: .\app\templates\app\home.html:461
+msgid "Code"
+msgstr ""
+
+#: .\app\templates\app\home.html:469
+msgid "Server"
+msgstr ""
+
+#: .\app\templates\app\home.html:477
 msgid "Link"
 msgstr ""
 
-#: .\app\templates\app\home.html:315
+#: .\app\templates\app\home.html:485
 msgid "Home"
 msgstr ""
 
-#: .\app\templates\app\home.html:322
+#: .\app\templates\app\home.html:492
 msgid "Eigenes Icon, falls keins passt"
 msgstr ""
 
-#: .\app\templates\app\home.html:323
+#: .\app\templates\app\home.html:493
 msgid "z.B. fa-solid fa-server"
 msgstr ""
 
-#: .\app\templates\app\home.html:327
+#: .\app\templates\app\home.html:497
 msgid "Eigenes Bild, falls du kein Icon nutzen möchtest"
 msgstr ""
 
-#: .\app\templates\app\home.html:332
+#: .\app\templates\app\home.html:502
 msgid "Bild auswählen"
 msgstr ""
 
-#: .\app\templates\app\home.html:335 .\app\views.py:81
+#: .\app\templates\app\home.html:505 .\app\views.py:365
 msgid "Keine Datei ausgewählt"
 msgstr ""
 
-#: .\app\templates\app\home.html:346
+#: .\app\templates\app\home.html:516
 msgid "Beispiele:"
 msgstr ""
 
-#: .\app\templates\app\home.html:357 .\app\views.py:77
+#: .\app\templates\app\home.html:527 .\app\views.py:361
 msgid "Neuer Bereich"
 msgstr ""
 
-#: .\app\templates\app\home.html:370
+#: .\app\templates\app\home.html:540
 msgid "Bereichsname"
 msgstr ""
 
-#: .\app\templates\app\home.html:375
+#: .\app\templates\app\home.html:545
 msgid "Bereichsfarbe"
 msgstr ""
 
-#: .\app\templates\app\home.html:406 .\app\views.py:78
+#: .\app\templates\app\home.html:576 .\app\views.py:362
 msgid "Bereich erstellen"
 msgstr ""
 
@@ -873,20 +1094,20 @@ msgstr ""
 msgid "Benchmark Tests"
 msgstr ""
 
-#: .\app\templates\app\human_benchmark.html:21
+#: .\app\templates\app\human_benchmark.html:21 .\app\views.py:1000
 msgid "Reaktion"
 msgstr ""
 
-#: .\app\templates\app\human_benchmark.html:22
+#: .\app\templates\app\human_benchmark.html:22 .\app\views.py:1001
 msgid "Aim Trainer"
 msgstr ""
 
-#: .\app\templates\app\human_benchmark.html:23
+#: .\app\templates\app\human_benchmark.html:23 .\app\views.py:1002
 msgid "Typing Test"
 msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:24
-#: .\app\templates\app\human_benchmark.html:94
+#: .\app\templates\app\human_benchmark.html:94 .\app\views.py:1003
 msgid "Visual Memory"
 msgstr ""
 
@@ -951,7 +1172,7 @@ msgstr ""
 msgid "Warte auf Start..."
 msgstr ""
 
-#: .\app\templates\app\human_benchmark.html:77 .\app\views.py:532
+#: .\app\templates\app\human_benchmark.html:77 .\app\views.py:1095
 msgid "Test starten"
 msgstr ""
 
@@ -966,6 +1187,39 @@ msgstr ""
 
 #: .\app\templates\app\human_benchmark.html:95
 msgid "Merke dir die blau leuchtenden Quadrate."
+msgstr ""
+
+#: .\app\templates\app\human_benchmark.html:105
+msgid "Human Benchmark Ergebnisse"
+msgstr ""
+
+#: .\app\templates\app\human_benchmark.html:108
+msgid "Deine Statistiken"
+msgstr ""
+
+#: .\app\templates\app\human_benchmark.html:109
+msgid "Scores & Bestenliste"
+msgstr ""
+
+#: .\app\templates\app\human_benchmark.html:117
+msgid "Dein Highscore"
+msgstr ""
+
+#: .\app\templates\app\human_benchmark.html:120
+msgid "Wähle oben einen Spielmodus aus."
+msgstr ""
+
+#: .\app\templates\app\human_benchmark.html:125
+msgid "Letzte 10 Ergebnisse"
+msgstr ""
+
+#: .\app\templates\app\human_benchmark.html:127
+#: .\app\templates\app\human_benchmark.html:134 .\app\views.py:1098
+msgid "Noch keine Ergebnisse."
+msgstr ""
+
+#: .\app\templates\app\human_benchmark.html:132
+msgid "Bestenliste"
 msgstr ""
 
 #: .\app\templates\app\note_form.html:16
@@ -1097,7 +1351,7 @@ msgid ""
 "später wiederfinden willst."
 msgstr ""
 
-#: .\app\templates\app\notes.html:31 .\app\views.py:889
+#: .\app\templates\app\notes.html:31 .\app\views.py:1521
 msgid "Neue Notiz"
 msgstr ""
 
@@ -1302,8 +1556,78 @@ msgstr ""
 msgid "Verbinde dich mit OBS, um Audioquellen zu laden."
 msgstr ""
 
-#: .\app\templates\app\partials\note_card.html:19
-msgid "Unbenannte Notiz"
+#: .\app\templates\app\partials\home_section_card.html:7
+#: .\app\templates\app\partials\home_section_card.html:17
+#: .\app\templates\app\partials\home_section_card.html:44
+#: .\app\templates\app\partials\home_section_card.html:68
+msgid "Verknüpfungen"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:26
+msgid "Eingeklappt"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:34
+msgid "Bereich verschieben"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:42 .\app\views.py:363
+msgid "Bereich bearbeiten"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:55
+msgid "Bereich ausklappen"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:55
+msgid "Bereich einklappen"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:71
+msgid "Verknüpfung"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:79
+msgid "Bereich löschen"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:102
+#: .\app\templates\app\partials\home_section_card.html:103
+msgid "Optionen öffnen"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:110
+#: .\app\templates\app\partials\home_section_card.html:112
+msgid "Verschieben"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:117
+#: .\app\templates\app\partials\note_card.html:62
+#: .\app\templates\app\stream_deck.html:52
+#: .\app\templates\app\stream_deck.html:171
+msgid "Bearbeiten"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:128
+msgid "Favorit entfernen"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:131
+msgid "Als Favorit markieren"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:143
+#: .\app\templates\app\partials\note_card.html:79
+#: .\app\templates\app\stream_deck.html:327
+msgid "Löschen"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:166
+msgid "Noch keine Verknüpfungen"
+msgstr ""
+
+#: .\app\templates\app\partials\home_section_card.html:167
+msgid "Erstelle deine erste Schnellverknüpfung für diesen Bereich."
 msgstr ""
 
 #: .\app\templates\app\partials\note_card.html:34
@@ -1335,10 +1659,6 @@ msgstr ""
 #: .\app\templates\app\profile.html:76
 #: .\app\templates\app\public_profile.html:67
 msgid "Profil erstellt"
-msgstr ""
-
-#: .\app\templates\app\profile.html:89
-msgid "Einstellungen"
 msgstr ""
 
 #: .\app\templates\app\profile.html:90
@@ -1607,10 +1927,6 @@ msgstr ""
 msgid "Mikrofon"
 msgstr ""
 
-#: .\app\templates\app\stream_deck.html:223
-msgid "Lautstärke"
-msgstr ""
-
 #: .\app\templates\app\stream_deck.html:224
 msgid "Krone"
 msgstr ""
@@ -1865,7 +2181,7 @@ msgstr ""
 msgid "Nach"
 msgstr ""
 
-#: .\app\templates\app\unit_converter.html:83 .\app\views.py:974
+#: .\app\templates\app\unit_converter.html:83 .\app\views.py:1607
 msgid "Gib einen Wert ein, um die Umrechnung zu starten."
 msgstr ""
 
@@ -1877,11 +2193,7 @@ msgstr ""
 msgid "Häufige Umrechnungen"
 msgstr ""
 
-#: .\app\templates\app\unit_converter.html:101 .\app\views.py:957
-msgid "Stunden"
-msgstr ""
-
-#: .\app\templates\app\unit_converter.html:106 .\app\views.py:965
+#: .\app\templates\app\unit_converter.html:106 .\app\views.py:1598
 msgid "Meilen"
 msgstr ""
 
@@ -1961,10 +2273,6 @@ msgstr ""
 
 #: .\app\templates\app\weather.html:54
 msgid "Aktuellen Ort speichern"
-msgstr ""
-
-#: .\app\templates\app\weather.html:85
-msgid "Ort löschen"
 msgstr ""
 
 #: .\app\templates\app\weather.html:106
@@ -2048,236 +2356,316 @@ msgstr ""
 msgid "Schon einen Account?"
 msgstr ""
 
-#: .\app\views.py:40
+#: .\app\views.py:44
 #, python-format
 msgid "%(name)s fehlt in der .env."
 msgstr ""
 
-#: .\app\views.py:60
+#: .\app\views.py:102
+msgid "Weltuhr-Ort wurde hinzugefügt."
+msgstr ""
+
+#: .\app\views.py:104
+msgid "Bitte wähle einen gültigen Ort aus."
+msgstr ""
+
+#: .\app\views.py:111
+msgid "Weltuhr-Ort wurde gelöscht."
+msgstr ""
+
+#: .\app\views.py:135
+msgid "Timer wurde gespeichert."
+msgstr ""
+
+#: .\app\views.py:137
+msgid "Bitte gib einen Namen und eine Dauer größer als 0 Sekunden ein."
+msgstr ""
+
+#: .\app\views.py:144
+msgid "Timer wurde gelöscht."
+msgstr ""
+
+#: .\app\views.py:162
+msgid "Der eigene Klingelton darf maximal 5 MB groß sein."
+msgstr ""
+
+#: .\app\views.py:167
+msgid "Bitte lade eine Audio-Datei hoch."
+msgstr ""
+
+#: .\app\views.py:174
+msgid "Uhr-Einstellungen wurden gespeichert."
+msgstr ""
+
+#: .\app\views.py:184
+msgid "Eigener Klingelton wurde gelöscht."
+msgstr ""
+
+#: .\app\views.py:214
 msgid "Dein Account wurde erstellt."
 msgstr ""
 
-#: .\app\views.py:74
+#: .\app\views.py:261 .\app\views.py:284
+msgid "Wetter konnte nicht geladen werden."
+msgstr ""
+
+#: .\app\views.py:272
+msgid "Keine Beschreibung"
+msgstr ""
+
+#: .\app\views.py:358
 #, python-format
 msgid "für \"%(section)s\""
 msgstr ""
 
-#: .\app\views.py:75
+#: .\app\views.py:359
 msgid "Verknüpfung bearbeiten"
 msgstr ""
 
-#: .\app\views.py:76
+#: .\app\views.py:360
 #, python-format
 msgid "in \"%(section)s\""
 msgstr ""
 
-#: .\app\views.py:80 .\app\views.py:911
+#: .\app\views.py:364 .\app\views.py:1543
 msgid "Änderungen speichern"
 msgstr ""
 
-#: .\app\views.py:100
+#: .\app\views.py:369
+msgid "Widget speichern"
+msgstr ""
+
+#: .\app\views.py:388
 msgid "Ungültiges JSON"
 msgstr ""
 
-#: .\app\views.py:133
+#: .\app\views.py:461
 msgid "Unbekannte Aktion"
 msgstr ""
 
-#: .\app\views.py:361 .\app\views.py:375 .\app\views.py:506
+#: .\app\views.py:491 .\app\views.py:543
+msgid "Widget"
+msgstr ""
+
+#: .\app\views.py:823 .\app\views.py:837 .\app\views.py:968
 msgid "Ungültige Antwort der OpenWeather API."
 msgstr ""
 
-#: .\app\views.py:384
+#: .\app\views.py:846
 msgid "Wettervorhersage konnte nicht geladen werden."
 msgstr ""
 
-#: .\app\views.py:474
+#: .\app\views.py:936
 msgid "OpenWeather API-Key ist ungültig."
 msgstr ""
 
-#: .\app\views.py:480 .\app\views.py:492
+#: .\app\views.py:942 .\app\views.py:954
 msgid "Standort nicht gefunden."
 msgstr ""
 
-#: .\app\views.py:486
+#: .\app\views.py:948
 #, python-format
 msgid "OpenWeather Fehler: %(message)s"
 msgstr ""
 
-#: .\app\views.py:499 .\app\views.py:513
+#: .\app\views.py:961 .\app\views.py:975
 #, python-format
 msgid "Verbindungsfehler: %(error)s"
 msgstr ""
 
-#: .\app\views.py:528
+#: .\app\views.py:1091
 msgid "Lade Text..."
 msgstr ""
 
-#: .\app\views.py:529
+#: .\app\views.py:1092
 msgid "Übersetze..."
 msgstr ""
 
-#: .\app\views.py:530
+#: .\app\views.py:1093
 msgid "Nächster Test"
 msgstr ""
 
-#: .\app\views.py:531
+#: .\app\views.py:1094
 msgid "Lädt..."
 msgstr ""
 
-#: .\app\views.py:573 .\app\views.py:639
+#: .\app\views.py:1096
+msgid "Neuer Highscore!"
+msgstr ""
+
+#: .\app\views.py:1097
+msgid "Ergebnis gespeichert."
+msgstr ""
+
+#: .\app\views.py:1099
+msgid "Platz"
+msgstr ""
+
+#: .\app\views.py:1101
+msgid "Score"
+msgstr ""
+
+#: .\app\views.py:1102
+msgid "Datum"
+msgstr ""
+
+#: .\app\views.py:1116
+msgid "Ungültige Anfrage."
+msgstr ""
+
+#: .\app\views.py:1121
+msgid "Unbekannter Spielmodus."
+msgstr ""
+
+#: .\app\views.py:1126 .\app\views.py:1129
+msgid "Ungültiger Score."
+msgstr ""
+
+#: .\app\views.py:1205 .\app\views.py:1271
 msgid ""
 "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
 msgstr ""
 
-#: .\app\views.py:583
+#: .\app\views.py:1215
 msgid "Ungültiges JSON."
 msgstr ""
 
-#: .\app\views.py:596
+#: .\app\views.py:1228
 msgid "Unbekannte Aktion."
 msgstr ""
 
-#: .\app\views.py:610 .\app\views.py:667
+#: .\app\views.py:1242 .\app\views.py:1299
 msgid "Name fehlt."
 msgstr ""
 
-#: .\app\views.py:616 .\app\views.py:673
+#: .\app\views.py:1248 .\app\views.py:1305
 msgid "Ungültige Nation."
 msgstr ""
 
-#: .\app\views.py:622
+#: .\app\views.py:1254
 msgid "Bild fehlt."
 msgstr ""
 
-#: .\app\views.py:649 .\app\views.py:696
+#: .\app\views.py:1281 .\app\views.py:1328
 msgid "Methode nicht erlaubt."
 msgstr ""
 
-#: .\app\views.py:714
+#: .\app\views.py:1346
 msgid "Suchbegriff fehlt."
 msgstr ""
 
-#: .\app\views.py:728
+#: .\app\views.py:1360
 msgid "Pagination-Parameter sind ungültig."
 msgstr ""
 
-#: .\app\views.py:749 .\app\views.py:782
+#: .\app\views.py:1381 .\app\views.py:1414
 msgid "Ungültige Antwort der Genius API."
 msgstr ""
 
-#: .\app\views.py:755
+#: .\app\views.py:1387
 msgid "Genius API Fehler."
 msgstr ""
 
-#: .\app\views.py:777
+#: .\app\views.py:1409
 msgid "Genius API konnte nicht erreicht werden."
 msgstr ""
 
-#: .\app\views.py:793
+#: .\app\views.py:1425
 msgid "Latitude und Longitude fehlen."
 msgstr ""
 
-#: .\app\views.py:802
+#: .\app\views.py:1434
 msgid "Latitude und Longitude müssen Zahlen sein."
 msgstr ""
 
-#: .\app\views.py:826 .\app\views.py:843
+#: .\app\views.py:1458 .\app\views.py:1475
 msgid "Ungültige Antwort der Tankerkönig API."
 msgstr ""
 
-#: .\app\views.py:830
+#: .\app\views.py:1462
 msgid "Tankerkönig API Fehler."
 msgstr ""
 
-#: .\app\views.py:838
+#: .\app\views.py:1470
 msgid "Tankerkönig API konnte nicht erreicht werden."
 msgstr ""
 
-#: .\app\views.py:882
+#: .\app\views.py:1514
 msgid "Notiz wurde erstellt."
 msgstr ""
 
-#: .\app\views.py:890
+#: .\app\views.py:1522
 msgid "Notiz speichern"
 msgstr ""
 
-#: .\app\views.py:902
+#: .\app\views.py:1534
 msgid "Notiz wurde aktualisiert."
 msgstr ""
 
-#: .\app\views.py:910
+#: .\app\views.py:1542
 msgid "Notiz bearbeiten"
 msgstr ""
 
-#: .\app\views.py:920
+#: .\app\views.py:1552
 msgid "Notiz wurde gelöscht."
 msgstr ""
 
-#: .\app\views.py:940
+#: .\app\views.py:1572
 msgid "Notiz wurde archiviert."
 msgstr ""
 
-#: .\app\views.py:942
+#: .\app\views.py:1574
 msgid "Notiz wurde wiederhergestellt."
 msgstr ""
 
-#: .\app\views.py:949
+#: .\app\views.py:1582
 msgid "Kilobyte (KB)"
 msgstr ""
 
-#: .\app\views.py:950
+#: .\app\views.py:1583
 msgid "Megabyte (MB)"
 msgstr ""
 
-#: .\app\views.py:951
+#: .\app\views.py:1584
 msgid "Gigabyte (GB)"
 msgstr ""
 
-#: .\app\views.py:952
+#: .\app\views.py:1585
 msgid "Terabyte (TB)"
 msgstr ""
 
-#: .\app\views.py:955
-msgid "Sekunden"
-msgstr ""
-
-#: .\app\views.py:956
-msgid "Minuten"
-msgstr ""
-
-#: .\app\views.py:958
+#: .\app\views.py:1591
 msgid "Tage"
 msgstr ""
 
-#: .\app\views.py:961
+#: .\app\views.py:1594
 msgid "Millimeter"
 msgstr ""
 
-#: .\app\views.py:962
+#: .\app\views.py:1595
 msgid "Zentimeter"
 msgstr ""
 
-#: .\app\views.py:963
+#: .\app\views.py:1596
 msgid "Meter"
 msgstr ""
 
-#: .\app\views.py:964
+#: .\app\views.py:1597
 msgid "Kilometer"
 msgstr ""
 
-#: .\app\views.py:968
+#: .\app\views.py:1601
 msgid "Euro pro Tag"
 msgstr ""
 
-#: .\app\views.py:969
+#: .\app\views.py:1602
 msgid "Euro pro Woche"
 msgstr ""
 
-#: .\app\views.py:970
+#: .\app\views.py:1603
 msgid "Euro pro Monat"
 msgstr ""
 
-#: .\app\views.py:971
+#: .\app\views.py:1604
 msgid "Euro pro Jahr"
 msgstr ""

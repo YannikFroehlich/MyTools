@@ -1,0 +1,682 @@
+.clock-page {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 34px 0 56px;
+    color: var(--theme-text);
+}
+
+.clock-hero,
+.clock-panel {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.58));
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+    backdrop-filter: blur(18px);
+    border-radius: 28px;
+}
+
+body.dark-mode .clock-hero,
+body.dark-mode .clock-panel {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(145deg, rgba(28, 34, 49, 0.92), rgba(18, 21, 31, 0.72));
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+}
+
+.clock-hero {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 22px;
+    padding: 32px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    position: relative;
+}
+
+.clock-hero::before {
+    content: "";
+    position: absolute;
+    inset: -80px auto auto -80px;
+    width: 220px;
+    height: 220px;
+    border-radius: 999px;
+    background: rgba(var(--theme-accent-rgb), 0.18);
+    filter: blur(8px);
+}
+
+.clock-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.clock-eyebrow,
+.clock-panel-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgb(var(--theme-accent-rgb));
+}
+
+.clock-hero h1 {
+    margin: 10px 0 8px;
+    font-size: clamp(2.3rem, 5vw, 4.6rem);
+    line-height: 0.95;
+}
+
+.clock-hero p {
+    max-width: 620px;
+    margin: 0;
+    color: color-mix(in srgb, var(--theme-text) 70%, transparent);
+    font-size: 1.05rem;
+}
+
+.clock-now-card {
+    min-width: 260px;
+    display: grid;
+    align-content: center;
+    gap: 8px;
+    padding: 22px;
+    border-radius: 24px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 18px 40px rgba(var(--theme-accent-rgb), 0.28);
+}
+
+.clock-now-card span,
+.clock-now-card small {
+    opacity: 0.86;
+}
+
+.clock-now-card strong {
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    letter-spacing: -0.05em;
+}
+
+.clock-messages {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.clock-message {
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.2);
+    font-weight: 700;
+}
+
+.clock-message-error {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.clock-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.clock-panel {
+    padding: 24px;
+}
+
+.clock-panel-wide {
+    grid-column: 1 / -1;
+}
+
+.clock-panel-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.clock-panel h2 {
+    margin: 6px 0 0;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    letter-spacing: -0.04em;
+}
+
+.clock-inline-form,
+.timer-create-form,
+.clock-settings-form {
+    display: grid;
+    gap: 14px;
+}
+
+.clock-inline-form {
+    grid-template-columns: minmax(160px, 1fr) minmax(190px, 1.2fr) auto;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.clock-inline-form label,
+.timer-create-form label,
+.clock-settings-form label {
+    display: grid;
+    gap: 7px;
+    font-weight: 800;
+}
+
+.clock-inline-form span,
+.timer-create-form span,
+.clock-settings-form span {
+    font-size: 0.86rem;
+    color: color-mix(in srgb, var(--theme-text) 68%, transparent);
+}
+
+.clock-page input,
+.clock-page select {
+    width: 100%;
+    border: 1px solid rgba(148, 163, 184, 0.34);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--theme-text);
+    border-radius: 16px;
+    padding: 12px 14px;
+    outline: none;
+    font: inherit;
+}
+
+body.dark-mode .clock-page input,
+body.dark-mode .clock-page select {
+    background: rgba(15, 23, 42, 0.62);
+    border-color: rgba(148, 163, 184, 0.18);
+}
+
+.clock-page input:focus,
+.clock-page select:focus {
+    border-color: rgba(var(--theme-accent-rgb), 0.7);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.clock-button,
+.clock-icon-button,
+.clock-delete-form button {
+    border: 0;
+    border-radius: 16px;
+    background: rgba(var(--theme-accent-rgb), 0.11);
+    color: var(--theme-text);
+    padding: 12px 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.clock-button:hover,
+.clock-icon-button:hover,
+.clock-delete-form button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+}
+
+.clock-button-primary {
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+}
+
+.clock-button-danger {
+    color: #fff;
+    background: linear-gradient(135deg, #ef4444, #f97316);
+}
+
+.clock-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.world-clock-grid,
+.timer-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px;
+}
+
+.world-clock-card,
+.timer-preset-card {
+    padding: 18px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+body.dark-mode .world-clock-card,
+body.dark-mode .timer-preset-card {
+    background: rgba(15, 23, 42, 0.42);
+}
+
+.world-clock-top,
+.timer-preset-card,
+.timer-preset-actions {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.world-clock-card h3,
+.timer-preset-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+}
+
+.world-clock-card span,
+.timer-preset-card span,
+.clock-empty,
+.custom-sound-upload small {
+    color: color-mix(in srgb, var(--theme-text) 62%, transparent);
+}
+
+.world-clock-card strong {
+    display: block;
+    margin-top: 16px;
+    font-size: 2.25rem;
+    letter-spacing: -0.06em;
+}
+
+.world-clock-card small {
+    display: block;
+    margin-top: 4px;
+}
+
+.clock-delete-form button,
+.clock-icon-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+.lap-list-wrapper {
+    min-height: 190px;
+    max-height: 270px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.lap-list {
+    list-style: none;
+    display: grid;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+}
+
+.lap-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(var(--theme-accent-rgb), 0.09);
+    font-weight: 800;
+}
+
+.timer-progress {
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.18);
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.timer-progress span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--theme-accent-start), var(--theme-accent-end));
+    transition: width 0.25s ease;
+}
+
+.timer-time-inputs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.timer-preset-card {
+    align-items: center;
+}
+
+.timer-preset-actions {
+    align-items: center;
+}
+
+.ringtone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.ringtone-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ringtone-option span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 52px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: var(--theme-text);
+}
+
+body.dark-mode .ringtone-option span {
+    background: rgba(15, 23, 42, 0.38);
+}
+
+.ringtone-option input:checked + span {
+    border-color: rgba(var(--theme-accent-rgb), 0.74);
+    background: rgba(var(--theme-accent-rgb), 0.14);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.1);
+}
+
+.custom-sound-upload {
+    padding: 16px;
+    border-radius: 20px;
+    border: 1px dashed rgba(var(--theme-accent-rgb), 0.4);
+    background: rgba(var(--theme-accent-rgb), 0.07);
+}
+
+.custom-sound-current {
+    color: #16a34a !important;
+    font-weight: 900;
+}
+
+.remove-sound-form {
+    margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+    .clock-hero,
+    .clock-panel-header,
+    .world-clock-top,
+    .timer-preset-card {
+        flex-direction: column;
+    }
+
+    .clock-now-card {
+        min-width: 0;
+    }
+
+    .clock-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .clock-inline-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .clock-page {
+        width: min(100% - 18px, 1180px);
+        padding-top: 18px;
+    }
+
+    .clock-hero,
+    .clock-panel {
+        border-radius: 22px;
+        padding: 18px;
+    }
+
+    .timer-time-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Verbesserungen: Settings-Dialog, freier Timer und klareres Feedback */
+.clock-hero-side {
+    min-width: 280px;
+    display: grid;
+    gap: 12px;
+    align-content: stretch;
+}
+
+.clock-settings-button {
+    border: 0;
+    width: 100%;
+    min-height: 52px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 950;
+    color: var(--theme-text);
+    background: rgba(255, 255, 255, 0.64);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+body.dark-mode .clock-settings-button {
+    background: rgba(15, 23, 42, 0.54);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.clock-settings-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.12);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.clock-button-secondary {
+    background: rgba(var(--theme-accent-rgb), 0.13);
+    color: rgb(var(--theme-accent-rgb));
+}
+
+.clock-button:disabled,
+.clock-icon-button:disabled {
+    opacity: 0.52;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.timer-panel {
+    position: relative;
+    overflow: hidden;
+}
+
+.timer-panel::before {
+    content: "";
+    position: absolute;
+    inset: auto -60px -90px auto;
+    width: 220px;
+    height: 220px;
+    border-radius: 999px;
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    filter: blur(12px);
+    pointer-events: none;
+}
+
+.timer-panel > * {
+    position: relative;
+    z-index: 1;
+}
+
+.timer-panel.is-running {
+    border-color: rgba(var(--theme-accent-rgb), 0.35);
+    box-shadow: 0 28px 70px rgba(var(--theme-accent-rgb), 0.18);
+}
+
+.timer-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 0;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    color: rgb(var(--theme-accent-rgb));
+    font-weight: 900;
+    font-size: 0.86rem;
+}
+
+.timer-status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.timer-panel.is-running .timer-status::before {
+    animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+    0%, 100% { transform: scale(0.85); opacity: 0.55; }
+    50% { transform: scale(1.25); opacity: 1; }
+}
+
+.timer-quick-set {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+    padding: 14px;
+    border-radius: 20px;
+    background: rgba(var(--theme-accent-rgb), 0.07);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.13);
+}
+
+.timer-quick-set label {
+    display: grid;
+    gap: 7px;
+    font-weight: 900;
+}
+
+.timer-quick-set span {
+    font-size: 0.82rem;
+    color: color-mix(in srgb, var(--theme-text) 66%, transparent);
+}
+
+.timer-quick-set input {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 950;
+}
+
+.timer-actions {
+    align-items: stretch;
+}
+
+.timer-toggle-button {
+    min-width: 128px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, filter 0.18s ease;
+}
+
+.timer-toggle-button.is-running,
+.clock-button-primary.is-running {
+    background: linear-gradient(135deg, #f97316, #ef4444);
+    box-shadow: 0 16px 36px rgba(239, 68, 68, 0.22);
+}
+
+.timer-save-form {
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.42);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+body.dark-mode .timer-save-form {
+    background: rgba(15, 23, 42, 0.3);
+}
+
+.clock-settings-modal[hidden] {
+    display: none !important;
+}
+
+.clock-settings-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    padding: 22px;
+}
+
+.clock-settings-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(8px);
+}
+
+.clock-settings-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(760px, 100%);
+    max-height: min(760px, calc(100vh - 44px));
+    overflow: auto;
+    animation: settingsPop 0.18s ease-out;
+}
+
+@keyframes settingsPop {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.settings-dialog-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+body.clock-modal-open {
+    overflow: hidden;
+}
+
+.ringtone-option span {
+    min-height: 58px;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.ringtone-option span:hover {
+    transform: translateY(-1px);
+}
+
+.custom-sound-upload {
+    margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+    .clock-hero-side {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .timer-quick-set {
+        grid-template-columns: 1fr;
+    }
+
+    .clock-settings-modal {
+        padding: 12px;
+    }
+
+    .settings-dialog-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

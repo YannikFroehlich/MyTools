@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class UserProfile(models.Model):
@@ -48,11 +49,11 @@ class UserProfile(models.Model):
 
 class ShortcutSection(models.Model):
     COLOR_CHOICES = [
-        ("blue", "Blau"),
-        ("green", "Grün"),
-        ("purple", "Lila"),
-        ("orange", "Orange"),
-        ("red", "Rot"),
+        ("blue", _("Blau")),
+        ("green", _("Grün")),
+        ("purple", _("Lila")),
+        ("orange", _("Orange")),
+        ("red", _("Rot")),
     ]
 
     user = models.ForeignKey(
@@ -158,11 +159,11 @@ class AvatarCharacter(models.Model):
 
 class Note(models.Model):
     COLOR_CHOICES = [
-        ("blue", "Blau"),
-        ("purple", "Lila"),
-        ("green", "Grün"),
-        ("orange", "Orange"),
-        ("red", "Rot"),
+        ("blue", _("Blau")),
+        ("purple", _("Lila")),
+        ("green", _("Grün")),
+        ("orange", _("Orange")),
+        ("red", _("Rot")),
         ("gray", "Grau"),
     ]
 
@@ -226,26 +227,201 @@ class WeatherLocation(models.Model):
 
 
 
+def clock_sound_upload_path(instance, filename):
+    suffix = filename.rsplit(".", 1)[-1].lower() if "." in filename else "mp3"
+    return f"clock_sounds/user_{instance.user_id}/custom_timer_sound.{suffix}"
+
+
+def validate_clock_sound_size(file):
+    from django.core.exceptions import ValidationError
+
+    max_size = 5 * 1024 * 1024
+    if file.size > max_size:
+        raise ValidationError("Der eigene Klingelton darf maximal 5 MB groß sein.")
+
+
+class ClockWorldCity(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="clock_world_cities",
+    )
+    label = models.CharField(max_length=80)
+    timezone = models.CharField(max_length=80)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        indexes = [
+            models.Index(fields=["user", "order", "created_at"]),
+        ]
+        verbose_name = "Weltuhr-Ort"
+        verbose_name_plural = "Weltuhr-Orte"
+
+    def __str__(self):
+        return f"{self.label} · {self.timezone}"
+
+
+class ClockTimerPreset(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="clock_timer_presets",
+    )
+    name = models.CharField(max_length=80)
+    hours = models.PositiveSmallIntegerField(default=0)
+    minutes = models.PositiveSmallIntegerField(default=0)
+    seconds = models.PositiveSmallIntegerField(default=0)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        indexes = [
+            models.Index(fields=["user", "order", "created_at"]),
+        ]
+        verbose_name = "Timer-Vorlage"
+        verbose_name_plural = "Timer-Vorlagen"
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def total_seconds(self):
+        return (self.hours * 3600) + (self.minutes * 60) + self.seconds
+
+    @property
+    def display_duration(self):
+        parts = []
+        if self.hours:
+            parts.append(f"{self.hours} h")
+        if self.minutes:
+            parts.append(f"{self.minutes} min")
+        if self.seconds:
+            parts.append(f"{self.seconds} s")
+        return " ".join(parts) or "0 s"
+
+
+class ClockSettings(models.Model):
+    RINGTONE_BELL = "bell"
+    RINGTONE_CHIME = "chime"
+    RINGTONE_DIGITAL = "digital"
+    RINGTONE_SOFT = "soft"
+    RINGTONE_ALARM = "alarm"
+    RINGTONE_CUSTOM = "custom"
+
+    RINGTONE_CHOICES = [
+        (RINGTONE_BELL, "Bell"),
+        (RINGTONE_CHIME, "Chime"),
+        (RINGTONE_DIGITAL, "Digital"),
+        (RINGTONE_SOFT, "Soft"),
+        (RINGTONE_ALARM, "Alarm"),
+        (RINGTONE_CUSTOM, "Eigener Ton"),
+    ]
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="clock_settings",
+    )
+    volume = models.PositiveSmallIntegerField(default=80)
+    ringtone = models.CharField(max_length=20, choices=RINGTONE_CHOICES, default=RINGTONE_BELL)
+    custom_sound = models.FileField(
+        upload_to=clock_sound_upload_path,
+        validators=[validate_clock_sound_size],
+        null=True,
+        blank=True,
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Uhr-Einstellung"
+        verbose_name_plural = "Uhr-Einstellungen"
+
+    def __str__(self):
+        return f"Uhr-Einstellungen von {self.user}"
+
+    @property
+    def custom_sound_url(self):
+        if self.custom_sound:
+            return self.custom_sound.url
+        return ""
+
+    def save(self, *args, **kwargs):
+        old_sound_name = None
+        if self.pk:
+            old_sound_name = (
+                ClockSettings.objects
+                .filter(pk=self.pk)
+                .values_list("custom_sound", flat=True)
+                .first()
+            )
+
+        super().save(*args, **kwargs)
+
+        if old_sound_name and self.custom_sound and old_sound_name != self.custom_sound.name:
+            self.custom_sound.storage.delete(old_sound_name)
+
+    def delete(self, *args, **kwargs):
+        sound_storage = self.custom_sound.storage if self.custom_sound else None
+        sound_name = self.custom_sound.name if self.custom_sound else None
+
+        super().delete(*args, **kwargs)
+
+        if sound_storage and sound_name:
+            sound_storage.delete(sound_name)
+
 
 class HomeWidget(models.Model):
     WIDGET_WEATHER = "weather"
     WIDGET_NOTES = "notes"
     WIDGET_BENCHMARK = "benchmark"
     WIDGET_STATS = "stats"
+    WIDGET_CLOCK = "clock"
 
     WIDGET_CHOICES = [
-        (WIDGET_WEATHER, "Wetter"),
-        (WIDGET_NOTES, "Notizen"),
-        (WIDGET_BENCHMARK, "Human Benchmark"),
-        (WIDGET_STATS, "Schnellstatistiken"),
+        (WIDGET_WEATHER, _("Wetter")),
+        (WIDGET_NOTES, _("Notizen")),
+        (WIDGET_BENCHMARK, _("Human Benchmark")),
+        (WIDGET_STATS, _("Schnellstatistiken")),
+        (WIDGET_CLOCK, _("Uhr")),
+    ]
+
+    CLOCK_DESIGN_MINIMAL = "minimal"
+    CLOCK_DESIGN_GLASS = "glass"
+    CLOCK_DESIGN_NEON = "neon"
+    CLOCK_DESIGN_FLIP = "flip"
+    CLOCK_DESIGN_TERMINAL = "terminal"
+
+    CLOCK_DESIGN_CHOICES = [
+        (CLOCK_DESIGN_MINIMAL, _("Minimal")),
+        (CLOCK_DESIGN_GLASS, _("Glass")),
+        (CLOCK_DESIGN_NEON, _("Neon")),
+        (CLOCK_DESIGN_FLIP, _("Flip")),
+        (CLOCK_DESIGN_TERMINAL, _("Terminal")),
+    ]
+
+    CLOCK_STYLE_CLASSIC = "classic"
+    CLOCK_STYLE_COMPACT = "compact"
+    CLOCK_STYLE_SPLIT = "split"
+    CLOCK_STYLE_ANALOG = "analog"
+    CLOCK_STYLE_HYBRID = "hybrid"
+
+    CLOCK_STYLE_CHOICES = [
+        (CLOCK_STYLE_CLASSIC, _("Klassisch")),
+        (CLOCK_STYLE_COMPACT, _("Kompakt")),
+        (CLOCK_STYLE_SPLIT, _("Datum links")),
+        (CLOCK_STYLE_ANALOG, _("Analog")),
+        (CLOCK_STYLE_HYBRID, _("Analog + Digital")),
     ]
 
     COLOR_CHOICES = [
-        ("blue", "Blau"),
-        ("green", "Grün"),
-        ("purple", "Lila"),
-        ("orange", "Orange"),
-        ("red", "Rot"),
+        ("blue", _("Blau")),
+        ("green", _("Grün")),
+        ("purple", _("Lila")),
+        ("orange", _("Orange")),
+        ("red", _("Rot")),
     ]
 
     user = models.ForeignKey(
@@ -262,6 +438,16 @@ class HomeWidget(models.Model):
         related_name="home_widgets",
         null=True,
         blank=True,
+    )
+    clock_design = models.CharField(
+        max_length=20,
+        choices=CLOCK_DESIGN_CHOICES,
+        default=CLOCK_DESIGN_MINIMAL,
+    )
+    clock_style = models.CharField(
+        max_length=20,
+        choices=CLOCK_STYLE_CHOICES,
+        default=CLOCK_STYLE_CLASSIC,
     )
     order = models.PositiveIntegerField(default=0)
     is_enabled = models.BooleanField(default=True)

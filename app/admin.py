@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AvatarCharacter, HumanBenchmarkHighScore, HumanBenchmarkScore, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
+from .models import AvatarCharacter, ClockSettings, ClockTimerPreset, ClockWorldCity, HumanBenchmarkHighScore, HumanBenchmarkScore, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
 
 
 @admin.register(AvatarCharacter)
@@ -60,3 +60,24 @@ class HumanBenchmarkHighScoreAdmin(admin.ModelAdmin):
     list_filter = ("game", "user")
     search_fields = ("user__username", "user__email", "display_score")
     readonly_fields = ("achieved_at",)
+
+@admin.register(ClockWorldCity)
+class ClockWorldCityAdmin(admin.ModelAdmin):
+    list_display = ("label", "timezone", "user", "order", "created_at")
+    list_filter = ("timezone", "user")
+    search_fields = ("label", "timezone", "user__username")
+
+
+@admin.register(ClockTimerPreset)
+class ClockTimerPresetAdmin(admin.ModelAdmin):
+    list_display = ("name", "user", "hours", "minutes", "seconds", "order", "created_at")
+    list_filter = ("user",)
+    search_fields = ("name", "user__username")
+
+
+@admin.register(ClockSettings)
+class ClockSettingsAdmin(admin.ModelAdmin):
+    list_display = ("user", "volume", "ringtone", "updated_at")
+    list_filter = ("ringtone",)
+    search_fields = ("user__username", "user__email")
+    readonly_fields = ("updated_at",)
