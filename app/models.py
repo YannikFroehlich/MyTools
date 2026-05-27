@@ -223,3 +223,140 @@ class WeatherLocation(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+
+class HomeWidget(models.Model):
+    WIDGET_WEATHER = "weather"
+    WIDGET_NOTES = "notes"
+    WIDGET_BENCHMARK = "benchmark"
+    WIDGET_STATS = "stats"
+
+    WIDGET_CHOICES = [
+        (WIDGET_WEATHER, "Wetter"),
+        (WIDGET_NOTES, "Notizen"),
+        (WIDGET_BENCHMARK, "Human Benchmark"),
+        (WIDGET_STATS, "Schnellstatistiken"),
+    ]
+
+    COLOR_CHOICES = [
+        ("blue", "Blau"),
+        ("green", "Grün"),
+        ("purple", "Lila"),
+        ("orange", "Orange"),
+        ("red", "Rot"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="home_widgets",
+    )
+    title = models.CharField(max_length=80)
+    widget_type = models.CharField(max_length=30, choices=WIDGET_CHOICES, default=WIDGET_WEATHER)
+    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="blue")
+    weather_location = models.ForeignKey(
+        WeatherLocation,
+        on_delete=models.SET_NULL,
+        related_name="home_widgets",
+        null=True,
+        blank=True,
+    )
+    order = models.PositiveIntegerField(default=0)
+    is_enabled = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+        indexes = [
+            models.Index(fields=["user", "order", "created_at"]),
+        ]
+        verbose_name = "Home-Widget"
+        verbose_name_plural = "Home-Widgets"
+
+    def __str__(self):
+        return f"{self.title} · {self.get_widget_type_display()}"
+
+
+class HomeLayoutPreference(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="home_layout_preference",
+    )
+    widget_area_order = models.PositiveIntegerField(default=1)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Home-Layout-Einstellung"
+        verbose_name_plural = "Home-Layout-Einstellungen"
+
+    def __str__(self):
+        return f"Home-Layout von {self.user}"
+
+
+class HumanBenchmarkScore(models.Model):
+    GAME_REACTION = "reaction"
+    GAME_AIM = "aim"
+    GAME_TYPING = "typing"
+    GAME_VISUAL = "visual"
+
+    GAME_CHOICES = [
+        (GAME_REACTION, "Reaktion"),
+        (GAME_AIM, "Aim Trainer"),
+        (GAME_TYPING, "Typing Test"),
+        (GAME_VISUAL, "Visual Memory"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="human_benchmark_scores",
+    )
+    game = models.CharField(max_length=20, choices=GAME_CHOICES)
+    score = models.FloatField()
+    display_score = models.CharField(max_length=80)
+    details = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "game", "-created_at"]),
+            models.Index(fields=["game", "score"]),
+        ]
+        verbose_name = "Human Benchmark Ergebnis"
+        verbose_name_plural = "Human Benchmark Ergebnisse"
+
+    def __str__(self):
+        return f"{self.user} · {self.get_game_display()} · {self.display_score}"
+
+
+class HumanBenchmarkHighScore(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="human_benchmark_highscores",
+    )
+    game = models.CharField(max_length=20, choices=HumanBenchmarkScore.GAME_CHOICES)
+    score = models.FloatField()
+    display_score = models.CharField(max_length=80)
+    details = models.JSONField(default=dict, blank=True)
+    achieved_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "game"],
+                name="unique_human_benchmark_highscore_per_user_game",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["game", "score"]),
+        ]
+        verbose_name = "Human Benchmark Highscore"
+        verbose_name_plural = "Human Benchmark Highscores"
+
+    def __str__(self):
+        return f"{self.user} · {self.get_game_display()} · {self.display_score}"

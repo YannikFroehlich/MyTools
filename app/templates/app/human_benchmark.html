@@ -10,7 +10,7 @@
 
 {% block content %}
     {% get_current_language as CURRENT_LANGUAGE %}
-    <div class="benchmark-page" data-language="{{ CURRENT_LANGUAGE }}">
+    <div class="benchmark-page" data-language="{{ CURRENT_LANGUAGE }}" data-score-url="{% url 'human-benchmark-score-api' %}">
         <div class="benchmark-topbar">
             <div class="benchmark-logo" role="button" tabindex="0" aria-label="{% translate 'Zum Reaktionstest wechseln' %}">
                 <span class="benchmark-logo-icon"></span>
@@ -101,10 +101,45 @@
                 <button id="visual-stop-btn" class="benchmark-outline-btn hidden" type="button">{% translate 'Test abbrechen' %}</button>
             </div>
         </section>
+
+        <section class="benchmark-scoreboard benchmark-card" aria-label="{% translate 'Human Benchmark Ergebnisse' %}">
+            <div class="scoreboard-header">
+                <div>
+                    <p class="scoreboard-kicker">{% translate 'Deine Statistiken' %}</p>
+                    <h2>{% translate 'Scores & Bestenliste' %}</h2>
+                </div>
+                <p id="score-save-status" class="score-save-status" aria-live="polite"></p>
+            </div>
+
+            <div class="scoreboard-grid">
+                <article class="score-panel">
+                    <div class="score-panel-title">
+                        <span>{% translate 'Dein Highscore' %}</span>
+                        <strong id="current-highscore">--</strong>
+                    </div>
+                    <p id="current-highscore-hint" class="score-panel-hint">{% translate 'Wähle oben einen Spielmodus aus.' %}</p>
+                </article>
+
+                <article class="score-panel">
+                    <div class="score-panel-title">
+                        <span>{% translate 'Letzte 10 Ergebnisse' %}</span>
+                    </div>
+                    <div id="recent-scores-list" class="score-list empty">{% translate 'Noch keine Ergebnisse.' %}</div>
+                </article>
+
+                <article class="score-panel leaderboard-panel">
+                    <div class="score-panel-title">
+                        <span>{% translate 'Bestenliste' %}</span>
+                    </div>
+                    <div id="leaderboard-list" class="leaderboard-list empty">{% translate 'Noch keine Ergebnisse.' %}</div>
+                </article>
+            </div>
+        </section>
     </div>
 {% endblock %}
 
 {% block extra_js %}
     {{ benchmark_labels|json_script:"benchmark-labels" }}
+    {{ score_data|json_script:"benchmark-score-data" }}
     <script src="{% static 'app/js/human_benchmark.js' %}"></script>
 {% endblock %}

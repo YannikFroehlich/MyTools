@@ -16,7 +16,10 @@ urlpatterns = [
     path('weather/', weather, name='weather'),
     path("obs-dashboard/", obs_dashboard, name="obs-dashboard"),
     path("spritkostenrechner/", spritkostenrechner, name="spritkostenrechner"),
+
     path("human-benchmark/", human_benchmark, name="human-benchmark"),
+    path("api/human-benchmark/scores/", human_benchmark_score_api, name="human-benchmark-score-api"),
+
     path("genius-search/", genius_search, name="genius-search"),
     path("avatar-wiki/", avatar_wiki, name="avatar-wiki"),
     path("api/avatar-characters/", avatar_characters_api, name="avatar-characters-api"),

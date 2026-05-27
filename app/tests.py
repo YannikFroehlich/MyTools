@@ -12,7 +12,18 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from app.forms import NoteForm
-from app.models import AvatarCharacter, Note, Shortcut, ShortcutSection, WeatherLocation
+from app.models import (
+    AvatarCharacter,
+    HomeLayoutPreference,
+    HomeWidget,
+    HumanBenchmarkHighScore,
+    HumanBenchmarkScore,
+    Note,
+    Shortcut,
+    ShortcutSection,
+    UserProfile,
+    WeatherLocation,
+)
 
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
@@ -20,7 +31,16 @@ TEST_MEDIA_ROOT = tempfile.mkdtemp()
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class BaseTestCase(TestCase):
-    user_scoped_models = (AvatarCharacter, Note, Shortcut, ShortcutSection, WeatherLocation)
+    user_scoped_models = (
+        AvatarCharacter,
+        HomeWidget,
+        HumanBenchmarkHighScore,
+        HumanBenchmarkScore,
+        Note,
+        Shortcut,
+        ShortcutSection,
+        WeatherLocation,
+    )
 
     @classmethod
     def tearDownClass(cls):
@@ -121,6 +141,58 @@ class ModelTests(BaseTestCase):
 
         self.assertEqual(str(character), "Aang")
 
+    def test_user_profile_str_and_initials(self):
+        self.user.first_name = "Yannik"
+        self.user.last_name = "Fröhlich"
+        self.user.save(update_fields=["first_name", "last_name"])
+
+        profile = UserProfile.objects.create(user=self.user, bio="Hallo")
+
+        self.assertEqual(str(profile), "Profil von testuser")
+        self.assertEqual(profile.initials, "YF")
+
+    def test_user_profile_initials_fallback_to_username(self):
+        profile = UserProfile.objects.create(user=self.user)
+
+        self.assertEqual(profile.initials, "TE")
+        self.assertEqual(profile.avatar_url, "")
+
+    def test_home_widget_str_returns_title_and_type(self):
+        widget = HomeWidget.objects.create(
+            user=self.user,
+            title="Mein Wetter",
+            widget_type=HomeWidget.WIDGET_WEATHER,
+        )
+
+        self.assertEqual(str(widget), "Mein Wetter · Wetter")
+
+    def test_home_layout_preference_str_returns_user(self):
+        preference = HomeLayoutPreference.objects.create(user=self.user)
+
+        self.assertEqual(str(preference), f"Home-Layout von {self.user}")
+
+    def test_human_benchmark_score_str_returns_user_game_and_score(self):
+        score = HumanBenchmarkScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=250,
+            display_score="250 ms",
+            details={"rounds": 5},
+        )
+
+        self.assertEqual(str(score), f"{self.user} · Reaktion · 250 ms")
+
+    def test_human_benchmark_highscore_str_returns_user_game_and_score(self):
+        highscore = HumanBenchmarkHighScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_TYPING,
+            score=82,
+            display_score="82 WPM",
+            details={"accuracy": 97},
+        )
+
+        self.assertEqual(str(highscore), f"{self.user} · Typing Test · 82 WPM")
+
 
 class AuthViewTests(BaseTestCase):
     def test_signup_page_loads_without_login(self):
@@ -143,6 +215,93 @@ class AuthViewTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("home"))
         self.assertTrue(get_user_model().objects.filter(username="neueruser").exists())
+
+
+class ProfileViewTests(BaseTestCase):
+    def test_profile_page_loads_and_creates_profile(self):
+        response = self.client.get(reverse("profile"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/profile.html")
+        self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
+
+    def test_profile_post_updates_profile_and_user_fields(self):
+        response = self.client.post(reverse("profile"), {
+            "username": "neuername",
+            "first_name": "Yannik",
+            "last_name": "Fröhlich",
+            "email": "yannik@example.com",
+            "bio": "Meine Bio",
+        })
+
+        self.assertRedirects(response, reverse("profile"))
+
+        self.user.refresh_from_db()
+        profile = UserProfile.objects.get(user=self.user)
+
+        self.assertEqual(self.user.username, "neuername")
+        self.assertEqual(self.user.first_name, "Yannik")
+        self.assertEqual(self.user.last_name, "Fröhlich")
+        self.assertEqual(self.user.email, "yannik@example.com")
+        self.assertEqual(profile.bio, "Meine Bio")
+
+    def test_profile_rejects_duplicate_username(self):
+        get_user_model().objects.create_user(
+            username="belegt",
+            email="belegt@example.com",
+            password="testpass-123",
+        )
+
+        response = self.client.post(reverse("profile"), {
+            "username": "belegt",
+            "first_name": "",
+            "last_name": "",
+            "email": "frei@example.com",
+            "bio": "",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response.context["form"], "username", "Dieser Benutzername ist bereits vergeben.")
+
+    def test_users_page_lists_active_profiles(self):
+        other_user = get_user_model().objects.create_user(
+            username="anderer",
+            first_name="Max",
+            password="testpass-123",
+        )
+
+        response = self.client.get(reverse("users"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/users.html")
+        self.assertEqual(response.context["total_users"], 2)
+        self.assertTrue(UserProfile.objects.filter(user=other_user).exists())
+
+    def test_users_page_search_filters_by_username(self):
+        get_user_model().objects.create_user(username="serverfreund", password="testpass-123")
+        get_user_model().objects.create_user(username="anderer", password="testpass-123")
+
+        response = self.client.get(reverse("users"), {
+            "q": "server",
+        })
+
+        usernames = [profile.user.username for profile in response.context["profiles"]]
+
+        self.assertIn("serverfreund", usernames)
+        self.assertNotIn("anderer", usernames)
+
+    def test_public_profile_page_loads(self):
+        other_user = get_user_model().objects.create_user(
+            username="publicuser",
+            password="testpass-123",
+        )
+
+        response = self.client.get(reverse("public_profile", args=[other_user.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/public_profile.html")
+        self.assertEqual(response.context["profile_user"], other_user)
+        self.assertTrue(UserProfile.objects.filter(user=other_user).exists())
 
 
 class HomeViewTests(BaseTestCase):
@@ -188,7 +347,7 @@ class HomeViewTests(BaseTestCase):
 
         section = ShortcutSection.objects.get(name="Server")
         self.assertEqual(section.color, "green")
-        self.assertEqual(section.order, 1)
+        self.assertEqual(section.order, 2)
 
     def test_add_empty_section_does_not_create_extra_section(self):
         response = self.client.post(reverse("home"), {
@@ -449,6 +608,145 @@ class HomeViewTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertFalse(response.json()["success"])
+
+
+    def test_add_widget_creates_widget_with_valid_data(self):
+        weather_location = WeatherLocation.objects.create(name="Berlin")
+
+        response = self.client.post(reverse("home"), {
+            "action": "add_widget",
+            "widget_title": "Wetter Berlin",
+            "widget_type": HomeWidget.WIDGET_WEATHER,
+            "widget_color": "green",
+            "weather_location": weather_location.id,
+        })
+
+        self.assertRedirects(response, reverse("home"))
+
+        widget = HomeWidget.objects.get(title="Wetter Berlin")
+        self.assertEqual(widget.user, self.user)
+        self.assertEqual(widget.widget_type, HomeWidget.WIDGET_WEATHER)
+        self.assertEqual(widget.color, "green")
+        self.assertEqual(widget.weather_location, weather_location)
+        self.assertEqual(widget.order, 1)
+
+    def test_add_widget_uses_fallbacks_for_invalid_or_empty_data(self):
+        response = self.client.post(reverse("home"), {
+            "action": "add_widget",
+            "widget_title": "",
+            "widget_type": "kaputt",
+            "widget_color": "pink",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+
+        widget = HomeWidget.objects.get()
+        self.assertEqual(widget.title, "Wetter")
+        self.assertEqual(widget.widget_type, HomeWidget.WIDGET_WEATHER)
+        self.assertEqual(widget.color, "blue")
+
+    def test_edit_widget_updates_widget(self):
+        old_location = WeatherLocation.objects.create(name="Berlin")
+        new_location = WeatherLocation.objects.create(name="Osnabrück")
+        widget = HomeWidget.objects.create(
+            user=self.user,
+            title="Alt",
+            widget_type=HomeWidget.WIDGET_WEATHER,
+            color="blue",
+            weather_location=old_location,
+        )
+
+        response = self.client.post(reverse("home"), {
+            "action": "edit_widget",
+            "widget_id": widget.id,
+            "widget_title": "Neue Notizen",
+            "widget_type": HomeWidget.WIDGET_NOTES,
+            "widget_color": "purple",
+            "weather_location": new_location.id,
+        })
+
+        self.assertRedirects(response, reverse("home"))
+
+        widget.refresh_from_db()
+        self.assertEqual(widget.title, "Neue Notizen")
+        self.assertEqual(widget.widget_type, HomeWidget.WIDGET_NOTES)
+        self.assertEqual(widget.color, "purple")
+        self.assertEqual(widget.weather_location, new_location)
+
+    def test_delete_widget(self):
+        widget = HomeWidget.objects.create(
+            user=self.user,
+            title="Weg",
+            widget_type=HomeWidget.WIDGET_STATS,
+        )
+
+        response = self.client.post(reverse("home"), {
+            "action": "delete_widget",
+            "widget_id": widget.id,
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertFalse(HomeWidget.objects.filter(id=widget.id).exists())
+
+    def test_update_widget_order_json(self):
+        widget = HomeWidget.objects.create(
+            user=self.user,
+            title="Stats",
+            widget_type=HomeWidget.WIDGET_STATS,
+            order=0,
+        )
+
+        response = self.client.post(
+            reverse("home"),
+            data=json.dumps({
+                "action": "update_widget_order",
+                "widgets": [
+                    {
+                        "id": widget.id,
+                        "order": 7,
+                    },
+                ],
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"success": True})
+
+        widget.refresh_from_db()
+        self.assertEqual(widget.order, 7)
+
+    def test_update_home_layout_order_json_updates_widgets_and_sections(self):
+        section = ShortcutSection.objects.create(name="Server", order=2)
+        preference = HomeLayoutPreference.objects.create(user=self.user, widget_area_order=1)
+
+        response = self.client.post(
+            reverse("home"),
+            data=json.dumps({
+                "action": "update_home_layout_order",
+                "items": [
+                    {
+                        "type": "widgets",
+                        "order": 5,
+                    },
+                    {
+                        "type": "section",
+                        "id": section.id,
+                        "order": 6,
+                    },
+                ],
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"success": True})
+
+        preference.refresh_from_db()
+        section.refresh_from_db()
+
+        self.assertEqual(preference.widget_area_order, 5)
+        self.assertEqual(section.order, 6)
 
 
 class StaticPageTests(BaseTestCase):
@@ -1034,6 +1332,237 @@ class AvatarApiTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 405)
         self.assertEqual(response.json()["message"], "Methode nicht erlaubt.")
+
+
+
+class HumanBenchmarkTests(BaseTestCase):
+    def post_score(self, payload):
+        return self.client.post(
+            reverse("human-benchmark-score-api"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+    def test_human_benchmark_page_contains_score_data(self):
+        HumanBenchmarkScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=210,
+            display_score="210 ms",
+        )
+        HumanBenchmarkHighScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=210,
+            display_score="210 ms",
+        )
+
+        response = self.client.get(reverse("human-benchmark"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/human_benchmark.html")
+        self.assertIn("score_data", response.context)
+        self.assertIn("reaction", response.context["score_data"]["games"])
+        self.assertEqual(
+            response.context["score_data"]["games"]["reaction"]["highscore"]["display_score"],
+            "210 ms",
+        )
+
+    def test_human_benchmark_score_api_rejects_invalid_json(self):
+        response = self.client.post(
+            reverse("human-benchmark-score-api"),
+            data="{kaputt",
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["message"], "Ungültige Anfrage.")
+
+    def test_human_benchmark_score_api_rejects_unknown_game(self):
+        response = self.post_score({
+            "game": "unknown",
+            "score": 123,
+            "display_score": "123",
+        })
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["message"], "Unbekannter Spielmodus.")
+
+    def test_human_benchmark_score_api_rejects_invalid_score(self):
+        response = self.post_score({
+            "game": HumanBenchmarkScore.GAME_REACTION,
+            "score": "abc",
+            "display_score": "abc",
+        })
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["message"], "Ungültiger Score.")
+
+        response = self.post_score({
+            "game": HumanBenchmarkScore.GAME_REACTION,
+            "score": -1,
+            "display_score": "-1 ms",
+        })
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["message"], "Ungültiger Score.")
+
+    def test_human_benchmark_score_api_saves_score_and_first_highscore(self):
+        response = self.post_score({
+            "game": HumanBenchmarkScore.GAME_AIM,
+            "score": 5500,
+            "display_score": "5.50 s",
+            "details": {
+                "accuracy": 92,
+                "hits": 30,
+                "misses": 2,
+            },
+        })
+
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()
+
+        self.assertEqual(data["status"], "ok")
+        self.assertTrue(data["new_highscore"])
+        self.assertEqual(HumanBenchmarkScore.objects.count(), 1)
+        self.assertEqual(HumanBenchmarkHighScore.objects.count(), 1)
+
+        highscore = HumanBenchmarkHighScore.objects.get(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_AIM,
+        )
+
+        self.assertEqual(highscore.score, 5500)
+        self.assertEqual(highscore.display_score, "5.50 s")
+        self.assertEqual(highscore.details["accuracy"], 92)
+
+    def test_human_benchmark_lower_score_is_better_for_reaction(self):
+        HumanBenchmarkHighScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=300,
+            display_score="300 ms",
+        )
+
+        response = self.post_score({
+            "game": HumanBenchmarkScore.GAME_REACTION,
+            "score": 240,
+            "display_score": "240 ms",
+            "details": {
+                "attempts": 5,
+            },
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["new_highscore"])
+
+        highscore = HumanBenchmarkHighScore.objects.get(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+        )
+
+        self.assertEqual(highscore.score, 240)
+        self.assertEqual(highscore.display_score, "240 ms")
+
+    def test_human_benchmark_worse_reaction_score_does_not_replace_highscore(self):
+        HumanBenchmarkHighScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=240,
+            display_score="240 ms",
+        )
+
+        response = self.post_score({
+            "game": HumanBenchmarkScore.GAME_REACTION,
+            "score": 300,
+            "display_score": "300 ms",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["new_highscore"])
+
+        highscore = HumanBenchmarkHighScore.objects.get(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+        )
+
+        self.assertEqual(highscore.score, 240)
+        self.assertEqual(highscore.display_score, "240 ms")
+        self.assertEqual(HumanBenchmarkScore.objects.count(), 1)
+
+    def test_human_benchmark_higher_score_is_better_for_typing(self):
+        HumanBenchmarkHighScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_TYPING,
+            score=60,
+            display_score="60 WPM",
+        )
+
+        response = self.post_score({
+            "game": HumanBenchmarkScore.GAME_TYPING,
+            "score": 75,
+            "display_score": "75 WPM",
+            "details": {
+                "accuracy": 98,
+            },
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["new_highscore"])
+
+        highscore = HumanBenchmarkHighScore.objects.get(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_TYPING,
+        )
+
+        self.assertEqual(highscore.score, 75)
+        self.assertEqual(highscore.display_score, "75 WPM")
+        self.assertEqual(highscore.details["accuracy"], 98)
+
+    def test_human_benchmark_recent_scores_are_limited_to_last_ten(self):
+        for index in range(12):
+            HumanBenchmarkScore.objects.create(
+                user=self.user,
+                game=HumanBenchmarkScore.GAME_VISUAL,
+                score=index,
+                display_score=f"Level {index}",
+            )
+
+        response = self.client.get(reverse("human-benchmark"))
+
+        recent = response.context["score_data"]["games"]["visual"]["recent"]
+
+        self.assertEqual(len(recent), 10)
+        self.assertEqual(recent[0]["display_score"], "Level 11")
+        self.assertEqual(recent[-1]["display_score"], "Level 2")
+
+    def test_human_benchmark_leaderboard_is_per_game_and_sorted(self):
+        other_user = get_user_model().objects.create_user(
+            username="anderer",
+            password="testpass-123",
+        )
+        HumanBenchmarkHighScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=240,
+            display_score="240 ms",
+        )
+        HumanBenchmarkHighScore.objects.create(
+            user=other_user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=180,
+            display_score="180 ms",
+        )
+
+        response = self.client.get(reverse("human-benchmark"))
+
+        leaderboard = response.context["score_data"]["games"]["reaction"]["leaderboard"]
+
+        self.assertEqual(leaderboard[0]["username"], "anderer")
+        self.assertEqual(leaderboard[0]["display_score"], "180 ms")
+        self.assertEqual(leaderboard[1]["username"], "testuser")
+        self.assertEqual(leaderboard[1]["display_score"], "240 ms")
 
 
 class GeniusSearchApiTests(BaseTestCase):

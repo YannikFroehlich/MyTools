@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AvatarCharacter, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
+from .models import AvatarCharacter, HumanBenchmarkHighScore, HumanBenchmarkScore, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
 
 
 @admin.register(AvatarCharacter)
@@ -44,3 +44,19 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "updated_at", "created_at")
     search_fields = ("user__username", "user__email", "user__first_name", "user__last_name")
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(HumanBenchmarkScore)
+class HumanBenchmarkScoreAdmin(admin.ModelAdmin):
+    list_display = ("user", "game", "display_score", "score", "created_at")
+    list_filter = ("game", "user")
+    search_fields = ("user__username", "user__email", "display_score")
+    readonly_fields = ("created_at",)
+
+
+@admin.register(HumanBenchmarkHighScore)
+class HumanBenchmarkHighScoreAdmin(admin.ModelAdmin):
+    list_display = ("user", "game", "display_score", "score", "achieved_at")
+    list_filter = ("game", "user")
+    search_fields = ("user__username", "user__email", "display_score")
+    readonly_fields = ("achieved_at",)

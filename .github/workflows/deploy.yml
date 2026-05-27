@@ -3,17 +3,32 @@ name: Test, Build and Deploy MyTools
 on:
   workflow_dispatch:
 
+  # Tests laufen bei normalen Pushes.
+  # Wenn zusätzlich ein Pull Request vom selben Branch geöffnet/aktualisiert wird,
+  # sorgt concurrency unten dafür, dass der doppelte ältere Lauf abgebrochen wird.
   push:
     branches:
       - "**"
 
+  # Pull-Request-Tests nur dann, wenn der Pull Request nach main geht.
   pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 concurrency:
-  group: mytools-${{ github.ref }}
+  # Wichtig:
+  # Bei pull_request ist github.head_ref der Quell-Branch.
+  # Bei push ist github.ref_name der gepushte Branch.
+  # Dadurch landen Push-Run und PR-Run vom selben Branch in derselben Gruppe.
+  group: mytools-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -35,9 +50,7 @@ jobs:
 
           OSV_VERSION="v2.3.8"
 
-          curl -L \
-            "https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}/osv-scanner_linux_amd64" \
-            -o osv-scanner
+          curl -L             "https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}/osv-scanner_linux_amd64"             -o osv-scanner
 
           chmod +x osv-scanner
 
@@ -54,15 +67,7 @@ jobs:
 
           set +e
 
-          ./osv-scanner scan source -r . \
-            --no-resolve \
-            --skip-git \
-            --skip-path .venv \
-            --skip-path venv \
-            --skip-path node_modules \
-            --skip-path staticfiles \
-            --skip-path media \
-            --skip-path .git
+          ./osv-scanner scan source -r .             --no-resolve             --skip-git             --skip-path .venv             --skip-path venv             --skip-path node_modules             --skip-path staticfiles             --skip-path media             --skip-path .git
 
           OSV_EXIT_CODE=$?
 
@@ -153,6 +158,7 @@ jobs:
     runs-on: self-hosted
     needs: test
 
+    # Build nur manuell oder nach Push auf main.
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.ref == 'refs/heads/main' && github.event_name == 'push')
@@ -170,6 +176,7 @@ jobs:
     runs-on: self-hosted
     needs: build
 
+    # Deployment nur nach echtem Push/Merge auf main, nicht bei Pull Requests.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
