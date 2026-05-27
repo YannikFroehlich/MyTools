@@ -314,7 +314,7 @@
                     <small>{% translate 'Du kannst weitere Orte auf der Wetterseite speichern.' %}</small>
                 </label>
 
-                <label class="widget-clock-design-field" id="widget-clock-design-field">
+                <label class="widget-clock-design-field" id="widget-clock-design-field" style="display: none;">
                     {% translate 'Uhr-Farbstil' %}
                     <select name="clock_design" id="widget-clock-design">
                         {% for value, label in clock_designs %}
@@ -324,7 +324,7 @@
                     <small>{% translate 'Der Farbstil verändert nur die Optik des Uhr-Widgets.' %}</small>
                 </label>
 
-                <label class="widget-clock-style-field" id="widget-clock-style-field">
+                <label class="widget-clock-style-field" id="widget-clock-style-field" style="display: none;">
                     {% translate 'Uhr-Layout' %}
                     <select name="clock_style" id="widget-clock-style">
                         {% for value, label in clock_styles %}
