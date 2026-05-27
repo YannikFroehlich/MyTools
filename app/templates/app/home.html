@@ -65,6 +65,8 @@
                                             data-widget-type="{{ widget.widget_type }}"
                                             data-widget-color="{{ widget.color }}"
                                             data-widget-weather-location="{% if widget.weather_location %}{{ widget.weather_location.id }}{% endif %}"
+                                            data-widget-clock-design="{{ widget.clock_design }}"
+                                            data-widget-clock-style="{{ widget.clock_style }}"
                                         >
                                             <div class="widget-topbar">
                                                 <span class="widget-drag-handle" title="{% translate 'Widget verschieben' %}" role="button" tabindex="0">
@@ -78,6 +80,8 @@
                                                         <i class="fa-solid fa-note-sticky"></i>
                                                     {% elif widget.widget_type == "benchmark" %}
                                                         <i class="fa-solid fa-chart-simple"></i>
+                                                    {% elif widget.widget_type == "clock" %}
+                                                        <i class="fa-regular fa-clock"></i>
                                                     {% else %}
                                                         <i class="fa-solid fa-gauge-high"></i>
                                                     {% endif %}
@@ -171,6 +175,29 @@
                                                         {% translate 'Notizen öffnen' %}
                                                         <i class="fa-solid fa-arrow-right"></i>
                                                     </a>
+                                                </div>
+                                            {% elif widget.widget_type == "clock" %}
+                                                <div class="clock-widget-content clock-design-{{ widget.clock_design }} clock-style-{{ widget.clock_style }}" data-clock-widget>
+                                                    <div class="clock-analog" aria-hidden="true">
+                                                        <span class="clock-analog-mark mark-12">12</span>
+                                                        <span class="clock-analog-mark mark-3">3</span>
+                                                        <span class="clock-analog-mark mark-6">6</span>
+                                                        <span class="clock-analog-mark mark-9">9</span>
+                                                        <span class="clock-hand clock-hand-hour" data-clock-hour-hand></span>
+                                                        <span class="clock-hand clock-hand-minute" data-clock-minute-hand></span>
+                                                        <span class="clock-hand clock-hand-second" data-clock-second-hand></span>
+                                                        <span class="clock-center-dot"></span>
+                                                    </div>
+
+                                                    <div class="clock-visual">
+                                                        <span class="clock-time" data-clock-time>--:--:--</span>
+                                                        <span class="clock-date" data-clock-date>--.--.----</span>
+                                                    </div>
+
+                                                    <div class="clock-meta-row">
+                                                        <span data-clock-weekday>---</span>
+                                                        <span data-clock-style-label>{{ widget.get_clock_style_display }}</span>
+                                                    </div>
                                                 </div>
                                             {% elif widget.widget_type == "benchmark" %}
                                                 <div class="benchmark-widget-content">
@@ -268,9 +295,11 @@
                 <label>
                     {% translate 'Widget-Typ' %}
                     <select name="widget_type" id="widget-type">
-                        {% for value, label in widget_types %}
-                            <option value="{{ value }}">{{ label }}</option>
-                        {% endfor %}
+                        <option value="weather">{% translate 'Wetter' %}</option>
+                        <option value="notes">{% translate 'Notizen' %}</option>
+                        <option value="clock">{% translate 'Uhr' %}</option>
+                        <option value="benchmark">{% translate 'Human Benchmark' %}</option>
+                        <option value="quick_stats">{% translate 'Schnellstatistiken' %}</option>
                     </select>
                 </label>
 
@@ -283,6 +312,26 @@
                         {% endfor %}
                     </select>
                     <small>{% translate 'Du kannst weitere Orte auf der Wetterseite speichern.' %}</small>
+                </label>
+
+                <label class="widget-clock-design-field" id="widget-clock-design-field">
+                    {% translate 'Uhr-Farbstil' %}
+                    <select name="clock_design" id="widget-clock-design">
+                        {% for value, label in clock_designs %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <small>{% translate 'Der Farbstil verändert nur die Optik des Uhr-Widgets.' %}</small>
+                </label>
+
+                <label class="widget-clock-style-field" id="widget-clock-style-field">
+                    {% translate 'Uhr-Layout' %}
+                    <select name="clock_style" id="widget-clock-style">
+                        {% for value, label in clock_styles %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <small>{% translate 'Hier wählst du die Anordnung, zum Beispiel digital oder analog.' %}</small>
                 </label>
 
                 <div class="section-color-picker">

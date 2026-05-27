@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
+from app.models import AvatarCharacter, ClockSettings, ClockTimerPreset, ClockWorldCity, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
     ShortcutSection, WeatherLocation
 
 import json
@@ -23,6 +23,7 @@ from django.http import JsonResponse
 
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 
@@ -48,6 +49,156 @@ def api_error_response(message, status=400):
         "status": "error",
         "message": message,
     }, status=status)
+
+
+CLOCK_TIMEZONE_CHOICES = [
+    ("Europe/Berlin", "Berlin / Deutschland"),
+    ("Europe/London", "London / Großbritannien"),
+    ("Europe/Paris", "Paris / Frankreich"),
+    ("Europe/Madrid", "Madrid / Spanien"),
+    ("Europe/Rome", "Rom / Italien"),
+    ("Europe/Istanbul", "Istanbul / Türkei"),
+    ("America/New_York", "New York / USA"),
+    ("America/Chicago", "Chicago / USA"),
+    ("America/Denver", "Denver / USA"),
+    ("America/Los_Angeles", "Los Angeles / USA"),
+    ("America/Sao_Paulo", "São Paulo / Brasilien"),
+    ("Asia/Dubai", "Dubai / VAE"),
+    ("Asia/Kolkata", "Mumbai / Indien"),
+    ("Asia/Bangkok", "Bangkok / Thailand"),
+    ("Asia/Shanghai", "Shanghai / China"),
+    ("Asia/Tokyo", "Tokio / Japan"),
+    ("Asia/Seoul", "Seoul / Südkorea"),
+    ("Australia/Sydney", "Sydney / Australien"),
+    ("Pacific/Auckland", "Auckland / Neuseeland"),
+    ("UTC", "UTC"),
+]
+
+
+@login_required
+def clock_view(request):
+    settings_obj, created = ClockSettings.objects.get_or_create(user=request.user)
+    valid_timezones = {timezone for timezone, label in CLOCK_TIMEZONE_CHOICES}
+    valid_ringtones = {choice[0] for choice in ClockSettings.RINGTONE_CHOICES}
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "add_world_city":
+            label = request.POST.get("label", "").strip()
+            timezone_name = request.POST.get("timezone", "").strip()
+
+            if not label and timezone_name in valid_timezones:
+                label = dict(CLOCK_TIMEZONE_CHOICES).get(timezone_name, timezone_name)
+
+            if label and timezone_name in valid_timezones:
+                max_order = ClockWorldCity.objects.filter(user=request.user).aggregate(Max("order"))["order__max"] or 0
+                ClockWorldCity.objects.create(
+                    user=request.user,
+                    label=label[:80],
+                    timezone=timezone_name,
+                    order=max_order + 1,
+                )
+                messages.success(request, _("Weltuhr-Ort wurde hinzugefügt."))
+            else:
+                messages.error(request, _("Bitte wähle einen gültigen Ort aus."))
+
+            return redirect("clock")
+
+        if action == "delete_world_city":
+            city_id = request.POST.get("city_id")
+            ClockWorldCity.objects.filter(id=city_id, user=request.user).delete()
+            messages.success(request, _("Weltuhr-Ort wurde gelöscht."))
+            return redirect("clock")
+
+        if action == "add_timer_preset":
+            name = request.POST.get("timer_name", "").strip()
+            try:
+                hours = max(0, min(int(request.POST.get("hours") or 0), 23))
+                minutes = max(0, min(int(request.POST.get("minutes") or 0), 59))
+                seconds = max(0, min(int(request.POST.get("seconds") or 0), 59))
+            except ValueError:
+                hours, minutes, seconds = 0, 0, 0
+
+            total_seconds = (hours * 3600) + (minutes * 60) + seconds
+
+            if name and total_seconds > 0:
+                max_order = ClockTimerPreset.objects.filter(user=request.user).aggregate(Max("order"))["order__max"] or 0
+                ClockTimerPreset.objects.create(
+                    user=request.user,
+                    name=name[:80],
+                    hours=hours,
+                    minutes=minutes,
+                    seconds=seconds,
+                    order=max_order + 1,
+                )
+                messages.success(request, _("Timer wurde gespeichert."))
+            else:
+                messages.error(request, _("Bitte gib einen Namen und eine Dauer größer als 0 Sekunden ein."))
+
+            return redirect("clock")
+
+        if action == "delete_timer_preset":
+            timer_id = request.POST.get("timer_id")
+            ClockTimerPreset.objects.filter(id=timer_id, user=request.user).delete()
+            messages.success(request, _("Timer wurde gelöscht."))
+            return redirect("clock")
+
+        if action == "update_clock_settings":
+            try:
+                volume = int(request.POST.get("volume") or 80)
+            except ValueError:
+                volume = 80
+
+            ringtone = request.POST.get("ringtone", ClockSettings.RINGTONE_BELL).strip()
+            uploaded_sound = request.FILES.get("custom_sound")
+
+            settings_obj.volume = max(0, min(volume, 100))
+            if ringtone in valid_ringtones:
+                settings_obj.ringtone = ringtone
+
+            if uploaded_sound:
+                if uploaded_sound.size > 5 * 1024 * 1024:
+                    messages.error(request, _("Der eigene Klingelton darf maximal 5 MB groß sein."))
+                    return redirect("clock")
+
+                content_type = getattr(uploaded_sound, "content_type", "") or ""
+                if content_type and not content_type.startswith("audio/"):
+                    messages.error(request, _("Bitte lade eine Audio-Datei hoch."))
+                    return redirect("clock")
+
+                settings_obj.custom_sound = uploaded_sound
+                settings_obj.ringtone = ClockSettings.RINGTONE_CUSTOM
+
+            settings_obj.save()
+            messages.success(request, _("Uhr-Einstellungen wurden gespeichert."))
+            return redirect("clock")
+
+        if action == "remove_custom_sound":
+            if settings_obj.custom_sound:
+                settings_obj.custom_sound.delete(save=False)
+                settings_obj.custom_sound = None
+                if settings_obj.ringtone == ClockSettings.RINGTONE_CUSTOM:
+                    settings_obj.ringtone = ClockSettings.RINGTONE_BELL
+                settings_obj.save()
+                messages.success(request, _("Eigener Klingelton wurde gelöscht."))
+            return redirect("clock")
+
+    if not ClockWorldCity.objects.filter(user=request.user).exists():
+        ClockWorldCity.objects.bulk_create([
+            ClockWorldCity(user=request.user, label="Berlin", timezone="Europe/Berlin", order=1),
+            ClockWorldCity(user=request.user, label="New York", timezone="America/New_York", order=2),
+            ClockWorldCity(user=request.user, label="Tokio", timezone="Asia/Tokyo", order=3),
+        ])
+
+    context = {
+        "world_cities": ClockWorldCity.objects.filter(user=request.user),
+        "timer_presets": ClockTimerPreset.objects.filter(user=request.user),
+        "clock_settings": settings_obj,
+        "timezone_choices": CLOCK_TIMEZONE_CHOICES,
+        "ringtone_choices": ClockSettings.RINGTONE_CHOICES,
+    }
+    return render(request, "app/clock.html", context)
 
 
 def signup(request):
@@ -181,6 +332,9 @@ def build_home_widget_data(request, user):
                 "rows": benchmark_rows,
             }
 
+        elif widget.widget_type == HomeWidget.WIDGET_CLOCK:
+            data = {}
+
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {
                 "shortcut_count": shortcut_count,
@@ -313,15 +467,25 @@ def home(request):
             widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
             widget_color = request.POST.get("widget_color", "blue").strip()
             weather_location_id = request.POST.get("weather_location") or None
+            clock_design = request.POST.get("clock_design", HomeWidget.CLOCK_DESIGN_MINIMAL).strip()
+            clock_style = request.POST.get("clock_style", HomeWidget.CLOCK_STYLE_CLASSIC).strip()
 
             valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
             valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
+            valid_clock_designs = {choice[0] for choice in HomeWidget.CLOCK_DESIGN_CHOICES}
+            valid_clock_styles = {choice[0] for choice in HomeWidget.CLOCK_STYLE_CHOICES}
 
             if widget_type not in valid_widget_types:
                 widget_type = HomeWidget.WIDGET_WEATHER
 
             if widget_color not in valid_colors:
                 widget_color = "blue"
+
+            if clock_design not in valid_clock_designs:
+                clock_design = HomeWidget.CLOCK_DESIGN_MINIMAL
+
+            if clock_style not in valid_clock_styles:
+                clock_style = HomeWidget.CLOCK_STYLE_CLASSIC
 
             if not title:
                 title = dict(HomeWidget.WIDGET_CHOICES).get(widget_type, _("Widget"))
@@ -338,6 +502,8 @@ def home(request):
                 widget_type=widget_type,
                 color=widget_color,
                 weather_location=weather_location,
+                clock_design=clock_design,
+                clock_style=clock_style,
                 order=max_order + 1,
             )
 
@@ -349,16 +515,26 @@ def home(request):
             widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
             widget_color = request.POST.get("widget_color", "blue").strip()
             weather_location_id = request.POST.get("weather_location") or None
+            clock_design = request.POST.get("clock_design", HomeWidget.CLOCK_DESIGN_MINIMAL).strip()
+            clock_style = request.POST.get("clock_style", HomeWidget.CLOCK_STYLE_CLASSIC).strip()
 
             widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
             valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
             valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
+            valid_clock_designs = {choice[0] for choice in HomeWidget.CLOCK_DESIGN_CHOICES}
+            valid_clock_styles = {choice[0] for choice in HomeWidget.CLOCK_STYLE_CHOICES}
 
             if widget_type not in valid_widget_types:
                 widget_type = HomeWidget.WIDGET_WEATHER
 
             if widget_color not in valid_colors:
                 widget_color = "blue"
+
+            if clock_design not in valid_clock_designs:
+                clock_design = HomeWidget.CLOCK_DESIGN_MINIMAL
+
+            if clock_style not in valid_clock_styles:
+                clock_style = HomeWidget.CLOCK_STYLE_CLASSIC
 
             weather_location = None
             if weather_location_id:
@@ -368,6 +544,8 @@ def home(request):
             widget.widget_type = widget_type
             widget.color = widget_color
             widget.weather_location = weather_location
+            widget.clock_design = clock_design
+            widget.clock_style = clock_style
             widget.save()
 
             return redirect("home")
@@ -549,6 +727,8 @@ def home(request):
         "weather_locations": weather_locations,
         "widget_types": [(value, _(label)) for value, label in HomeWidget.WIDGET_CHOICES],
         "widget_colors": [(value, _(label)) for value, label in HomeWidget.COLOR_CHOICES],
+        "clock_designs": [(value, _(label)) for value, label in HomeWidget.CLOCK_DESIGN_CHOICES],
+        "clock_styles": [(value, _(label)) for value, label in HomeWidget.CLOCK_STYLE_CHOICES],
         "home_labels": home_labels,
     })
 

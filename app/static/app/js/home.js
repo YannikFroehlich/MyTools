@@ -40,6 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const widgetTypeInput = document.getElementById("widget-type");
     const widgetWeatherLocationInput = document.getElementById("widget-weather-location");
     const widgetWeatherLocationField = document.getElementById("widget-weather-location-field");
+    const widgetClockDesignInput = document.getElementById("widget-clock-design");
+    const widgetClockDesignField = document.getElementById("widget-clock-design-field");
+    const widgetClockStyleInput = document.getElementById("widget-clock-style");
+    const widgetClockStyleField = document.getElementById("widget-clock-style-field");
     const widgetSubmitButton = document.getElementById("widget-submit-button");
 
     let suggestions = [];
@@ -86,6 +90,62 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setTimeout(focusSearchInput, 100);
+
+    function getCurrentLocale() {
+        const htmlLang = document.documentElement.lang || "de";
+
+        if (htmlLang.toLowerCase().startsWith("en")) {
+            return "en-US";
+        }
+
+        return "de-DE";
+    }
+
+    function updateClockWidgets() {
+        const now = new Date();
+        const locale = getCurrentLocale();
+
+        const time = new Intl.DateTimeFormat(locale, {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        }).format(now);
+        const date = new Intl.DateTimeFormat(locale, {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+        }).format(now);
+        const weekday = new Intl.DateTimeFormat(locale, {
+            weekday: "long",
+        }).format(now);
+
+        const seconds = now.getSeconds();
+        const minutes = now.getMinutes();
+        const hours = now.getHours();
+
+        const secondDegrees = seconds * 6;
+        const minuteDegrees = (minutes * 6) + (seconds * 0.1);
+        const hourDegrees = ((hours % 12) * 30) + (minutes * 0.5);
+
+        document.querySelectorAll("[data-clock-widget]").forEach(clock => {
+            clock.querySelector("[data-clock-time]").textContent = time;
+            clock.querySelector("[data-clock-date]").textContent = date;
+            clock.querySelector("[data-clock-weekday]").textContent = weekday;
+
+            const hourHand = clock.querySelector("[data-clock-hour-hand]");
+            const minuteHand = clock.querySelector("[data-clock-minute-hand]");
+            const secondHand = clock.querySelector("[data-clock-second-hand]");
+
+            if (hourHand) hourHand.style.transform = `translateX(-50%) rotate(${hourDegrees}deg)`;
+            if (minuteHand) minuteHand.style.transform = `translateX(-50%) rotate(${minuteDegrees}deg)`;
+            if (secondHand) secondHand.style.transform = `translateX(-50%) rotate(${secondDegrees}deg)`;
+        });
+    }
+
+    if (document.querySelector("[data-clock-widget]")) {
+        updateClockWidgets();
+        setInterval(updateClockWidgets, 1000);
+    }
 
     fetch("/static/app/data/suggestions.json")
         .then(response => {
@@ -415,8 +475,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function toggleWidgetWeatherField() {
-        const isWeatherWidget = widgetTypeInput?.value === "weather";
+    function toggleWidgetTypeFields() {
+        const currentWidgetType = widgetTypeInput?.value || "weather";
+        const isWeatherWidget = currentWidgetType === "weather";
+        const isClockWidget = currentWidgetType === "clock";
 
         if (widgetWeatherLocationField) {
             widgetWeatherLocationField.style.display = isWeatherWidget ? "" : "none";
@@ -424,6 +486,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (widgetWeatherLocationInput) {
             widgetWeatherLocationInput.disabled = !isWeatherWidget;
+        }
+
+        if (widgetClockDesignField) {
+            widgetClockDesignField.style.display = isClockWidget ? "" : "none";
+        }
+
+        if (widgetClockDesignInput) {
+            widgetClockDesignInput.disabled = !isClockWidget;
+        }
+
+        if (widgetClockStyleField) {
+            widgetClockStyleField.style.display = isClockWidget ? "" : "none";
+        }
+
+        if (widgetClockStyleInput) {
+            widgetClockStyleInput.disabled = !isClockWidget;
         }
     }
 
@@ -435,11 +513,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (widgetTitleInput) widgetTitleInput.value = "";
         if (widgetTypeInput) widgetTypeInput.value = "weather";
         if (widgetWeatherLocationInput) widgetWeatherLocationInput.value = "";
+        if (widgetClockDesignInput) widgetClockDesignInput.value = "minimal";
+        if (widgetClockStyleInput) widgetClockStyleInput.value = "classic";
         if (widgetModalTitle) widgetModalTitle.textContent = labels.newWidget || "Neues Widget";
         if (widgetSubmitButton) widgetSubmitButton.textContent = labels.addWidget || "Widget hinzufügen";
 
         setCheckedRadio(widgetForm, "widget_color", "blue");
-        toggleWidgetWeatherField();
+        toggleWidgetTypeFields();
     }
 
     function openAddWidgetModal() {
@@ -459,18 +539,20 @@ document.addEventListener("DOMContentLoaded", () => {
         if (widgetTitleInput) widgetTitleInput.value = widgetCard.dataset.widgetTitle || "";
         if (widgetTypeInput) widgetTypeInput.value = widgetCard.dataset.widgetType || "weather";
         if (widgetWeatherLocationInput) widgetWeatherLocationInput.value = widgetCard.dataset.widgetWeatherLocation || "";
+        if (widgetClockDesignInput) widgetClockDesignInput.value = widgetCard.dataset.widgetClockDesign || "minimal";
+        if (widgetClockStyleInput) widgetClockStyleInput.value = widgetCard.dataset.widgetClockStyle || "classic";
         if (widgetModalTitle) widgetModalTitle.textContent = labels.editWidget || "Widget bearbeiten";
         if (widgetSubmitButton) widgetSubmitButton.textContent = labels.saveWidget || "Widget speichern";
 
         setCheckedRadio(widgetForm, "widget_color", widgetCard.dataset.widgetColor || "blue", "blue");
-        toggleWidgetWeatherField();
+        toggleWidgetTypeFields();
 
         openModal(widgetModal);
         setTimeout(() => widgetTitleInput?.focus(), 100);
     }
 
     openWidgetModalButton?.addEventListener("click", openAddWidgetModal);
-    widgetTypeInput?.addEventListener("change", toggleWidgetWeatherField);
+    widgetTypeInput?.addEventListener("change", toggleWidgetTypeFields);
 
     document.querySelectorAll(".edit-widget-button").forEach(button => {
         button.addEventListener("click", event => {
@@ -912,7 +994,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     updateEmptyStates();
-    toggleWidgetWeatherField();
+    toggleWidgetTypeFields();
 });
 
 

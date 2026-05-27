@@ -1,7 +1,8 @@
 {% load static %}
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="de">
+<html lang="{{ LANGUAGE_CODE|default:'de' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -139,6 +140,11 @@
                 </button>
 
                 <div class="menu-dropdown" id="menu-dropdown">
+                    <a href="{% url 'clock' %}" class="menu-item">
+                        <i class="fa-regular fa-clock"></i>
+                        {% translate 'Uhr' %}
+                    </a>
+
                     <a href="{% url 'users' %}" class="menu-item">
                         <i class="fa-solid fa-users"></i>
                         {% translate 'Nutzer' %}
