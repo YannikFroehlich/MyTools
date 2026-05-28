@@ -48,6 +48,81 @@ body.dark-mode .clock-panel {
     z-index: 1;
 }
 
+
+.clock-hero-content {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-right: 20px;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.clock-hero-content::after {
+    content: "";
+    position: absolute;
+    inset: -8px -20px -8px 4%;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--theme-accent-rgb), 0.32) 0%,
+        rgba(var(--theme-accent-rgb), 0.24) 55%,
+        rgba(var(--theme-accent-rgb), 0.15) 100%
+    );
+    -webkit-mask-image: url("../img/worldmap.png");
+    mask-image: url("../img/worldmap.png");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center right;
+    mask-position: center right;
+    -webkit-mask-size: auto 124%;
+    mask-size: auto 124%;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body.dark-mode .clock-hero-content::after {
+    background: linear-gradient(
+        90deg,
+        rgba(var(--theme-accent-rgb), 0.44) 0%,
+        rgba(var(--theme-accent-rgb), 0.34) 55%,
+        rgba(var(--theme-accent-rgb), 0.22) 100%
+    );
+}
+
+/* Fallback, falls ein Browser CSS-Masken nicht unterstützt */
+@supports not ((-webkit-mask-image: url("")) or (mask-image: url(""))) {
+    .clock-hero-content::after {
+        background: none;
+        background-image: url("../img/worldmap.png");
+        background-repeat: no-repeat;
+        background-position: center right;
+        background-size: auto 124%;
+        opacity: 0.18;
+        filter: brightness(1.15) saturate(0);
+    }
+
+    body.dark-mode .clock-hero-content::after {
+        opacity: 0.24;
+        filter: brightness(1.2) saturate(0);
+    }
+}
+
+.clock-hero-content > * {
+    position: relative;
+    z-index: 1;
+}
+
+.clock-hero-content .clock-eyebrow,
+.clock-hero-content h1,
+.clock-hero-content p {
+    text-align: left;
+}
+
 .clock-eyebrow,
 .clock-panel-kicker {
     display: inline-flex;
@@ -67,7 +142,7 @@ body.dark-mode .clock-panel {
 }
 
 .clock-hero p {
-    max-width: 620px;
+    max-width: 680px;
     margin: 0;
     color: color-mix(in srgb, var(--theme-text) 70%, transparent);
     font-size: 1.05rem;
@@ -410,6 +485,22 @@ body.dark-mode .ringtone-option span {
         flex-direction: column;
     }
 
+    .clock-hero-content {
+        width: 100%;
+        padding-right: 0;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .clock-hero-content::after {
+        inset: -8px 0 -8px 0;
+        -webkit-mask-position: center center;
+        mask-position: center center;
+        -webkit-mask-size: auto 118%;
+        mask-size: auto 118%;
+        opacity: 0.92;
+    }
+
     .clock-now-card {
         min-width: 0;
     }
@@ -427,6 +518,15 @@ body.dark-mode .ringtone-option span {
     .clock-page {
         width: min(100% - 18px, 1180px);
         padding-top: 18px;
+    }
+
+    .clock-hero-content::after {
+        inset: -4px 0 -4px 0;
+        -webkit-mask-position: center center;
+        mask-position: center center;
+        -webkit-mask-size: 118% auto;
+        mask-size: 118% auto;
+        opacity: 0.82;
     }
 
     .clock-hero,

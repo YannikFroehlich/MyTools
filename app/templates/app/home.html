@@ -59,12 +59,14 @@
                                 {% for widget_item in home_widgets %}
                                     {% with widget=widget_item.widget data=widget_item.data %}
                                         <article
-                                            class="home-widget widget-color-{{ widget.color }}"
+                                            class="home-widget widget-color-{{ widget.color }}{% if widget.widget_type == 'weather' %} widget-weather-design-{{ widget.weather_design }} widget-weather-style-{{ widget.weather_style }}{% endif %}"
                                             data-widget-id="{{ widget.id }}"
                                             data-widget-title="{{ widget.title|escape }}"
                                             data-widget-type="{{ widget.widget_type }}"
                                             data-widget-color="{{ widget.color }}"
                                             data-widget-weather-location="{% if widget.weather_location %}{{ widget.weather_location.id }}{% endif %}"
+                                            data-widget-weather-design="{{ widget.weather_design }}"
+                                            data-widget-weather-style="{{ widget.weather_style }}"
                                             data-widget-clock-design="{{ widget.clock_design }}"
                                             data-widget-clock-style="{{ widget.clock_style }}"
                                         >
@@ -299,7 +301,7 @@
                         <option value="notes">{% translate 'Notizen' %}</option>
                         <option value="clock">{% translate 'Uhr' %}</option>
                         <option value="benchmark">{% translate 'Human Benchmark' %}</option>
-                        <option value="quick_stats">{% translate 'Schnellstatistiken' %}</option>
+                        <option value="stats">{% translate 'Schnellstatistiken' %}</option>
                     </select>
                 </label>
 
@@ -312,6 +314,26 @@
                         {% endfor %}
                     </select>
                     <small>{% translate 'Du kannst weitere Orte auf der Wetterseite speichern.' %}</small>
+                </label>
+
+                <label class="widget-weather-design-field" id="widget-weather-design-field">
+                    {% translate 'Wetter-Farbstil' %}
+                    <select name="weather_design" id="widget-weather-design">
+                        {% for value, label in weather_designs %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <small>{% translate 'Der Farbstil verändert den Hintergrund des Wetter-Widgets.' %}</small>
+                </label>
+
+                <label class="widget-weather-style-field" id="widget-weather-style-field">
+                    {% translate 'Wetter-Layout' %}
+                    <select name="weather_style" id="widget-weather-style">
+                        {% for value, label in weather_styles %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <small>{% translate 'Hier wählst du, wie Temperatur, Icon und Werte angeordnet werden.' %}</small>
                 </label>
 
                 <label class="widget-clock-design-field" id="widget-clock-design-field" style="display: none;">
