@@ -40,6 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const widgetTypeInput = document.getElementById("widget-type");
     const widgetWeatherLocationInput = document.getElementById("widget-weather-location");
     const widgetWeatherLocationField = document.getElementById("widget-weather-location-field");
+    const widgetWeatherDesignInput = document.getElementById("widget-weather-design");
+    const widgetWeatherDesignField = document.getElementById("widget-weather-design-field");
+    const widgetWeatherStyleInput = document.getElementById("widget-weather-style");
+    const widgetWeatherStyleField = document.getElementById("widget-weather-style-field");
     const widgetClockDesignInput = document.getElementById("widget-clock-design");
     const widgetClockDesignField = document.getElementById("widget-clock-design-field");
     const widgetClockStyleInput = document.getElementById("widget-clock-style");
@@ -498,6 +502,18 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         setWidgetFieldVisible(
+            widgetWeatherDesignField,
+            widgetWeatherDesignInput,
+            isWeatherWidget
+        );
+
+        setWidgetFieldVisible(
+            widgetWeatherStyleField,
+            widgetWeatherStyleInput,
+            isWeatherWidget
+        );
+
+        setWidgetFieldVisible(
             widgetClockDesignField,
             widgetClockDesignInput,
             isClockWidget
@@ -518,6 +534,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (widgetTitleInput) widgetTitleInput.value = "";
         if (widgetTypeInput) widgetTypeInput.value = "weather";
         if (widgetWeatherLocationInput) widgetWeatherLocationInput.value = "";
+        if (widgetWeatherDesignInput) widgetWeatherDesignInput.value = "clean";
+        if (widgetWeatherStyleInput) widgetWeatherStyleInput.value = "classic";
         if (widgetClockDesignInput) widgetClockDesignInput.value = "minimal";
         if (widgetClockStyleInput) widgetClockStyleInput.value = "classic";
         if (widgetModalTitle) widgetModalTitle.textContent = labels.newWidget || "Neues Widget";
@@ -544,6 +562,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (widgetTitleInput) widgetTitleInput.value = widgetCard.dataset.widgetTitle || "";
         if (widgetTypeInput) widgetTypeInput.value = widgetCard.dataset.widgetType || "weather";
         if (widgetWeatherLocationInput) widgetWeatherLocationInput.value = widgetCard.dataset.widgetWeatherLocation || "";
+        if (widgetWeatherDesignInput) widgetWeatherDesignInput.value = widgetCard.dataset.widgetWeatherDesign || "clean";
+        if (widgetWeatherStyleInput) widgetWeatherStyleInput.value = widgetCard.dataset.widgetWeatherStyle || "classic";
         if (widgetClockDesignInput) widgetClockDesignInput.value = widgetCard.dataset.widgetClockDesign || "minimal";
         if (widgetClockStyleInput) widgetClockStyleInput.value = widgetCard.dataset.widgetClockStyle || "classic";
         if (widgetModalTitle) widgetModalTitle.textContent = labels.editWidget || "Widget bearbeiten";

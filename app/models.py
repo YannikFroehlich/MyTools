@@ -422,6 +422,32 @@ class HomeWidget(models.Model):
         (CLOCK_STYLE_HYBRID, _("Analog + Digital")),
     ]
 
+    WEATHER_DESIGN_CLEAN = "clean"
+    WEATHER_DESIGN_GLASS = "glass"
+    WEATHER_DESIGN_AURORA = "aurora"
+    WEATHER_DESIGN_SUNSET = "sunset"
+    WEATHER_DESIGN_NIGHT = "night"
+
+    WEATHER_DESIGN_CHOICES = [
+        (WEATHER_DESIGN_CLEAN, _("Clean")),
+        (WEATHER_DESIGN_GLASS, _("Glass")),
+        (WEATHER_DESIGN_AURORA, _("Aurora")),
+        (WEATHER_DESIGN_SUNSET, _("Sunset")),
+        (WEATHER_DESIGN_NIGHT, _("Night")),
+    ]
+
+    WEATHER_STYLE_CLASSIC = "classic"
+    WEATHER_STYLE_HERO = "hero"
+    WEATHER_STYLE_COMPACT = "compact"
+    WEATHER_STYLE_SPLIT = "split"
+
+    WEATHER_STYLE_CHOICES = [
+        (WEATHER_STYLE_CLASSIC, _("Klassisch")),
+        (WEATHER_STYLE_HERO, _("Groß")),
+        (WEATHER_STYLE_COMPACT, _("Kompakt")),
+        (WEATHER_STYLE_SPLIT, _("Geteilt")),
+    ]
+
     COLOR_CHOICES = [
         ("blue", _("Blau")),
         ("green", _("Grün")),
@@ -444,6 +470,16 @@ class HomeWidget(models.Model):
         related_name="home_widgets",
         null=True,
         blank=True,
+    )
+    weather_design = models.CharField(
+        max_length=20,
+        choices=WEATHER_DESIGN_CHOICES,
+        default=WEATHER_DESIGN_CLEAN,
+    )
+    weather_style = models.CharField(
+        max_length=20,
+        choices=WEATHER_STYLE_CHOICES,
+        default=WEATHER_STYLE_CLASSIC,
     )
     clock_design = models.CharField(
         max_length=20,
