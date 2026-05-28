@@ -40,14 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const widgetTypeInput = document.getElementById("widget-type");
     const widgetWeatherLocationInput = document.getElementById("widget-weather-location");
     const widgetWeatherLocationField = document.getElementById("widget-weather-location-field");
-    const widgetWeatherDesignInput = document.getElementById("widget-weather-design");
-    const widgetWeatherDesignField = document.getElementById("widget-weather-design-field");
-    const widgetWeatherStyleInput = document.getElementById("widget-weather-style");
-    const widgetWeatherStyleField = document.getElementById("widget-weather-style-field");
     const widgetClockDesignInput = document.getElementById("widget-clock-design");
     const widgetClockDesignField = document.getElementById("widget-clock-design-field");
     const widgetClockStyleInput = document.getElementById("widget-clock-style");
     const widgetClockStyleField = document.getElementById("widget-clock-style-field");
+    const widgetClockOptionButtons = widgetModal
+        ? [...widgetModal.querySelectorAll("[data-clock-option-target]")]
+        : [];
     const widgetSubmitButton = document.getElementById("widget-submit-button");
 
     let suggestions = [];
@@ -336,6 +335,28 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function syncClockOptionCards(input) {
+        if (!input) return;
+
+        widgetClockOptionButtons
+            .filter(button => button.dataset.clockOptionTarget === input.id)
+            .forEach(button => {
+                button.classList.toggle("is-active", button.dataset.clockOptionValue === input.value);
+            });
+    }
+
+    function setClockOption(input, value, fallbackValue = "") {
+        if (!input) return;
+
+        const options = widgetClockOptionButtons.filter(button => button.dataset.clockOptionTarget === input.id);
+        const nextValue = options.some(button => button.dataset.clockOptionValue === value)
+            ? value
+            : fallbackValue;
+
+        input.value = nextValue;
+        syncClockOptionCards(input);
+    }
+
     function resetShortcutForm() {
         shortcutForm?.reset();
 
@@ -502,18 +523,6 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         setWidgetFieldVisible(
-            widgetWeatherDesignField,
-            widgetWeatherDesignInput,
-            isWeatherWidget
-        );
-
-        setWidgetFieldVisible(
-            widgetWeatherStyleField,
-            widgetWeatherStyleInput,
-            isWeatherWidget
-        );
-
-        setWidgetFieldVisible(
             widgetClockDesignField,
             widgetClockDesignInput,
             isClockWidget
@@ -534,10 +543,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (widgetTitleInput) widgetTitleInput.value = "";
         if (widgetTypeInput) widgetTypeInput.value = "weather";
         if (widgetWeatherLocationInput) widgetWeatherLocationInput.value = "";
-        if (widgetWeatherDesignInput) widgetWeatherDesignInput.value = "clean";
-        if (widgetWeatherStyleInput) widgetWeatherStyleInput.value = "classic";
-        if (widgetClockDesignInput) widgetClockDesignInput.value = "minimal";
-        if (widgetClockStyleInput) widgetClockStyleInput.value = "classic";
+        setClockOption(widgetClockDesignInput, "minimal", "minimal");
+        setClockOption(widgetClockStyleInput, "classic", "classic");
         if (widgetModalTitle) widgetModalTitle.textContent = labels.newWidget || "Neues Widget";
         if (widgetSubmitButton) widgetSubmitButton.textContent = labels.addWidget || "Widget hinzufügen";
 
@@ -562,10 +569,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (widgetTitleInput) widgetTitleInput.value = widgetCard.dataset.widgetTitle || "";
         if (widgetTypeInput) widgetTypeInput.value = widgetCard.dataset.widgetType || "weather";
         if (widgetWeatherLocationInput) widgetWeatherLocationInput.value = widgetCard.dataset.widgetWeatherLocation || "";
-        if (widgetWeatherDesignInput) widgetWeatherDesignInput.value = widgetCard.dataset.widgetWeatherDesign || "clean";
-        if (widgetWeatherStyleInput) widgetWeatherStyleInput.value = widgetCard.dataset.widgetWeatherStyle || "classic";
-        if (widgetClockDesignInput) widgetClockDesignInput.value = widgetCard.dataset.widgetClockDesign || "minimal";
-        if (widgetClockStyleInput) widgetClockStyleInput.value = widgetCard.dataset.widgetClockStyle || "classic";
+        setClockOption(widgetClockDesignInput, widgetCard.dataset.widgetClockDesign || "minimal", "minimal");
+        setClockOption(widgetClockStyleInput, widgetCard.dataset.widgetClockStyle || "classic", "classic");
         if (widgetModalTitle) widgetModalTitle.textContent = labels.editWidget || "Widget bearbeiten";
         if (widgetSubmitButton) widgetSubmitButton.textContent = labels.saveWidget || "Widget speichern";
 
@@ -578,6 +583,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     openWidgetModalButton?.addEventListener("click", openAddWidgetModal);
     widgetTypeInput?.addEventListener("change", toggleWidgetTypeFields);
+
+    widgetClockOptionButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const input = document.getElementById(button.dataset.clockOptionTarget);
+            setClockOption(input, button.dataset.clockOptionValue, input?.value);
+        });
+    });
 
     document.querySelectorAll(".edit-widget-button").forEach(button => {
         button.addEventListener("click", event => {
