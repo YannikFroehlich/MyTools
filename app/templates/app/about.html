@@ -22,8 +22,8 @@
 
                 <p>
                     {% blocktranslate trimmed %}
-                        MyTools ist eine persönliche Tool-Zentrale für Alltag, Homelab, Streaming und kleine Web-Helfer.
-                        Die App bündelt Schnellzugriffe, Wetter, Notizen, Rechner, Dashboards und Mini-Games in einer modernen Django-Oberfläche.
+                        MyTools ist eine persönliche Django-Toolbox für Alltag, Homelab, Medien, Streaming und kleine Web-Helfer.
+                        Die App bündelt Schnellzugriffe, Widgets, Wetter, Notizen, Timer, Rechner, Dashboards und Mini-Games in einer modernen Oberfläche.
                     {% endblocktranslate %}
                 </p>
 
@@ -33,9 +33,9 @@
                         {% translate 'Zur Startseite' %}
                     </a>
 
-                    <a href="{% url 'notes' %}" class="about-secondary-button">
-                        <i class="fa-regular fa-note-sticky"></i>
-                        {% translate 'Notizen öffnen' %}
+                    <a href="{% url 'clock' %}" class="about-secondary-button">
+                        <i class="fa-regular fa-clock"></i>
+                        {% translate 'Uhr öffnen' %}
                     </a>
                 </div>
             </div>
@@ -49,8 +49,8 @@
 
                 <p>
                     {% blocktranslate trimmed %}
-                        Von lokalen Server-Links bis zu API-Tools: MyTools soll die wichtigsten kleinen Helfer zentral,
-                        schnell erreichbar und angenehm bedienbar machen.
+                        Von lokalen Server-Links über personalisierte Startseiten-Widgets bis zu API-Tools:
+                        MyTools soll die wichtigsten kleinen Helfer zentral, schnell erreichbar und angenehm bedienbar machen.
                     {% endblocktranslate %}
                 </p>
             </div>
@@ -59,20 +59,20 @@
         <div class="about-stats">
             <div class="about-stat-card">
                 <i class="fa-solid fa-border-all"></i>
-                <strong>{% translate 'Dashboard' %}</strong>
-                <span>{% translate 'Shortcuts, Favoriten, Bereiche und Drag & Drop' %}</span>
+                <strong>{% translate 'Startseite' %}</strong>
+                <span>{% translate 'Shortcuts, Bereiche, Favoriten, Widgets und Drag & Drop' %}</span>
             </div>
 
             <div class="about-stat-card">
                 <i class="fa-solid fa-cloud-sun"></i>
-                <strong>{% translate 'Wetter & APIs' %}</strong>
-                <span>{% translate 'OpenWeather, Tankerkönig und Genius integriert' %}</span>
+                <strong>{% translate 'Tools & APIs' %}</strong>
+                <span>{% translate 'OpenWeather, Tankerkönig, Genius, OBS und Spotify vorbereitet' %}</span>
             </div>
 
             <div class="about-stat-card">
                 <i class="fa-solid fa-palette"></i>
                 <strong>{% translate 'Design' %}</strong>
-                <span>{% translate 'Dark Mode, Theme-Editor und responsive Layouts' %}</span>
+                <span>{% translate 'Dark Mode, Theme-Editor, moderne Widgets und responsive Layouts' %}</span>
             </div>
         </div>
 
@@ -82,42 +82,42 @@
                     <i class="fa-solid fa-link"></i>
                 </div>
 
-                <h2>{% translate 'Schnellzugriffe' %}</h2>
+                <h2>{% translate 'Schnellzugriffe & Widgets' %}</h2>
 
                 <p>
                     {% blocktranslate trimmed %}
                         Eigene Links können mit Icons, Bildern, Favoriten und Kategorien gespeichert werden.
-                        Bereiche lassen sich sortieren, einklappen und farblich markieren.
+                        Zusätzlich lassen sich Startseiten-Widgets wie Uhr, Wetter, Notizen oder Statistik-Karten hinzufügen und gestalten.
                     {% endblocktranslate %}
                 </p>
             </div>
 
             <div class="about-card">
                 <div class="about-card-icon">
-                    <i class="fa-solid fa-display"></i>
+                    <i class="fa-regular fa-clock"></i>
                 </div>
 
-                <h2>{% translate 'OBS & Streaming' %}</h2>
+                <h2>{% translate 'Uhr, Timer & Weltuhr' %}</h2>
 
                 <p>
                     {% blocktranslate trimmed %}
-                        Das OBS Dashboard verbindet sich mit OBS WebSocket und kann Szenen, Quellen, Audio,
-                        Aufnahme und Streaming lokal steuern.
+                        Die Uhr-Seite bündelt lokale Uhrzeit, Weltuhr, Stoppuhr, gespeicherte Timer-Vorlagen und eigene Timer-Sounds.
+                        Der Hero-Bereich nutzt eine dezente Weltkarte als Hintergrund.
                     {% endblocktranslate %}
                 </p>
             </div>
 
             <div class="about-card">
                 <div class="about-card-icon">
-                    <i class="fa-solid fa-gamepad"></i>
+                    <i class="fa-solid fa-user"></i>
                 </div>
 
-                <h2>{% translate 'Mini-Tools & Games' %}</h2>
+                <h2>{% translate 'Profile & Nutzer' %}</h2>
 
                 <p>
                     {% blocktranslate trimmed %}
-                        Einheitenrechner, Human Benchmark, Avatar Wiki, Notizen und Drift Circuit Pro erweitern
-                        das Dashboard um praktische und spielerische Funktionen.
+                        Nutzer können ein eigenes Profil mit Namen, Avatar und öffentlichen Profilinformationen pflegen.
+                        Die Nutzerübersicht erleichtert den Überblick über registrierte Accounts.
                     {% endblocktranslate %}
                 </p>
             </div>
@@ -138,6 +138,38 @@
                     </div>
                 </a>
 
+                <a href="{% url 'clock' %}" class="about-feature-card">
+                    <i class="fa-regular fa-clock"></i>
+                    <div>
+                        <strong>{% translate 'Uhr & Timer' %}</strong>
+                        <span>{% translate 'Weltuhr, Stoppuhr, Timer-Vorlagen und eigene Sounds.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'notes' %}" class="about-feature-card">
+                    <i class="fa-regular fa-note-sticky"></i>
+                    <div>
+                        <strong>{% translate 'Notizen' %}</strong>
+                        <span>{% translate 'Notizen mit Pins, Archiv, Farben und Tags.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'human-benchmark' %}" class="about-feature-card">
+                    <i class="fa-solid fa-bolt"></i>
+                    <div>
+                        <strong>{% translate 'Human Benchmark' %}</strong>
+                        <span>{% translate 'Mini-Games mit letzten Ergebnissen, Highscores und Bestenliste pro Nutzer.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'obs-dashboard' %}" class="about-feature-card">
+                    <i class="fa-solid fa-display"></i>
+                    <div>
+                        <strong>{% translate 'OBS Dashboard' %}</strong>
+                        <span>{% translate 'Szenen, Quellen, Audio, Stream und Aufnahme lokal steuern.' %}</span>
+                    </div>
+                </a>
+
                 <a href="{% url 'spritkostenrechner' %}" class="about-feature-card">
                     <i class="fa-solid fa-gas-pump"></i>
                     <div>
@@ -154,14 +186,6 @@
                     </div>
                 </a>
 
-                <a href="{% url 'notes' %}" class="about-feature-card">
-                    <i class="fa-regular fa-note-sticky"></i>
-                    <div>
-                        <strong>{% translate 'Notizen' %}</strong>
-                        <span>{% translate 'Notizen mit Pins, Archiv, Farben und Tags.' %}</span>
-                    </div>
-                </a>
-
                 <a href="{% url 'unit_converter' %}" class="about-feature-card">
                     <i class="fa-solid fa-calculator"></i>
                     <div>
@@ -170,11 +194,35 @@
                     </div>
                 </a>
 
+                <a href="{% url 'avatar-wiki' %}" class="about-feature-card">
+                    <i class="fa-solid fa-book-open"></i>
+                    <div>
+                        <strong>{% translate 'Avatar Wiki' %}</strong>
+                        <span>{% translate 'Charaktere verwalten, suchen und übersichtlich sammeln.' %}</span>
+                    </div>
+                </a>
+
                 <a href="{% url 'drift-circuit' %}" class="about-feature-card">
                     <i class="fa-solid fa-car-side"></i>
                     <div>
                         <strong>{% translate 'Drift Circuit Pro' %}</strong>
                         <span>{% translate 'Canvas-Racing-Game mit großen Maps, Nitro und Drift-Score.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'stream-deck' %}" class="about-feature-card">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    <div>
+                        <strong>{% translate 'Stream Deck' %}</strong>
+                        <span>{% translate 'Button-Dashboard für Medien, Spotify und eigene Aktionen.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'profile' %}" class="about-feature-card">
+                    <i class="fa-solid fa-id-card"></i>
+                    <div>
+                        <strong>{% translate 'Profil' %}</strong>
+                        <span>{% translate 'Profilseite mit Avatar, persönlichen Daten und öffentlicher Ansicht.' %}</span>
                     </div>
                 </a>
             </div>
@@ -187,8 +235,16 @@
                 <div class="timeline-item">
                     <span></span>
                     <div>
-                        <h3>{% translate 'Produktiv nutzbares Dashboard' %}</h3>
-                        <p>{% translate 'Startseite, Shortcuts, Wetter, Notizen und mehrere Tools sind bereits eingebunden.' %}</p>
+                        <h3>{% translate 'Personalisierbares Dashboard' %}</h3>
+                        <p>{% translate 'Startseite, Shortcuts, Favoriten, Bereiche, Widgets und Design-Optionen sind eingebunden.' %}</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <span></span>
+                    <div>
+                        <h3>{% translate 'Mehrere Tools produktiv nutzbar' %}</h3>
+                        <p>{% translate 'Wetter, Uhr, Notizen, Profile, Human Benchmark, OBS Dashboard, Rechner und API-Tools sind bereits verfügbar.' %}</p>
                     </div>
                 </div>
 
@@ -203,8 +259,8 @@
                 <div class="timeline-item">
                     <span></span>
                     <div>
-                        <h3>{% translate 'Nächste Ausbaustufe' %}</h3>
-                        <p>{% translate 'Das vorbereitete Stream Deck kann als nächstes mit eigenen Buttons, Aktionen und Integrationen gefüllt werden.' %}</p>
+                        <h3>{% translate 'Laufende Erweiterung' %}</h3>
+                        <p>{% translate 'Neue Widgets, bessere Statistiken, zusätzliche Integrationen und mehr Personalisierung können Schritt für Schritt ergänzt werden.' %}</p>
                     </div>
                 </div>
             </div>

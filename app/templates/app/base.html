@@ -145,14 +145,9 @@
                         {% translate 'Uhr' %}
                     </a>
 
-                    <a href="{% url 'users' %}" class="menu-item">
-                        <i class="fa-solid fa-users"></i>
-                        {% translate 'Nutzer' %}
-                    </a>
-
-                    <a href="{% url 'obs-dashboard' %}" class="menu-item">
-                        <i class="fa-solid fa-display"></i>
-                        {% translate 'OBS Dashboard' %}
+                    <a href="{% url 'notes' %}" class="menu-item">
+                        <i class="fa-regular fa-note-sticky"></i>
+                        {% translate 'Notizen' %}
                     </a>
 
                     <a href="{% url 'spritkostenrechner' %}" class="menu-item">
@@ -165,24 +160,24 @@
                         {% translate 'Genius Search' %}
                     </a>
 
-                    <a href="{% url 'avatar-wiki' %}" class="menu-item">
-                        <i class="fa-solid fa-wind"></i>
-                        {% translate 'Avatar Wiki' %}
-                    </a>
-
-                    <a href="{% url 'notes' %}" class="menu-item">
-                        <i class="fa-regular fa-note-sticky"></i>
-                        {% translate 'Notizen' %}
-                    </a>
-
                     <a href="{% url 'unit_converter' %}" class="menu-item">
                         <i class="fa-solid fa-calculator"></i>
                         {% translate 'Einheitenrechner' %}
                     </a>
 
+                    <a href="{% url 'avatar-wiki' %}" class="menu-item">
+                        <i class="fa-solid fa-wind"></i>
+                        {% translate 'Avatar Wiki' %}
+                    </a>
+
                     <a href="{% url 'stream-deck' %}" class="menu-item">
                         <i class="fa-solid fa-table-cells-large"></i>
                         {% translate 'Stream Deck' %}
+                    </a>
+
+                    <a href="{% url 'obs-dashboard' %}" class="menu-item">
+                        <i class="fa-solid fa-display"></i>
+                        {% translate 'OBS Dashboard' %}
                     </a>
                 </div>
             </div>

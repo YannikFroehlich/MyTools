@@ -1,7 +1,8 @@
 # 🧰 MyTools
 
-**MyTools** ist ein persönliches Django-Dashboard für kleine Alltags-, Server-, Web- und Streaming-Tools.  
-Die App bündelt Schnellzugriffe, Wetterdaten, Notizen, Rechner, kleine Browser-Spiele und API-basierte Helfer in einer modernen Oberfläche.
+**MyTools** ist ein persönliches Django-Dashboard für Alltag, Homelab, Medien, Streaming und kleine Web-Tools.
+
+Die App bündelt eigene Schnellzugriffe, Startseiten-Widgets, Wetterdaten, Notizen, Profile, Rechner, Timer, Mini-Games und API-basierte Helfer in einer modernen Oberfläche mit Dark Mode, Theme-Anpassung und deutscher/englischer Oberfläche.
 
 Das Projekt kann lokal in der Entwicklung laufen oder produktiv per Docker Compose mit **Django/Gunicorn**, **PostgreSQL**, **Redis** und **Caddy** betrieben werden.
 
@@ -9,18 +10,25 @@ Das Projekt kann lokal in der Entwicklung laufen oder produktiv per Docker Compo
 
 ## ✨ Aktueller Stand
 
-MyTools ist inzwischen mehr als nur eine Startseite. Der aktuelle Stand enthält:
+MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unter anderem:
 
-- Startseite mit eigenen Shortcut-Bereichen
-- Schnellzugriffe mit FontAwesome-Icons oder eigenen Bildern
+- personalisierbare Startseite mit Shortcut-Bereichen
+- eigene Verknüpfungen mit FontAwesome-Icons oder hochgeladenen Bildern
 - Favoriten, Drag & Drop Sortierung und einklappbare Bereiche
+- Startseiten-Widgets, z. B. Uhr, Wetter, Notizen und Statistik-Karten
+- Widget-Designs, Farbstile und Layout-Optionen
 - Wetterseite mit OpenWeather API und gespeicherten Orten
+- Uhr-Seite mit lokaler Uhrzeit, Weltuhr, Stoppuhr, gespeicherten Timern und eigenen Timer-Sounds
+- dezenter Weltkarten-Hintergrund auf der Uhr-Seite über `app/static/app/img/worldmap.png`
+- Profilseite mit Avatar, Namen und öffentlicher Profilansicht
+- Nutzerübersicht
+- Notizen-App mit Pins, Archiv, Farben und Tags
+- Human Benchmark mit gespeicherten Ergebnissen, Highscores und Bestenliste pro Nutzer
 - OBS Dashboard für lokale OBS-WebSocket-Steuerung
+- Stream-Deck-Seite als Button-Dashboard für Medien, Spotify und eigene Aktionen
 - Spritkostenrechner mit Tankerkönig API
 - Genius Search mit Genius API
-- Notizen-App mit Pins, Archiv, Farben und Tags
 - Einheitenrechner
-- Human Benchmark
 - Avatar Wiki mit Charakterverwaltung
 - Drift Circuit Pro als browserbasiertes Racing-Game
 - Google-Apps-Menü mit externen Links
@@ -31,9 +39,9 @@ MyTools ist inzwischen mehr als nur eine Startseite. Der aktuelle Stand enthält
 
 ---
 
-## 🏠 Startseite & Shortcuts
+## 🏠 Startseite, Shortcuts & Widgets
 
-Die Startseite ist die zentrale Oberfläche für eigene Links und lokale Dienste.
+Die Startseite ist die zentrale Oberfläche für eigene Links, lokale Dienste und kleine Widgets.
 
 Funktionen:
 
@@ -46,6 +54,8 @@ Funktionen:
 - Drag & Drop Sortierung für Shortcuts
 - Drag & Drop Sortierung für Bereiche
 - Suchleiste mit Vorschlägen
+- Startseiten-Widgets hinzufügen, bearbeiten und löschen
+- Widget-Farbstile und Layouts
 - Dark Mode und Theme-Anpassung
 
 Beispiele für typische Shortcuts:
@@ -75,6 +85,7 @@ Funktionen:
 - Nutzung von Koordinaten über `lat` und `lon`
 - gespeicherte Wetter-Orte über Django-Model
 - kompakte Anzeige der gespeicherten Orte neben der Suche
+- Wetter-Widget auf der Startseite mit eigenen Designs und Layouts
 - Fehlerhinweise, wenn API-Key, Stadt oder API-Antwort fehlerhaft sind
 
 Benötigter `.env` Wert:
@@ -82,6 +93,73 @@ Benötigter `.env` Wert:
 ```env
 OPENWEATHER_API_KEY=dein_openweather_api_key
 ```
+
+---
+
+## 🕒 Uhr, Timer & Weltuhr
+
+Die Uhr-Seite ist als kleine Zeit-Zentrale gedacht.
+
+Funktionen:
+
+- lokale Uhrzeit
+- Weltuhr mit gespeicherten Orten
+- Stoppuhr mit Runden
+- Timer mit Stunden, Minuten und Sekunden
+- Timer-Vorlagen speichern und löschen
+- eigene Timer-Sounds
+- Einstellungsdialog für Timer-Sounds und Lautstärke
+- dezenter Weltkarten-Hintergrund im Hero-Bereich
+
+Das lokale Weltkartenbild liegt hier:
+
+```text
+app/static/app/img/worldmap.png
+```
+
+---
+
+## 👤 Profile & Nutzer
+
+MyTools enthält Profilfunktionen für registrierte Nutzer.
+
+Funktionen:
+
+- eigene Profilseite
+- Vorname und Nachname speichern
+- Profilbild/Avatar
+- öffentliche Profilansicht
+- Nutzerübersicht
+- Account-Informationen wie Mitglied seit und letzte Aktivität
+
+---
+
+## 📝 Notizen
+
+Die Notizen-App speichert persönliche Notizen direkt in MyTools.
+
+Funktionen:
+
+- Notizen erstellen, bearbeiten und löschen
+- Notizen anpinnen
+- Notizen archivieren
+- Farben und Tags
+- Such- und Filterfunktionen
+- nutzerbezogene Speicherung
+
+---
+
+## ⚡ Human Benchmark
+
+Die Human-Benchmark-Seite enthält kleine Reaktions- und Geschicklichkeits-Tests.
+
+Funktionen:
+
+- verschiedene Spielmodi
+- letzte Ergebnisse pro Spielmodus
+- gespeicherte Highscores
+- zusätzliche Statistiken je nach Spielmodus
+- Bestenliste pro Nutzer
 
 ---
 
@@ -101,6 +179,20 @@ Funktionen:
 - Offline-/Leerzustände, wenn keine Verbindung besteht
 
 Die Seite eignet sich besonders gut für ein Tablet als lokales Stream-Control-Panel.
+
+---
+
+## 🎚️ Stream Deck
+
+Die Stream-Deck-Seite ist als Button-Dashboard für schnelle Aktionen gedacht.
+
+Mögliche Einsatzbereiche:
+
+- Mediensteuerung
+- Spotify-Verbindung
+- lokale Dashboard-Aktionen
+- eigene Buttons und Shortcuts
+- Steuerung auf Tablet oder Zweitgerät
 
 ---
 
@@ -137,609 +229,208 @@ Funktionen:
 Benötigter `.env` Wert:
 
 ```env
-GENIUS_API_KEY=dein_genius_api_key
+GENIUS_ACCESS_TOKEN=dein_genius_access_token
 ```
 
 ---
 
-## 📝 Notizen
+## 📐 Einheitenrechner
 
-Eine einfache Notizen-App direkt im Dashboard.
+Der Einheitenrechner bietet schnelle Umrechnungen direkt im Browser.
 
-Funktionen:
-
-- Notizen erstellen
-- Notizen bearbeiten
-- Notizen löschen
-- Notizen anpinnen
-- Notizen archivieren und wiederherstellen
-- Farben pro Notiz
-- Tags pro Notiz
-- Sortierung nach angepinnten und zuletzt aktualisierten Notizen
-
----
-
-## 🧮 Einheitenrechner
-
-Ein kleiner Rechner zum Umrechnen verschiedener Werte.
-
-Aktuell enthalten:
+Beispiele:
 
 - Speichergrößen
-- Zeit
-- Entfernung
-- Geld-/Zeitraum-Werte
-
-Die Oberfläche und Labels sind für Django-Übersetzungen vorbereitet.
+- Zeitwerte
+- Entfernungen
+- Geld-Zeiträume
 
 ---
 
-## ⚡ Human Benchmark
+## 📚 Avatar Wiki
 
-Kleine Benchmark-/Reaktions-Tools im Browser.
-
-Enthalten sind browserbasierte Mini-Tests, Sounds und eine moderne Oberfläche für schnelle Reaktions- und Eingabeübungen.
-
----
-
-## 🌊 Avatar Wiki
-
-Ein kleines Avatar-Wiki mit Charakteren.
+Das Avatar Wiki dient als kleine Charakterverwaltung.
 
 Funktionen:
 
-- Charaktere verwalten
-- Nationen/Farben
-- Bilder pro Charakter
-- Reihenfolge über `order`
-- API für Charakterliste
-- API für Charakterdetails
-
-API-Endpunkte:
-
-```text
-/api/avatar-characters/
-/api/avatar-characters/<id>/
-```
+- Charaktere erstellen
+- Charaktere bearbeiten
+- Charaktere löschen
+- Suche und Übersicht
+- API-Endpunkte für Charakterdaten
 
 ---
 
 ## 🏎️ Drift Circuit Pro
 
-Ein browserbasiertes 2D-Racing-Game mit HTML5 Canvas.
+Drift Circuit Pro ist ein kleines browserbasiertes Racing-Game.
 
 Funktionen:
 
-- große Maps
-- Kamera folgt dem Auto
-- mehrere Strecken
-- Time Trial, Checkpoint Rush und freies Fahren
+- Canvas-basiertes Spiel
+- verschiedene Maps
 - Nitro
 - Drift-Score
-- Checkpoints
-- Minimap
-- Touch-Buttons für mobile Nutzung
-
-Route:
-
-```text
-/drift-circuit/
-```
+- Tastatursteuerung
 
 ---
 
-## 🎚️ Stream Deck
+## 🌍 Internationalisierung
 
-Die Route für ein eigenes Stream-Deck-Tool ist bereits vorbereitet.
+MyTools nutzt Django i18n.
 
-Aktueller Status:
-
-- Template vorhanden
-- CSS/JS-Dateien vorbereitet
-- Route im Menü eingebunden
-- Inhalt kann noch ausgebaut werden
-
-Route:
-
-```text
-/stream-deck/
-```
-
----
-
-## 🎨 Design & Bedienung
-
-MyTools besitzt eine moderne Oberfläche mit anpassbarem Look.
-
-Funktionen:
-
-- Light Mode
-- Dark Mode
-- Theme-Editor
-- Presets für Blau, Grün, Rose und Graphit
-- eigene Farben für Header, Hintergrund und Footer
-- responsive Layouts
-- Dropdown-Menüs für Tools, Spiele und Google-Apps
-- externe Links werden in einem neuen Tab geöffnet
-
-Für FontAwesome kann optional ein Kit-Key aus der `.env` genutzt werden:
-
-```env
-FONTAWESOME_KIT_KEY=dein_fontawesome_kit_key
-```
-
----
-
-## 🌍 Mehrsprachigkeit
-
-Das Projekt nutzt Django i18n.
-
-Aktuell vorbereitet:
+Aktuell vorgesehen:
 
 - Deutsch
 - Englisch
 
-Übersetzungsdateien liegen unter:
+Nach Änderungen an übersetzbaren Texten:
 
-```text
-locale/de/LC_MESSAGES/django.po
-locale/en/LC_MESSAGES/django.po
+```bash
+python manage.py makemessages -l de
+python manage.py makemessages -l en
+python manage.py compilemessages
 ```
+
+Unter Windows müssen dafür die GNU-gettext-Tools installiert sein.
 
 ---
 
-## 🧱 Tech Stack
+## 🎨 Design
 
-- Python 3.12
-- Django 6.0.4
-- PostgreSQL 16
-- Redis 7
-- Gunicorn
-- Caddy
-- Docker Compose
-- WhiteNoise
-- django-redis
-- python-dotenv
-- requests
-- Pillow
+Design-Funktionen:
+
+- Dark Mode
+- Theme-Editor
+- eigene Accent-Farbe
+- moderne Kartenlayouts
+- responsive Darstellung für Desktop, Tablet und Smartphone
+- sticky Header
+- überarbeiteter Footer
+- Widget-Farbstile und Widget-Layouts
 
 ---
 
-## 📁 Projektstruktur
+## 🐳 Docker Deployment
 
-```text
-MyTools/
-├── app/
-│   ├── migrations/
-│   ├── static/app/
-│   │   ├── css/
-│   │   ├── js/
-│   │   ├── data/
-│   │   ├── icons/
-│   │   └── img/
-│   ├── templates/app/
-│   ├── admin.py
-│   ├── forms.py
-│   ├── models.py
-│   ├── urls.py
-│   └── views.py
-├── locale/
-│   ├── de/LC_MESSAGES/
-│   └── en/LC_MESSAGES/
-├── media/
-├── MyTools/
-│   ├── settings.py
-│   ├── urls.py
-│   ├── asgi.py
-│   └── wsgi.py
-├── Caddyfile
-├── Dockerfile
-├── docker-compose.yml
-├── DOCKER.md
-├── manage.py
-├── requirements.txt
-└── README.md
-```
+Produktiv läuft MyTools typischerweise über Docker Compose.
 
----
+Typische Container:
 
-## ⚙️ Wichtige Umgebungsvariablen
+- `web` für Django/Gunicorn
+- `db` für PostgreSQL
+- `redis` für Cache/Redis
+- `caddy` als Reverse Proxy
+- optional `cloudflared` für Cloudflare Tunnel
 
-Lege im Projektordner eine `.env` Datei an.
-
-Beispiel:
-
-```env
-DEBUG=True
-SECRET_KEY=bitte-einen-eigenen-secret-key-setzen
-
-DOMAIN=tools.example.com
-ALLOWED_HOSTS=localhost,127.0.0.1
-CSRF_TRUSTED_ORIGINS=https://tools.example.com
-
-USE_SQLITE=False
-USE_LOCAL_CACHE=False
-
-DB_NAME=mytools
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_HOST=db
-DB_PORT=5432
-
-REDIS_URL=redis://redis:6379/0
-
-FONTAWESOME_KIT_KEY=
-OPENWEATHER_API_KEY=
-GENIUS_API_KEY=
-TANKERKOENIG_API_KEY=
-SPOTIFY_CLIENT_ID=
-SPOTIFY_REDIRECT_URI=https://tools.example.com/stream-deck/
-```
-
-> Die echte `.env` sollte nicht ins Git-Repository committed werden.
-
----
-
-## 🚀 Lokale Entwicklung ohne Docker
-
-### 1. Virtuelle Umgebung erstellen
-
-Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-Linux/macOS:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 2. Abhängigkeiten installieren
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. `.env` für lokale Entwicklung anlegen
-
-Für lokale SQLite-Entwicklung kannst du z. B. setzen:
-
-```env
-USE_SQLITE=True
-USE_LOCAL_CACHE=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-```
-
-### 4. Migrationen ausführen
-
-```bash
-python manage.py migrate
-```
-
-### 5. Entwicklungsserver starten
-
-```bash
-python manage.py runserver
-```
-
-Danach ist die App erreichbar unter:
-
-```text
-http://127.0.0.1:8000/
-```
-
----
-
-## 🐳 Start mit Docker Compose
-
-### 1. `.env` anlegen
-
-Im Projektordner:
-
-```bash
-nano .env
-```
-
-Für Docker sollte PostgreSQL und Redis über die Service-Namen erreichbar sein:
-
-```env
-USE_SQLITE=False
-USE_LOCAL_CACHE=False
-DB_HOST=db
-REDIS_URL=redis://redis:6379/0
-DOMAIN=tools.example.com
-CLOUDFLARE_TUNNEL_TOKEN=dein-cloudflare-token
-SPOTIFY_REDIRECT_URI=https://tools.example.com/stream-deck/
-```
-
-### 2. Container bauen und starten
+Start/Rebuild:
 
 ```bash
 docker compose up -d --build
 ```
 
-Beim Start führt der Web-Container automatisch aus:
-
-```bash
-python manage.py migrate
-python manage.py collectstatic --noinput
-gunicorn MyTools.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60
-```
-
-### 3. Logs anschauen
-
-```bash
-docker compose logs -f web
-```
-
-### 4. Status prüfen
-
-```bash
-docker compose ps
-```
-
-### 5. App öffnen
-
-Mit Cloudflare Tunnel ist MyTools unter deiner Domain erreichbar:
-
-```text
-https://tools.example.com/
-```
-
-Lokal auf demselben Server kannst du testen mit:
-
-```bash
-curl -I http://localhost:8090
-```
-
----
-
-## 🧑‍💻 Django Admin
-
-Superuser erstellen:
-
-```bash
-docker compose exec web python manage.py createsuperuser
-```
-
-Admin öffnen:
-
-```text
-https://tools.example.com/admin/
-```
-
----
-
-## 🔄 Änderungen auf dem Server deployen
-
-Typischer Ablauf für deinen Server unter `/opt/mytools`:
-
-```bash
-cd /opt/mytools
-git pull origin main
-docker compose up -d --build
-```
-
-Wenn du neue Models geändert oder hinzugefügt hast:
+Migrationen ausführen:
 
 ```bash
 docker compose exec web python manage.py makemigrations
 docker compose exec web python manage.py migrate
 ```
 
-Wenn du statische Dateien geändert hast:
+Statische Dateien sammeln:
 
 ```bash
 docker compose exec web python manage.py collectstatic --noinput
 ```
 
-Wenn du nur `.env` geändert hast:
-
-```bash
-docker compose up -d --force-recreate web
-```
-
-Oder einmal komplett neu starten:
-
-```bash
-docker compose restart
-```
-
----
-
-## 🌐 Wichtige Routen
-
-| Seite | URL |
-|---|---|
-| Startseite | `/` |
-| Home | `/home/` |
-| Über | `/about/` |
-| Wetter | `/weather/` |
-| OBS Dashboard | `/obs-dashboard/` |
-| Spritkostenrechner | `/spritkostenrechner/` |
-| Human Benchmark | `/human-benchmark/` |
-| Genius Search | `/genius-search/` |
-| Avatar Wiki | `/avatar-wiki/` |
-| Notizen | `/notes/` |
-| Neue Notiz | `/notes/new/` |
-| Einheitenrechner | `/einheitenrechner/` |
-| Drift Circuit Pro | `/drift-circuit/` |
-| Stream Deck | `/stream-deck/` |
-| Admin | `/admin/` |
-
----
-
-## 🔌 API-Endpunkte
-
-| API | URL |
-|---|---|
-| Genius Suche | `/api/genius/search/` |
-| Tankstellen | `/api/tankstellen/` |
-| Avatar Charaktere | `/api/avatar-characters/` |
-| Avatar Charakter Detail | `/api/avatar-characters/<id>/` |
-
----
-
-## 🌍 Übersetzungen bearbeiten
-
-Texte aus Templates/Python sammeln:
-
-```bash
-python manage.py makemessages -l en
-python manage.py makemessages -l de
-```
-
-Übersetzungen kompilieren:
-
-```bash
-python manage.py compilemessages
-```
-
-Unter Windows brauchst du dafür GNU gettext. Wenn `msguniq` fehlt, ist gettext nicht installiert oder nicht im `PATH`.
-
----
-
-## 🛠️ Nützliche Befehle
-
-### Container neubauen
-
-```bash
-docker compose up -d --build
-```
-
-### Logs anzeigen
-
-```bash
-docker compose logs -f
-```
-
-### Nur Web-Logs anzeigen
+Logs ansehen:
 
 ```bash
 docker compose logs -f web
 ```
 
-### Shell im Django-Container öffnen
+---
 
-```bash
-docker compose exec web sh
+## ⚙️ Wichtige `.env` Werte
+
+Beispiel:
+
+```env
+DEBUG=False
+SECRET_KEY=dein_secret_key
+ALLOWED_HOSTS=localhost,127.0.0.1,mytools.yfserver.de
+CSRF_TRUSTED_ORIGINS=https://mytools.yfserver.de
+
+OPENWEATHER_API_KEY=dein_openweather_api_key
+TANKERKOENIG_API_KEY=dein_tankerkoenig_api_key
+GENIUS_ACCESS_TOKEN=dein_genius_access_token
+
+DB_NAME=mytools
+DB_USER=mytools
+DB_PASSWORD=dein_db_passwort
+DB_HOST=db
+DB_PORT=5432
+
+REDIS_URL=redis://redis:6379/1
 ```
 
-### Migrationen ausführen
+Secrets gehören nicht ins Git-Repository. Dafür sollte eine `.env.example` ohne echte Zugangsdaten gepflegt werden.
+
+---
+
+## 🧪 Tests
+
+Tests lokal starten:
 
 ```bash
-docker compose exec web python manage.py migrate
+python manage.py test
 ```
 
-### Statische Dateien sammeln
+Tests im Docker-Container:
 
 ```bash
-docker compose exec web python manage.py collectstatic --noinput
-```
-
-### Container stoppen
-
-```bash
-docker compose down
-```
-
-### Container inklusive Volumes löschen
-
-Achtung: Das löscht auch Datenbankdaten.
-
-```bash
-docker compose down -v
+docker compose exec web python manage.py test
 ```
 
 ---
 
-## 🧯 Troubleshooting
+## 📁 Projektstruktur
 
-### Seite ist nicht erreichbar
-
-Prüfen, ob Container laufen:
-
-```bash
-docker compose ps
-```
-
-Logs prüfen:
-
-```bash
-docker compose logs -f web
-```
-
-Port prüfen:
-
-```bash
-ss -tulpn | grep 8090
-```
-
----
-
-### Static-Dateien fehlen
-
-```bash
-docker compose exec web python manage.py collectstatic --noinput
-docker compose restart caddy
-```
-
----
-
-### Datenbank ist nicht erreichbar
-
-```bash
-docker compose logs -f db
-docker compose restart db web
-```
-
----
-
-### API-Key fehlt
-
-Prüfe die `.env` Datei:
-
-```bash
-cat .env
-```
-
-Danach Container neu laden:
-
-```bash
-docker compose up -d --force-recreate web
-```
-
----
-
-## 🧭 Deployment-Kontext
-
-Produktiv läuft MyTools typischerweise hier:
+Grob:
 
 ```text
-Server: yfserver
-IP: 192.168.178.99
-Projektpfad: /opt/mytools
-MyTools-Port: 8090
-CasaOS-Port: 8080
+MyTools/
+├── MyTools/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── app/
+│   ├── templates/app/
+│   ├── static/app/css/
+│   ├── static/app/js/
+│   ├── static/app/img/
+│   ├── migrations/
+│   ├── models.py
+│   ├── views.py
+│   ├── profile_views.py
+│   └── urls.py
+├── locale/
+├── media/
+├── docker-compose.yml
+├── Dockerfile
+├── Caddyfile
+├── requirements.txt
+└── manage.py
 ```
 
 ---
 
-## 📌 Hinweise
+## 🚀 Ziel
 
-- Secrets gehören nur in die `.env`, nicht ins Git-Repository.
-- Änderungen an `requirements.txt` brauchen einen neuen Docker Build.
-- Änderungen an Models brauchen Migrationen.
-- Änderungen an CSS/JS/Templates können je nach Browser Cache erst nach Cache-Leeren sichtbar sein.
-- Für externe APIs müssen die jeweiligen API-Keys gesetzt sein.
-- Nach neuen Übersetzungstexten müssen `makemessages` und `compilemessages` erneut laufen.
+MyTools soll eine persönliche, erweiterbare Web-Toolbox bleiben:
 
----
-
-## 📄 Lizenz
-
-Privates Projekt / eigenes Dashboard.
+- schnell erreichbar
+- gut für Homelab und Alltag
+- nutzerbezogen
+- optisch modern
+- einfach per Docker deploybar
+- Schritt für Schritt um neue Tools erweiterbar
