@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 14:55+0200\n"
+"POT-Creation-Date: 2026-05-29 19:09+0200\n"
 "PO-Revision-Date: 2026-05-29 10:45+0000\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -39,7 +39,6 @@ msgid "Wähle mindestens einen Freund für die Gruppe aus."
 msgstr "Select at least one friend for the group."
 
 #: .\app\chat_views.py:232 .\app\chat_views.py:446
-#| msgid "Neue Gruppe"
 msgid "Neue Chatgruppe"
 msgstr "New chat group"
 
@@ -62,17 +61,14 @@ msgid "Nachricht darf nicht leer sein."
 msgstr "Message cannot be empty."
 
 #: .\app\chat_views.py:262 .\app\chat_views.py:263
-#| msgid "Der eigene Klingelton darf maximal 5 MB groß sein."
 msgid "Der Anhang darf maximal 8 MB groß sein."
 msgstr "The attachment must not be larger than 8 MB."
 
 #: .\app\chat_views.py:285
-#| msgid "Nachricht"
 msgid "Neue Chatnachricht"
 msgstr "New chat message"
 
 #: .\app\chat_views.py:286
-#| msgid "Feuernation"
 msgid "Neuer Anhang"
 msgstr "New attachment"
 
@@ -86,7 +82,6 @@ msgid "Gelesen von %(count)s"
 msgstr "Read by %(count)s"
 
 #: .\app\chat_views.py:316
-#| msgid "Beendet"
 msgid "Gesendet"
 msgstr "Sent"
 
@@ -105,17 +100,14 @@ msgid "Nur Gruppenadmins können die Gruppe bearbeiten."
 msgstr "Only group admins can edit the group."
 
 #: .\app\chat_views.py:445
-#| msgid "Weltuhr-Ort wurde hinzugefügt."
 msgid "Zur Gruppe hinzugefügt"
 msgstr "Added to group"
 
 #: .\app\chat_views.py:450
-#| msgid "Einstellungen speichern"
 msgid "Gruppeneinstellungen gespeichert."
 msgstr "Group settings saved."
 
 #: .\app\chat_views.py:452
-#| msgid "Genius API konnte nicht erreicht werden."
 msgid "Die Gruppeneinstellungen konnten nicht gespeichert werden."
 msgstr "The group settings could not be saved."
 
@@ -124,7 +116,6 @@ msgid "Nur Gruppenadmins können Mitglieder verwalten."
 msgstr "Only group admins can manage members."
 
 #: .\app\chat_views.py:467
-#| msgid "Du kannst dir selbst keine Freundschaftsanfrage senden."
 msgid "Du kannst dich hier nicht selbst entfernen."
 msgstr "You cannot remove yourself here."
 
@@ -133,17 +124,14 @@ msgid "Mitglied ist jetzt Gruppenadmin."
 msgstr "The member is now a group admin."
 
 #: .\app\chat_views.py:474
-#| msgid "Mitglied seit"
 msgid "Mitglied entfernt."
 msgstr "Member removed."
 
 #: .\app\chat_views.py:476
-#| msgid "Unbekannte Aktion."
 msgid "Unbekannte Gruppenaktion."
 msgstr "Unknown group action."
 
 #: .\app\chat_views.py:487
-#| msgid "Timer wurde gelöscht."
 msgid "Gruppe gelöscht."
 msgstr "Group deleted."
 
@@ -247,7 +235,7 @@ msgid "Tags"
 msgstr "Tags"
 
 #: .\app\forms.py:141 .\app\templates\app\note_form.html:138
-#: .\app\templates\app\skribble_lobby.html:197
+#: .\app\templates\app\skribble_lobby.html:211
 #: .\app\templates\app\stream_deck.html:249
 msgid "Farbe"
 msgstr "Color"
@@ -281,7 +269,6 @@ msgstr "Away"
 
 # | msgid "Stream starten"
 #: .\app\models.py:40
-#| msgid "Direktchat starten"
 msgid "Nicht stören"
 msgstr "Do not disturb"
 
@@ -308,7 +295,6 @@ msgid "Gruppe"
 msgstr "Group"
 
 #: .\app\models.py:292
-#| msgid "Der eigene Klingelton darf maximal 5 MB groß sein."
 msgid "Anhänge dürfen maximal 8 MB groß sein."
 msgstr "Attachments must not be larger than 8 MB."
 
@@ -354,7 +340,7 @@ msgid "Chats"
 msgstr "Chats"
 
 # | msgid "Runde"
-#: .\app\models.py:698 .\app\models.py:1214 .\app\templates\app\base.html:396
+#: .\app\models.py:698 .\app\models.py:1224 .\app\templates\app\base.html:396
 #: .\app\templates\app\friends.html:5 .\app\templates\app\friends.html:24
 #: .\app\templates\app\friends.html:41 .\app\templates\app\home.html:281
 #: .\app\templates\app\home.html:444 .\app\templates\app\inbox.html:23
@@ -366,14 +352,14 @@ msgstr "Chats"
 msgid "Freunde"
 msgstr "Friends"
 
-#: .\app\models.py:699 .\app\models.py:1215 .\app\platform_utils.py:11
+#: .\app\models.py:699 .\app\models.py:1225 .\app\platform_utils.py:11
 #: .\app\platform_utils.py:34 .\app\templates\app\about.html:238
 #: .\app\templates\app\base.html:74 .\app\templates\app\home.html:445
 #: .\app\templates\app\public_profile.html:229
 #: .\app\templates\app\skribble_home.html:4
 #: .\app\templates\app\skribble_home.html:16
 #: .\app\templates\app\skribble_lobby.html:4
-#: .\app\templates\app\skribble_lobby.html:29
+#: .\app\templates\app\skribble_lobby.html:30
 msgid "Skribble"
 msgstr "Skribble"
 
@@ -441,78 +427,82 @@ msgstr "Large"
 msgid "Geteilt"
 msgstr "Split"
 
-#: .\app\models.py:904
+#: .\app\models.py:905
 msgid "Wartet"
 msgstr "Waiting"
 
-#: .\app\models.py:905
+#: .\app\models.py:906
 msgid "Läuft"
 msgstr "Running"
 
-#: .\app\models.py:906
+#: .\app\models.py:907 .\app\templates\app\skribble_lobby.html:143
+msgid "Rundenuebersicht"
+msgstr "Round summary"
+
+#: .\app\models.py:908
 msgid "Beendet"
 msgstr "Finished"
 
 # | msgid "Runde"
-#: .\app\models.py:965
+#: .\app\models.py:973
 msgid "Rund"
 msgstr "Round"
 
-#: .\app\models.py:966
+#: .\app\models.py:974
 msgid "Eckig"
 msgstr "Square"
 
 # | msgid "Footer"
-#: .\app\models.py:967
+#: .\app\models.py:975
 msgid "Roboter"
 msgstr "Robot"
 
-#: .\app\models.py:968
+#: .\app\models.py:976
 msgid "Katze"
 msgstr "Cat"
 
-#: .\app\models.py:969
+#: .\app\models.py:977
 msgid "Geist"
 msgstr "Ghost"
 
-#: .\app\models.py:970
+#: .\app\models.py:978
 msgid "Ninja"
 msgstr "Ninja"
 
-#: .\app\models.py:1015 .\app\models.py:1254 .\app\templates\app\users.html:97
+#: .\app\models.py:1023 .\app\models.py:1264 .\app\templates\app\users.html:97
 msgid "Offen"
 msgstr "Open"
 
 # | msgid "Angepinnt"
-#: .\app\models.py:1016
+#: .\app\models.py:1024
 msgid "Angenommen"
 msgstr "Accepted"
 
-#: .\app\models.py:1017
+#: .\app\models.py:1025
 msgid "Abgelehnt"
 msgstr "Declined"
 
-#: .\app\models.py:1143
+#: .\app\models.py:1153
 msgid "Spam"
 msgstr "Spam"
 
-#: .\app\models.py:1144
+#: .\app\models.py:1154
 msgid "Belästigung"
 msgstr "Harassment"
 
-#: .\app\models.py:1145
+#: .\app\models.py:1155
 msgid "Unpassende Inhalte"
 msgstr "Inappropriate content"
 
-#: .\app\models.py:1146
+#: .\app\models.py:1156
 msgid "Sonstiges"
 msgstr "Other"
 
-#: .\app\models.py:1212 .\app\templates\app\stream_deck.html:147
+#: .\app\models.py:1222 .\app\templates\app\stream_deck.html:147
 msgid "System"
 msgstr "System"
 
-#: .\app\models.py:1213 .\app\platform_utils.py:7
+#: .\app\models.py:1223 .\app\platform_utils.py:7
 #: .\app\templates\app\about.html:230 .\app\templates\app\base.html:412
 #: .\app\templates\app\base.html:479 .\app\templates\app\chat.html:5
 #: .\app\templates\app\chat.html:17 .\app\templates\app\inbox.html:22
@@ -520,36 +510,33 @@ msgstr "System"
 msgid "Chat"
 msgstr "Chat"
 
-#: .\app\models.py:1216 .\app\models.py:1244 .\app\templates\app\base.html:178
+#: .\app\models.py:1226 .\app\models.py:1254 .\app\templates\app\base.html:178
 #: .\app\templates\app\feedback.html:5 .\app\templates\app\feedback.html:12
 msgid "Feedback"
 msgstr "Feedback"
 
-#: .\app\models.py:1245
+#: .\app\models.py:1255
 msgid "Bug"
 msgstr "Bug"
 
-#: .\app\models.py:1246
+#: .\app\models.py:1256
 msgid "Feature-Idee"
 msgstr "Feature idea"
 
-#: .\app\models.py:1255
+#: .\app\models.py:1265
 msgid "Geplant"
 msgstr "Planned"
 
-#: .\app\models.py:1256
+#: .\app\models.py:1266
 msgid "Erledigt"
 msgstr "Done"
 
 #: .\app\notification_utils.py:91
 #, python-format
-#| msgid "%(count)s ungelesene Nachricht"
-#| msgid_plural "%(count)s ungelesene Nachrichten"
 msgid "%(count)s ungelesene Nachricht(en) von %(user)s"
 msgstr "%(count)s unread message(s) from %(user)s"
 
 #: .\app\notification_utils.py:102 .\app\templates\app\inbox.html:46
-#| msgid "Freundschaftsanfragen"
 msgid "Freundschaftsanfrage"
 msgstr "Friend request"
 
@@ -560,13 +547,11 @@ msgstr "%(user)s wants to be friends with you"
 
 # | msgid "Einstellungen"
 #: .\app\notification_utils.py:114 .\app\templates\app\inbox.html:54
-#| msgid "Einladungen"
 msgid "Skribble-Einladung"
 msgstr "Skribble invitation"
 
 #: .\app\notification_utils.py:115
 #, python-format
-#| msgid "Du bist nicht für diese Lobby eingeladen."
 msgid "%(user)s hat dich in %(lobby)s eingeladen"
 msgstr "%(user)s invited you to %(lobby)s"
 
@@ -612,7 +597,6 @@ msgid "Alltag"
 msgstr "Everyday"
 
 #: .\app\platform_utils.py:7 .\app\platform_utils.py:8
-#| msgid "Community"
 msgid "Kommunikation"
 msgstr "Communication"
 
@@ -643,7 +627,6 @@ msgstr "Unit Converter"
 
 #: .\app\platform_utils.py:14 .\app\platform_utils.py:15
 #: .\app\platform_utils.py:16
-#| msgid "Mehr Tools"
 msgid "Tools"
 msgstr "Tools"
 
@@ -666,7 +649,6 @@ msgid "Stream Deck"
 msgstr "Stream Deck"
 
 #: .\app\platform_utils.py:17 .\app\platform_utils.py:18
-#| msgid "Stream"
 msgid "Streaming"
 msgstr "Streaming"
 
@@ -683,14 +665,12 @@ msgid "Spritkosten"
 msgstr "Fuel costs"
 
 #: .\app\platform_utils.py:27
-#| msgid "Startseite"
 msgid "Startseite / Widgets"
 msgstr "Homepage / Widgets"
 
 #: .\app\platform_utils.py:28 .\app\templates\app\base.html:168
 #: .\app\templates\app\base.html:401 .\app\templates\app\favorites.html:5
 #: .\app\templates\app\favorites.html:13
-#| msgid "Favorit entfernen"
 msgid "Favoriten"
 msgstr "Favorites"
 
@@ -710,12 +690,10 @@ msgstr "Profile"
 
 # | msgid "Keine Nutzer gefunden"
 #: .\app\platform_utils.py:32
-#| msgid "Nutzer finden"
 msgid "Nutzer / Freunde"
 msgstr "Users / Friends"
 
 #: .\app\platform_utils.py:46
-#| msgid "Design"
 msgid "Theme / Design"
 msgstr "Theme / Design"
 
@@ -724,7 +702,6 @@ msgid "Benachrichtigungseinstellungen"
 msgstr "Notification settings"
 
 #: .\app\platform_views.py:32
-#| msgid "Unbekannte Aktion."
 msgid "Unbekanntes Tool."
 msgstr "Unknown tool."
 
@@ -733,12 +710,10 @@ msgid "Dieses Tool gibt es nicht."
 msgstr "This tool does not exist."
 
 #: .\app\platform_views.py:45
-#| msgid "Notiz wurde aktualisiert."
 msgid "Favoriten wurden aktualisiert."
 msgstr "Favorites have been updated."
 
 #: .\app\platform_views.py:112
-#| msgid "Ergebnis gespeichert."
 msgid "Feedback gespeichert"
 msgstr "Feedback saved"
 
@@ -747,7 +722,6 @@ msgid "Danke! Dein Feedback wurde in MyTools abgelegt."
 msgstr "Thank you! Your feedback has been saved in MyTools."
 
 #: .\app\profile_views.py:115
-#| msgid "Aktive"
 msgid "Aktive Chats"
 msgstr "Active chats"
 
@@ -791,7 +765,6 @@ msgid "Freundschaftsanfrage angenommen."
 msgstr "Friend request accepted."
 
 #: .\app\profile_views.py:396
-#| msgid "Freundschaftsanfragen"
 msgid "Neue Freundschaftsanfrage"
 msgstr "New friend request"
 
@@ -838,12 +811,10 @@ msgid "Galeriebild hochgeladen."
 msgstr "Gallery image uploaded."
 
 #: .\app\profile_views.py:446
-#| msgid "Wetter konnte nicht geladen werden."
 msgid "Das Galeriebild konnte nicht hochgeladen werden."
 msgstr "The gallery image could not be uploaded."
 
 #: .\app\profile_views.py:456
-#| msgid "Timer wurde gelöscht."
 msgid "Galeriebild gelöscht."
 msgstr "Gallery image deleted."
 
@@ -856,69 +827,65 @@ msgid "Blockierung aufgehoben."
 msgstr "Block removed."
 
 #: .\app\profile_views.py:475
-#| msgid "Nutzerübersicht"
 msgid "Nutzer blockiert."
 msgstr "User blocked."
 
 #: .\app\profile_views.py:485
-#| msgid "Du kannst nur Freunde einladen."
 msgid "Du kannst dich nicht selbst melden."
 msgstr "You cannot report yourself."
 
 #: .\app\profile_views.py:493
-#| msgid "Timer wurde gespeichert."
 msgid "Meldung wurde gespeichert."
 msgstr "Report saved."
 
 #: .\app\profile_views.py:495
-#| msgid "Genius API konnte nicht erreicht werden."
 msgid "Die Meldung konnte nicht gespeichert werden."
 msgstr "The report could not be saved."
 
-#: .\app\skribble_views.py:258
+#: .\app\skribble_views.py:332
 msgid "hat das Wort erraten!"
 msgstr "guessed the word!"
 
-#: .\app\skribble_views.py:269 .\app\templates\app\skribble_home.html:44
+#: .\app\skribble_views.py:343 .\app\templates\app\skribble_home.html:44
 msgid "Zeichen-Lobby"
 msgstr "Drawing lobby"
 
 # | msgid "Notiz wurde erstellt."
-#: .\app\skribble_views.py:287
+#: .\app\skribble_views.py:361
 msgid "Lobby wurde erstellt."
 msgstr "Lobby has been created."
 
-#: .\app\skribble_views.py:322
+#: .\app\skribble_views.py:396
 msgid "Du bist nicht für diese Lobby eingeladen."
 msgstr "You are not invited to this lobby."
 
-#: .\app\skribble_views.py:326
+#: .\app\skribble_views.py:400
 msgid "Diese Lobby ist bereits voll."
 msgstr "This lobby is already full."
 
-#: .\app\skribble_views.py:361
+#: .\app\skribble_views.py:435
 msgid "Du kannst aus dieser Lobby keine Einladungen senden."
 msgstr "You cannot send invitations from this lobby."
 
-#: .\app\skribble_views.py:367
+#: .\app\skribble_views.py:441
 msgid "Du kannst nur Freunde einladen."
 msgstr "You can only invite friends."
 
 # | msgid "Uhr-Einstellungen wurden gespeichert."
-#: .\app\skribble_views.py:375
+#: .\app\skribble_views.py:449
 msgid "Einladung wurde gesendet."
 msgstr "Invitation sent."
 
 # | msgid "Uhr-Einstellungen wurden gespeichert."
-#: .\app\skribble_views.py:391
+#: .\app\skribble_views.py:465
 msgid "Einladung wurde abgelehnt."
 msgstr "Invitation declined."
 
-#: .\app\skribble_views.py:403
+#: .\app\skribble_views.py:477
 msgid "Du bist nicht mehr in dieser Lobby."
 msgstr "You are no longer in this lobby."
 
-#: .\app\skribble_views.py:415
+#: .\app\skribble_views.py:489
 msgid ""
 "Du hast die Lobby verlassen. Du kannst über eine Einladung oder als Freund "
 "wieder beitreten."
@@ -926,42 +893,50 @@ msgstr ""
 "You have left the lobby. You can rejoin through an invitation or as a friend."
 
 # | msgid "Timer wurde gelöscht."
-#: .\app\skribble_views.py:425
+#: .\app\skribble_views.py:499
 #, python-format
 msgid "Lobby '%(name)s' wurde gelöscht."
 msgstr "Lobby '%(name)s' has been deleted."
 
 # | msgid "Timer wurde gespeichert."
-#: .\app\skribble_views.py:441
+#: .\app\skribble_views.py:515
 msgid "Avatar wurde gespeichert."
 msgstr "Avatar has been saved."
 
-#: .\app\skribble_views.py:451
+#: .\app\skribble_views.py:525
 msgid "Nur der Host kann starten."
 msgstr "Only the host can start."
 
-#: .\app\skribble_views.py:453
+#: .\app\skribble_views.py:527
 msgid "Du brauchst mindestens 2 Spieler."
 msgstr "You need at least 2 players."
 
-#: .\app\skribble_views.py:490
+#: .\app\skribble_views.py:568
+msgid "Nur der Host kann fortfahren."
+msgstr "Only the host can continue."
+
+#: .\app\skribble_views.py:579
 msgid "Kein Zugriff."
 msgstr "No access."
 
-#: .\app\skribble_views.py:507
+#: .\app\skribble_views.py:596
 msgid "Du bist gerade nicht am Zeichnen."
 msgstr "You are not drawing right now."
 
-#: .\app\skribble_views.py:509
+#: .\app\skribble_views.py:598
+msgid "Die Runde laeuft gerade nicht."
+msgstr "The round is not currently running."
+
+#: .\app\skribble_views.py:600
 msgid "Das Wort wurde schon gewählt."
 msgstr "The word has already been chosen."
 
 # | msgid "Ungültiger Score."
-#: .\app\skribble_views.py:512
+#: .\app\skribble_views.py:603
 msgid "Ungültiges Wort."
 msgstr "Invalid word."
 
-#: .\app\skribble_views.py:558
+#: .\app\skribble_views.py:649
 msgid "Der Zeichner darf nicht raten."
 msgstr "The drawer is not allowed to guess."
 
@@ -1169,8 +1144,12 @@ msgstr ""
 "Direct chats, group chats, emoji reactions, and deletable own messages."
 
 #: .\app\templates\app\about.html:239
-msgid "Zeichnen, Raten, Lobbys erstellen und Freunde einladen."
-msgstr "Draw, guess, create lobbies, and invite friends."
+msgid ""
+"Zeichnen, Raten, Lobbys erstellen, Freunde einladen und Punkte nach jeder "
+"Runde ansehen."
+msgstr ""
+"Draw, guess, create lobbies, invite friends, and view points after every "
+"round."
 
 # | msgid "Profilseite mit Avatar, persönlichen Daten und öffentlicher Ansicht."
 #: .\app\templates\app\about.html:247
@@ -1459,8 +1438,6 @@ msgstr "pending Skribble invitations"
 
 #: .\app\templates\app\base.html:77
 #, python-format
-#| msgid "%(count)s offene Freundschaftsanfrage"
-#| msgid_plural "%(count)s offene Freundschaftsanfragen"
 msgid "%(count)s offene Skribble-Einladung"
 msgid_plural "%(count)s offene Skribble-Einladungen"
 msgstr[0] "%(count)s pending Skribble invitation"
@@ -1564,7 +1541,6 @@ msgid "Hintergrund"
 msgstr "Background"
 
 #: .\app\templates\app\base.html:281
-#| msgid "Wartet"
 msgid "Karten"
 msgstr "Cards"
 
@@ -1574,12 +1550,10 @@ msgstr "Footer"
 
 # | msgid "Runde"
 #: .\app\templates\app\base.html:291
-#| msgid "Runden"
 msgid "Rundung"
 msgstr "Rounding"
 
 #: .\app\templates\app\base.html:299
-#| msgid "Kompakt"
 msgid "Kompakter Modus"
 msgstr "Compact mode"
 
@@ -1592,30 +1566,25 @@ msgid "Zur&uuml;cksetzen"
 msgstr "Reset"
 
 #: .\app\templates\app\base.html:323
-#| msgid "Optionen öffnen"
 msgid "Benachrichtigungen öffnen"
 msgstr "Open notifications"
 
 # | msgid "Nachricht"
 #: .\app\templates\app\base.html:325
-#| msgid "Nachrichten"
 msgid "Benachrichtigung"
 msgstr "Notification"
 
 # | msgid "Nachricht"
 #: .\app\templates\app\base.html:325 .\app\templates\app\base.html:331
 #: .\app\templates\app\profile.html:346
-#| msgid "Nachrichten"
 msgid "Benachrichtigungen"
 msgstr "Notifications"
 
 #: .\app\templates\app\base.html:332
-#| msgid "Freundschaftsanfragen"
 msgid "Chats, Freundschaftsanfragen und Skribble"
 msgstr "Chats, friend requests and Skribble"
 
 #: .\app\templates\app\base.html:339
-#| msgid "Keine Beschreibung"
 msgid "Keine neuen Benachrichtigungen."
 msgstr "No new notifications."
 
@@ -1641,14 +1610,10 @@ msgid "Profil öffnen"
 msgstr "Open profile"
 
 #: .\app\templates\app\base.html:414
-#| msgid "%(count)s ungelesene Nachricht"
-#| msgid_plural "%(count)s ungelesene Nachrichten"
 msgid "ungelesene Nachricht"
 msgstr "unread message"
 
 #: .\app\templates\app\base.html:414 .\app\templates\app\inbox.html:38
-#| msgid "%(count)s ungelesene Nachricht"
-#| msgid_plural "%(count)s ungelesene Nachrichten"
 msgid "ungelesene Nachrichten"
 msgstr "unread messages"
 
@@ -1664,13 +1629,10 @@ msgid "Freundschaftsanfragen"
 msgstr "Friend requests"
 
 #: .\app\templates\app\base.html:424
-#| msgid "%(count)s offene Freundschaftsanfrage"
-#| msgid_plural "%(count)s offene Freundschaftsanfragen"
 msgid "offene Freundschaftsanfrage"
 msgstr "pending friend request"
 
 #: .\app\templates\app\base.html:424
-#| msgid "Freundschaftsanfragen"
 msgid "offene Freundschaftsanfragen"
 msgstr "pending friend requests"
 
@@ -1695,8 +1657,6 @@ msgid "Nachrichten"
 msgstr "Messages"
 
 #: .\app\templates\app\chat.html:18
-#| msgid ""
-#| "Schreibe direkt mit Freunden oder erstelle Gruppen für mehrere Nutzer."
 msgid "Schreibe direkt mit Freunden oder erstelle Gruppen."
 msgstr "Write directly with friends or create groups."
 
@@ -1707,7 +1667,6 @@ msgstr "Conversations"
 
 #: .\app\templates\app\chat.html:34 .\app\templates\app\chat.html:151
 #: .\app\templates\app\chat.html:179
-#| msgid "Gruppe"
 msgid "Gruppenbild"
 msgstr "Group picture"
 
@@ -1755,7 +1714,6 @@ msgstr "You need friends before you can create groups."
 
 # | msgid "Ort hinzufügen"
 #: .\app\templates\app\chat.html:184
-#| msgid "Freund hinzufügen"
 msgid "Freunde hinzufügen"
 msgstr "Add friends"
 
@@ -1773,17 +1731,14 @@ msgstr "Remove"
 
 # | msgid "Bereich erstellen"
 #: .\app\templates\app\chat.html:212
-#| msgid "Gruppe erstellen"
 msgid "Gruppe verlassen"
 msgstr "Leave group"
 
 #: .\app\templates\app\chat.html:219
-#| msgid "Charakter suchen..."
 msgid "Chat durchsuchen..."
 msgstr "Search chat..."
 
 #: .\app\templates\app\chat.html:221
-#| msgid "Zurücksetzen"
 msgid "Suche zurücksetzen"
 msgstr "Reset search"
 
@@ -1818,7 +1773,6 @@ msgid "Schreibe die erste Nachricht in diesem Chat."
 msgstr "Write the first message in this chat."
 
 #: .\app\templates\app\chat.html:308
-#| msgid "Ort hinzufügen"
 msgid "Anhang hinzufügen"
 msgstr "Add attachment"
 
@@ -2000,12 +1954,10 @@ msgid "Markiere deine wichtigsten Tools und öffne sie schneller."
 msgstr "Mark your most important tools and open them faster."
 
 #: .\app\templates\app\favorites.html:34
-#| msgid "Stream umschalten"
 msgid "Favorit umschalten"
 msgstr "Toggle favorite"
 
 #: .\app\templates\app\feedback.html:13
-#| msgid "Profil bearbeiten"
 msgid "Tool bewerten"
 msgstr "Rate tool"
 
@@ -2022,19 +1974,16 @@ msgid "Neues Feedback"
 msgstr "New feedback"
 
 #: .\app\templates\app\feedback.html:38
-#| msgid "Sekunden"
 msgid "Absenden"
 msgstr "Submit"
 
 # | msgid "Einstellungen"
 #: .\app\templates\app\feedback.html:42
-#| msgid "Einladungen"
 msgid "Meine Meldungen"
 msgstr "My reports"
 
 # | msgid "Noch keine Ergebnisse."
 #: .\app\templates\app\feedback.html:50
-#| msgid "Noch keine Freunde"
 msgid "Noch kein Feedback."
 msgstr "No feedback yet."
 
@@ -2110,6 +2059,7 @@ msgid "Seite 1"
 msgstr "Page 1"
 
 #: .\app\templates\app\genius_search.html:35
+#: .\app\templates\app\skribble_lobby.html:149
 #: .\app\templates\app\stream_deck.html:233
 msgid "Weiter"
 msgstr "Next"
@@ -2174,30 +2124,25 @@ msgstr "Open Human Benchmark"
 
 # | msgid "Eingeklappt"
 #: .\app\templates\app\home.html:231
-#| msgid "Eingeladen"
 msgid "ungelesen"
 msgstr "unread"
 
 # | msgid "Uhr öffnen"
 #: .\app\templates\app\home.html:272
-#| msgid "Chat öffnen"
 msgid "Chats öffnen"
 msgstr "Open chats"
 
 #: .\app\templates\app\home.html:285
-#| msgid "OBS-Anfrage"
 msgid "Anfragen"
 msgstr "Requests"
 
 # | msgid "Noch keine Ergebnisse."
 #: .\app\templates\app\home.html:304
-#| msgid "Noch keine Freunde"
 msgid "Noch keine Freunde."
 msgstr "No friends yet."
 
 # | msgid "Wetterseite öffnen"
 #: .\app\templates\app\home.html:309
-#| msgid "Freundesliste öffnen"
 msgid "Freunde öffnen"
 msgstr "Open friends"
 
@@ -2207,22 +2152,18 @@ msgid "Einladungen"
 msgstr "Invitations"
 
 #: .\app\templates\app\home.html:322
-#| msgid "Lobby"
 msgid "Lobbys"
 msgstr "Lobbies"
 
 #: .\app\templates\app\home.html:333
-#| msgid "Von"
 msgid "von"
 msgstr "by"
 
 #: .\app\templates\app\home.html:353
-#| msgid "Du hast aktuell keine offenen Spiel-Einladungen."
 msgid "Keine offenen Skribble-Einladungen."
 msgstr "No pending Skribble invitations."
 
 #: .\app\templates\app\home.html:358
-#| msgid "Profil öffnen"
 msgid "Skribble öffnen"
 msgstr "Open Skribble"
 
@@ -2513,7 +2454,6 @@ msgid "Bestenliste"
 msgstr "Leaderboard"
 
 #: .\app\templates\app\inbox.html:12
-#| msgid "Persönliches Dashboard"
 msgid "Persönlich"
 msgstr "Personal"
 
@@ -2523,28 +2463,23 @@ msgstr "All important messages, invitations and notices in one place."
 
 # | msgid "Eingeklappt"
 #: .\app\templates\app\inbox.html:21
-#| msgid "Eingeladen"
 msgid "Ungelesen"
 msgstr "Unread"
 
 # | msgid "Alle Nutzer anzeigen"
 #: .\app\templates\app\inbox.html:27
-#| msgid "Alle anzeigen"
 msgid "Alles gelesen"
 msgstr "All read"
 
 #: .\app\templates\app\inbox.html:33
-#| msgid "Aktuelles Banner"
 msgid "Aktuelle Hinweise"
 msgstr "Current notices"
 
 #: .\app\templates\app\inbox.html:39 .\app\templates\app\inbox.html:64
-#| msgid "Uhr öffnen"
 msgid "Öffnen"
 msgstr "Open"
 
 #: .\app\templates\app\inbox.html:47 .\app\templates\app\inbox.html:55
-#| msgid "Ausstehend"
 msgid "Ansehen"
 msgstr "View"
 
@@ -2687,7 +2622,7 @@ msgstr "New note"
 msgid "Titel, Inhalt oder Tags suchen..."
 msgstr "Search for title, content, or tags..."
 
-#: .\app\templates\app\notes.html:70 .\app\templates\app\skribble_lobby.html:46
+#: .\app\templates\app\notes.html:70 .\app\templates\app\skribble_lobby.html:47
 #: .\app\templates\app\stream_deck.html:77
 msgid "Zurücksetzen"
 msgstr "Reset"
@@ -3098,7 +3033,9 @@ msgstr "Notifications & sounds"
 msgid ""
 "Browser-Benachrichtigungen funktionieren, sobald du sie im Browser erlaubst "
 "und MyTools geöffnet ist."
-msgstr "Browser notifications work as soon as you allow them in your browser and MyTools is open."
+msgstr ""
+"Browser notifications work as soon as you allow them in your browser and "
+"MyTools is open."
 
 #: .\app\templates\app\profile.html:363
 msgid "Zurück zur Startseite"
@@ -3110,7 +3047,6 @@ msgid "Galerie"
 msgstr "Gallery"
 
 #: .\app\templates\app\profile.html:379
-#| msgid "Profilbild entfernen"
 msgid "Profilbilder-Galerie"
 msgstr "Profile picture gallery"
 
@@ -3119,17 +3055,14 @@ msgid "Hochladen"
 msgstr "Upload"
 
 #: .\app\templates\app\profile.html:395
-#| msgid "Keine Beschreibung"
 msgid "Ohne Beschreibung"
 msgstr "No description"
 
 #: .\app\templates\app\profile.html:409
-#| msgid "Blocksatz"
 msgid "Blockiert"
 msgstr "Blocked"
 
 #: .\app\templates\app\profile.html:410
-#| msgid "Archivierte Notizen"
 msgid "Blockierte Nutzer"
 msgstr "Blocked users"
 
@@ -3163,7 +3096,7 @@ msgstr "Member since"
 
 # | msgid "Spotify-Status"
 #: .\app\templates\app\public_profile.html:91
-#: .\app\templates\app\skribble_lobby.html:118
+#: .\app\templates\app\skribble_lobby.html:69
 msgid "Status"
 msgstr "Status"
 
@@ -3196,12 +3129,10 @@ msgstr "Block"
 
 # | msgid "Keine Nutzer gefunden"
 #: .\app\templates\app\public_profile.html:180
-#| msgid "Nutzer finden"
 msgid "Nutzer melden"
 msgstr "Report user"
 
 #: .\app\templates\app\public_profile.html:186
-#| msgid "Verbindung trennen"
 msgid "Meldung senden"
 msgstr "Send report"
 
@@ -3214,12 +3145,10 @@ msgid "Dieser Nutzer hat noch keine Beschreibung hinterlegt."
 msgstr "This user has not added a description yet."
 
 #: .\app\templates\app\public_profile.html:215
-#| msgid "Bildschirm"
 msgid "Bilder"
 msgstr "Images"
 
 #: .\app\templates\app\public_profile.html:230
-#| msgid "Deine Statistiken"
 msgid "Statistiken"
 msgstr "Statistics"
 
@@ -3233,7 +3162,6 @@ msgstr "Guessed"
 
 # | msgid "Widget speichern"
 #: .\app\templates\app\public_profile.html:235
-#| msgid "Live zeichnen"
 msgid "Gezeichnet"
 msgstr "Drawn"
 
@@ -3242,7 +3170,6 @@ msgid "Winrate"
 msgstr "Win rate"
 
 #: .\app\templates\app\public_profile.html:237
-#| msgid "Punkte sammeln"
 msgid "Punkte"
 msgstr "Points"
 
@@ -3265,12 +3192,10 @@ msgid "Noch kein Highscore"
 msgstr "No highscore yet"
 
 #: .\app\templates\app\public_profile.html:336
-#| msgid "Aktive"
 msgid "Aktivität"
 msgstr "Activity"
 
 #: .\app\templates\app\public_profile.html:337
-#| msgid "Freundesliste"
 msgid "Freundesaktivität"
 msgstr "Friend activity"
 
@@ -3293,7 +3218,7 @@ msgstr "Game features"
 
 # | msgid "Runde beenden"
 #: .\app\templates\app\skribble_home.html:23
-#: .\app\templates\app\skribble_lobby.html:140
+#: .\app\templates\app\skribble_lobby.html:84
 msgid "Freunde einladen"
 msgstr "Invite friends"
 
@@ -3376,12 +3301,10 @@ msgstr "You currently have no pending game invitations."
 
 # | msgid "Nutzerübersicht"
 #: .\app\templates\app\skribble_home.html:119
-#| msgid "Zur Übersicht"
 msgid "Lobby-Übersicht"
 msgstr "Lobby overview"
 
 #: .\app\templates\app\skribble_home.html:120
-#| msgid "Deine Lobbys"
 msgid "Aktive Lobbys"
 msgstr "Active lobbies"
 
@@ -3394,7 +3317,6 @@ msgid "Aktuell gibt es keine aktive Lobby von dir oder deinen Freunden."
 msgstr "There is currently no active lobby from you or your friends."
 
 #: .\app\templates\app\skribble_home.html:149
-#| msgid "Verlassen"
 msgid "Verlauf"
 msgstr "History"
 
@@ -3404,7 +3326,7 @@ msgstr "Your lobbies"
 
 # | msgid "Spiele"
 #: .\app\templates\app\skribble_home.html:159
-#: .\app\templates\app\skribble_lobby.html:123
+#: .\app\templates\app\skribble_lobby.html:79
 msgid "Spieler"
 msgstr "Players"
 
@@ -3413,38 +3335,38 @@ msgid "Du bist noch in keiner Lobby."
 msgstr "You are not in any lobby yet."
 
 # | msgid "Nutzerübersicht"
-#: .\app\templates\app\skribble_lobby.html:27
+#: .\app\templates\app\skribble_lobby.html:28
 msgid "Zur Übersicht"
 msgstr "Back to overview"
 
-#: .\app\templates\app\skribble_lobby.html:31
+#: .\app\templates\app\skribble_lobby.html:32
 msgid "Lobby"
 msgstr "Lobby"
 
-#: .\app\templates\app\skribble_lobby.html:33
+#: .\app\templates\app\skribble_lobby.html:34
 msgid "Lobby-Code"
 msgstr "Lobby code"
 
 # | msgid "Link (optional)"
-#: .\app\templates\app\skribble_lobby.html:39
+#: .\app\templates\app\skribble_lobby.html:40
 msgid "Link kopieren"
 msgstr "Copy link"
 
 # | msgid "Stream starten"
-#: .\app\templates\app\skribble_lobby.html:43
+#: .\app\templates\app\skribble_lobby.html:44
 msgid "Spiel starten"
 msgstr "Start game"
 
-#: .\app\templates\app\skribble_lobby.html:48
+#: .\app\templates\app\skribble_lobby.html:49
 msgid "Lobby wirklich löschen? Alle Spieler und Zeichnungen werden entfernt."
 msgstr "Really delete the lobby? All players and drawings will be removed."
 
 # | msgid "Löschen"
-#: .\app\templates\app\skribble_lobby.html:51
+#: .\app\templates\app\skribble_lobby.html:52
 msgid "Lobby löschen"
 msgstr "Delete lobby"
 
-#: .\app\templates\app\skribble_lobby.html:55
+#: .\app\templates\app\skribble_lobby.html:56
 msgid ""
 "Lobby wirklich verlassen? Du kannst später über eine Einladung oder als "
 "Freund wieder beitreten."
@@ -3452,99 +3374,106 @@ msgstr ""
 "Really leave the lobby? You can rejoin later through an invitation or as a "
 "friend."
 
-#: .\app\templates\app\skribble_lobby.html:58
+#: .\app\templates\app\skribble_lobby.html:59
 msgid "Verlassen"
 msgstr "Leave"
 
 # | msgid "Speicher"
-#: .\app\templates\app\skribble_lobby.html:68
+#: .\app\templates\app\skribble_lobby.html:73
 msgid "Zeichner"
 msgstr "Drawer"
 
-# | msgid "Aktuelles Wetter"
-#: .\app\templates\app\skribble_lobby.html:76
-msgid "Aktuelles Wort"
-msgstr "Current word"
-
-# | msgid "Warte auf Start..."
-#: .\app\templates\app\skribble_lobby.html:84
-msgid "Warte auf das Spiel..."
-msgstr "Waiting for the game..."
-
-#: .\app\templates\app\skribble_lobby.html:85
-msgid "Der aktuelle Zeichner wählt gleich ein Wort."
-msgstr "The current drawer is about to choose a word."
-
-# | msgid "Farbe"
-#: .\app\templates\app\skribble_lobby.html:91
-msgid "Farben"
-msgstr "Colors"
-
-#: .\app\templates\app\skribble_lobby.html:104
-msgid "Eigene Pinsel-Farbe"
-msgstr "Custom brush color"
-
-#: .\app\templates\app\skribble_lobby.html:107
-msgid "Pinselgröße"
-msgstr "Brush size"
-
-#: .\app\templates\app\skribble_lobby.html:111
-msgid "Leeren"
-msgstr "Clear"
-
-#: .\app\templates\app\skribble_lobby.html:128
-msgid "Chat & Raten"
-msgstr "Chat & guessing"
-
-#: .\app\templates\app\skribble_lobby.html:131
-msgid "Wort raten oder Nachricht schreiben..."
-msgstr "Guess the word or write a message..."
-
-#: .\app\templates\app\skribble_lobby.html:151
+#: .\app\templates\app\skribble_lobby.html:95
 msgid "Einladung offen"
 msgstr "Invitation pending"
 
-#: .\app\templates\app\skribble_lobby.html:153
+#: .\app\templates\app\skribble_lobby.html:97
 msgid "War schon eingeladen"
 msgstr "Was already invited"
 
-#: .\app\templates\app\skribble_lobby.html:155
-#: .\app\templates\app\users.html:93
+#: .\app\templates\app\skribble_lobby.html:99 .\app\templates\app\users.html:93
 msgid "Freund"
 msgstr "Friend"
 
 # | msgid "Eingeklappt"
-#: .\app\templates\app\skribble_lobby.html:165
+#: .\app\templates\app\skribble_lobby.html:109
 msgid "Eingeladen"
 msgstr "Invited"
 
 # | msgid "Einloggen"
-#: .\app\templates\app\skribble_lobby.html:167
+#: .\app\templates\app\skribble_lobby.html:111
 msgid "Einladen"
 msgstr "Invite"
 
-#: .\app\templates\app\skribble_lobby.html:175
+#: .\app\templates\app\skribble_lobby.html:119
 msgid "Es gibt gerade keine weiteren Freunde, die du einladen kannst."
 msgstr "There are currently no other friends you can invite."
 
-#: .\app\templates\app\skribble_lobby.html:180
+# | msgid "Aktuelles Wetter"
+#: .\app\templates\app\skribble_lobby.html:128
+msgid "Aktuelles Wort"
+msgstr "Current word"
+
+# | msgid "Warte auf Start..."
+#: .\app\templates\app\skribble_lobby.html:138
+msgid "Warte auf das Spiel..."
+msgstr "Waiting for the game..."
+
+#: .\app\templates\app\skribble_lobby.html:139
+msgid "Der aktuelle Zeichner wählt gleich ein Wort."
+msgstr "The current drawer is about to choose a word."
+
+#: .\app\templates\app\skribble_lobby.html:144
+msgid "Punkte dieser Runde"
+msgstr "Points this round"
+
+#: .\app\templates\app\skribble_lobby.html:151
+msgid "Der Host startet die naechste Runde."
+msgstr "The host starts the next round."
+
+# | msgid "Farbe"
+#: .\app\templates\app\skribble_lobby.html:158
+msgid "Farben"
+msgstr "Colors"
+
+#: .\app\templates\app\skribble_lobby.html:171
+msgid "Eigene Pinsel-Farbe"
+msgstr "Custom brush color"
+
+#: .\app\templates\app\skribble_lobby.html:174
+msgid "Pinselgröße"
+msgstr "Brush size"
+
+#: .\app\templates\app\skribble_lobby.html:178
+msgid "Leeren"
+msgstr "Clear"
+
+#: .\app\templates\app\skribble_lobby.html:185
+msgid "Chat & Raten"
+msgstr "Chat & guessing"
+
+#: .\app\templates\app\skribble_lobby.html:188
+msgid "Wort raten oder Nachricht schreiben..."
+msgstr "Guess the word or write a message..."
+
+#: .\app\templates\app\skribble_lobby.html:194
 msgid "Dein Spiel-Avatar"
 msgstr "Your game avatar"
 
-#: .\app\templates\app\skribble_lobby.html:184
+#: .\app\templates\app\skribble_lobby.html:198
 msgid "Name im Spiel"
 msgstr "Name in game"
 
-#: .\app\templates\app\skribble_lobby.html:188
+#: .\app\templates\app\skribble_lobby.html:202
 msgid "Avatar-Form"
 msgstr "Avatar shape"
 
-#: .\app\templates\app\skribble_lobby.html:205
+#: .\app\templates\app\skribble_lobby.html:219
 msgid "Akzent"
 msgstr "Accent"
 
 # | msgid "Notiz speichern"
-#: .\app\templates\app\skribble_lobby.html:213
+#: .\app\templates\app\skribble_lobby.html:227
 msgid "Avatar speichern"
 msgstr "Save avatar"
 
