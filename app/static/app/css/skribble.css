@@ -2512,3 +2512,1583 @@ html.dark-mode .draw-hero-chips span,
         font-size: .9rem;
     }
 }
+
+/* ===== Fit Skribble into the browser viewport ===== */
+body:has(.draw-home-page),
+body:has(.draw-lobby-page) {
+    overflow: hidden;
+}
+
+body:has(.draw-home-page) > main,
+body:has(.draw-lobby-page) > main {
+    height: calc(100dvh - var(--nav-height, 60px));
+    overflow: hidden;
+    padding: 10px 12px;
+}
+
+body:has(.draw-home-page) .site-footer,
+body:has(.draw-lobby-page) .site-footer {
+    display: none;
+}
+
+.draw-page.draw-home-page,
+.draw-page.draw-lobby-page {
+    width: min(1780px, 100%);
+    height: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.draw-home-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, .85fr);
+    grid-template-rows: auto minmax(0, 1fr) minmax(0, .7fr);
+    gap: 12px;
+}
+
+.draw-home-page .draw-skribble-hero {
+    grid-column: 1 / -1;
+    min-height: 0;
+    padding: 14px !important;
+}
+
+.draw-home-page .draw-hero-main {
+    padding: 12px 16px !important;
+    gap: 8px;
+}
+
+.draw-home-page .draw-hero-logo-row {
+    grid-template-columns: minmax(150px, 250px) minmax(0, 1fr);
+    gap: 14px;
+}
+
+.draw-home-page .draw-logo-hero {
+    max-height: 94px !important;
+    width: min(250px, 100%) !important;
+    margin: -4px 0 !important;
+}
+
+.draw-home-page .draw-hero-text .draw-logo-title {
+    font-size: clamp(1.45rem, 2.2vw, 2.35rem) !important;
+}
+
+.draw-home-page .draw-hero-text p,
+.draw-home-page .draw-hero-feature-card span {
+    font-size: .92rem !important;
+    line-height: 1.28 !important;
+}
+
+.draw-home-page .draw-hero-chips {
+    gap: 6px;
+}
+
+.draw-home-page .draw-hero-chips span {
+    padding: 6px 9px;
+    font-size: .78rem;
+}
+
+.draw-home-page .draw-hero-feature-card {
+    padding: 14px !important;
+}
+
+.draw-home-page .draw-hero-feature-card i {
+    width: 44px !important;
+    height: 44px !important;
+}
+
+.draw-home-page .draw-grid-home {
+    grid-column: 1;
+    grid-row: 2 / 4;
+    grid-template-columns: minmax(0, 1.45fr) minmax(240px, .85fr);
+    gap: 12px;
+    min-height: 0;
+    margin-top: 0 !important;
+}
+
+.draw-home-page > .draw-lobby-overview-panel {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0;
+}
+
+.draw-home-page > .draw-panel:last-child {
+    grid-column: 2;
+    grid-row: 3;
+    margin-top: 0;
+}
+
+.draw-home-page .draw-panel {
+    min-height: 0;
+    overflow: auto;
+    padding: 16px !important;
+}
+
+.draw-home-page .draw-form,
+.draw-home-page .draw-avatar-form {
+    gap: 10px;
+}
+
+.draw-home-page .draw-form-row {
+    gap: 10px;
+}
+
+.draw-home-page .draw-form input,
+.draw-home-page .draw-form select,
+.draw-home-page .draw-form textarea {
+    padding: 9px 11px;
+    border-radius: 12px;
+}
+
+.draw-home-page .draw-form textarea {
+    min-height: 72px;
+}
+
+.draw-home-page .draw-section-heading {
+    margin-bottom: 10px;
+}
+
+.draw-home-page .draw-lobby-overview-grid,
+.draw-home-page .draw-lobby-cards,
+.draw-home-page .draw-list {
+    gap: 10px;
+}
+
+.draw-lobby-page {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 10px;
+}
+
+.draw-lobby-page .draw-lobby-top {
+    min-height: 0;
+    margin-bottom: 0;
+    padding: 10px 14px !important;
+    border-radius: 22px !important;
+    gap: 12px;
+}
+
+.draw-lobby-page .draw-title-row {
+    padding: 8px 12px !important;
+    border-radius: 18px !important;
+}
+
+.draw-lobby-page .draw-back {
+    margin-bottom: 4px;
+    font-size: .86rem;
+}
+
+.draw-lobby-page .draw-logo-lobby {
+    width: clamp(92px, 9vw, 148px);
+    max-height: 56px;
+    object-fit: contain;
+}
+
+.draw-lobby-page .draw-lobby-top h1 {
+    font-size: clamp(1.25rem, 2vw, 2rem) !important;
+    line-height: 1;
+    text-shadow: none;
+}
+
+.draw-lobby-page .draw-lobby-top p {
+    margin: 2px 0 0;
+    font-size: .9rem;
+    line-height: 1.2;
+}
+
+.draw-lobby-page .draw-top-actions {
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.draw-lobby-page .draw-top-actions .draw-primary,
+.draw-lobby-page .draw-top-actions .draw-secondary,
+.draw-lobby-page .draw-top-actions .draw-danger {
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: .86rem;
+}
+
+.draw-lobby-page .draw-game-shell {
+    min-height: 0;
+    height: 100%;
+    margin-top: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+    gap: 12px;
+    align-items: stretch;
+}
+
+.draw-lobby-page .draw-stage {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    padding: 12px !important;
+    border-radius: 22px !important;
+    overflow: hidden;
+}
+
+.draw-lobby-page .draw-stage-header {
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.draw-lobby-page .draw-stage-title,
+.draw-lobby-page .draw-round-pill,
+.draw-lobby-page .draw-timer {
+    min-height: 44px;
+    border-radius: 14px;
+}
+
+.draw-lobby-page .draw-stage-title {
+    padding: 6px 10px;
+}
+
+.draw-lobby-page .draw-stage-title strong {
+    font-size: 1rem;
+}
+
+.draw-lobby-page .draw-round-pill {
+    padding: 0 12px;
+    font-size: .86rem;
+}
+
+.draw-lobby-page .draw-timer {
+    min-width: 68px;
+    font-size: 1.35rem;
+}
+
+.draw-lobby-page .draw-word-box-stage {
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-radius: 16px;
+}
+
+.draw-lobby-page .draw-word-box-stage strong {
+    font-size: clamp(1rem, 1.35vw, 1.45rem);
+}
+
+.draw-lobby-page .draw-word-choices {
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.draw-lobby-page .draw-word-choice {
+    min-height: 30px;
+    padding: 6px 10px;
+    font-size: .86rem;
+}
+
+.draw-lobby-page .draw-canvas-wrap {
+    min-height: 0;
+    border-width: 3px;
+    border-radius: 18px;
+}
+
+.draw-lobby-page .draw-canvas-wrap canvas,
+.draw-lobby-page #drawing-canvas {
+    height: 100%;
+    min-height: 0 !important;
+    max-height: none;
+    aspect-ratio: auto;
+}
+
+.draw-lobby-page .draw-tools {
+    margin-top: 8px;
+    padding: 8px;
+    border-radius: 16px;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.draw-lobby-page .draw-tool-group {
+    gap: 4px !important;
+}
+
+.draw-lobby-page .draw-color-tool {
+    flex-basis: 360px;
+}
+
+.draw-lobby-page .draw-size-tool {
+    flex-basis: 180px;
+}
+
+.draw-lobby-page .draw-brush-palette {
+    gap: 5px;
+}
+
+.draw-lobby-page .draw-brush-palette button {
+    width: 28px;
+    height: 28px;
+    border-width: 2px;
+    border-radius: 9px 9px 12px 9px;
+}
+
+.draw-lobby-page .draw-tools input[type="color"] {
+    width: 42px;
+    height: 30px;
+}
+
+.draw-lobby-page .draw-clear-btn {
+    min-height: 40px;
+    align-self: end;
+}
+
+.draw-lobby-page .draw-side-stack {
+    min-height: 0;
+    max-height: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: max-content;
+    gap: 10px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.draw-lobby-page .draw-side-stack .draw-panel {
+    margin-top: 0;
+    padding: 12px !important;
+    border-radius: 18px !important;
+}
+
+.draw-lobby-page .draw-status-card {
+    min-height: 0;
+    padding: 10px 12px !important;
+}
+
+.draw-lobby-page .draw-status-card strong {
+    font-size: 1rem;
+}
+
+.draw-lobby-page .draw-players-panel h2,
+.draw-lobby-page .draw-chat h2,
+.draw-lobby-page .draw-friends-panel h2,
+.draw-lobby-page .draw-avatar-panel h2 {
+    margin-bottom: 8px !important;
+    font-size: 1rem;
+}
+
+.draw-lobby-page .draw-players {
+    max-height: 132px;
+    gap: 8px;
+}
+
+.draw-lobby-page .draw-player {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 14px;
+}
+
+.draw-lobby-page .draw-player-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+}
+
+.draw-lobby-page .draw-player-score {
+    min-width: 38px;
+    height: 34px;
+    border-radius: 12px;
+}
+
+.draw-lobby-page .draw-chat {
+    display: grid;
+    grid-template-rows: auto minmax(150px, 1fr) auto;
+    min-height: 260px;
+}
+
+.draw-lobby-page .draw-guess-list {
+    height: auto;
+    min-height: 150px;
+    max-height: 26dvh;
+}
+
+.draw-lobby-page .draw-guess {
+    padding: 8px 10px;
+    border-radius: 12px;
+}
+
+.draw-lobby-page .draw-guess-form {
+    margin-top: 8px;
+    grid-template-columns: minmax(0, 1fr) 42px;
+}
+
+.draw-lobby-page .draw-guess-form input {
+    min-height: 42px;
+    padding: 8px 10px;
+    border-radius: 12px;
+}
+
+.draw-lobby-page .draw-guess-form button {
+    width: 42px;
+    min-height: 42px;
+    padding: 0;
+}
+
+.draw-lobby-page .draw-friend-invite-list {
+    max-height: 150px;
+    overflow: auto;
+    gap: 8px;
+}
+
+.draw-lobby-page .draw-friend-invite-row {
+    gap: 8px;
+    padding: 8px;
+    border-radius: 14px;
+}
+
+.draw-lobby-page .draw-friend-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+}
+
+.draw-lobby-page .draw-invite-one {
+    min-width: 104px;
+    min-height: 34px;
+    padding: 0 10px;
+    border-radius: 11px;
+    font-size: .82rem;
+}
+
+.draw-lobby-page .draw-avatar-form {
+    gap: 8px;
+}
+
+.draw-lobby-page .draw-avatar-form label {
+    gap: 4px;
+}
+
+.draw-lobby-page .draw-avatar-form input,
+.draw-lobby-page .draw-avatar-form select {
+    padding: 8px 10px;
+    border-radius: 12px;
+}
+
+.draw-lobby-page .draw-color-picker-row {
+    gap: 8px;
+}
+
+.draw-lobby-page .draw-color-options {
+    gap: 6px;
+    margin-top: 5px;
+}
+
+.draw-lobby-page .draw-color-options label {
+    width: 26px;
+    height: 26px;
+}
+
+.draw-lobby-page .draw-avatar-form .draw-secondary {
+    min-height: 38px;
+    border-radius: 12px;
+}
+
+@media (max-width: 1380px) {
+    .draw-lobby-page .draw-game-shell {
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 330px);
+    }
+}
+
+@media (max-width: 1180px) {
+    body:has(.draw-home-page),
+    body:has(.draw-lobby-page) {
+        overflow: auto;
+    }
+
+    body:has(.draw-home-page) > main,
+    body:has(.draw-lobby-page) > main,
+    .draw-page.draw-home-page,
+    .draw-page.draw-lobby-page {
+        height: auto;
+        min-height: calc(100dvh - var(--nav-height, 60px));
+        overflow: visible;
+    }
+
+    .draw-home-page {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+    }
+
+    .draw-home-page .draw-skribble-hero,
+    .draw-home-page .draw-grid-home,
+    .draw-home-page > .draw-lobby-overview-panel,
+    .draw-home-page > .draw-panel:last-child {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .draw-home-page .draw-grid-home {
+        grid-template-columns: 1fr;
+    }
+
+    .draw-home-page .draw-panel {
+        overflow: visible;
+    }
+
+    .draw-lobby-page {
+        display: block;
+    }
+
+    .draw-lobby-page .draw-game-shell {
+        height: auto;
+        grid-template-columns: 1fr;
+    }
+
+    .draw-lobby-page .draw-stage {
+        display: block;
+    }
+
+    .draw-lobby-page .draw-canvas-wrap canvas,
+    .draw-lobby-page #drawing-canvas {
+        height: auto;
+        aspect-ratio: 1280 / 760;
+        max-height: min(56dvh, 620px);
+    }
+
+    .draw-lobby-page .draw-side-stack {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 760px) {
+    body:has(.draw-home-page) > main,
+    body:has(.draw-lobby-page) > main {
+        padding: 8px;
+    }
+
+    .draw-home-page .draw-hero-logo-row {
+        grid-template-columns: 1fr;
+    }
+
+    .draw-lobby-page .draw-lobby-top {
+        padding: 10px !important;
+    }
+
+    .draw-lobby-page .draw-top-actions {
+        justify-content: stretch;
+    }
+
+    .draw-lobby-page .draw-tools {
+        display: grid;
+        flex-wrap: wrap;
+    }
+
+    .draw-lobby-page .draw-brush-palette {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(28px, 1fr));
+    }
+}
+
+/* Lobby must stay inside one browser viewport while playing. */
+html:has(.draw-lobby-page),
+body:has(.draw-lobby-page) {
+    height: 100%;
+    overflow: hidden !important;
+}
+
+body:has(.draw-lobby-page) {
+    min-height: 100dvh;
+}
+
+body:has(.draw-lobby-page) > main {
+    box-sizing: border-box;
+    height: calc(100dvh - var(--nav-height, 60px)) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    padding: 8px 10px !important;
+}
+
+.draw-page.draw-lobby-page {
+    box-sizing: border-box;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 8px !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.draw-lobby-page .draw-lobby-top {
+    box-sizing: border-box;
+    margin: 0 !important;
+    padding: 8px 12px !important;
+}
+
+.draw-lobby-page .draw-title-row {
+    padding: 7px 10px !important;
+}
+
+.draw-lobby-page .draw-lobby-brand {
+    min-width: 0;
+}
+
+.draw-lobby-page .draw-lobby-copy {
+    min-width: 0;
+}
+
+.draw-lobby-page .draw-lobby-copy h1,
+.draw-lobby-page .draw-lobby-copy p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.draw-lobby-page .draw-top-actions {
+    flex: 0 1 auto;
+}
+
+.draw-lobby-page .draw-game-shell {
+    box-sizing: border-box;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 22vw, 350px) !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    align-items: stretch !important;
+}
+
+.draw-lobby-page .draw-stage {
+    box-sizing: border-box;
+    display: grid !important;
+    grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.draw-lobby-page .draw-stage-header {
+    margin-bottom: 6px !important;
+}
+
+.draw-lobby-page .draw-word-box-stage {
+    margin-bottom: 6px !important;
+}
+
+.draw-lobby-page .draw-canvas-wrap {
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.draw-lobby-page #drawing-canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+}
+
+.draw-lobby-page .draw-tools {
+    margin-top: 6px !important;
+    min-height: 0;
+}
+
+.draw-lobby-page .draw-side-stack {
+    box-sizing: border-box;
+    display: grid !important;
+    grid-template-rows: auto minmax(96px, .65fr) minmax(150px, 1fr) minmax(84px, .5fr) auto;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    padding-right: 0 !important;
+}
+
+.draw-lobby-page .draw-side-stack .draw-panel {
+    min-height: 0 !important;
+    overflow: hidden;
+}
+
+.draw-lobby-page .draw-players-panel,
+.draw-lobby-page .draw-chat,
+.draw-lobby-page .draw-friends-panel {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+.draw-lobby-page .draw-chat {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    min-height: 0 !important;
+}
+
+.draw-lobby-page .draw-players,
+.draw-lobby-page .draw-guess-list,
+.draw-lobby-page .draw-friend-invite-list {
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: auto !important;
+}
+
+.draw-lobby-page .draw-avatar-panel {
+    align-self: end;
+}
+
+@media (max-width: 1180px) {
+    body:has(.draw-lobby-page) > main,
+    .draw-page.draw-lobby-page {
+        height: calc(100dvh - var(--nav-height, 60px)) !important;
+        overflow: hidden !important;
+    }
+
+    .draw-page.draw-lobby-page {
+        height: 100% !important;
+    }
+
+    .draw-lobby-page .draw-game-shell {
+        grid-template-columns: minmax(0, 1fr) clamp(260px, 31vw, 320px) !important;
+    }
+
+    .draw-lobby-page .draw-side-stack {
+        overflow: hidden !important;
+    }
+}
+
+@media (max-width: 900px) {
+    body:has(.draw-lobby-page) > main {
+        padding: 6px !important;
+    }
+
+    .draw-page.draw-lobby-page {
+        gap: 6px !important;
+    }
+
+    .draw-lobby-page .draw-game-shell {
+        grid-template-columns: minmax(0, 1fr) 250px !important;
+        gap: 6px !important;
+    }
+
+    .draw-lobby-page .draw-lobby-top {
+        padding: 6px 8px !important;
+        gap: 8px;
+    }
+
+    .draw-lobby-page .draw-back {
+        display: none;
+    }
+
+    .draw-lobby-page .draw-logo-lobby {
+        width: 82px;
+        max-height: 42px;
+    }
+
+    .draw-lobby-page .draw-lobby-top h1 {
+        font-size: 1.05rem !important;
+    }
+
+    .draw-lobby-page .draw-lobby-top p,
+    .draw-lobby-page .draw-eyebrow {
+        font-size: .72rem;
+    }
+
+    .draw-lobby-page .draw-top-actions {
+        gap: 5px;
+    }
+
+    .draw-lobby-page .draw-top-actions .draw-primary,
+    .draw-lobby-page .draw-top-actions .draw-secondary,
+    .draw-lobby-page .draw-top-actions .draw-danger {
+        min-height: 30px;
+        padding: 0 8px;
+        font-size: .72rem;
+    }
+
+    .draw-lobby-page .draw-stage,
+    .draw-lobby-page .draw-side-stack .draw-panel {
+        padding: 8px !important;
+        border-radius: 14px !important;
+    }
+
+    .draw-lobby-page .draw-stage-title,
+    .draw-lobby-page .draw-round-pill,
+    .draw-lobby-page .draw-timer {
+        min-height: 34px;
+    }
+
+    .draw-lobby-page .draw-stage-title strong,
+    .draw-lobby-page .draw-status-card strong {
+        font-size: .88rem;
+    }
+
+    .draw-lobby-page .draw-round-pill {
+        padding: 0 8px;
+        font-size: .74rem;
+    }
+
+    .draw-lobby-page .draw-timer {
+        min-width: 50px;
+        font-size: 1rem;
+    }
+
+    .draw-lobby-page .draw-word-box-stage {
+        padding: 6px 8px;
+    }
+
+    .draw-lobby-page .draw-tools {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(110px, .45fr) auto;
+        padding: 6px;
+        gap: 6px;
+    }
+
+    .draw-lobby-page .draw-color-tool,
+    .draw-lobby-page .draw-size-tool {
+        flex-basis: auto;
+    }
+
+    .draw-lobby-page .draw-brush-palette {
+        display: flex;
+        gap: 4px;
+    }
+
+    .draw-lobby-page .draw-brush-palette button {
+        width: 22px;
+        height: 22px;
+    }
+
+    .draw-lobby-page .draw-tools input[type="color"] {
+        width: 34px;
+        height: 26px;
+    }
+
+    .draw-lobby-page .draw-clear-btn {
+        min-height: 34px;
+        padding: 0 8px;
+    }
+
+    .draw-lobby-page .draw-side-stack {
+        gap: 6px;
+        grid-template-rows: auto minmax(70px, .55fr) minmax(110px, 1fr) minmax(64px, .45fr) auto;
+    }
+
+    .draw-lobby-page .draw-players-panel h2,
+    .draw-lobby-page .draw-chat h2,
+    .draw-lobby-page .draw-friends-panel h2,
+    .draw-lobby-page .draw-avatar-panel h2 {
+        margin-bottom: 4px !important;
+        font-size: .85rem;
+    }
+
+    .draw-lobby-page .draw-player,
+    .draw-lobby-page .draw-friend-invite-row {
+        padding: 6px;
+    }
+
+    .draw-lobby-page .draw-avatar-form {
+        gap: 6px;
+    }
+
+    .draw-lobby-page .draw-avatar-form input,
+    .draw-lobby-page .draw-avatar-form select {
+        padding: 6px 8px;
+    }
+}
+
+/* Refined play layout: word as popup, smaller lobby chrome, more player space. */
+.draw-lobby-page .draw-lobby-top {
+    padding: 5px 9px !important;
+    border-radius: 16px !important;
+}
+
+.draw-lobby-page .draw-title-row {
+    padding: 5px 8px !important;
+    border-radius: 14px !important;
+    gap: 8px;
+}
+
+.draw-lobby-page .draw-back {
+    display: none;
+}
+
+.draw-lobby-page .draw-logo-lobby {
+    width: clamp(70px, 6vw, 104px);
+    max-height: 38px;
+}
+
+.draw-lobby-page .draw-eyebrow {
+    margin-bottom: 1px;
+    font-size: .62rem !important;
+    letter-spacing: .05em;
+}
+
+.draw-lobby-page .draw-lobby-top h1 {
+    font-size: clamp(.98rem, 1.35vw, 1.35rem) !important;
+    line-height: 1 !important;
+}
+
+.draw-lobby-page .draw-lobby-top p {
+    font-size: .72rem !important;
+    line-height: 1.05 !important;
+}
+
+.draw-lobby-page .draw-code {
+    padding: 2px 6px;
+    border-radius: 9px;
+    font-size: .72rem;
+}
+
+.draw-lobby-page .draw-top-actions .draw-primary,
+.draw-lobby-page .draw-top-actions .draw-secondary,
+.draw-lobby-page .draw-top-actions .draw-danger {
+    min-height: 28px !important;
+    padding: 0 8px !important;
+    border-radius: 9px !important;
+    font-size: .72rem !important;
+}
+
+.draw-lobby-page .draw-game-shell {
+    grid-template-columns: minmax(0, 1fr) clamp(310px, 24vw, 390px) !important;
+}
+
+.draw-lobby-page .draw-stage {
+    position: relative;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    padding: 8px !important;
+}
+
+.draw-lobby-page .draw-stage-header {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    margin-bottom: 5px !important;
+}
+
+.draw-lobby-page .draw-round-pill,
+.draw-lobby-page .draw-timer {
+    min-height: 34px !important;
+    border-radius: 12px !important;
+}
+
+.draw-lobby-page .draw-round-pill {
+    justify-content: start;
+    padding: 0 11px;
+    font-size: .78rem;
+}
+
+.draw-lobby-page .draw-timer {
+    min-width: 54px;
+    font-size: 1.05rem;
+}
+
+.draw-lobby-page .draw-word-box-stage {
+    position: absolute;
+    top: 48px;
+    left: 50%;
+    z-index: 4;
+    width: min(520px, calc(100% - 48px));
+    margin: 0 !important;
+    padding: 8px 12px !important;
+    transform: translateX(-50%);
+    border-radius: 16px !important;
+    border: 2px solid rgba(255, 255, 255, .74) !important;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(254, 249, 195, .92), rgba(251, 207, 232, .90)) !important;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, .22) !important;
+    color: #1e1b4b !important;
+    text-align: center;
+}
+
+body.dark-mode .draw-lobby-page .draw-word-box-stage,
+html.dark-mode .draw-lobby-page .draw-word-box-stage,
+[data-theme="dark"] .draw-lobby-page .draw-word-box-stage {
+    background:
+        linear-gradient(135deg, rgba(15, 23, 42, .94), rgba(49, 46, 129, .92), rgba(112, 26, 117, .88)) !important;
+    border-color: rgba(255, 255, 255, .22) !important;
+    color: #f8fafc !important;
+}
+
+.draw-lobby-page .draw-word-box-stage span {
+    font-size: .65rem !important;
+}
+
+.draw-lobby-page .draw-word-box-stage strong {
+    margin-top: 1px;
+    font-size: clamp(1rem, 1.55vw, 1.45rem) !important;
+}
+
+.draw-lobby-page .draw-word-choices {
+    justify-content: center;
+    gap: 6px;
+}
+
+.draw-lobby-page .draw-word-choice {
+    min-height: 24px;
+    padding: 3px 8px;
+    font-size: .74rem;
+}
+
+.draw-lobby-page .draw-canvas-wrap {
+    grid-row: 2;
+}
+
+.draw-lobby-page .draw-tools {
+    grid-row: 3;
+}
+
+.draw-lobby-page .draw-side-stack {
+    grid-template-rows: auto minmax(170px, 1.3fr) minmax(140px, 1fr) minmax(58px, .34fr) auto !important;
+}
+
+.draw-lobby-page .draw-status-card {
+    grid-template-columns: 1fr 1fr;
+    padding: 7px 9px !important;
+    gap: 8px;
+}
+
+.draw-lobby-page .draw-status-card div {
+    min-width: 0;
+}
+
+.draw-lobby-page .draw-status-card span {
+    display: block;
+    margin-bottom: 1px;
+}
+
+.draw-lobby-page .draw-status-card strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.draw-lobby-page .draw-players-panel {
+    min-height: 0;
+}
+
+.draw-lobby-page .draw-players {
+    align-content: start;
+}
+
+.draw-lobby-page .draw-player {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+}
+
+.draw-lobby-page .draw-player-avatar {
+    width: 34px;
+    height: 34px;
+}
+
+.draw-lobby-page .draw-player-score {
+    min-width: 34px;
+    height: 30px;
+}
+
+.draw-lobby-page .draw-friends-panel {
+    min-height: 0;
+}
+
+.draw-lobby-page .draw-friends-panel h2,
+.draw-lobby-page .draw-avatar-panel h2 {
+    font-size: .78rem !important;
+}
+
+.draw-lobby-page .draw-avatar-panel {
+    overflow: auto !important;
+}
+
+@media (max-width: 900px) {
+    .draw-lobby-page .draw-game-shell {
+        grid-template-columns: minmax(0, 1fr) 285px !important;
+    }
+
+    .draw-lobby-page .draw-word-box-stage {
+        top: 42px;
+        width: min(420px, calc(100% - 28px));
+        padding: 6px 9px !important;
+    }
+
+    .draw-lobby-page .draw-side-stack {
+        grid-template-rows: auto minmax(145px, 1.3fr) minmax(110px, 1fr) minmax(52px, .3fr) auto !important;
+    }
+}
+
+/* Arrangement pass: players left, canvas center, chat right, like the classic game layout. */
+.draw-lobby-page {
+    grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.draw-lobby-page .draw-lobby-top {
+    display: grid !important;
+    grid-template-columns: minmax(190px, 1fr) auto;
+    align-items: center;
+}
+
+.draw-lobby-page .draw-lobby-brand {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.draw-lobby-page .draw-title-row {
+    width: max-content;
+    max-width: 100%;
+}
+
+.draw-lobby-page .draw-lobby-copy h1 {
+    max-width: 26ch;
+}
+
+.draw-lobby-page .draw-top-actions {
+    justify-self: end;
+    flex-wrap: nowrap;
+}
+
+.draw-lobby-page .draw-lobby-top::before {
+    display: none !important;
+}
+
+.draw-lobby-page .draw-lobby-top {
+    min-height: 54px;
+    padding: 6px 10px !important;
+    border-radius: 18px !important;
+    background:
+        linear-gradient(135deg, rgba(30, 41, 59, .88), rgba(49, 46, 129, .78), rgba(88, 28, 135, .66)) !important;
+    border: 1px solid rgba(255, 255, 255, .16) !important;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, .24), inset 0 1px 0 rgba(255, 255, 255, .12) !important;
+}
+
+.draw-lobby-page .draw-title-row {
+    width: auto;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.draw-lobby-page .draw-logo-lobby {
+    width: 76px;
+    max-height: 34px;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .18));
+}
+
+.draw-lobby-page .draw-lobby-copy {
+    display: grid;
+    gap: 1px;
+}
+
+.draw-lobby-page .draw-lobby-copy .draw-eyebrow {
+    color: rgba(255, 255, 255, .58) !important;
+    font-size: .6rem !important;
+    margin: 0;
+}
+
+.draw-lobby-page .draw-lobby-top h1 {
+    color: #ffffff !important;
+    font-size: 1.08rem !important;
+    line-height: 1.05 !important;
+}
+
+.draw-lobby-page .draw-lobby-top p {
+    color: rgba(255, 255, 255, .66) !important;
+    font-size: .72rem !important;
+}
+
+.draw-lobby-page .draw-lobby-top .draw-code {
+    color: #172554;
+    background: rgba(255, 255, 255, .82);
+    letter-spacing: .04em;
+}
+
+.draw-lobby-page .draw-top-actions {
+    padding: 3px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, .22);
+    border: 1px solid rgba(255, 255, 255, .10);
+}
+
+.draw-lobby-page .draw-top-actions .draw-primary,
+.draw-lobby-page .draw-top-actions .draw-secondary,
+.draw-lobby-page .draw-top-actions .draw-danger {
+    min-height: 30px !important;
+    padding: 0 10px !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    white-space: nowrap;
+}
+
+.draw-lobby-page .draw-top-actions .draw-secondary {
+    background: rgba(255, 255, 255, .11) !important;
+    border: 1px solid rgba(255, 255, 255, .10) !important;
+}
+
+.draw-lobby-page .draw-top-actions .draw-danger {
+    background: linear-gradient(135deg, #ef4444, #f97316) !important;
+}
+
+.draw-lobby-page .draw-game-shell {
+    grid-template-columns: clamp(170px, 15vw, 230px) minmax(0, 1fr) clamp(290px, 24vw, 380px) !important;
+    grid-template-areas: "players board chat";
+    gap: 8px !important;
+}
+
+.draw-left-stack {
+    grid-area: players;
+}
+
+.draw-lobby-page .draw-stage {
+    grid-area: board;
+}
+
+.draw-right-stack {
+    grid-area: chat;
+}
+
+.draw-left-stack,
+.draw-right-stack {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.draw-left-stack {
+    grid-template-rows: auto minmax(230px, 1fr) minmax(110px, .42fr);
+}
+
+.draw-right-stack {
+    grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.draw-lobby-page .draw-stage {
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+.draw-lobby-page .draw-stage-header {
+    display: grid !important;
+    grid-template-columns: minmax(120px, auto) minmax(0, 1fr) auto !important;
+    align-items: center;
+    gap: 6px !important;
+}
+
+.draw-lobby-page .draw-word-box-stage {
+    position: static !important;
+    z-index: auto;
+    width: auto !important;
+    transform: none !important;
+    padding: 3px 10px !important;
+    min-height: 28px;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+}
+
+.draw-lobby-page .draw-word-box-stage span {
+    display: none;
+}
+
+.draw-lobby-page .draw-word-box-stage strong {
+    margin: 0;
+    line-height: 1;
+    font-size: clamp(.9rem, 1.2vw, 1.12rem) !important;
+}
+
+.draw-lobby-page .draw-word-choices {
+    margin-top: 3px;
+}
+
+.draw-lobby-page .draw-round-pill,
+.draw-lobby-page .draw-timer {
+    min-height: 42px !important;
+}
+
+.draw-lobby-page .draw-round-pill {
+    justify-content: center;
+    text-align: center;
+}
+
+.draw-lobby-page .draw-timer {
+    min-width: 62px;
+}
+
+.draw-lobby-page .draw-canvas-wrap {
+    border-radius: 14px !important;
+}
+
+.draw-lobby-page .draw-tools {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(150px, .32fr) auto;
+    align-items: center;
+}
+
+.draw-lobby-page .draw-brush-palette {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.draw-lobby-page .draw-color-tool {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    column-gap: 8px !important;
+}
+
+.draw-lobby-page .draw-color-tool > span {
+    grid-column: 1 / -1;
+}
+
+.draw-lobby-page .draw-color-tool #brush-palette {
+    grid-column: 1;
+}
+
+.draw-lobby-page .draw-color-tool input[type="color"] {
+    grid-column: 2;
+    justify-self: end;
+    align-self: end;
+    width: 34px;
+    height: 30px;
+    margin: 0;
+}
+
+.draw-round-summary {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, .42);
+    backdrop-filter: blur(6px);
+}
+
+.draw-round-summary.hidden {
+    display: none;
+}
+
+.draw-round-summary-card {
+    width: min(520px, 94%);
+    max-height: min(92%, 620px);
+    overflow: auto;
+    padding: 18px;
+    border-radius: 18px;
+    color: #f8fafc;
+    background:
+        linear-gradient(145deg, rgba(30, 41, 59, .94), rgba(49, 46, 129, .88)),
+        rgba(15, 23, 42, .92);
+    border: 1px solid rgba(255, 255, 255, .18);
+    box-shadow: 0 24px 70px rgba(2, 6, 23, .36);
+}
+
+.draw-round-summary-kicker {
+    display: block;
+    margin-bottom: 4px;
+    color: rgba(226, 232, 240, .68);
+    font-size: .72rem;
+    font-weight: 950;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.draw-round-summary-card h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.45rem;
+}
+
+.draw-round-summary-card p {
+    margin: 6px 0 12px;
+}
+
+.draw-round-summary-list {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.draw-round-summary-row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .10);
+    border: 1px solid rgba(255, 255, 255, .10);
+}
+
+.draw-round-summary-row strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.draw-round-summary-rank,
+.draw-round-summary-total {
+    color: rgba(226, 232, 240, .70);
+    font-weight: 900;
+}
+
+.draw-round-summary-points {
+    min-width: 58px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    color: #172554;
+    background: linear-gradient(135deg, #fef08a, #facc15);
+    text-align: center;
+    font-weight: 1000;
+}
+
+.draw-round-summary-card .draw-primary {
+    width: 100%;
+}
+
+.draw-lobby-page .draw-left-stack .draw-panel,
+.draw-lobby-page .draw-right-stack .draw-panel {
+    margin-top: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 10px !important;
+    border-radius: 14px !important;
+}
+
+.draw-lobby-page .draw-status-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+}
+
+.draw-lobby-page .draw-players-panel,
+.draw-lobby-page .draw-friends-panel,
+.draw-lobby-page .draw-chat {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+.draw-lobby-page .draw-chat {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.draw-lobby-page .draw-players,
+.draw-lobby-page .draw-friend-invite-list,
+.draw-lobby-page .draw-guess-list {
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: auto !important;
+}
+
+.draw-lobby-page .draw-player {
+    grid-template-columns: 36px minmax(0, 1fr);
+    grid-template-areas:
+        "avatar info"
+        "avatar score";
+    gap: 3px 8px;
+    padding: 7px;
+}
+
+.draw-lobby-page .draw-player-avatar {
+    grid-area: avatar;
+}
+
+.draw-lobby-page .draw-player-info {
+    grid-area: info;
+    min-width: 0;
+}
+
+.draw-lobby-page .draw-player-score {
+    grid-area: score;
+    width: max-content;
+    min-width: 0;
+    height: auto;
+    padding: 2px 8px;
+    font-size: .82rem;
+}
+
+.draw-lobby-page .draw-player-info strong,
+.draw-lobby-page .draw-player-info small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.draw-lobby-page .draw-friend-invite-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+}
+
+.draw-lobby-page .draw-friend-invite-row form,
+.draw-lobby-page .draw-invite-one {
+    width: 100%;
+}
+
+.draw-lobby-page .draw-avatar-panel {
+    overflow: auto !important;
+}
+
+.draw-lobby-page .draw-avatar-panel .draw-color-picker-row {
+    grid-template-columns: 1fr;
+}
+
+@media (max-width: 1180px) {
+    .draw-lobby-page .draw-game-shell {
+        grid-template-columns: 180px minmax(0, 1fr) 300px !important;
+    }
+}
+
+@media (max-width: 980px) {
+    .draw-lobby-page .draw-lobby-top {
+        grid-template-columns: 1fr;
+    }
+
+    .draw-lobby-page .draw-top-actions {
+        justify-self: stretch;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .draw-lobby-page .draw-game-shell {
+        grid-template-columns: 155px minmax(0, 1fr) 255px !important;
+        gap: 6px !important;
+    }
+
+    .draw-left-stack,
+    .draw-right-stack {
+        gap: 6px;
+    }
+
+    .draw-left-stack {
+        grid-template-rows: auto minmax(180px, 1fr) minmax(80px, .32fr);
+    }
+
+    .draw-lobby-page .draw-tools {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .draw-lobby-page .draw-size-tool {
+        display: none !important;
+    }
+}
+
+@media (max-width: 760px) {
+    html:has(.draw-lobby-page),
+    body:has(.draw-lobby-page),
+    body:has(.draw-lobby-page) > main,
+    .draw-page.draw-lobby-page {
+        height: auto !important;
+        min-height: 100dvh !important;
+        overflow: auto !important;
+    }
+
+    .draw-lobby-page .draw-game-shell {
+        grid-template-columns: 1fr !important;
+        grid-template-areas:
+            "board"
+            "players"
+            "chat";
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .draw-left-stack,
+    .draw-right-stack,
+    .draw-lobby-page .draw-stage {
+        height: auto;
+        overflow: visible;
+    }
+
+    .draw-lobby-page .draw-canvas-wrap canvas,
+    .draw-lobby-page #drawing-canvas {
+        height: auto !important;
+        aspect-ratio: 1280 / 760 !important;
+    }
+}

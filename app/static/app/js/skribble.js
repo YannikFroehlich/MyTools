@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
         state: root.dataset.stateUrl,
         start: root.dataset.startUrl,
         restart: root.dataset.restartUrl,
+        continueRound: root.dataset.continueUrl,
         choose: root.dataset.chooseUrl,
         draw: root.dataset.drawUrl,
         guess: root.dataset.guessUrl,
@@ -20,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const clearBtn = document.getElementById("clear-canvas-btn");
     const guessForm = document.getElementById("guess-form");
     const guessInput = document.getElementById("guess-input");
+    const roundSummary = document.getElementById("round-summary");
+    const continueRoundBtn = document.getElementById("continue-round-btn");
 
     let state = null;
     let isDrawing = false;
@@ -71,6 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("restart-game-btn")?.addEventListener("click", async () => {
             await post(urls.restart);
+            await refreshState(true);
+        });
+
+        continueRoundBtn?.addEventListener("click", async () => {
+            await post(urls.continueRound);
             await refreshState(true);
         });
 
@@ -191,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderWordChoices();
         renderPlayers();
         renderGuesses();
+        renderRoundSummary();
         renderCanvasBlocker();
 
         const signature = JSON.stringify(state.drawing || []);
@@ -203,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function labelStatus(status) {
         if (status === "waiting") return "Wartet";
         if (status === "playing") return "Läuft";
+        if (status === "round_summary") return "Rundenuebersicht";
         if (status === "finished") return "Beendet";
         return status;
     }
@@ -255,7 +265,44 @@ document.addEventListener("DOMContentLoaded", () => {
         if (shouldStick) list.scrollTop = list.scrollHeight;
     }
 
+    function renderRoundSummary() {
+        if (!roundSummary) return;
+        const summary = state.lobby.roundSummary || {};
+        const isVisible = state.lobby.status === "round_summary" && Array.isArray(summary.rows);
+        roundSummary.classList.toggle("hidden", !isVisible);
+        if (!isVisible) return;
+
+        const title = document.getElementById("round-summary-title");
+        const word = document.getElementById("round-summary-word");
+        const list = document.getElementById("round-summary-list");
+        const wait = document.getElementById("round-summary-wait");
+        title.textContent = summary.isGameOver ? "Spielauswertung" : `Runde ${summary.round} / ${summary.rounds}`;
+        word.textContent = summary.word ? `Wort: ${summary.word}` : "";
+        list.innerHTML = "";
+
+        summary.rows.forEach((row, index) => {
+            const delta = Number(row.points || 0);
+            const item = document.createElement("div");
+            item.className = "draw-round-summary-row";
+            item.innerHTML = `
+                <span class="draw-round-summary-rank">#${index + 1}</span>
+                <strong>${escapeHtml(row.name)}${row.isDrawer ? " · Zeichner" : ""}</strong>
+                <span class="draw-round-summary-points">${delta > 0 ? "+" : ""}${delta}</span>
+                <span class="draw-round-summary-total">${escapeHtml(row.score)} gesamt</span>
+            `;
+            list.appendChild(item);
+        });
+
+        continueRoundBtn.hidden = !state.lobby.isOwner;
+        continueRoundBtn.querySelector("span").textContent = summary.isGameOver ? "Spiel beenden" : "Naechste Runde";
+        wait.hidden = state.lobby.isOwner;
+    }
+
     function renderCanvasBlocker() {
+        if (state.lobby.status === "round_summary") {
+            blocker.classList.add("hidden");
+            return;
+        }
         if (canDraw() || (state.lobby.status === "playing" && (state.lobby.hasWord || state.lobby.maskedWord))) {
             blocker.classList.add("hidden");
         } else {

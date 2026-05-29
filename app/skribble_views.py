@@ -96,6 +96,8 @@ def _pick_word_choices(lobby):
 
 
 def _seconds_left(lobby):
+    if lobby.status == DrawingGameLobby.STATUS_ROUND_SUMMARY:
+        return 0
     if not lobby.round_started_at or not lobby.current_word:
         return lobby.draw_time_seconds
     elapsed = (timezone.now() - lobby.round_started_at).total_seconds()
@@ -108,6 +110,46 @@ def _reset_turn_state(lobby):
     lobby.current_drawing = []
     lobby.round_started_at = None
     lobby.players.update(has_guessed_current_word=False)
+
+
+def _build_round_summary(lobby, next_round_number, next_turn_index, is_game_over=False):
+    players = _players(lobby)
+    drawer = _current_drawer(lobby, players)
+    correct_guesses = list(lobby.guesses.select_related("user").filter(
+        round_number=lobby.current_round_number,
+        turn_index=lobby.current_turn_index,
+        is_correct=True,
+    ))
+    points_by_user = {player.user_id: 0 for player in players}
+    for guess in correct_guesses:
+        points_by_user[guess.user_id] = points_by_user.get(guess.user_id, 0) + int(guess.points_awarded or 0)
+        if drawer:
+            points_by_user[drawer.user_id] = points_by_user.get(drawer.user_id, 0) + int(guess.drawer_points_awarded or 0)
+
+    rows = [
+        {
+            "id": player.user_id,
+            "name": player.display_label,
+            "score": player.score,
+            "points": points_by_user.get(player.user_id, 0),
+            "isDrawer": bool(drawer and drawer.id == player.id),
+            "hasGuessed": player.has_guessed_current_word,
+        }
+        for player in players
+    ]
+    rows.sort(key=lambda item: (-item["score"], item["name"].lower()))
+
+    return {
+        "round": lobby.current_round_number,
+        "rounds": lobby.rounds_count,
+        "turnIndex": lobby.current_turn_index,
+        "word": lobby.current_word,
+        "drawerName": drawer.display_label if drawer else "",
+        "isGameOver": is_game_over,
+        "nextRound": next_round_number,
+        "nextTurnIndex": next_turn_index,
+        "rows": rows,
+    }
 
 
 def _store_finished_lobby_stats(lobby):
@@ -131,44 +173,75 @@ def _store_finished_lobby_stats(lobby):
         stats.save(update_fields=["games_played", "games_won", "correct_guesses", "total_score", "updated_at"])
 
 
-def _advance_turn(lobby):
+def _show_round_summary(lobby):
     players_count = lobby.players.count()
     if players_count < 2:
         lobby.status = DrawingGameLobby.STATUS_WAITING
         lobby.current_word = ""
         lobby.current_word_choices = []
         lobby.round_started_at = None
-        lobby.save(update_fields=["status", "current_word", "current_word_choices", "round_started_at", "updated_at"])
+        lobby.round_summary = {}
+        lobby.summary_started_at = None
+        lobby.save(update_fields=[
+            "status", "current_word", "current_word_choices", "round_started_at",
+            "round_summary", "summary_started_at", "updated_at",
+        ])
         return
 
-    lobby.current_turn_index += 1
-    if lobby.current_turn_index >= players_count:
-        lobby.current_turn_index = 0
-        lobby.current_round_number += 1
+    next_turn_index = lobby.current_turn_index + 1
+    next_round_number = lobby.current_round_number
+    if next_turn_index >= players_count:
+        next_turn_index = 0
+        next_round_number += 1
 
-    if lobby.current_round_number > lobby.rounds_count:
+    is_game_over = next_round_number > lobby.rounds_count
+    lobby.status = DrawingGameLobby.STATUS_ROUND_SUMMARY
+    lobby.current_word_choices = []
+    lobby.round_started_at = None
+    lobby.round_summary = _build_round_summary(lobby, next_round_number, next_turn_index, is_game_over)
+    lobby.summary_started_at = timezone.now()
+    lobby.save(update_fields=[
+        "status", "current_word_choices", "round_started_at",
+        "round_summary", "summary_started_at", "updated_at",
+    ])
+
+
+def _continue_after_round_summary(lobby):
+    if lobby.status != DrawingGameLobby.STATUS_ROUND_SUMMARY:
+        return
+
+    summary = lobby.round_summary or {}
+    if summary.get("isGameOver"):
         _store_finished_lobby_stats(lobby)
         lobby.status = DrawingGameLobby.STATUS_FINISHED
         lobby.current_word = ""
         lobby.current_word_choices = []
         lobby.current_drawing = []
         lobby.round_started_at = None
+        lobby.round_summary = {}
+        lobby.summary_started_at = None
         lobby.save(update_fields=[
-            "status", "current_round_number", "current_turn_index", "current_word", "current_word_choices",
-            "current_drawing", "round_started_at", "updated_at",
+            "status", "current_word", "current_word_choices", "current_drawing",
+            "round_started_at", "round_summary", "summary_started_at", "updated_at",
         ])
         return
 
+    lobby.current_round_number = int(summary.get("nextRound") or lobby.current_round_number)
+    lobby.current_turn_index = int(summary.get("nextTurnIndex") or 0)
+    lobby.status = DrawingGameLobby.STATUS_PLAYING
     _reset_turn_state(lobby)
+    lobby.round_summary = {}
+    lobby.summary_started_at = None
     lobby.save(update_fields=[
-        "current_round_number", "current_turn_index", "current_word", "current_word_choices",
-        "current_drawing", "round_started_at", "updated_at",
+        "status", "current_round_number", "current_turn_index", "current_word",
+        "current_word_choices", "current_drawing", "round_started_at",
+        "round_summary", "summary_started_at", "updated_at",
     ])
 
 
 def _maybe_advance_if_time_is_over(lobby):
     if lobby.status == DrawingGameLobby.STATUS_PLAYING and lobby.current_word and _seconds_left(lobby) <= 0:
-        _advance_turn(lobby)
+        _show_round_summary(lobby)
 
 
 def _handle_player_removed(lobby, removed_player_id=None, removed_index=None, was_current_drawer=False):
@@ -226,13 +299,14 @@ def _serialize_state(lobby, user):
             "rounds": lobby.rounds_count,
             "drawTime": lobby.draw_time_seconds,
             "secondsLeft": _seconds_left(lobby),
-            "word": lobby.current_word if drawer and drawer.user_id == user.id else "",
+            "word": lobby.current_word if (drawer and drawer.user_id == user.id) or lobby.status == DrawingGameLobby.STATUS_ROUND_SUMMARY else "",
             "maskedWord": _masked_word(lobby.current_word) if lobby.current_word else "",
             "hasWord": bool(lobby.current_word),
-            "wordChoices": lobby.current_word_choices if drawer and drawer.user_id == user.id and not lobby.current_word else [],
+            "wordChoices": lobby.current_word_choices if lobby.status == DrawingGameLobby.STATUS_PLAYING and drawer and drawer.user_id == user.id and not lobby.current_word else [],
             "currentDrawerId": drawer.user_id if drawer else None,
             "currentDrawerName": drawer.display_label if drawer else "",
             "isOwner": lobby.owner_id == user.id,
+            "roundSummary": lobby.round_summary or {},
         },
         "me": {
             "isDrawer": bool(drawer and drawer.user_id == user.id),
@@ -459,6 +533,8 @@ def skribble_start(request, code):
         lobby.current_word_choices = _pick_word_choices(lobby)
         lobby.current_drawing = []
         lobby.round_started_at = None
+        lobby.round_summary = {}
+        lobby.summary_started_at = None
         lobby.guesses.all().delete()
         lobby.save()
     return JsonResponse({"ok": True})
@@ -475,9 +551,22 @@ def skribble_restart(request, code):
     lobby.current_word_choices = []
     lobby.current_drawing = []
     lobby.round_started_at = None
+    lobby.round_summary = {}
+    lobby.summary_started_at = None
     lobby.players.update(score=0, has_guessed_current_word=False)
     lobby.guesses.all().delete()
     lobby.save()
+    return JsonResponse({"ok": True})
+
+
+@login_required
+@require_POST
+def skribble_continue_round(request, code):
+    with transaction.atomic():
+        lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
+        if lobby.owner_id != request.user.id:
+            return JsonResponse({"ok": False, "error": _("Nur der Host kann fortfahren.")}, status=403)
+        _continue_after_round_summary(lobby)
     return JsonResponse({"ok": True})
 
 
@@ -505,6 +594,8 @@ def skribble_choose_word_api(request, code):
         drawer = _current_drawer(lobby, players)
         if not drawer or drawer.user_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Du bist gerade nicht am Zeichnen.")}, status=403)
+        if lobby.status != DrawingGameLobby.STATUS_PLAYING:
+            return JsonResponse({"ok": False, "error": _("Die Runde laeuft gerade nicht.")}, status=400)
         if lobby.current_word:
             return JsonResponse({"ok": False, "error": _("Das Wort wurde schon gewählt.")}, status=400)
         word = request.POST.get("word", "").strip()
@@ -523,7 +614,7 @@ def skribble_choose_word_api(request, code):
 def skribble_draw_api(request, code):
     lobby = get_object_or_404(DrawingGameLobby, code=code.upper())
     drawer = _current_drawer(lobby)
-    if not drawer or drawer.user_id != request.user.id or not lobby.current_word:
+    if lobby.status != DrawingGameLobby.STATUS_PLAYING or not drawer or drawer.user_id != request.user.id or not lobby.current_word:
         return JsonResponse({"ok": False}, status=403)
 
     action = request.POST.get("action", "stroke")
@@ -561,7 +652,7 @@ def skribble_guess_api(request, code):
         if player.has_guessed_current_word and is_correct:
             is_correct = False
 
-        DrawingGameGuess.objects.create(
+        guess = DrawingGameGuess.objects.create(
             lobby=lobby,
             user=request.user,
             round_number=lobby.current_round_number,
@@ -572,14 +663,19 @@ def skribble_guess_api(request, code):
 
         if is_correct:
             player.has_guessed_current_word = True
-            player.score += max(25, _seconds_left(lobby) * 5)
+            points_awarded = max(25, _seconds_left(lobby) * 5)
+            drawer_points_awarded = 50
+            player.score += points_awarded
             player.save(update_fields=["has_guessed_current_word", "score", "last_seen"])
             if drawer:
-                drawer.score += 50
+                drawer.score += drawer_points_awarded
                 drawer.save(update_fields=["score", "last_seen"])
+            guess.points_awarded = points_awarded
+            guess.drawer_points_awarded = drawer_points_awarded if drawer else 0
+            guess.save(update_fields=["points_awarded", "drawer_points_awarded"])
 
             remaining = lobby.players.exclude(user_id=drawer.user_id if drawer else None).filter(has_guessed_current_word=False).count()
             if remaining == 0:
-                _advance_turn(lobby)
+                _show_round_summary(lobby)
 
     return JsonResponse({"ok": True})

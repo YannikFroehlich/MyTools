@@ -39,6 +39,7 @@ from .profile_views import (
 )
 from .skribble_views import (
     skribble_choose_word_api,
+    skribble_continue_round,
     skribble_delete_lobby,
     skribble_draw_api,
     skribble_guess_api,
@@ -140,6 +141,7 @@ urlpatterns = [
     path('skribble/<slug:code>/avatar/', skribble_update_avatar, name='skribble_update_avatar'),
     path('skribble/<slug:code>/start/', skribble_start, name='skribble_start'),
     path('skribble/<slug:code>/restart/', skribble_restart, name='skribble_restart'),
+    path('skribble/<slug:code>/continue/', skribble_continue_round, name='skribble_continue_round'),
     path('skribble/<slug:code>/leave/', skribble_leave_lobby, name='skribble_leave_lobby'),
     path('skribble/<slug:code>/delete/', skribble_delete_lobby, name='skribble_delete_lobby'),
     path('api/skribble/<slug:code>/state/', skribble_state_api, name='skribble_state_api'),

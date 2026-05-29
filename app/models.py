@@ -898,11 +898,13 @@ class HumanBenchmarkHighScore(models.Model):
 class DrawingGameLobby(models.Model):
     STATUS_WAITING = "waiting"
     STATUS_PLAYING = "playing"
+    STATUS_ROUND_SUMMARY = "round_summary"
     STATUS_FINISHED = "finished"
 
     STATUS_CHOICES = [
         (STATUS_WAITING, _("Wartet")),
         (STATUS_PLAYING, _("Läuft")),
+        (STATUS_ROUND_SUMMARY, _("Rundenuebersicht")),
         (STATUS_FINISHED, _("Beendet")),
     ]
 
@@ -927,6 +929,8 @@ class DrawingGameLobby(models.Model):
     current_word_choices = models.JSONField(default=list, blank=True)
     current_drawing = models.JSONField(default=list, blank=True)
     round_started_at = models.DateTimeField(null=True, blank=True)
+    round_summary = models.JSONField(default=dict, blank=True)
+    summary_started_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -950,6 +954,10 @@ class DrawingGameLobby(models.Model):
     @property
     def is_playing(self):
         return self.status == self.STATUS_PLAYING
+
+    @property
+    def is_round_summary(self):
+        return self.status == self.STATUS_ROUND_SUMMARY
 
     @property
     def is_finished(self):
@@ -1064,6 +1072,8 @@ class DrawingGameGuess(models.Model):
     turn_index = models.PositiveIntegerField(default=0)
     message = models.CharField(max_length=160)
     is_correct = models.BooleanField(default=False)
+    points_awarded = models.PositiveSmallIntegerField(default=0)
+    drawer_points_awarded = models.PositiveSmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
