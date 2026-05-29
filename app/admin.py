@@ -213,3 +213,38 @@ class ToolFeedbackAdmin(admin.ModelAdmin):
     list_display = ("title", "tool_key", "feedback_type", "rating", "status", "user", "created_at")
     list_filter = ("feedback_type", "status", "tool_key")
     search_fields = ("title", "message", "user__username")
+
+# Platform/social Erweiterungen
+try:
+    from .models import ChatMessageRead, ProfileGalleryImage, SkribbleStats, UserBlock, UserReport
+
+    @admin.register(ChatMessageRead)
+    class ChatMessageReadAdmin(admin.ModelAdmin):
+        list_display = ("message", "user", "read_at")
+        search_fields = ("user__username", "message__text")
+        list_filter = ("read_at",)
+
+    @admin.register(ProfileGalleryImage)
+    class ProfileGalleryImageAdmin(admin.ModelAdmin):
+        list_display = ("user", "caption", "is_public", "created_at")
+        search_fields = ("user__username", "caption")
+        list_filter = ("is_public", "created_at")
+
+    @admin.register(UserBlock)
+    class UserBlockAdmin(admin.ModelAdmin):
+        list_display = ("blocker", "blocked", "created_at")
+        search_fields = ("blocker__username", "blocked__username")
+        list_filter = ("created_at",)
+
+    @admin.register(UserReport)
+    class UserReportAdmin(admin.ModelAdmin):
+        list_display = ("reporter", "reported", "reason", "is_resolved", "created_at")
+        search_fields = ("reporter__username", "reported__username", "message")
+        list_filter = ("reason", "is_resolved", "created_at")
+
+    @admin.register(SkribbleStats)
+    class SkribbleStatsAdmin(admin.ModelAdmin):
+        list_display = ("user", "games_played", "games_won", "correct_guesses", "drawings_made", "total_score", "updated_at")
+        search_fields = ("user__username",)
+except admin.sites.AlreadyRegistered:
+    pass

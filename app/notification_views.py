@@ -33,8 +33,13 @@ def notification_counts_api(request):
 @never_cache
 @require_GET
 def notification_center_api(request):
+    profile = getattr(request.user, "profile", None)
     return JsonResponse({
         "ok": True,
         "counts": get_notification_counts(request.user),
         "items": [_serialize_item(item) for item in get_notification_items(request.user, limit=12)],
+        "settings": {
+            "browser_notifications": bool(getattr(profile, "browser_notifications", False)),
+            "sound_notifications": bool(getattr(profile, "sound_notifications", False)),
+        },
     })

@@ -16,8 +16,10 @@
         <i class="fa-solid fa-comment-dots"></i>
     </div>
 
-    {% if messages %}
-        <div class="platform-messages">{% for message in messages %}<div>{{ message }}</div>{% endfor %}</div>
+    {% if feedback_sent %}
+        <div class="platform-messages">
+            <div>{% translate "Danke für dein Feedback." %}</div>
+        </div>
     {% endif %}
 
     <div class="platform-layout two-cols">

@@ -339,6 +339,22 @@
                         <label>{{ form.privacy_show_chat_button }} <span>{{ form.privacy_show_chat_button.label }}</span></label>
                     </div>
                 </div>
+
+                <div class="profile-field profile-field-full">
+                    <div class="profile-privacy-box profile-notification-box">
+                        <div>
+                            <p class="profile-kicker">{% translate "Benachrichtigungen" %}</p>
+                            <h3>{% translate "Mitteilungen & Sounds" %}</h3>
+                        </div>
+                        <label>{{ form.notify_chat }} <span>{{ form.notify_chat.label }}</span></label>
+                        <label>{{ form.notify_friend_requests }} <span>{{ form.notify_friend_requests.label }}</span></label>
+                        <label>{{ form.notify_skribble }} <span>{{ form.notify_skribble.label }}</span></label>
+                        <label>{{ form.browser_notifications }} <span>{{ form.browser_notifications.label }}</span></label>
+                        <label>{{ form.sound_notifications }} <span>{{ form.sound_notifications.label }}</span></label>
+                        <label>{{ form.dnd_silence_notifications }} <span>{{ form.dnd_silence_notifications.label }}</span></label>
+                        <small>{% translate "Browser-Benachrichtigungen funktionieren, sobald du sie im Browser erlaubst und MyTools geöffnet ist." %}</small>
+                    </div>
+                </div>
             </div>
 
             <div class="profile-form-footer">
@@ -354,6 +370,59 @@
             </div>
         </form>
     </div>
+
+
+    <div class="profile-card profile-gallery-card">
+        <div class="profile-form-header">
+            <div>
+                <p class="profile-kicker">{% translate "Galerie" %}</p>
+                <h2>{% translate "Profilbilder-Galerie" %}</h2>
+            </div>
+        </div>
+        <form class="profile-gallery-upload" method="post" enctype="multipart/form-data" action="{% url 'profile_gallery_upload' %}">
+            {% csrf_token %}
+            {{ gallery_form.image }}
+            {{ gallery_form.caption }}
+            <label>{{ gallery_form.is_public }} <span>{{ gallery_form.is_public.label }}</span></label>
+            <button type="submit" class="profile-save-button"><i class="fa-solid fa-upload"></i>{% translate "Hochladen" %}</button>
+        </form>
+        {% if gallery_images %}
+            <div class="profile-gallery-grid">
+                {% for image in gallery_images %}
+                    <div class="profile-gallery-item">
+                        <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Galeriebild' }}">
+                        <div>
+                            <span>{% if image.caption %}{{ image.caption }}{% else %}{% translate 'Ohne Beschreibung' %}{% endif %}</span>
+                            <form method="post" action="{% url 'profile_gallery_delete' image.id %}">
+                                {% csrf_token %}
+                                <button type="submit" title="{% translate 'Löschen' %}"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {% if blocked_users %}
+        <div class="profile-card profile-blocked-card">
+            <p class="profile-kicker">{% translate "Blockiert" %}</p>
+            <h2>{% translate "Blockierte Nutzer" %}</h2>
+            <div class="profile-blocked-list">
+                {% for block in blocked_users %}
+                    <div>
+                        <span>@{{ block.blocked.username }}</span>
+                        <form method="post" action="{% url 'block_user' block.blocked.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button name="action" value="unblock" type="submit">{% translate "Entblocken" %}</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
 </section>
 
 <div class="avatar-crop-modal" id="avatar-crop-modal" aria-hidden="true">

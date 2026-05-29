@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import JsonResponse
@@ -113,11 +114,20 @@ def feedback_view(request):
                 target_url=reverse("feedback"),
                 icon="fa-solid fa-comment-dots",
             )
-            messages.success(request, _("Danke für dein Feedback."))
-            return redirect("feedback")
+            return redirect(f"{reverse('feedback')}?sent=1")
     else:
         form = ToolFeedbackForm(initial={"tool_key": request.GET.get("tool", "")})
 
+    # The feedback page has its own confirmation box below.
+    # Clear old Django messages here so unrelated messages like
+    # "Favoriten wurden aktualisiert" do not show up on the feedback page.
+    list(get_messages(request))
+
     my_feedback = ToolFeedback.objects.filter(user=request.user)[:30]
     open_feedback = ToolFeedback.objects.values("tool_key").annotate(total=Count("id")).order_by("-total")[:8]
-    return render(request, "app/feedback.html", {"form": form, "my_feedback": my_feedback, "open_feedback": open_feedback})
+    return render(request, "app/feedback.html", {
+        "form": form,
+        "my_feedback": my_feedback,
+        "open_feedback": open_feedback,
+        "feedback_sent": request.GET.get("sent") == "1",
+    })

@@ -160,6 +160,33 @@
                         {{ friends_count }} {% translate "Freunde" %}
                     </a>
                 {% endif %}
+
+                {% if friendship_state != "self" %}
+                    <form method="post" action="{% url 'block_user' profile_user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        {% if blocked_by_viewer %}
+                            <button type="submit" name="action" value="unblock" class="friendship-button friendship-button-muted">
+                                <i class="fa-solid fa-lock-open"></i>{% translate "Blockierung aufheben" %}
+                            </button>
+                        {% else %}
+                            <button type="submit" name="action" value="block" class="friendship-button friendship-button-muted">
+                                <i class="fa-solid fa-ban"></i>{% translate "Blockieren" %}
+                            </button>
+                        {% endif %}
+                    </form>
+
+                    <details class="public-report-box">
+                        <summary><i class="fa-solid fa-flag"></i>{% translate "Nutzer melden" %}</summary>
+                        <form method="post" action="{% url 'report_user' profile_user.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            {{ report_form.reason }}
+                            {{ report_form.message }}
+                            <button type="submit" class="friendship-button"><i class="fa-solid fa-paper-plane"></i>{% translate "Meldung senden" %}</button>
+                        </form>
+                    </details>
+                {% endif %}
             </div>
 
         </aside>
@@ -179,6 +206,38 @@
             {% endif %}
         </article>
 
+
+
+
+        {% if gallery_images %}
+        <article class="public-profile-card public-profile-gallery-card">
+            <p class="users-kicker">{% translate "Galerie" %}</p>
+            <h2>{% translate "Bilder" %}</h2>
+            <div class="public-gallery-grid">
+                {% for image in gallery_images %}
+                    <a href="{{ image.image.url }}" target="_blank" rel="noopener" class="public-gallery-item">
+                        <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Galeriebild' }}">
+                        {% if image.caption %}<span>{{ image.caption }}</span>{% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+        </article>
+        {% endif %}
+
+        {% if skribble_stats %}
+        <article class="public-profile-card public-profile-skribble-card">
+            <p class="users-kicker">{% translate "Skribble" %}</p>
+            <h2>{% translate "Statistiken" %}</h2>
+            <div class="friend-activity-grid">
+                <div class="friend-activity-item"><i class="fa-solid fa-gamepad"></i><span>{% translate "Spiele" %}</span><strong>{{ skribble_stats.games_played }}</strong></div>
+                <div class="friend-activity-item"><i class="fa-solid fa-crown"></i><span>{% translate "Siege" %}</span><strong>{{ skribble_stats.games_won }}</strong></div>
+                <div class="friend-activity-item"><i class="fa-solid fa-check"></i><span>{% translate "Erraten" %}</span><strong>{{ skribble_stats.correct_guesses }}</strong></div>
+                <div class="friend-activity-item"><i class="fa-solid fa-pencil"></i><span>{% translate "Gezeichnet" %}</span><strong>{{ skribble_stats.drawings_made }}</strong></div>
+                <div class="friend-activity-item"><i class="fa-solid fa-percent"></i><span>{% translate "Winrate" %}</span><strong>{{ skribble_stats.win_rate }}%</strong></div>
+                <div class="friend-activity-item"><i class="fa-solid fa-star"></i><span>{% translate "Punkte" %}</span><strong>{{ skribble_stats.total_score }}</strong></div>
+            </div>
+        </article>
+        {% endif %}
 
         {% if can_view_friends %}
         <article class="public-profile-card public-profile-friends-card">

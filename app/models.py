@@ -47,6 +47,12 @@ class UserProfile(models.Model):
     privacy_show_friends = models.BooleanField(default=True)
     privacy_show_highscores = models.BooleanField(default=True)
     privacy_show_chat_button = models.BooleanField(default=True)
+    notify_chat = models.BooleanField(default=True)
+    notify_friend_requests = models.BooleanField(default=True)
+    notify_skribble = models.BooleanField(default=True)
+    browser_notifications = models.BooleanField(default=False)
+    sound_notifications = models.BooleanField(default=True)
+    dnd_silence_notifications = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -182,6 +188,8 @@ class ChatRoom(models.Model):
 
     room_type = models.CharField(max_length=20, choices=ROOM_CHOICES, default=ROOM_DIRECT)
     name = models.CharField(max_length=80, blank=True)
+    description = models.CharField(max_length=220, blank=True)
+    avatar = models.ImageField(upload_to="chat_group_avatars/", null=True, blank=True)
     direct_key = models.CharField(max_length=80, unique=True, null=True, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -1068,6 +1076,113 @@ class DrawingGameGuess(models.Model):
 
     def __str__(self):
         return f"{self.user}: {self.message[:30]}"
+
+
+class ChatMessageRead(models.Model):
+    message = models.ForeignKey(ChatMessage, on_delete=models.CASCADE, related_name="read_receipts")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_read_receipts")
+    read_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["read_at"]
+        constraints = [models.UniqueConstraint(fields=["message", "user"], name="unique_chat_message_read_user")]
+        indexes = [models.Index(fields=["message", "user"]), models.Index(fields=["user", "read_at"])]
+        verbose_name = "Gelesene Chatnachricht"
+        verbose_name_plural = "Gelesene Chatnachrichten"
+
+    def __str__(self):
+        return f"{self.user} gelesen {self.message_id}"
+
+
+def profile_gallery_upload_path(instance, filename):
+    return f"profile_gallery/user_{instance.user_id}/{filename}"
+
+
+class ProfileGalleryImage(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="gallery_images")
+    image = models.ImageField(upload_to=profile_gallery_upload_path)
+    caption = models.CharField(max_length=120, blank=True)
+    is_public = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["user", "-created_at"])]
+        verbose_name = "Profil-Galeriebild"
+        verbose_name_plural = "Profil-Galeriebilder"
+
+    def __str__(self):
+        return self.caption or f"Galeriebild {self.pk}"
+
+
+class UserBlock(models.Model):
+    blocker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_users")
+    blocked = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_by_users")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["blocker", "blocked"], name="unique_user_block"),
+            models.CheckConstraint(condition=~models.Q(blocker=models.F("blocked")), name="prevent_self_block"),
+        ]
+        indexes = [models.Index(fields=["blocker", "blocked"])]
+        verbose_name = "Blockierter Nutzer"
+        verbose_name_plural = "Blockierte Nutzer"
+
+    def __str__(self):
+        return f"{self.blocker} blockiert {self.blocked}"
+
+
+class UserReport(models.Model):
+    REASON_SPAM = "spam"
+    REASON_HARASSMENT = "harassment"
+    REASON_CONTENT = "content"
+    REASON_OTHER = "other"
+    REASON_CHOICES = [
+        (REASON_SPAM, _("Spam")),
+        (REASON_HARASSMENT, _("Belästigung")),
+        (REASON_CONTENT, _("Unpassende Inhalte")),
+        (REASON_OTHER, _("Sonstiges")),
+    ]
+    reporter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_user_reports")
+    reported = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_user_reports")
+    reason = models.CharField(max_length=30, choices=REASON_CHOICES, default=REASON_OTHER)
+    message = models.TextField(max_length=1000, blank=True)
+    is_resolved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["reported", "is_resolved", "-created_at"])]
+        verbose_name = "Nutzermeldung"
+        verbose_name_plural = "Nutzermeldungen"
+
+    def __str__(self):
+        return f"Meldung: {self.reporter} → {self.reported}"
+
+
+class SkribbleStats(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="skribble_stats")
+    games_played = models.PositiveIntegerField(default=0)
+    games_won = models.PositiveIntegerField(default=0)
+    correct_guesses = models.PositiveIntegerField(default=0)
+    drawings_made = models.PositiveIntegerField(default=0)
+    total_score = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Skribble-Statistik"
+        verbose_name_plural = "Skribble-Statistiken"
+
+    def __str__(self):
+        return f"Skribble Stats: {self.user}"
+
+    @property
+    def win_rate(self):
+        if not self.games_played:
+            return 0
+        return round((self.games_won / self.games_played) * 100)
 
 
 class ToolFavorite(models.Model):

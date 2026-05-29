@@ -19,6 +19,42 @@ TOOL_CATALOG = [
     {"key": "spritkosten", "label": _("Spritkosten"), "icon": "fa-solid fa-gas-pump", "url_name": "spritkostenrechner", "category": _("Alltag")},
 ]
 
+# Extra Einträge nur für das Feedback-Formular.
+# Diese Liste ist absichtlich unabhängig von TOOL_CATALOG, weil nicht jede Seite
+# als startbares Tool auf der Favoriten-Seite auftauchen muss.
+FEEDBACK_TOOL_CHOICES = [
+    ("general", _("Allgemein")),
+    ("home", _("Startseite / Widgets")),
+    ("favorites", _("Favoriten")),
+    ("inbox", _("Inbox / Benachrichtigungen")),
+    ("feedback", _("Tool bewerten / Feedback")),
+    ("profile", _("Profil")),
+    ("users", _("Nutzer / Freunde")),
+    ("chat", _("Chats")),
+    ("skribble", _("Skribble")),
+    ("human_benchmark", _("Human Benchmark")),
+    ("weather", _("Wetter")),
+    ("notes", _("Notizen")),
+    ("clock", _("Uhr")),
+    ("unit_converter", _("Einheitenrechner")),
+    ("spritkosten", _("Spritkosten")),
+    ("genius_search", _("Genius Search")),
+    ("avatar_wiki", _("Avatar Wiki")),
+    ("stream_deck", _("Stream Deck")),
+    ("obs_dashboard", _("OBS Dashboard")),
+    ("drift_circuit", _("Racing Game")),
+    ("theme", _("Theme / Design")),
+    ("notifications", _("Benachrichtigungseinstellungen")),
+]
+
+
+def get_feedback_tool_choices():
+    return FEEDBACK_TOOL_CHOICES
+
+
+def get_feedback_tool_keys():
+    return {key for key, _label in FEEDBACK_TOOL_CHOICES}
+
 
 def resolve_tools(request, favorite_keys=None):
     favorite_keys = set(favorite_keys or [])

@@ -27,9 +27,13 @@ from .views import (
     weather,
 )
 from .profile_views import (
+    block_user_view,
+    delete_gallery_image_view,
     friends_list_view,
     friendship_action_view,
+    profile_gallery_upload_view,
     profile_view,
+    report_user_view,
     public_profile_view,
     users_view,
 )
@@ -49,6 +53,9 @@ from .skribble_views import (
     skribble_update_avatar,
 )
 from .chat_views import (
+    chat_group_leave_view,
+    chat_group_member_action_view,
+    chat_group_settings_view,
     chat_messages_api,
     chat_view,
     create_group_chat,
@@ -79,15 +86,22 @@ urlpatterns = [
     path('uhr/', clock_view, name='clock'),
 
     path('profile/', profile_view, name='profile'),
+    path('profile/gallery/upload/', profile_gallery_upload_view, name='profile_gallery_upload'),
+    path('profile/gallery/<int:image_id>/delete/', delete_gallery_image_view, name='profile_gallery_delete'),
     path('users/', users_view, name='users'),
     path('users/<int:user_id>/', public_profile_view, name='public_profile'),
     path('users/<int:user_id>/friends/', friends_list_view, name='friends_list'),
     path('users/<int:user_id>/friendship/', friendship_action_view, name='friendship_action'),
+    path('users/<int:user_id>/block/', block_user_view, name='block_user'),
+    path('users/<int:user_id>/report/', report_user_view, name='report_user'),
 
     path('chat/', chat_view, name='chat'),
     path('chat/<int:room_id>/', chat_view, name='chat_room'),
     path('chat/direct/<int:user_id>/', start_direct_chat, name='chat_direct'),
     path('chat/group/new/', create_group_chat, name='chat_group_create'),
+    path('chat/<int:room_id>/group/settings/', chat_group_settings_view, name='chat_group_settings'),
+    path('chat/<int:room_id>/group/leave/', chat_group_leave_view, name='chat_group_leave'),
+    path('chat/<int:room_id>/group/member/<int:user_id>/', chat_group_member_action_view, name='chat_group_member_action'),
     path('chat/<int:room_id>/send/', send_chat_message, name='chat_send'),
     path('chat/<int:room_id>/message/<int:message_id>/delete/', delete_chat_message, name='chat_message_delete'),
     path('chat/<int:room_id>/message/<int:message_id>/react/', react_chat_message, name='chat_message_react'),
