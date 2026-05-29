@@ -24,7 +24,7 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Nutzerübersicht mit öffentlichen Profilen
 - Freundschaftssystem mit Anfragen, Freundesliste und befreundet-seit Anzeige
 - Chat-System mit Direktchats, Gruppenchats, Emoji-Reaktionen und Löschen eigener Nachrichten
-- Skribble-Zeichenspiel mit Lobby, Einladungen, Zeichnen, Raten und Punktestand
+- Skribble-Zeichenspiel mit Lobby, Einladungen, Zeichnen, Raten, Punktestand und Rundenübersicht
 - Notizen-App mit Pins, Archiv, Farben und Tags
 - Human Benchmark mit gespeicherten Ergebnissen, Highscores und Bestenliste pro Nutzer
 - OBS Dashboard für lokale OBS-WebSocket-Steuerung
@@ -176,6 +176,7 @@ Funktionen:
 - Zeichnen im Browser
 - Chat-/Ratebereich für Antworten
 - Punktestand und Spielstatus
+- Punkteübersicht nach jeder Runde, bevor der Host die nächste Runde startet
 - dezenter eigener Hintergrund und Logo
 
 ---

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 14:54+0200\n"
+"POT-Creation-Date: 2026-05-29 19:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -231,7 +231,7 @@ msgid "Tags"
 msgstr ""
 
 #: .\app\forms.py:141 .\app\templates\app\note_form.html:138
-#: .\app\templates\app\skribble_lobby.html:197
+#: .\app\templates\app\skribble_lobby.html:211
 #: .\app\templates\app\stream_deck.html:249
 msgid "Farbe"
 msgstr ""
@@ -332,7 +332,7 @@ msgstr ""
 msgid "Chats"
 msgstr ""
 
-#: .\app\models.py:698 .\app\models.py:1214 .\app\templates\app\base.html:396
+#: .\app\models.py:698 .\app\models.py:1224 .\app\templates\app\base.html:396
 #: .\app\templates\app\friends.html:5 .\app\templates\app\friends.html:24
 #: .\app\templates\app\friends.html:41 .\app\templates\app\home.html:281
 #: .\app\templates\app\home.html:444 .\app\templates\app\inbox.html:23
@@ -344,14 +344,14 @@ msgstr ""
 msgid "Freunde"
 msgstr ""
 
-#: .\app\models.py:699 .\app\models.py:1215 .\app\platform_utils.py:11
+#: .\app\models.py:699 .\app\models.py:1225 .\app\platform_utils.py:11
 #: .\app\platform_utils.py:34 .\app\templates\app\about.html:238
 #: .\app\templates\app\base.html:74 .\app\templates\app\home.html:445
 #: .\app\templates\app\public_profile.html:229
 #: .\app\templates\app\skribble_home.html:4
 #: .\app\templates\app\skribble_home.html:16
 #: .\app\templates\app\skribble_lobby.html:4
-#: .\app\templates\app\skribble_lobby.html:29
+#: .\app\templates\app\skribble_lobby.html:30
 msgid "Skribble"
 msgstr ""
 
@@ -419,75 +419,79 @@ msgstr ""
 msgid "Geteilt"
 msgstr ""
 
-#: .\app\models.py:904
+#: .\app\models.py:905
 msgid "Wartet"
 msgstr ""
 
-#: .\app\models.py:905
+#: .\app\models.py:906
 msgid "Läuft"
 msgstr ""
 
-#: .\app\models.py:906
+#: .\app\models.py:907 .\app\templates\app\skribble_lobby.html:143
+msgid "Rundenuebersicht"
+msgstr ""
+
+#: .\app\models.py:908
 msgid "Beendet"
 msgstr ""
 
-#: .\app\models.py:965
+#: .\app\models.py:973
 msgid "Rund"
 msgstr ""
 
-#: .\app\models.py:966
+#: .\app\models.py:974
 msgid "Eckig"
 msgstr ""
 
-#: .\app\models.py:967
+#: .\app\models.py:975
 msgid "Roboter"
 msgstr ""
 
-#: .\app\models.py:968
+#: .\app\models.py:976
 msgid "Katze"
 msgstr ""
 
-#: .\app\models.py:969
+#: .\app\models.py:977
 msgid "Geist"
 msgstr ""
 
-#: .\app\models.py:970
+#: .\app\models.py:978
 msgid "Ninja"
 msgstr ""
 
-#: .\app\models.py:1015 .\app\models.py:1254 .\app\templates\app\users.html:97
+#: .\app\models.py:1023 .\app\models.py:1264 .\app\templates\app\users.html:97
 msgid "Offen"
 msgstr ""
 
-#: .\app\models.py:1016
+#: .\app\models.py:1024
 msgid "Angenommen"
 msgstr ""
 
-#: .\app\models.py:1017
+#: .\app\models.py:1025
 msgid "Abgelehnt"
 msgstr ""
 
-#: .\app\models.py:1143
+#: .\app\models.py:1153
 msgid "Spam"
 msgstr ""
 
-#: .\app\models.py:1144
+#: .\app\models.py:1154
 msgid "Belästigung"
 msgstr ""
 
-#: .\app\models.py:1145
+#: .\app\models.py:1155
 msgid "Unpassende Inhalte"
 msgstr ""
 
-#: .\app\models.py:1146
+#: .\app\models.py:1156
 msgid "Sonstiges"
 msgstr ""
 
-#: .\app\models.py:1212 .\app\templates\app\stream_deck.html:147
+#: .\app\models.py:1222 .\app\templates\app\stream_deck.html:147
 msgid "System"
 msgstr ""
 
-#: .\app\models.py:1213 .\app\platform_utils.py:7
+#: .\app\models.py:1223 .\app\platform_utils.py:7
 #: .\app\templates\app\about.html:230 .\app\templates\app\base.html:412
 #: .\app\templates\app\base.html:479 .\app\templates\app\chat.html:5
 #: .\app\templates\app\chat.html:17 .\app\templates\app\inbox.html:22
@@ -495,24 +499,24 @@ msgstr ""
 msgid "Chat"
 msgstr ""
 
-#: .\app\models.py:1216 .\app\models.py:1244 .\app\templates\app\base.html:178
+#: .\app\models.py:1226 .\app\models.py:1254 .\app\templates\app\base.html:178
 #: .\app\templates\app\feedback.html:5 .\app\templates\app\feedback.html:12
 msgid "Feedback"
 msgstr ""
 
-#: .\app\models.py:1245
+#: .\app\models.py:1255
 msgid "Bug"
 msgstr ""
 
-#: .\app\models.py:1246
+#: .\app\models.py:1256
 msgid "Feature-Idee"
 msgstr ""
 
-#: .\app\models.py:1255
+#: .\app\models.py:1265
 msgid "Geplant"
 msgstr ""
 
-#: .\app\models.py:1256
+#: .\app\models.py:1266
 msgid "Erledigt"
 msgstr ""
 
@@ -822,86 +826,94 @@ msgstr ""
 msgid "Die Meldung konnte nicht gespeichert werden."
 msgstr ""
 
-#: .\app\skribble_views.py:258
+#: .\app\skribble_views.py:332
 msgid "hat das Wort erraten!"
 msgstr ""
 
-#: .\app\skribble_views.py:269 .\app\templates\app\skribble_home.html:44
+#: .\app\skribble_views.py:343 .\app\templates\app\skribble_home.html:44
 msgid "Zeichen-Lobby"
 msgstr ""
 
-#: .\app\skribble_views.py:287
+#: .\app\skribble_views.py:361
 msgid "Lobby wurde erstellt."
 msgstr ""
 
-#: .\app\skribble_views.py:322
+#: .\app\skribble_views.py:396
 msgid "Du bist nicht für diese Lobby eingeladen."
 msgstr ""
 
-#: .\app\skribble_views.py:326
+#: .\app\skribble_views.py:400
 msgid "Diese Lobby ist bereits voll."
 msgstr ""
 
-#: .\app\skribble_views.py:361
+#: .\app\skribble_views.py:435
 msgid "Du kannst aus dieser Lobby keine Einladungen senden."
 msgstr ""
 
-#: .\app\skribble_views.py:367
+#: .\app\skribble_views.py:441
 msgid "Du kannst nur Freunde einladen."
 msgstr ""
 
-#: .\app\skribble_views.py:375
+#: .\app\skribble_views.py:449
 msgid "Einladung wurde gesendet."
 msgstr ""
 
-#: .\app\skribble_views.py:391
+#: .\app\skribble_views.py:465
 msgid "Einladung wurde abgelehnt."
 msgstr ""
 
-#: .\app\skribble_views.py:403
+#: .\app\skribble_views.py:477
 msgid "Du bist nicht mehr in dieser Lobby."
 msgstr ""
 
-#: .\app\skribble_views.py:415
+#: .\app\skribble_views.py:489
 msgid ""
 "Du hast die Lobby verlassen. Du kannst über eine Einladung oder als Freund "
 "wieder beitreten."
 msgstr ""
 
-#: .\app\skribble_views.py:425
+#: .\app\skribble_views.py:499
 #, python-format
 msgid "Lobby '%(name)s' wurde gelöscht."
 msgstr ""
 
-#: .\app\skribble_views.py:441
+#: .\app\skribble_views.py:515
 msgid "Avatar wurde gespeichert."
 msgstr ""
 
-#: .\app\skribble_views.py:451
+#: .\app\skribble_views.py:525
 msgid "Nur der Host kann starten."
 msgstr ""
 
-#: .\app\skribble_views.py:453
+#: .\app\skribble_views.py:527
 msgid "Du brauchst mindestens 2 Spieler."
 msgstr ""
 
-#: .\app\skribble_views.py:490
+#: .\app\skribble_views.py:568
+msgid "Nur der Host kann fortfahren."
+msgstr ""
+
+#: .\app\skribble_views.py:579
 msgid "Kein Zugriff."
 msgstr ""
 
-#: .\app\skribble_views.py:507
+#: .\app\skribble_views.py:596
 msgid "Du bist gerade nicht am Zeichnen."
 msgstr ""
 
-#: .\app\skribble_views.py:509
+#: .\app\skribble_views.py:598
+msgid "Die Runde laeuft gerade nicht."
+msgstr ""
+
+#: .\app\skribble_views.py:600
 msgid "Das Wort wurde schon gewählt."
 msgstr ""
 
-#: .\app\skribble_views.py:512
+#: .\app\skribble_views.py:603
 msgid "Ungültiges Wort."
 msgstr ""
 
-#: .\app\skribble_views.py:558
+#: .\app\skribble_views.py:649
 msgid "Der Zeichner darf nicht raten."
 msgstr ""
 
@@ -1945,6 +1957,7 @@ msgid "Seite 1"
 msgstr ""
 
 #: .\app\templates\app\genius_search.html:35
+#: .\app\templates\app\skribble_lobby.html:149
 #: .\app\templates\app\stream_deck.html:233
 msgid "Weiter"
 msgstr ""
@@ -2498,7 +2511,7 @@ msgstr ""
 msgid "Titel, Inhalt oder Tags suchen..."
 msgstr ""
 
-#: .\app\templates\app\notes.html:70 .\app\templates\app\skribble_lobby.html:46
+#: .\app\templates\app\notes.html:70 .\app\templates\app\skribble_lobby.html:47
 #: .\app\templates\app\stream_deck.html:77
 msgid "Zurücksetzen"
 msgstr ""
@@ -2960,7 +2973,7 @@ msgid "Mitglied seit"
 msgstr ""
 
 #: .\app\templates\app\public_profile.html:91
-#: .\app\templates\app\skribble_lobby.html:118
+#: .\app\templates\app\skribble_lobby.html:69
 msgid "Status"
 msgstr ""
 
@@ -3073,7 +3086,7 @@ msgid "Spiel-Funktionen"
 msgstr ""
 
 #: .\app\templates\app\skribble_home.html:23
-#: .\app\templates\app\skribble_lobby.html:140
+#: .\app\templates\app\skribble_lobby.html:84
 msgid "Freunde einladen"
 msgstr ""
 
@@ -3172,7 +3185,7 @@ msgid "Deine Lobbys"
 msgstr ""
 
 #: .\app\templates\app\skribble_home.html:159
-#: .\app\templates\app\skribble_lobby.html:123
+#: .\app\templates\app\skribble_lobby.html:79
 msgid "Spieler"
 msgstr ""
 
@@ -3180,126 +3193,133 @@ msgstr ""
 msgid "Du bist noch in keiner Lobby."
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:27
+#: .\app\templates\app\skribble_lobby.html:28
 msgid "Zur Übersicht"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:31
+#: .\app\templates\app\skribble_lobby.html:32
 msgid "Lobby"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:33
+#: .\app\templates\app\skribble_lobby.html:34
 msgid "Lobby-Code"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:39
+#: .\app\templates\app\skribble_lobby.html:40
 msgid "Link kopieren"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:43
+#: .\app\templates\app\skribble_lobby.html:44
 msgid "Spiel starten"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:48
+#: .\app\templates\app\skribble_lobby.html:49
 msgid "Lobby wirklich löschen? Alle Spieler und Zeichnungen werden entfernt."
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:51
+#: .\app\templates\app\skribble_lobby.html:52
 msgid "Lobby löschen"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:55
+#: .\app\templates\app\skribble_lobby.html:56
 msgid ""
 "Lobby wirklich verlassen? Du kannst später über eine Einladung oder als "
 "Freund wieder beitreten."
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:58
+#: .\app\templates\app\skribble_lobby.html:59
 msgid "Verlassen"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:68
+#: .\app\templates\app\skribble_lobby.html:73
 msgid "Zeichner"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:76
-msgid "Aktuelles Wort"
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:84
-msgid "Warte auf das Spiel..."
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:85
-msgid "Der aktuelle Zeichner wählt gleich ein Wort."
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:91
-msgid "Farben"
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:104
-msgid "Eigene Pinsel-Farbe"
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:107
-msgid "Pinselgröße"
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:111
-msgid "Leeren"
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:128
-msgid "Chat & Raten"
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:131
-msgid "Wort raten oder Nachricht schreiben..."
-msgstr ""
-
-#: .\app\templates\app\skribble_lobby.html:151
+#: .\app\templates\app\skribble_lobby.html:95
 msgid "Einladung offen"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:153
+#: .\app\templates\app\skribble_lobby.html:97
 msgid "War schon eingeladen"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:155
-#: .\app\templates\app\users.html:93
+#: .\app\templates\app\skribble_lobby.html:99 .\app\templates\app\users.html:93
 msgid "Freund"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:165
+#: .\app\templates\app\skribble_lobby.html:109
 msgid "Eingeladen"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:167
+#: .\app\templates\app\skribble_lobby.html:111
 msgid "Einladen"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:175
+#: .\app\templates\app\skribble_lobby.html:119
 msgid "Es gibt gerade keine weiteren Freunde, die du einladen kannst."
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:180
-msgid "Dein Spiel-Avatar"
+#: .\app\templates\app\skribble_lobby.html:128
+msgid "Aktuelles Wort"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:184
-msgid "Name im Spiel"
+#: .\app\templates\app\skribble_lobby.html:138
+msgid "Warte auf das Spiel..."
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:139
+msgid "Der aktuelle Zeichner wählt gleich ein Wort."
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:144
+msgid "Punkte dieser Runde"
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:151
+msgid "Der Host startet die naechste Runde."
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:158
+msgid "Farben"
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:171
+msgid "Eigene Pinsel-Farbe"
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:174
+msgid "Pinselgröße"
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:178
+msgid "Leeren"
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:185
+msgid "Chat & Raten"
 msgstr ""
 
 #: .\app\templates\app\skribble_lobby.html:188
+msgid "Wort raten oder Nachricht schreiben..."
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:194
+msgid "Dein Spiel-Avatar"
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:198
+msgid "Name im Spiel"
+msgstr ""
+
+#: .\app\templates\app\skribble_lobby.html:202
 msgid "Avatar-Form"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:205
+#: .\app\templates\app\skribble_lobby.html:219
 msgid "Akzent"
 msgstr ""
 
-#: .\app\templates\app\skribble_lobby.html:213
+#: .\app\templates\app\skribble_lobby.html:227
 msgid "Avatar speichern"
 msgstr ""
 
