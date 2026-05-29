@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         choose: root.dataset.chooseUrl,
         draw: root.dataset.drawUrl,
         guess: root.dataset.guessUrl,
+        invite: root.dataset.inviteUrl,
     };
 
     const csrfToken = getCookie("csrftoken");
@@ -198,6 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
         wordDisplay.classList.toggle("is-mask", !state.lobby.word && Boolean(state.lobby.maskedWord));
         renderWordChoices();
         renderPlayers();
+        renderFriendInvites();
         renderGuesses();
         renderRoundSummary();
         renderCanvasBlocker();
@@ -247,6 +249,40 @@ document.addEventListener("DOMContentLoaded", () => {
                     <small>${player.hasGuessed ? "Wort erraten" : "im Spiel"}</small>
                 </div>
                 <div class="draw-player-score">${player.score}</div>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function renderFriendInvites() {
+        const list = document.getElementById("friend-invite-list");
+        const empty = document.getElementById("friend-invite-empty");
+        if (!list) return;
+
+        const rows = state.friendInvites || [];
+        list.innerHTML = "";
+        empty?.classList.toggle("hidden", rows.length > 0);
+
+        rows.forEach((friend) => {
+            const item = document.createElement("div");
+            item.className = "draw-friend-invite-row";
+            const status = friend.isInvited ? "Einladung offen" : (friend.wasInvited ? "War schon eingeladen" : "Freund");
+            const disabled = friend.isInvited ? "disabled" : "";
+            const label = friend.isInvited ? "Eingeladen" : "Einladen";
+            const buttonContent = friend.isInvited ? '<i class="fa-solid fa-check"></i>' : '<span aria-hidden="true">+</span>';
+            item.innerHTML = `
+                <div class="draw-friend-mini">
+                    <div class="draw-friend-avatar">${escapeHtml(friend.initial || "?")}</div>
+                    <div>
+                        <strong>${escapeHtml(friend.name)}</strong>
+                        <span>${escapeHtml(status)}</span>
+                    </div>
+                </div>
+                <form method="post" action="${escapeHtml(urls.invite)}">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${escapeHtml(csrfToken)}">
+                    <input type="hidden" name="friend_id" value="${escapeHtml(friend.id)}">
+                    <button class="draw-primary draw-invite-one" type="submit" aria-label="${escapeHtml(label)}" ${disabled}>${buttonContent}</button>
+                </form>
             `;
             list.appendChild(item);
         });

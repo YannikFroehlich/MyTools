@@ -281,6 +281,54 @@ def _handle_player_removed(lobby, removed_player_id=None, removed_index=None, wa
     ])
 
 
+def _friend_invite_rows(lobby, user):
+    friend_ids = Friendship.friend_ids_for_user(user)
+    current_player_ids = lobby.players.values_list("user_id", flat=True)
+    friends = (
+        User.objects
+        .filter(id__in=friend_ids, is_active=True)
+        .exclude(id__in=current_player_ids)
+        .order_by("username")
+    )
+    UserProfile.objects.bulk_create(
+        [UserProfile(user=friend) for friend in friends if not hasattr(friend, "profile")],
+        ignore_conflicts=True,
+    )
+    invited_friend_ids = set(
+        lobby.invites
+        .filter(status=DrawingGameInvite.STATUS_PENDING)
+        .values_list("to_user_id", flat=True)
+    )
+    accepted_invite_ids = set(
+        lobby.invites
+        .filter(status=DrawingGameInvite.STATUS_ACCEPTED)
+        .values_list("to_user_id", flat=True)
+    )
+    return [
+        {
+            "user": friend,
+            "is_invited": friend.id in invited_friend_ids,
+            "was_invited": friend.id in accepted_invite_ids,
+        }
+        for friend in friends
+    ]
+
+
+def _serialize_friend_invites(lobby, user):
+    rows = _friend_invite_rows(lobby, user)
+    return [
+        {
+            "id": row["user"].id,
+            "name": row["user"].get_full_name() or row["user"].username,
+            "username": row["user"].username,
+            "initial": (row["user"].username[:1] or "?").upper(),
+            "isInvited": row["is_invited"],
+            "wasInvited": row["was_invited"],
+        }
+        for row in rows
+    ]
+
+
 def _serialize_state(lobby, user):
     players = _players(lobby)
     drawer = _current_drawer(lobby, players)
@@ -325,6 +373,7 @@ def _serialize_state(lobby, user):
             }
             for player in players
         ],
+        "friendInvites": _serialize_friend_invites(lobby, user),
         "drawing": lobby.current_drawing or [],
         "guesses": [
             {
@@ -403,23 +452,10 @@ def skribble_lobby(request, code):
     _get_or_create_player(lobby, request.user)
     DrawingGameInvite.objects.filter(lobby=lobby, to_user=request.user).update(status=DrawingGameInvite.STATUS_ACCEPTED)
 
-    friend_ids = Friendship.friend_ids_for_user(request.user)
-    friends = User.objects.filter(id__in=friend_ids, is_active=True).exclude(id__in=lobby.players.values_list("user_id", flat=True)).order_by("username")
-    UserProfile.objects.bulk_create([UserProfile(user=friend) for friend in friends if not hasattr(friend, "profile")], ignore_conflicts=True)
-    invited_friend_ids = set(lobby.invites.filter(status=DrawingGameInvite.STATUS_PENDING).values_list("to_user_id", flat=True))
-    accepted_invite_ids = set(lobby.invites.filter(status=DrawingGameInvite.STATUS_ACCEPTED).values_list("to_user_id", flat=True))
-    friend_invite_rows = [
-        {
-            "user": friend,
-            "is_invited": friend.id in invited_friend_ids,
-            "was_invited": friend.id in accepted_invite_ids,
-        }
-        for friend in friends
-    ]
+    friend_invite_rows = _friend_invite_rows(lobby, request.user)
 
     return render(request, "app/skribble_lobby.html", {
         "lobby": lobby,
-        "friends": friends,
         "friend_invite_rows": friend_invite_rows,
         "avatar_bases": DrawingGamePlayer.AVATAR_BASE_CHOICES,
         "avatar_colors": AVATAR_COLORS,

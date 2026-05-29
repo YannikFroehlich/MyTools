@@ -1447,6 +1447,17 @@ body.dark-mode .footer-links a:hover {
     font-size: .72rem;
 }
 
+.notification-center-item > em {
+    padding: 6px 9px;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    font-size: .72rem;
+    font-style: normal;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
 .notification-center-empty {
     padding: 26px 16px;
     text-align: center;
