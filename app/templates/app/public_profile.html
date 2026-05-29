@@ -33,6 +33,7 @@
                 {% else %}
                     <span>{{ profile.initials }}</span>
                 {% endif %}
+                {% if profile.is_online %}<span class="public-profile-online-dot" title="{% translate 'Online' %}"></span>{% endif %}
             </div>
 
             <div class="public-profile-title">
@@ -47,6 +48,15 @@
                 </h1>
 
                 <p>@{{ profile_user.username }}</p>
+                <span class="public-profile-status {% if profile.is_online %}is-online{% endif %}">
+                    {% if profile.is_online %}
+                        {% translate "Online" %}
+                    {% elif profile.last_seen_at %}
+                        {% translate "Zuletzt online" %} {{ profile.last_seen_at|timesince }}
+                    {% else %}
+                        {% translate "Offline" %}
+                    {% endif %}
+                </span>
 
                 <div class="public-profile-stats">
                     <span><strong>{{ friends_count }}</strong>{% translate "Freunde" %}</span>

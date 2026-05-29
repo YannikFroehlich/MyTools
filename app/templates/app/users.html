@@ -74,6 +74,7 @@
                         {% else %}
                             <span>{{ profile.initials }}</span>
                         {% endif %}
+                        {% if profile.is_online %}<span class="user-online-dot" title="{% translate 'Online' %}"></span>{% endif %}
                     </div>
 
                     <div class="user-content">
@@ -98,6 +99,15 @@
                         </div>
 
                         <p class="user-username">@{{ profile.user.username }}</p>
+                        <span class="user-status-line {% if profile.is_online %}is-online{% endif %}">
+                            {% if profile.is_online %}
+                                {% translate "Online" %}
+                            {% elif profile.last_seen_at %}
+                                {% translate "Zuletzt online" %} {{ profile.last_seen_at|timesince }}
+                            {% else %}
+                                {% translate "Offline" %}
+                            {% endif %}
+                        </span>
 
                         {% if profile.bio %}
                             <p class="user-bio">{{ profile.bio|truncatechars:120 }}</p>

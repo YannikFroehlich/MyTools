@@ -53,6 +53,30 @@ class UserProfile(models.Model):
         return (self.user.username[:2] or "MT").upper()
 
 
+class UserPresence(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="presence",
+    )
+    last_seen = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Online-Status"
+        verbose_name_plural = "Online-Status"
+        indexes = [
+            models.Index(fields=["last_seen"]),
+        ]
+
+    def __str__(self):
+        return f"{self.user} · {self.last_seen}"
+
+    @property
+    def is_online(self):
+        from django.utils import timezone
+        return self.last_seen >= timezone.now() - timezone.timedelta(minutes=3)
+
+
 class Friendship(models.Model):
     STATUS_PENDING = "pending"
     STATUS_ACCEPTED = "accepted"

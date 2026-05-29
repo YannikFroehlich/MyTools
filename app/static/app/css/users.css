@@ -1257,3 +1257,91 @@ body.dark-mode .public-profile-stats span {
     background: rgba(255, 255, 255, 0.13);
     border-color: rgba(255, 255, 255, 0.18);
 }
+
+/* ── ONLINE STATUS ── */
+.user-avatar,
+.public-profile-avatar,
+.friends-preview-avatar {
+    position: relative;
+}
+
+.user-online-dot,
+.public-profile-online-dot,
+.friend-online-dot {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: #22c55e;
+    border: 3px solid rgba(15, 23, 42, .88);
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, .14);
+}
+
+.user-status-line,
+.public-profile-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #64748b;
+    font-weight: 850;
+    font-size: .86rem;
+}
+
+.user-status-line::before,
+.public-profile-status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #94a3b8;
+}
+
+.user-status-line.is-online::before,
+.public-profile-status.is-online::before {
+    background: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, .14);
+}
+
+body.dark-mode .user-status-line,
+body.dark-mode .public-profile-status {
+    color: #cbd5e1;
+}
+
+/* ── ONLINE STATUS: cleaner badge position ── */
+.user-avatar,
+.public-profile-avatar,
+.friends-preview-avatar {
+    overflow: visible;
+}
+
+.user-avatar img,
+.public-profile-avatar img,
+.friends-preview-avatar img {
+    border-radius: inherit;
+}
+
+.user-online-dot,
+.public-profile-online-dot,
+.friend-online-dot {
+    right: -4px;
+    bottom: -4px;
+    box-sizing: border-box;
+    border-color: var(--theme-surface, #ffffff);
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, .12), 0 0 0 4px rgba(34, 197, 94, .16);
+}
+
+.public-profile-online-dot {
+    right: -5px;
+    bottom: -5px;
+    width: 18px;
+    height: 18px;
+}
+
+body.dark-mode .user-online-dot,
+body.dark-mode .public-profile-online-dot,
+body.dark-mode .friend-online-dot {
+    border-color: #111827;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .16), 0 0 0 4px rgba(34, 197, 94, .16);
+}

@@ -10,17 +10,14 @@
 
 {% block content %}
 <section class="chat-page">
-    <div class="chat-hero">
-        <div>
-            <p class="chat-kicker">{% translate "Nachrichten" %}</p>
-            <h1>{% translate "Chat" %}</h1>
-            <p>{% translate "Schreibe direkt mit Freunden oder erstelle Gruppen für mehrere Nutzer." %}</p>
-        </div>
-        <div class="chat-hero-icon"><i class="fa-solid fa-comments"></i></div>
-    </div>
-
     <div class="chat-layout" {% if active_room %}data-room-id="{{ active_room.id }}" data-messages-url="{% url 'chat_messages_api' active_room.id %}" data-send-url="{% url 'chat_send' active_room.id %}"{% endif %}>
         <aside class="chat-sidebar">
+            <div class="chat-sidebar-hero">
+                <p class="chat-kicker">{% translate "Nachrichten" %}</p>
+                <h1>{% translate "Chat" %}</h1>
+                <p>{% translate "Schreibe direkt mit Freunden oder erstelle Gruppen." %}</p>
+            </div>
+
             <div class="chat-sidebar-header">
                 <div>
                     <p class="chat-kicker">{% translate "Unterhaltungen" %}</p>
@@ -42,6 +39,7 @@
                             {% else %}
                                 <i class="fa-solid fa-comment"></i>
                             {% endif %}
+                            {% if room.room_type != 'group' and room.preview_members and room.preview_members.0.is_online %}<em class="chat-online-dot" title="{% translate 'Online' %}"></em>{% endif %}
                         </span>
                         <span class="chat-room-main">
                             <strong>{{ room.display_title }}</strong>
@@ -156,6 +154,7 @@
                             {% else %}
                                 <i class="fa-solid fa-comment"></i>
                             {% endif %}
+                            {% if active_room.room_type != 'group' and active_room.preview_members and active_room.preview_members.0.is_online %}<em class="chat-online-dot is-big" title="{% translate 'Online' %}"></em>{% endif %}
                         </div>
                         <div>
                             <p class="chat-kicker">{% if active_room.room_type == 'group' %}{% translate "Gruppe" %}{% else %}{% translate "Direktchat" %}{% endif %}</p>
@@ -170,6 +169,7 @@
                                 {% else %}
                                     {{ member.profile.initials }}
                                 {% endif %}
+                                {% if member.is_online %}<em class="chat-member-online-dot" title="{% translate 'Online' %}"></em>{% endif %}
                             </a>
                         {% endfor %}
                     </div>

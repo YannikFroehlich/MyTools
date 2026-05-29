@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 
 from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, UserProfile
 from .profile_forms import ProfileForm
+from .presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
 
 User = get_user_model()
 
@@ -79,6 +80,7 @@ def get_friend_profiles(user, limit=None):
         .filter(user__in=friends)
         .order_by("user__username")
     )
+    decorate_profiles_with_presence(profiles)
 
     for profile in profiles:
         profile.friendship_since = friendship_since_by_user_id.get(profile.user_id)
@@ -244,6 +246,8 @@ def users_view(request):
         .order_by("user__username")
     )
 
+    decorate_profiles_with_presence(profiles)
+
     for profile in profiles:
         profile.friendship_state = get_friendship_state(request.user, profile.user)
 
@@ -258,6 +262,9 @@ def users_view(request):
 def public_profile_view(request, user_id):
     profile_user = get_object_or_404(User, id=user_id, is_active=True)
     profile, created = UserProfile.objects.get_or_create(user=profile_user)
+    decorate_users_with_presence([profile_user])
+    profile.is_online = getattr(profile_user, "is_online", False)
+    profile.last_seen_at = getattr(profile_user, "last_seen_at", None)
     friends_count = Friendship.accepted_for_user(profile_user).count()
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
     total_highscores_count = HumanBenchmarkHighScore.objects.filter(user=profile_user).count()

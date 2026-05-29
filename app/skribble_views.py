@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -264,14 +264,31 @@ def skribble_home(request):
         messages.success(request, _("Lobby wurde erstellt."))
         return redirect("skribble_lobby", code=lobby.code)
 
-    my_lobbies = DrawingGameLobby.objects.filter(players__user=request.user).distinct().order_by("-updated_at")[:12]
+    friend_ids = Friendship.friend_ids_for_user(request.user)
+    my_lobbies = (
+        DrawingGameLobby.objects
+        .filter(players__user=request.user)
+        .annotate(players_count=Count("players", distinct=True))
+        .distinct()
+        .order_by("-updated_at")[:12]
+    )
     invites = DrawingGameInvite.objects.select_related("lobby", "from_user").filter(
         to_user=request.user,
         status=DrawingGameInvite.STATUS_PENDING,
     )
+    discover_lobbies = (
+        DrawingGameLobby.objects
+        .filter(status__in=[DrawingGameLobby.STATUS_WAITING, DrawingGameLobby.STATUS_PLAYING])
+        .filter(Q(owner_id__in=friend_ids) | Q(invites__to_user=request.user) | Q(players__user=request.user))
+        .select_related("owner")
+        .annotate(players_count=Count("players", distinct=True))
+        .distinct()
+        .order_by("-updated_at")[:16]
+    )
     return render(request, "app/skribble_home.html", {
         "my_lobbies": my_lobbies,
         "invites": invites,
+        "discover_lobbies": discover_lobbies,
     })
 
 

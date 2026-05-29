@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from .models import ChatMessage, ChatMessageReaction, ChatRoom, ChatRoomMember, Friendship, UserProfile
 from .profile_views import ensure_profiles_for_users, get_friend_profiles
+from .presence_utils import decorate_users_with_presence
 
 User = get_user_model()
 
@@ -101,6 +102,7 @@ def chat_view(request, room_id=None):
         room.current_membership = memberships.get(room.id)
         all_room_members.extend(list(room.members.all()))
     ensure_profiles_for_users(all_room_members)
+    decorate_users_with_presence(all_room_members)
 
     for room in rooms:
         decorate_room(room, request.user)
@@ -125,6 +127,7 @@ def chat_view(request, room_id=None):
             decorate_message(message, request.user)
         active_room_members = list(active_room.members.select_related("profile").order_by("username"))
         ensure_profiles_for_users(active_room_members)
+        decorate_users_with_presence(active_room_members)
         ChatRoomMember.objects.filter(room=active_room, user=request.user).update(last_read_at=timezone.now())
 
     friend_profiles = get_friend_profiles(request.user)

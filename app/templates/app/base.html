@@ -27,7 +27,7 @@
         <script src="{% static 'app/js/base.js' %}"></script>
     {% endblock %}
 </head>
-<body{% if request.user.is_authenticated %} data-notification-counts-url="{% url 'notification_counts_api' %}"{% endif %}>
+<body{% if request.user.is_authenticated %} data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}"{% endif %}>
     <nav>
         <div class="logo">
             <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
@@ -263,9 +263,30 @@
                         </label>
 
                         <label>
+                            <span>{% translate 'Karten' %}</span>
+                            <input type="color" id="theme-card-bg" value="#ffffff">
+                        </label>
+
+                        <label>
                             <span>{% translate 'Footer' %}</span>
                             <input type="color" id="theme-footer-bg" value="#ffffff">
                         </label>
+
+                        <label>
+                            <span>{% translate 'Rundung' %}</span>
+                            <input type="range" id="theme-radius" min="12" max="34" value="22">
+                        </label>
+                    </div>
+
+                    <div class="theme-option-row">
+                        <button type="button" class="theme-toggle-option" id="theme-compact-toggle">
+                            <i class="fa-solid fa-compress"></i>
+                            {% translate 'Kompakter Modus' %}
+                        </button>
+                        <button type="button" class="theme-toggle-option" id="theme-pattern-toggle">
+                            <i class="fa-solid fa-circle-nodes"></i>
+                            {% translate 'Dezentes Muster' %}
+                        </button>
                     </div>
 
                     <div class="theme-editor-actions">
@@ -283,6 +304,29 @@
             </button>
 
             {% if request.user.is_authenticated %}
+                <div class="notification-center-wrapper">
+                    <button class="notification-center-button" id="notification-center-button" type="button" aria-label="{% translate 'Benachrichtigungen öffnen' %}">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-center-badge js-notification-badge" data-notification-key="total_notifications" data-label-singular="{% translate 'Benachrichtigung' %}" data-label-plural="{% translate 'Benachrichtigungen' %}">{{ total_notifications_count }}</span>
+                    </button>
+
+                    <div class="notification-center-dropdown" id="notification-center-dropdown">
+                        <div class="notification-center-header">
+                            <div>
+                                <strong>{% translate 'Benachrichtigungen' %}</strong>
+                                <small>{% translate 'Chats, Freundschaftsanfragen und Skribble' %}</small>
+                            </div>
+                            <span class="notification-center-total js-notification-total">{{ total_notifications_count }}</span>
+                        </div>
+                        <div class="notification-center-list js-notification-list">
+                            <div class="notification-center-empty">
+                                <i class="fa-regular fa-bell"></i>
+                                <p>{% translate 'Keine neuen Benachrichtigungen.' %}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="profile-menu-wrapper">
                     <button class="profile-menu-button" id="profile-menu-button" type="button" aria-label="{% translate 'Profilmenü öffnen' %}">
                         <span class="profile-menu-avatar">

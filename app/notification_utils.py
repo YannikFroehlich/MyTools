@@ -1,3 +1,7 @@
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.translation import gettext as _
+
 from .models import ChatMessage, ChatRoomMember, DrawingGameInvite, Friendship
 
 
@@ -52,3 +56,53 @@ def get_notification_counts(user):
     )
 
     return counts
+
+
+def get_notification_items(user, limit=10):
+    if not getattr(user, "is_authenticated", False):
+        return []
+
+    items = []
+
+    for membership in ChatRoomMember.objects.filter(user=user).select_related("room"):
+        qs = ChatMessage.objects.filter(room=membership.room).exclude(sender=user).select_related("sender").order_by("-created_at")
+        if membership.last_read_at:
+            qs = qs.filter(created_at__gt=membership.last_read_at)
+        unread_count = qs.count()
+        latest = qs.first()
+        if unread_count and latest:
+            room_title = membership.room.title_for(user)
+            items.append({
+                "type": "chat",
+                "icon": "fa-solid fa-comments",
+                "title": room_title,
+                "text": _("%(count)s ungelesene Nachricht(en) von %(user)s") % {"count": unread_count, "user": latest.sender.username},
+                "url": reverse("chat_room", args=[membership.room_id]),
+                "created_at": latest.created_at,
+                "badge": unread_count,
+            })
+
+    for friendship in Friendship.objects.filter(to_user=user, status=Friendship.STATUS_PENDING).select_related("from_user").order_by("-created_at")[:limit]:
+        items.append({
+            "type": "friend",
+            "icon": "fa-solid fa-user-plus",
+            "title": _("Freundschaftsanfrage"),
+            "text": _("%(user)s möchte mit dir befreundet sein") % {"user": friendship.from_user.username},
+            "url": reverse("profile") + "#friend-requests",
+            "created_at": friendship.created_at,
+            "badge": 1,
+        })
+
+    for invite in DrawingGameInvite.objects.filter(to_user=user, status=DrawingGameInvite.STATUS_PENDING).select_related("lobby", "from_user").order_by("-created_at")[:limit]:
+        items.append({
+            "type": "skribble",
+            "icon": "fa-solid fa-pencil",
+            "title": _("Skribble-Einladung"),
+            "text": _("%(user)s hat dich in %(lobby)s eingeladen") % {"user": invite.from_user.username, "lobby": invite.lobby.name},
+            "url": reverse("skribble_home"),
+            "created_at": invite.created_at,
+            "badge": 1,
+        })
+
+    items.sort(key=lambda item: item.get("created_at") or timezone.now(), reverse=True)
+    return items[:limit]
