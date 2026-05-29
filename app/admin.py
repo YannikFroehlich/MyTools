@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AvatarCharacter, ClockSettings, ClockTimerPreset, ClockWorldCity, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
+from .models import AvatarCharacter, ClockSettings, ClockTimerPreset, ClockWorldCity, DrawingGameGuess, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
 
 
 @admin.register(AvatarCharacter)
@@ -89,3 +89,33 @@ class ClockSettingsAdmin(admin.ModelAdmin):
     list_filter = ("ringtone",)
     search_fields = ("user__username", "user__email")
     readonly_fields = ("updated_at",)
+
+
+
+@admin.register(DrawingGameLobby)
+class DrawingGameLobbyAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "owner", "status", "rounds_count", "draw_time_seconds", "max_players", "updated_at")
+    list_filter = ("status", "owner", "created_at")
+    search_fields = ("name", "code", "owner__username", "owner__email")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(DrawingGamePlayer)
+class DrawingGamePlayerAdmin(admin.ModelAdmin):
+    list_display = ("display_name", "user", "lobby", "score", "avatar_base", "joined_at")
+    list_filter = ("avatar_base", "lobby")
+    search_fields = ("display_name", "user__username", "lobby__code")
+
+
+@admin.register(DrawingGameInvite)
+class DrawingGameInviteAdmin(admin.ModelAdmin):
+    list_display = ("lobby", "from_user", "to_user", "status", "created_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("lobby__code", "from_user__username", "to_user__username")
+
+
+@admin.register(DrawingGameGuess)
+class DrawingGameGuessAdmin(admin.ModelAdmin):
+    list_display = ("lobby", "user", "round_number", "turn_index", "is_correct", "created_at")
+    list_filter = ("is_correct", "created_at")
+    search_fields = ("message", "user__username", "lobby__code")

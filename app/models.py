@@ -661,3 +661,186 @@ class HumanBenchmarkHighScore(models.Model):
 
     def __str__(self):
         return f"{self.user} · {self.get_game_display()} · {self.display_score}"
+
+
+class DrawingGameLobby(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_PLAYING = "playing"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_PLAYING, _("Läuft")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_drawing_lobbies",
+    )
+    name = models.CharField(max_length=80, default="Zeichen-Lobby")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+
+    rounds_count = models.PositiveSmallIntegerField(default=3)
+    draw_time_seconds = models.PositiveSmallIntegerField(default=80)
+    max_players = models.PositiveSmallIntegerField(default=8)
+    custom_words = models.TextField(blank=True)
+    use_only_custom_words = models.BooleanField(default=False)
+
+    current_round_number = models.PositiveSmallIntegerField(default=1)
+    current_turn_index = models.PositiveIntegerField(default=0)
+    current_word = models.CharField(max_length=80, blank=True)
+    current_word_choices = models.JSONField(default=list, blank=True)
+    current_drawing = models.JSONField(default=list, blank=True)
+    round_started_at = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Zeichenspiel-Lobby"
+        verbose_name_plural = "Zeichenspiel-Lobbys"
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def is_waiting(self):
+        return self.status == self.STATUS_WAITING
+
+    @property
+    def is_playing(self):
+        return self.status == self.STATUS_PLAYING
+
+    @property
+    def is_finished(self):
+        return self.status == self.STATUS_FINISHED
+
+    @property
+    def custom_word_list(self):
+        return [word.strip() for word in self.custom_words.replace(";", ",").split(",") if word.strip()]
+
+
+class DrawingGamePlayer(models.Model):
+    AVATAR_BASE_CHOICES = [
+        ("round", _("Rund")),
+        ("square", _("Eckig")),
+        ("robot", _("Roboter")),
+        ("cat", _("Katze")),
+        ("ghost", _("Geist")),
+        ("ninja", _("Ninja")),
+    ]
+
+    lobby = models.ForeignKey(
+        DrawingGameLobby,
+        on_delete=models.CASCADE,
+        related_name="players",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="drawing_game_players",
+    )
+    display_name = models.CharField(max_length=40, blank=True)
+    avatar_base = models.CharField(max_length=20, choices=AVATAR_BASE_CHOICES, default="round")
+    avatar_color = models.CharField(max_length=20, default="#4f8cff")
+    accent_color = models.CharField(max_length=20, default="#ffffff")
+    score = models.PositiveIntegerField(default=0)
+    is_ready = models.BooleanField(default=False)
+    has_guessed_current_word = models.BooleanField(default=False)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["joined_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "user"], name="unique_drawing_player_per_lobby"),
+        ]
+        verbose_name = "Zeichenspiel-Spieler"
+        verbose_name_plural = "Zeichenspiel-Spieler"
+
+    def __str__(self):
+        return f"{self.display_label} · {self.lobby.code}"
+
+    @property
+    def display_label(self):
+        return self.display_name or self.user.get_full_name() or self.user.username
+
+
+class DrawingGameInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    lobby = models.ForeignKey(
+        DrawingGameLobby,
+        on_delete=models.CASCADE,
+        related_name="invites",
+    )
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_drawing_invites",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_drawing_invites",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "to_user"], name="unique_drawing_invite_per_lobby_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="drawing_invite_prevent_self"),
+        ]
+        verbose_name = "Zeichenspiel-Einladung"
+        verbose_name_plural = "Zeichenspiel-Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} → {self.to_user} · {self.lobby.code}"
+
+
+class DrawingGameGuess(models.Model):
+    lobby = models.ForeignKey(
+        DrawingGameLobby,
+        on_delete=models.CASCADE,
+        related_name="guesses",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="drawing_game_guesses",
+    )
+    round_number = models.PositiveSmallIntegerField(default=1)
+    turn_index = models.PositiveIntegerField(default=0)
+    message = models.CharField(max_length=160)
+    is_correct = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["lobby", "round_number", "turn_index", "created_at"]),
+        ]
+        verbose_name = "Zeichenspiel-Rateversuch"
+        verbose_name_plural = "Zeichenspiel-Rateversuche"
+
+    def __str__(self):
+        return f"{self.user}: {self.message[:30]}"

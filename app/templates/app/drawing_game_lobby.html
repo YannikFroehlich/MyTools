@@ -1,0 +1,218 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ lobby.name }} · {% translate 'Zeichenspiel' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/drawing_game.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/drawing_game.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="draw-page draw-lobby-page"
+      data-code="{{ lobby.code }}"
+      data-state-url="{% url 'drawing_game_state_api' lobby.code %}"
+      data-start-url="{% url 'drawing_game_start' lobby.code %}"
+      data-restart-url="{% url 'drawing_game_restart' lobby.code %}"
+      data-choose-url="{% url 'drawing_game_choose_word_api' lobby.code %}"
+      data-draw-url="{% url 'drawing_game_draw_api' lobby.code %}"
+      data-guess-url="{% url 'drawing_game_guess_api' lobby.code %}">
+
+    <section class="draw-lobby-top">
+        <div class="draw-lobby-brand">
+            <a href="{% url 'drawing_game_home' %}" class="draw-back"><i class="fa-solid fa-arrow-left"></i> {% translate 'Zur Übersicht' %}</a>
+            <div class="draw-title-row">
+                <img class="draw-logo draw-logo-lobby" src="{% static 'app/img/Skribble-logo.png' %}" alt="{% translate 'Zeichenspiel' %}">
+                <div class="draw-lobby-copy">
+                    <span class="draw-eyebrow"><i class="fa-solid fa-users"></i> {% translate 'Lobby' %}</span>
+                    <h1>{{ lobby.name }}</h1>
+                    <p>{% translate 'Lobby-Code' %}: <strong class="draw-code">{{ lobby.code }}</strong></p>
+                </div>
+            </div>
+        </div>
+        <div class="draw-top-actions">
+            <button class="draw-secondary" type="button" id="copy-lobby-link">
+                <i class="fa-regular fa-copy"></i> {% translate 'Link kopieren' %}
+            </button>
+            {% if lobby.owner_id == request.user.id %}
+                <button class="draw-primary" type="button" id="start-game-btn">
+                    <i class="fa-solid fa-play"></i> {% translate 'Spiel starten' %}
+                </button>
+                <button class="draw-secondary" type="button" id="restart-game-btn">
+                    <i class="fa-solid fa-rotate-right"></i> {% translate 'Zurücksetzen' %}
+                </button>
+                <form method="post" action="{% url 'drawing_game_delete_lobby' lobby.code %}" class="draw-inline-form" data-confirm="{% translate 'Lobby wirklich löschen? Alle Spieler und Zeichnungen werden entfernt.' %}">
+                    {% csrf_token %}
+                    <button class="draw-danger" type="submit">
+                        <i class="fa-solid fa-trash"></i> {% translate 'Lobby löschen' %}
+                    </button>
+                </form>
+            {% endif %}
+            <form method="post" action="{% url 'drawing_game_leave_lobby' lobby.code %}" class="draw-inline-form" data-confirm="{% translate 'Lobby wirklich verlassen? Du kannst später über eine Einladung oder als Freund wieder beitreten.' %}">
+                {% csrf_token %}
+                <button class="draw-secondary" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i> {% translate 'Verlassen' %}
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="draw-game-shell">
+        <section class="draw-stage draw-panel">
+            <div class="draw-stage-header">
+                <div class="draw-stage-title">
+                    <span>{% translate 'Zeichner' %}</span>
+                    <strong id="drawer-name">-</strong>
+                </div>
+                <div class="draw-round-pill" id="round-info">-</div>
+                <div class="draw-timer" id="timer-display">--</div>
+            </div>
+
+            <div class="draw-word-box draw-word-box-stage">
+                <span>{% translate 'Aktuelles Wort' %}</span>
+                <strong id="word-display">-</strong>
+                <div id="word-choices" class="draw-word-choices"></div>
+            </div>
+
+            <div class="draw-canvas-wrap">
+                <canvas id="drawing-canvas" width="1280" height="760"></canvas>
+                <div id="canvas-blocker" class="draw-canvas-blocker">
+                    <strong>{% translate 'Warte auf das Spiel...' %}</strong>
+                    <span>{% translate 'Der aktuelle Zeichner wählt gleich ein Wort.' %}</span>
+                </div>
+            </div>
+
+            <div class="draw-tools">
+                <div class="draw-tool-group draw-color-tool">
+                    <span>{% translate 'Farben' %}</span>
+                    <div class="draw-brush-palette" id="brush-palette">
+                        <button type="button" class="active" data-color="#111827" style="--brush: #111827" aria-label="Schwarz"></button>
+                        <button type="button" data-color="#ef4444" style="--brush: #ef4444" aria-label="Rot"></button>
+                        <button type="button" data-color="#f97316" style="--brush: #f97316" aria-label="Orange"></button>
+                        <button type="button" data-color="#facc15" style="--brush: #facc15" aria-label="Gelb"></button>
+                        <button type="button" data-color="#22c55e" style="--brush: #22c55e" aria-label="Grün"></button>
+                        <button type="button" data-color="#06b6d4" style="--brush: #06b6d4" aria-label="Türkis"></button>
+                        <button type="button" data-color="#3b82f6" style="--brush: #3b82f6" aria-label="Blau"></button>
+                        <button type="button" data-color="#8b5cf6" style="--brush: #8b5cf6" aria-label="Lila"></button>
+                        <button type="button" data-color="#ec4899" style="--brush: #ec4899" aria-label="Pink"></button>
+                        <button type="button" data-color="#ffffff" style="--brush: #ffffff" aria-label="Weiß"></button>
+                    </div>
+                    <input type="color" id="brush-color" value="#111827" aria-label="{% translate 'Eigene Pinsel-Farbe' %}">
+                </div>
+                <label class="draw-tool-group draw-size-tool">
+                    <span>{% translate 'Pinselgröße' %}</span>
+                    <input type="range" id="brush-size" min="2" max="42" value="7">
+                </label>
+                <button type="button" class="draw-secondary draw-clear-btn" id="clear-canvas-btn">
+                    <i class="fa-solid fa-broom"></i> {% translate 'Leeren' %}
+                </button>
+            </div>
+        </section>
+
+        <aside class="draw-side-stack">
+            <div class="draw-panel draw-status-card">
+                <span>{% translate 'Status' %}</span>
+                <strong id="game-status">-</strong>
+            </div>
+
+            <div class="draw-panel draw-players-panel">
+                <h2>{% translate 'Spieler' %}</h2>
+                <div id="players-list" class="draw-players"></div>
+            </div>
+
+            <div class="draw-chat draw-panel">
+                <h2>{% translate 'Chat & Raten' %}</h2>
+                <div id="guess-list" class="draw-guess-list"></div>
+                <form id="guess-form" class="draw-guess-form">
+                    <input type="text" id="guess-input" maxlength="160" autocomplete="off" placeholder="{% translate 'Wort raten oder Nachricht schreiben...' %}">
+                    <button type="submit" class="draw-primary"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </aside>
+    </section>
+
+    <section class="draw-grid draw-grid-lobby">
+        <article class="draw-panel draw-friends-panel">
+            <h2>{% translate 'Freunde einladen' %}</h2>
+            {% if friend_invite_rows %}
+                <div class="draw-friend-invite-list">
+                    {% for row in friend_invite_rows %}
+                        <div class="draw-friend-invite-row">
+                            <div class="draw-friend-mini">
+                                <div class="draw-friend-avatar">{{ row.user.username|slice:":1"|upper }}</div>
+                                <div>
+                                    <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
+                                    <span>
+                                        {% if row.is_invited %}
+                                            {% translate 'Einladung offen' %}
+                                        {% elif row.was_invited %}
+                                            {% translate 'War schon eingeladen' %}
+                                        {% else %}
+                                            {% translate 'Freund' %}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <form method="post" action="{% url 'drawing_game_invite_friend' lobby.code %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                <button class="draw-primary draw-invite-one" type="submit" {% if row.is_invited %}disabled{% endif %}>
+                                    {% if row.is_invited %}
+                                        <i class="fa-solid fa-check"></i> {% translate 'Eingeladen' %}
+                                    {% else %}
+                                        <i class="fa-solid fa-user-plus"></i> {% translate 'Einladen' %}
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="draw-muted">{% translate 'Es gibt gerade keine weiteren Freunde, die du einladen kannst.' %}</p>
+            {% endif %}
+        </article>
+
+        <article class="draw-panel">
+            <h2>{% translate 'Dein Spiel-Avatar' %}</h2>
+            <form method="post" action="{% url 'drawing_game_update_avatar' lobby.code %}" class="draw-avatar-form">
+                {% csrf_token %}
+                <label>
+                    <span>{% translate 'Name im Spiel' %}</span>
+                    <input type="text" name="display_name" maxlength="40" value="{{ request.user.get_full_name|default:request.user.username }}">
+                </label>
+                <label>
+                    <span>{% translate 'Avatar-Form' %}</span>
+                    <select name="avatar_base">
+                        {% for value, label in avatar_bases %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <div class="draw-color-picker-row">
+                    <div>
+                        <span>{% translate 'Farbe' %}</span>
+                        <div class="draw-color-options">
+                            {% for color in avatar_colors %}
+                                <label style="--swatch: {{ color }}"><input type="radio" name="avatar_color" value="{{ color }}" {% if forloop.first %}checked{% endif %}></label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <span>{% translate 'Akzent' %}</span>
+                        <div class="draw-color-options">
+                            {% for color in accent_colors %}
+                                <label style="--swatch: {{ color }}"><input type="radio" name="accent_color" value="{{ color }}" {% if forloop.first %}checked{% endif %}></label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <button class="draw-secondary" type="submit"><i class="fa-solid fa-floppy-disk"></i> {% translate 'Avatar speichern' %}</button>
+            </form>
+        </article>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Zeichenspiel' %} · MyTools{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/drawing_game.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="draw-page draw-home-page">
+    <section class="draw-hero">
+        <div class="draw-hero-main">
+            <span class="draw-eyebrow"><i class="fa-solid fa-pencil"></i> {% translate 'Freunde-Spiel' %}</span>
+            <img class="draw-logo draw-logo-hero" src="{% static 'app/img/Skribble-logo.png' %}" alt="{% translate 'Zeichenspiel' %}">
+            <h1 class="draw-logo-title">{% translate 'Zeichenspiel' %}</h1>
+            <p>{% translate 'Erstelle eine Lobby, lade deine Freunde ein, wähle ein Wort und lass die anderen raten.' %}</p>
+        </div>
+        <div class="draw-hero-card">
+            <i class="fa-solid fa-palette"></i>
+            <strong>{% translate 'Live zeichnen' %}</strong>
+            <span>{% translate 'Canvas, Chat, Punkte, Timer und Runden direkt in MyTools.' %}</span>
+        </div>
+    </section>
+
+    <section class="draw-grid draw-grid-home">
+        <article class="draw-panel">
+            <h2>{% translate 'Neue Lobby erstellen' %}</h2>
+            <form method="post" class="draw-form">
+                {% csrf_token %}
+                <label>
+                    <span>{% translate 'Lobby-Name' %}</span>
+                    <input type="text" name="name" maxlength="80" value="{% translate 'Zeichen-Lobby' %}">
+                </label>
+
+                <div class="draw-form-row">
+                    <label>
+                        <span>{% translate 'Runden' %}</span>
+                        <input type="number" name="rounds_count" min="1" max="10" value="3">
+                    </label>
+                    <label>
+                        <span>{% translate 'Zeichenzeit' %}</span>
+                        <select name="draw_time_seconds">
+                            <option value="45">45 {% translate 'Sek.' %}</option>
+                            <option value="60">60 {% translate 'Sek.' %}</option>
+                            <option value="80" selected>80 {% translate 'Sek.' %}</option>
+                            <option value="120">120 {% translate 'Sek.' %}</option>
+                            <option value="180">180 {% translate 'Sek.' %}</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>{% translate 'Max. Spieler' %}</span>
+                        <input type="number" name="max_players" min="2" max="12" value="8">
+                    </label>
+                </div>
+
+                <label>
+                    <span>{% translate 'Eigene Wörter' %}</span>
+                    <textarea name="custom_words" rows="4" placeholder="{% translate 'Kommagetrennt, z.B. Server, Django, Cloudflare' %}"></textarea>
+                </label>
+
+                <label class="draw-check">
+                    <input type="checkbox" name="use_only_custom_words">
+                    <span>{% translate 'Nur eigene Wörter verwenden' %}</span>
+                </label>
+
+                <button class="draw-primary" type="submit">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate 'Lobby erstellen' %}
+                </button>
+            </form>
+        </article>
+
+        <aside class="draw-panel">
+            <h2>{% translate 'Einladungen' %}</h2>
+            {% if invites %}
+                <div class="draw-list">
+                    {% for invite in invites %}
+                        <div class="draw-list-item">
+                            <div>
+                                <strong>{{ invite.lobby.name }}</strong>
+                                <span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span>
+                            </div>
+                            <div class="draw-actions-inline">
+                                <form method="post" action="{% url 'drawing_game_invite_response' invite.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="accept">
+                                    <button type="submit" class="draw-small-btn draw-accept">{% translate 'Annehmen' %}</button>
+                                </form>
+                                <form method="post" action="{% url 'drawing_game_invite_response' invite.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="decline">
+                                    <button type="submit" class="draw-small-btn">{% translate 'Ablehnen' %}</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="draw-muted">{% translate 'Du hast aktuell keine offenen Spiel-Einladungen.' %}</p>
+            {% endif %}
+        </aside>
+    </section>
+
+    <section class="draw-panel">
+        <h2>{% translate 'Deine Lobbys' %}</h2>
+        {% if my_lobbies %}
+            <div class="draw-lobby-cards">
+                {% for lobby in my_lobbies %}
+                    <a class="draw-lobby-card" href="{% url 'drawing_game_lobby' lobby.code %}">
+                        <span class="draw-code">{{ lobby.code }}</span>
+                        <strong>{{ lobby.name }}</strong>
+                        <span>{{ lobby.players.count }} / {{ lobby.max_players }} {% translate 'Spieler' %} · {{ lobby.get_status_display }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="draw-muted">{% translate 'Du bist noch in keiner Lobby.' %}</p>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
