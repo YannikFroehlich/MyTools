@@ -22,6 +22,7 @@
     {% endblock %}
 
     {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'app/css/contrast.css' %}">
     {% block scripts %}
         <script src="{% static 'app/js/base.js' %}"></script>
     {% endblock %}
@@ -65,6 +66,11 @@
                     <a href="{% url 'drift-circuit' %}" class="menu-item">
                         <i class="fa-solid fa-car-side"></i>
                         {% translate 'Racing Game' %}
+                    </a>
+
+                    <a href="{% url 'skribble_home' %}" class="menu-item">
+                        <i class="fa-solid fa-pencil"></i>
+                        {% translate 'Skribble' %}
                     </a>
                 </div>
             </div>
@@ -318,6 +324,31 @@
                             {% translate 'Nutzer' %}
                         </a>
 
+                        <a href="{% url 'friends_list' request.user.id %}" class="profile-menu-item">
+                            <i class="fa-solid fa-user-group"></i>
+                            {% translate 'Freunde' %}
+                        </a>
+
+                        <a href="{% url 'chat' %}" class="profile-menu-item profile-menu-item-with-badge">
+                            <span class="profile-menu-item-main">
+                                <i class="fa-solid fa-comments"></i>
+                                {% translate 'Chat' %}
+                            </span>
+                            <span class="profile-menu-badge" aria-label="{% blocktranslate count count=unread_chat_messages_count %}{{ count }} ungelesene Nachricht{% plural %}{{ count }} ungelesene Nachrichten{% endblocktranslate %}">
+                                {{ unread_chat_messages_count }}
+                            </span>
+                        </a>
+
+                        <a href="{% url 'profile' %}#friend-requests" class="profile-menu-item profile-menu-item-with-badge">
+                            <span class="profile-menu-item-main">
+                                <i class="fa-solid fa-user-plus"></i>
+                                {% translate 'Freundschaftsanfragen' %}
+                            </span>
+                            <span class="profile-menu-badge" aria-label="{% blocktranslate count count=incoming_friend_requests_count %}{{ count }} offene Freundschaftsanfrage{% plural %}{{ count }} offene Freundschaftsanfragen{% endblocktranslate %}">
+                                {{ incoming_friend_requests_count }}
+                            </span>
+                        </a>
+
                         <form action="{% url 'logout' %}" method="post" class="profile-menu-logout-form">
                             {% csrf_token %}
                             <button class="profile-menu-item profile-menu-logout" type="submit">
@@ -364,6 +395,11 @@
                 <a href="{% url 'users' %}">
                     <i class="fa-solid fa-users"></i>
                     {% translate 'Nutzer' %}
+                </a>
+
+                <a href="{% url 'chat' %}">
+                    <i class="fa-solid fa-comments"></i>
+                    {% translate 'Chat' %}
                 </a>
 
                 <a href="{% url 'notes' %}">

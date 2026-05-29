@@ -47,6 +47,12 @@
                 </h1>
 
                 <p>@{{ profile_user.username }}</p>
+
+                <div class="public-profile-stats">
+                    <span><strong>{{ friends_count }}</strong>{% translate "Freunde" %}</span>
+                    <span><strong>{{ total_highscores_count }}</strong>{% translate "Highscores" %}</span>
+                    <span><strong>{{ chat_rooms_count }}</strong>{% translate "Chats" %}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -72,12 +78,72 @@
                 </div>
             </div>
 
-            {% if profile_user == request.user %}
-                <a href="{% url 'profile' %}" class="public-profile-edit-button">
-                    <i class="fa-solid fa-user-gear"></i>
-                    {% translate "Mein Profil bearbeiten" %}
+
+            <div class="public-profile-actions">
+                {% if friendship_state == "self" %}
+                    <a href="{% url 'profile' %}" class="public-profile-edit-button">
+                        <i class="fa-solid fa-user-gear"></i>
+                        {% translate "Mein Profil bearbeiten" %}
+                    </a>
+                {% elif friendship_state == "friends" %}
+                    <form method="post" action="{% url 'chat_direct' profile_user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="friendship-button friendship-chat-button">
+                            <i class="fa-solid fa-comments"></i>
+                            {% translate "Nachricht schreiben" %}
+                        </button>
+                    </form>
+
+                    <form method="post" action="{% url 'friendship_action' profile_user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="remove">
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="friendship-button friendship-button-muted">
+                            <i class="fa-solid fa-user-check"></i>
+                            {% translate "Befreundet" %}
+                        </button>
+                    </form>
+                {% elif friendship_state == "pending_sent" %}
+                    <form method="post" action="{% url 'friendship_action' profile_user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="cancel">
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="friendship-button friendship-button-muted">
+                            <i class="fa-solid fa-clock"></i>
+                            {% translate "Anfrage gesendet" %}
+                        </button>
+                    </form>
+                {% elif friendship_state == "pending_received" %}
+                    <form method="post" action="{% url 'friendship_action' profile_user.id %}" class="friendship-inline-actions">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" name="action" value="accept" class="friendship-button">
+                            <i class="fa-solid fa-user-plus"></i>
+                            {% translate "Annehmen" %}
+                        </button>
+                        <button type="submit" name="action" value="decline" class="friendship-button friendship-button-muted">
+                            <i class="fa-solid fa-xmark"></i>
+                            {% translate "Ablehnen" %}
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'friendship_action' profile_user.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="send">
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button type="submit" class="friendship-button">
+                            <i class="fa-solid fa-user-plus"></i>
+                            {% translate "Freund hinzufügen" %}
+                        </button>
+                    </form>
+                {% endif %}
+
+                <a href="{% url 'friends_list' profile_user.id %}" class="friendship-link-button">
+                    <i class="fa-solid fa-user-group"></i>
+                    {{ friends_count }} {% translate "Freunde" %}
                 </a>
-            {% endif %}
+            </div>
+
         </aside>
 
         <div class="public-profile-main">
@@ -91,6 +157,52 @@
                 <div class="public-profile-empty-bio">
                     <i class="fa-regular fa-message"></i>
                     <p>{% translate "Dieser Nutzer hat noch keine Beschreibung hinterlegt." %}</p>
+                </div>
+            {% endif %}
+        </article>
+
+
+        <article class="public-profile-card public-profile-friends-card">
+            <div class="public-profile-section-header">
+                <div>
+                    <p class="users-kicker">{% translate "Freunde" %}</p>
+                    <h2>{{ friends_count }} {% translate "Freunde" %}</h2>
+                </div>
+
+                <a href="{% url 'friends_list' profile_user.id %}" class="public-profile-benchmark-link">
+                    <i class="fa-solid fa-user-group"></i>
+                    {% translate "Alle anzeigen" %}
+                </a>
+            </div>
+
+            {% if friends_preview %}
+                <div class="friends-preview-grid">
+                    {% for friend_profile in friends_preview %}
+                        <a href="{% url 'public_profile' friend_profile.user.id %}" class="friend-preview-card">
+                            <span class="friend-preview-avatar">
+                                {% if friend_profile.avatar %}
+                                    <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                {% else %}
+                                    {{ friend_profile.initials }}
+                                {% endif %}
+                            </span>
+                            <span>
+                                <strong>
+                                    {% if friend_profile.user.get_full_name %}
+                                        {{ friend_profile.user.get_full_name }}
+                                    {% else %}
+                                        {{ friend_profile.user.username }}
+                                    {% endif %}
+                                </strong>
+                                <small>@{{ friend_profile.user.username }}</small>
+                            </span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="public-profile-empty-bio">
+                    <i class="fa-regular fa-face-smile"></i>
+                    <p>{% translate "Hier sind noch keine Freunde sichtbar." %}</p>
                 </div>
             {% endif %}
         </article>

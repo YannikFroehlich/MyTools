@@ -8,8 +8,9 @@ from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
-from .models import HumanBenchmarkHighScore, HumanBenchmarkScore, UserProfile
+from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, UserProfile
 from .profile_forms import ProfileForm
 
 User = get_user_model()
@@ -29,6 +30,78 @@ def get_profile_human_benchmark_highscores(user):
         }
         for game, label in HumanBenchmarkScore.GAME_CHOICES
     ]
+
+
+def get_friend_users(user):
+    friend_ids = Friendship.friend_ids_for_user(user)
+
+    if not friend_ids:
+        return User.objects.none()
+
+    return User.objects.filter(id__in=friend_ids, is_active=True).order_by("username")
+
+
+def get_friend_profiles(user, limit=None):
+    friendships = list(Friendship.accepted_for_user(user))
+
+    if not friendships:
+        return []
+
+    friend_ids = []
+    friendship_since_by_user_id = {}
+
+    for friendship in friendships:
+        friend_user = friendship.other_user(user)
+
+        if not friend_user or not friend_user.is_active:
+            continue
+
+        friend_ids.append(friend_user.id)
+        friendship_since_by_user_id[friend_user.id] = friendship.updated_at
+
+    if not friend_ids:
+        return []
+
+    friends = list(
+        User.objects
+        .filter(id__in=friend_ids, is_active=True)
+        .order_by("username")
+    )
+
+    if limit:
+        friends = friends[:limit]
+
+    ensure_profiles_for_users(friends)
+
+    profiles = list(
+        UserProfile.objects
+        .select_related("user")
+        .filter(user__in=friends)
+        .order_by("user__username")
+    )
+
+    for profile in profiles:
+        profile.friendship_since = friendship_since_by_user_id.get(profile.user_id)
+
+    return profiles
+
+
+def get_friendship_state(viewer, profile_user):
+    if not viewer.is_authenticated or viewer == profile_user:
+        return "self" if viewer == profile_user else "none"
+
+    friendship = Friendship.between(viewer, profile_user)
+
+    if not friendship:
+        return "none"
+
+    if friendship.status == Friendship.STATUS_ACCEPTED:
+        return "friends"
+
+    if friendship.from_user_id == viewer.id:
+        return "pending_sent"
+
+    return "pending_received"
 
 
 @login_required
@@ -101,10 +174,32 @@ def profile_view(request):
     else:
         form = ProfileForm(instance=profile, user=request.user)
 
+    incoming_requests = (
+        Friendship.objects
+        .select_related("from_user", "from_user__profile")
+        .filter(to_user=request.user, status=Friendship.STATUS_PENDING)
+        .order_by("-created_at")
+    )
+    outgoing_requests = (
+        Friendship.objects
+        .select_related("to_user", "to_user__profile")
+        .filter(from_user=request.user, status=Friendship.STATUS_PENDING)
+        .order_by("-created_at")
+    )
+    friends_count = Friendship.accepted_for_user(request.user).count()
+    chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=request.user).distinct().count()
+    total_highscores_count = HumanBenchmarkHighScore.objects.filter(user=request.user).count()
+
     return render(request, "app/profile.html", {
         "form": form,
         "profile": profile,
         "benchmark_highscores": get_profile_human_benchmark_highscores(request.user),
+        "incoming_friend_requests": incoming_requests,
+        "outgoing_friend_requests": outgoing_requests,
+        "friends_preview": get_friend_profiles(request.user, limit=6),
+        "friends_count": friends_count,
+        "chat_rooms_count": chat_rooms_count,
+        "total_highscores_count": total_highscores_count,
     })
 
 
@@ -142,12 +237,15 @@ def users_view(request):
     users = list(users_qs.order_by("username"))
     ensure_profiles_for_users(users)
 
-    profiles = (
+    profiles = list(
         UserProfile.objects
         .select_related("user")
         .filter(user__in=users)
         .order_by("user__username")
     )
+
+    for profile in profiles:
+        profile.friendship_state = get_friendship_state(request.user, profile.user)
 
     return render(request, "app/users.html", {
         "profiles": profiles,
@@ -160,9 +258,91 @@ def users_view(request):
 def public_profile_view(request, user_id):
     profile_user = get_object_or_404(User, id=user_id, is_active=True)
     profile, created = UserProfile.objects.get_or_create(user=profile_user)
+    friends_count = Friendship.accepted_for_user(profile_user).count()
+    chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
+    total_highscores_count = HumanBenchmarkHighScore.objects.filter(user=profile_user).count()
 
     return render(request, "app/public_profile.html", {
         "profile_user": profile_user,
         "profile": profile,
         "benchmark_highscores": get_profile_human_benchmark_highscores(profile_user),
+        "friendship_state": get_friendship_state(request.user, profile_user),
+        "friends_preview": get_friend_profiles(profile_user, limit=6),
+        "friends_count": friends_count,
+        "chat_rooms_count": chat_rooms_count,
+        "total_highscores_count": total_highscores_count,
     })
+
+
+@login_required
+def friends_list_view(request, user_id):
+    profile_user = get_object_or_404(User, id=user_id, is_active=True)
+    profile, created = UserProfile.objects.get_or_create(user=profile_user)
+    friends = get_friend_profiles(profile_user)
+
+    return render(request, "app/friends.html", {
+        "profile_user": profile_user,
+        "profile": profile,
+        "friends": friends,
+        "friends_count": Friendship.accepted_for_user(profile_user).count(),
+    })
+
+
+@login_required
+@require_POST
+def friendship_action_view(request, user_id):
+    target_user = get_object_or_404(User, id=user_id, is_active=True)
+    action = request.POST.get("action", "").strip()
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER") or "users"
+
+    if target_user == request.user:
+        messages.error(request, _("Du kannst dir selbst keine Freundschaftsanfrage senden."))
+        return redirect(next_url)
+
+    friendship = Friendship.between(request.user, target_user)
+
+    if action == "send":
+        if friendship:
+            if friendship.status == Friendship.STATUS_ACCEPTED:
+                messages.info(request, _("Ihr seid bereits befreundet."))
+            elif friendship.from_user_id == request.user.id:
+                messages.info(request, _("Deine Freundschaftsanfrage ist bereits offen."))
+            else:
+                friendship.status = Friendship.STATUS_ACCEPTED
+                friendship.save(update_fields=["status", "updated_at"])
+                messages.success(request, _("Freundschaftsanfrage angenommen."))
+        else:
+            Friendship.objects.create(from_user=request.user, to_user=target_user)
+            messages.success(request, _("Freundschaftsanfrage gesendet."))
+
+    elif action == "accept":
+        if friendship and friendship.to_user_id == request.user.id and friendship.status == Friendship.STATUS_PENDING:
+            friendship.status = Friendship.STATUS_ACCEPTED
+            friendship.save(update_fields=["status", "updated_at"])
+            messages.success(request, _("Freundschaftsanfrage angenommen."))
+        else:
+            messages.error(request, _("Diese Freundschaftsanfrage konnte nicht angenommen werden."))
+
+    elif action in ["decline", "cancel"]:
+        if friendship and friendship.status == Friendship.STATUS_PENDING:
+            if action == "decline" and friendship.to_user_id != request.user.id:
+                messages.error(request, _("Diese Freundschaftsanfrage kannst du nicht ablehnen."))
+            elif action == "cancel" and friendship.from_user_id != request.user.id:
+                messages.error(request, _("Diese Freundschaftsanfrage kannst du nicht zurückziehen."))
+            else:
+                friendship.delete()
+                messages.success(request, _("Freundschaftsanfrage entfernt."))
+        else:
+            messages.error(request, _("Es gibt keine offene Freundschaftsanfrage."))
+
+    elif action == "remove":
+        if friendship and friendship.status == Friendship.STATUS_ACCEPTED:
+            friendship.delete()
+            messages.success(request, _("Freundschaft entfernt."))
+        else:
+            messages.error(request, _("Ihr seid aktuell nicht befreundet."))
+
+    else:
+        messages.error(request, _("Unbekannte Freundschafts-Aktion."))
+
+    return redirect(next_url)

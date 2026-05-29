@@ -53,6 +53,213 @@ class UserProfile(models.Model):
         return (self.user.username[:2] or "MT").upper()
 
 
+class Friendship(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Ausstehend")),
+        (STATUS_ACCEPTED, _("Befreundet")),
+    ]
+
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_friendships",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_friendships",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Freundschaft"
+        verbose_name_plural = "Freundschaften"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["from_user", "to_user"],
+                name="unique_friendship_request_direction",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(from_user=models.F("to_user")),
+                name="friendship_prevent_self_request",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["from_user", "status"]),
+            models.Index(fields=["to_user", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.from_user} → {self.to_user} · {self.get_status_display()}"
+
+    def other_user(self, user):
+        if self.from_user_id == user.id:
+            return self.to_user
+        if self.to_user_id == user.id:
+            return self.from_user
+        return None
+
+    @classmethod
+    def between(cls, user_a, user_b):
+        return cls.objects.filter(
+            models.Q(from_user=user_a, to_user=user_b)
+            | models.Q(from_user=user_b, to_user=user_a)
+        ).first()
+
+    @classmethod
+    def accepted_for_user(cls, user):
+        return cls.objects.select_related("from_user", "to_user").filter(
+            status=cls.STATUS_ACCEPTED
+        ).filter(
+            models.Q(from_user=user) | models.Q(to_user=user)
+        )
+
+    @classmethod
+    def friend_ids_for_user(cls, user):
+        friendships = cls.accepted_for_user(user).values_list("from_user_id", "to_user_id")
+        return [to_id if from_id == user.id else from_id for from_id, to_id in friendships]
+
+
+class ChatRoom(models.Model):
+    ROOM_DIRECT = "direct"
+    ROOM_GROUP = "group"
+
+    ROOM_CHOICES = [
+        (ROOM_DIRECT, _("Direktchat")),
+        (ROOM_GROUP, _("Gruppe")),
+    ]
+
+    room_type = models.CharField(max_length=20, choices=ROOM_CHOICES, default=ROOM_DIRECT)
+    name = models.CharField(max_length=80, blank=True)
+    direct_key = models.CharField(max_length=80, unique=True, null=True, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_chat_rooms",
+    )
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="ChatRoomMember",
+        related_name="chat_rooms",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        indexes = [
+            models.Index(fields=["room_type", "updated_at"]),
+            models.Index(fields=["direct_key"]),
+        ]
+        verbose_name = "Chatraum"
+        verbose_name_plural = "Chaträume"
+
+    def __str__(self):
+        return self.name or f"Chat #{self.pk}"
+
+    @classmethod
+    def direct_key_for_users(cls, user_a, user_b):
+        first_id, second_id = sorted([user_a.id, user_b.id])
+        return f"direct:{first_id}:{second_id}"
+
+    def title_for(self, user):
+        if self.room_type == self.ROOM_GROUP:
+            return self.name or _("Gruppe")
+
+        other_member = (
+            self.members
+            .exclude(id=user.id)
+            .first()
+        )
+
+        if other_member:
+            return other_member.get_full_name() or other_member.username
+
+        return _("Direktchat")
+
+
+class ChatRoomMember(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="room_memberships")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_memberships")
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_read_at = models.DateTimeField(null=True, blank=True)
+    is_admin = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["joined_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["room", "user"], name="unique_chat_room_member"),
+        ]
+        indexes = [
+            models.Index(fields=["user", "room"]),
+        ]
+        verbose_name = "Chatmitglied"
+        verbose_name_plural = "Chatmitglieder"
+
+    def __str__(self):
+        return f"{self.user} · {self.room}"
+
+
+class ChatMessage(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_chat_messages")
+    text = models.TextField(max_length=1200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["room", "created_at"]),
+            models.Index(fields=["sender", "created_at"]),
+        ]
+        verbose_name = "Chatnachricht"
+        verbose_name_plural = "Chatnachrichten"
+
+    def __str__(self):
+        return f"{self.sender}: {self.text[:40]}"
+
+
+class ChatMessageReaction(models.Model):
+    EMOJI_CHOICES = [
+        ("👍", "👍"),
+        ("❤️", "❤️"),
+        ("😂", "😂"),
+        ("😮", "😮"),
+        ("😢", "😢"),
+        ("🙏", "🙏"),
+    ]
+
+    message = models.ForeignKey(ChatMessage, on_delete=models.CASCADE, related_name="reactions")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_reactions")
+    emoji = models.CharField(max_length=8, choices=EMOJI_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["message", "user"], name="unique_chat_message_reaction"),
+        ]
+        indexes = [
+            models.Index(fields=["message", "emoji"]),
+            models.Index(fields=["user", "updated_at"]),
+        ]
+        verbose_name = "Chatreaktion"
+        verbose_name_plural = "Chatreaktionen"
+
+    def __str__(self):
+        return f"{self.user} {self.emoji} → {self.message_id}"
+
+
 class ShortcutSection(models.Model):
     COLOR_CHOICES = [
         ("blue", _("Blau")),
@@ -588,3 +795,186 @@ class HumanBenchmarkHighScore(models.Model):
 
     def __str__(self):
         return f"{self.user} · {self.get_game_display()} · {self.display_score}"
+
+
+class DrawingGameLobby(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_PLAYING = "playing"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_PLAYING, _("Läuft")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_drawing_lobbies",
+    )
+    name = models.CharField(max_length=80, default="Zeichen-Lobby")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+
+    rounds_count = models.PositiveSmallIntegerField(default=3)
+    draw_time_seconds = models.PositiveSmallIntegerField(default=80)
+    max_players = models.PositiveSmallIntegerField(default=8)
+    custom_words = models.TextField(blank=True)
+    use_only_custom_words = models.BooleanField(default=False)
+
+    current_round_number = models.PositiveSmallIntegerField(default=1)
+    current_turn_index = models.PositiveIntegerField(default=0)
+    current_word = models.CharField(max_length=80, blank=True)
+    current_word_choices = models.JSONField(default=list, blank=True)
+    current_drawing = models.JSONField(default=list, blank=True)
+    round_started_at = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Skribble-Lobby"
+        verbose_name_plural = "Skribble-Lobbys"
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def is_waiting(self):
+        return self.status == self.STATUS_WAITING
+
+    @property
+    def is_playing(self):
+        return self.status == self.STATUS_PLAYING
+
+    @property
+    def is_finished(self):
+        return self.status == self.STATUS_FINISHED
+
+    @property
+    def custom_word_list(self):
+        return [word.strip() for word in self.custom_words.replace(";", ",").split(",") if word.strip()]
+
+
+class DrawingGamePlayer(models.Model):
+    AVATAR_BASE_CHOICES = [
+        ("round", _("Rund")),
+        ("square", _("Eckig")),
+        ("robot", _("Roboter")),
+        ("cat", _("Katze")),
+        ("ghost", _("Geist")),
+        ("ninja", _("Ninja")),
+    ]
+
+    lobby = models.ForeignKey(
+        DrawingGameLobby,
+        on_delete=models.CASCADE,
+        related_name="players",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="skribble_players",
+    )
+    display_name = models.CharField(max_length=40, blank=True)
+    avatar_base = models.CharField(max_length=20, choices=AVATAR_BASE_CHOICES, default="round")
+    avatar_color = models.CharField(max_length=20, default="#4f8cff")
+    accent_color = models.CharField(max_length=20, default="#ffffff")
+    score = models.PositiveIntegerField(default=0)
+    is_ready = models.BooleanField(default=False)
+    has_guessed_current_word = models.BooleanField(default=False)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["joined_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "user"], name="unique_drawing_player_per_lobby"),
+        ]
+        verbose_name = "Skribble-Spieler"
+        verbose_name_plural = "Skribble-Spieler"
+
+    def __str__(self):
+        return f"{self.display_label} · {self.lobby.code}"
+
+    @property
+    def display_label(self):
+        return self.display_name or self.user.get_full_name() or self.user.username
+
+
+class DrawingGameInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    lobby = models.ForeignKey(
+        DrawingGameLobby,
+        on_delete=models.CASCADE,
+        related_name="invites",
+    )
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_drawing_invites",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_drawing_invites",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "to_user"], name="unique_drawing_invite_per_lobby_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="drawing_invite_prevent_self"),
+        ]
+        verbose_name = "Skribble-Einladung"
+        verbose_name_plural = "Skribble-Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} → {self.to_user} · {self.lobby.code}"
+
+
+class DrawingGameGuess(models.Model):
+    lobby = models.ForeignKey(
+        DrawingGameLobby,
+        on_delete=models.CASCADE,
+        related_name="guesses",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="skribble_guesses",
+    )
+    round_number = models.PositiveSmallIntegerField(default=1)
+    turn_index = models.PositiveIntegerField(default=0)
+    message = models.CharField(max_length=160)
+    is_correct = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["lobby", "round_number", "turn_index", "created_at"]),
+        ]
+        verbose_name = "Skribble-Rateversuch"
+        verbose_name_plural = "Skribble-Rateversuche"
+
+    def __str__(self):
+        return f"{self.user}: {self.message[:30]}"
