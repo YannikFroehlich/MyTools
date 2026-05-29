@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import *
-from .profile_views import profile_view, users_view, public_profile_view
+from .profile_views import friends_list_view, friendship_action_view, profile_view, users_view, public_profile_view
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
@@ -13,6 +13,8 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
     path('users/', users_view, name='users'),
     path('users/<int:user_id>/', public_profile_view, name='public_profile'),
+    path('users/<int:user_id>/friends/', friends_list_view, name='friends_list'),
+    path('users/<int:user_id>/friendship/', friendship_action_view, name='friendship_action'),
 
     path('weather/', weather, name='weather'),
     path("obs-dashboard/", obs_dashboard, name="obs-dashboard"),

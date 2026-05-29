@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AvatarCharacter, ClockSettings, ClockTimerPreset, ClockWorldCity, HumanBenchmarkHighScore, HumanBenchmarkScore, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
+from .models import AvatarCharacter, ClockSettings, ClockTimerPreset, ClockWorldCity, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, Note, Shortcut, ShortcutSection, UserProfile, WeatherLocation
 
 
 @admin.register(AvatarCharacter)
@@ -43,6 +43,14 @@ class WeatherLocationAdmin(admin.ModelAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "updated_at", "created_at")
     search_fields = ("user__username", "user__email", "user__first_name", "user__last_name")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(Friendship)
+class FriendshipAdmin(admin.ModelAdmin):
+    list_display = ("from_user", "to_user", "status", "created_at", "updated_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("from_user__username", "from_user__email", "to_user__username", "to_user__email")
     readonly_fields = ("created_at", "updated_at")
 
 

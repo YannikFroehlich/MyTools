@@ -80,6 +80,64 @@
                     <strong>{{ profile.created_at|date:"d.m.Y" }}</strong>
                 </div>
             </div>
+
+            <div class="profile-friends-summary">
+                <div class="profile-friends-headline">
+                    <span>{% translate "Freunde" %}</span>
+                    <strong>{{ friends_count }}</strong>
+                </div>
+
+                <a href="{% url 'friends_list' request.user.id %}" class="profile-friends-link">
+                    <i class="fa-solid fa-user-group"></i>
+                    {% translate "Freundesliste öffnen" %}
+                </a>
+
+                {% if incoming_friend_requests %}
+                    <div class="profile-friend-requests">
+                        <h3>{% translate "Offene Anfragen" %}</h3>
+                        {% for request_item in incoming_friend_requests %}
+                            <div class="profile-friend-request">
+                                <a href="{% url 'public_profile' request_item.from_user.id %}">
+                                    @{{ request_item.from_user.username }}
+                                </a>
+
+                                <form method="post" action="{% url 'friendship_action' request_item.from_user.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <button type="submit" name="action" value="accept" title="{% translate 'Annehmen' %}">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                    <button type="submit" name="action" value="decline" title="{% translate 'Ablehnen' %}">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% if outgoing_friend_requests %}
+                    <div class="profile-friend-requests">
+                        <h3>{% translate "Gesendete Anfragen" %}</h3>
+                        {% for request_item in outgoing_friend_requests %}
+                            <div class="profile-friend-request">
+                                <a href="{% url 'public_profile' request_item.to_user.id %}">
+                                    @{{ request_item.to_user.username }}
+                                </a>
+
+                                <form method="post" action="{% url 'friendship_action' request_item.to_user.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    <button type="submit" name="action" value="cancel" title="{% translate 'Zurückziehen' %}">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
         </aside>
 
         <form class="profile-card profile-form-card" method="post" enctype="multipart/form-data">

@@ -319,6 +319,13 @@
                             {% translate 'Nutzer' %}
                         </a>
 
+                        <a href="{% url 'friends_list' request.user.id %}" class="profile-menu-item">
+                            <i class="fa-solid fa-user-group"></i>
+                            {% translate 'Freunde' %}
+                        </a>
+
+                        <form action="{% url 'logout' %}" method="post" class="profile-menu-logout-form">
+
                         <form action="{% url 'logout' %}" method="post" class="profile-menu-logout-form">
                             {% csrf_token %}
                             <button class="profile-menu-item profile-menu-logout" type="submit">

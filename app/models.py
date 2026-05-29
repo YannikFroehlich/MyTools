@@ -53,6 +53,79 @@ class UserProfile(models.Model):
         return (self.user.username[:2] or "MT").upper()
 
 
+class Friendship(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Ausstehend")),
+        (STATUS_ACCEPTED, _("Befreundet")),
+    ]
+
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_friendships",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_friendships",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Freundschaft"
+        verbose_name_plural = "Freundschaften"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["from_user", "to_user"],
+                name="unique_friendship_request_direction",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(from_user=models.F("to_user")),
+                name="friendship_prevent_self_request",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["from_user", "status"]),
+            models.Index(fields=["to_user", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.from_user} → {self.to_user} · {self.get_status_display()}"
+
+    def other_user(self, user):
+        if self.from_user_id == user.id:
+            return self.to_user
+        if self.to_user_id == user.id:
+            return self.from_user
+        return None
+
+    @classmethod
+    def between(cls, user_a, user_b):
+        return cls.objects.filter(
+            models.Q(from_user=user_a, to_user=user_b)
+            | models.Q(from_user=user_b, to_user=user_a)
+        ).first()
+
+    @classmethod
+    def accepted_for_user(cls, user):
+        return cls.objects.select_related("from_user", "to_user").filter(
+            status=cls.STATUS_ACCEPTED
+        ).filter(
+            models.Q(from_user=user) | models.Q(to_user=user)
+        )
+
+    @classmethod
+    def friend_ids_for_user(cls, user):
+        friendships = cls.accepted_for_user(user).values_list("from_user_id", "to_user_id")
+        return [to_id if from_id == user.id else from_id for from_id, to_id in friendships]
+
+
 class ShortcutSection(models.Model):
     COLOR_CHOICES = [
         ("blue", _("Blau")),
