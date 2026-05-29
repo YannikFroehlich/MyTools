@@ -42,15 +42,21 @@
             {% endif %}
         </form>
 
-        <div class="users-counter">
-            <span>{{ profiles|length }}</span>
-            <small>
-                {% if query %}
-                    {% translate "gefunden" %}
-                {% else %}
-                    {% translate "Nutzer" %}
-                {% endif %}
-            </small>
+        <div class="users-toolbar-actions">
+            <a href="{% url 'chat' %}" class="users-toolbar-action">
+                <i class="fa-solid fa-comments"></i>
+                {% translate "Chat" %}
+            </a>
+            <div class="users-counter">
+                <span>{{ profiles|length }}</span>
+                <small>
+                    {% if query %}
+                        {% translate "gefunden" %}
+                    {% else %}
+                        {% translate "Nutzer" %}
+                    {% endif %}
+                </small>
+            </div>
         </div>
     </div>
 

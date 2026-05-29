@@ -1185,3 +1185,75 @@ body.dark-mode .friends-page .user-open {
         height: 96px;
     }
 }
+
+/* Erweiterte Profil-Features */
+.public-profile-stats {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.public-profile-stats span {
+    min-height: 42px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: rgba(255, 255, 255, 0.88);
+    font-weight: 850;
+}
+
+.public-profile-stats strong {
+    color: #ffffff;
+    font-size: 1.08rem;
+}
+
+.friendship-chat-button {
+    background: linear-gradient(135deg, #22c55e, #14b8a6);
+}
+
+.user-card::after {
+    content: "";
+    position: absolute;
+    inset: auto 18px 18px auto;
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(var(--theme-accent-rgb), 0.14), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.user-card:hover::after {
+    opacity: 1;
+}
+
+.users-toolbar-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.users-toolbar-action {
+    min-height: 46px;
+    padding: 0 15px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--theme-accent-start);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.14);
+    font-weight: 950;
+}
+
+body.dark-mode .public-profile-stats span {
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(255, 255, 255, 0.18);
+}
