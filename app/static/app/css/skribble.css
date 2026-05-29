@@ -2128,3 +2128,387 @@ html.dark-mode .draw-hero-chips span,
         padding: 16px !important;
     }
 }
+/* ── LOBBY ÜBERSICHT ── */
+.draw-section-heading {
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.draw-section-heading h2 {
+    margin: 0;
+}
+
+.draw-overview-count {
+    min-width: 42px;
+    height: 42px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, #4f8cff, #8b5cf6);
+    font-weight: 950;
+}
+
+.draw-lobby-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+}
+
+.draw-lobby-overview-card {
+    min-width: 0;
+    padding: 16px;
+    border-radius: 22px;
+    display: grid;
+    gap: 9px;
+    color: inherit;
+    text-decoration: none;
+    background: rgba(15, 23, 42, .52);
+    border: 1px solid rgba(148, 163, 184, .18);
+    transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.draw-lobby-overview-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(79, 140, 255, .42);
+    background: rgba(30, 41, 59, .72);
+}
+
+.draw-lobby-status {
+    width: max-content;
+    padding: 5px 10px;
+    border-radius: 999px;
+    color: #bfdbfe;
+    background: rgba(79, 140, 255, .16);
+    font-weight: 950;
+    font-size: .78rem;
+}
+
+.draw-lobby-overview-card.is-playing .draw-lobby-status {
+    color: #fde68a;
+    background: rgba(245, 158, 11, .18);
+}
+
+.draw-lobby-owner,
+.draw-lobby-meta-row {
+    color: rgba(226, 232, 240, .72);
+    font-weight: 800;
+}
+
+.draw-lobby-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: .86rem;
+}
+
+.draw-lobby-meta-row span {
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .08);
+}
+
+.draw-lobby-open {
+    margin-top: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #bfdbfe;
+    font-weight: 950;
+}
+
+
+/* ===== Responsive Skribble pass ===== */
+.draw-page,
+.draw-grid,
+.draw-panel,
+.draw-hero,
+.draw-game-shell,
+.draw-stage,
+.draw-side-stack,
+.draw-canvas-wrap,
+.draw-tools,
+.draw-top-actions,
+.draw-lobby-cards,
+.draw-lobby-card,
+.draw-lobby-overview-grid,
+.draw-friend-invite-row {
+    min-width: 0;
+}
+
+.draw-page {
+    width: min(1240px, calc(100% - 32px));
+}
+
+.draw-panel,
+.draw-hero,
+.draw-canvas-wrap,
+.draw-chat {
+    max-width: 100%;
+}
+
+.draw-canvas-wrap canvas,
+#drawing-canvas {
+    width: 100%;
+    height: auto;
+    max-height: min(62dvh, 760px);
+    touch-action: none;
+}
+
+.draw-form input,
+.draw-form select,
+.draw-form textarea,
+.draw-avatar-form input,
+.draw-avatar-form select,
+.draw-guess-form input {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 1180px) {
+    .draw-page {
+        width: min(100% - 24px, 1240px);
+        padding-top: 20px;
+    }
+
+    .draw-grid,
+    .draw-grid-home,
+    .draw-grid-lobby,
+    .draw-game-shell {
+        gap: 16px;
+    }
+
+    .draw-panel,
+    .draw-hero {
+        border-radius: 26px;
+    }
+
+    .draw-game-shell {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .draw-side-stack {
+        display: grid;
+        grid-template-columns: minmax(220px, .8fr) minmax(260px, 1.2fr);
+        gap: 16px;
+    }
+
+    .draw-chat {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 860px) {
+    .draw-page {
+        width: min(100% - 16px, 1240px);
+        padding-bottom: 34px;
+    }
+
+    .draw-skribble-hero,
+    .draw-hero,
+    .draw-lobby-top {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+    }
+
+    .draw-hero-main,
+    .draw-hero-feature-card,
+    .draw-panel {
+        padding: 18px !important;
+        border-radius: 22px;
+    }
+
+    .draw-logo-title,
+    .draw-title-row h1 {
+        font-size: clamp(1.9rem, 10vw, 3rem) !important;
+        line-height: 1.02;
+    }
+
+    .draw-hero-chips,
+    .draw-top-actions,
+    .draw-actions-inline {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .draw-hero-chips span,
+    .draw-top-actions a,
+    .draw-top-actions button,
+    .draw-top-actions form,
+    .draw-actions-inline a,
+    .draw-actions-inline button,
+    .draw-actions-inline form {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .draw-form-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .draw-lobby-overview-grid,
+    .draw-lobby-cards,
+    .draw-list {
+        grid-template-columns: 1fr !important;
+    }
+
+    .draw-stage-header {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .draw-round-pill,
+    .draw-timer,
+    .draw-stage-title {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .draw-tools {
+        grid-template-columns: 1fr !important;
+        align-items: stretch;
+    }
+
+    .draw-tool-group,
+    .draw-clear-btn {
+        width: 100%;
+    }
+
+    .draw-brush-palette {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(32px, 1fr));
+        gap: 8px;
+    }
+
+    .draw-side-stack {
+        grid-template-columns: 1fr;
+    }
+
+    .draw-guess-list {
+        max-height: 300px;
+    }
+
+    .draw-friend-invite-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .draw-friend-invite-row form,
+    .draw-invite-one {
+        width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .draw-page {
+        width: 100%;
+        padding-top: 10px;
+    }
+
+    .draw-panel,
+    .draw-hero,
+    .draw-hero-main,
+    .draw-hero-feature-card {
+        border-radius: 18px !important;
+        padding: 14px !important;
+    }
+
+    .draw-hero-logo-row {
+        grid-template-columns: 1fr !important;
+        text-align: center;
+    }
+
+    .draw-logo-hero {
+        width: min(230px, 88vw) !important;
+        max-height: 110px !important;
+    }
+
+    .draw-hero-chips,
+    .draw-top-actions,
+    .draw-actions-inline {
+        grid-template-columns: 1fr;
+    }
+
+    .draw-primary,
+    .draw-secondary,
+    .draw-danger,
+    .draw-small-btn,
+    .draw-lobby-open {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .draw-code,
+    .draw-lobby-copy {
+        width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .draw-lobby-card,
+    .draw-lobby-overview-card,
+    .draw-list-item {
+        border-radius: 16px;
+        padding: 14px;
+    }
+
+    .draw-lobby-meta-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .draw-canvas-wrap {
+        border-radius: 16px;
+    }
+
+    .draw-canvas-wrap canvas,
+    #drawing-canvas {
+        max-height: 48dvh;
+    }
+
+    .draw-brush-palette {
+        grid-template-columns: repeat(5, minmax(28px, 1fr));
+    }
+
+    .draw-brush-palette button,
+    .draw-color-options label {
+        min-width: 34px;
+        min-height: 34px;
+    }
+
+    .draw-color-picker-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .draw-guess-form {
+        grid-template-columns: minmax(0, 1fr) 46px;
+    }
+
+    .draw-guess-form button {
+        width: 46px;
+        min-width: 46px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 380px) {
+    .draw-brush-palette {
+        grid-template-columns: repeat(4, minmax(28px, 1fr));
+    }
+
+    .draw-stage-title,
+    .draw-round-pill,
+    .draw-timer,
+    .draw-status-card {
+        font-size: .9rem;
+    }
+}

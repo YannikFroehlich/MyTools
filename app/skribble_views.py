@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -20,6 +20,7 @@ from .models import (
     DrawingGameLobby,
     DrawingGamePlayer,
     Friendship,
+    SkribbleStats,
     UserProfile,
 )
 
@@ -109,6 +110,27 @@ def _reset_turn_state(lobby):
     lobby.players.update(has_guessed_current_word=False)
 
 
+def _store_finished_lobby_stats(lobby):
+    players = list(lobby.players.select_related("user").order_by("-score", "joined_at"))
+    if not players:
+        return
+    top_score = players[0].score
+    winner_ids = {player.user_id for player in players if player.score == top_score and top_score > 0}
+    correct_guess_counts = dict(
+        DrawingGameGuess.objects.filter(lobby=lobby, is_correct=True)
+        .values_list("user_id")
+        .annotate(total=Count("id"))
+    )
+    for player in players:
+        stats, _ = SkribbleStats.objects.get_or_create(user=player.user)
+        stats.games_played += 1
+        if player.user_id in winner_ids:
+            stats.games_won += 1
+        stats.correct_guesses += int(correct_guess_counts.get(player.user_id, 0))
+        stats.total_score += int(player.score or 0)
+        stats.save(update_fields=["games_played", "games_won", "correct_guesses", "total_score", "updated_at"])
+
+
 def _advance_turn(lobby):
     players_count = lobby.players.count()
     if players_count < 2:
@@ -125,6 +147,7 @@ def _advance_turn(lobby):
         lobby.current_round_number += 1
 
     if lobby.current_round_number > lobby.rounds_count:
+        _store_finished_lobby_stats(lobby)
         lobby.status = DrawingGameLobby.STATUS_FINISHED
         lobby.current_word = ""
         lobby.current_word_choices = []
@@ -264,14 +287,31 @@ def skribble_home(request):
         messages.success(request, _("Lobby wurde erstellt."))
         return redirect("skribble_lobby", code=lobby.code)
 
-    my_lobbies = DrawingGameLobby.objects.filter(players__user=request.user).distinct().order_by("-updated_at")[:12]
+    friend_ids = Friendship.friend_ids_for_user(request.user)
+    my_lobbies = (
+        DrawingGameLobby.objects
+        .filter(players__user=request.user)
+        .annotate(players_count=Count("players", distinct=True))
+        .distinct()
+        .order_by("-updated_at")[:12]
+    )
     invites = DrawingGameInvite.objects.select_related("lobby", "from_user").filter(
         to_user=request.user,
         status=DrawingGameInvite.STATUS_PENDING,
     )
+    discover_lobbies = (
+        DrawingGameLobby.objects
+        .filter(status__in=[DrawingGameLobby.STATUS_WAITING, DrawingGameLobby.STATUS_PLAYING])
+        .filter(Q(owner_id__in=friend_ids) | Q(invites__to_user=request.user) | Q(players__user=request.user))
+        .select_related("owner")
+        .annotate(players_count=Count("players", distinct=True))
+        .distinct()
+        .order_by("-updated_at")[:16]
+    )
     return render(request, "app/skribble_home.html", {
         "my_lobbies": my_lobbies,
         "invites": invites,
+        "discover_lobbies": discover_lobbies,
     })
 
 

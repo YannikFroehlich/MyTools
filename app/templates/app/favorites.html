@@ -1,0 +1,44 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Favoriten" %} | MyTools{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/platform.css' %}">{% endblock %}
+
+{% block content %}
+<section class="platform-page">
+    <div class="platform-hero">
+        <div>
+            <p class="platform-kicker">{% translate "App-Launcher" %}</p>
+            <h1>{% translate "Favoriten" %}</h1>
+            <p>{% translate "Markiere deine wichtigsten Tools und öffne sie schneller." %}</p>
+        </div>
+        <i class="fa-solid fa-star"></i>
+    </div>
+
+    {% for category in categories %}
+        <section class="platform-card">
+            <div class="platform-section-head">
+                <h2>{{ category.name }}</h2>
+            </div>
+            <div class="tool-grid">
+                {% for tool in category.tools %}
+                    <article class="tool-card {% if tool.is_favorite %}is-favorite{% endif %}">
+                        <a href="{{ tool.url }}" class="tool-card-main">
+                            <span><i class="{{ tool.icon }}"></i></span>
+                            <strong>{{ tool.label }}</strong>
+                        </a>
+                        <form method="post" action="{% url 'favorite_toggle' tool.key %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit" title="{% translate 'Favorit umschalten' %}">
+                                <i class="fa-{% if tool.is_favorite %}solid{% else %}regular{% endif %} fa-star"></i>
+                            </button>
+                        </form>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% endfor %}
+</section>
+{% endblock %}
