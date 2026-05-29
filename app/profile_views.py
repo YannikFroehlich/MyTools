@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from .models import Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, UserProfile
+from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, UserProfile
 from .profile_forms import ProfileForm
 
 User = get_user_model()
@@ -187,6 +187,8 @@ def profile_view(request):
         .order_by("-created_at")
     )
     friends_count = Friendship.accepted_for_user(request.user).count()
+    chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=request.user).distinct().count()
+    total_highscores_count = HumanBenchmarkHighScore.objects.filter(user=request.user).count()
 
     return render(request, "app/profile.html", {
         "form": form,
@@ -196,6 +198,8 @@ def profile_view(request):
         "outgoing_friend_requests": outgoing_requests,
         "friends_preview": get_friend_profiles(request.user, limit=6),
         "friends_count": friends_count,
+        "chat_rooms_count": chat_rooms_count,
+        "total_highscores_count": total_highscores_count,
     })
 
 
@@ -255,6 +259,8 @@ def public_profile_view(request, user_id):
     profile_user = get_object_or_404(User, id=user_id, is_active=True)
     profile, created = UserProfile.objects.get_or_create(user=profile_user)
     friends_count = Friendship.accepted_for_user(profile_user).count()
+    chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
+    total_highscores_count = HumanBenchmarkHighScore.objects.filter(user=profile_user).count()
 
     return render(request, "app/public_profile.html", {
         "profile_user": profile_user,
@@ -263,6 +269,8 @@ def public_profile_view(request, user_id):
         "friendship_state": get_friendship_state(request.user, profile_user),
         "friends_preview": get_friend_profiles(profile_user, limit=6),
         "friends_count": friends_count,
+        "chat_rooms_count": chat_rooms_count,
+        "total_highscores_count": total_highscores_count,
     })
 
 

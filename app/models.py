@@ -126,6 +126,140 @@ class Friendship(models.Model):
         return [to_id if from_id == user.id else from_id for from_id, to_id in friendships]
 
 
+class ChatRoom(models.Model):
+    ROOM_DIRECT = "direct"
+    ROOM_GROUP = "group"
+
+    ROOM_CHOICES = [
+        (ROOM_DIRECT, _("Direktchat")),
+        (ROOM_GROUP, _("Gruppe")),
+    ]
+
+    room_type = models.CharField(max_length=20, choices=ROOM_CHOICES, default=ROOM_DIRECT)
+    name = models.CharField(max_length=80, blank=True)
+    direct_key = models.CharField(max_length=80, unique=True, null=True, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_chat_rooms",
+    )
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="ChatRoomMember",
+        related_name="chat_rooms",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        indexes = [
+            models.Index(fields=["room_type", "updated_at"]),
+            models.Index(fields=["direct_key"]),
+        ]
+        verbose_name = "Chatraum"
+        verbose_name_plural = "Chaträume"
+
+    def __str__(self):
+        return self.name or f"Chat #{self.pk}"
+
+    @classmethod
+    def direct_key_for_users(cls, user_a, user_b):
+        first_id, second_id = sorted([user_a.id, user_b.id])
+        return f"direct:{first_id}:{second_id}"
+
+    def title_for(self, user):
+        if self.room_type == self.ROOM_GROUP:
+            return self.name or _("Gruppe")
+
+        other_member = (
+            self.members
+            .exclude(id=user.id)
+            .first()
+        )
+
+        if other_member:
+            return other_member.get_full_name() or other_member.username
+
+        return _("Direktchat")
+
+
+class ChatRoomMember(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="room_memberships")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_memberships")
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_read_at = models.DateTimeField(null=True, blank=True)
+    is_admin = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["joined_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["room", "user"], name="unique_chat_room_member"),
+        ]
+        indexes = [
+            models.Index(fields=["user", "room"]),
+        ]
+        verbose_name = "Chatmitglied"
+        verbose_name_plural = "Chatmitglieder"
+
+    def __str__(self):
+        return f"{self.user} · {self.room}"
+
+
+class ChatMessage(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_chat_messages")
+    text = models.TextField(max_length=1200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["room", "created_at"]),
+            models.Index(fields=["sender", "created_at"]),
+        ]
+        verbose_name = "Chatnachricht"
+        verbose_name_plural = "Chatnachrichten"
+
+    def __str__(self):
+        return f"{self.sender}: {self.text[:40]}"
+
+
+class ChatMessageReaction(models.Model):
+    EMOJI_CHOICES = [
+        ("👍", "👍"),
+        ("❤️", "❤️"),
+        ("😂", "😂"),
+        ("😮", "😮"),
+        ("😢", "😢"),
+        ("🙏", "🙏"),
+    ]
+
+    message = models.ForeignKey(ChatMessage, on_delete=models.CASCADE, related_name="reactions")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_reactions")
+    emoji = models.CharField(max_length=8, choices=EMOJI_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["message", "user"], name="unique_chat_message_reaction"),
+        ]
+        indexes = [
+            models.Index(fields=["message", "emoji"]),
+            models.Index(fields=["user", "updated_at"]),
+        ]
+        verbose_name = "Chatreaktion"
+        verbose_name_plural = "Chatreaktionen"
+
+    def __str__(self):
+        return f"{self.user} {self.emoji} → {self.message_id}"
+
+
 class ShortcutSection(models.Model):
     COLOR_CHOICES = [
         ("blue", _("Blau")),

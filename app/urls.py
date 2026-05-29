@@ -3,6 +3,7 @@ from django.urls import path
 from .views import *
 from .profile_views import friends_list_view, friendship_action_view, profile_view, users_view, public_profile_view
 from .skribble_views import *
+from .chat_views import *
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
@@ -16,6 +17,15 @@ urlpatterns = [
     path('users/<int:user_id>/', public_profile_view, name='public_profile'),
     path('users/<int:user_id>/friends/', friends_list_view, name='friends_list'),
     path('users/<int:user_id>/friendship/', friendship_action_view, name='friendship_action'),
+
+    path("chat/", chat_view, name="chat"),
+    path("chat/<int:room_id>/", chat_view, name="chat_room"),
+    path("chat/direct/<int:user_id>/", start_direct_chat, name="chat_direct"),
+    path("chat/group/new/", create_group_chat, name="chat_group_create"),
+    path("chat/<int:room_id>/send/", send_chat_message, name="chat_send"),
+    path("chat/<int:room_id>/message/<int:message_id>/delete/", delete_chat_message, name="chat_message_delete"),
+    path("chat/<int:room_id>/message/<int:message_id>/react/", react_chat_message, name="chat_message_react"),
+    path("api/chat/<int:room_id>/messages/", chat_messages_api, name="chat_messages_api"),
 
     path('weather/', weather, name='weather'),
     path("obs-dashboard/", obs_dashboard, name="obs-dashboard"),

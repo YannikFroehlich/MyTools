@@ -2,6 +2,10 @@ from django.contrib import admin
 
 from .models import (
     AvatarCharacter,
+    ChatMessage,
+    ChatMessageReaction,
+    ChatRoom,
+    ChatRoomMember,
     ClockSettings,
     ClockTimerPreset,
     ClockWorldCity,
@@ -19,6 +23,47 @@ from .models import (
     WeatherLocation,
 )
 
+
+
+
+@admin.register(ChatRoom)
+class ChatRoomAdmin(admin.ModelAdmin):
+    list_display = ("id", "display_name", "room_type", "created_by", "updated_at", "created_at")
+    list_filter = ("room_type", "created_at")
+    search_fields = ("name", "created_by__username", "members__username")
+    readonly_fields = ("created_at", "updated_at")
+
+    def display_name(self, obj):
+        return obj.name or str(obj)
+
+
+@admin.register(ChatRoomMember)
+class ChatRoomMemberAdmin(admin.ModelAdmin):
+    list_display = ("room", "user", "is_admin", "joined_at", "last_read_at")
+    list_filter = ("is_admin", "joined_at")
+    search_fields = ("room__name", "user__username", "user__email")
+    readonly_fields = ("joined_at",)
+
+
+@admin.register(ChatMessage)
+class ChatMessageAdmin(admin.ModelAdmin):
+    list_display = ("room", "sender", "short_text", "created_at")
+    list_filter = ("created_at", "sender")
+    search_fields = ("text", "sender__username", "room__name")
+    readonly_fields = ("created_at", "edited_at")
+
+    def short_text(self, obj):
+        return obj.text[:60]
+
+
+
+
+@admin.register(ChatMessageReaction)
+class ChatMessageReactionAdmin(admin.ModelAdmin):
+    list_display = ("message", "user", "emoji", "created_at", "updated_at")
+    list_filter = ("emoji", "created_at")
+    search_fields = ("message__text", "user__username", "user__email")
+    readonly_fields = ("created_at", "updated_at")
 
 @admin.register(AvatarCharacter)
 class AvatarCharacterAdmin(admin.ModelAdmin):

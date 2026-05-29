@@ -329,6 +329,16 @@
                             {% translate 'Freunde' %}
                         </a>
 
+                        <a href="{% url 'chat' %}" class="profile-menu-item profile-menu-item-with-badge">
+                            <span class="profile-menu-item-main">
+                                <i class="fa-solid fa-comments"></i>
+                                {% translate 'Chat' %}
+                            </span>
+                            <span class="profile-menu-badge" aria-label="{% blocktranslate count count=unread_chat_messages_count %}{{ count }} ungelesene Nachricht{% plural %}{{ count }} ungelesene Nachrichten{% endblocktranslate %}">
+                                {{ unread_chat_messages_count }}
+                            </span>
+                        </a>
+
                         <a href="{% url 'profile' %}#friend-requests" class="profile-menu-item profile-menu-item-with-badge">
                             <span class="profile-menu-item-main">
                                 <i class="fa-solid fa-user-plus"></i>
@@ -385,6 +395,11 @@
                 <a href="{% url 'users' %}">
                     <i class="fa-solid fa-users"></i>
                     {% translate 'Nutzer' %}
+                </a>
+
+                <a href="{% url 'chat' %}">
+                    <i class="fa-solid fa-comments"></i>
+                    {% translate 'Chat' %}
                 </a>
 
                 <a href="{% url 'notes' %}">

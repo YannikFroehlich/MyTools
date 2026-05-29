@@ -70,15 +70,34 @@
 
             <p>{{ request.user.email|default:"Keine E-Mail hinterlegt" }}</p>
 
-            <div class="profile-summary-meta">
+            <div class="profile-summary-meta profile-mini-stats">
                 <div>
-                    <span>{% translate "Benutzername" %}</span>
-                    <strong>{{ request.user.username }}</strong>
+                    <span>{% translate "Freunde" %}</span>
+                    <strong>{{ friends_count }}</strong>
+                </div>
+                <div>
+                    <span>{% translate "Chats" %}</span>
+                    <strong>{{ chat_rooms_count }}</strong>
+                </div>
+                <div>
+                    <span>{% translate "Highscores" %}</span>
+                    <strong>{{ total_highscores_count }}</strong>
                 </div>
                 <div>
                     <span>{% translate "Profil erstellt" %}</span>
                     <strong>{{ profile.created_at|date:"d.m.Y" }}</strong>
                 </div>
+            </div>
+
+            <div class="profile-quick-actions">
+                <a href="{% url 'chat' %}">
+                    <i class="fa-solid fa-comments"></i>
+                    {% translate "Chat öffnen" %}
+                </a>
+                <a href="{% url 'users' %}">
+                    <i class="fa-solid fa-user-plus"></i>
+                    {% translate "Nutzer finden" %}
+                </a>
             </div>
 
             <div class="profile-friends-summary" id="friend-requests">
