@@ -1156,7 +1156,7 @@ def get_human_benchmark_score_data(user):
         recent_scores = HumanBenchmarkScore.objects.filter(
             user=user,
             game=game,
-        ).order_by("-created_at")[:10]
+        ).order_by("-created_at", "-id")[:10]
 
         highscore = HumanBenchmarkHighScore.objects.filter(
             user=user,

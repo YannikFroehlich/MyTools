@@ -387,7 +387,7 @@ def friendship_action_view(request, user_id):
                 messages.success(request, _("Freundschaftsanfrage angenommen."))
         else:
             Friendship.objects.create(from_user=request.user, to_user=target_user)
-            target_profile, _ = UserProfile.objects.get_or_create(user=target_user)
+            target_profile, _created = UserProfile.objects.get_or_create(user=target_user)
             muted_by_dnd = target_profile.status == UserProfile.STATUS_DND and target_profile.dnd_silence_notifications
             if target_profile.notify_friend_requests and not muted_by_dnd:
                 InboxItem.objects.create(

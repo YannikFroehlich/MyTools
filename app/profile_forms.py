@@ -103,6 +103,7 @@ class ProfileForm(forms.ModelForm):
         self.fields["first_name"].initial = self.user.first_name
         self.fields["last_name"].initial = self.user.last_name
         self.fields["email"].initial = self.user.email
+        self.fields["status"].required = False
 
     def clean_username(self):
         username = self.cleaned_data["username"].strip()
@@ -119,6 +120,9 @@ class ProfileForm(forms.ModelForm):
             raise forms.ValidationError("Diese E-Mail-Adresse wird bereits verwendet.")
 
         return email
+
+    def clean_status(self):
+        return self.cleaned_data.get("status") or getattr(self.instance, "status", "") or UserProfile.STATUS_ONLINE
 
     def clean_avatar(self):
         return self.clean_profile_image("avatar", "Das Profilbild")
