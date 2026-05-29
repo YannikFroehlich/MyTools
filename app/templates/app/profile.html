@@ -314,6 +314,31 @@
                     {{ form.bio }}
                     {{ form.bio.errors }}
                 </div>
+
+                <div class="profile-field">
+                    <label for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+                    {{ form.status }}
+                    {{ form.status.errors }}
+                </div>
+
+                <div class="profile-field">
+                    <label for="{{ form.status_text.id_for_label }}">{{ form.status_text.label }}</label>
+                    {{ form.status_text }}
+                    {{ form.status_text.errors }}
+                </div>
+
+                <div class="profile-field profile-field-full">
+                    <div class="profile-privacy-box">
+                        <div>
+                            <p class="profile-kicker">{% translate "Privatsphäre" %}</p>
+                            <h3>{% translate "Sichtbarkeit" %}</h3>
+                        </div>
+                        <label>{{ form.privacy_show_online }} <span>{{ form.privacy_show_online.label }}</span></label>
+                        <label>{{ form.privacy_show_friends }} <span>{{ form.privacy_show_friends.label }}</span></label>
+                        <label>{{ form.privacy_show_highscores }} <span>{{ form.privacy_show_highscores.label }}</span></label>
+                        <label>{{ form.privacy_show_chat_button }} <span>{{ form.privacy_show_chat_button.label }}</span></label>
+                    </div>
+                </div>
             </div>
 
             <div class="profile-form-footer">

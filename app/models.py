@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.core.validators import FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
 
 
@@ -26,6 +27,26 @@ class UserProfile(models.Model):
         blank=True,
         verbose_name="Über mich",
     )
+    STATUS_ONLINE = "online"
+    STATUS_BUSY = "busy"
+    STATUS_AWAY = "away"
+    STATUS_DND = "dnd"
+    STATUS_INVISIBLE = "invisible"
+
+    STATUS_CHOICES = [
+        (STATUS_ONLINE, _("Online")),
+        (STATUS_BUSY, _("Beschäftigt")),
+        (STATUS_AWAY, _("Abwesend")),
+        (STATUS_DND, _("Nicht stören")),
+        (STATUS_INVISIBLE, _("Unsichtbar")),
+    ]
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_ONLINE)
+    status_text = models.CharField(max_length=80, blank=True)
+    privacy_show_online = models.BooleanField(default=True)
+    privacy_show_friends = models.BooleanField(default=True)
+    privacy_show_highscores = models.BooleanField(default=True)
+    privacy_show_chat_button = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -235,7 +256,7 @@ class ChatRoomMember(models.Model):
 class ChatMessage(models.Model):
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_chat_messages")
-    text = models.TextField(max_length=1200)
+    text = models.TextField(max_length=1200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(null=True, blank=True)
 
@@ -250,6 +271,45 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender}: {self.text[:40]}"
+
+
+def chat_attachment_upload_path(instance, filename):
+    return f"chat_attachments/room_{instance.message.room_id}/{instance.message_id}_{filename}"
+
+
+def validate_chat_attachment_size(file):
+    from django.core.exceptions import ValidationError
+    max_size = 8 * 1024 * 1024
+    if file.size > max_size:
+        raise ValidationError(_("Anhänge dürfen maximal 8 MB groß sein."))
+
+
+class ChatAttachment(models.Model):
+    message = models.ForeignKey(ChatMessage, on_delete=models.CASCADE, related_name="attachments")
+    file = models.FileField(
+        upload_to=chat_attachment_upload_path,
+        validators=[validate_chat_attachment_size],
+    )
+    original_name = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=120, blank=True)
+    size = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = "Chat-Anhang"
+        verbose_name_plural = "Chat-Anhänge"
+
+    def __str__(self):
+        return self.original_name
+
+    @property
+    def is_image(self):
+        return self.content_type.startswith("image/")
+
+    @property
+    def filename(self):
+        return self.original_name or self.file.name.rsplit("/", 1)[-1]
 
 
 class ChatMessageReaction(models.Model):
@@ -1008,3 +1068,94 @@ class DrawingGameGuess(models.Model):
 
     def __str__(self):
         return f"{self.user}: {self.message[:30]}"
+
+
+class ToolFavorite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tool_favorites")
+    tool_key = models.CharField(max_length=60)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        constraints = [models.UniqueConstraint(fields=["user", "tool_key"], name="unique_tool_favorite_per_user")]
+        indexes = [models.Index(fields=["user", "tool_key"])]
+        verbose_name = "Tool-Favorit"
+        verbose_name_plural = "Tool-Favoriten"
+
+    def __str__(self):
+        return f"{self.user} · {self.tool_key}"
+
+
+class InboxItem(models.Model):
+    TYPE_SYSTEM = "system"
+    TYPE_CHAT = "chat"
+    TYPE_FRIEND = "friend"
+    TYPE_SKRIBBLE = "skribble"
+    TYPE_FEEDBACK = "feedback"
+
+    TYPE_CHOICES = [
+        (TYPE_SYSTEM, _("System")),
+        (TYPE_CHAT, _("Chat")),
+        (TYPE_FRIEND, _("Freunde")),
+        (TYPE_SKRIBBLE, _("Skribble")),
+        (TYPE_FEEDBACK, _("Feedback")),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="inbox_items")
+    item_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=TYPE_SYSTEM)
+    title = models.CharField(max_length=120)
+    message = models.TextField(blank=True)
+    target_url = models.CharField(max_length=255, blank=True)
+    icon = models.CharField(max_length=80, default="fa-solid fa-bell")
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["user", "is_read", "-created_at"])]
+        verbose_name = "Inbox-Eintrag"
+        verbose_name_plural = "Inbox-Einträge"
+
+    def __str__(self):
+        return self.title
+
+
+class ToolFeedback(models.Model):
+    TYPE_FEEDBACK = "feedback"
+    TYPE_BUG = "bug"
+    TYPE_IDEA = "idea"
+
+    TYPE_CHOICES = [
+        (TYPE_FEEDBACK, _("Feedback")),
+        (TYPE_BUG, _("Bug")),
+        (TYPE_IDEA, _("Feature-Idee")),
+    ]
+
+    STATUS_OPEN = "open"
+    STATUS_PLANNED = "planned"
+    STATUS_DONE = "done"
+
+    STATUS_CHOICES = [
+        (STATUS_OPEN, _("Offen")),
+        (STATUS_PLANNED, _("Geplant")),
+        (STATUS_DONE, _("Erledigt")),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="tool_feedback")
+    tool_key = models.CharField(max_length=60, blank=True)
+    feedback_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=TYPE_FEEDBACK)
+    title = models.CharField(max_length=120)
+    message = models.TextField()
+    rating = models.PositiveSmallIntegerField(default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_OPEN)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["tool_key", "status", "-created_at"])]
+        verbose_name = "Tool-Feedback"
+        verbose_name_plural = "Tool-Feedback"
+
+    def __str__(self):
+        return self.title

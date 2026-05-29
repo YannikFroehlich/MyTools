@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const messagesBox = document.getElementById("chat-messages");
     const form = document.getElementById("chat-compose-form");
     const textarea = form?.querySelector("textarea[name='text']");
+    const attachmentInput = form?.querySelector("input[name='attachment']");
+    const attachmentName = document.getElementById("chat-attachment-name");
 
     if (!layout || !messagesBox || !form || !textarea) return;
 
@@ -52,6 +54,16 @@ document.addEventListener("DOMContentLoaded", () => {
         )).join("")}</div>`;
     }
 
+    function attachmentsTemplate(attachments = []) {
+        if (!attachments.length) return "";
+        return `<div class="chat-attachments">${attachments.map((attachment) => {
+            const image = attachment.is_image && attachment.url
+                ? `<img src="${escapeHtml(attachment.url)}" alt="${escapeHtml(attachment.name)}">`
+                : `<i class="fa-solid fa-paperclip"></i>`;
+            return `<a href="${escapeHtml(attachment.url)}" class="chat-attachment${attachment.is_image ? " is-image" : ""}" target="_blank" rel="noopener">${image}<span>${escapeHtml(attachment.name)}</span></a>`;
+        }).join("")}</div>`;
+    }
+
     function messageTemplate(message) {
         const avatar = message.sender.avatar_url
             ? `<img src="${escapeHtml(message.sender.avatar_url)}" alt="Profilbild">`
@@ -79,7 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         <strong>${escapeHtml(message.sender.display_name)}</strong>
                         <span>${escapeHtml(message.created_at)}</span>
                     </div>
-                    <p>${text}</p>
+                    ${text ? `<p>${text}</p>` : ""}
+                    ${attachmentsTemplate(message.attachments || [])}
                     ${reactionsTemplate(message.reactions || [])}
                 </div>
             </div>
@@ -135,12 +148,16 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const text = textarea.value.trim();
-        if (!text) return;
+        const hasAttachment = attachmentInput?.files?.length > 0;
+        if (!text && !hasAttachment) return;
 
         const formData = new FormData();
         formData.append("text", text);
         formData.append("csrfmiddlewaretoken", csrfToken);
+        if (hasAttachment) formData.append("attachment", attachmentInput.files[0]);
         textarea.value = "";
+        if (attachmentInput) attachmentInput.value = "";
+        if (attachmentName) attachmentName.textContent = "";
         textarea.style.height = "auto";
 
         try {
@@ -152,7 +169,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             if (data.ok && data.message) {
                 appendMessages([data.message]);
-                scrollToBottom();
+                attachmentInput?.addEventListener("change", () => {
+        const file = attachmentInput.files?.[0];
+        if (attachmentName) attachmentName.textContent = file ? file.name : "";
+    });
+
+    scrollToBottom();
             }
         } catch (error) {
             console.warn("Message send failed", error);
@@ -262,6 +284,11 @@ document.addEventListener("DOMContentLoaded", () => {
         messagesBox.querySelectorAll(".chat-message.is-menu-open, .chat-message.is-emoji-open").forEach((item) => {
             item.classList.remove("is-menu-open", "is-emoji-open");
         });
+    });
+
+    attachmentInput?.addEventListener("change", () => {
+        const file = attachmentInput.files?.[0];
+        if (attachmentName) attachmentName.textContent = file ? file.name : "";
     });
 
     scrollToBottom();

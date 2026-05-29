@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import (
     AvatarCharacter,
+    ChatAttachment,
     ChatMessage,
     ChatMessageReaction,
     ChatRoom,
@@ -16,9 +17,12 @@ from .models import (
     Friendship,
     HumanBenchmarkHighScore,
     HumanBenchmarkScore,
+    InboxItem,
     Note,
     Shortcut,
     ShortcutSection,
+    ToolFavorite,
+    ToolFeedback,
     UserProfile,
     WeatherLocation,
 )
@@ -181,3 +185,31 @@ class SkribbleGuessAdmin(admin.ModelAdmin):
     list_display = ("lobby", "user", "round_number", "turn_index", "is_correct", "created_at")
     list_filter = ("is_correct", "created_at")
     search_fields = ("message", "user__username", "lobby__code")
+
+
+@admin.register(ChatAttachment)
+class ChatAttachmentAdmin(admin.ModelAdmin):
+    list_display = ("original_name", "message", "content_type", "size", "created_at")
+    search_fields = ("original_name", "message__text", "message__sender__username")
+    readonly_fields = ("created_at",)
+
+
+@admin.register(ToolFavorite)
+class ToolFavoriteAdmin(admin.ModelAdmin):
+    list_display = ("user", "tool_key", "created_at")
+    list_filter = ("tool_key",)
+    search_fields = ("user__username", "tool_key")
+
+
+@admin.register(InboxItem)
+class InboxItemAdmin(admin.ModelAdmin):
+    list_display = ("user", "item_type", "title", "is_read", "created_at")
+    list_filter = ("item_type", "is_read", "created_at")
+    search_fields = ("user__username", "title", "message")
+
+
+@admin.register(ToolFeedback)
+class ToolFeedbackAdmin(admin.ModelAdmin):
+    list_display = ("title", "tool_key", "feedback_type", "rating", "status", "user", "created_at")
+    list_filter = ("feedback_type", "status", "tool_key")
+    search_fields = ("title", "message", "user__username")

@@ -161,6 +161,14 @@
                             <h2>{{ active_room.display_title }}</h2>
                         </div>
                     </div>
+                    <form class="chat-search-form" method="get">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="search" name="q" value="{{ chat_query }}" placeholder="{% translate 'Chat durchsuchen...' %}">
+                        {% if chat_query %}
+                            <a href="{% url 'chat_room' active_room.id %}" aria-label="{% translate 'Suche zurücksetzen' %}"><i class="fa-solid fa-xmark"></i></a>
+                        {% endif %}
+                    </form>
+
                     <div class="chat-member-strip">
                         {% for member in active_room_members %}
                             <a href="{% url 'public_profile' member.id %}" title="{{ member.username }}">
@@ -212,7 +220,21 @@
                                     <strong>{{ message.sender.get_full_name|default:message.sender.username }}</strong>
                                     <span>{{ message.created_at|date:"d.m.Y H:i" }}</span>
                                 </div>
-                                <p>{{ message.text|linebreaksbr }}</p>
+                                {% if message.text %}<p>{{ message.text|linebreaksbr }}</p>{% endif %}
+                                {% if message.attachments.all %}
+                                    <div class="chat-attachments">
+                                        {% for attachment in message.attachments.all %}
+                                            <a href="{{ attachment.file.url }}" class="chat-attachment {% if attachment.is_image %}is-image{% endif %}" target="_blank" rel="noopener">
+                                                {% if attachment.is_image %}
+                                                    <img src="{{ attachment.file.url }}" alt="{{ attachment.filename }}">
+                                                {% else %}
+                                                    <i class="fa-solid fa-paperclip"></i>
+                                                {% endif %}
+                                                <span>{{ attachment.filename }}</span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                                 <div class="chat-reactions {% if not message.reaction_items %}is-empty{% endif %}">
                                     {% for reaction in message.reaction_items %}
                                         <span class="chat-reaction {% if reaction.mine %}is-mine{% endif %}">{{ reaction.emoji }} <b>{{ reaction.count }}</b></span>
@@ -229,10 +251,15 @@
                     {% endfor %}
                 </div>
 
-                <form class="chat-compose" method="post" action="{% url 'chat_send' active_room.id %}" id="chat-compose-form">
+                <form class="chat-compose" method="post" action="{% url 'chat_send' active_room.id %}" id="chat-compose-form" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <textarea name="text" rows="1" maxlength="1200" placeholder="{% translate 'Nachricht schreiben...' %}" required></textarea>
+                    <label class="chat-attach-button" for="chat-attachment-input" title="{% translate 'Anhang hinzufügen' %}">
+                        <i class="fa-solid fa-paperclip"></i>
+                    </label>
+                    <input type="file" name="attachment" id="chat-attachment-input" class="chat-attachment-input" accept="image/*,.pdf,.txt,.zip,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                    <textarea name="text" rows="1" maxlength="1200" placeholder="{% translate 'Nachricht schreiben...' %}"></textarea>
                     <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+                    <small class="chat-attachment-name" id="chat-attachment-name"></small>
                 </form>
             {% else %}
                 <div class="chat-start-panel">

@@ -46,11 +46,17 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ["avatar", "profile_banner", "bio"]
+        fields = ["avatar", "profile_banner", "bio", "status", "status_text", "privacy_show_online", "privacy_show_friends", "privacy_show_highscores", "privacy_show_chat_button"]
         labels = {
             "avatar": "Profilbild",
             "profile_banner": "Profilbanner",
             "bio": "Über mich",
+            "status": "Status",
+            "status_text": "Statustext",
+            "privacy_show_online": "Online-Status öffentlich anzeigen",
+            "privacy_show_friends": "Freundesliste öffentlich anzeigen",
+            "privacy_show_highscores": "Highscores öffentlich anzeigen",
+            "privacy_show_chat_button": "Chat-Button im Profil anzeigen",
         }
         widgets = {
             "avatar": forms.ClearableFileInput(attrs={
@@ -66,6 +72,15 @@ class ProfileForm(forms.ModelForm):
                 "rows": 5,
                 "placeholder": "Schreibe kurz etwas über dich...",
             }),
+            "status": forms.Select(attrs={"class": "profile-input"}),
+            "status_text": forms.TextInput(attrs={
+                "class": "profile-input",
+                "placeholder": "z. B. Bin gerade am Zocken",
+            }),
+            "privacy_show_online": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "privacy_show_friends": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "privacy_show_highscores": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "privacy_show_chat_button": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
         }
 
     def __init__(self, *args, **kwargs):

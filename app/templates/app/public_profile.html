@@ -86,6 +86,12 @@
                     <span>{% translate "Profil erstellt" %}</span>
                     <strong>{{ profile.created_at|date:"d.m.Y" }}</strong>
                 </div>
+
+                <div>
+                    <span>{% translate "Status" %}</span>
+                    <strong>{{ profile.get_status_display }}</strong>
+                    {% if profile.status_text %}<small>{{ profile.status_text }}</small>{% endif %}
+                </div>
             </div>
 
 
@@ -95,7 +101,7 @@
                         <i class="fa-solid fa-user-gear"></i>
                         {% translate "Mein Profil bearbeiten" %}
                     </a>
-                {% elif friendship_state == "friends" %}
+                {% elif friendship_state == "friends" and can_use_chat_button %}
                     <form method="post" action="{% url 'chat_direct' profile_user.id %}">
                         {% csrf_token %}
                         <button type="submit" class="friendship-button friendship-chat-button">
@@ -148,10 +154,12 @@
                     </form>
                 {% endif %}
 
-                <a href="{% url 'friends_list' profile_user.id %}" class="friendship-link-button">
-                    <i class="fa-solid fa-user-group"></i>
-                    {{ friends_count }} {% translate "Freunde" %}
-                </a>
+                {% if can_view_friends %}
+                    <a href="{% url 'friends_list' profile_user.id %}" class="friendship-link-button">
+                        <i class="fa-solid fa-user-group"></i>
+                        {{ friends_count }} {% translate "Freunde" %}
+                    </a>
+                {% endif %}
             </div>
 
         </aside>
@@ -172,6 +180,7 @@
         </article>
 
 
+        {% if can_view_friends %}
         <article class="public-profile-card public-profile-friends-card">
             <div class="public-profile-section-header">
                 <div>
@@ -216,7 +225,9 @@
                 </div>
             {% endif %}
         </article>
+        {% endif %}
 
+        {% if benchmark_highscores %}
         <article class="public-profile-card public-profile-benchmark-card">
             <div class="public-profile-section-header">
                 <div>
@@ -259,6 +270,23 @@
                 {% endfor %}
             </div>
         </article>
+        {% endif %}
+
+        {% if friend_activity %}
+        <article class="public-profile-card public-profile-activity-card">
+            <p class="users-kicker">{% translate "Aktivität" %}</p>
+            <h2>{% translate "Freundesaktivität" %}</h2>
+            <div class="friend-activity-grid">
+                {% for activity in friend_activity %}
+                    <div class="friend-activity-item">
+                        <i class="{{ activity.icon }}"></i>
+                        <span>{{ activity.label }}</span>
+                        <strong>{{ activity.value }}</strong>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+        {% endif %}
         </div>
     </div>
 </section>

@@ -89,6 +89,18 @@
                             </p>
                         {% endif %}
 
+                        {% if profile.status_text %}
+                            <p class="user-status-text"><i class="fa-solid fa-circle"></i>{{ profile.status_text }}</p>
+                        {% endif %}
+
+                        {% if profile.activity_summary %}
+                            <div class="user-activity-row">
+                                {% for activity in profile.activity_summary %}
+                                    <span><i class="{{ activity.icon }}"></i>{{ activity.value }} {{ activity.label }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
                         <div class="user-meta">
                             <span>
                                 <i class="fa-solid fa-calendar-days"></i>

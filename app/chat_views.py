@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import ChatMessage, ChatMessageReaction, ChatRoom, ChatRoomMember, Friendship, UserProfile
+from .models import ChatAttachment, ChatMessage, ChatMessageReaction, ChatRoom, ChatRoomMember, Friendship, InboxItem, UserProfile
 from .profile_views import ensure_profiles_for_users, get_friend_profiles
 from .presence_utils import decorate_users_with_presence
 
@@ -71,6 +71,19 @@ def decorate_room(room, current_user):
 
 
 CHAT_REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"]
+MAX_CHAT_ATTACHMENT_SIZE = 8 * 1024 * 1024
+
+
+def attachment_payload(attachment):
+    return {
+        "id": attachment.id,
+        "name": attachment.filename,
+        "url": attachment.file.url if attachment.file else "",
+        "content_type": attachment.content_type,
+        "size": attachment.size,
+        "is_image": attachment.is_image,
+    }
+
 
 
 def reaction_payload(message, current_user):
@@ -117,12 +130,18 @@ def chat_view(request, room_id=None):
     active_room_members = []
     if active_room:
         active_room = decorate_room(active_room, request.user)
-        messages_qs = list(
+        chat_query = request.GET.get("q", "").strip()
+        message_queryset = (
             active_room.messages
             .select_related("sender", "sender__profile")
-            .prefetch_related("reactions")
-            .order_by("created_at")[:150]
+            .prefetch_related("reactions", "attachments")
+            .order_by("created_at")
         )
+        if chat_query:
+            message_queryset = message_queryset.filter(
+                Q(text__icontains=chat_query) | Q(sender__username__icontains=chat_query)
+            )
+        messages_qs = list(message_queryset[:150])
         for message in messages_qs:
             decorate_message(message, request.user)
         active_room_members = list(active_room.members.select_related("profile").order_by("username"))
@@ -138,6 +157,7 @@ def chat_view(request, room_id=None):
         "chat_messages": messages_qs,
         "active_room_members": active_room_members,
         "friend_profiles": friend_profiles,
+        "chat_query": request.GET.get("q", "").strip(),
     })
 
 
@@ -186,6 +206,14 @@ def create_group_chat(request):
 
     for user in User.objects.filter(id__in=selected_ids, is_active=True):
         ChatRoomMember.objects.get_or_create(room=room, user=user)
+        InboxItem.objects.create(
+            user=user,
+            item_type=InboxItem.TYPE_CHAT,
+            title=_("Neue Chatgruppe"),
+            message=_("Du wurdest zu einer neuen Gruppe hinzugefügt."),
+            target_url=reverse("chat_room", args=[room.id]),
+            icon="fa-solid fa-user-group",
+        )
 
     ChatMessage.objects.create(
         room=room,
@@ -201,16 +229,41 @@ def create_group_chat(request):
 def send_chat_message(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
     text = request.POST.get("text", "").strip()
+    uploaded_file = request.FILES.get("attachment")
 
-    if not text:
+    if not text and not uploaded_file:
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"ok": False, "error": _("Nachricht darf nicht leer sein.")}, status=400)
         messages.error(request, _("Nachricht darf nicht leer sein."))
         return redirect("chat_room", room_id=room.id)
 
+    if uploaded_file and uploaded_file.size > MAX_CHAT_ATTACHMENT_SIZE:
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"ok": False, "error": _("Der Anhang darf maximal 8 MB groß sein.")}, status=400)
+        messages.error(request, _("Der Anhang darf maximal 8 MB groß sein."))
+        return redirect("chat_room", room_id=room.id)
+
     message = ChatMessage.objects.create(room=room, sender=request.user, text=text[:1200])
+    if uploaded_file:
+        ChatAttachment.objects.create(
+            message=message,
+            file=uploaded_file,
+            original_name=uploaded_file.name[:255],
+            content_type=getattr(uploaded_file, "content_type", "") or "",
+            size=uploaded_file.size,
+        )
+
     room.save(update_fields=["updated_at"])
     ChatRoomMember.objects.filter(room=room, user=request.user).update(last_read_at=timezone.now())
+    for member in room.members.exclude(id=request.user.id):
+        InboxItem.objects.create(
+            user=member,
+            item_type=InboxItem.TYPE_CHAT,
+            title=_("Neue Chatnachricht"),
+            message=(text[:120] if text else _("Neuer Anhang")),
+            target_url=reverse("chat_room", args=[room.id]),
+            icon="fa-solid fa-comments",
+        )
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return JsonResponse({"ok": True, "message": message_payload(message, request.user)})
@@ -229,6 +282,7 @@ def message_payload(message, current_user):
         "delete_url": reverse("chat_message_delete", args=[message.room_id, message.id]) if is_own else "",
         "react_url": reverse("chat_message_react", args=[message.room_id, message.id]) if not is_own else "",
         "reactions": reaction_payload(message, current_user),
+        "attachments": [attachment_payload(attachment) for attachment in message.attachments.all()],
         "sender": {
             "id": message.sender_id,
             "username": message.sender.username,
@@ -252,7 +306,7 @@ def chat_messages_api(request, room_id):
         qs = qs.order_by("-created_at")[:80]
         qs = reversed(list(qs))
 
-    qs = list(qs.prefetch_related("reactions")) if hasattr(qs, "prefetch_related") else list(qs)
+    qs = list(qs.prefetch_related("reactions", "attachments")) if hasattr(qs, "prefetch_related") else list(qs)
     payload = [message_payload(message, request.user) for message in qs]
 
     visible_ids = {
@@ -267,7 +321,7 @@ def chat_messages_api(request, room_id):
             room.messages
             .filter(id__in=visible_ids)
             .select_related("sender", "sender__profile")
-            .prefetch_related("reactions")
+            .prefetch_related("reactions", "attachments")
         )
         existing_ids = {message.id for message in existing_visible_messages}
         deleted_ids = sorted(visible_ids - existing_ids)
@@ -301,7 +355,7 @@ def delete_chat_message(request, room_id, message_id):
 def react_chat_message(request, room_id, message_id):
     room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
     message = get_object_or_404(
-        ChatMessage.objects.select_related("sender").prefetch_related("reactions"),
+        ChatMessage.objects.select_related("sender").prefetch_related("reactions", "attachments"),
         id=message_id,
         room=room,
     )
@@ -322,5 +376,5 @@ def react_chat_message(request, room_id, message_id):
     else:
         ChatMessageReaction.objects.create(message=message, user=request.user, emoji=emoji)
 
-    message = ChatMessage.objects.prefetch_related("reactions").get(id=message.id)
+    message = ChatMessage.objects.prefetch_related("reactions", "attachments").get(id=message.id)
     return JsonResponse({"ok": True, "message_id": message.id, "reactions": reaction_payload(message, request.user)})

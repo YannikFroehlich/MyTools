@@ -1057,3 +1057,16 @@ body.dark-mode .profile-quick-actions a:nth-child(2) {
         border-radius: 18px;
     }
 }
+
+.profile-privacy-box {
+    padding: 16px;
+    border-radius: 22px;
+    background: rgba(148, 163, 184, .1);
+    border: 1px solid rgba(148, 163, 184, .16);
+    display: grid;
+    gap: 10px;
+}
+.profile-privacy-box h3 { margin: 0; }
+.profile-privacy-box label { display: flex; align-items: center; gap: 10px; font-weight: 850; color: var(--theme-text); }
+.profile-checkbox { width: 18px; height: 18px; accent-color: rgb(var(--theme-accent-rgb)); }
+body.dark-mode .profile-privacy-box { background: rgba(255,255,255,.07); border-color: rgba(203,213,225,.12); }

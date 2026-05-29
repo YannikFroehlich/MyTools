@@ -1614,3 +1614,23 @@ body.dark-mode .friend-online-dot {
         border-radius: 14px;
     }
 }
+
+.user-status-text {
+    margin: 6px 0 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: color-mix(in srgb, var(--theme-text) 78%, transparent);
+    font-weight: 800;
+    font-size: .88rem;
+}
+.user-status-text i { color: rgb(var(--theme-accent-rgb)); font-size: .45rem; }
+.user-activity-row,
+.friend-activity-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.user-activity-row span,
+.friend-activity-item { padding: 7px 10px; border-radius: 999px; background: rgba(var(--theme-accent-rgb), .1); color: rgb(var(--theme-accent-rgb)); font-size: .78rem; font-weight: 900; display: inline-flex; align-items: center; gap: 6px; }
+.friend-activity-item { border-radius: 16px; color: var(--theme-text); background: rgba(148,163,184,.12); }
+.friend-activity-item strong { color: rgb(var(--theme-accent-rgb)); }
+.public-profile-info-list small { display:block; margin-top:4px; color:#64748b; font-weight:800; }
+body.dark-mode .friend-activity-item { background: rgba(255,255,255,.08); color:#e2e8f0; }
+body.dark-mode .public-profile-info-list small { color:#cbd5e1; }
