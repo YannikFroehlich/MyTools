@@ -33,14 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
         navStart: '#1a56d6',
         navEnd: '#5aadee',
         pageBg: '#dce5f5',
+        cardBg: '#ffffff',
         footerBg: '#ffffff',
+        radius: 22,
+        compact: false,
+        pattern: false,
     };
 
     const darkDefaultTheme = {
         navStart: '#0e2d6e',
         navEnd: '#2a6ea0',
         pageBg: '#12151f',
+        cardBg: '#1c2231',
         footerBg: '#1a1d2b',
+        radius: 22,
+        compact: false,
+        pattern: false,
     };
 
     const themePresets = {
@@ -136,7 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.style.setProperty('--theme-accent-end-rgb', rgbString(theme.navEnd));
         document.documentElement.style.setProperty('--theme-page-bg', theme.pageBg);
         document.documentElement.style.setProperty('--theme-footer-bg', theme.footerBg);
+        document.documentElement.style.setProperty('--theme-card-bg', theme.cardBg || theme.footerBg || '#ffffff');
+        document.documentElement.style.setProperty('--theme-card-radius', `${theme.radius || 22}px`);
         document.documentElement.style.setProperty('--theme-text', readableTextColor(theme.pageBg));
+        body.classList.toggle('theme-compact-mode', Boolean(theme.compact));
+        body.classList.toggle('theme-pattern-mode', Boolean(theme.pattern));
         document.documentElement.style.setProperty('--theme-footer-text', readableTextColor(theme.footerBg));
         document.documentElement.style.setProperty('--theme-footer-border', 'rgba(0, 0, 0, 0.08)');
         document.documentElement.style.setProperty('--theme-nav-shadow', `rgba(${rgbString(theme.navStart)}, 0.28)`);
@@ -144,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearCustomTheme() {
         body.classList.remove('custom-theme');
+        body.classList.remove('theme-compact-mode', 'theme-pattern-mode');
 
         [
             '--theme-nav-start',
@@ -155,6 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
             '--theme-accent-end-rgb',
             '--theme-page-bg',
             '--theme-footer-bg',
+            '--theme-card-bg',
+            '--theme-card-radius',
             '--theme-text',
             '--theme-footer-text',
             '--theme-footer-border',
@@ -253,12 +268,14 @@ document.addEventListener('DOMContentLoaded', () => {
         navStart: document.getElementById('theme-nav-start'),
         navEnd: document.getElementById('theme-nav-end'),
         pageBg: document.getElementById('theme-page-bg'),
+        cardBg: document.getElementById('theme-card-bg'),
         footerBg: document.getElementById('theme-footer-bg'),
+        radius: document.getElementById('theme-radius'),
     };
 
     function syncThemeInputs(theme) {
         Object.entries(themeInputs).forEach(([key, input]) => {
-            if (input && theme[key]) {
+            if (input && theme[key] !== undefined) {
                 input.value = theme[key];
             }
         });
@@ -269,7 +286,11 @@ document.addEventListener('DOMContentLoaded', () => {
             navStart: themeInputs.navStart?.value || defaultTheme.navStart,
             navEnd: themeInputs.navEnd?.value || defaultTheme.navEnd,
             pageBg: themeInputs.pageBg?.value || defaultTheme.pageBg,
+            cardBg: themeInputs.cardBg?.value || defaultTheme.cardBg,
             footerBg: themeInputs.footerBg?.value || defaultTheme.footerBg,
+            radius: Number(themeInputs.radius?.value || defaultTheme.radius),
+            compact: document.getElementById('theme-compact-toggle')?.classList.contains('is-active') || false,
+            pattern: document.getElementById('theme-pattern-toggle')?.classList.contains('is-active') || false,
         };
     }
 
@@ -284,6 +305,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (themeEditorButton && themeEditorPanel) {
         syncThemeInputs(activeCustomTheme || defaultThemeForMode());
+        document.getElementById('theme-compact-toggle')?.classList.toggle('is-active', Boolean((activeCustomTheme || {}).compact));
+        document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active', Boolean((activeCustomTheme || {}).pattern));
 
         themeEditorButton.addEventListener('click', (event) => {
             event.stopPropagation();
@@ -298,11 +321,21 @@ document.addEventListener('DOMContentLoaded', () => {
             input?.addEventListener('input', saveThemeFromInputs);
         });
 
+        ['theme-compact-toggle', 'theme-pattern-toggle'].forEach((id) => {
+            const toggle = document.getElementById(id);
+            toggle?.addEventListener('click', () => {
+                toggle.classList.toggle('is-active');
+                saveThemeFromInputs();
+            });
+        });
+
         document.querySelectorAll('.theme-preset').forEach((button) => {
             button.addEventListener('click', () => {
                 const preset = themePresets[currentMode()][button.dataset.preset] || defaultThemeForMode();
 
                 syncThemeInputs(preset);
+                document.getElementById('theme-compact-toggle')?.classList.remove('is-active');
+                document.getElementById('theme-pattern-toggle')?.classList.remove('is-active');
                 activeThemePreset = button.dataset.preset;
                 activeCustomTheme = { ...preset };
 
@@ -321,6 +354,8 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem(themePresetStorageKey);
 
             syncThemeInputs(defaultThemeForMode());
+            document.getElementById('theme-compact-toggle')?.classList.remove('is-active');
+            document.getElementById('theme-pattern-toggle')?.classList.remove('is-active');
             clearCustomTheme();
         });
 
@@ -340,16 +375,163 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
+    /* ── LIVE BENACHRICHTIGUNGS-ZÄHLER ── */
+    const notificationCountsUrl = body.dataset.notificationCountsUrl;
+    const notificationPollMs = 10000;
+
+    function setNotificationBadgeValue(badge, value) {
+        const normalizedValue = Number.isFinite(Number(value)) ? Number(value) : 0;
+        const oldValue = Number(badge.dataset.currentValue ?? badge.textContent.trim() ?? 0);
+
+        badge.textContent = String(normalizedValue);
+        badge.dataset.currentValue = String(normalizedValue);
+
+        const singularLabel = badge.dataset.labelSingular || '';
+        const pluralLabel = badge.dataset.labelPlural || singularLabel;
+        const label = normalizedValue === 1 ? singularLabel : pluralLabel;
+
+        if (label) {
+            badge.setAttribute('aria-label', `${normalizedValue} ${label}`);
+            badge.title = `${normalizedValue} ${label}`;
+        }
+
+        if (oldValue !== normalizedValue) {
+            badge.classList.remove('badge-updated');
+            void badge.offsetWidth;
+            badge.classList.add('badge-updated');
+
+            window.setTimeout(() => {
+                badge.classList.remove('badge-updated');
+            }, 180);
+        }
+    }
+
+    function updateProfileNotificationDot(counts) {
+        const dot = document.querySelector('.js-profile-notification-dot');
+
+        if (!dot || !counts) {
+            return;
+        }
+
+        const total = Number(counts.total_notifications ?? 0);
+        dot.classList.toggle('is-visible', total > 0);
+    }
+
+    function updateNotificationBadges(counts) {
+        if (!counts) {
+            return;
+        }
+
+        document.querySelectorAll('.js-notification-badge[data-notification-key]').forEach((badge) => {
+            const key = badge.dataset.notificationKey;
+
+            if (Object.prototype.hasOwnProperty.call(counts, key)) {
+                setNotificationBadgeValue(badge, counts[key]);
+            }
+        });
+
+        updateProfileNotificationDot(counts);
+    }
+
+
+    const notificationCenterUrl = body.dataset.notificationCenterUrl;
+    const notificationList = document.querySelector('.js-notification-list');
+    const notificationTotal = document.querySelector('.js-notification-total');
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function renderNotificationItems(items = []) {
+        if (!notificationList) return;
+
+        if (!items.length) {
+            notificationList.innerHTML = `
+                <div class="notification-center-empty">
+                    <i class="fa-regular fa-bell"></i>
+                    <p>Keine neuen Benachrichtigungen.</p>
+                </div>
+            `;
+            return;
+        }
+
+        notificationList.innerHTML = items.map((item) => `
+            <a class="notification-center-item is-${escapeHtml(item.type)}" href="${escapeHtml(item.url || '#')}">
+                <span class="notification-center-item-icon"><i class="${escapeHtml(item.icon || 'fa-solid fa-bell')}"></i></span>
+                <span class="notification-center-item-main">
+                    <strong>${escapeHtml(item.title)}</strong>
+                    <small>${escapeHtml(item.text)}</small>
+                </span>
+                ${Number(item.badge || 0) > 1 ? `<b>${escapeHtml(item.badge)}</b>` : ''}
+            </a>
+        `).join('');
+    }
+
+    function updateNotificationCenter(counts, items) {
+        if (notificationTotal && counts) {
+            notificationTotal.textContent = String(Number(counts.total_notifications || 0));
+        }
+        if (Array.isArray(items)) {
+            renderNotificationItems(items);
+        }
+    }
+
+    async function refreshNotificationCounts() {
+        if (!notificationCountsUrl || document.hidden) {
+            return;
+        }
+
+        try {
+            const response = await fetch(notificationCenterUrl || notificationCountsUrl, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                cache: 'no-store',
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.ok) {
+                updateNotificationBadges(data.counts);
+                updateNotificationCenter(data.counts, data.items);
+            }
+        } catch (error) {
+            // Wenn der Server kurz nicht erreichbar ist, probieren wir es beim nächsten Intervall erneut.
+        }
+    }
+
+    if (notificationCountsUrl) {
+        refreshNotificationCounts();
+        window.setInterval(refreshNotificationCounts, notificationPollMs);
+        window.addEventListener('focus', refreshNotificationCounts);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                refreshNotificationCounts();
+            }
+        });
+    }
+
     /* ── DROPDOWN MENÜS ── */
 
     function closeAllDropdowns(exceptDropdown = null, exceptButton = null) {
-        document.querySelectorAll('.menu-dropdown.open, .profile-menu-dropdown.open').forEach((dropdown) => {
+        document.querySelectorAll('.menu-dropdown.open, .profile-menu-dropdown.open, .notification-center-dropdown.open').forEach((dropdown) => {
             if (dropdown !== exceptDropdown) {
                 dropdown.classList.remove('open');
             }
         });
 
-        document.querySelectorAll('.menu-button.active, .profile-menu-button.active').forEach((button) => {
+        document.querySelectorAll('.menu-button.active, .profile-menu-button.active, .notification-center-button.active').forEach((button) => {
             if (button !== exceptButton) {
                 button.classList.remove('active');
             }
@@ -397,6 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDropdown('google-apps-menu-button', 'google-apps-menu-dropdown');
     setupDropdown('menu-button', 'menu-dropdown');
     setupDropdown('profile-menu-button', 'profile-menu-dropdown');
+    setupDropdown('notification-center-button', 'notification-center-dropdown');
 
     document.addEventListener('click', () => {
         closeAllDropdowns();

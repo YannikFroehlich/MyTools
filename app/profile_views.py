@@ -7,11 +7,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, UserProfile
-from .profile_forms import ProfileForm
+from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, ProfileGalleryImage, SkribbleStats, UserBlock, UserProfile, UserReport
+from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
+from .presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
 
 User = get_user_model()
 
@@ -79,11 +81,42 @@ def get_friend_profiles(user, limit=None):
         .filter(user__in=friends)
         .order_by("user__username")
     )
+    decorate_profiles_with_presence(profiles)
 
     for profile in profiles:
         profile.friendship_since = friendship_since_by_user_id.get(profile.user_id)
 
     return profiles
+
+
+def can_view_private_profile_area(viewer, profile_user):
+    return viewer.is_authenticated and (viewer == profile_user or get_friendship_state(viewer, profile_user) == "friends")
+
+
+def apply_profile_privacy(profile, viewer):
+    owner = profile.user
+    is_self = viewer.is_authenticated and viewer == owner
+    is_friend = viewer.is_authenticated and get_friendship_state(viewer, owner) == "friends"
+    if not (is_self or is_friend) and not profile.privacy_show_online:
+        profile.is_online = False
+        profile.last_seen_at = None
+    if profile.status == UserProfile.STATUS_INVISIBLE and not is_self:
+        profile.is_online = False
+        profile.last_seen_at = None
+    return profile
+
+
+def get_friend_activity(profile_user, viewer):
+    if not can_view_private_profile_area(viewer, profile_user):
+        return []
+    activity = []
+    recent_chat_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
+    if recent_chat_count:
+        activity.append({"icon": "fa-solid fa-comments", "label": _("Aktive Chats"), "value": recent_chat_count})
+    score_count = HumanBenchmarkHighScore.objects.filter(user=profile_user).count()
+    if score_count:
+        activity.append({"icon": "fa-solid fa-trophy", "label": _("Highscores"), "value": score_count})
+    return activity
 
 
 def get_friendship_state(viewer, profile_user):
@@ -102,6 +135,14 @@ def get_friendship_state(viewer, profile_user):
         return "pending_sent"
 
     return "pending_received"
+
+
+def is_blocked_between(user_a, user_b):
+    if not user_a.is_authenticated or user_a == user_b:
+        return False
+    return UserBlock.objects.filter(
+        Q(blocker=user_a, blocked=user_b) | Q(blocker=user_b, blocked=user_a)
+    ).exists()
 
 
 @login_required
@@ -200,6 +241,9 @@ def profile_view(request):
         "friends_count": friends_count,
         "chat_rooms_count": chat_rooms_count,
         "total_highscores_count": total_highscores_count,
+        "gallery_form": ProfileGalleryImageForm(),
+        "gallery_images": ProfileGalleryImage.objects.filter(user=request.user)[:12],
+        "blocked_users": UserBlock.objects.select_related("blocked", "blocked__profile").filter(blocker=request.user)[:20],
     })
 
 
@@ -224,7 +268,9 @@ def ensure_profiles_for_users(users):
 def users_view(request):
     query = request.GET.get("q", "").strip()
 
-    users_qs = User.objects.filter(is_active=True)
+    blocked_ids = set(UserBlock.objects.filter(blocker=request.user).values_list("blocked_id", flat=True))
+    blocked_ids |= set(UserBlock.objects.filter(blocked=request.user).values_list("blocker_id", flat=True))
+    users_qs = User.objects.filter(is_active=True).exclude(id__in=blocked_ids)
 
     if query:
         users_qs = users_qs.filter(
@@ -244,8 +290,12 @@ def users_view(request):
         .order_by("user__username")
     )
 
+    decorate_profiles_with_presence(profiles)
+
     for profile in profiles:
         profile.friendship_state = get_friendship_state(request.user, profile.user)
+        apply_profile_privacy(profile, request.user)
+        profile.activity_summary = get_friend_activity(profile.user, request.user)
 
     return render(request, "app/users.html", {
         "profiles": profiles,
@@ -258,6 +308,12 @@ def users_view(request):
 def public_profile_view(request, user_id):
     profile_user = get_object_or_404(User, id=user_id, is_active=True)
     profile, created = UserProfile.objects.get_or_create(user=profile_user)
+    decorate_users_with_presence([profile_user])
+    profile.is_online = getattr(profile_user, "is_online", False)
+    profile.last_seen_at = getattr(profile_user, "last_seen_at", None)
+    apply_profile_privacy(profile, request.user)
+    blocked_by_viewer = UserBlock.objects.filter(blocker=request.user, blocked=profile_user).exists()
+    viewer_blocked = UserBlock.objects.filter(blocker=profile_user, blocked=request.user).exists()
     friends_count = Friendship.accepted_for_user(profile_user).count()
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
     total_highscores_count = HumanBenchmarkHighScore.objects.filter(user=profile_user).count()
@@ -265,12 +321,20 @@ def public_profile_view(request, user_id):
     return render(request, "app/public_profile.html", {
         "profile_user": profile_user,
         "profile": profile,
-        "benchmark_highscores": get_profile_human_benchmark_highscores(profile_user),
+        "benchmark_highscores": get_profile_human_benchmark_highscores(profile_user) if profile.privacy_show_highscores or can_view_private_profile_area(request.user, profile_user) else [],
         "friendship_state": get_friendship_state(request.user, profile_user),
-        "friends_preview": get_friend_profiles(profile_user, limit=6),
+        "friends_preview": get_friend_profiles(profile_user, limit=6) if profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user) else [],
+        "can_view_friends": profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user),
+        "can_use_chat_button": profile.privacy_show_chat_button or can_view_private_profile_area(request.user, profile_user),
+        "friend_activity": get_friend_activity(profile_user, request.user),
         "friends_count": friends_count,
         "chat_rooms_count": chat_rooms_count,
         "total_highscores_count": total_highscores_count,
+        "blocked_by_viewer": blocked_by_viewer,
+        "viewer_blocked": viewer_blocked,
+        "report_form": UserReportForm(),
+        "gallery_images": ProfileGalleryImage.objects.filter(user=profile_user, is_public=True)[:12] if not viewer_blocked else [],
+        "skribble_stats": SkribbleStats.objects.filter(user=profile_user).first(),
     })
 
 
@@ -278,7 +342,13 @@ def public_profile_view(request, user_id):
 def friends_list_view(request, user_id):
     profile_user = get_object_or_404(User, id=user_id, is_active=True)
     profile, created = UserProfile.objects.get_or_create(user=profile_user)
+    if not (profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user)):
+        messages.info(request, _("Diese Freundesliste ist privat."))
+        return redirect("public_profile", user_id=profile_user.id)
     friends = get_friend_profiles(profile_user)
+    for friend_profile in friends:
+        apply_profile_privacy(friend_profile, request.user)
+        friend_profile.activity_summary = get_friend_activity(friend_profile.user, request.user)
 
     return render(request, "app/friends.html", {
         "profile_user": profile_user,
@@ -299,6 +369,10 @@ def friendship_action_view(request, user_id):
         messages.error(request, _("Du kannst dir selbst keine Freundschaftsanfrage senden."))
         return redirect(next_url)
 
+    if is_blocked_between(request.user, target_user):
+        messages.error(request, _("Diese Aktion ist wegen einer Blockierung nicht möglich."))
+        return redirect(next_url)
+
     friendship = Friendship.between(request.user, target_user)
 
     if action == "send":
@@ -313,6 +387,17 @@ def friendship_action_view(request, user_id):
                 messages.success(request, _("Freundschaftsanfrage angenommen."))
         else:
             Friendship.objects.create(from_user=request.user, to_user=target_user)
+            target_profile, _created = UserProfile.objects.get_or_create(user=target_user)
+            muted_by_dnd = target_profile.status == UserProfile.STATUS_DND and target_profile.dnd_silence_notifications
+            if target_profile.notify_friend_requests and not muted_by_dnd:
+                InboxItem.objects.create(
+                    user=target_user,
+                    item_type=InboxItem.TYPE_FRIEND,
+                    title=_("Neue Freundschaftsanfrage"),
+                    message=f"{request.user.username} möchte dich hinzufügen.",
+                    target_url=reverse("profile") + "#friend-requests",
+                    icon="fa-solid fa-user-plus",
+                )
             messages.success(request, _("Freundschaftsanfrage gesendet."))
 
     elif action == "accept":
@@ -345,4 +430,67 @@ def friendship_action_view(request, user_id):
     else:
         messages.error(request, _("Unbekannte Freundschafts-Aktion."))
 
+    return redirect(next_url)
+
+
+@login_required
+@require_POST
+def profile_gallery_upload_view(request):
+    form = ProfileGalleryImageForm(request.POST, request.FILES)
+    if form.is_valid():
+        image = form.save(commit=False)
+        image.user = request.user
+        image.save()
+        messages.success(request, _("Galeriebild hochgeladen."))
+    else:
+        messages.error(request, _("Das Galeriebild konnte nicht hochgeladen werden."))
+    return redirect("profile")
+
+
+@login_required
+@require_POST
+def delete_gallery_image_view(request, image_id):
+    image = get_object_or_404(ProfileGalleryImage, id=image_id, user=request.user)
+    image.image.delete(save=False)
+    image.delete()
+    messages.success(request, _("Galeriebild gelöscht."))
+    return redirect("profile")
+
+
+@login_required
+@require_POST
+def block_user_view(request, user_id):
+    target_user = get_object_or_404(User, id=user_id, is_active=True)
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER") or "users"
+    if target_user == request.user:
+        messages.error(request, _("Du kannst dich nicht selbst blockieren."))
+        return redirect(next_url)
+    action = request.POST.get("action", "block")
+    if action == "unblock":
+        UserBlock.objects.filter(blocker=request.user, blocked=target_user).delete()
+        messages.success(request, _("Blockierung aufgehoben."))
+    else:
+        UserBlock.objects.get_or_create(blocker=request.user, blocked=target_user)
+        Friendship.objects.filter(Q(from_user=request.user, to_user=target_user) | Q(from_user=target_user, to_user=request.user)).delete()
+        messages.success(request, _("Nutzer blockiert."))
+    return redirect(next_url)
+
+
+@login_required
+@require_POST
+def report_user_view(request, user_id):
+    target_user = get_object_or_404(User, id=user_id, is_active=True)
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER") or "users"
+    if target_user == request.user:
+        messages.error(request, _("Du kannst dich nicht selbst melden."))
+        return redirect(next_url)
+    form = UserReportForm(request.POST)
+    if form.is_valid():
+        report = form.save(commit=False)
+        report.reporter = request.user
+        report.reported = target_user
+        report.save()
+        messages.success(request, _("Meldung wurde gespeichert."))
+    else:
+        messages.error(request, _("Die Meldung konnte nicht gespeichert werden."))
     return redirect(next_url)

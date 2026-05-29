@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.core.validators import FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
 
 
@@ -26,6 +27,32 @@ class UserProfile(models.Model):
         blank=True,
         verbose_name="Über mich",
     )
+    STATUS_ONLINE = "online"
+    STATUS_BUSY = "busy"
+    STATUS_AWAY = "away"
+    STATUS_DND = "dnd"
+    STATUS_INVISIBLE = "invisible"
+
+    STATUS_CHOICES = [
+        (STATUS_ONLINE, _("Online")),
+        (STATUS_BUSY, _("Beschäftigt")),
+        (STATUS_AWAY, _("Abwesend")),
+        (STATUS_DND, _("Nicht stören")),
+        (STATUS_INVISIBLE, _("Unsichtbar")),
+    ]
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_ONLINE)
+    status_text = models.CharField(max_length=80, blank=True)
+    privacy_show_online = models.BooleanField(default=True)
+    privacy_show_friends = models.BooleanField(default=True)
+    privacy_show_highscores = models.BooleanField(default=True)
+    privacy_show_chat_button = models.BooleanField(default=True)
+    notify_chat = models.BooleanField(default=True)
+    notify_friend_requests = models.BooleanField(default=True)
+    notify_skribble = models.BooleanField(default=True)
+    browser_notifications = models.BooleanField(default=False)
+    sound_notifications = models.BooleanField(default=True)
+    dnd_silence_notifications = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -51,6 +78,30 @@ class UserProfile(models.Model):
             return f"{first_name[:1]}{last_name[:1]}".upper()
 
         return (self.user.username[:2] or "MT").upper()
+
+
+class UserPresence(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="presence",
+    )
+    last_seen = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Online-Status"
+        verbose_name_plural = "Online-Status"
+        indexes = [
+            models.Index(fields=["last_seen"]),
+        ]
+
+    def __str__(self):
+        return f"{self.user} · {self.last_seen}"
+
+    @property
+    def is_online(self):
+        from django.utils import timezone
+        return self.last_seen >= timezone.now() - timezone.timedelta(minutes=3)
 
 
 class Friendship(models.Model):
@@ -137,6 +188,8 @@ class ChatRoom(models.Model):
 
     room_type = models.CharField(max_length=20, choices=ROOM_CHOICES, default=ROOM_DIRECT)
     name = models.CharField(max_length=80, blank=True)
+    description = models.CharField(max_length=220, blank=True)
+    avatar = models.ImageField(upload_to="chat_group_avatars/", null=True, blank=True)
     direct_key = models.CharField(max_length=80, unique=True, null=True, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -211,7 +264,7 @@ class ChatRoomMember(models.Model):
 class ChatMessage(models.Model):
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_chat_messages")
-    text = models.TextField(max_length=1200)
+    text = models.TextField(max_length=1200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(null=True, blank=True)
 
@@ -226,6 +279,45 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender}: {self.text[:40]}"
+
+
+def chat_attachment_upload_path(instance, filename):
+    return f"chat_attachments/room_{instance.message.room_id}/{instance.message_id}_{filename}"
+
+
+def validate_chat_attachment_size(file):
+    from django.core.exceptions import ValidationError
+    max_size = 8 * 1024 * 1024
+    if file.size > max_size:
+        raise ValidationError(_("Anhänge dürfen maximal 8 MB groß sein."))
+
+
+class ChatAttachment(models.Model):
+    message = models.ForeignKey(ChatMessage, on_delete=models.CASCADE, related_name="attachments")
+    file = models.FileField(
+        upload_to=chat_attachment_upload_path,
+        validators=[validate_chat_attachment_size],
+    )
+    original_name = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=120, blank=True)
+    size = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = "Chat-Anhang"
+        verbose_name_plural = "Chat-Anhänge"
+
+    def __str__(self):
+        return self.original_name
+
+    @property
+    def is_image(self):
+        return self.content_type.startswith("image/")
+
+    @property
+    def filename(self):
+        return self.original_name or self.file.name.rsplit("/", 1)[-1]
 
 
 class ChatMessageReaction(models.Model):
@@ -592,6 +684,9 @@ class HomeWidget(models.Model):
     WIDGET_BENCHMARK = "benchmark"
     WIDGET_STATS = "stats"
     WIDGET_CLOCK = "clock"
+    WIDGET_CHAT = "chat"
+    WIDGET_FRIENDS = "friends"
+    WIDGET_SKRIBBLE = "skribble"
 
     WIDGET_CHOICES = [
         (WIDGET_WEATHER, _("Wetter")),
@@ -599,6 +694,9 @@ class HomeWidget(models.Model):
         (WIDGET_BENCHMARK, _("Human Benchmark")),
         (WIDGET_STATS, _("Schnellstatistiken")),
         (WIDGET_CLOCK, _("Uhr")),
+        (WIDGET_CHAT, _("Chats")),
+        (WIDGET_FRIENDS, _("Freunde")),
+        (WIDGET_SKRIBBLE, _("Skribble")),
     ]
 
     CLOCK_DESIGN_MINIMAL = "minimal"
@@ -978,3 +1076,201 @@ class DrawingGameGuess(models.Model):
 
     def __str__(self):
         return f"{self.user}: {self.message[:30]}"
+
+
+class ChatMessageRead(models.Model):
+    message = models.ForeignKey(ChatMessage, on_delete=models.CASCADE, related_name="read_receipts")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_read_receipts")
+    read_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["read_at"]
+        constraints = [models.UniqueConstraint(fields=["message", "user"], name="unique_chat_message_read_user")]
+        indexes = [models.Index(fields=["message", "user"]), models.Index(fields=["user", "read_at"])]
+        verbose_name = "Gelesene Chatnachricht"
+        verbose_name_plural = "Gelesene Chatnachrichten"
+
+    def __str__(self):
+        return f"{self.user} gelesen {self.message_id}"
+
+
+def profile_gallery_upload_path(instance, filename):
+    return f"profile_gallery/user_{instance.user_id}/{filename}"
+
+
+class ProfileGalleryImage(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="gallery_images")
+    image = models.ImageField(upload_to=profile_gallery_upload_path)
+    caption = models.CharField(max_length=120, blank=True)
+    is_public = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["user", "-created_at"])]
+        verbose_name = "Profil-Galeriebild"
+        verbose_name_plural = "Profil-Galeriebilder"
+
+    def __str__(self):
+        return self.caption or f"Galeriebild {self.pk}"
+
+
+class UserBlock(models.Model):
+    blocker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_users")
+    blocked = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blocked_by_users")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["blocker", "blocked"], name="unique_user_block"),
+            models.CheckConstraint(condition=~models.Q(blocker=models.F("blocked")), name="prevent_self_block"),
+        ]
+        indexes = [models.Index(fields=["blocker", "blocked"])]
+        verbose_name = "Blockierter Nutzer"
+        verbose_name_plural = "Blockierte Nutzer"
+
+    def __str__(self):
+        return f"{self.blocker} blockiert {self.blocked}"
+
+
+class UserReport(models.Model):
+    REASON_SPAM = "spam"
+    REASON_HARASSMENT = "harassment"
+    REASON_CONTENT = "content"
+    REASON_OTHER = "other"
+    REASON_CHOICES = [
+        (REASON_SPAM, _("Spam")),
+        (REASON_HARASSMENT, _("Belästigung")),
+        (REASON_CONTENT, _("Unpassende Inhalte")),
+        (REASON_OTHER, _("Sonstiges")),
+    ]
+    reporter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_user_reports")
+    reported = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_user_reports")
+    reason = models.CharField(max_length=30, choices=REASON_CHOICES, default=REASON_OTHER)
+    message = models.TextField(max_length=1000, blank=True)
+    is_resolved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["reported", "is_resolved", "-created_at"])]
+        verbose_name = "Nutzermeldung"
+        verbose_name_plural = "Nutzermeldungen"
+
+    def __str__(self):
+        return f"Meldung: {self.reporter} → {self.reported}"
+
+
+class SkribbleStats(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="skribble_stats")
+    games_played = models.PositiveIntegerField(default=0)
+    games_won = models.PositiveIntegerField(default=0)
+    correct_guesses = models.PositiveIntegerField(default=0)
+    drawings_made = models.PositiveIntegerField(default=0)
+    total_score = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Skribble-Statistik"
+        verbose_name_plural = "Skribble-Statistiken"
+
+    def __str__(self):
+        return f"Skribble Stats: {self.user}"
+
+    @property
+    def win_rate(self):
+        if not self.games_played:
+            return 0
+        return round((self.games_won / self.games_played) * 100)
+
+
+class ToolFavorite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tool_favorites")
+    tool_key = models.CharField(max_length=60)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        constraints = [models.UniqueConstraint(fields=["user", "tool_key"], name="unique_tool_favorite_per_user")]
+        indexes = [models.Index(fields=["user", "tool_key"])]
+        verbose_name = "Tool-Favorit"
+        verbose_name_plural = "Tool-Favoriten"
+
+    def __str__(self):
+        return f"{self.user} · {self.tool_key}"
+
+
+class InboxItem(models.Model):
+    TYPE_SYSTEM = "system"
+    TYPE_CHAT = "chat"
+    TYPE_FRIEND = "friend"
+    TYPE_SKRIBBLE = "skribble"
+    TYPE_FEEDBACK = "feedback"
+
+    TYPE_CHOICES = [
+        (TYPE_SYSTEM, _("System")),
+        (TYPE_CHAT, _("Chat")),
+        (TYPE_FRIEND, _("Freunde")),
+        (TYPE_SKRIBBLE, _("Skribble")),
+        (TYPE_FEEDBACK, _("Feedback")),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="inbox_items")
+    item_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=TYPE_SYSTEM)
+    title = models.CharField(max_length=120)
+    message = models.TextField(blank=True)
+    target_url = models.CharField(max_length=255, blank=True)
+    icon = models.CharField(max_length=80, default="fa-solid fa-bell")
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["user", "is_read", "-created_at"])]
+        verbose_name = "Inbox-Eintrag"
+        verbose_name_plural = "Inbox-Einträge"
+
+    def __str__(self):
+        return self.title
+
+
+class ToolFeedback(models.Model):
+    TYPE_FEEDBACK = "feedback"
+    TYPE_BUG = "bug"
+    TYPE_IDEA = "idea"
+
+    TYPE_CHOICES = [
+        (TYPE_FEEDBACK, _("Feedback")),
+        (TYPE_BUG, _("Bug")),
+        (TYPE_IDEA, _("Feature-Idee")),
+    ]
+
+    STATUS_OPEN = "open"
+    STATUS_PLANNED = "planned"
+    STATUS_DONE = "done"
+
+    STATUS_CHOICES = [
+        (STATUS_OPEN, _("Offen")),
+        (STATUS_PLANNED, _("Geplant")),
+        (STATUS_DONE, _("Erledigt")),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="tool_feedback")
+    tool_key = models.CharField(max_length=60, blank=True)
+    feedback_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=TYPE_FEEDBACK)
+    title = models.CharField(max_length=120)
+    message = models.TextField()
+    rating = models.PositiveSmallIntegerField(default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_OPEN)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["tool_key", "status", "-created_at"])]
+        verbose_name = "Tool-Feedback"
+        verbose_name_plural = "Tool-Feedback"
+
+    def __str__(self):
+        return self.title

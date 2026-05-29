@@ -2145,7 +2145,10 @@ body.dark-mode .shortcuts-grid.drag-over {
 .weather-widget-content,
 .notes-widget-content,
 .benchmark-widget-content,
-.stats-widget-content {
+.stats-widget-content,
+.chat-widget-content,
+.friends-widget-content,
+.skribble-widget-content {
     position: relative;
     z-index: 1;
 }
@@ -2818,6 +2821,164 @@ body.dark-mode .shortcuts-grid.drag-over {
     box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.08);
 }
 
+.chat-widget-content,
+.friends-widget-content,
+.skribble-widget-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.widget-metric-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.widget-big-number.compact {
+    margin-bottom: 0;
+}
+
+.widget-big-number.compact strong {
+    font-size: 2.35rem;
+}
+
+.widget-soft-pill {
+    min-height: 2.25rem;
+    padding: 0 0.75rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: rgb(var(--widget-rgb));
+    background: rgba(var(--widget-rgb), 0.1);
+    font-weight: 900;
+    font-size: 0.84rem;
+    white-space: nowrap;
+}
+
+.widget-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.widget-list a {
+    min-width: 0;
+    min-height: 3.05rem;
+    border-radius: 16px;
+    padding: 0.45rem 0.55rem;
+    display: grid;
+    grid-template-columns: 2.15rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.55rem;
+    color: inherit;
+    background: rgba(var(--widget-rgb), 0.08);
+    text-decoration: none;
+    transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.widget-list a:hover {
+    transform: translateY(-1px);
+    background: rgba(var(--widget-rgb), 0.14);
+}
+
+.widget-list-icon {
+    width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 13px;
+    display: inline-grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    font-size: 0.86rem;
+}
+
+.widget-list-icon.is-purple {
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+}
+
+.widget-list a span:not(.widget-list-icon) {
+    min-width: 0;
+    display: grid;
+    gap: 0.08rem;
+}
+
+.widget-list a strong,
+.widget-list a small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.widget-list a strong {
+    color: var(--theme-text);
+    font-size: 0.9rem;
+}
+
+.widget-list a small {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.widget-list a > b {
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.45rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #ef4444;
+    font-size: 0.74rem;
+    font-weight: 950;
+}
+
+.stats-grid.mini {
+    gap: 0.55rem;
+}
+
+.stats-grid.mini div {
+    padding: 0.75rem;
+}
+
+.stats-grid.mini strong {
+    font-size: 1.75rem;
+}
+
+.widget-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 3.25rem;
+}
+
+.widget-avatar-row a {
+    width: 2.85rem;
+    height: 2.85rem;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    border: 2px solid rgba(255, 255, 255, 0.72);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+    text-decoration: none;
+    font-weight: 950;
+    font-size: 0.78rem;
+}
+
+.widget-avatar-row img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
 .widget-dragging {
     opacity: 0.92;
     transform: scale(1.02);
@@ -2842,7 +3003,8 @@ body.dark-mode .widget-weather-location-field small,
 body.dark-mode .widget-clock-design-field small,
 body.dark-mode .clock-option-heading small,
 body.dark-mode .clock-date,
-body.dark-mode .clock-meta-row {
+body.dark-mode .clock-meta-row,
+body.dark-mode .widget-list a small {
     color: #cbd5e1;
 }
 
@@ -2895,6 +3057,8 @@ body.dark-mode .benchmark-row,
 body.dark-mode .stats-grid div,
 body.dark-mode .weather-mini-stats span,
 body.dark-mode .widget-empty-state.compact,
+body.dark-mode .widget-list a,
+body.dark-mode .widget-soft-pill,
 body.dark-mode .clock-design-minimal {
     background:
         radial-gradient(circle at 92% 8%, rgba(var(--widget-rgb), 0.18), transparent 34%),

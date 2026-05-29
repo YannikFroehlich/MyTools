@@ -1,0 +1,55 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Feedback" %} | MyTools{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/platform.css' %}">{% endblock %}
+
+{% block content %}
+<section class="platform-page">
+    <div class="platform-hero">
+        <div>
+            <p class="platform-kicker">{% translate "Feedback" %}</p>
+            <h1>{% translate "Tool bewerten" %}</h1>
+            <p>{% translate "Melde Bugs, Ideen oder Feedback direkt in MyTools." %}</p>
+        </div>
+        <i class="fa-solid fa-comment-dots"></i>
+    </div>
+
+    {% if feedback_sent %}
+        <div class="platform-messages">
+            <div>{% translate "Danke für dein Feedback." %}</div>
+        </div>
+    {% endif %}
+
+    <div class="platform-layout two-cols">
+        <form class="platform-card platform-form" method="post">
+            {% csrf_token %}
+            <div class="platform-section-head"><h2>{% translate "Neues Feedback" %}</h2></div>
+            <div class="platform-form-grid">
+                {% for field in form %}
+                    <label class="{% if field.name == 'message' %}is-full{% endif %}">
+                        <span>{{ field.label }}</span>
+                        {{ field }}
+                        {{ field.errors }}
+                    </label>
+                {% endfor %}
+            </div>
+            <button class="platform-primary" type="submit"><i class="fa-solid fa-paper-plane"></i>{% translate "Absenden" %}</button>
+        </form>
+
+        <aside class="platform-card platform-list-card">
+            <div class="platform-section-head"><h2>{% translate "Meine Meldungen" %}</h2></div>
+            {% for item in my_feedback %}
+                <div class="feedback-item">
+                    <strong>{{ item.title }}</strong>
+                    <small>{{ item.get_feedback_type_display }} · {{ item.get_status_display }} · {{ item.created_at|date:"d.m.Y" }}</small>
+                    <p>{{ item.message|truncatechars:140 }}</p>
+                </div>
+            {% empty %}
+                <div class="platform-empty"><p>{% translate "Noch kein Feedback." %}</p></div>
+            {% endfor %}
+        </aside>
+    </div>
+</section>
+{% endblock %}

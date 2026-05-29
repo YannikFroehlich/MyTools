@@ -9,8 +9,10 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import ChatMessage, ChatMessageReaction, ChatRoom, ChatRoomMember, Friendship, UserProfile
+from .chat_forms import ChatGroupSettingsForm
+from .models import ChatAttachment, ChatMessage, ChatMessageReaction, ChatMessageRead, ChatRoom, ChatRoomMember, Friendship, InboxItem, UserBlock, UserProfile
 from .profile_views import ensure_profiles_for_users, get_friend_profiles
+from .presence_utils import decorate_users_with_presence
 
 User = get_user_model()
 
@@ -47,11 +49,20 @@ def get_or_create_direct_room(current_user, target_user):
         },
     )
 
+    if users_blocked_between(current_user, target_user):
+        raise PermissionError("blocked")
+
     if created or not room.room_memberships.filter(user=current_user).exists():
         ChatRoomMember.objects.get_or_create(room=room, user=current_user, defaults={"is_admin": True})
     ChatRoomMember.objects.get_or_create(room=room, user=target_user)
 
     return room
+
+
+def users_blocked_between(user_a, user_b):
+    return UserBlock.objects.filter(
+        Q(blocker=user_a, blocked=user_b) | Q(blocker=user_b, blocked=user_a)
+    ).exists()
 
 
 def decorate_room(room, current_user):
@@ -70,6 +81,19 @@ def decorate_room(room, current_user):
 
 
 CHAT_REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"]
+MAX_CHAT_ATTACHMENT_SIZE = 8 * 1024 * 1024
+
+
+def attachment_payload(attachment):
+    return {
+        "id": attachment.id,
+        "name": attachment.filename,
+        "url": attachment.file.url if attachment.file else "",
+        "content_type": attachment.content_type,
+        "size": attachment.size,
+        "is_image": attachment.is_image,
+    }
+
 
 
 def reaction_payload(message, current_user):
@@ -85,6 +109,7 @@ def reaction_payload(message, current_user):
 def decorate_message(message, current_user):
     message.reaction_items = reaction_payload(message, current_user)
     message.can_delete = message.sender_id == current_user.id
+    message.read_label = read_label_for_message(message, current_user)
     return message
 
 
@@ -101,6 +126,7 @@ def chat_view(request, room_id=None):
         room.current_membership = memberships.get(room.id)
         all_room_members.extend(list(room.members.all()))
     ensure_profiles_for_users(all_room_members)
+    decorate_users_with_presence(all_room_members)
 
     for room in rooms:
         decorate_room(room, request.user)
@@ -115,17 +141,28 @@ def chat_view(request, room_id=None):
     active_room_members = []
     if active_room:
         active_room = decorate_room(active_room, request.user)
-        messages_qs = list(
+        chat_query = request.GET.get("q", "").strip()
+        message_queryset = (
             active_room.messages
             .select_related("sender", "sender__profile")
-            .prefetch_related("reactions")
-            .order_by("created_at")[:150]
+            .prefetch_related("reactions", "attachments", "read_receipts")
+            .order_by("created_at")
         )
+        if chat_query:
+            message_queryset = message_queryset.filter(
+                Q(text__icontains=chat_query) | Q(sender__username__icontains=chat_query)
+            )
+        messages_qs = list(message_queryset[:150])
         for message in messages_qs:
             decorate_message(message, request.user)
         active_room_members = list(active_room.members.select_related("profile").order_by("username"))
         ensure_profiles_for_users(active_room_members)
+        decorate_users_with_presence(active_room_members)
+        active_membership = ChatRoomMember.objects.filter(room=active_room, user=request.user).first()
+        active_room.current_user_is_admin = bool(active_membership and active_membership.is_admin)
+        active_room.settings_form = ChatGroupSettingsForm(user=request.user, room=active_room, instance=active_room) if active_room.room_type == ChatRoom.ROOM_GROUP and active_room.current_user_is_admin else None
         ChatRoomMember.objects.filter(room=active_room, user=request.user).update(last_read_at=timezone.now())
+        mark_room_messages_read(active_room, request.user)
 
     friend_profiles = get_friend_profiles(request.user)
 
@@ -135,6 +172,7 @@ def chat_view(request, room_id=None):
         "chat_messages": messages_qs,
         "active_room_members": active_room_members,
         "friend_profiles": friend_profiles,
+        "chat_query": request.GET.get("q", "").strip(),
     })
 
 
@@ -152,7 +190,11 @@ def start_direct_chat(request, user_id):
         messages.error(request, _("Du kannst nur mit Freunden einen Direktchat starten."))
         return redirect("public_profile", user_id=target_user.id)
 
-    room = get_or_create_direct_room(request.user, target_user)
+    try:
+        room = get_or_create_direct_room(request.user, target_user)
+    except PermissionError:
+        messages.error(request, _("Dieser Chat ist wegen einer Blockierung nicht möglich."))
+        return redirect("public_profile", user_id=target_user.id)
     return redirect("chat_room", room_id=room.id)
 
 
@@ -168,7 +210,8 @@ def create_group_chat(request):
 
     allowed_friend_ids = set(Friendship.friend_ids_for_user(request.user))
     selected_ids = {int(member_id) for member_id in member_ids if member_id.isdigit()}
-    selected_ids = selected_ids & allowed_friend_ids
+    blocked_ids = set(UserBlock.objects.filter(blocker=request.user).values_list("blocked_id", flat=True)) | set(UserBlock.objects.filter(blocked=request.user).values_list("blocker_id", flat=True))
+    selected_ids = (selected_ids & allowed_friend_ids) - blocked_ids
 
     if not selected_ids:
         messages.error(request, _("Wähle mindestens einen Freund für die Gruppe aus."))
@@ -183,6 +226,14 @@ def create_group_chat(request):
 
     for user in User.objects.filter(id__in=selected_ids, is_active=True):
         ChatRoomMember.objects.get_or_create(room=room, user=user)
+        InboxItem.objects.create(
+            user=user,
+            item_type=InboxItem.TYPE_CHAT,
+            title=_("Neue Chatgruppe"),
+            message=_("Du wurdest zu einer neuen Gruppe hinzugefügt."),
+            target_url=reverse("chat_room", args=[room.id]),
+            icon="fa-solid fa-user-group",
+        )
 
     ChatMessage.objects.create(
         room=room,
@@ -198,21 +249,71 @@ def create_group_chat(request):
 def send_chat_message(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
     text = request.POST.get("text", "").strip()
+    uploaded_file = request.FILES.get("attachment")
 
-    if not text:
+    if not text and not uploaded_file:
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"ok": False, "error": _("Nachricht darf nicht leer sein.")}, status=400)
         messages.error(request, _("Nachricht darf nicht leer sein."))
         return redirect("chat_room", room_id=room.id)
 
+    if uploaded_file and uploaded_file.size > MAX_CHAT_ATTACHMENT_SIZE:
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"ok": False, "error": _("Der Anhang darf maximal 8 MB groß sein.")}, status=400)
+        messages.error(request, _("Der Anhang darf maximal 8 MB groß sein."))
+        return redirect("chat_room", room_id=room.id)
+
     message = ChatMessage.objects.create(room=room, sender=request.user, text=text[:1200])
+    if uploaded_file:
+        ChatAttachment.objects.create(
+            message=message,
+            file=uploaded_file,
+            original_name=uploaded_file.name[:255],
+            content_type=getattr(uploaded_file, "content_type", "") or "",
+            size=uploaded_file.size,
+        )
+
     room.save(update_fields=["updated_at"])
     ChatRoomMember.objects.filter(room=room, user=request.user).update(last_read_at=timezone.now())
+    for member in room.members.select_related("profile").exclude(id=request.user.id):
+        member_profile, _ = UserProfile.objects.get_or_create(user=member)
+        muted_by_dnd = member_profile.status == UserProfile.STATUS_DND and member_profile.dnd_silence_notifications
+        if member_profile.notify_chat and not muted_by_dnd:
+            InboxItem.objects.create(
+                user=member,
+                item_type=InboxItem.TYPE_CHAT,
+                title=_("Neue Chatnachricht"),
+                message=(text[:120] if text else _("Neuer Anhang")),
+                target_url=reverse("chat_room", args=[room.id]),
+                icon="fa-solid fa-comments",
+            )
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return JsonResponse({"ok": True, "message": message_payload(message, request.user)})
 
     return redirect("chat_room", room_id=room.id)
+
+
+def mark_room_messages_read(room, user):
+    unread_messages = room.messages.exclude(sender=user).exclude(read_receipts__user=user)[:200]
+    ChatMessageRead.objects.bulk_create(
+        [ChatMessageRead(message=message, user=user) for message in unread_messages],
+        ignore_conflicts=True,
+    )
+
+
+def read_label_for_message(message, current_user):
+    if message.sender_id != current_user.id:
+        return ""
+    other_member_count = message.room.members.exclude(id=current_user.id).count()
+    if other_member_count <= 0:
+        return ""
+    read_count = message.read_receipts.exclude(user=current_user).count()
+    if read_count >= other_member_count:
+        return _("Gelesen")
+    if read_count > 0:
+        return _("Gelesen von %(count)s") % {"count": read_count}
+    return _("Gesendet")
 
 
 def message_payload(message, current_user):
@@ -224,8 +325,10 @@ def message_payload(message, current_user):
         "created_at": timezone.localtime(message.created_at).strftime("%d.%m.%Y %H:%M"),
         "is_own": is_own,
         "delete_url": reverse("chat_message_delete", args=[message.room_id, message.id]) if is_own else "",
-        "react_url": reverse("chat_message_react", args=[message.room_id, message.id]) if not is_own else "",
+        "react_url": reverse("chat_message_react", args=[message.room_id, message.id]),
+        "read_label": read_label_for_message(message, current_user) if is_own else "",
         "reactions": reaction_payload(message, current_user),
+        "attachments": [attachment_payload(attachment) for attachment in message.attachments.all()],
         "sender": {
             "id": message.sender_id,
             "username": message.sender.username,
@@ -249,7 +352,7 @@ def chat_messages_api(request, room_id):
         qs = qs.order_by("-created_at")[:80]
         qs = reversed(list(qs))
 
-    qs = list(qs.prefetch_related("reactions")) if hasattr(qs, "prefetch_related") else list(qs)
+    qs = list(qs.prefetch_related("reactions", "attachments", "read_receipts")) if hasattr(qs, "prefetch_related") else list(qs)
     payload = [message_payload(message, request.user) for message in qs]
 
     visible_ids = {
@@ -264,17 +367,18 @@ def chat_messages_api(request, room_id):
             room.messages
             .filter(id__in=visible_ids)
             .select_related("sender", "sender__profile")
-            .prefetch_related("reactions")
+            .prefetch_related("reactions", "attachments", "read_receipts")
         )
         existing_ids = {message.id for message in existing_visible_messages}
         deleted_ids = sorted(visible_ids - existing_ids)
 
     updates = [
-        {"id": message.id, "reactions": reaction_payload(message, request.user)}
+        {"id": message.id, "reactions": reaction_payload(message, request.user), "read_label": read_label_for_message(message, request.user)}
         for message in existing_visible_messages
     ]
 
     ChatRoomMember.objects.filter(room=room, user=request.user).update(last_read_at=timezone.now())
+    mark_room_messages_read(room, request.user)
     return JsonResponse({"ok": True, "messages": payload, "deleted_ids": deleted_ids, "updates": updates})
 
 
@@ -298,13 +402,11 @@ def delete_chat_message(request, room_id, message_id):
 def react_chat_message(request, room_id, message_id):
     room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
     message = get_object_or_404(
-        ChatMessage.objects.select_related("sender").prefetch_related("reactions"),
+        ChatMessage.objects.select_related("sender").prefetch_related("reactions", "attachments", "read_receipts"),
         id=message_id,
         room=room,
     )
 
-    if message.sender_id == request.user.id:
-        return JsonResponse({"ok": False, "error": _("Auf eigene Nachrichten kannst du hier nicht reagieren.")}, status=400)
 
     emoji = request.POST.get("emoji", "").strip()
     if emoji not in CHAT_REACTION_EMOJIS:
@@ -319,5 +421,76 @@ def react_chat_message(request, room_id, message_id):
     else:
         ChatMessageReaction.objects.create(message=message, user=request.user, emoji=emoji)
 
-    message = ChatMessage.objects.prefetch_related("reactions").get(id=message.id)
+    message = ChatMessage.objects.prefetch_related("reactions", "attachments", "read_receipts").get(id=message.id)
     return JsonResponse({"ok": True, "message_id": message.id, "reactions": reaction_payload(message, request.user)})
+
+
+@login_required
+@require_POST
+def chat_group_settings_view(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id, room_type=ChatRoom.ROOM_GROUP, room_memberships__user=request.user)
+    membership = get_object_or_404(ChatRoomMember, room=room, user=request.user)
+    if not membership.is_admin:
+        messages.error(request, _("Nur Gruppenadmins können die Gruppe bearbeiten."))
+        return redirect("chat_room", room_id=room.id)
+
+    form = ChatGroupSettingsForm(request.POST, request.FILES, user=request.user, room=room, instance=room)
+    if form.is_valid():
+        form.save()
+        for user in form.cleaned_data.get("members_to_add", []):
+            ChatRoomMember.objects.get_or_create(room=room, user=user)
+            InboxItem.objects.create(
+                user=user,
+                item_type=InboxItem.TYPE_CHAT,
+                title=_("Zur Gruppe hinzugefügt"),
+                message=room.name or _("Neue Chatgruppe"),
+                target_url=reverse("chat_room", args=[room.id]),
+                icon="fa-solid fa-user-group",
+            )
+        messages.success(request, _("Gruppeneinstellungen gespeichert."))
+    else:
+        messages.error(request, _("Die Gruppeneinstellungen konnten nicht gespeichert werden."))
+    return redirect("chat_room", room_id=room.id)
+
+
+@login_required
+@require_POST
+def chat_group_member_action_view(request, room_id, user_id):
+    room = get_object_or_404(ChatRoom, id=room_id, room_type=ChatRoom.ROOM_GROUP, room_memberships__user=request.user)
+    actor_membership = get_object_or_404(ChatRoomMember, room=room, user=request.user)
+    if not actor_membership.is_admin:
+        messages.error(request, _("Nur Gruppenadmins können Mitglieder verwalten."))
+        return redirect("chat_room", room_id=room.id)
+    target_membership = get_object_or_404(ChatRoomMember, room=room, user_id=user_id)
+    action = request.POST.get("action", "").strip()
+    if target_membership.user_id == request.user.id:
+        messages.error(request, _("Du kannst dich hier nicht selbst entfernen."))
+    elif action == "promote":
+        target_membership.is_admin = True
+        target_membership.save(update_fields=["is_admin"])
+        messages.success(request, _("Mitglied ist jetzt Gruppenadmin."))
+    elif action == "remove":
+        target_membership.delete()
+        messages.success(request, _("Mitglied entfernt."))
+    else:
+        messages.error(request, _("Unbekannte Gruppenaktion."))
+    return redirect("chat_room", room_id=room.id)
+
+
+@login_required
+@require_POST
+def chat_group_leave_view(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id, room_type=ChatRoom.ROOM_GROUP, room_memberships__user=request.user)
+    membership = get_object_or_404(ChatRoomMember, room=room, user=request.user)
+    if room.room_memberships.count() <= 1:
+        room.delete()
+        messages.success(request, _("Gruppe gelöscht."))
+        return redirect("chat")
+    membership.delete()
+    if not room.room_memberships.filter(is_admin=True).exists():
+        first_member = room.room_memberships.order_by("joined_at").first()
+        if first_member:
+            first_member.is_admin = True
+            first_member.save(update_fields=["is_admin"])
+    messages.success(request, _("Du hast die Gruppe verlassen."))
+    return redirect("chat")

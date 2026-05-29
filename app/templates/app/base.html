@@ -27,7 +27,7 @@
         <script src="{% static 'app/js/base.js' %}"></script>
     {% endblock %}
 </head>
-<body>
+<body{% if request.user.is_authenticated %} data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}"{% endif %}>
     <nav>
         <div class="logo">
             <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
@@ -68,9 +68,16 @@
                         {% translate 'Racing Game' %}
                     </a>
 
-                    <a href="{% url 'skribble_home' %}" class="menu-item">
-                        <i class="fa-solid fa-pencil"></i>
-                        {% translate 'Skribble' %}
+                    <a href="{% url 'skribble_home' %}" class="menu-item menu-item-with-badge">
+                        <span class="menu-item-main">
+                            <i class="fa-solid fa-pencil"></i>
+                            {% translate 'Skribble' %}
+                        </span>
+                        {% if request.user.is_authenticated %}
+                            <span class="menu-badge js-notification-badge" data-notification-key="skribble_invites" data-label-singular="{% translate 'offene Skribble-Einladung' %}" data-label-plural="{% translate 'offene Skribble-Einladungen' %}" aria-label="{% blocktranslate count count=skribble_invites_count %}{{ count }} offene Skribble-Einladung{% plural %}{{ count }} offene Skribble-Einladungen{% endblocktranslate %}">
+                                {{ skribble_invites_count }}
+                            </span>
+                        {% endif %}
                     </a>
                 </div>
             </div>
@@ -154,6 +161,21 @@
                     <a href="{% url 'notes' %}" class="menu-item">
                         <i class="fa-regular fa-note-sticky"></i>
                         {% translate 'Notizen' %}
+                    </a>
+
+                    <a href="{% url 'favorites' %}" class="menu-item">
+                        <i class="fa-solid fa-star"></i>
+                        {% translate 'Favoriten' %}
+                    </a>
+
+                    <a href="{% url 'inbox' %}" class="menu-item">
+                        <i class="fa-solid fa-inbox"></i>
+                        {% translate 'Inbox' %}
+                    </a>
+
+                    <a href="{% url 'feedback' %}" class="menu-item">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        {% translate 'Feedback' %}
                     </a>
 
                     <a href="{% url 'spritkostenrechner' %}" class="menu-item">
@@ -256,9 +278,30 @@
                         </label>
 
                         <label>
+                            <span>{% translate 'Karten' %}</span>
+                            <input type="color" id="theme-card-bg" value="#ffffff">
+                        </label>
+
+                        <label>
                             <span>{% translate 'Footer' %}</span>
                             <input type="color" id="theme-footer-bg" value="#ffffff">
                         </label>
+
+                        <label>
+                            <span>{% translate 'Rundung' %}</span>
+                            <input type="range" id="theme-radius" min="12" max="34" value="22">
+                        </label>
+                    </div>
+
+                    <div class="theme-option-row">
+                        <button type="button" class="theme-toggle-option" id="theme-compact-toggle">
+                            <i class="fa-solid fa-compress"></i>
+                            {% translate 'Kompakter Modus' %}
+                        </button>
+                        <button type="button" class="theme-toggle-option" id="theme-pattern-toggle">
+                            <i class="fa-solid fa-circle-nodes"></i>
+                            {% translate 'Dezentes Muster' %}
+                        </button>
                     </div>
 
                     <div class="theme-editor-actions">
@@ -276,6 +319,29 @@
             </button>
 
             {% if request.user.is_authenticated %}
+                <div class="notification-center-wrapper">
+                    <button class="notification-center-button" id="notification-center-button" type="button" aria-label="{% translate 'Benachrichtigungen öffnen' %}">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="notification-center-badge js-notification-badge" data-notification-key="total_notifications" data-label-singular="{% translate 'Benachrichtigung' %}" data-label-plural="{% translate 'Benachrichtigungen' %}">{{ total_notifications_count }}</span>
+                    </button>
+
+                    <div class="notification-center-dropdown" id="notification-center-dropdown">
+                        <div class="notification-center-header">
+                            <div>
+                                <strong>{% translate 'Benachrichtigungen' %}</strong>
+                                <small>{% translate 'Chats, Freundschaftsanfragen und Skribble' %}</small>
+                            </div>
+                            <span class="notification-center-total js-notification-total">{{ total_notifications_count }}</span>
+                        </div>
+                        <div class="notification-center-list js-notification-list">
+                            <div class="notification-center-empty">
+                                <i class="fa-regular fa-bell"></i>
+                                <p>{% translate 'Keine neuen Benachrichtigungen.' %}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="profile-menu-wrapper">
                     <button class="profile-menu-button" id="profile-menu-button" type="button" aria-label="{% translate 'Profilmenü öffnen' %}">
                         <span class="profile-menu-avatar">
@@ -287,6 +353,7 @@
                                 {{ request.user.username|slice:":2"|upper }}
                             {% endif %}
                         </span>
+                        <span class="profile-notification-dot js-profile-notification-dot{% if total_notifications_count > 0 %} is-visible{% endif %}" aria-hidden="true"></span>
                         <i class="fa-solid fa-chevron-down profile-menu-chevron"></i>
                     </button>
 
@@ -329,12 +396,22 @@
                             {% translate 'Freunde' %}
                         </a>
 
+                        <a href="{% url 'favorites' %}" class="profile-menu-item">
+                            <i class="fa-solid fa-star"></i>
+                            {% translate 'Favoriten' %}
+                        </a>
+
+                        <a href="{% url 'inbox' %}" class="profile-menu-item">
+                            <i class="fa-solid fa-inbox"></i>
+                            {% translate 'Inbox' %}
+                        </a>
+
                         <a href="{% url 'chat' %}" class="profile-menu-item profile-menu-item-with-badge">
                             <span class="profile-menu-item-main">
                                 <i class="fa-solid fa-comments"></i>
                                 {% translate 'Chat' %}
                             </span>
-                            <span class="profile-menu-badge" aria-label="{% blocktranslate count count=unread_chat_messages_count %}{{ count }} ungelesene Nachricht{% plural %}{{ count }} ungelesene Nachrichten{% endblocktranslate %}">
+                            <span class="profile-menu-badge js-notification-badge" data-notification-key="unread_chat_messages" data-label-singular="{% translate 'ungelesene Nachricht' %}" data-label-plural="{% translate 'ungelesene Nachrichten' %}" aria-label="{% blocktranslate count count=unread_chat_messages_count %}{{ count }} ungelesene Nachricht{% plural %}{{ count }} ungelesene Nachrichten{% endblocktranslate %}">
                                 {{ unread_chat_messages_count }}
                             </span>
                         </a>
@@ -344,7 +421,7 @@
                                 <i class="fa-solid fa-user-plus"></i>
                                 {% translate 'Freundschaftsanfragen' %}
                             </span>
-                            <span class="profile-menu-badge" aria-label="{% blocktranslate count count=incoming_friend_requests_count %}{{ count }} offene Freundschaftsanfrage{% plural %}{{ count }} offene Freundschaftsanfragen{% endblocktranslate %}">
+                            <span class="profile-menu-badge js-notification-badge" data-notification-key="incoming_friend_requests" data-label-singular="{% translate 'offene Freundschaftsanfrage' %}" data-label-plural="{% translate 'offene Freundschaftsanfragen' %}" aria-label="{% blocktranslate count count=incoming_friend_requests_count %}{{ count }} offene Freundschaftsanfrage{% plural %}{{ count }} offene Freundschaftsanfragen{% endblocktranslate %}">
                                 {{ incoming_friend_requests_count }}
                             </span>
                         </a>

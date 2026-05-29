@@ -4,6 +4,8 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.urls import reverse
 
+from .presence_utils import touch_user_presence
+
 
 class LoginRequiredMiddleware:
     """Require a logged-in user for the app while keeping auth/static/i18n endpoints open."""
@@ -13,7 +15,10 @@ class LoginRequiredMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated or self._is_exempt(request.path):
-            return self.get_response(request)
+            response = self.get_response(request)
+            if request.user.is_authenticated:
+                touch_user_presence(request.user)
+            return response
 
         login_url = reverse(settings.LOGIN_URL)
         return redirect(f"{login_url}?{urlencode({'next': request.get_full_path()})}")

@@ -1,0 +1,83 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Inbox" %} | MyTools{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/platform.css' %}">{% endblock %}
+
+{% block content %}
+<section class="platform-page">
+    <div class="platform-hero">
+        <div>
+            <p class="platform-kicker">{% translate "Persönlich" %}</p>
+            <h1>{% translate "Inbox" %}</h1>
+            <p>{% translate "Alle wichtigen Meldungen, Einladungen und Hinweise an einem Ort." %}</p>
+        </div>
+        <i class="fa-solid fa-inbox"></i>
+    </div>
+
+    <div class="platform-tabs">
+        <a class="{% if tab == 'all' %}is-active{% endif %}" href="{% url 'inbox' %}">{% translate "Alle" %}</a>
+        <a class="{% if tab == 'unread' %}is-active{% endif %}" href="?tab=unread">{% translate "Ungelesen" %}</a>
+        <a class="{% if tab == 'chat' %}is-active{% endif %}" href="?tab=chat">{% translate "Chat" %}</a>
+        <a class="{% if tab == 'friend' %}is-active{% endif %}" href="?tab=friend">{% translate "Freunde" %}</a>
+        <form method="post" action="{% url 'inbox_mark_read' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit"><i class="fa-solid fa-check-double"></i>{% translate "Alles gelesen" %}</button>
+        </form>
+    </div>
+
+    <div class="platform-layout">
+        <div class="platform-card platform-list-card">
+            <div class="platform-section-head"><h2>{% translate "Aktuelle Hinweise" %}</h2></div>
+
+            {% for room in unread_rooms %}
+                <a href="{% url 'chat_room' room.id %}" class="inbox-item is-live">
+                    <i class="fa-solid fa-comments"></i>
+                    <span><strong>{{ room.display_title }}</strong><small>{{ room.unread_count }} {% translate "ungelesene Nachrichten" %}</small></span>
+                    <em>{% translate "Öffnen" %}</em>
+                </a>
+            {% endfor %}
+
+            {% for request_item in pending_friendships %}
+                <a href="{% url 'profile' %}#friend-requests" class="inbox-item is-live">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span><strong>{% translate "Freundschaftsanfrage" %}</strong><small>@{{ request_item.from_user.username }}</small></span>
+                    <em>{% translate "Ansehen" %}</em>
+                </a>
+            {% endfor %}
+
+            {% for invite in pending_skribble_invites %}
+                <a href="{% url 'skribble_home' %}" class="inbox-item is-live">
+                    <i class="fa-solid fa-pencil"></i>
+                    <span><strong>{% translate "Skribble-Einladung" %}</strong><small>{{ invite.lobby.name }} · @{{ invite.from_user.username }}</small></span>
+                    <em>{% translate "Ansehen" %}</em>
+                </a>
+            {% endfor %}
+
+            {% for item in inbox_items %}
+                <div class="inbox-item {% if not item.is_read %}is-unread{% endif %}">
+                    <i class="{{ item.icon }}"></i>
+                    <span><strong>{{ item.title }}</strong><small>{{ item.message }} · {{ item.created_at|date:"d.m.Y H:i" }}</small></span>
+                    <div class="inbox-actions">
+                        {% if item.target_url %}<a href="{{ item.target_url }}">{% translate "Öffnen" %}</a>{% endif %}
+                        {% if not item.is_read %}
+                            <form method="post" action="{% url 'inbox_mark_read' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button type="submit">{% translate "Gelesen" %}</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                {% if not unread_rooms and not pending_friendships and not pending_skribble_invites %}
+                    <div class="platform-empty"><i class="fa-regular fa-bell"></i><p>{% translate "Deine Inbox ist leer." %}</p></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
