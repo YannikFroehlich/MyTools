@@ -14,6 +14,7 @@ from django.urls import reverse
 from app.forms import NoteForm
 from app.models import (
     AvatarCharacter,
+    Friendship,
     HomeLayoutPreference,
     HomeWidget,
     HumanBenchmarkHighScore,
@@ -186,6 +187,22 @@ class ModelTests(BaseTestCase):
 
         self.assertEqual(profile.initials, "TE")
         self.assertEqual(profile.avatar_url, "")
+
+    def test_friendship_str_and_other_user(self):
+        other_user = get_user_model().objects.create_user(
+            username="freund",
+            password="testpass-123",
+        )
+        friendship = Friendship.objects.create(
+            from_user=self.user,
+            to_user=other_user,
+            status=Friendship.STATUS_ACCEPTED,
+        )
+
+        self.assertIn("testuser", str(friendship))
+        self.assertEqual(friendship.other_user(self.user), other_user)
+        self.assertEqual(friendship.other_user(other_user), self.user)
+        self.assertEqual(Friendship.friend_ids_for_user(self.user), [other_user.id])
 
     def test_home_widget_str_returns_title_and_type(self):
         widget = HomeWidget.objects.create(
@@ -383,7 +400,63 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "app/public_profile.html")
         self.assertEqual(response.context["profile_user"], other_user)
+        self.assertEqual(response.context["friendship_state"], "none")
         self.assertTrue(UserProfile.objects.filter(user=other_user).exists())
+
+    def test_send_friend_request_from_public_profile(self):
+        other_user = get_user_model().objects.create_user(
+            username="friendtarget",
+            password="testpass-123",
+        )
+
+        response = self.client.post(reverse("friendship_action", args=[other_user.id]), {
+            "action": "send",
+            "next": reverse("public_profile", args=[other_user.id]),
+        })
+
+        self.assertRedirects(response, reverse("public_profile", args=[other_user.id]))
+        friendship = Friendship.objects.get(from_user=self.user, to_user=other_user)
+        self.assertEqual(friendship.status, Friendship.STATUS_PENDING)
+
+    def test_accept_friend_request(self):
+        other_user = get_user_model().objects.create_user(
+            username="requestsender",
+            password="testpass-123",
+        )
+        friendship = Friendship.objects.create(from_user=other_user, to_user=self.user)
+
+        response = self.client.post(reverse("friendship_action", args=[other_user.id]), {
+            "action": "accept",
+            "next": reverse("profile"),
+        })
+
+        self.assertRedirects(response, reverse("profile"))
+        friendship.refresh_from_db()
+        self.assertEqual(friendship.status, Friendship.STATUS_ACCEPTED)
+
+    def test_friends_list_page_shows_accepted_friends_only(self):
+        accepted_user = get_user_model().objects.create_user(
+            username="acceptedfriend",
+            password="testpass-123",
+        )
+        pending_user = get_user_model().objects.create_user(
+            username="pendingfriend",
+            password="testpass-123",
+        )
+        Friendship.objects.create(
+            from_user=self.user,
+            to_user=accepted_user,
+            status=Friendship.STATUS_ACCEPTED,
+        )
+        Friendship.objects.create(from_user=self.user, to_user=pending_user)
+
+        response = self.client.get(reverse("friends_list", args=[self.user.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/friends.html")
+        usernames = [profile.user.username for profile in response.context["friends"]]
+        self.assertIn("acceptedfriend", usernames)
+        self.assertNotIn("pendingfriend", usernames)
 
     def test_public_profile_uses_profile_banner(self):
         other_user = get_user_model().objects.create_user(

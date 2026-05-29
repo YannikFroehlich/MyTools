@@ -467,15 +467,11 @@ def home(request):
             widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
             widget_color = request.POST.get("widget_color", "blue").strip()
             weather_location_id = request.POST.get("weather_location") or None
-            weather_design = request.POST.get("weather_design", HomeWidget.WEATHER_DESIGN_CLEAN).strip()
-            weather_style = request.POST.get("weather_style", HomeWidget.WEATHER_STYLE_CLASSIC).strip()
             clock_design = request.POST.get("clock_design", HomeWidget.CLOCK_DESIGN_MINIMAL).strip()
             clock_style = request.POST.get("clock_style", HomeWidget.CLOCK_STYLE_CLASSIC).strip()
 
             valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
             valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
-            valid_weather_designs = {choice[0] for choice in HomeWidget.WEATHER_DESIGN_CHOICES}
-            valid_weather_styles = {choice[0] for choice in HomeWidget.WEATHER_STYLE_CHOICES}
             valid_clock_designs = {choice[0] for choice in HomeWidget.CLOCK_DESIGN_CHOICES}
             valid_clock_styles = {choice[0] for choice in HomeWidget.CLOCK_STYLE_CHOICES}
 
@@ -484,12 +480,6 @@ def home(request):
 
             if widget_color not in valid_colors:
                 widget_color = "blue"
-
-            if weather_design not in valid_weather_designs:
-                weather_design = HomeWidget.WEATHER_DESIGN_CLEAN
-
-            if weather_style not in valid_weather_styles:
-                weather_style = HomeWidget.WEATHER_STYLE_CLASSIC
 
             if clock_design not in valid_clock_designs:
                 clock_design = HomeWidget.CLOCK_DESIGN_MINIMAL
@@ -512,8 +502,8 @@ def home(request):
                 widget_type=widget_type,
                 color=widget_color,
                 weather_location=weather_location,
-                weather_design=weather_design,
-                weather_style=weather_style,
+                weather_design=HomeWidget.WEATHER_DESIGN_CLEAN,
+                weather_style=HomeWidget.WEATHER_STYLE_CLASSIC,
                 clock_design=clock_design,
                 clock_style=clock_style,
                 order=max_order + 1,
@@ -527,16 +517,12 @@ def home(request):
             widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
             widget_color = request.POST.get("widget_color", "blue").strip()
             weather_location_id = request.POST.get("weather_location") or None
-            weather_design = request.POST.get("weather_design", HomeWidget.WEATHER_DESIGN_CLEAN).strip()
-            weather_style = request.POST.get("weather_style", HomeWidget.WEATHER_STYLE_CLASSIC).strip()
             clock_design = request.POST.get("clock_design", HomeWidget.CLOCK_DESIGN_MINIMAL).strip()
             clock_style = request.POST.get("clock_style", HomeWidget.CLOCK_STYLE_CLASSIC).strip()
 
             widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
             valid_widget_types = {choice[0] for choice in HomeWidget.WIDGET_CHOICES}
             valid_colors = {choice[0] for choice in HomeWidget.COLOR_CHOICES}
-            valid_weather_designs = {choice[0] for choice in HomeWidget.WEATHER_DESIGN_CHOICES}
-            valid_weather_styles = {choice[0] for choice in HomeWidget.WEATHER_STYLE_CHOICES}
             valid_clock_designs = {choice[0] for choice in HomeWidget.CLOCK_DESIGN_CHOICES}
             valid_clock_styles = {choice[0] for choice in HomeWidget.CLOCK_STYLE_CHOICES}
 
@@ -545,12 +531,6 @@ def home(request):
 
             if widget_color not in valid_colors:
                 widget_color = "blue"
-
-            if weather_design not in valid_weather_designs:
-                weather_design = HomeWidget.WEATHER_DESIGN_CLEAN
-
-            if weather_style not in valid_weather_styles:
-                weather_style = HomeWidget.WEATHER_STYLE_CLASSIC
 
             if clock_design not in valid_clock_designs:
                 clock_design = HomeWidget.CLOCK_DESIGN_MINIMAL
@@ -566,8 +546,8 @@ def home(request):
             widget.widget_type = widget_type
             widget.color = widget_color
             widget.weather_location = weather_location
-            widget.weather_design = weather_design
-            widget.weather_style = weather_style
+            widget.weather_design = HomeWidget.WEATHER_DESIGN_CLEAN
+            widget.weather_style = HomeWidget.WEATHER_STYLE_CLASSIC
             widget.clock_design = clock_design
             widget.clock_style = clock_style
             widget.save()
@@ -751,8 +731,6 @@ def home(request):
         "weather_locations": weather_locations,
         "widget_types": [(value, _(label)) for value, label in HomeWidget.WIDGET_CHOICES],
         "widget_colors": [(value, _(label)) for value, label in HomeWidget.COLOR_CHOICES],
-        "weather_designs": [(value, _(label)) for value, label in HomeWidget.WEATHER_DESIGN_CHOICES],
-        "weather_styles": [(value, _(label)) for value, label in HomeWidget.WEATHER_STYLE_CHOICES],
         "clock_designs": [(value, _(label)) for value, label in HomeWidget.CLOCK_DESIGN_CHOICES],
         "clock_styles": [(value, _(label)) for value, label in HomeWidget.CLOCK_STYLE_CHOICES],
         "home_labels": home_labels,

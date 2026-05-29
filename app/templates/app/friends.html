@@ -2,67 +2,49 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}{% translate "Nutzer" %} | MyTools{% endblock %}
+{% block title %}{% translate "Freunde" %} | MyTools{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
 {% endblock %}
 
 {% block content %}
-<section class="users-page">
+<section class="users-page friends-page">
     <div class="users-hero">
         <div>
-            <p class="users-kicker">{% translate "Nutzerübersicht" %}</p>
-            <h1>{% translate "Nutzer" %}</h1>
+            <p class="users-kicker">{% translate "Freundesliste" %}</p>
+            <h1>
+                {% if profile_user.get_full_name %}
+                    {{ profile_user.get_full_name }}
+                {% else %}
+                    {{ profile_user.username }}
+                {% endif %}
+            </h1>
             <p>
-                {% translate "Hier siehst du alle Nutzer von MyTools und kannst dir deren öffentliche Profilseite anschauen." %}
+                {{ friends_count }} {% translate "Freunde" %} · @{{ profile_user.username }}
             </p>
         </div>
 
         <div class="users-hero-icon">
-            <i class="fa-solid fa-users"></i>
+            <i class="fa-solid fa-user-group"></i>
         </div>
     </div>
 
     <div class="users-toolbar">
-        <form class="users-search" method="get">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input
-                type="search"
-                name="q"
-                value="{{ query }}"
-                placeholder="{% translate 'Nach Nutzern suchen...' %}"
-                autocomplete="off"
-            >
+        <a href="{% url 'public_profile' profile_user.id %}" class="friends-back-link">
+            <i class="fa-solid fa-arrow-left"></i>
+            {% translate "Zurück zum Profil" %}
+        </a>
 
-            {% if query %}
-                <a href="{% url 'users' %}" class="users-clear-search">
-                    <i class="fa-solid fa-xmark"></i>
-                </a>
-            {% endif %}
-        </form>
-
-        <div class="users-toolbar-actions">
-            <a href="{% url 'chat' %}" class="users-toolbar-action">
-                <i class="fa-solid fa-comments"></i>
-                {% translate "Chat" %}
-            </a>
-            <div class="users-counter">
-                <span>{{ profiles|length }}</span>
-                <small>
-                    {% if query %}
-                        {% translate "gefunden" %}
-                    {% else %}
-                        {% translate "Nutzer" %}
-                    {% endif %}
-                </small>
-            </div>
+        <div class="users-counter">
+            <span>{{ friends_count }}</span>
+            <small>{% translate "Freunde" %}</small>
         </div>
     </div>
 
-    {% if profiles %}
+    {% if friends %}
         <div class="users-grid">
-            {% for profile in profiles %}
+            {% for profile in friends %}
                 <a
                     href="{% url 'public_profile' profile.user.id %}"
                     class="user-card {% if profile.profile_banner %}has-profile-banner{% endif %}"
@@ -85,16 +67,6 @@
                                     {{ profile.user.username }}
                                 {% endif %}
                             </h2>
-
-                            {% if profile.user == request.user %}
-                                <span class="user-own-badge">{% translate "Du" %}</span>
-                            {% elif profile.friendship_state == "friends" %}
-                                <span class="user-own-badge user-friend-badge">{% translate "Freund" %}</span>
-                            {% elif profile.friendship_state == "pending_sent" %}
-                                <span class="user-own-badge user-pending-badge">{% translate "Angefragt" %}</span>
-                            {% elif profile.friendship_state == "pending_received" %}
-                                <span class="user-own-badge user-pending-badge">{% translate "Offen" %}</span>
-                            {% endif %}
                         </div>
 
                         <p class="user-username">@{{ profile.user.username }}</p>
@@ -110,8 +82,15 @@
                         <div class="user-meta">
                             <span>
                                 <i class="fa-solid fa-calendar-days"></i>
-                                {% translate "Seit" %} {{ profile.user.date_joined|date:"d.m.Y" }}
+                                {% translate "Registriert seit" %} {{ profile.user.date_joined|date:"d.m.Y" }}
                             </span>
+
+                            {% if profile.friendship_since %}
+                                <span>
+                                    <i class="fa-solid fa-user-check"></i>
+                                    {% translate "Befreundet seit" %} {{ profile.friendship_since|date:"d.m.Y" }}
+                                </span>
+                            {% endif %}
 
                             <span class="user-open">
                                 {% translate "Profil ansehen" %}
@@ -124,11 +103,11 @@
         </div>
     {% else %}
         <div class="users-empty">
-            <i class="fa-solid fa-user-slash"></i>
-            <h2>{% translate "Keine Nutzer gefunden" %}</h2>
-            <p>{% translate "Versuche es mit einem anderen Suchbegriff." %}</p>
+            <i class="fa-regular fa-face-smile"></i>
+            <h2>{% translate "Noch keine Freunde" %}</h2>
+            <p>{% translate "Sobald Freundschaften angenommen wurden, erscheinen sie hier." %}</p>
             <a href="{% url 'users' %}">
-                {% translate "Alle Nutzer anzeigen" %}
+                {% translate "Nutzer suchen" %}
             </a>
         </div>
     {% endif %}

@@ -22,8 +22,8 @@
 
                 <p>
                     {% blocktranslate trimmed %}
-                        MyTools ist eine persönliche Django-Toolbox für Alltag, Homelab, Medien, Streaming und kleine Web-Helfer.
-                        Die App bündelt Schnellzugriffe, Widgets, Wetter, Notizen, Timer, Rechner, Dashboards und Mini-Games in einer modernen Oberfläche.
+                        MyTools ist eine persönliche Django-Toolbox für Alltag, Homelab, Medien, Streaming, kleine Web-Helfer und gemeinsame Funktionen.
+                        Die App bündelt Schnellzugriffe, Widgets, Wetter, Notizen, Timer, Rechner, Dashboards, Profile, Freunde, Chats und Mini-Games in einer modernen Oberfläche.
                     {% endblocktranslate %}
                 </p>
 
@@ -49,7 +49,7 @@
 
                 <p>
                     {% blocktranslate trimmed %}
-                        Von lokalen Server-Links über personalisierte Startseiten-Widgets bis zu API-Tools:
+                        Von lokalen Server-Links über personalisierte Startseiten-Widgets bis zu Profilen, Freunden, Chats und API-Tools:
                         MyTools soll die wichtigsten kleinen Helfer zentral, schnell erreichbar und angenehm bedienbar machen.
                     {% endblocktranslate %}
                 </p>
@@ -73,6 +73,12 @@
                 <i class="fa-solid fa-palette"></i>
                 <strong>{% translate 'Design' %}</strong>
                 <span>{% translate 'Dark Mode, Theme-Editor, moderne Widgets und responsive Layouts' %}</span>
+            </div>
+
+            <div class="about-stat-card">
+                <i class="fa-solid fa-user-group"></i>
+                <strong>{% translate 'Community' %}</strong>
+                <span>{% translate 'Profile, Freunde, Direktchats, Gruppenchats und Skribble-Lobbys' %}</span>
             </div>
         </div>
 
@@ -112,12 +118,12 @@
                     <i class="fa-solid fa-user"></i>
                 </div>
 
-                <h2>{% translate 'Profile & Nutzer' %}</h2>
+                <h2>{% translate 'Profile, Freunde & Chat' %}</h2>
 
                 <p>
                     {% blocktranslate trimmed %}
-                        Nutzer können ein eigenes Profil mit Namen, Avatar und öffentlichen Profilinformationen pflegen.
-                        Die Nutzerübersicht erleichtert den Überblick über registrierte Accounts.
+                        Nutzer können ein eigenes Profil mit Namen, Avatar, Banner und öffentlichen Profilinformationen pflegen.
+                        Zusätzlich gibt es Freundschaftsanfragen, Freundeslisten, Direktchats, Gruppenchats, Emoji-Reaktionen und löschbare eigene Nachrichten.
                     {% endblocktranslate %}
                 </p>
             </div>
@@ -218,11 +224,27 @@
                     </div>
                 </a>
 
+                <a href="{% url 'chat' %}" class="about-feature-card">
+                    <i class="fa-solid fa-comments"></i>
+                    <div>
+                        <strong>{% translate 'Chat' %}</strong>
+                        <span>{% translate 'Direktchats, Gruppenchats, Emoji-Reaktionen und löschbare eigene Nachrichten.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'skribble_home' %}" class="about-feature-card">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <div>
+                        <strong>{% translate 'Skribble' %}</strong>
+                        <span>{% translate 'Zeichnen, Raten, Lobbys erstellen und Freunde einladen.' %}</span>
+                    </div>
+                </a>
+
                 <a href="{% url 'profile' %}" class="about-feature-card">
                     <i class="fa-solid fa-id-card"></i>
                     <div>
                         <strong>{% translate 'Profil' %}</strong>
-                        <span>{% translate 'Profilseite mit Avatar, persönlichen Daten und öffentlicher Ansicht.' %}</span>
+                        <span>{% translate 'Profilseite mit Avatar, Banner, persönlichen Daten, Freunden und öffentlicher Ansicht.' %}</span>
                     </div>
                 </a>
             </div>
@@ -244,7 +266,7 @@
                     <span></span>
                     <div>
                         <h3>{% translate 'Mehrere Tools produktiv nutzbar' %}</h3>
-                        <p>{% translate 'Wetter, Uhr, Notizen, Profile, Human Benchmark, OBS Dashboard, Rechner und API-Tools sind bereits verfügbar.' %}</p>
+                        <p>{% translate 'Wetter, Uhr, Notizen, Profile, Freunde, Chat, Skribble, Human Benchmark, OBS Dashboard, Rechner und API-Tools sind bereits verfügbar.' %}</p>
                     </div>
                 </div>
 
@@ -260,7 +282,7 @@
                     <span></span>
                     <div>
                         <h3>{% translate 'Laufende Erweiterung' %}</h3>
-                        <p>{% translate 'Neue Widgets, bessere Statistiken, zusätzliche Integrationen und mehr Personalisierung können Schritt für Schritt ergänzt werden.' %}</p>
+                        <p>{% translate 'Neue Widgets, bessere Statistiken, zusätzliche Integrationen, Chat-Funktionen, Mini-Games und mehr Personalisierung können Schritt für Schritt ergänzt werden.' %}</p>
                     </div>
                 </div>
             </div>

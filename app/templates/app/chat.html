@@ -1,0 +1,236 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Chat" %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/chat.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="chat-page">
+    <div class="chat-hero">
+        <div>
+            <p class="chat-kicker">{% translate "Nachrichten" %}</p>
+            <h1>{% translate "Chat" %}</h1>
+            <p>{% translate "Schreibe direkt mit Freunden oder erstelle Gruppen für mehrere Nutzer." %}</p>
+        </div>
+        <div class="chat-hero-icon"><i class="fa-solid fa-comments"></i></div>
+    </div>
+
+    <div class="chat-layout" {% if active_room %}data-room-id="{{ active_room.id }}" data-messages-url="{% url 'chat_messages_api' active_room.id %}" data-send-url="{% url 'chat_send' active_room.id %}"{% endif %}>
+        <aside class="chat-sidebar">
+            <div class="chat-sidebar-header">
+                <div>
+                    <p class="chat-kicker">{% translate "Unterhaltungen" %}</p>
+                    <h2>{% translate "Chats" %}</h2>
+                </div>
+                <span>{{ rooms|length }}</span>
+            </div>
+
+            <div class="chat-room-list">
+                {% for room in rooms %}
+                    <a href="{% url 'chat_room' room.id %}" class="chat-room-item {% if active_room and room.id == active_room.id %}is-active{% endif %}">
+                        <span class="chat-room-avatar {% if room.room_type == 'group' %}is-group{% endif %}">
+                            {% if room.room_type == 'group' %}
+                                <i class="fa-solid fa-user-group"></i>
+                            {% elif room.preview_members and room.preview_members.0.profile.avatar %}
+                                <img src="{{ room.preview_members.0.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                            {% elif room.preview_members %}
+                                {{ room.preview_members.0.profile.initials }}
+                            {% else %}
+                                <i class="fa-solid fa-comment"></i>
+                            {% endif %}
+                        </span>
+                        <span class="chat-room-main">
+                            <strong>{{ room.display_title }}</strong>
+                            {% if room.last_message %}
+                                <small>{{ room.last_message.sender.username }}: {{ room.last_message.text|truncatechars:48 }}</small>
+                            {% else %}
+                                <small>{% translate "Noch keine Nachrichten" %}</small>
+                            {% endif %}
+                        </span>
+                        {% if room.unread_count %}
+                            <span class="chat-unread-badge">{{ room.unread_count }}</span>
+                        {% endif %}
+                    </a>
+                {% empty %}
+                    <div class="chat-empty-mini">
+                        <i class="fa-regular fa-comment-dots"></i>
+                        <p>{% translate "Noch keine Chats." %}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="chat-direct-panel">
+                <div class="chat-panel-heading">
+                    <p class="chat-kicker">{% translate "Direktchat starten" %}</p>
+                    <small>{% translate "Wähle einen Freund aus und öffne direkt einen Chat." %}</small>
+                </div>
+
+                {% if friend_profiles %}
+                    <div class="chat-direct-list">
+                        {% for friend_profile in friend_profiles %}
+                            <form method="post" action="{% url 'chat_direct' friend_profile.user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="chat-direct-user">
+                                    <span class="chat-direct-avatar">
+                                        {% if friend_profile.avatar %}
+                                            <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                        {% else %}
+                                            <b>{{ friend_profile.initials }}</b>
+                                        {% endif %}
+                                    </span>
+                                    <span class="chat-direct-info">
+                                        <strong>{{ friend_profile.user.get_full_name|default:friend_profile.user.username }}</strong>
+                                        <small>@{{ friend_profile.user.username }}</small>
+                                    </span>
+                                    <i class="fa-solid fa-message"></i>
+                                </button>
+                            </form>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="chat-no-friends">{% translate "Für Direktchats brauchst du erst Freunde." %}</p>
+                    <a href="{% url 'users' %}" class="chat-find-friends">{% translate "Nutzer suchen" %}</a>
+                {% endif %}
+            </div>
+
+            <form class="chat-group-form" method="post" action="{% url 'chat_group_create' %}">
+                {% csrf_token %}
+                <p class="chat-kicker">{% translate "Neue Gruppe" %}</p>
+                <input type="text" name="name" maxlength="80" placeholder="{% translate 'Gruppenname' %}" required>
+
+                {% if friend_profiles %}
+                    <div class="chat-friend-picker">
+                        {% for friend_profile in friend_profiles %}
+                            <label>
+                                <input type="checkbox" name="members" value="{{ friend_profile.user.id }}">
+                                <span>
+                                    {% if friend_profile.avatar %}
+                                        <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                    {% else %}
+                                        <b>{{ friend_profile.initials }}</b>
+                                    {% endif %}
+                                    <strong>{{ friend_profile.user.get_full_name|default:friend_profile.user.username }}</strong>
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <button type="submit"><i class="fa-solid fa-plus"></i>{% translate "Gruppe erstellen" %}</button>
+                {% else %}
+                    <p class="chat-no-friends">{% translate "Für Gruppen brauchst du erst Freunde." %}</p>
+                    <a href="{% url 'users' %}" class="chat-find-friends">{% translate "Nutzer suchen" %}</a>
+                {% endif %}
+            </form>
+        </aside>
+
+        <section class="chat-window">
+            {% if active_room %}
+                <header class="chat-window-header">
+                    <div class="chat-window-title">
+                        <div class="chat-room-avatar big {% if active_room.room_type == 'group' %}is-group{% endif %}">
+                            {% if active_room.room_type == 'group' %}
+                                <i class="fa-solid fa-user-group"></i>
+                            {% elif active_room.preview_members and active_room.preview_members.0.profile.avatar %}
+                                <img src="{{ active_room.preview_members.0.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                            {% elif active_room.preview_members %}
+                                {{ active_room.preview_members.0.profile.initials }}
+                            {% else %}
+                                <i class="fa-solid fa-comment"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <p class="chat-kicker">{% if active_room.room_type == 'group' %}{% translate "Gruppe" %}{% else %}{% translate "Direktchat" %}{% endif %}</p>
+                            <h2>{{ active_room.display_title }}</h2>
+                        </div>
+                    </div>
+                    <div class="chat-member-strip">
+                        {% for member in active_room_members %}
+                            <a href="{% url 'public_profile' member.id %}" title="{{ member.username }}">
+                                {% if member.profile.avatar %}
+                                    <img src="{{ member.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                {% else %}
+                                    {{ member.profile.initials }}
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </header>
+
+                <div class="chat-messages" id="chat-messages">
+                    {% for message in chat_messages %}
+                        <div class="chat-message {% if message.sender_id == request.user.id %}is-own{% endif %}"
+                             data-message-id="{{ message.id }}"
+                             {% if message.sender_id == request.user.id %}data-delete-url="{% url 'chat_message_delete' active_room.id message.id %}"{% else %}data-react-url="{% url 'chat_message_react' active_room.id message.id %}"{% endif %}>
+                            <div class="chat-message-avatar">
+                                {% if message.sender.profile.avatar %}
+                                    <img src="{{ message.sender.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                {% else %}
+                                    {{ message.sender.profile.initials }}
+                                {% endif %}
+                            </div>
+                            <div class="chat-bubble">
+                                <button type="button" class="chat-message-menu-button" aria-label="{% translate 'Nachrichtoptionen' %}">
+                                    <i class="fa-solid fa-ellipsis"></i>
+                                </button>
+                                <div class="chat-message-menu">
+                                    {% if message.sender_id == request.user.id %}
+                                        <button type="button" data-chat-action="delete"><i class="fa-solid fa-trash"></i>{% translate "Löschen" %}</button>
+                                    {% else %}
+                                        <button type="button" data-chat-action="react"><i class="fa-regular fa-face-smile"></i>{% translate "Reagieren" %}</button>
+                                    {% endif %}
+                                </div>
+                                {% if message.sender_id != request.user.id %}
+                                    <div class="chat-emoji-picker" aria-label="{% translate 'Emoji auswählen' %}">
+                                        <button type="button" data-emoji="👍">👍</button>
+                                        <button type="button" data-emoji="❤️">❤️</button>
+                                        <button type="button" data-emoji="😂">😂</button>
+                                        <button type="button" data-emoji="😮">😮</button>
+                                        <button type="button" data-emoji="😢">😢</button>
+                                        <button type="button" data-emoji="🙏">🙏</button>
+                                    </div>
+                                {% endif %}
+                                <div class="chat-message-meta">
+                                    <strong>{{ message.sender.get_full_name|default:message.sender.username }}</strong>
+                                    <span>{{ message.created_at|date:"d.m.Y H:i" }}</span>
+                                </div>
+                                <p>{{ message.text|linebreaksbr }}</p>
+                                <div class="chat-reactions {% if not message.reaction_items %}is-empty{% endif %}">
+                                    {% for reaction in message.reaction_items %}
+                                        <span class="chat-reaction {% if reaction.mine %}is-mine{% endif %}">{{ reaction.emoji }} <b>{{ reaction.count }}</b></span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="chat-empty-state" id="chat-empty-state">
+                            <i class="fa-regular fa-paper-plane"></i>
+                            <h2>{% translate "Starte die Unterhaltung" %}</h2>
+                            <p>{% translate "Schreibe die erste Nachricht in diesem Chat." %}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <form class="chat-compose" method="post" action="{% url 'chat_send' active_room.id %}" id="chat-compose-form">
+                    {% csrf_token %}
+                    <textarea name="text" rows="1" maxlength="1200" placeholder="{% translate 'Nachricht schreiben...' %}" required></textarea>
+                    <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            {% else %}
+                <div class="chat-start-panel">
+                    <i class="fa-solid fa-comments"></i>
+                    <h2>{% translate "Noch kein Chat ausgewählt" %}</h2>
+                    <p>{% translate "Öffne ein Nutzerprofil und starte einen Direktchat oder erstelle links eine Gruppe." %}</p>
+                    <a href="{% url 'users' %}">{% translate "Nutzer suchen" %}</a>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/chat.js' %}"></script>
+{% endblock %}

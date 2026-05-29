@@ -28,13 +28,13 @@
 
 html.auth-dark .auth-page,
 .auth-page.dark-mode {
-    --auth-bg: #10141d;
-    --auth-panel: rgba(20, 26, 38, 0.96);
-    --auth-panel-border: rgba(226, 232, 240, 0.12);
+    --auth-bg: #12151f;
+    --auth-panel: rgba(28, 34, 49, 0.96);
+    --auth-panel-border: rgba(203, 213, 225, 0.2);
     --auth-text: #f8fafc;
-    --auth-muted: #aab6c7;
-    --auth-input: #111827;
-    --auth-input-border: rgba(203, 213, 225, 0.18);
+    --auth-muted: #cbd5e1;
+    --auth-input: rgba(15, 23, 42, 0.72);
+    --auth-input-border: rgba(203, 213, 225, 0.22);
     --auth-input-focus: #2dd4bf;
     --auth-link: #5eead4;
     --auth-danger-text: #fecaca;

@@ -134,6 +134,35 @@
     transition: background 0.16s ease, transform 0.16s ease;
 }
 
+
+.profile-menu-item-with-badge {
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.profile-menu-item-main {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.profile-menu-badge {
+    min-width: 25px;
+    height: 25px;
+    padding: 0 8px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    font-size: 0.78rem;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(var(--theme-accent-rgb), 0.28);
+}
+
 .profile-menu-item:hover {
     transform: translateX(2px);
     background: rgba(var(--theme-accent-rgb), 0.1);
