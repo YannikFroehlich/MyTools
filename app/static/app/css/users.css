@@ -1345,3 +1345,272 @@ body.dark-mode .friend-online-dot {
     border-color: #111827;
     box-shadow: 0 0 0 1px rgba(255, 255, 255, .16), 0 0 0 4px rgba(34, 197, 94, .16);
 }
+
+
+/* ===== Responsive users/profile pass ===== */
+.users-page,
+.public-profile-page,
+.users-toolbar,
+.users-grid,
+.user-card,
+.public-profile-layout,
+.public-profile-card,
+.public-profile-main,
+.friends-preview-grid {
+    min-width: 0;
+}
+
+.user-title-row,
+.user-meta,
+.public-profile-section-header,
+.public-profile-actions,
+.friendship-inline-actions {
+    min-width: 0;
+}
+
+.user-title-row h2,
+.user-username,
+.user-bio,
+.user-meta span,
+.public-profile-title h1,
+.public-profile-title p,
+.friend-preview-card strong,
+.friend-preview-card small {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1080px) {
+    .users-page,
+    .public-profile-page {
+        width: min(100% - 24px, 1180px);
+    }
+
+    .users-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+    }
+
+    .user-card {
+        padding: 18px;
+        grid-template-columns: 68px minmax(0, 1fr);
+        gap: 14px;
+        border-radius: 24px;
+    }
+
+    .user-avatar {
+        width: 68px;
+        height: 68px;
+        border-radius: 20px;
+    }
+
+    .public-profile-layout {
+        grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+        gap: 18px;
+    }
+}
+
+@media (max-width: 820px) {
+    .users-hero,
+    .public-profile-hero {
+        padding: 24px;
+        border-radius: 26px;
+    }
+
+    .users-toolbar {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .users-toolbar-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .users-toolbar-action,
+    .users-counter {
+        min-width: 0;
+    }
+
+    .public-profile-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .public-profile-info-card {
+        position: static;
+        order: 2;
+    }
+
+    .public-profile-main {
+        order: 1;
+    }
+}
+
+@media (max-width: 620px) {
+    .users-page,
+    .public-profile-page {
+        width: min(100% - 14px, 1180px);
+        padding: 12px 0 34px;
+    }
+
+    .users-hero,
+    .public-profile-hero {
+        padding: 20px;
+        border-radius: 22px;
+    }
+
+    .users-hero h1,
+    .public-profile-title h1 {
+        font-size: clamp(2rem, 14vw, 3rem);
+    }
+
+    .users-hero p:last-child,
+    .public-profile-title p {
+        font-size: .95rem;
+    }
+
+    .users-hero-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        font-size: 1.45rem;
+    }
+
+    .users-search {
+        min-height: 50px;
+        border-radius: 17px;
+    }
+
+    .users-toolbar-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .users-counter {
+        min-height: 48px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .users-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .user-card,
+    .friends-page .user-card {
+        grid-template-columns: 62px minmax(0, 1fr);
+        padding: 15px;
+        gap: 12px;
+        border-radius: 20px;
+    }
+
+    .user-avatar,
+    .friends-page .user-avatar {
+        width: 62px;
+        height: 62px;
+        border-radius: 18px;
+    }
+
+    .user-title-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .user-title-row h2 {
+        font-size: 1.14rem;
+    }
+
+    .user-meta,
+    .friends-page .user-meta {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .user-meta span,
+    .friends-page .user-meta span {
+        width: 100%;
+    }
+
+    .public-profile-header {
+        gap: 16px;
+        margin-top: 22px;
+    }
+
+    .public-profile-avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 26px;
+    }
+
+    .public-profile-card {
+        padding: 18px;
+        border-radius: 22px;
+    }
+
+    .public-profile-empty-bio {
+        padding: 16px;
+        border-radius: 18px;
+        align-items: flex-start;
+    }
+
+    .friendship-inline-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .friends-preview-grid,
+    .public-profile-benchmark-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 430px) {
+    .users-page,
+    .public-profile-page {
+        width: 100%;
+    }
+
+    .users-hero,
+    .public-profile-hero,
+    .users-search,
+    .users-counter,
+    .user-card,
+    .public-profile-card {
+        border-radius: 18px;
+    }
+
+    .user-card,
+    .friends-page .user-card {
+        grid-template-columns: 1fr;
+    }
+
+    .user-avatar,
+    .friends-page .user-avatar {
+        width: 72px;
+        height: 72px;
+    }
+
+    .public-profile-header {
+        flex-direction: column;
+    }
+
+    .public-profile-stats span {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .friend-preview-card {
+        grid-template-columns: 42px minmax(0, 1fr);
+    }
+
+    .friend-preview-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+    }
+}

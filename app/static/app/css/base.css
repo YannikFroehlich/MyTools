@@ -1564,3 +1564,64 @@ body.dark-mode .notification-center-empty {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ===== Responsive readability pass ===== */
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+main,
+nav,
+.site-footer,
+.menu-dropdown,
+.notification-center-dropdown,
+.theme-editor-panel {
+    min-width: 0;
+}
+
+img,
+svg,
+canvas,
+video {
+    max-width: 100%;
+}
+
+@media (max-width: 760px) {
+    nav {
+        width: 100%;
+    }
+
+    nav .navigation {
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+        padding-bottom: 2px;
+    }
+
+    nav .navigation > a,
+    nav .navigation .menu-button {
+        white-space: nowrap;
+    }
+
+    .menu-dropdown,
+    .notification-center-dropdown {
+        max-width: calc(100vw - 24px);
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .theme-editor-panel,
+    .notification-center-dropdown {
+        left: 8px;
+        right: 8px;
+        max-width: calc(100vw - 16px);
+    }
+}
