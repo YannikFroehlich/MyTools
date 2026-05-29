@@ -566,7 +566,7 @@
 }
 
 /* ──────────────────────────────────────────────
-   Zeichenspiel Refresh: bunter, größer, spieliger
+   Skribble Refresh: bunter, größer, spieliger
    ────────────────────────────────────────────── */
 .draw-page.draw-lobby-page {
     width: min(1780px, calc(100% - 28px));
@@ -935,7 +935,7 @@
     margin-top: 0;
 }
 
-/* Zeichenspiel Update: Lobby verlassen/löschen + Freundesliste */
+/* Skribble Update: Lobby verlassen/löschen + Freundesliste */
 .draw-inline-form {
     display: inline-flex;
     margin: 0;
@@ -1044,7 +1044,7 @@
 }
 
 /* ──────────────────────────────────────────────
-   Zeichenspiel Update: eigener Hintergrund + mehr Farbe
+   Skribble Update: eigener Hintergrund + mehr Farbe
    Bild liegt in: app/static/app/img/Skribble-background.png
    ────────────────────────────────────────────── */
 .draw-panel {
@@ -1292,7 +1292,7 @@ body.dark-mode .draw-canvas-wrap {
 
 
 /* ──────────────────────────────────────────────
-   Zeichenspiel Update: Logo + bessere Text-Ausrichtung
+   Skribble Update: Logo + bessere Text-Ausrichtung
    Logo liegt in: app/static/app/img/Skribble-logo.png
    ────────────────────────────────────────────── */
 .draw-hero-main,
@@ -1539,7 +1539,7 @@ body.dark-mode .draw-logo {
 }
 
 /* ──────────────────────────────────────────────
-   Zeichenspiel Fix: Light Mode heller + schönere Logo-Box
+   Skribble Fix: Light Mode heller + schönere Logo-Box
    ────────────────────────────────────────────── */
 .draw-page.draw-home-page,
 .draw-page.draw-lobby-page {
@@ -1859,7 +1859,7 @@ html.dark-mode .draw-logo-lobby,
 }
 
 /* ──────────────────────────────────────────────
-   Zeichenspiel Update: bunter, kompakter Header + echtes transparentes Logo
+   Skribble Update: bunter, kompakter Header + echtes transparentes Logo
    ────────────────────────────────────────────── */
 .draw-skribble-hero {
     display: grid !important;

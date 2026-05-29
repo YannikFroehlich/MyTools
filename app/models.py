@@ -701,8 +701,8 @@ class DrawingGameLobby(models.Model):
 
     class Meta:
         ordering = ["-updated_at"]
-        verbose_name = "Zeichenspiel-Lobby"
-        verbose_name_plural = "Zeichenspiel-Lobbys"
+        verbose_name = "Skribble-Lobby"
+        verbose_name_plural = "Skribble-Lobbys"
         indexes = [
             models.Index(fields=["code"]),
             models.Index(fields=["owner", "status"]),
@@ -746,7 +746,7 @@ class DrawingGamePlayer(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="drawing_game_players",
+        related_name="skribble_players",
     )
     display_name = models.CharField(max_length=40, blank=True)
     avatar_base = models.CharField(max_length=20, choices=AVATAR_BASE_CHOICES, default="round")
@@ -763,8 +763,8 @@ class DrawingGamePlayer(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["lobby", "user"], name="unique_drawing_player_per_lobby"),
         ]
-        verbose_name = "Zeichenspiel-Spieler"
-        verbose_name_plural = "Zeichenspiel-Spieler"
+        verbose_name = "Skribble-Spieler"
+        verbose_name_plural = "Skribble-Spieler"
 
     def __str__(self):
         return f"{self.display_label} · {self.lobby.code}"
@@ -810,8 +810,8 @@ class DrawingGameInvite(models.Model):
             models.UniqueConstraint(fields=["lobby", "to_user"], name="unique_drawing_invite_per_lobby_user"),
             models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="drawing_invite_prevent_self"),
         ]
-        verbose_name = "Zeichenspiel-Einladung"
-        verbose_name_plural = "Zeichenspiel-Einladungen"
+        verbose_name = "Skribble-Einladung"
+        verbose_name_plural = "Skribble-Einladungen"
 
     def __str__(self):
         return f"{self.from_user} → {self.to_user} · {self.lobby.code}"
@@ -826,7 +826,7 @@ class DrawingGameGuess(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="drawing_game_guesses",
+        related_name="skribble_guesses",
     )
     round_number = models.PositiveSmallIntegerField(default=1)
     turn_index = models.PositiveIntegerField(default=0)
@@ -839,8 +839,8 @@ class DrawingGameGuess(models.Model):
         indexes = [
             models.Index(fields=["lobby", "round_number", "turn_index", "created_at"]),
         ]
-        verbose_name = "Zeichenspiel-Rateversuch"
-        verbose_name_plural = "Zeichenspiel-Rateversuche"
+        verbose_name = "Skribble-Rateversuch"
+        verbose_name_plural = "Skribble-Rateversuche"
 
     def __str__(self):
         return f"{self.user}: {self.message[:30]}"

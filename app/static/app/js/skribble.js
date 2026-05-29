@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
             state = json.state;
             renderState(forceDraw);
         } catch (error) {
-            console.warn("Zeichenspiel state failed", error);
+            console.warn("Skribble state failed", error);
         }
     }
 

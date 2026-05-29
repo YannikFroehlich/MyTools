@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import *
 from .profile_views import friends_list_view, friendship_action_view, profile_view, users_view, public_profile_view
-from .drawing_game_views import *
+from .skribble_views import *
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
@@ -42,19 +42,19 @@ urlpatterns = [
 
     path("drift-circuit/", drift_circuit, name="drift-circuit"),
 
-    path("zeichenspiel/", drawing_game_home, name="drawing_game_home"),
-    path("zeichenspiel/<slug:code>/", drawing_game_lobby, name="drawing_game_lobby"),
-    path("zeichenspiel/<slug:code>/invite/", drawing_game_invite_friend, name="drawing_game_invite_friend"),
-    path("zeichenspiel/invite/<int:invite_id>/", drawing_game_invite_response, name="drawing_game_invite_response"),
-    path("zeichenspiel/<slug:code>/avatar/", drawing_game_update_avatar, name="drawing_game_update_avatar"),
-    path("zeichenspiel/<slug:code>/start/", drawing_game_start, name="drawing_game_start"),
-    path("zeichenspiel/<slug:code>/restart/", drawing_game_restart, name="drawing_game_restart"),
-    path("zeichenspiel/<slug:code>/leave/", drawing_game_leave_lobby, name="drawing_game_leave_lobby"),
-    path("zeichenspiel/<slug:code>/delete/", drawing_game_delete_lobby, name="drawing_game_delete_lobby"),
-    path("api/zeichenspiel/<slug:code>/state/", drawing_game_state_api, name="drawing_game_state_api"),
-    path("api/zeichenspiel/<slug:code>/choose-word/", drawing_game_choose_word_api, name="drawing_game_choose_word_api"),
-    path("api/zeichenspiel/<slug:code>/draw/", drawing_game_draw_api, name="drawing_game_draw_api"),
-    path("api/zeichenspiel/<slug:code>/guess/", drawing_game_guess_api, name="drawing_game_guess_api"),
+    path("skribble/", skribble_home, name="skribble_home"),
+    path("skribble/<slug:code>/", skribble_lobby, name="skribble_lobby"),
+    path("skribble/<slug:code>/invite/", skribble_invite_friend, name="skribble_invite_friend"),
+    path("skribble/invite/<int:invite_id>/", skribble_invite_response, name="skribble_invite_response"),
+    path("skribble/<slug:code>/avatar/", skribble_update_avatar, name="skribble_update_avatar"),
+    path("skribble/<slug:code>/start/", skribble_start, name="skribble_start"),
+    path("skribble/<slug:code>/restart/", skribble_restart, name="skribble_restart"),
+    path("skribble/<slug:code>/leave/", skribble_leave_lobby, name="skribble_leave_lobby"),
+    path("skribble/<slug:code>/delete/", skribble_delete_lobby, name="skribble_delete_lobby"),
+    path("api/skribble/<slug:code>/state/", skribble_state_api, name="skribble_state_api"),
+    path("api/skribble/<slug:code>/choose-word/", skribble_choose_word_api, name="skribble_choose_word_api"),
+    path("api/skribble/<slug:code>/draw/", skribble_draw_api, name="skribble_draw_api"),
+    path("api/skribble/<slug:code>/guess/", skribble_guess_api, name="skribble_guess_api"),
 
     path("stream-deck/", stream_deck, name="stream-deck"),
 ]

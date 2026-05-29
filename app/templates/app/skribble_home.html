@@ -1,7 +1,7 @@
 {% extends 'app/base.html' %}
 {% load i18n static %}
 
-{% block title %}{% translate 'Zeichenspiel' %} · MyTools{% endblock %}
+{% block title %}{% translate 'Skribble' %} · MyTools{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'app/css/skribble.css' %}">
@@ -13,7 +13,7 @@
         <div class="draw-hero-main">
             <span class="draw-eyebrow"><i class="fa-solid fa-pencil"></i> {% translate 'Freunde-Spiel' %}</span>
             <div class="draw-hero-logo-row">
-                <img class="draw-logo draw-logo-hero" src="{% static 'app/img/Skribble-logo.png' %}" alt="{% translate 'Zeichenspiel' %}">
+                <img class="draw-logo draw-logo-hero" src="{% static 'app/img/Skribble-logo.png' %}" alt="{% translate 'Skribble' %}">
                 <div class="draw-hero-text">
                     <h1 class="draw-logo-title">{% translate 'Zeichnen, raten, lachen.' %}</h1>
                     <p>{% translate 'Erstelle eine Lobby, lade deine Freunde ein und spielt direkt zusammen.' %}</p>
@@ -93,12 +93,12 @@
                                 <span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span>
                             </div>
                             <div class="draw-actions-inline">
-                                <form method="post" action="{% url 'drawing_game_invite_response' invite.id %}">
+                                <form method="post" action="{% url 'skribble_invite_response' invite.id %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="accept">
                                     <button type="submit" class="draw-small-btn draw-accept">{% translate 'Annehmen' %}</button>
                                 </form>
-                                <form method="post" action="{% url 'drawing_game_invite_response' invite.id %}">
+                                <form method="post" action="{% url 'skribble_invite_response' invite.id %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="decline">
                                     <button type="submit" class="draw-small-btn">{% translate 'Ablehnen' %}</button>
@@ -118,7 +118,7 @@
         {% if my_lobbies %}
             <div class="draw-lobby-cards">
                 {% for lobby in my_lobbies %}
-                    <a class="draw-lobby-card" href="{% url 'drawing_game_lobby' lobby.code %}">
+                    <a class="draw-lobby-card" href="{% url 'skribble_lobby' lobby.code %}">
                         <span class="draw-code">{{ lobby.code }}</span>
                         <strong>{{ lobby.name }}</strong>
                         <span>{{ lobby.players.count }} / {{ lobby.max_players }} {% translate 'Spieler' %} · {{ lobby.get_status_display }}</span>

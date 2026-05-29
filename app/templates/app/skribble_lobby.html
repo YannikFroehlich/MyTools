@@ -1,7 +1,7 @@
 {% extends 'app/base.html' %}
 {% load i18n static %}
 
-{% block title %}{{ lobby.name }} · {% translate 'Zeichenspiel' %}{% endblock %}
+{% block title %}{{ lobby.name }} · {% translate 'Skribble' %}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'app/css/skribble.css' %}">
@@ -15,18 +15,18 @@
 {% block content %}
 <main class="draw-page draw-lobby-page"
       data-code="{{ lobby.code }}"
-      data-state-url="{% url 'drawing_game_state_api' lobby.code %}"
-      data-start-url="{% url 'drawing_game_start' lobby.code %}"
-      data-restart-url="{% url 'drawing_game_restart' lobby.code %}"
-      data-choose-url="{% url 'drawing_game_choose_word_api' lobby.code %}"
-      data-draw-url="{% url 'drawing_game_draw_api' lobby.code %}"
-      data-guess-url="{% url 'drawing_game_guess_api' lobby.code %}">
+      data-state-url="{% url 'skribble_state_api' lobby.code %}"
+      data-start-url="{% url 'skribble_start' lobby.code %}"
+      data-restart-url="{% url 'skribble_restart' lobby.code %}"
+      data-choose-url="{% url 'skribble_choose_word_api' lobby.code %}"
+      data-draw-url="{% url 'skribble_draw_api' lobby.code %}"
+      data-guess-url="{% url 'skribble_guess_api' lobby.code %}">
 
     <section class="draw-lobby-top">
         <div class="draw-lobby-brand">
-            <a href="{% url 'drawing_game_home' %}" class="draw-back"><i class="fa-solid fa-arrow-left"></i> {% translate 'Zur Übersicht' %}</a>
+            <a href="{% url 'skribble_home' %}" class="draw-back"><i class="fa-solid fa-arrow-left"></i> {% translate 'Zur Übersicht' %}</a>
             <div class="draw-title-row">
-                <img class="draw-logo draw-logo-lobby" src="{% static 'app/img/Skribble-logo.png' %}" alt="{% translate 'Zeichenspiel' %}">
+                <img class="draw-logo draw-logo-lobby" src="{% static 'app/img/Skribble-logo.png' %}" alt="{% translate 'Skribble' %}">
                 <div class="draw-lobby-copy">
                     <span class="draw-eyebrow"><i class="fa-solid fa-users"></i> {% translate 'Lobby' %}</span>
                     <h1>{{ lobby.name }}</h1>
@@ -45,14 +45,14 @@
                 <button class="draw-secondary" type="button" id="restart-game-btn">
                     <i class="fa-solid fa-rotate-right"></i> {% translate 'Zurücksetzen' %}
                 </button>
-                <form method="post" action="{% url 'drawing_game_delete_lobby' lobby.code %}" class="draw-inline-form" data-confirm="{% translate 'Lobby wirklich löschen? Alle Spieler und Zeichnungen werden entfernt.' %}">
+                <form method="post" action="{% url 'skribble_delete_lobby' lobby.code %}" class="draw-inline-form" data-confirm="{% translate 'Lobby wirklich löschen? Alle Spieler und Zeichnungen werden entfernt.' %}">
                     {% csrf_token %}
                     <button class="draw-danger" type="submit">
                         <i class="fa-solid fa-trash"></i> {% translate 'Lobby löschen' %}
                     </button>
                 </form>
             {% endif %}
-            <form method="post" action="{% url 'drawing_game_leave_lobby' lobby.code %}" class="draw-inline-form" data-confirm="{% translate 'Lobby wirklich verlassen? Du kannst später über eine Einladung oder als Freund wieder beitreten.' %}">
+            <form method="post" action="{% url 'skribble_leave_lobby' lobby.code %}" class="draw-inline-form" data-confirm="{% translate 'Lobby wirklich verlassen? Du kannst später über eine Einladung oder als Freund wieder beitreten.' %}">
                 {% csrf_token %}
                 <button class="draw-secondary" type="submit">
                     <i class="fa-solid fa-right-from-bracket"></i> {% translate 'Verlassen' %}
@@ -157,7 +157,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <form method="post" action="{% url 'drawing_game_invite_friend' lobby.code %}">
+                            <form method="post" action="{% url 'skribble_invite_friend' lobby.code %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="friend_id" value="{{ row.user.id }}">
                                 <button class="draw-primary draw-invite-one" type="submit" {% if row.is_invited %}disabled{% endif %}>
@@ -178,7 +178,7 @@
 
         <article class="draw-panel">
             <h2>{% translate 'Dein Spiel-Avatar' %}</h2>
-            <form method="post" action="{% url 'drawing_game_update_avatar' lobby.code %}" class="draw-avatar-form">
+            <form method="post" action="{% url 'skribble_update_avatar' lobby.code %}" class="draw-avatar-form">
                 {% csrf_token %}
                 <label>
                     <span>{% translate 'Name im Spiel' %}</span>

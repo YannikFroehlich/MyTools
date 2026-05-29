@@ -241,7 +241,7 @@ def _serialize_state(lobby, user):
 
 
 @login_required
-def drawing_game_home(request):
+def skribble_home(request):
     if request.method == "POST":
         name = request.POST.get("name", "").strip() or _("Zeichen-Lobby")
         rounds_count = min(max(int(request.POST.get("rounds_count", 3) or 3), 1), 10)
@@ -262,7 +262,7 @@ def drawing_game_home(request):
         )
         _get_or_create_player(lobby, request.user)
         messages.success(request, _("Lobby wurde erstellt."))
-        return redirect("drawing_game_lobby", code=lobby.code)
+        return redirect("skribble_lobby", code=lobby.code)
 
     my_lobbies = DrawingGameLobby.objects.filter(players__user=request.user).distinct().order_by("-updated_at")[:12]
     invites = DrawingGameInvite.objects.select_related("lobby", "from_user").filter(
@@ -276,15 +276,15 @@ def drawing_game_home(request):
 
 
 @login_required
-def drawing_game_lobby(request, code):
+def skribble_lobby(request, code):
     lobby = get_object_or_404(DrawingGameLobby, code=code.upper())
     if not _user_can_enter_lobby(lobby, request.user):
         messages.error(request, _("Du bist nicht für diese Lobby eingeladen."))
-        return redirect("drawing_game_home")
+        return redirect("skribble_home")
 
     if lobby.players.count() >= lobby.max_players and not lobby.players.filter(user=request.user).exists():
         messages.error(request, _("Diese Lobby ist bereits voll."))
-        return redirect("drawing_game_home")
+        return redirect("skribble_home")
 
     _get_or_create_player(lobby, request.user)
     DrawingGameInvite.objects.filter(lobby=lobby, to_user=request.user).update(status=DrawingGameInvite.STATUS_ACCEPTED)
@@ -315,17 +315,17 @@ def drawing_game_lobby(request, code):
 
 @login_required
 @require_POST
-def drawing_game_invite_friend(request, code):
+def skribble_invite_friend(request, code):
     lobby = get_object_or_404(DrawingGameLobby, code=code.upper())
     if lobby.owner_id != request.user.id and not lobby.players.filter(user=request.user).exists():
         messages.error(request, _("Du kannst aus dieser Lobby keine Einladungen senden."))
-        return redirect("drawing_game_home")
+        return redirect("skribble_home")
 
     friend_id = request.POST.get("friend_id")
     friend = get_object_or_404(User, id=friend_id, is_active=True)
     if friend.id not in Friendship.friend_ids_for_user(request.user):
         messages.error(request, _("Du kannst nur Freunde einladen."))
-        return redirect("drawing_game_lobby", code=lobby.code)
+        return redirect("skribble_lobby", code=lobby.code)
 
     DrawingGameInvite.objects.update_or_create(
         lobby=lobby,
@@ -333,35 +333,35 @@ def drawing_game_invite_friend(request, code):
         defaults={"from_user": request.user, "status": DrawingGameInvite.STATUS_PENDING},
     )
     messages.success(request, _("Einladung wurde gesendet."))
-    return redirect("drawing_game_lobby", code=lobby.code)
+    return redirect("skribble_lobby", code=lobby.code)
 
 
 @login_required
 @require_POST
-def drawing_game_invite_response(request, invite_id):
+def skribble_invite_response(request, invite_id):
     invite = get_object_or_404(DrawingGameInvite, id=invite_id, to_user=request.user)
     action = request.POST.get("action")
     if action == "accept":
         invite.status = DrawingGameInvite.STATUS_ACCEPTED
         invite.save(update_fields=["status", "updated_at"])
         _get_or_create_player(invite.lobby, request.user)
-        return redirect("drawing_game_lobby", code=invite.lobby.code)
+        return redirect("skribble_lobby", code=invite.lobby.code)
     invite.status = DrawingGameInvite.STATUS_DECLINED
     invite.save(update_fields=["status", "updated_at"])
     messages.info(request, _("Einladung wurde abgelehnt."))
-    return redirect("drawing_game_home")
+    return redirect("skribble_home")
 
 
 @login_required
 @require_POST
-def drawing_game_leave_lobby(request, code):
+def skribble_leave_lobby(request, code):
     with transaction.atomic():
         lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
         players = _players(lobby)
         player = next((item for item in players if item.user_id == request.user.id), None)
         if not player:
             messages.info(request, _("Du bist nicht mehr in dieser Lobby."))
-            return redirect("drawing_game_home")
+            return redirect("skribble_home")
 
         removed_index = next((index for index, item in enumerate(players) if item.id == player.id), None)
         was_current_drawer = removed_index == lobby.current_turn_index
@@ -373,22 +373,22 @@ def drawing_game_leave_lobby(request, code):
             lobby.save(update_fields=["updated_at"])
 
     messages.info(request, _("Du hast die Lobby verlassen. Du kannst über eine Einladung oder als Freund wieder beitreten."))
-    return redirect("drawing_game_home")
+    return redirect("skribble_home")
 
 
 @login_required
 @require_POST
-def drawing_game_delete_lobby(request, code):
+def skribble_delete_lobby(request, code):
     lobby = get_object_or_404(DrawingGameLobby, code=code.upper(), owner=request.user)
     lobby_name = lobby.name
     lobby.delete()
     messages.success(request, _("Lobby '%(name)s' wurde gelöscht.") % {"name": lobby_name})
-    return redirect("drawing_game_home")
+    return redirect("skribble_home")
 
 
 @login_required
 @require_POST
-def drawing_game_update_avatar(request, code):
+def skribble_update_avatar(request, code):
     lobby = get_object_or_404(DrawingGameLobby, code=code.upper())
     player = get_object_or_404(DrawingGamePlayer, lobby=lobby, user=request.user)
     player.display_name = (request.POST.get("display_name", "").strip() or request.user.username)[:40]
@@ -399,12 +399,12 @@ def drawing_game_update_avatar(request, code):
         player.accent_color = request.POST.get("accent_color")
     player.save(update_fields=["display_name", "avatar_base", "avatar_color", "accent_color", "last_seen"])
     messages.success(request, _("Avatar wurde gespeichert."))
-    return redirect("drawing_game_lobby", code=lobby.code)
+    return redirect("skribble_lobby", code=lobby.code)
 
 
 @login_required
 @require_POST
-def drawing_game_start(request, code):
+def skribble_start(request, code):
     with transaction.atomic():
         lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
         if lobby.owner_id != request.user.id:
@@ -426,7 +426,7 @@ def drawing_game_start(request, code):
 
 @login_required
 @require_POST
-def drawing_game_restart(request, code):
+def skribble_restart(request, code):
     lobby = get_object_or_404(DrawingGameLobby, code=code.upper(), owner=request.user)
     lobby.status = DrawingGameLobby.STATUS_WAITING
     lobby.current_round_number = 1
@@ -443,7 +443,7 @@ def drawing_game_restart(request, code):
 
 @login_required
 @require_GET
-def drawing_game_state_api(request, code):
+def skribble_state_api(request, code):
     with transaction.atomic():
         lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
         if not lobby.players.filter(user=request.user).exists():
@@ -458,7 +458,7 @@ def drawing_game_state_api(request, code):
 
 @login_required
 @require_POST
-def drawing_game_choose_word_api(request, code):
+def skribble_choose_word_api(request, code):
     with transaction.atomic():
         lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
         players = _players(lobby)
@@ -480,7 +480,7 @@ def drawing_game_choose_word_api(request, code):
 
 @login_required
 @require_POST
-def drawing_game_draw_api(request, code):
+def skribble_draw_api(request, code):
     lobby = get_object_or_404(DrawingGameLobby, code=code.upper())
     drawer = _current_drawer(lobby)
     if not drawer or drawer.user_id != request.user.id or not lobby.current_word:
@@ -505,7 +505,7 @@ def drawing_game_draw_api(request, code):
 
 @login_required
 @require_POST
-def drawing_game_guess_api(request, code):
+def skribble_guess_api(request, code):
     with transaction.atomic():
         lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
         _maybe_advance_if_time_is_over(lobby)
