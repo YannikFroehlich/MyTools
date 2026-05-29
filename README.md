@@ -2,7 +2,7 @@
 
 **MyTools** ist ein persönliches Django-Dashboard für Alltag, Homelab, Medien, Streaming und kleine Web-Tools.
 
-Die App bündelt eigene Schnellzugriffe, Startseiten-Widgets, Wetterdaten, Notizen, Profile, Rechner, Timer, Mini-Games und API-basierte Helfer in einer modernen Oberfläche mit Dark Mode, Theme-Anpassung und deutscher/englischer Oberfläche.
+Die App bündelt eigene Schnellzugriffe, Startseiten-Widgets, Wetterdaten, Notizen, Profile, Freunde, Chats, Rechner, Timer, Mini-Games und API-basierte Helfer in einer modernen Oberfläche mit Dark Mode, Theme-Anpassung und deutscher/englischer Oberfläche.
 
 Das Projekt kann lokal in der Entwicklung laufen oder produktiv per Docker Compose mit **Django/Gunicorn**, **PostgreSQL**, **Redis** und **Caddy** betrieben werden.
 
@@ -20,8 +20,11 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Wetterseite mit OpenWeather API und gespeicherten Orten
 - Uhr-Seite mit lokaler Uhrzeit, Weltuhr, Stoppuhr, gespeicherten Timern und eigenen Timer-Sounds
 - dezenter Weltkarten-Hintergrund auf der Uhr-Seite über `app/static/app/img/worldmap.png`
-- Profilseite mit Avatar, Namen und öffentlicher Profilansicht
-- Nutzerübersicht
+- Profilseite mit Avatar, Banner, Namen und öffentlicher Profilansicht
+- Nutzerübersicht mit öffentlichen Profilen
+- Freundschaftssystem mit Anfragen, Freundesliste und befreundet-seit Anzeige
+- Chat-System mit Direktchats, Gruppenchats, Emoji-Reaktionen und Löschen eigener Nachrichten
+- Skribble-Zeichenspiel mit Lobby, Einladungen, Zeichnen, Raten und Punktestand
 - Notizen-App mit Pins, Archiv, Farben und Tags
 - Human Benchmark mit gespeicherten Ergebnissen, Highscores und Bestenliste pro Nutzer
 - OBS Dashboard für lokale OBS-WebSocket-Steuerung
@@ -119,18 +122,61 @@ app/static/app/img/worldmap.png
 
 ---
 
-## 👤 Profile & Nutzer
+## 👤 Profile, Nutzer & Freunde
 
-MyTools enthält Profilfunktionen für registrierte Nutzer.
+MyTools enthält Profil- und Community-Funktionen für registrierte Nutzer.
 
 Funktionen:
 
 - eigene Profilseite
 - Vorname und Nachname speichern
-- Profilbild/Avatar
+- Profilbild/Avatar mit Vorschau und Zuschnitt
+- Profilbanner
 - öffentliche Profilansicht
 - Nutzerübersicht
+- Freundschaftsanfragen senden, annehmen und ablehnen
+- Freundesliste mit Anzeige, seit wann man befreundet ist
+- Schnellzugriff auf Freunde und Freundschaftsanfragen im Profilmenü
 - Account-Informationen wie Mitglied seit und letzte Aktivität
+- Profil-Statistiken, z. B. Freunde, Chats und Highscores
+
+---
+
+## 💬 Chats
+
+Das Chat-System ist für direkte Unterhaltungen und kleine Gruppen innerhalb von MyTools gedacht.
+
+Funktionen:
+
+- Direktchats mit befreundeten Nutzern
+- Gruppenchats mit mehreren Freunden
+- Chatliste mit Direktchat-Startbereich
+- Nachrichten senden per Enter
+- neue Zeile per Shift + Enter
+- automatische Aktualisierung über Polling
+- ungelesene Chat-Anzahl im Profilmenü
+- eigene Nachrichten löschen
+- auf empfangene Nachrichten mit Emojis reagieren
+- Reaktionen erneut anklicken, um sie wieder zu entfernen
+
+---
+
+## 🎨 Skribble
+
+Skribble ist ein kleines Zeichen- und Ratespiel innerhalb von MyTools.
+
+Funktionen:
+
+- Lobbys erstellen und teilen
+- Freunde einladen
+- Spieler können Lobbys verlassen
+- Lobby-Ersteller können Lobbys löschen
+- Runden starten und neu starten
+- Wörter auswählen
+- Zeichnen im Browser
+- Chat-/Ratebereich für Antworten
+- Punktestand und Spielstatus
+- dezenter eigener Hintergrund und Logo
 
 ---
 
@@ -319,7 +365,7 @@ Typische Container:
 
 - `web` für Django/Gunicorn
 - `db` für PostgreSQL
-- `redis` für Cache/Redis
+- `redis` für Cache/Redis und spätere Echtzeit-/Caching-Funktionen
 - `caddy` als Reverse Proxy
 - optional `cloudflared` für Cloudflare Tunnel
 
@@ -412,6 +458,8 @@ MyTools/
 │   ├── models.py
 │   ├── views.py
 │   ├── profile_views.py
+│   ├── chat_views.py
+│   ├── skribble_views.py
 │   └── urls.py
 ├── locale/
 ├── media/
@@ -429,8 +477,8 @@ MyTools/
 MyTools soll eine persönliche, erweiterbare Web-Toolbox bleiben:
 
 - schnell erreichbar
-- gut für Homelab und Alltag
-- nutzerbezogen
+- gut für Homelab, Alltag und kleine gemeinsame Tools
+- nutzerbezogen mit Profilen, Freunden und Chats
 - optisch modern
 - einfach per Docker deploybar
 - Schritt für Schritt um neue Tools erweiterbar

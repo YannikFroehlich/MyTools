@@ -340,10 +340,13 @@ body.dark-mode .chat-message-meta span {
     right: 8px;
     width: 28px;
     height: 28px;
+    padding: 0;
     border: 0;
     border-radius: 999px;
-    display: grid;
-    place-items: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     color: #64748b;
     background: rgba(148, 163, 184, 0.14);
     opacity: 0;
@@ -351,6 +354,15 @@ body.dark-mode .chat-message-meta span {
     cursor: pointer;
     transition: opacity .16s ease, transform .16s ease, background .16s ease;
     z-index: 4;
+}
+
+.chat-message-menu-button i {
+    display: block;
+    font-size: 14px;
+    line-height: 1;
+    width: 1em;
+    height: 1em;
+    text-align: center;
 }
 
 .chat-message:hover .chat-message-menu-button,
