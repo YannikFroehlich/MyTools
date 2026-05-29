@@ -98,7 +98,6 @@
 .draw-grid {
     display: grid;
     gap: 22px;
-    margin-top: 22px;
 }
 
 .draw-grid-home {
@@ -111,6 +110,13 @@
 
 .draw-panel {
     padding: 24px;
+}
+
+/* Vertical rhythm between top-level page sections */
+.draw-page > .draw-panel,
+.draw-page > .draw-grid,
+.draw-page > .draw-game-shell {
+    margin-top: 22px;
 }
 
 .draw-panel h2 {
@@ -282,7 +288,7 @@
 
 .draw-game-shell {
     display: grid;
-    grid-template-columns: 280px minmax(0, 1fr) 330px;
+    grid-template-columns: minmax(0, 1fr) 330px;
     gap: 18px;
 }
 
@@ -602,7 +608,7 @@
 }
 
 .draw-game-shell {
-    grid-template-columns: minmax(760px, 1fr) minmax(330px, 420px);
+    grid-template-columns: minmax(0, 1fr) minmax(330px, 420px);
     align-items: start;
     gap: 24px;
 }
@@ -922,6 +928,11 @@
     .draw-clear-btn {
         width: 100%;
     }
+}
+
+.draw-lobby-page .draw-grid-lobby .draw-panel,
+.draw-lobby-page .draw-side-stack .draw-panel {
+    margin-top: 0;
 }
 
 /* Zeichenspiel Update: Lobby verlassen/löschen + Freundesliste */
@@ -1844,5 +1855,276 @@ html.dark-mode .draw-logo-lobby,
     .draw-home-page .draw-hero-main,
     .draw-lobby-page .draw-title-row {
         padding: 14px;
+    }
+}
+
+/* ──────────────────────────────────────────────
+   Zeichenspiel Update: bunter, kompakter Header + echtes transparentes Logo
+   ────────────────────────────────────────────── */
+.draw-skribble-hero {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+    align-items: stretch;
+    gap: clamp(14px, 2vw, 22px);
+    padding: clamp(18px, 2.3vw, 28px) !important;
+    border-radius: 30px !important;
+    background:
+        radial-gradient(circle at 10% 12%, rgba(250, 204, 21, 0.42), transparent 25%),
+        radial-gradient(circle at 45% 0%, rgba(56, 189, 248, 0.24), transparent 30%),
+        radial-gradient(circle at 90% 18%, rgba(236, 72, 153, 0.32), transparent 26%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.90), rgba(239, 246, 255, 0.72), rgba(252, 231, 243, 0.72)) !important;
+}
+
+.draw-skribble-hero::before {
+    inset: 12px !important;
+    border-radius: 22px !important;
+    border: 2px dashed rgba(99, 102, 241, 0.18) !important;
+    background:
+        radial-gradient(circle at 5% 12%, rgba(34, 197, 94, 0.12), transparent 19%),
+        radial-gradient(circle at 96% 86%, rgba(251, 146, 60, 0.16), transparent 22%) !important;
+}
+
+.draw-skribble-hero::after {
+    width: 320px !important;
+    height: 320px !important;
+    inset: auto -7% -55% auto !important;
+    background:
+        radial-gradient(circle, rgba(59, 130, 246, 0.24), transparent 68%) !important;
+}
+
+.draw-skribble-hero .draw-hero-main {
+    padding: clamp(14px, 2vw, 22px) !important;
+    border-radius: 24px !important;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(224, 242, 254, 0.42), rgba(252, 231, 243, 0.34)) !important;
+    border: 2px solid rgba(255, 255, 255, 0.82) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.90), 0 16px 34px rgba(59, 130, 246, 0.10) !important;
+    display: grid;
+    align-content: center;
+    gap: 12px;
+    text-align: left;
+}
+
+.draw-hero-logo-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 360px) minmax(220px, 1fr);
+    align-items: center;
+    gap: clamp(16px, 2.4vw, 28px);
+}
+
+.draw-skribble-hero .draw-logo-hero,
+.draw-lobby-page .draw-logo-lobby {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    filter: drop-shadow(0 16px 18px rgba(49, 46, 129, 0.20));
+}
+
+.draw-skribble-hero .draw-logo-hero {
+    width: min(360px, 100%) !important;
+    max-height: 175px;
+    object-fit: contain;
+    margin: -8px 0 -10px !important;
+    justify-self: center;
+}
+
+.draw-hero-text {
+    display: grid;
+    gap: 8px;
+    align-content: center;
+    text-align: left;
+}
+
+.draw-hero-text .draw-logo-title {
+    display: block !important;
+    margin: 0 !important;
+    font-size: clamp(1.8rem, 3.2vw, 3.35rem) !important;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+    color: #312e81 !important;
+    max-width: 520px;
+}
+
+.draw-hero-text p {
+    margin: 0 !important;
+    max-width: 560px !important;
+    color: rgba(30, 41, 59, 0.74) !important;
+    font-size: clamp(0.98rem, 1.5vw, 1.18rem) !important;
+    line-height: 1.45 !important;
+}
+
+.draw-hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 2px;
+}
+
+.draw-hero-chips span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    color: #1e1b4b;
+    font-weight: 900;
+    font-size: 0.88rem;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.10);
+}
+
+.draw-hero-chips span:nth-child(1) i { color: #2563eb; }
+.draw-hero-chips span:nth-child(2) i { color: #ec4899; }
+.draw-hero-chips span:nth-child(3) i { color: #f97316; }
+
+.draw-hero-feature-card {
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 16px !important;
+    text-align: left !important;
+    padding: 20px !important;
+    border-radius: 24px !important;
+    background:
+        radial-gradient(circle at 14% 20%, rgba(253, 224, 71, 0.58), transparent 36%),
+        radial-gradient(circle at 88% 84%, rgba(96, 165, 250, 0.42), transparent 40%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(237, 233, 254, 0.58)) !important;
+    border: 2px solid rgba(255, 255, 255, 0.82) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88), 0 16px 34px rgba(124, 58, 237, 0.12) !important;
+}
+
+.draw-hero-feature-card i {
+    flex: 0 0 auto;
+    width: 58px !important;
+    height: 58px !important;
+    border-radius: 20px !important;
+    background: linear-gradient(135deg, #fef08a, #bae6fd, #fbcfe8) !important;
+    color: #7c3aed !important;
+    box-shadow: 0 12px 24px rgba(124, 58, 237, 0.18);
+}
+
+.draw-hero-feature-card div {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.draw-hero-feature-card strong {
+    color: #312e81 !important;
+    font-size: 1.05rem;
+    line-height: 1.15;
+}
+
+.draw-hero-feature-card span {
+    color: rgba(30, 41, 59, 0.70) !important;
+    line-height: 1.45;
+}
+
+.draw-home-page .draw-grid {
+    margin-top: 18px !important;
+}
+
+.draw-home-page .draw-panel {
+    border-radius: 24px !important;
+}
+
+.draw-home-page .draw-grid-home {
+    grid-template-columns: minmax(0, 1.55fr) minmax(290px, .85fr);
+}
+
+.draw-home-page .draw-panel h2 {
+    margin-bottom: 14px !important;
+}
+
+body.dark-mode .draw-skribble-hero,
+html.dark-mode .draw-skribble-hero,
+[data-theme="dark"] .draw-skribble-hero {
+    background:
+        radial-gradient(circle at 10% 12%, rgba(250, 204, 21, 0.22), transparent 25%),
+        radial-gradient(circle at 45% 0%, rgba(56, 189, 248, 0.16), transparent 30%),
+        radial-gradient(circle at 90% 18%, rgba(236, 72, 153, 0.20), transparent 26%),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(49, 46, 129, 0.72), rgba(88, 28, 135, 0.58)) !important;
+}
+
+body.dark-mode .draw-skribble-hero .draw-hero-main,
+html.dark-mode .draw-skribble-hero .draw-hero-main,
+[data-theme="dark"] .draw-skribble-hero .draw-hero-main,
+body.dark-mode .draw-hero-feature-card,
+html.dark-mode .draw-hero-feature-card,
+[data-theme="dark"] .draw-hero-feature-card {
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.11), rgba(79,70,229,.16), rgba(236,72,153,.09)) !important;
+    border-color: rgba(255,255,255,.17) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 18px 40px rgba(2,6,23,.26) !important;
+}
+
+body.dark-mode .draw-hero-text .draw-logo-title,
+html.dark-mode .draw-hero-text .draw-logo-title,
+[data-theme="dark"] .draw-hero-text .draw-logo-title,
+body.dark-mode .draw-hero-feature-card strong,
+html.dark-mode .draw-hero-feature-card strong,
+[data-theme="dark"] .draw-hero-feature-card strong {
+    color: #ffffff !important;
+}
+
+body.dark-mode .draw-hero-text p,
+html.dark-mode .draw-hero-text p,
+[data-theme="dark"] .draw-hero-text p,
+body.dark-mode .draw-hero-feature-card span,
+html.dark-mode .draw-hero-feature-card span,
+[data-theme="dark"] .draw-hero-feature-card span {
+    color: rgba(226, 232, 240, 0.78) !important;
+}
+
+body.dark-mode .draw-hero-chips span,
+html.dark-mode .draw-hero-chips span,
+[data-theme="dark"] .draw-hero-chips span {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+@media (max-width: 1100px) {
+    .draw-skribble-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .draw-hero-feature-card {
+        align-items: center !important;
+    }
+}
+
+@media (max-width: 780px) {
+    .draw-skribble-hero {
+        padding: 16px !important;
+    }
+
+    .draw-hero-logo-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        text-align: center;
+    }
+
+    .draw-hero-text {
+        text-align: center;
+        justify-items: center;
+    }
+
+    .draw-skribble-hero .draw-logo-hero {
+        width: min(290px, 88%) !important;
+        max-height: 140px;
+        margin: -4px auto -8px !important;
+    }
+
+    .draw-hero-chips {
+        justify-content: center;
+    }
+
+    .draw-hero-feature-card {
+        padding: 16px !important;
     }
 }
