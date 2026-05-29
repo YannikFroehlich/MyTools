@@ -42,20 +42,48 @@ def get_friend_users(user):
 
 
 def get_friend_profiles(user, limit=None):
-    friends = get_friend_users(user)
+    friendships = list(Friendship.accepted_for_user(user))
+
+    if not friendships:
+        return []
+
+    friend_ids = []
+    friendship_since_by_user_id = {}
+
+    for friendship in friendships:
+        friend_user = friendship.other_user(user)
+
+        if not friend_user or not friend_user.is_active:
+            continue
+
+        friend_ids.append(friend_user.id)
+        friendship_since_by_user_id[friend_user.id] = friendship.updated_at
+
+    if not friend_ids:
+        return []
+
+    friends = list(
+        User.objects
+        .filter(id__in=friend_ids, is_active=True)
+        .order_by("username")
+    )
 
     if limit:
         friends = friends[:limit]
 
-    friends = list(friends)
     ensure_profiles_for_users(friends)
 
-    return (
+    profiles = list(
         UserProfile.objects
         .select_related("user")
         .filter(user__in=friends)
         .order_by("user__username")
     )
+
+    for profile in profiles:
+        profile.friendship_since = friendship_since_by_user_id.get(profile.user_id)
+
+    return profiles
 
 
 def get_friendship_state(viewer, profile_user):

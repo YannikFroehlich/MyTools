@@ -324,7 +324,15 @@
                             {% translate 'Freunde' %}
                         </a>
 
-                        <form action="{% url 'logout' %}" method="post" class="profile-menu-logout-form">
+                        <a href="{% url 'profile' %}#friend-requests" class="profile-menu-item profile-menu-item-with-badge">
+                            <span class="profile-menu-item-main">
+                                <i class="fa-solid fa-user-plus"></i>
+                                {% translate 'Freundschaftsanfragen' %}
+                            </span>
+                            <span class="profile-menu-badge" aria-label="{% blocktranslate count count=incoming_friend_requests_count %}{{ count }} offene Freundschaftsanfrage{% plural %}{{ count }} offene Freundschaftsanfragen{% endblocktranslate %}">
+                                {{ incoming_friend_requests_count }}
+                            </span>
+                        </a>
 
                         <form action="{% url 'logout' %}" method="post" class="profile-menu-logout-form">
                             {% csrf_token %}

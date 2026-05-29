@@ -885,3 +885,74 @@ body.dark-mode .profile-friends-link {
 body.dark-mode .profile-friends-headline span {
     color: #94a3b8;
 }
+
+/* ── Darkmode-Kontrast-Feinschliff wie auf der Timer-Seite ── */
+body.dark-mode .profile-page {
+    color: #f8fafc;
+}
+
+body.dark-mode .profile-card {
+    background: linear-gradient(145deg, rgba(28, 34, 49, 0.94), rgba(18, 21, 31, 0.76));
+    border-color: rgba(203, 213, 225, 0.16);
+    color: #f8fafc;
+    box-shadow:
+        0 22px 58px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .profile-summary-card h2,
+body.dark-mode .profile-form-header h2,
+body.dark-mode .profile-field label,
+body.dark-mode .profile-summary-meta strong,
+body.dark-mode .profile-friends-headline strong,
+body.dark-mode .profile-friend-requests h3,
+body.dark-mode .profile-friend-request a,
+body.dark-mode .profile-current-file a,
+body.dark-mode .profile-current-file strong {
+    color: #f8fafc;
+}
+
+body.dark-mode .profile-summary-card > p,
+body.dark-mode .profile-summary-meta span,
+body.dark-mode .profile-friends-headline span,
+body.dark-mode .profile-current-file span,
+body.dark-mode .profile-avatar-hint {
+    color: #cbd5e1;
+}
+
+body.dark-mode .profile-summary-meta div,
+body.dark-mode .profile-avatar-upload-card,
+body.dark-mode .profile-banner-upload-card,
+body.dark-mode .profile-friend-request,
+body.dark-mode .profile-friends-link,
+body.dark-mode .profile-secondary-button {
+    background: rgba(255, 255, 255, 0.075);
+    border-color: rgba(203, 213, 225, 0.12);
+    color: #e8eef7;
+}
+
+body.dark-mode .profile-friends-link,
+body.dark-mode .profile-secondary-button {
+    color: color-mix(in srgb, var(--theme-accent-end) 72%, #ffffff);
+}
+
+body.dark-mode .profile-input,
+body.dark-mode .profile-textarea {
+    background: rgba(15, 23, 42, 0.72);
+    border-color: rgba(203, 213, 225, 0.2);
+    color: #f8fafc;
+}
+
+body.dark-mode .profile-input::placeholder,
+body.dark-mode .profile-textarea::placeholder {
+    color: rgba(203, 213, 225, 0.72);
+}
+
+body.dark-mode .profile-banner-upload-preview {
+    background: rgba(255, 255, 255, 0.07);
+    color: color-mix(in srgb, var(--theme-accent-end) 72%, #ffffff);
+}
+
+body.dark-mode .profile-friends-summary {
+    border-top-color: rgba(203, 213, 225, 0.14);
+}

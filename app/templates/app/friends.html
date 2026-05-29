@@ -82,8 +82,15 @@
                         <div class="user-meta">
                             <span>
                                 <i class="fa-solid fa-calendar-days"></i>
-                                {% translate "Seit" %} {{ profile.user.date_joined|date:"d.m.Y" }}
+                                {% translate "Registriert seit" %} {{ profile.user.date_joined|date:"d.m.Y" }}
                             </span>
+
+                            {% if profile.friendship_since %}
+                                <span>
+                                    <i class="fa-solid fa-user-check"></i>
+                                    {% translate "Befreundet seit" %} {{ profile.friendship_since|date:"d.m.Y" }}
+                                </span>
+                            {% endif %}
 
                             <span class="user-open">
                                 {% translate "Profil ansehen" %}
