@@ -63,67 +63,83 @@
                 {% endfor %}
             </div>
 
-            <div class="chat-direct-panel">
-                <div class="chat-panel-heading">
-                    <p class="chat-kicker">{% translate "Direktchat starten" %}</p>
-                    <small>{% translate "Wähle einen Freund aus und öffne direkt einen Chat." %}</small>
-                </div>
+            <div class="chat-actions">
+                <details class="chat-action-card">
+                    <summary class="chat-action-summary">
+                        <span class="chat-action-icon"><i class="fa-solid fa-message"></i></span>
+                        <span class="chat-action-title">{% translate "Direktchat starten" %}</span>
+                        {% if friend_profiles %}
+                            <span class="chat-action-count">{{ friend_profiles|length }}</span>
+                        {% endif %}
+                        <span class="chat-action-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                    </summary>
 
-                {% if friend_profiles %}
-                    <div class="chat-direct-list">
-                        {% for friend_profile in friend_profiles %}
-                            <form method="post" action="{% url 'chat_direct' friend_profile.user.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="chat-direct-user">
-                                    <span class="chat-direct-avatar">
-                                        {% if friend_profile.avatar %}
-                                            <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
-                                        {% else %}
-                                            <b>{{ friend_profile.initials }}</b>
-                                        {% endif %}
-                                    </span>
-                                    <span class="chat-direct-info">
-                                        <strong>{{ friend_profile.user.get_full_name|default:friend_profile.user.username }}</strong>
-                                        <small>@{{ friend_profile.user.username }}</small>
-                                    </span>
-                                    <i class="fa-solid fa-message"></i>
-                                </button>
-                            </form>
-                        {% endfor %}
+                    <div class="chat-action-body">
+                        {% if friend_profiles %}
+                            <div class="chat-direct-compact-list">
+                                {% for friend_profile in friend_profiles %}
+                                    <form method="post" action="{% url 'chat_direct' friend_profile.user.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="chat-direct-compact-user">
+                                            <span class="chat-direct-avatar compact">
+                                                {% if friend_profile.avatar %}
+                                                    <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                                {% else %}
+                                                    <b>{{ friend_profile.initials }}</b>
+                                                {% endif %}
+                                            </span>
+                                            <span class="chat-direct-info compact">
+                                                <strong>{{ friend_profile.user.get_full_name|default:friend_profile.user.username }}</strong>
+                                                <small>@{{ friend_profile.user.username }}</small>
+                                            </span>
+                                        </button>
+                                    </form>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="chat-no-friends">{% translate "Für Direktchats brauchst du erst Freunde." %}</p>
+                            <a href="{% url 'users' %}" class="chat-find-friends">{% translate "Nutzer suchen" %}</a>
+                        {% endif %}
                     </div>
-                {% else %}
-                    <p class="chat-no-friends">{% translate "Für Direktchats brauchst du erst Freunde." %}</p>
-                    <a href="{% url 'users' %}" class="chat-find-friends">{% translate "Nutzer suchen" %}</a>
-                {% endif %}
+                </details>
+
+                <details class="chat-action-card">
+                    <summary class="chat-action-summary">
+                        <span class="chat-action-icon is-group"><i class="fa-solid fa-user-group"></i></span>
+                        <span class="chat-action-title">{% translate "Neue Gruppe" %}</span>
+                        <span class="chat-action-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                    </summary>
+
+                    <div class="chat-action-body">
+                        <form class="chat-group-form compact" method="post" action="{% url 'chat_group_create' %}">
+                            {% csrf_token %}
+                            <input type="text" name="name" maxlength="80" placeholder="{% translate 'Gruppenname' %}" required>
+
+                            {% if friend_profiles %}
+                                <div class="chat-friend-chip-grid">
+                                    {% for friend_profile in friend_profiles %}
+                                        <label class="chat-friend-chip">
+                                            <input type="checkbox" name="members" value="{{ friend_profile.user.id }}">
+                                            <span>
+                                                {% if friend_profile.avatar %}
+                                                    <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                                {% else %}
+                                                    <b>{{ friend_profile.initials }}</b>
+                                                {% endif %}
+                                                <strong>{{ friend_profile.user.get_full_name|default:friend_profile.user.username }}</strong>
+                                            </span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                <button type="submit"><i class="fa-solid fa-plus"></i>{% translate "Gruppe erstellen" %}</button>
+                            {% else %}
+                                <p class="chat-no-friends">{% translate "Für Gruppen brauchst du erst Freunde." %}</p>
+                                <a href="{% url 'users' %}" class="chat-find-friends">{% translate "Nutzer suchen" %}</a>
+                            {% endif %}
+                        </form>
+                    </div>
+                </details>
             </div>
-
-            <form class="chat-group-form" method="post" action="{% url 'chat_group_create' %}">
-                {% csrf_token %}
-                <p class="chat-kicker">{% translate "Neue Gruppe" %}</p>
-                <input type="text" name="name" maxlength="80" placeholder="{% translate 'Gruppenname' %}" required>
-
-                {% if friend_profiles %}
-                    <div class="chat-friend-picker">
-                        {% for friend_profile in friend_profiles %}
-                            <label>
-                                <input type="checkbox" name="members" value="{{ friend_profile.user.id }}">
-                                <span>
-                                    {% if friend_profile.avatar %}
-                                        <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
-                                    {% else %}
-                                        <b>{{ friend_profile.initials }}</b>
-                                    {% endif %}
-                                    <strong>{{ friend_profile.user.get_full_name|default:friend_profile.user.username }}</strong>
-                                </span>
-                            </label>
-                        {% endfor %}
-                    </div>
-                    <button type="submit"><i class="fa-solid fa-plus"></i>{% translate "Gruppe erstellen" %}</button>
-                {% else %}
-                    <p class="chat-no-friends">{% translate "Für Gruppen brauchst du erst Freunde." %}</p>
-                    <a href="{% url 'users' %}" class="chat-find-friends">{% translate "Nutzer suchen" %}</a>
-                {% endif %}
-            </form>
         </aside>
 
         <section class="chat-window">

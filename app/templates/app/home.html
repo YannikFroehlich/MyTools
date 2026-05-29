@@ -82,6 +82,12 @@
                                                         <i class="fa-solid fa-chart-simple"></i>
                                                     {% elif widget.widget_type == "clock" %}
                                                         <i class="fa-regular fa-clock"></i>
+                                                    {% elif widget.widget_type == "chat" %}
+                                                        <i class="fa-solid fa-comments"></i>
+                                                    {% elif widget.widget_type == "friends" %}
+                                                        <i class="fa-solid fa-user-group"></i>
+                                                    {% elif widget.widget_type == "skribble" %}
+                                                        <i class="fa-solid fa-palette"></i>
                                                     {% else %}
                                                         <i class="fa-solid fa-gauge-high"></i>
                                                     {% endif %}
@@ -217,6 +223,142 @@
                                                         <i class="fa-solid fa-arrow-right"></i>
                                                     </a>
                                                 </div>
+                                            {% elif widget.widget_type == "chat" %}
+                                                <div class="chat-widget-content">
+                                                    <div class="widget-metric-row">
+                                                        <div class="widget-big-number compact">
+                                                            <strong>{{ data.unread_total }}</strong>
+                                                            <span>{% translate 'ungelesen' %}</span>
+                                                        </div>
+                                                        <div class="widget-soft-pill">
+                                                            <i class="fa-solid fa-comments"></i>
+                                                            {{ data.room_count }} {% translate 'Chats' %}
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.recent_rooms %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for room in data.recent_rooms %}
+                                                                <a href="{% url 'chat_room' room.id %}">
+                                                                    <span class="widget-list-icon {% if room.type == 'group' %}is-purple{% endif %}">
+                                                                        {% if room.type == 'group' %}
+                                                                            <i class="fa-solid fa-user-group"></i>
+                                                                        {% else %}
+                                                                            <i class="fa-solid fa-comment"></i>
+                                                                        {% endif %}
+                                                                    </span>
+                                                                    <span>
+                                                                        <strong>{{ room.title }}</strong>
+                                                                        {% if room.last_message %}
+                                                                            <small>{{ room.last_message.sender.username }}: {{ room.last_message.text|truncatechars:30 }}</small>
+                                                                        {% else %}
+                                                                            <small>{% translate 'Noch keine Nachrichten' %}</small>
+                                                                        {% endif %}
+                                                                    </span>
+                                                                    {% if room.unread_count %}
+                                                                        <b>{{ room.unread_count }}</b>
+                                                                    {% endif %}
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-regular fa-comment-dots"></i>
+                                                            <span>{% translate 'Noch keine Chats.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'chat' %}" class="widget-link">
+                                                        {% translate 'Chats öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "friends" %}
+                                                <div class="friends-widget-content">
+                                                    <div class="stats-grid mini">
+                                                        <div>
+                                                            <strong>{{ data.friend_count }}</strong>
+                                                            <span>{% translate 'Freunde' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.incoming_count }}</strong>
+                                                            <span>{% translate 'Anfragen' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.recent_friends %}
+                                                        <div class="widget-avatar-row">
+                                                            {% for friend in data.recent_friends %}
+                                                                <a href="{% url 'public_profile' friend.user.id %}" title="{{ friend.user.username }}">
+                                                                    {% if friend.profile.avatar %}
+                                                                        <img src="{{ friend.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                                                    {% else %}
+                                                                        {{ friend.profile.initials }}
+                                                                    {% endif %}
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-regular fa-user"></i>
+                                                            <span>{% translate 'Noch keine Freunde.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'friends_list' request.user.id %}" class="widget-link">
+                                                        {% translate 'Freunde öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "skribble" %}
+                                                <div class="skribble-widget-content">
+                                                    <div class="stats-grid mini">
+                                                        <div>
+                                                            <strong>{{ data.pending_invites_count }}</strong>
+                                                            <span>{% translate 'Einladungen' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.active_lobbies_count }}</strong>
+                                                            <span>{% translate 'Lobbys' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.pending_invites %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for invite in data.pending_invites %}
+                                                                <a href="{% url 'skribble_lobby' invite.lobby.code %}">
+                                                                    <span class="widget-list-icon is-purple"><i class="fa-solid fa-palette"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ invite.lobby.name }}</strong>
+                                                                        <small>{% translate 'von' %} {{ invite.from_user.username }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% elif data.active_lobbies %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for lobby in data.active_lobbies %}
+                                                                <a href="{% url 'skribble_lobby' lobby.code %}">
+                                                                    <span class="widget-list-icon is-purple"><i class="fa-solid fa-palette"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ lobby.name }}</strong>
+                                                                        <small>{{ lobby.get_status_display }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-solid fa-palette"></i>
+                                                            <span>{% translate 'Keine offenen Skribble-Einladungen.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'skribble_home' %}" class="widget-link">
+                                                        {% translate 'Skribble öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
                                             {% else %}
                                                 <div class="stats-widget-content">
                                                     <div class="stats-grid">
@@ -298,6 +440,9 @@
                         <option value="weather">{% translate 'Wetter' %}</option>
                         <option value="notes">{% translate 'Notizen' %}</option>
                         <option value="clock">{% translate 'Uhr' %}</option>
+                        <option value="chat">{% translate 'Chats' %}</option>
+                        <option value="friends">{% translate 'Freunde' %}</option>
+                        <option value="skribble">{% translate 'Skribble' %}</option>
                         <option value="benchmark">{% translate 'Human Benchmark' %}</option>
                         <option value="stats">{% translate 'Schnellstatistiken' %}</option>
                     </select>

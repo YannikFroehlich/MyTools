@@ -340,6 +340,104 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
+    /* ── LIVE BENACHRICHTIGUNGS-ZÄHLER ── */
+    const notificationCountsUrl = body.dataset.notificationCountsUrl;
+    const notificationPollMs = 10000;
+
+    function setNotificationBadgeValue(badge, value) {
+        const normalizedValue = Number.isFinite(Number(value)) ? Number(value) : 0;
+        const oldValue = Number(badge.dataset.currentValue ?? badge.textContent.trim() ?? 0);
+
+        badge.textContent = String(normalizedValue);
+        badge.dataset.currentValue = String(normalizedValue);
+
+        const singularLabel = badge.dataset.labelSingular || '';
+        const pluralLabel = badge.dataset.labelPlural || singularLabel;
+        const label = normalizedValue === 1 ? singularLabel : pluralLabel;
+
+        if (label) {
+            badge.setAttribute('aria-label', `${normalizedValue} ${label}`);
+            badge.title = `${normalizedValue} ${label}`;
+        }
+
+        if (oldValue !== normalizedValue) {
+            badge.classList.remove('badge-updated');
+            void badge.offsetWidth;
+            badge.classList.add('badge-updated');
+
+            window.setTimeout(() => {
+                badge.classList.remove('badge-updated');
+            }, 180);
+        }
+    }
+
+    function updateProfileNotificationDot(counts) {
+        const dot = document.querySelector('.js-profile-notification-dot');
+
+        if (!dot || !counts) {
+            return;
+        }
+
+        const total = Number(counts.total_notifications ?? 0);
+        dot.classList.toggle('is-visible', total > 0);
+    }
+
+    function updateNotificationBadges(counts) {
+        if (!counts) {
+            return;
+        }
+
+        document.querySelectorAll('.js-notification-badge[data-notification-key]').forEach((badge) => {
+            const key = badge.dataset.notificationKey;
+
+            if (Object.prototype.hasOwnProperty.call(counts, key)) {
+                setNotificationBadgeValue(badge, counts[key]);
+            }
+        });
+
+        updateProfileNotificationDot(counts);
+    }
+
+    async function refreshNotificationCounts() {
+        if (!notificationCountsUrl || document.hidden) {
+            return;
+        }
+
+        try {
+            const response = await fetch(notificationCountsUrl, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                cache: 'no-store',
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.ok) {
+                updateNotificationBadges(data.counts);
+            }
+        } catch (error) {
+            // Wenn der Server kurz nicht erreichbar ist, probieren wir es beim nächsten Intervall erneut.
+        }
+    }
+
+    if (notificationCountsUrl) {
+        refreshNotificationCounts();
+        window.setInterval(refreshNotificationCounts, notificationPollMs);
+        window.addEventListener('focus', refreshNotificationCounts);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                refreshNotificationCounts();
+            }
+        });
+    }
+
     /* ── DROPDOWN MENÜS ── */
 
     function closeAllDropdowns(exceptDropdown = null, exceptButton = null) {

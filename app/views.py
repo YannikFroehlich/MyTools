@@ -12,8 +12,8 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, ClockSettings, ClockTimerPreset, ClockWorldCity, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
-    ShortcutSection, WeatherLocation
+from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
+    ShortcutSection, UserProfile, WeatherLocation
 
 import json
 
@@ -285,6 +285,105 @@ def get_home_weather_data(request, user, widget):
         }
 
 
+def build_home_chat_widget_data(user):
+    memberships = list(
+        ChatRoomMember.objects
+        .filter(user=user)
+        .select_related("room")
+        .order_by("-room__updated_at")
+    )
+    room_ids = [membership.room_id for membership in memberships]
+    rooms = list(
+        ChatRoom.objects
+        .filter(id__in=room_ids)
+        .prefetch_related("members", "members__profile")
+        .annotate(last_message_at=Max("messages__created_at"))
+        .order_by("-last_message_at", "-updated_at")
+        .distinct()[:4]
+    )
+    memberships_by_room = {membership.room_id: membership for membership in memberships}
+
+    unread_total = 0
+    recent_rooms = []
+    for room in rooms:
+        membership = memberships_by_room.get(room.id)
+        unread_qs = ChatMessage.objects.filter(room=room).exclude(sender=user)
+        if membership and membership.last_read_at:
+            unread_qs = unread_qs.filter(created_at__gt=membership.last_read_at)
+        unread_count = unread_qs.count()
+        unread_total += unread_count
+
+        recent_rooms.append({
+            "id": room.id,
+            "title": room.title_for(user),
+            "type": room.room_type,
+            "last_message": room.messages.select_related("sender").order_by("-created_at").first(),
+            "unread_count": unread_count,
+        })
+
+    if len(rooms) < len(room_ids):
+        for membership in memberships:
+            if membership.room_id in {room.id for room in rooms}:
+                continue
+            unread_qs = ChatMessage.objects.filter(room=membership.room).exclude(sender=user)
+            if membership.last_read_at:
+                unread_qs = unread_qs.filter(created_at__gt=membership.last_read_at)
+            unread_total += unread_qs.count()
+
+    return {
+        "room_count": len(room_ids),
+        "unread_total": unread_total,
+        "recent_rooms": recent_rooms,
+    }
+
+
+def build_home_friends_widget_data(user):
+    accepted_friendships = list(Friendship.accepted_for_user(user)[:5])
+    friend_users = []
+
+    for friendship in accepted_friendships:
+        other_user = friendship.other_user(user)
+        if other_user:
+            UserProfile.objects.get_or_create(user=other_user)
+            friend_users.append({
+                "user": other_user,
+                "profile": other_user.profile,
+                "since": friendship.updated_at,
+            })
+
+    return {
+        "friend_count": Friendship.accepted_for_user(user).count(),
+        "incoming_count": Friendship.objects.filter(to_user=user, status=Friendship.STATUS_PENDING).count(),
+        "outgoing_count": Friendship.objects.filter(from_user=user, status=Friendship.STATUS_PENDING).count(),
+        "recent_friends": friend_users[:3],
+    }
+
+
+def build_home_skribble_widget_data(user):
+    pending_invites = (
+        DrawingGameInvite.objects
+        .filter(to_user=user, status=DrawingGameInvite.STATUS_PENDING)
+        .select_related("lobby", "from_user")[:3]
+    )
+    active_lobbies = (
+        DrawingGameLobby.objects
+        .filter(players__user=user, status__in=[DrawingGameLobby.STATUS_WAITING, DrawingGameLobby.STATUS_PLAYING])
+        .distinct()
+        .order_by("-updated_at")[:3]
+    )
+
+    return {
+        "pending_invites_count": DrawingGameInvite.objects.filter(to_user=user, status=DrawingGameInvite.STATUS_PENDING).count(),
+        "owned_waiting_count": DrawingGameLobby.objects.filter(owner=user, status=DrawingGameLobby.STATUS_WAITING).count(),
+        "active_lobbies_count": DrawingGamePlayer.objects.filter(
+            user=user,
+            lobby__status__in=[DrawingGameLobby.STATUS_WAITING, DrawingGameLobby.STATUS_PLAYING],
+        ).count(),
+        "pending_invites": pending_invites,
+        "active_lobbies": active_lobbies,
+    }
+
+
 def build_home_widget_data(request, user):
     widgets = list(
         HomeWidget.objects
@@ -334,6 +433,15 @@ def build_home_widget_data(request, user):
 
         elif widget.widget_type == HomeWidget.WIDGET_CLOCK:
             data = {}
+
+        elif widget.widget_type == HomeWidget.WIDGET_CHAT:
+            data = build_home_chat_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_FRIENDS:
+            data = build_home_friends_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_SKRIBBLE:
+            data = build_home_skribble_widget_data(user)
 
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {

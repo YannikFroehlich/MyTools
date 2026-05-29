@@ -27,7 +27,7 @@
         <script src="{% static 'app/js/base.js' %}"></script>
     {% endblock %}
 </head>
-<body>
+<body{% if request.user.is_authenticated %} data-notification-counts-url="{% url 'notification_counts_api' %}"{% endif %}>
     <nav>
         <div class="logo">
             <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
@@ -68,9 +68,16 @@
                         {% translate 'Racing Game' %}
                     </a>
 
-                    <a href="{% url 'skribble_home' %}" class="menu-item">
-                        <i class="fa-solid fa-pencil"></i>
-                        {% translate 'Skribble' %}
+                    <a href="{% url 'skribble_home' %}" class="menu-item menu-item-with-badge">
+                        <span class="menu-item-main">
+                            <i class="fa-solid fa-pencil"></i>
+                            {% translate 'Skribble' %}
+                        </span>
+                        {% if request.user.is_authenticated %}
+                            <span class="menu-badge js-notification-badge" data-notification-key="skribble_invites" data-label-singular="{% translate 'offene Skribble-Einladung' %}" data-label-plural="{% translate 'offene Skribble-Einladungen' %}" aria-label="{% blocktranslate count count=skribble_invites_count %}{{ count }} offene Skribble-Einladung{% plural %}{{ count }} offene Skribble-Einladungen{% endblocktranslate %}">
+                                {{ skribble_invites_count }}
+                            </span>
+                        {% endif %}
                     </a>
                 </div>
             </div>
@@ -287,6 +294,7 @@
                                 {{ request.user.username|slice:":2"|upper }}
                             {% endif %}
                         </span>
+                        <span class="profile-notification-dot js-profile-notification-dot{% if total_notifications_count > 0 %} is-visible{% endif %}" aria-hidden="true"></span>
                         <i class="fa-solid fa-chevron-down profile-menu-chevron"></i>
                     </button>
 
@@ -334,7 +342,7 @@
                                 <i class="fa-solid fa-comments"></i>
                                 {% translate 'Chat' %}
                             </span>
-                            <span class="profile-menu-badge" aria-label="{% blocktranslate count count=unread_chat_messages_count %}{{ count }} ungelesene Nachricht{% plural %}{{ count }} ungelesene Nachrichten{% endblocktranslate %}">
+                            <span class="profile-menu-badge js-notification-badge" data-notification-key="unread_chat_messages" data-label-singular="{% translate 'ungelesene Nachricht' %}" data-label-plural="{% translate 'ungelesene Nachrichten' %}" aria-label="{% blocktranslate count count=unread_chat_messages_count %}{{ count }} ungelesene Nachricht{% plural %}{{ count }} ungelesene Nachrichten{% endblocktranslate %}">
                                 {{ unread_chat_messages_count }}
                             </span>
                         </a>
@@ -344,7 +352,7 @@
                                 <i class="fa-solid fa-user-plus"></i>
                                 {% translate 'Freundschaftsanfragen' %}
                             </span>
-                            <span class="profile-menu-badge" aria-label="{% blocktranslate count count=incoming_friend_requests_count %}{{ count }} offene Freundschaftsanfrage{% plural %}{{ count }} offene Freundschaftsanfragen{% endblocktranslate %}">
+                            <span class="profile-menu-badge js-notification-badge" data-notification-key="incoming_friend_requests" data-label-singular="{% translate 'offene Freundschaftsanfrage' %}" data-label-plural="{% translate 'offene Freundschaftsanfragen' %}" aria-label="{% blocktranslate count count=incoming_friend_requests_count %}{{ count }} offene Freundschaftsanfrage{% plural %}{{ count }} offene Freundschaftsanfragen{% endblocktranslate %}">
                                 {{ incoming_friend_requests_count }}
                             </span>
                         </a>

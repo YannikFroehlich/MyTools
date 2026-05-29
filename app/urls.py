@@ -4,6 +4,7 @@ from .views import *
 from .profile_views import friends_list_view, friendship_action_view, profile_view, users_view, public_profile_view
 from .skribble_views import *
 from .chat_views import *
+from .notification_views import notification_counts_api
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
@@ -26,6 +27,7 @@ urlpatterns = [
     path("chat/<int:room_id>/message/<int:message_id>/delete/", delete_chat_message, name="chat_message_delete"),
     path("chat/<int:room_id>/message/<int:message_id>/react/", react_chat_message, name="chat_message_react"),
     path("api/chat/<int:room_id>/messages/", chat_messages_api, name="chat_messages_api"),
+    path("api/notifications/counts/", notification_counts_api, name="notification_counts_api"),
 
     path('weather/', weather, name='weather'),
     path("obs-dashboard/", obs_dashboard, name="obs-dashboard"),

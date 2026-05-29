@@ -592,6 +592,9 @@ class HomeWidget(models.Model):
     WIDGET_BENCHMARK = "benchmark"
     WIDGET_STATS = "stats"
     WIDGET_CLOCK = "clock"
+    WIDGET_CHAT = "chat"
+    WIDGET_FRIENDS = "friends"
+    WIDGET_SKRIBBLE = "skribble"
 
     WIDGET_CHOICES = [
         (WIDGET_WEATHER, _("Wetter")),
@@ -599,6 +602,9 @@ class HomeWidget(models.Model):
         (WIDGET_BENCHMARK, _("Human Benchmark")),
         (WIDGET_STATS, _("Schnellstatistiken")),
         (WIDGET_CLOCK, _("Uhr")),
+        (WIDGET_CHAT, _("Chats")),
+        (WIDGET_FRIENDS, _("Freunde")),
+        (WIDGET_SKRIBBLE, _("Skribble")),
     ]
 
     CLOCK_DESIGN_MINIMAL = "minimal"

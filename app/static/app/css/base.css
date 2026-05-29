@@ -1203,3 +1203,66 @@ body.dark-mode .footer-links a:hover {
         flex: 1 1 135px;
     }
 }
+
+/* ── LIVE NOTIFICATION BADGES ── */
+.menu-item-with-badge {
+    justify-content: space-between !important;
+    gap: 12px !important;
+}
+
+.menu-item-main {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-badge,
+.profile-menu-badge {
+    transition: transform 0.16s ease, opacity 0.16s ease;
+}
+
+.menu-badge {
+    min-width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--theme-accent-start);
+    background: rgba(255, 255, 255, 0.92);
+    font-size: 0.76rem;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+}
+
+.js-notification-badge.badge-updated {
+    transform: scale(1.12);
+}
+
+.profile-menu-button {
+    position: relative;
+}
+
+.profile-notification-dot {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #ef4444;
+    border: 2px solid var(--card-bg, #ffffff);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+    opacity: 0;
+    transform: scale(0.65);
+    pointer-events: none;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.profile-notification-dot.is-visible {
+    opacity: 1;
+    transform: scale(1);
+}
