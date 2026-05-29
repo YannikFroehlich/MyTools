@@ -269,7 +269,7 @@ def drawing_game_home(request):
         to_user=request.user,
         status=DrawingGameInvite.STATUS_PENDING,
     )
-    return render(request, "app/drawing_game_home.html", {
+    return render(request, "app/skribble_home.html", {
         "my_lobbies": my_lobbies,
         "invites": invites,
     })
@@ -303,7 +303,7 @@ def drawing_game_lobby(request, code):
         for friend in friends
     ]
 
-    return render(request, "app/drawing_game_lobby.html", {
+    return render(request, "app/skribble_lobby.html", {
         "lobby": lobby,
         "friends": friends,
         "friend_invite_rows": friend_invite_rows,

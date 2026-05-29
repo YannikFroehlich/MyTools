@@ -4,12 +4,12 @@
 {% block title %}{{ lobby.name }} · {% translate 'Zeichenspiel' %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'app/css/drawing_game.css' %}">
+<link rel="stylesheet" href="{% static 'app/css/skribble.css' %}">
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
-<script defer src="{% static 'app/js/drawing_game.js' %}"></script>
+<script defer src="{% static 'app/js/skribble.js' %}"></script>
 {% endblock %}
 
 {% block content %}
