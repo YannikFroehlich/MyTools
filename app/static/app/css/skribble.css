@@ -1045,7 +1045,7 @@
 
 /* ──────────────────────────────────────────────
    Skribble Update: eigener Hintergrund + mehr Farbe
-   Bild liegt in: app/static/app/img/Skribble-background.png
+   Bild liegt in: app/static/app/img/Skribble-background.webp
    ────────────────────────────────────────────── */
 .draw-panel {
     margin-top: 22px;
@@ -1064,7 +1064,7 @@
     pointer-events: none;
     background:
         linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(224, 242, 254, 0.34) 45%, rgba(253, 242, 248, 0.42)),
-        url("../img/Skribble-background.png") center / cover no-repeat,
+        url("../img/Skribble-background.webp") center / cover no-repeat,
         linear-gradient(135deg, #fff7ed, #dbeafe 48%, #fce7f3);
 }
 
@@ -1084,7 +1084,7 @@
 body.dark-mode .draw-lobby-page::before {
     background:
         linear-gradient(135deg, rgba(15, 23, 42, 0.80), rgba(30, 41, 59, 0.62) 46%, rgba(49, 46, 129, 0.68)),
-        url("../img/Skribble-background.png") center / cover no-repeat,
+        url("../img/Skribble-background.webp") center / cover no-repeat,
         linear-gradient(135deg, #0f172a, #172554 48%, #581c87);
 }
 
@@ -1293,7 +1293,7 @@ body.dark-mode .draw-canvas-wrap {
 
 /* ──────────────────────────────────────────────
    Skribble Update: Logo + bessere Text-Ausrichtung
-   Logo liegt in: app/static/app/img/Skribble-logo.png
+   Logo liegt in: app/static/app/img/Skribble-logo.webp
    ────────────────────────────────────────────── */
 .draw-hero-main,
 .draw-lobby-brand,
@@ -1556,7 +1556,7 @@ body.dark-mode .draw-logo {
     pointer-events: none;
     background:
         linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(224, 242, 254, 0.36) 45%, rgba(253, 242, 248, 0.44)),
-        url("../img/Skribble-background.png") center / cover no-repeat,
+        url("../img/Skribble-background.webp") center / cover no-repeat,
         linear-gradient(135deg, #fff7ed, #dbeafe 48%, #fce7f3);
 }
 
@@ -1587,7 +1587,7 @@ html.dark-mode .draw-home-page::before,
 [data-theme="dark"] .draw-home-page::before {
     background:
         linear-gradient(135deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.66) 46%, rgba(49, 46, 129, 0.70)),
-        url("../img/Skribble-background.png") center / cover no-repeat,
+        url("../img/Skribble-background.webp") center / cover no-repeat,
         linear-gradient(135deg, #0f172a, #172554 48%, #581c87);
 }
 

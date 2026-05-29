@@ -45,7 +45,7 @@ body.dark-mode .avatar-page {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: url('../img/Airtemple-island.png');
+    background-image: url('../img/Airtemple-island.webp');
     background-size: cover;
     background-position: center;
     z-index: 0;
