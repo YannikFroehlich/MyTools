@@ -18,6 +18,7 @@
       data-state-url="{% url 'skribble_state_api' lobby.code %}"
       data-start-url="{% url 'skribble_start' lobby.code %}"
       data-restart-url="{% url 'skribble_restart' lobby.code %}"
+      data-continue-url="{% url 'skribble_continue_round' lobby.code %}"
       data-choose-url="{% url 'skribble_choose_word_api' lobby.code %}"
       data-draw-url="{% url 'skribble_draw_api' lobby.code %}"
       data-guess-url="{% url 'skribble_guess_api' lobby.code %}">
@@ -62,20 +63,73 @@
     </section>
 
     <section class="draw-game-shell">
-        <section class="draw-stage draw-panel">
-            <div class="draw-stage-header">
-                <div class="draw-stage-title">
+        <aside class="draw-left-stack">
+            <div class="draw-panel draw-status-card">
+                <div>
+                    <span>{% translate 'Status' %}</span>
+                    <strong id="game-status">-</strong>
+                </div>
+                <div>
                     <span>{% translate 'Zeichner' %}</span>
                     <strong id="drawer-name">-</strong>
                 </div>
-                <div class="draw-round-pill" id="round-info">-</div>
-                <div class="draw-timer" id="timer-display">--</div>
             </div>
 
-            <div class="draw-word-box draw-word-box-stage">
-                <span>{% translate 'Aktuelles Wort' %}</span>
-                <strong id="word-display">-</strong>
-                <div id="word-choices" class="draw-word-choices"></div>
+            <div class="draw-panel draw-players-panel">
+                <h2>{% translate 'Spieler' %}</h2>
+                <div id="players-list" class="draw-players"></div>
+            </div>
+
+            <article class="draw-panel draw-friends-panel">
+                <h2>{% translate 'Freunde einladen' %}</h2>
+                {% if friend_invite_rows %}
+                    <div class="draw-friend-invite-list">
+                        {% for row in friend_invite_rows %}
+                            <div class="draw-friend-invite-row">
+                                <div class="draw-friend-mini">
+                                    <div class="draw-friend-avatar">{{ row.user.username|slice:":1"|upper }}</div>
+                                    <div>
+                                        <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
+                                        <span>
+                                            {% if row.is_invited %}
+                                                {% translate 'Einladung offen' %}
+                                            {% elif row.was_invited %}
+                                                {% translate 'War schon eingeladen' %}
+                                            {% else %}
+                                                {% translate 'Freund' %}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'skribble_invite_friend' lobby.code %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                    <button class="draw-primary draw-invite-one" type="submit" {% if row.is_invited %}disabled{% endif %}>
+                                        {% if row.is_invited %}
+                                            <i class="fa-solid fa-check"></i> {% translate 'Eingeladen' %}
+                                        {% else %}
+                                            <i class="fa-solid fa-user-plus"></i> {% translate 'Einladen' %}
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="draw-muted">{% translate 'Es gibt gerade keine weiteren Freunde, die du einladen kannst.' %}</p>
+                {% endif %}
+            </article>
+        </aside>
+
+        <section class="draw-stage draw-panel">
+            <div class="draw-stage-header">
+                <div class="draw-round-pill" id="round-info">-</div>
+                <div class="draw-word-box draw-word-box-stage">
+                    <span>{% translate 'Aktuelles Wort' %}</span>
+                    <strong id="word-display">-</strong>
+                    <div id="word-choices" class="draw-word-choices"></div>
+                </div>
+                <div class="draw-timer" id="timer-display">--</div>
             </div>
 
             <div class="draw-canvas-wrap">
@@ -83,6 +137,19 @@
                 <div id="canvas-blocker" class="draw-canvas-blocker">
                     <strong>{% translate 'Warte auf das Spiel...' %}</strong>
                     <span>{% translate 'Der aktuelle Zeichner wählt gleich ein Wort.' %}</span>
+                </div>
+                <div id="round-summary" class="draw-round-summary hidden" aria-live="polite">
+                    <div class="draw-round-summary-card">
+                        <span class="draw-round-summary-kicker">{% translate 'Rundenuebersicht' %}</span>
+                        <h2 id="round-summary-title">{% translate 'Punkte dieser Runde' %}</h2>
+                        <p id="round-summary-word"></p>
+                        <div id="round-summary-list" class="draw-round-summary-list"></div>
+                        <button type="button" class="draw-primary" id="continue-round-btn">
+                            <i class="fa-solid fa-forward-step"></i>
+                            <span>{% translate 'Weiter' %}</span>
+                        </button>
+                        <p class="draw-muted" id="round-summary-wait">{% translate 'Der Host startet die naechste Runde.' %}</p>
+                    </div>
                 </div>
             </div>
 
@@ -113,17 +180,7 @@
             </div>
         </section>
 
-        <aside class="draw-side-stack">
-            <div class="draw-panel draw-status-card">
-                <span>{% translate 'Status' %}</span>
-                <strong id="game-status">-</strong>
-            </div>
-
-            <div class="draw-panel draw-players-panel">
-                <h2>{% translate 'Spieler' %}</h2>
-                <div id="players-list" class="draw-players"></div>
-            </div>
-
+        <aside class="draw-right-stack">
             <div class="draw-chat draw-panel">
                 <h2>{% translate 'Chat & Raten' %}</h2>
                 <div id="guess-list" class="draw-guess-list"></div>
@@ -132,87 +189,45 @@
                     <button type="submit" class="draw-primary"><i class="fa-solid fa-paper-plane"></i></button>
                 </form>
             </div>
-        </aside>
-    </section>
 
-    <section class="draw-grid draw-grid-lobby">
-        <article class="draw-panel draw-friends-panel">
-            <h2>{% translate 'Freunde einladen' %}</h2>
-            {% if friend_invite_rows %}
-                <div class="draw-friend-invite-list">
-                    {% for row in friend_invite_rows %}
-                        <div class="draw-friend-invite-row">
-                            <div class="draw-friend-mini">
-                                <div class="draw-friend-avatar">{{ row.user.username|slice:":1"|upper }}</div>
-                                <div>
-                                    <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
-                                    <span>
-                                        {% if row.is_invited %}
-                                            {% translate 'Einladung offen' %}
-                                        {% elif row.was_invited %}
-                                            {% translate 'War schon eingeladen' %}
-                                        {% else %}
-                                            {% translate 'Freund' %}
-                                        {% endif %}
-                                    </span>
-                                </div>
+            <article class="draw-panel draw-avatar-panel">
+                <h2>{% translate 'Dein Spiel-Avatar' %}</h2>
+                <form method="post" action="{% url 'skribble_update_avatar' lobby.code %}" class="draw-avatar-form">
+                    {% csrf_token %}
+                    <label>
+                        <span>{% translate 'Name im Spiel' %}</span>
+                        <input type="text" name="display_name" maxlength="40" value="{{ request.user.get_full_name|default:request.user.username }}">
+                    </label>
+                    <label>
+                        <span>{% translate 'Avatar-Form' %}</span>
+                        <select name="avatar_base">
+                            {% for value, label in avatar_bases %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <div class="draw-color-picker-row">
+                        <div>
+                            <span>{% translate 'Farbe' %}</span>
+                            <div class="draw-color-options">
+                                {% for color in avatar_colors %}
+                                    <label style="--swatch: {{ color }}"><input type="radio" name="avatar_color" value="{{ color }}" {% if forloop.first %}checked{% endif %}></label>
+                                {% endfor %}
                             </div>
-                            <form method="post" action="{% url 'skribble_invite_friend' lobby.code %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="friend_id" value="{{ row.user.id }}">
-                                <button class="draw-primary draw-invite-one" type="submit" {% if row.is_invited %}disabled{% endif %}>
-                                    {% if row.is_invited %}
-                                        <i class="fa-solid fa-check"></i> {% translate 'Eingeladen' %}
-                                    {% else %}
-                                        <i class="fa-solid fa-user-plus"></i> {% translate 'Einladen' %}
-                                    {% endif %}
-                                </button>
-                            </form>
                         </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="draw-muted">{% translate 'Es gibt gerade keine weiteren Freunde, die du einladen kannst.' %}</p>
-            {% endif %}
-        </article>
-
-        <article class="draw-panel">
-            <h2>{% translate 'Dein Spiel-Avatar' %}</h2>
-            <form method="post" action="{% url 'skribble_update_avatar' lobby.code %}" class="draw-avatar-form">
-                {% csrf_token %}
-                <label>
-                    <span>{% translate 'Name im Spiel' %}</span>
-                    <input type="text" name="display_name" maxlength="40" value="{{ request.user.get_full_name|default:request.user.username }}">
-                </label>
-                <label>
-                    <span>{% translate 'Avatar-Form' %}</span>
-                    <select name="avatar_base">
-                        {% for value, label in avatar_bases %}
-                            <option value="{{ value }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                <div class="draw-color-picker-row">
-                    <div>
-                        <span>{% translate 'Farbe' %}</span>
-                        <div class="draw-color-options">
-                            {% for color in avatar_colors %}
-                                <label style="--swatch: {{ color }}"><input type="radio" name="avatar_color" value="{{ color }}" {% if forloop.first %}checked{% endif %}></label>
-                            {% endfor %}
+                        <div>
+                            <span>{% translate 'Akzent' %}</span>
+                            <div class="draw-color-options">
+                                {% for color in accent_colors %}
+                                    <label style="--swatch: {{ color }}"><input type="radio" name="accent_color" value="{{ color }}" {% if forloop.first %}checked{% endif %}></label>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <span>{% translate 'Akzent' %}</span>
-                        <div class="draw-color-options">
-                            {% for color in accent_colors %}
-                                <label style="--swatch: {{ color }}"><input type="radio" name="accent_color" value="{{ color }}" {% if forloop.first %}checked{% endif %}></label>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                <button class="draw-secondary" type="submit"><i class="fa-solid fa-floppy-disk"></i> {% translate 'Avatar speichern' %}</button>
-            </form>
-        </article>
+                    <button class="draw-secondary" type="submit"><i class="fa-solid fa-floppy-disk"></i> {% translate 'Avatar speichern' %}</button>
+                </form>
+            </article>
+        </aside>
     </section>
 </main>
 {% endblock %}
