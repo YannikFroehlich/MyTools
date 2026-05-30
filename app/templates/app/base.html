@@ -80,6 +80,18 @@
                         {% endif %}
                     </a>
 
+                    <a href="{% url 'battleship_home' %}" class="menu-item menu-item-with-badge">
+                        <span class="menu-item-main">
+                            <i class="fa-solid fa-anchor"></i>
+                            {% translate 'Schiffe versenken' %}
+                        </span>
+                        {% if request.user.is_authenticated %}
+                            <span class="menu-badge js-notification-badge" data-notification-key="battleship_invites" data-label-singular="{% translate 'offene Schiffe-versenken-Einladung' %}" data-label-plural="{% translate 'offene Schiffe-versenken-Einladungen' %}" aria-label="{% blocktranslate count count=battleship_invites_count %}{{ count }} offene Schiffe-versenken-Einladung{% plural %}{{ count }} offene Schiffe-versenken-Einladungen{% endblocktranslate %}">
+                                {{ battleship_invites_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
                     <a href="{% url 'skribble_home' %}" class="menu-item menu-item-with-badge">
                         <span class="menu-item-main">
                             <i class="fa-solid fa-pencil"></i>

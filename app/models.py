@@ -1029,6 +1029,142 @@ class TicTacToeInvite(models.Model):
         return f"{self.from_user} -> {self.to_user} · {self.game}"
 
 
+class BattleshipGame(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_SETUP = "setup"
+    STATUS_PLAYING = "playing"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_SETUP, _("Flottenaufbau")),
+        (STATUS_PLAYING, _("Läuft")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    SIDE_A = "A"
+    SIDE_B = "B"
+
+    SIDE_CHOICES = [
+        (SIDE_A, "A"),
+        (SIDE_B, "B"),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_battleship_games",
+    )
+    player_a = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="battleship_games_as_a",
+        null=True,
+        blank=True,
+    )
+    player_b = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="battleship_games_as_b",
+        null=True,
+        blank=True,
+    )
+    name = models.CharField(max_length=80, default="Schiffe versenken")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+    fleet_a = models.JSONField(default=list, blank=True)
+    fleet_b = models.JSONField(default=list, blank=True)
+    shots_a = models.JSONField(default=list, blank=True)
+    shots_b = models.JSONField(default=list, blank=True)
+    ready_a = models.BooleanField(default=False)
+    ready_b = models.BooleanField(default=False)
+    current_turn = models.CharField(max_length=1, choices=SIDE_CHOICES, default=SIDE_A)
+    winner_side = models.CharField(max_length=1, choices=SIDE_CHOICES, blank=True)
+    round_number = models.PositiveIntegerField(default=1)
+    last_move_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Schiffe versenken Spiel"
+        verbose_name_plural = "Schiffe versenken Spiele"
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+            models.Index(fields=["player_a", "status"]),
+            models.Index(fields=["player_b", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    def side_for_user(self, user):
+        if self.player_a_id == user.id:
+            return self.SIDE_A
+        if self.player_b_id == user.id:
+            return self.SIDE_B
+        return ""
+
+    def opponent_for_user(self, user):
+        if self.player_a_id == user.id:
+            return self.player_b
+        if self.player_b_id == user.id:
+            return self.player_a
+        return None
+
+    @property
+    def is_full(self):
+        return bool(self.player_a_id and self.player_b_id)
+
+
+class BattleshipInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    game = models.ForeignKey(
+        BattleshipGame,
+        on_delete=models.CASCADE,
+        related_name="invites",
+    )
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_battleship_invites",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_battleship_invites",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["game", "to_user"], name="unique_battleship_invite_per_game_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="battleship_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"]),
+            models.Index(fields=["game", "status"]),
+        ]
+        verbose_name = "Schiffe versenken Einladung"
+        verbose_name_plural = "Schiffe versenken Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user} · {self.game}"
+
+
 class DrawingGameLobby(models.Model):
     STATUS_WAITING = "waiting"
     STATUS_PLAYING = "playing"

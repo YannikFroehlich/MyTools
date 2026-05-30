@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from .models import ChatMessage, ChatRoomMember, DrawingGameInvite, Friendship, TicTacToeInvite, UserProfile
+from .models import BattleshipInvite, ChatMessage, ChatRoomMember, DrawingGameInvite, Friendship, TicTacToeInvite, UserProfile
 
 
 def get_notification_counts(user):
@@ -12,6 +12,7 @@ def get_notification_counts(user):
         "incoming_friend_requests": 0,
         "skribble_invites": 0,
         "tictactoe_invites": 0,
+        "battleship_invites": 0,
         "total_notifications": 0,
     }
 
@@ -49,6 +50,15 @@ def get_notification_counts(user):
         counts["tictactoe_invites"] = 0
 
     try:
+        if profile.notify_skribble and not muted_by_dnd:
+            counts["battleship_invites"] = BattleshipInvite.objects.filter(
+                to_user=user,
+                status=BattleshipInvite.STATUS_PENDING,
+            ).count()
+    except Exception:
+        counts["battleship_invites"] = 0
+
+    try:
         if not profile.notify_chat or muted_by_dnd:
             raise StopIteration
         unread_count = 0
@@ -73,6 +83,7 @@ def get_notification_counts(user):
         + counts["incoming_friend_requests"]
         + counts["skribble_invites"]
         + counts["tictactoe_invites"]
+        + counts["battleship_invites"]
     )
 
     return counts
@@ -139,6 +150,18 @@ def get_notification_items(user, limit=10):
                 "title": _("Tic-Tac-Toe-Einladung"),
                 "text": _("%(user)s hat dich in %(game)s eingeladen") % {"user": invite.from_user.username, "game": invite.game.name},
                 "url": reverse("tictactoe_lobby", args=[invite.game.code]),
+                "action_label": _("Beitreten"),
+                "created_at": invite.created_at,
+                "badge": 1,
+            })
+
+        for invite in BattleshipInvite.objects.filter(to_user=user, status=BattleshipInvite.STATUS_PENDING).select_related("game", "from_user").order_by("-created_at")[:limit]:
+            items.append({
+                "type": "battleship",
+                "icon": "fa-solid fa-anchor",
+                "title": _("Schiffe-versenken-Einladung"),
+                "text": _("%(user)s hat dich in %(game)s eingeladen") % {"user": invite.from_user.username, "game": invite.game.name},
+                "url": reverse("battleship_lobby", args=[invite.game.code]),
                 "action_label": _("Beitreten"),
                 "created_at": invite.created_at,
                 "badge": 1,

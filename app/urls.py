@@ -65,6 +65,19 @@ from .tictactoe_views import (
     tictactoe_reset_api,
     tictactoe_state_api,
 )
+from .battleship_views import (
+    battleship_attack_api,
+    battleship_delete,
+    battleship_home,
+    battleship_home_state_api,
+    battleship_invite_friend,
+    battleship_invite_response,
+    battleship_leave,
+    battleship_lobby,
+    battleship_place_api,
+    battleship_reset_api,
+    battleship_state_api,
+)
 from .chat_views import (
     chat_group_leave_view,
     chat_group_member_action_view,
@@ -156,6 +169,18 @@ urlpatterns = [
     path('api/tic-tac-toe/home-state/', tictactoe_home_state_api, name='tictactoe_home_state_api'),
     path('api/tic-tac-toe/<slug:code>/move/', tictactoe_move_api, name='tictactoe_move_api'),
     path('api/tic-tac-toe/<slug:code>/reset/', tictactoe_reset_api, name='tictactoe_reset_api'),
+
+    path('schiffe-versenken/', battleship_home, name='battleship_home'),
+    path('schiffe-versenken/<slug:code>/', battleship_lobby, name='battleship_lobby'),
+    path('schiffe-versenken/<slug:code>/invite/', battleship_invite_friend, name='battleship_invite_friend'),
+    path('schiffe-versenken/invite/<int:invite_id>/', battleship_invite_response, name='battleship_invite_response'),
+    path('schiffe-versenken/<slug:code>/leave/', battleship_leave, name='battleship_leave'),
+    path('schiffe-versenken/<slug:code>/delete/', battleship_delete, name='battleship_delete'),
+    path('api/schiffe-versenken/home-state/', battleship_home_state_api, name='battleship_home_state_api'),
+    path('api/schiffe-versenken/<slug:code>/state/', battleship_state_api, name='battleship_state_api'),
+    path('api/schiffe-versenken/<slug:code>/place/', battleship_place_api, name='battleship_place_api'),
+    path('api/schiffe-versenken/<slug:code>/attack/', battleship_attack_api, name='battleship_attack_api'),
+    path('api/schiffe-versenken/<slug:code>/reset/', battleship_reset_api, name='battleship_reset_api'),
 
     path('skribble/', skribble_home, name='skribble_home'),
     path('skribble/<slug:code>/', skribble_lobby, name='skribble_lobby'),
