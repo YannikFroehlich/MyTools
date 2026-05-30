@@ -22,6 +22,7 @@ from django.db.utils import OperationalError, ProgrammingError
 from django.http import JsonResponse
 
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -1610,6 +1611,10 @@ def notes_view(request):
         "query": query,
         "show_archived": show_archived,
         "note_count": notes.count(),
+        "note_messages": [
+            message for message in get_messages(request)
+            if "notes" in message.tags.split()
+        ],
     }
 
     return render(request, "app/notes.html", context)
@@ -1623,7 +1628,7 @@ def note_create_view(request):
             note = form.save(commit=False)
             note.user = request.user
             note.save()
-            messages.success(request, _("Notiz wurde erstellt."))
+            messages.success(request, _("Notiz wurde erstellt."), extra_tags="notes")
             return redirect("notes")
     else:
         form = NoteForm()
@@ -1643,7 +1648,7 @@ def note_edit_view(request, pk):
 
         if form.is_valid():
             form.save()
-            messages.success(request, _("Notiz wurde aktualisiert."))
+            messages.success(request, _("Notiz wurde aktualisiert."), extra_tags="notes")
             return redirect("notes")
     else:
         form = NoteForm(instance=note)
@@ -1661,7 +1666,7 @@ def note_delete_view(request, pk):
     note = get_object_or_404(Note, pk=pk, user=request.user)
     note.delete()
 
-    messages.success(request, _("Notiz wurde gelöscht."))
+    messages.success(request, _("Notiz wurde gelöscht."), extra_tags="notes")
     return redirect("notes")
 
 
@@ -1681,9 +1686,9 @@ def note_toggle_archive_view(request, pk):
     note.save()
 
     if note.is_archived:
-        messages.success(request, _("Notiz wurde archiviert."))
+        messages.success(request, _("Notiz wurde archiviert."), extra_tags="notes")
     else:
-        messages.success(request, _("Notiz wurde wiederhergestellt."))
+        messages.success(request, _("Notiz wurde wiederhergestellt."), extra_tags="notes")
 
     return redirect("notes")
 

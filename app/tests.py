@@ -14,6 +14,8 @@ from django.urls import reverse
 from app.forms import NoteForm
 from app.models import (
     AvatarCharacter,
+    DrawingGameLobby,
+    DrawingGamePlayer,
     Friendship,
     HomeLayoutPreference,
     HomeWidget,
@@ -1869,6 +1871,98 @@ class GeniusSearchApiTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 502)
         self.assertEqual(response.json()["message"], "Genius API konnte nicht erreicht werden.")
+
+
+class SkribbleLobbyTests(BaseTestCase):
+    def create_lobby(self):
+        lobby = DrawingGameLobby.objects.create(
+            owner=self.user,
+            name="Test-Lobby",
+            code="ABC123",
+        )
+        DrawingGamePlayer.objects.create(lobby=lobby, user=self.user, display_name="Testuser")
+        return lobby
+
+    def test_state_api_reports_deleted_lobby_for_open_clients(self):
+        lobby = self.create_lobby()
+        code = lobby.code
+        lobby.delete()
+
+        response = self.client.get(reverse("skribble_state_api", args=[code]))
+
+        self.assertEqual(response.status_code, 410)
+        self.assertFalse(response.json()["ok"])
+        self.assertTrue(response.json()["lobbyDeleted"])
+        self.assertEqual(response.json()["redirectUrl"], reverse("skribble_home"))
+
+    def test_deleted_lobby_page_redirects_to_skribble_home(self):
+        lobby = self.create_lobby()
+        code = lobby.code
+        lobby.delete()
+
+        response = self.client.get(reverse("skribble_lobby", args=[code]))
+
+        self.assertRedirects(response, reverse("skribble_home"))
+
+    def test_draw_api_appends_segment_batches_without_losing_lines(self):
+        lobby = self.create_lobby()
+        lobby.status = DrawingGameLobby.STATUS_PLAYING
+        lobby.current_word = "Haus"
+        lobby.save(update_fields=["status", "current_word"])
+
+        response = self.client.post(reverse("skribble_draw_api", args=[lobby.code]), {
+            "action": "segments",
+            "segments": json.dumps([
+                {"id": "segment-2", "order": 2, "points": "2,2;3,3", "color": "#111827", "size": "7"},
+                {"id": "segment-1", "order": 1, "points": "1,1;2,2", "color": "#111827", "size": "7"},
+            ]),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["ok"])
+
+        lobby.refresh_from_db()
+        self.assertEqual(len(lobby.current_drawing), 2)
+        self.assertEqual(lobby.current_drawing[0]["id"], "segment-1")
+        self.assertEqual(lobby.current_drawing[1]["id"], "segment-2")
+
+    def test_draw_api_deduplicates_retried_segments(self):
+        lobby = self.create_lobby()
+        lobby.status = DrawingGameLobby.STATUS_PLAYING
+        lobby.current_word = "Haus"
+        lobby.save(update_fields=["status", "current_word"])
+
+        payload = json.dumps([
+            {"id": "segment-1", "order": 1, "points": "1,1;2,2", "color": "#111827", "size": "7"},
+        ])
+        for _ in range(2):
+            response = self.client.post(reverse("skribble_draw_api", args=[lobby.code]), {
+                "action": "segments",
+                "segments": payload,
+            })
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(response.json()["ok"])
+
+        lobby.refresh_from_db()
+        self.assertEqual(len(lobby.current_drawing), 1)
+        self.assertEqual(lobby.current_drawing[0]["id"], "segment-1")
+
+    def test_state_api_returns_drawing_delta_after_revision(self):
+        lobby = self.create_lobby()
+        lobby.current_drawing = [
+            {"id": "segment-1", "order": 1, "points": "1,1;2,2", "color": "#111827", "size": 7},
+            {"id": "segment-2", "order": 2, "points": "2,2;3,3", "color": "#111827", "size": 7},
+        ]
+        lobby.save(update_fields=["current_drawing"])
+
+        response = self.client.get(reverse("skribble_state_api", args=[lobby.code]), {"after": "1"})
+
+        self.assertEqual(response.status_code, 200)
+        state = response.json()["state"]
+        self.assertEqual(state["drawingRevision"], 2)
+        self.assertEqual(state["drawing"], [])
+        self.assertEqual(len(state["drawingDelta"]), 1)
+        self.assertEqual(state["drawingDelta"][0]["id"], "segment-2")
 
 
 class TankstellenApiTests(BaseTestCase):

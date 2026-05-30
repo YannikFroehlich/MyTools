@@ -33,9 +33,9 @@
         </div>
     </section>
 
-    {% if messages %}
+    {% if note_messages %}
         <div class="notes-messages">
-            {% for message in messages %}
+            {% for message in note_messages %}
                 <div class="notes-message {{ message.tags }}">
                     <i class="fa-solid fa-circle-check"></i>
                     {{ message }}
