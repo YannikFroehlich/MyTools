@@ -1,6 +1,7 @@
 {% extends "app/base.html" %}
 {% load static %}
 {% load i18n %}
+{% load media_performance %}
 
 {% block title %}{% translate "Chat" %} | MyTools{% endblock %}
 
@@ -31,11 +32,11 @@
                     <a href="{% url 'chat_room' room.id %}" class="chat-room-item {% if active_room and room.id == active_room.id %}is-active{% endif %}">
                         <span class="chat-room-avatar {% if room.room_type == 'group' %}is-group{% endif %}">
                             {% if room.room_type == 'group' and room.avatar %}
-                                <img src="{{ room.avatar.url }}" alt="{% translate 'Gruppenbild' %}">
+                                <img src="{{ room.avatar|media_thumb:'avatar' }}" alt="{% translate 'Gruppenbild' %}" width="192" height="192" loading="lazy" decoding="async">
                             {% elif room.room_type == 'group' %}
                                 <i class="fa-solid fa-user-group"></i>
                             {% elif room.preview_members and room.preview_members.0.profile.avatar %}
-                                <img src="{{ room.preview_members.0.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                <img src="{{ room.preview_members.0.profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                             {% elif room.preview_members %}
                                 {{ room.preview_members.0.profile.initials }}
                             {% else %}
@@ -83,7 +84,7 @@
                                         <button type="submit" class="chat-direct-compact-user">
                                             <span class="chat-direct-avatar compact">
                                                 {% if friend_profile.avatar %}
-                                                    <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                                    <img src="{{ friend_profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
                                                 {% else %}
                                                     <b>{{ friend_profile.initials }}</b>
                                                 {% endif %}
@@ -122,7 +123,7 @@
                                             <input type="checkbox" name="members" value="{{ friend_profile.user.id }}">
                                             <span>
                                                 {% if friend_profile.avatar %}
-                                                    <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                                    <img src="{{ friend_profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
                                                 {% else %}
                                                     <b>{{ friend_profile.initials }}</b>
                                                 {% endif %}
@@ -148,11 +149,11 @@
                     <div class="chat-window-title">
                         <div class="chat-room-avatar big {% if active_room.room_type == 'group' %}is-group{% endif %}">
                             {% if active_room.room_type == 'group' and active_room.avatar %}
-                                <img src="{{ active_room.avatar.url }}" alt="{% translate 'Gruppenbild' %}">
+                                <img src="{{ active_room.avatar|media_thumb:'avatar' }}" alt="{% translate 'Gruppenbild' %}" width="192" height="192" decoding="async">
                             {% elif active_room.room_type == 'group' %}
                                 <i class="fa-solid fa-user-group"></i>
                             {% elif active_room.preview_members and active_room.preview_members.0.profile.avatar %}
-                                <img src="{{ active_room.preview_members.0.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                <img src="{{ active_room.preview_members.0.profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
                             {% elif active_room.preview_members %}
                                 {{ active_room.preview_members.0.profile.initials }}
                             {% else %}
@@ -226,7 +227,7 @@
                         {% for member in active_room_members %}
                             <a href="{% url 'public_profile' member.id %}" title="{{ member.username }}">
                                 {% if member.profile.avatar %}
-                                    <img src="{{ member.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                    <img src="{{ member.profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
                                 {% else %}
                                     {{ member.profile.initials }}
                                 {% endif %}
@@ -244,7 +245,7 @@
                              {% if message.sender_id == request.user.id %}data-delete-url="{% url 'chat_message_delete' active_room.id message.id %}"{% endif %}>
                             <div class="chat-message-avatar">
                                 {% if message.sender.profile.avatar %}
-                                    <img src="{{ message.sender.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                    <img src="{{ message.sender.profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
                                 {% else %}
                                     {{ message.sender.profile.initials }}
                                 {% endif %}
@@ -277,7 +278,7 @@
                                         {% for attachment in message.attachments.all %}
                                             <a href="{{ attachment.file.url }}" class="chat-attachment {% if attachment.is_image %}is-image{% endif %}" target="_blank" rel="noopener">
                                                 {% if attachment.is_image %}
-                                                    <img src="{{ attachment.file.url }}" alt="{{ attachment.filename }}">
+                                                    <img src="{{ attachment.file|media_thumb:'preview' }}" alt="{{ attachment.filename }}" loading="lazy" decoding="async">
                                                 {% else %}
                                                     <i class="fa-solid fa-paperclip"></i>
                                                 {% endif %}

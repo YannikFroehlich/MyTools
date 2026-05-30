@@ -92,8 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function attachmentsTemplate(attachments = []) {
         if (!attachments.length) return "";
         return `<div class="chat-attachments">${attachments.map((attachment) => {
-            const image = attachment.is_image && attachment.url
-                ? `<img src="${escapeHtml(attachment.url)}" alt="${escapeHtml(attachment.name)}">`
+            const imageUrl = attachment.preview_url || attachment.url;
+            const image = attachment.is_image && imageUrl
+                ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(attachment.name)}" loading="lazy" decoding="async">`
                 : `<i class="fa-solid fa-paperclip"></i>`;
             return `<a href="${escapeHtml(attachment.url)}" class="chat-attachment${attachment.is_image ? " is-image" : ""}" target="_blank" rel="noopener">${image}<span>${escapeHtml(attachment.name)}</span></a>`;
         }).join("")}</div>`;
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function messageTemplate(message) {
         const avatar = message.sender.avatar_url
-            ? `<img src="${escapeHtml(message.sender.avatar_url)}" alt="Profilbild">`
+            ? `<img src="${escapeHtml(message.sender.avatar_url)}" alt="Profilbild" loading="lazy" decoding="async">`
             : escapeHtml(message.sender.initials || "MT");
         const text = escapeHtml(message.text).replaceAll("\n", "<br>");
         const isOwn = Boolean(message.is_own);

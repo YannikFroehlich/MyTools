@@ -23,7 +23,7 @@ def user_payload(user):
         "id": user.id,
         "username": user.username,
         "display_name": user.get_full_name() or user.username,
-        "avatar_url": profile.avatar.url if profile.avatar else "",
+        "avatar_url": media_thumbnail_url(profile.avatar, "avatar-small"),
         "initials": profile.initials,
     }
 
@@ -89,10 +89,17 @@ def attachment_payload(attachment):
         "id": attachment.id,
         "name": attachment.filename,
         "url": attachment.file.url if attachment.file else "",
+        "preview_url": media_thumbnail_url(attachment.file, "preview") if attachment.is_image else "",
         "content_type": attachment.content_type,
         "size": attachment.size,
         "is_image": attachment.is_image,
     }
+
+
+def media_thumbnail_url(file_field, spec):
+    if not file_field:
+        return ""
+    return reverse("media_thumbnail", kwargs={"spec": spec, "source": file_field.name})
 
 
 
@@ -333,7 +340,7 @@ def message_payload(message, current_user):
             "id": message.sender_id,
             "username": message.sender.username,
             "display_name": message.sender.get_full_name() or message.sender.username,
-            "avatar_url": sender_profile.avatar.url if sender_profile.avatar else "",
+            "avatar_url": media_thumbnail_url(sender_profile.avatar, "avatar-small"),
             "initials": sender_profile.initials,
         },
     }

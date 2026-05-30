@@ -29,6 +29,7 @@ class LoginRequiredMiddleware:
             reverse("signup"),
             "/i18n/",
             "/admin/",
+            "/media-thumb/",
             settings.STATIC_URL,
             settings.MEDIA_URL,
         )
