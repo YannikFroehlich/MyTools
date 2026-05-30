@@ -23,6 +23,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve as media_serve
 from django.contrib.staticfiles.views import serve as staticfiles_serve
+from app.media_views import media_thumbnail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -63,6 +64,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('', include('app.urls')),
     path('i18n/setlang/', set_language, name='set_language'),
+    path('media-thumb/<str:spec>/<path:source>', media_thumbnail, name='media_thumbnail'),
 ]
 
 if settings.DEBUG:

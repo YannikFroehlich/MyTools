@@ -1,6 +1,7 @@
 {% extends "app/base.html" %}
 {% load static %}
 {% load i18n %}
+{% load media_performance %}
 
 {% block title %}
     {% if profile_user.get_full_name %}
@@ -19,7 +20,7 @@
 <section class="public-profile-page">
     <div
         class="public-profile-hero {% if profile.profile_banner %}has-profile-banner{% endif %}"
-        {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner.url }}');"{% endif %}
+        {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner|media_thumb:'banner' }}');"{% endif %}
     >
         <a href="{% url 'users' %}" class="public-profile-back">
             <i class="fa-solid fa-arrow-left"></i>
@@ -29,7 +30,7 @@
         <div class="public-profile-header">
             <div class="public-profile-avatar">
                 {% if profile.avatar %}
-                    <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
                 {% else %}
                     <span>{{ profile.initials }}</span>
                 {% endif %}
@@ -216,7 +217,7 @@
             <div class="public-gallery-grid">
                 {% for image in gallery_images %}
                     <a href="{{ image.image.url }}" target="_blank" rel="noopener" class="public-gallery-item">
-                        <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Galeriebild' }}">
+                        <img src="{{ image.image|media_thumb:'gallery' }}" alt="{{ image.caption|default:'Galeriebild' }}" width="640" height="640" loading="lazy" decoding="async">
                         {% if image.caption %}<span>{{ image.caption }}</span>{% endif %}
                     </a>
                 {% endfor %}
@@ -259,7 +260,7 @@
                         <a href="{% url 'public_profile' friend_profile.user.id %}" class="friend-preview-card">
                             <span class="friend-preview-avatar">
                                 {% if friend_profile.avatar %}
-                                    <img src="{{ friend_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                    <img src="{{ friend_profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                                 {% else %}
                                     {{ friend_profile.initials }}
                                 {% endif %}

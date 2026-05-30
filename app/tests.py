@@ -248,6 +248,27 @@ class ModelTests(BaseTestCase):
         self.assertEqual(str(highscore), f"{self.user} · Typing Test · 82 WPM")
 
 
+class MediaThumbnailTests(BaseTestCase):
+    def test_media_thumbnail_creates_cached_preview_without_login(self):
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("avatar.bmp", self.get_large_test_image("avatar.bmp"), save=True)
+        self.client.logout()
+
+        response = self.client.get(reverse("media_thumbnail", args=["avatar-small", profile.avatar.name]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("max-age=31536000", response["Cache-Control"])
+        self.assertTrue(response.streaming)
+
+    def test_media_thumbnail_rejects_unknown_spec(self):
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("avatar.bmp", self.get_large_test_image("avatar.bmp"), save=True)
+
+        response = self.client.get(reverse("media_thumbnail", args=["unknown", profile.avatar.name]))
+
+        self.assertEqual(response.status_code, 404)
+
+
 class AuthViewTests(BaseTestCase):
     def test_signup_page_loads_without_login(self):
         self.client.logout()

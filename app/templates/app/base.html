@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load media_performance %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'de' }}">
@@ -10,8 +11,11 @@
 
     <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'app/css/icons/custom_icons.css' %}">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous"></script>
+    {% if fontawesome_kit_key %}
+        <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
+    {% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -24,7 +28,7 @@
     {% block extra_css %}{% endblock %}
     <link rel="stylesheet" href="{% static 'app/css/contrast.css' %}">
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}"></script>
+        <script src="{% static 'app/js/base.js' %}" defer></script>
     {% endblock %}
 </head>
 <body{% if request.user.is_authenticated %} data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}"{% endif %}>
@@ -370,7 +374,7 @@
                     <button class="profile-menu-button" id="profile-menu-button" type="button" aria-label="{% translate 'Profilmenü öffnen' %}">
                         <span class="profile-menu-avatar">
                             {% if current_profile and current_profile.avatar %}
-                                <img src="{{ current_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                <img src="{{ current_profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" decoding="async">
                             {% elif current_profile %}
                                 {{ current_profile.initials }}
                             {% else %}
@@ -385,7 +389,7 @@
                         <div class="profile-menu-header">
                             <span class="profile-menu-avatar profile-menu-avatar-large">
                                 {% if current_profile and current_profile.avatar %}
-                                    <img src="{{ current_profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                    <img src="{{ current_profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                                 {% elif current_profile %}
                                     {{ current_profile.initials }}
                                 {% else %}
