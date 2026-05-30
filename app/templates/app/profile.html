@@ -1,6 +1,7 @@
 {% extends "app/base.html" %}
 {% load static %}
 {% load i18n %}
+{% load media_performance %}
 
 {% block title %}{% translate "Profil" %} | MyTools{% endblock %}
 
@@ -12,12 +13,12 @@
 <section class="profile-page">
     <div
         class="profile-hero {% if profile.profile_banner %}has-profile-banner{% endif %}"
-        {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner.url }}');"{% endif %}
+        {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner|media_thumb:'banner' }}');"{% endif %}
     >
         <div class="profile-hero-content">
             <div class="profile-avatar-preview">
                 {% if profile.avatar %}
-                    <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
                 {% else %}
                     <span>{{ profile.initials }}</span>
                 {% endif %}
@@ -54,7 +55,7 @@
         <aside class="profile-card profile-summary-card">
             <div class="profile-summary-avatar">
                 {% if profile.avatar %}
-                    <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                 {% else %}
                     <span>{{ profile.initials }}</span>
                 {% endif %}
@@ -212,7 +213,7 @@
                     <div class="profile-avatar-upload-card">
                         <div class="profile-avatar-upload-preview" id="profile-avatar-live-preview">
                             {% if profile.avatar %}
-                                <img src="{{ profile.avatar.url }}" alt="{% translate 'Aktuelles Profilbild' %}">
+                                <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Aktuelles Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                             {% else %}
                                 <i class="fa-solid fa-user"></i>
                             {% endif %}
@@ -266,7 +267,7 @@
                     <div class="profile-avatar-upload-card profile-banner-upload-card">
                         <div class="profile-banner-upload-preview">
                             {% if profile.profile_banner %}
-                                <img src="{{ profile.profile_banner.url }}" alt="{% translate 'Aktuelles Profilbanner' %}">
+                                <img src="{{ profile.profile_banner|media_thumb:'banner' }}" alt="{% translate 'Aktuelles Profilbanner' %}" loading="lazy" decoding="async">
                             {% else %}
                                 <i class="fa-solid fa-image"></i>
                             {% endif %}
@@ -390,7 +391,7 @@
             <div class="profile-gallery-grid">
                 {% for image in gallery_images %}
                     <div class="profile-gallery-item">
-                        <img src="{{ image.image.url }}" alt="{{ image.caption|default:'Galeriebild' }}">
+                        <img src="{{ image.image|media_thumb:'gallery' }}" alt="{{ image.caption|default:'Galeriebild' }}" width="640" height="640" loading="lazy" decoding="async">
                         <div>
                             <span>{% if image.caption %}{{ image.caption }}{% else %}{% translate 'Ohne Beschreibung' %}{% endif %}</span>
                             <form method="post" action="{% url 'profile_gallery_delete' image.id %}">

@@ -3,11 +3,13 @@
 
     handle_path /static/* {
         root * /app/staticfiles
+        header Cache-Control "public, max-age=604800"
         file_server
     }
 
     handle_path /media/* {
         root * /app/media
+        header Cache-Control "public, max-age=2592000"
         file_server
     }
 

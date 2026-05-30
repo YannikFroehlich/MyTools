@@ -1,6 +1,7 @@
 {% extends 'app/base.html' %}
 {% load static %}
 {% load i18n %}
+{% load media_performance %}
 
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
@@ -129,7 +130,7 @@
                                                             </div>
 
                                                             {% if data.icon %}
-                                                                <img src="https://openweathermap.org/img/wn/{{ data.icon }}@2x.png" alt="{{ data.description }}">
+                                                                <img src="https://openweathermap.org/img/wn/{{ data.icon }}@2x.png" alt="{{ data.description }}" loading="lazy" decoding="async">
                                                             {% else %}
                                                                 <i class="fa-solid fa-cloud-sun weather-fallback-icon"></i>
                                                             {% endif %}
@@ -293,7 +294,7 @@
                                                             {% for friend in data.recent_friends %}
                                                                 <a href="{% url 'public_profile' friend.user.id %}" title="{{ friend.user.username }}">
                                                                     {% if friend.profile.avatar %}
-                                                                        <img src="{{ friend.profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                                                                        <img src="{{ friend.profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
                                                                     {% else %}
                                                                         {{ friend.profile.initials }}
                                                                     {% endif %}

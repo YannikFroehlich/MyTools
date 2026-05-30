@@ -1,6 +1,7 @@
 {% extends "app/base.html" %}
 {% load static %}
 {% load i18n %}
+{% load media_performance %}
 
 {% block title %}{% translate "Nutzer" %} | MyTools{% endblock %}
 
@@ -66,11 +67,11 @@
                 <a
                     href="{% url 'public_profile' profile.user.id %}"
                     class="user-card {% if profile.profile_banner %}has-profile-banner{% endif %}"
-                    {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner.url }}');"{% endif %}
+                    {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner|media_thumb:'banner' }}');"{% endif %}
                 >
                     <div class="user-avatar">
                         {% if profile.avatar %}
-                            <img src="{{ profile.avatar.url }}" alt="{% translate 'Profilbild' %}">
+                            <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                         {% else %}
                             <span>{{ profile.initials }}</span>
                         {% endif %}

@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load media_performance %}
 
 <div
     class="shortcuts-section home-layout-item section-color-{{ section.color }} {% if section.is_collapsed %}section-collapsed{% endif %}"
@@ -149,7 +150,7 @@
                     <a href="{{ shortcut.url }}" target="_blank" rel="noopener noreferrer">
                         <div class="shortcut-icon {% if shortcut.image %}shortcut-image-icon{% endif %}">
                             {% if shortcut.image %}
-                                <img src="{{ shortcut.image.url }}" alt="{{ shortcut.name }}">
+                                <img src="{{ shortcut.image|media_thumb:'shortcut' }}" alt="{{ shortcut.name }}" width="128" height="128" loading="lazy" decoding="async">
                             {% else %}
                                 <i class="{{ shortcut.icon }}"></i>
                             {% endif %}
