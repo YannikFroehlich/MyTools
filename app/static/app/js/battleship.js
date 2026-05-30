@@ -389,6 +389,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const stateUrl = rootElement.dataset.homeStateUrl;
         if (!stateUrl) return;
         const csrfToken = getCookie("csrftoken");
+        const labels = {
+            emptyInvites: rootElement.dataset.emptyInvitesLabel || "No pending invitations.",
+            emptyGames: rootElement.dataset.emptyGamesLabel || "You do not have a room yet.",
+            from: rootElement.dataset.fromLabel || "from",
+            accept: rootElement.dataset.acceptLabel || "Accept",
+            decline: rootElement.dataset.declineLabel || "Decline",
+            round: rootElement.dataset.roundLabel || "Round",
+        };
         let lastSignature = "";
 
         refreshHomeState();
@@ -415,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const container = document.getElementById("bs-invites-live");
             if (!container) return;
             if (!invites.length) {
-                container.innerHTML = '<p class="bs-muted">Du hast aktuell keine offenen Schiffe-versenken-Einladungen.</p>';
+                container.innerHTML = `<p class="bs-muted">${escapeHtml(labels.emptyInvites)}</p>`;
                 return;
             }
             container.innerHTML = `
@@ -424,11 +432,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="bs-invite-row">
                             <div>
                                 <strong>${escapeHtml(invite.gameName)}</strong>
-                                <span>von ${escapeHtml(invite.fromUser)}</span>
+                                <span>${escapeHtml(labels.from)} ${escapeHtml(invite.fromUser)}</span>
                             </div>
                             <div class="bs-inline-actions">
-                                ${inviteForm(invite.acceptUrl, "accept", "Annehmen", "bs-primary")}
-                                ${inviteForm(invite.declineUrl, "decline", "Ablehnen", "bs-secondary")}
+                                ${inviteForm(invite.acceptUrl, "accept", labels.accept, "bs-primary")}
+                                ${inviteForm(invite.declineUrl, "decline", labels.decline, "bs-secondary")}
                             </div>
                         </div>
                     `).join("")}
@@ -440,7 +448,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const container = document.getElementById("bs-games-live");
             if (!container) return;
             if (!games.length) {
-                container.innerHTML = '<p class="bs-muted">Du hast noch keinen Schiffe-versenken-Raum.</p>';
+                container.innerHTML = `<p class="bs-muted">${escapeHtml(labels.emptyGames)}</p>`;
                 return;
             }
             container.innerHTML = `
@@ -449,7 +457,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <a class="bs-room-card" href="${escapeHtml(item.url)}">
                             <span class="bs-code">${escapeHtml(item.code)}</span>
                             <strong>${escapeHtml(item.name)}</strong>
-                            <span>${escapeHtml(item.statusLabel)} · Runde ${escapeHtml(item.roundNumber)}</span>
+                            <span>${escapeHtml(item.statusLabel)} · ${escapeHtml(labels.round)} ${escapeHtml(item.roundNumber)}</span>
                         </a>
                     `).join("")}
                 </div>

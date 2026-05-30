@@ -13,7 +13,14 @@
 {% endblock %}
 
 {% block content %}
-<main class="ttt-page ttt-home-page" data-home-state-url="{% url 'tictactoe_home_state_api' %}">
+<main class="ttt-page ttt-home-page"
+      data-home-state-url="{% url 'tictactoe_home_state_api' %}"
+      data-empty-invites-label="{% translate 'Du hast aktuell keine offenen Tic-Tac-Toe-Einladungen.' %}"
+      data-empty-games-label="{% translate 'Du hast noch keinen Tic-Tac-Toe-Raum.' %}"
+      data-from-label="{% translate 'von' %}"
+      data-accept-label="{% translate 'Annehmen' %}"
+      data-decline-label="{% translate 'Ablehnen' %}"
+      data-round-label="{% translate 'Runde' %}">
     <section class="ttt-hero">
         <div>
             <span class="ttt-eyebrow"><i class="fa-solid fa-table-cells"></i> {% translate 'Freunde-Spiel' %}</span>

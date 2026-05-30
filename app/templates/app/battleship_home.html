@@ -13,7 +13,14 @@
 {% endblock %}
 
 {% block content %}
-<main class="bs-page bs-home-page" data-home-state-url="{% url 'battleship_home_state_api' %}">
+<main class="bs-page bs-home-page"
+      data-home-state-url="{% url 'battleship_home_state_api' %}"
+      data-empty-invites-label="{% translate 'Du hast aktuell keine offenen Schiffe-versenken-Einladungen.' %}"
+      data-empty-games-label="{% translate 'Du hast noch keinen Schiffe-versenken-Raum.' %}"
+      data-from-label="{% translate 'von' %}"
+      data-accept-label="{% translate 'Annehmen' %}"
+      data-decline-label="{% translate 'Ablehnen' %}"
+      data-round-label="{% translate 'Runde' %}">
     <section class="bs-hero">
         <div>
             <span class="bs-eyebrow"><i class="fa-solid fa-anchor"></i> {% translate 'Freunde-Spiel' %}</span>

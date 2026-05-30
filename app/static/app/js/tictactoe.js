@@ -135,6 +135,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!stateUrl) return;
 
         const csrfToken = getCookie("csrftoken");
+        const labels = {
+            emptyInvites: rootElement.dataset.emptyInvitesLabel || "No pending invitations.",
+            emptyGames: rootElement.dataset.emptyGamesLabel || "You do not have a room yet.",
+            from: rootElement.dataset.fromLabel || "from",
+            accept: rootElement.dataset.acceptLabel || "Accept",
+            decline: rootElement.dataset.declineLabel || "Decline",
+            round: rootElement.dataset.roundLabel || "Round",
+        };
         let lastSignature = "";
 
         refreshHomeState();
@@ -167,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!container) return;
 
             if (!invites.length) {
-                container.innerHTML = '<p class="ttt-muted" id="ttt-invites-empty">Du hast aktuell keine offenen Tic-Tac-Toe-Einladungen.</p>';
+                container.innerHTML = `<p class="ttt-muted" id="ttt-invites-empty">${escapeHtml(labels.emptyInvites)}</p>`;
                 return;
             }
 
@@ -177,11 +185,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="ttt-invite-row">
                             <div>
                                 <strong>${escapeHtml(invite.gameName)}</strong>
-                                <span>von ${escapeHtml(invite.fromUser)}</span>
+                                <span>${escapeHtml(labels.from)} ${escapeHtml(invite.fromUser)}</span>
                             </div>
                             <div class="ttt-inline-actions">
-                                ${inviteForm(invite.acceptUrl, "accept", "Annehmen", "ttt-primary")}
-                                ${inviteForm(invite.declineUrl, "decline", "Ablehnen", "ttt-secondary")}
+                                ${inviteForm(invite.acceptUrl, "accept", labels.accept, "ttt-primary")}
+                                ${inviteForm(invite.declineUrl, "decline", labels.decline, "ttt-secondary")}
                             </div>
                         </div>
                     `).join("")}
@@ -194,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!container) return;
 
             if (!games.length) {
-                container.innerHTML = '<p class="ttt-muted" id="ttt-games-empty">Du hast noch keinen Tic-Tac-Toe-Raum.</p>';
+                container.innerHTML = `<p class="ttt-muted" id="ttt-games-empty">${escapeHtml(labels.emptyGames)}</p>`;
                 return;
             }
 
@@ -204,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <a class="ttt-room-card" href="${escapeHtml(game.url)}">
                             <span class="ttt-code">${escapeHtml(game.code)}</span>
                             <strong>${escapeHtml(game.name)}</strong>
-                            <span>${escapeHtml(game.statusLabel)} · Runde ${escapeHtml(game.roundNumber)}</span>
+                            <span>${escapeHtml(game.statusLabel)} · ${escapeHtml(labels.round)} ${escapeHtml(game.roundNumber)}</span>
                         </a>
                     `).join("")}
                 </div>

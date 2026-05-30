@@ -31,6 +31,7 @@ from app.models import (
     UserProfile,
     WeatherLocation,
 )
+from app.notification_utils import get_notification_counts
 
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
@@ -2593,6 +2594,28 @@ class BattleshipTests(BaseTestCase):
         self.assertEqual(data["games"][0]["name"], "Live-Flotte")
         self.assertEqual(data["invites"][0]["gameName"], "Einladung")
         self.assertEqual(data["invites"][0]["fromUser"], "freund")
+
+    def test_battleship_invites_are_counted_in_notifications(self):
+        friend = get_user_model().objects.create_user(
+            username="freund",
+            password="testpass-123",
+        )
+        game = BattleshipGame.objects.create(
+            owner=friend,
+            player_a=friend,
+            code="INV123",
+            name="Einladung",
+        )
+        BattleshipInvite.objects.create(
+            game=game,
+            from_user=friend,
+            to_user=self.user,
+        )
+
+        counts = get_notification_counts(self.user)
+
+        self.assertEqual(counts["battleship_invites"], 1)
+        self.assertGreaterEqual(counts["total_notifications"], 1)
 
 
 class TankstellenApiTests(BaseTestCase):
