@@ -53,6 +53,31 @@ from .skribble_views import (
     skribble_state_api,
     skribble_update_avatar,
 )
+from .tictactoe_views import (
+    tictactoe_home,
+    tictactoe_delete,
+    tictactoe_invite_friend,
+    tictactoe_invite_response,
+    tictactoe_leave,
+    tictactoe_lobby,
+    tictactoe_home_state_api,
+    tictactoe_move_api,
+    tictactoe_reset_api,
+    tictactoe_state_api,
+)
+from .battleship_views import (
+    battleship_attack_api,
+    battleship_delete,
+    battleship_home,
+    battleship_home_state_api,
+    battleship_invite_friend,
+    battleship_invite_response,
+    battleship_leave,
+    battleship_lobby,
+    battleship_place_api,
+    battleship_reset_api,
+    battleship_state_api,
+)
 from .chat_views import (
     chat_group_leave_view,
     chat_group_member_action_view,
@@ -133,6 +158,29 @@ urlpatterns = [
 
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
+
+    path('tic-tac-toe/', tictactoe_home, name='tictactoe_home'),
+    path('tic-tac-toe/<slug:code>/', tictactoe_lobby, name='tictactoe_lobby'),
+    path('tic-tac-toe/<slug:code>/invite/', tictactoe_invite_friend, name='tictactoe_invite_friend'),
+    path('tic-tac-toe/invite/<int:invite_id>/', tictactoe_invite_response, name='tictactoe_invite_response'),
+    path('tic-tac-toe/<slug:code>/leave/', tictactoe_leave, name='tictactoe_leave'),
+    path('tic-tac-toe/<slug:code>/delete/', tictactoe_delete, name='tictactoe_delete'),
+    path('api/tic-tac-toe/<slug:code>/state/', tictactoe_state_api, name='tictactoe_state_api'),
+    path('api/tic-tac-toe/home-state/', tictactoe_home_state_api, name='tictactoe_home_state_api'),
+    path('api/tic-tac-toe/<slug:code>/move/', tictactoe_move_api, name='tictactoe_move_api'),
+    path('api/tic-tac-toe/<slug:code>/reset/', tictactoe_reset_api, name='tictactoe_reset_api'),
+
+    path('schiffe-versenken/', battleship_home, name='battleship_home'),
+    path('schiffe-versenken/<slug:code>/', battleship_lobby, name='battleship_lobby'),
+    path('schiffe-versenken/<slug:code>/invite/', battleship_invite_friend, name='battleship_invite_friend'),
+    path('schiffe-versenken/invite/<int:invite_id>/', battleship_invite_response, name='battleship_invite_response'),
+    path('schiffe-versenken/<slug:code>/leave/', battleship_leave, name='battleship_leave'),
+    path('schiffe-versenken/<slug:code>/delete/', battleship_delete, name='battleship_delete'),
+    path('api/schiffe-versenken/home-state/', battleship_home_state_api, name='battleship_home_state_api'),
+    path('api/schiffe-versenken/<slug:code>/state/', battleship_state_api, name='battleship_state_api'),
+    path('api/schiffe-versenken/<slug:code>/place/', battleship_place_api, name='battleship_place_api'),
+    path('api/schiffe-versenken/<slug:code>/attack/', battleship_attack_api, name='battleship_attack_api'),
+    path('api/schiffe-versenken/<slug:code>/reset/', battleship_reset_api, name='battleship_reset_api'),
 
     path('skribble/', skribble_home, name='skribble_home'),
     path('skribble/<slug:code>/', skribble_lobby, name='skribble_lobby'),

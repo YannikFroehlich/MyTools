@@ -78,7 +78,7 @@
             <div class="about-stat-card">
                 <i class="fa-solid fa-user-group"></i>
                 <strong>{% translate 'Community' %}</strong>
-                <span>{% translate 'Profile, Freunde, Direktchats, Gruppenchats und Skribble-Lobbys' %}</span>
+                <span>{% translate 'Profile, Freunde, Chats und gemeinsame Spiele-Lobbys' %}</span>
             </div>
         </div>
 
@@ -240,6 +240,22 @@
                     </div>
                 </a>
 
+                <a href="{% url 'tictactoe_home' %}" class="about-feature-card">
+                    <i class="fa-solid fa-table-cells"></i>
+                    <div>
+                        <strong>{% translate 'Tic Tac Toe' %}</strong>
+                        <span>{% translate 'Schnelles 1v1-Spiel mit privaten Räumen, Freunde-Einladungen und Live-Übersicht.' %}</span>
+                    </div>
+                </a>
+
+                <a href="{% url 'battleship_home' %}" class="about-feature-card">
+                    <i class="fa-solid fa-anchor"></i>
+                    <div>
+                        <strong>{% translate 'Schiffe versenken' %}</strong>
+                        <span>{% translate '1v1-Gefecht mit manueller Flottenplatzierung, Sounds, Effekten und geprüften Spielregeln.' %}</span>
+                    </div>
+                </a>
+
                 <a href="{% url 'profile' %}" class="about-feature-card">
                     <i class="fa-solid fa-id-card"></i>
                     <div>
@@ -266,7 +282,7 @@
                     <span></span>
                     <div>
                         <h3>{% translate 'Mehrere Tools produktiv nutzbar' %}</h3>
-                        <p>{% translate 'Wetter, Uhr, Notizen, Profile, Freunde, Chat, Skribble, Human Benchmark, OBS Dashboard, Rechner und API-Tools sind bereits verfügbar.' %}</p>
+                        <p>{% translate 'Wetter, Uhr, Notizen, Profile, Freunde, Chat, Skribble, Tic Tac Toe, Schiffe versenken, Human Benchmark, OBS Dashboard, Rechner und API-Tools sind bereits verfügbar.' %}</p>
                     </div>
                 </div>
 

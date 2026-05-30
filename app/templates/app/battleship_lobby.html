@@ -1,0 +1,170 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ game.name }} · {% translate 'Schiffe versenken' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/battleship.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/battleship.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="bs-page bs-lobby-page"
+      data-state-url="{% url 'battleship_state_api' game.code %}"
+      data-place-url="{% url 'battleship_place_api' game.code %}"
+      data-attack-url="{% url 'battleship_attack_api' game.code %}"
+      data-reset-url="{% url 'battleship_reset_api' game.code %}">
+    <section class="bs-lobby-top">
+        <div>
+            <a class="bs-back" href="{% url 'battleship_home' %}">
+                <i class="fa-solid fa-arrow-left"></i>
+                {% translate 'Zur Übersicht' %}
+            </a>
+            <span class="bs-eyebrow"><i class="fa-solid fa-anchor"></i> {% translate 'Raum' %}</span>
+            <h1>{{ game.name }}</h1>
+            <p>{% translate 'Raum-Code' %}: <strong class="bs-code">{{ game.code }}</strong></p>
+        </div>
+        <div class="bs-top-actions">
+            <button class="bs-secondary" type="button" id="bs-copy-link">
+                <i class="fa-regular fa-copy"></i>
+                {% translate 'Link kopieren' %}
+            </button>
+            {% if game.owner_id == request.user.id %}
+                <button class="bs-primary" type="button" id="bs-reset">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    {% translate 'Neue Runde' %}
+                </button>
+            {% endif %}
+            <form method="post" action="{% url 'battleship_leave' game.code %}">
+                {% csrf_token %}
+                <button class="bs-secondary" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    {% translate 'Verlassen' %}
+                </button>
+            </form>
+            <form method="post" action="{% url 'battleship_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
+                {% csrf_token %}
+                <button class="bs-danger" type="submit">
+                    <i class="fa-solid fa-trash"></i>
+                    {% translate 'Löschen' %}
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="bs-game-shell">
+        <aside class="bs-panel bs-side-panel">
+            <h2>{% translate 'Kapitänsdeck' %}</h2>
+            <div class="bs-player-row is-a">
+                <span>A</span>
+                <strong id="bs-player-a">-</strong>
+            </div>
+            <div class="bs-player-row is-b">
+                <span>B</span>
+                <strong id="bs-player-b">-</strong>
+            </div>
+            <div class="bs-status-card">
+                <small>{% translate 'Status' %}</small>
+                <strong id="bs-status">-</strong>
+                <p id="bs-message">-</p>
+            </div>
+            <button class="bs-primary bs-wide-action" type="button" id="bs-place">
+                <i class="fa-solid fa-location-crosshairs"></i>
+                {% translate 'Bereit melden' %}
+            </button>
+            <div class="bs-placement-tools" id="bs-placement-tools">
+                <div class="bs-tool-row">
+                    <button class="bs-secondary bs-icon-button" type="button" id="bs-rotate" title="{% translate 'Ausrichtung drehen' %}" aria-label="{% translate 'Ausrichtung drehen' %}">
+                        <i class="fa-solid fa-repeat"></i>
+                    </button>
+                    <button class="bs-secondary bs-icon-button" type="button" id="bs-random-fleet" title="{% translate 'Zufällige Flotte platzieren' %}" aria-label="{% translate 'Zufällige Flotte platzieren' %}">
+                        <i class="fa-solid fa-shuffle"></i>
+                    </button>
+                    <button class="bs-secondary bs-icon-button" type="button" id="bs-clear-fleet" title="{% translate 'Platzierung leeren' %}" aria-label="{% translate 'Platzierung leeren' %}">
+                        <i class="fa-solid fa-eraser"></i>
+                    </button>
+                </div>
+                <div class="bs-ship-picker" id="bs-ship-picker"></div>
+            </div>
+
+            {% if not game.player_b_id %}
+            <div class="bs-friends-box">
+                <h2>{% translate 'Freunde einladen' %}</h2>
+                {% if friend_invite_rows %}
+                    <div class="bs-friend-list">
+                        {% for row in friend_invite_rows %}
+                            <div class="bs-friend-row">
+                                <div class="bs-friend-mini">
+                                    <span>{{ row.user.username|slice:":1"|upper }}</span>
+                                    <div>
+                                        <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
+                                        <small>
+                                            {% if row.is_invited %}
+                                                {% translate 'Einladung offen' %}
+                                            {% elif row.was_invited %}
+                                                {% translate 'War schon eingeladen' %}
+                                            {% else %}
+                                                {% translate 'Freund' %}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'battleship_invite_friend' game.code %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                    <button class="bs-invite-button" type="submit" aria-label="{% translate 'Einladen' %}" {% if row.is_invited %}disabled{% endif %}>
+                                        {% if row.is_invited %}
+                                            <i class="fa-solid fa-check"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-plus"></i>
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="bs-muted">{% translate 'Keine weiteren Freunde zum Einladen gefunden.' %}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </aside>
+
+        <section class="bs-battlefield">
+            <div class="bs-victory-overlay" id="bs-victory-overlay" hidden>
+                <div class="bs-victory-card">
+                    <span class="bs-eyebrow"><i class="fa-solid fa-trophy"></i> {% translate 'Gefecht beendet' %}</span>
+                    <h2 id="bs-victory-title">-</h2>
+                    <p id="bs-victory-text">-</p>
+                </div>
+            </div>
+
+            <article class="bs-board-card">
+                <div class="bs-board-header">
+                    <div>
+                        <span class="bs-eyebrow"><i class="fa-solid fa-shield-halved"></i> {% translate 'Eigene Flotte' %}</span>
+                        <h2>{% translate 'Werft' %}</h2>
+                    </div>
+                    <span class="bs-readiness" id="bs-own-ready">-</span>
+                </div>
+                <div class="bs-board" id="bs-own-board" aria-label="{% translate 'Eigenes Spielfeld' %}"></div>
+            </article>
+
+            <article class="bs-board-card">
+                <div class="bs-board-header">
+                    <div>
+                        <span class="bs-eyebrow"><i class="fa-solid fa-crosshairs"></i> {% translate 'Gegnerisches Radar' %}</span>
+                        <h2>{% translate 'Zielgebiet' %}</h2>
+                    </div>
+                    <span class="bs-turn-pill" id="bs-turn">-</span>
+                </div>
+                <div class="bs-board bs-enemy-board" id="bs-enemy-board" aria-label="{% translate 'Gegnerisches Spielfeld' %}"></div>
+            </article>
+        </section>
+    </section>
+</main>
+{% endblock %}

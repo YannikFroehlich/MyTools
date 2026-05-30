@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 19:37+0200\n"
-"PO-Revision-Date: 2026-05-29 10:45+0000\n"
+"POT-Creation-Date: 2026-05-30 18:27+0200\n"
+"PO-Revision-Date: 2026-05-30 18:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -17,6 +17,177 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: .\app\battleship_views.py:23
+msgid "Träger"
+msgstr "Carrier"
+
+#: .\app\battleship_views.py:24
+msgid "Kreuzer"
+msgstr "Cruiser"
+
+#: .\app\battleship_views.py:25
+msgid "U-Boot"
+msgstr "Submarine"
+
+#: .\app\battleship_views.py:26
+msgid "Zerstörer"
+msgstr "Destroyer"
+
+#: .\app\battleship_views.py:27
+msgid "Patrouille"
+msgstr "Patrol Boat"
+
+#: .\app\battleship_views.py:75
+#, python-format
+msgid "Schiff %(number)s"
+msgstr "Ship %(number)s"
+
+# | msgid "Ungültiger Score."
+#: .\app\battleship_views.py:86 .\app\battleship_views.py:95
+#: .\app\battleship_views.py:451
+msgid "Ungültige Flotte."
+msgstr "Invalid fleet."
+
+#: .\app\battleship_views.py:99
+msgid "Ungültige Schiffsauswahl."
+msgstr "Invalid ship selection."
+
+#: .\app\battleship_views.py:106
+msgid "Ungültige Schiffsfelder."
+msgstr "Invalid ship cells."
+
+#: .\app\battleship_views.py:109
+msgid "Ein Schiff hat die falsche Länge."
+msgstr "A ship has the wrong length."
+
+#: .\app\battleship_views.py:111
+msgid "Ein Schiff liegt außerhalb des Spielfelds."
+msgstr "A ship is outside the board."
+
+#: .\app\battleship_views.py:113
+msgid "Schiffe dürfen sich nicht überlappen."
+msgstr "Ships must not overlap."
+
+#: .\app\battleship_views.py:123
+msgid "Schiffe müssen gerade platziert werden."
+msgstr "Ships must be placed in a straight line."
+
+#: .\app\battleship_views.py:126
+msgid "Schiffe müssen zusammenhängend platziert werden."
+msgstr "Ships must be placed contiguously."
+
+#: .\app\battleship_views.py:137
+msgid "Platziere alle Schiffe."
+msgstr "Place all ships."
+
+#: .\app\battleship_views.py:257
+msgid "Warte auf einen zweiten Kapitän."
+msgstr "Waiting for a second captain."
+
+#: .\app\battleship_views.py:259
+msgid "Platziere deine Flotte."
+msgstr "Place your fleet."
+
+#: .\app\battleship_views.py:261
+msgid "Warte auf die gegnerische Flotte."
+msgstr "Waiting for the enemy fleet."
+
+#: .\app\battleship_views.py:263
+msgid "Du hast die Flotte versenkt."
+msgstr "You sank the fleet."
+
+#: .\app\battleship_views.py:265
+msgid "Deine Flotte wurde versenkt."
+msgstr "Your fleet was sunk."
+
+#: .\app\battleship_views.py:267
+msgid "Wähle ein Feld auf dem Radar."
+msgstr "Choose a square on the radar."
+
+#: .\app\battleship_views.py:269
+msgid "Der Gegner ist am Zug."
+msgstr "Your opponent's turn."
+
+#: .\app\battleship_views.py:314 .\app\templates\app\about.html:254
+#: .\app\templates\app\base.html:86 .\app\templates\app\battleship_home.html:4
+#: .\app\templates\app\battleship_home.html:20
+#: .\app\templates\app\battleship_home.html:37
+#: .\app\templates\app\battleship_lobby.html:4
+msgid "Schiffe versenken"
+msgstr "Battleship"
+
+#: .\app\battleship_views.py:327 .\app\tictactoe_views.py:213
+msgid "Bitte gib einen Raum-Code ein."
+msgstr "Please enter a room code."
+
+#: .\app\battleship_views.py:357 .\app\battleship_views.py:405
+msgid "Dieser Schiffe-versenken-Raum ist bereits voll."
+msgstr "This Battleship room is already full."
+
+#: .\app\battleship_views.py:375 .\app\tictactoe_views.py:259
+msgid "Dieser Raum hat bereits zwei Spieler."
+msgstr "This room already has two players."
+
+#: .\app\battleship_views.py:380 .\app\skribble_views.py:524
+#: .\app\tictactoe_views.py:265
+msgid "Du kannst nur Freunde einladen."
+msgstr "You can only invite friends."
+
+# | msgid "Uhr-Einstellungen wurden gespeichert."
+#: .\app\battleship_views.py:388 .\app\skribble_views.py:532
+#: .\app\tictactoe_views.py:277
+msgid "Einladung wurde gesendet."
+msgstr "Invitation sent."
+
+# | msgid "Uhr-Einstellungen wurden gespeichert."
+#: .\app\battleship_views.py:413 .\app\skribble_views.py:548
+#: .\app\tictactoe_views.py:304
+msgid "Einladung wurde abgelehnt."
+msgstr "Invitation declined."
+
+#: .\app\battleship_views.py:425
+msgid "Dieser Schiffe-versenken-Raum wurde gelöscht."
+msgstr "This Battleship room was deleted."
+
+#: .\app\battleship_views.py:442
+msgid "Du bist nicht in diesem Raum."
+msgstr "You are not in this room."
+
+# | msgid "Warte auf Start..."
+#: .\app\battleship_views.py:444 .\app\tictactoe_views.py:115
+msgid "Warte auf einen zweiten Spieler."
+msgstr "Waiting for a second player."
+
+# | msgid "Ungültiger Score."
+#: .\app\battleship_views.py:479 .\app\battleship_views.py:481
+#: .\app\tictactoe_views.py:329 .\app\tictactoe_views.py:332
+msgid "Ungültiges Feld."
+msgstr "Invalid square."
+
+#: .\app\battleship_views.py:490
+msgid "Das Gefecht läuft gerade nicht."
+msgstr "The battle is not running right now."
+
+#: .\app\battleship_views.py:492 .\app\tictactoe_views.py:347
+msgid "Du bist noch nicht am Zug."
+msgstr "It is not your turn yet."
+
+#: .\app\battleship_views.py:496
+msgid "Dieses Feld wurde schon beschossen."
+msgstr "This square has already been fired at."
+
+#: .\app\battleship_views.py:528
+msgid "Nur der Host kann eine neue Runde starten."
+msgstr "Only the host can start a new round."
+
+#: .\app\battleship_views.py:556 .\app\battleship_views.py:578
+msgid "Schiffe-versenken-Raum wurde gelöscht."
+msgstr "Battleship room was deleted."
+
+#: .\app\battleship_views.py:575 .\app\tictactoe_views.py:436
+msgid "Du kannst diesen Raum nicht löschen."
+msgstr "You cannot delete this room."
 
 #: .\app\chat_views.py:185
 msgid "Das ist dein eigenes Profil."
@@ -140,32 +311,32 @@ msgid "Du hast die Gruppe verlassen."
 msgstr "You have left the group."
 
 #: .\app\forms.py:46 .\app\models.py:357 .\app\models.py:467
-#: .\app\models.py:757 .\app\templates\app\base.html:247
-#: .\app\templates\app\home.html:504 .\app\templates\app\home.html:711
+#: .\app\models.py:759 .\app\templates\app\base.html:271
+#: .\app\templates\app\home.html:544 .\app\templates\app\home.html:751
 msgid "Blau"
 msgstr "Blue"
 
 #: .\app\forms.py:47 .\app\models.py:359 .\app\models.py:468
-#: .\app\models.py:759 .\app\templates\app\home.html:514
-#: .\app\templates\app\home.html:721
+#: .\app\models.py:761 .\app\templates\app\home.html:554
+#: .\app\templates\app\home.html:761
 msgid "Lila"
 msgstr "Purple"
 
 #: .\app\forms.py:48 .\app\models.py:358 .\app\models.py:469
-#: .\app\models.py:758 .\app\templates\app\home.html:509
-#: .\app\templates\app\home.html:716
+#: .\app\models.py:760 .\app\templates\app\home.html:549
+#: .\app\templates\app\home.html:756
 msgid "Grün"
 msgstr "Green"
 
 #: .\app\forms.py:49 .\app\models.py:360 .\app\models.py:470
-#: .\app\models.py:760 .\app\templates\app\home.html:519
-#: .\app\templates\app\home.html:726
+#: .\app\models.py:762 .\app\templates\app\home.html:559
+#: .\app\templates\app\home.html:766
 msgid "Orange"
 msgstr "Orange"
 
 #: .\app\forms.py:50 .\app\models.py:361 .\app\models.py:471
-#: .\app\models.py:761 .\app\templates\app\home.html:524
-#: .\app\templates\app\home.html:731
+#: .\app\models.py:763 .\app\templates\app\home.html:564
+#: .\app\templates\app\home.html:771
 msgid "Rot"
 msgstr "Red"
 
@@ -298,52 +469,52 @@ msgstr "Group"
 msgid "Anhänge dürfen maximal 8 MB groß sein."
 msgstr "Attachments must not be larger than 8 MB."
 
-#: .\app\models.py:692 .\app\platform_utils.py:6 .\app\platform_utils.py:36
+#: .\app\models.py:693 .\app\platform_utils.py:6 .\app\platform_utils.py:36
 #: .\app\templates\app\about.html:142 .\app\templates\app\base.html:45
-#: .\app\templates\app\base.html:469 .\app\templates\app\home.html:440
+#: .\app\templates\app\base.html:493 .\app\templates\app\home.html:479
 #: .\app\templates\app\weather.html:5
 msgid "Wetter"
 msgstr "Weather"
 
-#: .\app\models.py:693 .\app\platform_utils.py:9 .\app\platform_utils.py:37
-#: .\app\templates\app\about.html:158 .\app\templates\app\base.html:163
-#: .\app\templates\app\base.html:484 .\app\templates\app\home.html:375
-#: .\app\templates\app\home.html:441 .\app\templates\app\notes.html:4
+#: .\app\models.py:694 .\app\platform_utils.py:9 .\app\platform_utils.py:37
+#: .\app\templates\app\about.html:158 .\app\templates\app\base.html:187
+#: .\app\templates\app\base.html:508 .\app\templates\app\home.html:414
+#: .\app\templates\app\home.html:480 .\app\templates\app\notes.html:4
 #: .\app\templates\app\notes.html:21
 msgid "Notizen"
 msgstr "Notes"
 
-#: .\app\models.py:694 .\app\platform_utils.py:12 .\app\platform_utils.py:35
+#: .\app\models.py:695 .\app\platform_utils.py:12 .\app\platform_utils.py:35
 #: .\app\templates\app\about.html:166 .\app\templates\app\base.html:63
-#: .\app\templates\app\home.html:446 .\app\templates\app\human_benchmark.html:5
+#: .\app\templates\app\home.html:486 .\app\templates\app\human_benchmark.html:5
 #: .\app\templates\app\human_benchmark.html:19
 #: .\app\templates\app\public_profile.html:293
 msgid "Human Benchmark"
 msgstr "Human Benchmark"
 
-#: .\app\models.py:695 .\app\templates\app\home.html:447
+#: .\app\models.py:696 .\app\templates\app\home.html:487
 msgid "Schnellstatistiken"
 msgstr "Quick Stats"
 
-#: .\app\models.py:696 .\app\platform_utils.py:10 .\app\platform_utils.py:38
-#: .\app\templates\app\base.html:158 .\app\templates\app\clock.html:5
-#: .\app\templates\app\clock.html:19 .\app\templates\app\home.html:442
+#: .\app\models.py:697 .\app\platform_utils.py:10 .\app\platform_utils.py:38
+#: .\app\templates\app\base.html:182 .\app\templates\app\clock.html:5
+#: .\app\templates\app\clock.html:19 .\app\templates\app\home.html:481
 msgid "Uhr"
 msgstr "Clock"
 
 # | msgid "Chat"
-#: .\app\models.py:697 .\app\platform_utils.py:33
-#: .\app\templates\app\chat.html:24 .\app\templates\app\home.html:235
-#: .\app\templates\app\home.html:443 .\app\templates\app\profile.html:79
+#: .\app\models.py:698 .\app\platform_utils.py:33
+#: .\app\templates\app\chat.html:24 .\app\templates\app\home.html:237
+#: .\app\templates\app\home.html:482 .\app\templates\app\profile.html:79
 #: .\app\templates\app\public_profile.html:64
 msgid "Chats"
 msgstr "Chats"
 
 # | msgid "Runde"
-#: .\app\models.py:698 .\app\models.py:1224 .\app\templates\app\base.html:396
+#: .\app\models.py:699 .\app\models.py:1494 .\app\templates\app\base.html:420
 #: .\app\templates\app\friends.html:5 .\app\templates\app\friends.html:24
-#: .\app\templates\app\friends.html:41 .\app\templates\app\home.html:281
-#: .\app\templates\app\home.html:444 .\app\templates\app\inbox.html:23
+#: .\app\templates\app\friends.html:41 .\app\templates\app\home.html:283
+#: .\app\templates\app\home.html:483 .\app\templates\app\inbox.html:23
 #: .\app\templates\app\profile.html:75 .\app\templates\app\profile.html:105
 #: .\app\templates\app\public_profile.html:62
 #: .\app\templates\app\public_profile.html:160
@@ -352,222 +523,252 @@ msgstr "Chats"
 msgid "Freunde"
 msgstr "Friends"
 
-#: .\app\models.py:699 .\app\models.py:1225 .\app\platform_utils.py:11
+#: .\app\models.py:700 .\app\models.py:1495 .\app\platform_utils.py:11
 #: .\app\platform_utils.py:34 .\app\templates\app\about.html:238
-#: .\app\templates\app\base.html:74 .\app\templates\app\home.html:445
+#: .\app\templates\app\base.html:98 .\app\templates\app\home.html:484
 #: .\app\templates\app\inbox.html:24
 #: .\app\templates\app\public_profile.html:229
 #: .\app\templates\app\skribble_home.html:4
 #: .\app\templates\app\skribble_home.html:16
 #: .\app\templates\app\skribble_lobby.html:4
-#: .\app\templates\app\skribble_lobby.html:30
+#: .\app\templates\app\skribble_lobby.html:31
 msgid "Skribble"
 msgstr "Skribble"
 
-#: .\app\models.py:709
+#: .\app\models.py:701 .\app\templates\app\about.html:246
+#: .\app\templates\app\base.html:74 .\app\templates\app\home.html:485
+#: .\app\templates\app\tictactoe_home.html:4
+#: .\app\templates\app\tictactoe_home.html:20
+#: .\app\templates\app\tictactoe_home.html:37
+#: .\app\templates\app\tictactoe_lobby.html:4 .\app\tictactoe_views.py:199
+msgid "Tic Tac Toe"
+msgstr "Tic Tac Toe"
+
+#: .\app\models.py:711
 msgid "Minimal"
 msgstr "Minimal"
 
-#: .\app\models.py:710 .\app\models.py:738
+#: .\app\models.py:712 .\app\models.py:740
 msgid "Glass"
 msgstr "Glass"
 
-#: .\app\models.py:711
+#: .\app\models.py:713
 msgid "Neon"
 msgstr "Neon"
 
-#: .\app\models.py:712
+#: .\app\models.py:714
 msgid "Flip"
 msgstr "Flip"
 
-#: .\app\models.py:713
+#: .\app\models.py:715
 msgid "Terminal"
 msgstr "Terminal"
 
-#: .\app\models.py:723 .\app\models.py:750
+#: .\app\models.py:725 .\app\models.py:752
 msgid "Klassisch"
 msgstr "Classic"
 
-#: .\app\models.py:724 .\app\models.py:752
+#: .\app\models.py:726 .\app\models.py:754
 msgid "Kompakt"
 msgstr "Compact"
 
-#: .\app\models.py:725
+#: .\app\models.py:727
 msgid "Datum links"
 msgstr "Date on the left"
 
-#: .\app\models.py:726
+#: .\app\models.py:728
 msgid "Analog"
 msgstr "Analog"
 
-#: .\app\models.py:727
+#: .\app\models.py:729
 msgid "Analog + Digital"
 msgstr "Analog + Digital"
 
-#: .\app\models.py:737
+#: .\app\models.py:739
 msgid "Clean"
 msgstr "Clean"
 
-#: .\app\models.py:739
+#: .\app\models.py:741
 msgid "Aurora"
 msgstr "Aurora"
 
-#: .\app\models.py:740
+#: .\app\models.py:742
 msgid "Sunset"
 msgstr "Sunset"
 
-#: .\app\models.py:741
+#: .\app\models.py:743
 msgid "Night"
 msgstr "Night"
 
-#: .\app\models.py:751 .\app\templates\app\note_form.html:112
+#: .\app\models.py:753 .\app\templates\app\note_form.html:112
 msgid "Groß"
 msgstr "Large"
 
-#: .\app\models.py:753
+#: .\app\models.py:755
 msgid "Geteilt"
 msgstr "Split"
 
-#: .\app\models.py:905
+#: .\app\models.py:906 .\app\models.py:1039 .\app\models.py:1175
 msgid "Wartet"
 msgstr "Waiting"
 
-#: .\app\models.py:906
+#: .\app\models.py:907 .\app\models.py:1041 .\app\models.py:1176
 msgid "Läuft"
 msgstr "Running"
 
-#: .\app\models.py:907 .\app\templates\app\skribble_lobby.html:143
-msgid "Rundenuebersicht"
-msgstr "Round summary"
-
-#: .\app\models.py:908
+#: .\app\models.py:908 .\app\models.py:1042 .\app\models.py:1178
 msgid "Beendet"
 msgstr "Finished"
 
-# | msgid "Runde"
-#: .\app\models.py:973
-msgid "Rund"
-msgstr "Round"
-
-#: .\app\models.py:974
-msgid "Eckig"
-msgstr "Square"
-
-# | msgid "Footer"
-#: .\app\models.py:975
-msgid "Roboter"
-msgstr "Robot"
-
-#: .\app\models.py:976
-msgid "Katze"
-msgstr "Cat"
-
-#: .\app\models.py:977
-msgid "Geist"
-msgstr "Ghost"
-
-#: .\app\models.py:978
-msgid "Ninja"
-msgstr "Ninja"
-
-#: .\app\models.py:1023 .\app\models.py:1264 .\app\templates\app\users.html:97
+#: .\app\models.py:991 .\app\models.py:1127 .\app\models.py:1293
+#: .\app\models.py:1534 .\app\templates\app\users.html:97
 msgid "Offen"
 msgstr "Open"
 
 # | msgid "Angepinnt"
-#: .\app\models.py:1024
+#: .\app\models.py:992 .\app\models.py:1128 .\app\models.py:1294
 msgid "Angenommen"
 msgstr "Accepted"
 
-#: .\app\models.py:1025
+#: .\app\models.py:993 .\app\models.py:1129 .\app\models.py:1295
 msgid "Abgelehnt"
 msgstr "Declined"
 
-#: .\app\models.py:1153
+#: .\app\models.py:1040
+msgid "Flottenaufbau"
+msgstr "Fleet setup"
+
+#: .\app\models.py:1177 .\app\templates\app\skribble_lobby.html:143
+msgid "Rundenuebersicht"
+msgstr "Round summary"
+
+# | msgid "Runde"
+#: .\app\models.py:1243
+msgid "Rund"
+msgstr "Round"
+
+#: .\app\models.py:1244
+msgid "Eckig"
+msgstr "Square"
+
+# | msgid "Footer"
+#: .\app\models.py:1245
+msgid "Roboter"
+msgstr "Robot"
+
+#: .\app\models.py:1246
+msgid "Katze"
+msgstr "Cat"
+
+#: .\app\models.py:1247
+msgid "Geist"
+msgstr "Ghost"
+
+#: .\app\models.py:1248
+msgid "Ninja"
+msgstr "Ninja"
+
+#: .\app\models.py:1423
 msgid "Spam"
 msgstr "Spam"
 
-#: .\app\models.py:1154
+#: .\app\models.py:1424
 msgid "Belästigung"
 msgstr "Harassment"
 
-#: .\app\models.py:1155
+#: .\app\models.py:1425
 msgid "Unpassende Inhalte"
 msgstr "Inappropriate content"
 
-#: .\app\models.py:1156
+#: .\app\models.py:1426
 msgid "Sonstiges"
 msgstr "Other"
 
-#: .\app\models.py:1222 .\app\templates\app\stream_deck.html:147
+#: .\app\models.py:1492 .\app\templates\app\stream_deck.html:147
 msgid "System"
 msgstr "System"
 
-#: .\app\models.py:1223 .\app\platform_utils.py:7
-#: .\app\templates\app\about.html:230 .\app\templates\app\base.html:412
-#: .\app\templates\app\base.html:479 .\app\templates\app\chat.html:5
+#: .\app\models.py:1493 .\app\platform_utils.py:7
+#: .\app\templates\app\about.html:230 .\app\templates\app\base.html:436
+#: .\app\templates\app\base.html:503 .\app\templates\app\chat.html:5
 #: .\app\templates\app\chat.html:17 .\app\templates\app\inbox.html:22
 #: .\app\templates\app\stream_deck.html:217 .\app\templates\app\users.html:48
 msgid "Chat"
 msgstr "Chat"
 
-#: .\app\models.py:1226 .\app\models.py:1254 .\app\templates\app\base.html:178
+#: .\app\models.py:1496 .\app\models.py:1524 .\app\templates\app\base.html:202
 #: .\app\templates\app\feedback.html:5 .\app\templates\app\feedback.html:12
 msgid "Feedback"
 msgstr "Feedback"
 
-#: .\app\models.py:1255
+#: .\app\models.py:1525
 msgid "Bug"
 msgstr "Bug"
 
-#: .\app\models.py:1256
+#: .\app\models.py:1526
 msgid "Feature-Idee"
 msgstr "Feature idea"
 
-#: .\app\models.py:1265
+#: .\app\models.py:1535
 msgid "Geplant"
 msgstr "Planned"
 
-#: .\app\models.py:1266
+#: .\app\models.py:1536
 msgid "Erledigt"
 msgstr "Done"
 
-#: .\app\notification_utils.py:91
+#: .\app\notification_utils.py:113
 #, python-format
 msgid "%(count)s ungelesene Nachricht(en) von %(user)s"
 msgstr "%(count)s unread message(s) from %(user)s"
 
-#: .\app\notification_utils.py:93
+#: .\app\notification_utils.py:115
 msgid "Zum Chat"
 msgstr "To chat"
 
-#: .\app\notification_utils.py:103 .\app\templates\app\inbox.html:47
+#: .\app\notification_utils.py:125 .\app\templates\app\inbox.html:47
 msgid "Freundschaftsanfrage"
 msgstr "Friend request"
 
-#: .\app\notification_utils.py:104
+#: .\app\notification_utils.py:126
 #, python-format
 msgid "%(user)s möchte mit dir befreundet sein"
 msgstr "%(user)s wants to be friends with you"
 
-#: .\app\notification_utils.py:106 .\app\templates\app\inbox.html:48
+#: .\app\notification_utils.py:128 .\app\templates\app\inbox.html:48
 msgid "Ansehen"
 msgstr "View"
 
 # | msgid "Einstellungen"
-#: .\app\notification_utils.py:116 .\app\templates\app\inbox.html:55
+#: .\app\notification_utils.py:138 .\app\templates\app\inbox.html:55
 msgid "Skribble-Einladung"
 msgstr "Skribble invitation"
 
-#: .\app\notification_utils.py:117
+#: .\app\notification_utils.py:139
 #, python-format
 msgid "%(user)s hat dich in %(lobby)s eingeladen"
 msgstr "%(user)s invited you to %(lobby)s"
 
-#: .\app\notification_utils.py:119 .\app\templates\app\inbox.html:56
-#: .\app\templates\app\skribble_home.html:137
+#: .\app\notification_utils.py:141 .\app\notification_utils.py:153
+#: .\app\notification_utils.py:165 .\app\templates\app\battleship_home.html:57
+#: .\app\templates\app\inbox.html:56 .\app\templates\app\skribble_home.html:137
+#: .\app\templates\app\tictactoe_home.html:57
 msgid "Beitreten"
 msgstr "Join"
+
+# | msgid "Einstellungen"
+#: .\app\notification_utils.py:150
+msgid "Tic-Tac-Toe-Einladung"
+msgstr "Tic Tac Toe invitation"
+
+#: .\app\notification_utils.py:151 .\app\notification_utils.py:163
+#, python-format
+msgid "%(user)s hat dich in %(game)s eingeladen"
+msgstr "%(user)s invited you to %(game)s"
+
+#: .\app\notification_utils.py:162
+msgid "Schiffe-versenken-Einladung"
+msgstr "Battleship invitation"
 
 #: .\app\platform_forms.py:10
 msgid "Tool"
@@ -598,7 +799,7 @@ msgid "Allgemein"
 msgstr "General"
 
 #: .\app\platform_utils.py:5 .\app\templates\app\base.html:40
-#: .\app\templates\app\base.html:464 .\app\templates\app\clock.html:119
+#: .\app\templates\app\base.html:488 .\app\templates\app\clock.html:119
 #: .\app\templates\app\clock.html:168
 #: .\app\templates\app\human_benchmark.html:98
 msgid "Start"
@@ -614,10 +815,10 @@ msgstr "Everyday"
 msgid "Kommunikation"
 msgstr "Communication"
 
-#: .\app\platform_utils.py:8 .\app\templates\app\base.html:391
-#: .\app\templates\app\base.html:474 .\app\templates\app\users.html:5
+#: .\app\platform_utils.py:8 .\app\templates\app\base.html:415
+#: .\app\templates\app\base.html:498 .\app\templates\app\users.html:5
 #: .\app\templates\app\users.html:16 .\app\templates\app\users.html:56
-#: .\app\views.py:1212
+#: .\app\views.py:1242
 msgid "Nutzer"
 msgstr "Users"
 
@@ -633,7 +834,7 @@ msgid "Racing Game"
 msgstr "Racing Game"
 
 #: .\app\platform_utils.py:14 .\app\platform_utils.py:39
-#: .\app\templates\app\about.html:198 .\app\templates\app\base.html:193
+#: .\app\templates\app\about.html:198 .\app\templates\app\base.html:217
 #: .\app\templates\app\unit_converter.html:4
 #: .\app\templates\app\unit_converter.html:20
 msgid "Einheitenrechner"
@@ -645,7 +846,7 @@ msgid "Tools"
 msgstr "Tools"
 
 #: .\app\platform_utils.py:15 .\app\platform_utils.py:41
-#: .\app\templates\app\about.html:190 .\app\templates\app\base.html:188
+#: .\app\templates\app\about.html:190 .\app\templates\app\base.html:212
 #: .\app\templates\app\genius_search.html:5
 #: .\app\templates\app\genius_search.html:16
 msgid "Genius Search"
@@ -653,12 +854,12 @@ msgstr "Genius Search"
 
 #: .\app\platform_utils.py:16 .\app\platform_utils.py:42
 #: .\app\templates\app\about.html:206 .\app\templates\app\avatar_wiki.html:5
-#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:198
+#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:222
 msgid "Avatar Wiki"
 msgstr "Avatar Wiki"
 
 #: .\app\platform_utils.py:17 .\app\platform_utils.py:43
-#: .\app\templates\app\about.html:222 .\app\templates\app\base.html:203
+#: .\app\templates\app\about.html:222 .\app\templates\app\base.html:227
 msgid "Stream Deck"
 msgstr "Stream Deck"
 
@@ -667,14 +868,14 @@ msgid "Streaming"
 msgstr "Streaming"
 
 #: .\app\platform_utils.py:18 .\app\platform_utils.py:44
-#: .\app\templates\app\about.html:174 .\app\templates\app\base.html:208
+#: .\app\templates\app\about.html:174 .\app\templates\app\base.html:232
 #: .\app\templates\app\obs-dashboard.html:5
 #: .\app\templates\app\obs-dashboard.html:21
 msgid "OBS Dashboard"
 msgstr "OBS Dashboard"
 
 #: .\app\platform_utils.py:19 .\app\platform_utils.py:40
-#: .\app\templates\app\about.html:182 .\app\templates\app\base.html:183
+#: .\app\templates\app\about.html:182 .\app\templates\app\base.html:207
 msgid "Spritkosten"
 msgstr "Fuel costs"
 
@@ -682,8 +883,8 @@ msgstr "Fuel costs"
 msgid "Startseite / Widgets"
 msgstr "Homepage / Widgets"
 
-#: .\app\platform_utils.py:28 .\app\templates\app\base.html:168
-#: .\app\templates\app\base.html:401 .\app\templates\app\favorites.html:5
+#: .\app\platform_utils.py:28 .\app\templates\app\base.html:192
+#: .\app\templates\app\base.html:425 .\app\templates\app\favorites.html:5
 #: .\app\templates\app\favorites.html:13
 msgid "Favoriten"
 msgstr "Favorites"
@@ -696,7 +897,7 @@ msgstr "Inbox / Notifications"
 msgid "Tool bewerten / Feedback"
 msgstr "Rate tool / Feedback"
 
-#: .\app\platform_utils.py:31 .\app\templates\app\about.html:246
+#: .\app\platform_utils.py:31 .\app\templates\app\about.html:262
 #: .\app\templates\app\profile.html:5
 #: .\app\templates\app\public_profile.html:40
 msgid "Profil"
@@ -856,50 +1057,41 @@ msgstr "Report saved."
 msgid "Die Meldung konnte nicht gespeichert werden."
 msgstr "The report could not be saved."
 
-#: .\app\skribble_views.py:332
+#: .\app\skribble_views.py:424
 msgid "hat das Wort erraten!"
 msgstr "guessed the word!"
 
-#: .\app\skribble_views.py:343 .\app\templates\app\skribble_home.html:44
+#: .\app\skribble_views.py:435 .\app\templates\app\skribble_home.html:44
 msgid "Zeichen-Lobby"
 msgstr "Drawing lobby"
 
 # | msgid "Notiz wurde erstellt."
-#: .\app\skribble_views.py:361
+#: .\app\skribble_views.py:453
 msgid "Lobby wurde erstellt."
 msgstr "Lobby has been created."
 
-#: .\app\skribble_views.py:396
+#: .\app\skribble_views.py:488 .\app\skribble_views.py:655
+#: .\app\skribble_views.py:674
+msgid "Diese Lobby wurde gelöscht."
+msgstr "This lobby was deleted."
+
+#: .\app\skribble_views.py:492
 msgid "Du bist nicht für diese Lobby eingeladen."
 msgstr "You are not invited to this lobby."
 
-#: .\app\skribble_views.py:400
+#: .\app\skribble_views.py:496
 msgid "Diese Lobby ist bereits voll."
 msgstr "This lobby is already full."
 
-#: .\app\skribble_views.py:435
+#: .\app\skribble_views.py:518
 msgid "Du kannst aus dieser Lobby keine Einladungen senden."
 msgstr "You cannot send invitations from this lobby."
 
-#: .\app\skribble_views.py:441
-msgid "Du kannst nur Freunde einladen."
-msgstr "You can only invite friends."
-
-# | msgid "Uhr-Einstellungen wurden gespeichert."
-#: .\app\skribble_views.py:449
-msgid "Einladung wurde gesendet."
-msgstr "Invitation sent."
-
-# | msgid "Uhr-Einstellungen wurden gespeichert."
-#: .\app\skribble_views.py:465
-msgid "Einladung wurde abgelehnt."
-msgstr "Invitation declined."
-
-#: .\app\skribble_views.py:477
+#: .\app\skribble_views.py:560
 msgid "Du bist nicht mehr in dieser Lobby."
 msgstr "You are no longer in this lobby."
 
-#: .\app\skribble_views.py:489
+#: .\app\skribble_views.py:572
 msgid ""
 "Du hast die Lobby verlassen. Du kannst über eine Einladung oder als Freund "
 "wieder beitreten."
@@ -907,55 +1099,55 @@ msgstr ""
 "You have left the lobby. You can rejoin through an invitation or as a friend."
 
 # | msgid "Timer wurde gelöscht."
-#: .\app\skribble_views.py:499
+#: .\app\skribble_views.py:582
 #, python-format
 msgid "Lobby '%(name)s' wurde gelöscht."
 msgstr "Lobby '%(name)s' has been deleted."
 
 # | msgid "Timer wurde gespeichert."
-#: .\app\skribble_views.py:515
+#: .\app\skribble_views.py:598
 msgid "Avatar wurde gespeichert."
 msgstr "Avatar has been saved."
 
-#: .\app\skribble_views.py:525
+#: .\app\skribble_views.py:608
 msgid "Nur der Host kann starten."
 msgstr "Only the host can start."
 
-#: .\app\skribble_views.py:527
+#: .\app\skribble_views.py:610
 msgid "Du brauchst mindestens 2 Spieler."
 msgstr "You need at least 2 players."
 
-#: .\app\skribble_views.py:568
+#: .\app\skribble_views.py:659
 msgid "Nur der Host kann fortfahren."
 msgstr "Only the host can continue."
 
-#: .\app\skribble_views.py:579
+#: .\app\skribble_views.py:678
 msgid "Kein Zugriff."
 msgstr "No access."
 
-#: .\app\skribble_views.py:596
+#: .\app\skribble_views.py:698
 msgid "Du bist gerade nicht am Zeichnen."
 msgstr "You are not drawing right now."
 
-#: .\app\skribble_views.py:598
+#: .\app\skribble_views.py:700
 msgid "Die Runde laeuft gerade nicht."
 msgstr "The round is not currently running."
 
-#: .\app\skribble_views.py:600
+#: .\app\skribble_views.py:702
 msgid "Das Wort wurde schon gewählt."
 msgstr "The word has already been chosen."
 
 # | msgid "Ungültiger Score."
-#: .\app\skribble_views.py:603
+#: .\app\skribble_views.py:705
 msgid "Ungültiges Wort."
 msgstr "Invalid word."
 
-#: .\app\skribble_views.py:649
+#: .\app\skribble_views.py:786
 msgid "Der Zeichner darf nicht raten."
 msgstr "The drawer is not allowed to guess."
 
 #: .\app\templates\app\about.html:5 .\app\templates\app\base.html:50
-#: .\app\templates\app\base.html:489
+#: .\app\templates\app\base.html:513
 msgid "Über"
 msgstr "About"
 
@@ -1026,7 +1218,7 @@ msgstr "Tools & APIs"
 msgid "OpenWeather, Tankerkönig, Genius, OBS und Spotify vorbereitet"
 msgstr "OpenWeather, Tankerkönig, Genius, OBS, and Spotify prepared"
 
-#: .\app\templates\app\about.html:74 .\app\templates\app\base.html:240
+#: .\app\templates\app\about.html:74 .\app\templates\app\base.html:264
 msgid "Design"
 msgstr "Design"
 
@@ -1039,8 +1231,8 @@ msgid "Community"
 msgstr "Community"
 
 #: .\app\templates\app\about.html:81
-msgid "Profile, Freunde, Direktchats, Gruppenchats und Skribble-Lobbys"
-msgstr "Profiles, friends, direct chats, group chats, and Skribble lobbies"
+msgid "Profile, Freunde, Chats und gemeinsame Spiele-Lobbys"
+msgstr "Profiles, friends, chats, and shared game lobbies"
 
 #: .\app\templates\app\about.html:91
 msgid "Schnellzugriffe & Widgets"
@@ -1165,8 +1357,23 @@ msgstr ""
 "Draw, guess, create lobbies, invite friends, and view points after every "
 "round."
 
-# | msgid "Profilseite mit Avatar, persönlichen Daten und öffentlicher Ansicht."
 #: .\app\templates\app\about.html:247
+msgid ""
+"Schnelles 1v1-Spiel mit privaten Räumen, Freunde-Einladungen und Live-"
+"Übersicht."
+msgstr ""
+"Fast 1v1 game with private rooms, friend invitations, and a live overview."
+
+#: .\app\templates\app\about.html:255
+msgid ""
+"1v1-Gefecht mit manueller Flottenplatzierung, Sounds, Effekten und geprüften "
+"Spielregeln."
+msgstr ""
+"1v1 battle with manual fleet placement, sounds, effects, and validated game "
+"rules."
+
+# | msgid "Profilseite mit Avatar, persönlichen Daten und öffentlicher Ansicht."
+#: .\app\templates\app\about.html:263
 msgid ""
 "Profilseite mit Avatar, Banner, persönlichen Daten, Freunden und "
 "öffentlicher Ansicht."
@@ -1174,15 +1381,15 @@ msgstr ""
 "Profile page with avatar, banner, personal details, friends, and a public "
 "view."
 
-#: .\app\templates\app\about.html:254
+#: .\app\templates\app\about.html:270
 msgid "Projektstand"
 msgstr "Project Status"
 
-#: .\app\templates\app\about.html:260
+#: .\app\templates\app\about.html:276
 msgid "Personalisierbares Dashboard"
 msgstr "Customizable dashboard"
 
-#: .\app\templates\app\about.html:261
+#: .\app\templates\app\about.html:277
 msgid ""
 "Startseite, Shortcuts, Favoriten, Bereiche, Widgets und Design-Optionen sind "
 "eingebunden."
@@ -1190,26 +1397,25 @@ msgstr ""
 "The homepage, shortcuts, favorites, sections, widgets, and design options "
 "are built in."
 
-#: .\app\templates\app\about.html:268
+#: .\app\templates\app\about.html:284
 msgid "Mehrere Tools produktiv nutzbar"
 msgstr "Several tools ready for daily use"
 
 # | msgid ""
 # | "Wetter, Uhr, Notizen, Profile, Human Benchmark, OBS Dashboard, Rechner "
 # | "und API-Tools sind bereits verfügbar."
-#: .\app\templates\app\about.html:269
+#: .\app\templates\app\about.html:285
 msgid ""
-"Wetter, Uhr, Notizen, Profile, Freunde, Chat, Skribble, Human Benchmark, OBS "
-"Dashboard, Rechner und API-Tools sind bereits verfügbar."
-msgstr ""
-"Weather, clock, notes, profiles, friends, chat, Skribble, Human Benchmark, "
-"OBS Dashboard, calculators, and API tools are already available."
+"Wetter, Uhr, Notizen, Profile, Freunde, Chat, Skribble, Tic Tac Toe, Schiffe "
+"versenken, Human Benchmark, OBS Dashboard, Rechner und API-Tools sind "
+"bereits verfügbar."
+msgstr "Weather, clock, notes, profiles, friends, chat, Skribble, Tic Tac Toe, Battleship, Human Benchmark, OBS Dashboard, converter, and API tools are already available."
 
-#: .\app\templates\app\about.html:276
+#: .\app\templates\app\about.html:292
 msgid "Docker-Deployment vorbereitet"
 msgstr "Docker deployment prepared"
 
-#: .\app\templates\app\about.html:277
+#: .\app\templates\app\about.html:293
 msgid ""
 "Das Projekt läuft mit Django, Gunicorn, PostgreSQL, Redis und Caddy per "
 "Docker Compose."
@@ -1217,14 +1423,14 @@ msgstr ""
 "The project runs on Django, Gunicorn, PostgreSQL, Redis, and Caddy using "
 "Docker Compose."
 
-#: .\app\templates\app\about.html:284
+#: .\app\templates\app\about.html:300
 msgid "Laufende Erweiterung"
 msgstr "Ongoing expansion"
 
 # | msgid ""
 # | "Neue Widgets, bessere Statistiken, zusätzliche Integrationen und mehr "
 # | "Personalisierung können Schritt für Schritt ergänzt werden."
-#: .\app\templates\app\about.html:285
+#: .\app\templates\app\about.html:301
 msgid ""
 "Neue Widgets, bessere Statistiken, zusätzliche Integrationen, Chat-"
 "Funktionen, Mini-Games und mehr Personalisierung können Schritt für Schritt "
@@ -1242,7 +1448,7 @@ msgstr "Password changed"
 #: .\app\templates\app\auth\password_reset_confirm.html:25
 #: .\app\templates\app\auth\password_reset_done.html:25
 #: .\app\templates\app\auth\password_reset_form.html:25
-#: .\app\templates\app\base.html:316 .\app\templates\registration\login.html:40
+#: .\app\templates\app\base.html:340 .\app\templates\registration\login.html:40
 #: .\app\templates\registration\signup.html:40
 msgid "Dark Mode umschalten"
 msgstr "Toggle Dark Mode"
@@ -1348,7 +1554,7 @@ msgid "Charakter hinzufügen"
 msgstr "Add character"
 
 #: .\app\templates\app\avatar_wiki.html:37 .\app\templates\app\clock.html:61
-#: .\app\templates\app\home.html:557
+#: .\app\templates\app\home.html:597
 msgid "Name"
 msgstr "Name"
 
@@ -1387,7 +1593,7 @@ msgid "Abbrechen"
 msgstr "Cancel"
 
 #: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\chat.html:188
-#: .\app\templates\app\home.html:672 .\app\templates\app\profile.html:174
+#: .\app\templates\app\home.html:712 .\app\templates\app\profile.html:174
 #: .\app\templates\app\profile.html:368
 #: .\app\templates\app\stream_deck.html:334
 #: .\app\templates\app\stream_deck.html:372
@@ -1443,174 +1649,204 @@ msgid "Spiele-Menü öffnen"
 msgstr "Open games menu"
 
 #: .\app\templates\app\base.html:77
+msgid "offene Tic-Tac-Toe-Einladung"
+msgstr "pending Tic Tac Toe invitation"
+
+#: .\app\templates\app\base.html:77
+msgid "offene Tic-Tac-Toe-Einladungen"
+msgstr "pending Tic Tac Toe invitations"
+
+#: .\app\templates\app\base.html:77
+#, python-format
+msgid "%(count)s offene Tic-Tac-Toe-Einladung"
+msgid_plural "%(count)s offene Tic-Tac-Toe-Einladungen"
+msgstr[0] "%(count)s pending Tic Tac Toe invitation"
+msgstr[1] "%(count)s pending Tic Tac Toe invitations"
+
+#: .\app\templates\app\base.html:89
+msgid "offene Schiffe-versenken-Einladung"
+msgstr "pending Battleship invitation"
+
+#: .\app\templates\app\base.html:89
+msgid "offene Schiffe-versenken-Einladungen"
+msgstr "pending Battleship invitations"
+
+#: .\app\templates\app\base.html:89
+#, python-format
+msgid "%(count)s offene Schiffe-versenken-Einladung"
+msgid_plural "%(count)s offene Schiffe-versenken-Einladungen"
+msgstr[0] "%(count)s pending Battleship invitation"
+msgstr[1] "%(count)s pending Battleship invitations"
+
+#: .\app\templates\app\base.html:101
 msgid "offene Skribble-Einladung"
 msgstr "pending Skribble invitation"
 
-#: .\app\templates\app\base.html:77
+#: .\app\templates\app\base.html:101
 msgid "offene Skribble-Einladungen"
 msgstr "pending Skribble invitations"
 
-#: .\app\templates\app\base.html:77
+#: .\app\templates\app\base.html:101
 #, python-format
 msgid "%(count)s offene Skribble-Einladung"
 msgid_plural "%(count)s offene Skribble-Einladungen"
 msgstr[0] "%(count)s pending Skribble invitation"
 msgstr[1] "%(count)s pending Skribble invitations"
 
-#: .\app\templates\app\base.html:86
+#: .\app\templates\app\base.html:110
 msgid "Google-Apps-Menü öffnen"
 msgstr "Open Google apps menu"
 
-#: .\app\templates\app\base.html:88
+#: .\app\templates\app\base.html:112
 msgid "Google"
 msgstr "Google"
 
-#: .\app\templates\app\base.html:95
+#: .\app\templates\app\base.html:119
 msgid "Suche"
 msgstr "Search"
 
-#: .\app\templates\app\base.html:100
+#: .\app\templates\app\base.html:124
 msgid "Maps"
 msgstr "Maps"
 
-#: .\app\templates\app\base.html:105
+#: .\app\templates\app\base.html:129
 msgid "Youtube"
 msgstr "YouTube"
 
-#: .\app\templates\app\base.html:110
+#: .\app\templates\app\base.html:134
 msgid "Play"
 msgstr "Play"
 
-#: .\app\templates\app\base.html:115
+#: .\app\templates\app\base.html:139
 msgid "Gmail"
 msgstr "Gmail"
 
-#: .\app\templates\app\base.html:120
+#: .\app\templates\app\base.html:144
 msgid "Drive"
 msgstr "Drive"
 
-#: .\app\templates\app\base.html:125
+#: .\app\templates\app\base.html:149
 msgid "Kalender"
 msgstr "Calendar"
 
-#: .\app\templates\app\base.html:130
+#: .\app\templates\app\base.html:154
 msgid "Translator"
 msgstr "Translator"
 
-#: .\app\templates\app\base.html:135
+#: .\app\templates\app\base.html:159
 msgid "Gemini"
 msgstr "Gemini"
 
-#: .\app\templates\app\base.html:140
+#: .\app\templates\app\base.html:164
 msgid "News"
 msgstr "News"
 
-#: .\app\templates\app\base.html:145
+#: .\app\templates\app\base.html:169
 msgid "Fotos"
 msgstr "Photos"
 
-#: .\app\templates\app\base.html:151
+#: .\app\templates\app\base.html:175
 msgid "Weitere Seiten"
 msgstr "More pages"
 
-#: .\app\templates\app\base.html:173 .\app\templates\app\base.html:406
+#: .\app\templates\app\base.html:197 .\app\templates\app\base.html:430
 #: .\app\templates\app\inbox.html:5 .\app\templates\app\inbox.html:13
 msgid "Inbox"
 msgstr "Inbox"
 
-#: .\app\templates\app\base.html:234
+#: .\app\templates\app\base.html:258
 msgid "Design anpassen"
 msgstr "Customize design"
 
-#: .\app\templates\app\base.html:241
+#: .\app\templates\app\base.html:265
 msgid "Design-Men&uuml; schlie&szlig;en"
 msgstr "Close design menu"
 
-#: .\app\templates\app\base.html:246
+#: .\app\templates\app\base.html:270
 msgid "Design-Vorlagen"
 msgstr "Design templates"
 
-#: .\app\templates\app\base.html:251
+#: .\app\templates\app\base.html:275
 msgid "Gr&uuml;n"
 msgstr "Green"
 
-#: .\app\templates\app\base.html:255
+#: .\app\templates\app\base.html:279
 msgid "Rose"
 msgstr "Pink"
 
-#: .\app\templates\app\base.html:259
+#: .\app\templates\app\base.html:283
 msgid "Graphit"
 msgstr "Graphite"
 
-#: .\app\templates\app\base.html:266
+#: .\app\templates\app\base.html:290
 msgid "Header links"
 msgstr "Header left"
 
-#: .\app\templates\app\base.html:271
+#: .\app\templates\app\base.html:295
 msgid "Header rechts"
 msgstr "Header right"
 
-#: .\app\templates\app\base.html:276
+#: .\app\templates\app\base.html:300
 msgid "Hintergrund"
 msgstr "Background"
 
-#: .\app\templates\app\base.html:281
+#: .\app\templates\app\base.html:305
 msgid "Karten"
 msgstr "Cards"
 
-#: .\app\templates\app\base.html:286
+#: .\app\templates\app\base.html:310
 msgid "Footer"
 msgstr "Footer"
 
 # | msgid "Runde"
-#: .\app\templates\app\base.html:291
+#: .\app\templates\app\base.html:315
 msgid "Rundung"
 msgstr "Rounding"
 
-#: .\app\templates\app\base.html:299
+#: .\app\templates\app\base.html:323
 msgid "Kompakter Modus"
 msgstr "Compact mode"
 
-#: .\app\templates\app\base.html:303
+#: .\app\templates\app\base.html:327
 msgid "Dezentes Muster"
 msgstr "Subtle pattern"
 
-#: .\app\templates\app\base.html:310
+#: .\app\templates\app\base.html:334
 msgid "Zur&uuml;cksetzen"
 msgstr "Reset"
 
-#: .\app\templates\app\base.html:323
+#: .\app\templates\app\base.html:347
 msgid "Benachrichtigungen öffnen"
 msgstr "Open notifications"
 
 # | msgid "Nachricht"
-#: .\app\templates\app\base.html:325
+#: .\app\templates\app\base.html:349
 msgid "Benachrichtigung"
 msgstr "Notification"
 
 # | msgid "Nachricht"
-#: .\app\templates\app\base.html:325 .\app\templates\app\base.html:331
+#: .\app\templates\app\base.html:349 .\app\templates\app\base.html:355
 #: .\app\templates\app\profile.html:346
 msgid "Benachrichtigungen"
 msgstr "Notifications"
 
-#: .\app\templates\app\base.html:332
+#: .\app\templates\app\base.html:356
 msgid "Chats, Freundschaftsanfragen und Skribble"
 msgstr "Chats, friend requests and Skribble"
 
-#: .\app\templates\app\base.html:339
+#: .\app\templates\app\base.html:363
 msgid "Keine neuen Benachrichtigungen."
 msgstr "No new notifications."
 
-#: .\app\templates\app\base.html:346
+#: .\app\templates\app\base.html:370
 msgid "Profilmenü öffnen"
 msgstr "Open profile menu"
 
-#: .\app\templates\app\base.html:349 .\app\templates\app\base.html:364
+#: .\app\templates\app\base.html:373 .\app\templates\app\base.html:388
 #: .\app\templates\app\chat.html:38 .\app\templates\app\chat.html:86
 #: .\app\templates\app\chat.html:125 .\app\templates\app\chat.html:155
 #: .\app\templates\app\chat.html:229 .\app\templates\app\chat.html:247
-#: .\app\templates\app\friends.html:55 .\app\templates\app\home.html:294
+#: .\app\templates\app\friends.html:55 .\app\templates\app\home.html:296
 #: .\app\templates\app\profile.html:20 .\app\templates\app\profile.html:57
 #: .\app\templates\app\profile.html:434
 #: .\app\templates\app\public_profile.html:32
@@ -1619,51 +1855,296 @@ msgstr "Open profile menu"
 msgid "Profilbild"
 msgstr "Profile picture"
 
-#: .\app\templates\app\base.html:386
+#: .\app\templates\app\base.html:410
 msgid "Profil öffnen"
 msgstr "Open profile"
 
-#: .\app\templates\app\base.html:414
+#: .\app\templates\app\base.html:438
 msgid "ungelesene Nachricht"
 msgstr "unread message"
 
-#: .\app\templates\app\base.html:414 .\app\templates\app\inbox.html:39
+#: .\app\templates\app\base.html:438 .\app\templates\app\inbox.html:39
 msgid "ungelesene Nachrichten"
 msgstr "unread messages"
 
-#: .\app\templates\app\base.html:414
+#: .\app\templates\app\base.html:438
 #, python-format
 msgid "%(count)s ungelesene Nachricht"
 msgid_plural "%(count)s ungelesene Nachrichten"
 msgstr[0] "%(count)s unread message"
 msgstr[1] "%(count)s unread messages"
 
-#: .\app\templates\app\base.html:422
+#: .\app\templates\app\base.html:446
 msgid "Freundschaftsanfragen"
 msgstr "Friend requests"
 
-#: .\app\templates\app\base.html:424
+#: .\app\templates\app\base.html:448
 msgid "offene Freundschaftsanfrage"
 msgstr "pending friend request"
 
-#: .\app\templates\app\base.html:424
+#: .\app\templates\app\base.html:448
 msgid "offene Freundschaftsanfragen"
 msgstr "pending friend requests"
 
-#: .\app\templates\app\base.html:424
+#: .\app\templates\app\base.html:448
 #, python-format
 msgid "%(count)s offene Freundschaftsanfrage"
 msgid_plural "%(count)s offene Freundschaftsanfragen"
 msgstr[0] "%(count)s pending friend request"
 msgstr[1] "%(count)s pending friend requests"
 
-#: .\app\templates\app\base.html:433
+#: .\app\templates\app\base.html:457
 msgid "Abmelden"
 msgstr "Log out"
 
-#: .\app\templates\app\base.html:461
+#: .\app\templates\app\base.html:485
 msgid "Footer Navigation"
 msgstr "Footer navigation"
+
+#: .\app\templates\app\battleship_home.html:19
+#: .\app\templates\app\skribble_home.html:14
+#: .\app\templates\app\tictactoe_home.html:19
+msgid "Freunde-Spiel"
+msgstr "Friends game"
+
+#: .\app\templates\app\battleship_home.html:21
+msgid ""
+"Erstelle einen Raum, lade einen Freund ein und versenkt euch gegenseitig die "
+"Flotte."
+msgstr "Create a room, invite a friend, and sink each other's fleet."
+
+# | msgid "Bereich erstellen"
+#: .\app\templates\app\battleship_home.html:31
+#: .\app\templates\app\tictactoe_home.html:31
+msgid "Neuen Raum erstellen"
+msgstr "Create new room"
+
+#: .\app\templates\app\battleship_home.html:36
+#: .\app\templates\app\tictactoe_home.html:36
+msgid "Raum-Name"
+msgstr "Room name"
+
+# | msgid "Bereich erstellen"
+#: .\app\templates\app\battleship_home.html:41
+#: .\app\templates\app\tictactoe_home.html:41
+msgid "Raum erstellen"
+msgstr "Create room"
+
+#: .\app\templates\app\battleship_home.html:47
+#: .\app\templates\app\tictactoe_home.html:47
+msgid "Mit Code beitreten"
+msgstr "Join with code"
+
+#: .\app\templates\app\battleship_home.html:52
+#: .\app\templates\app\battleship_lobby.html:29
+#: .\app\templates\app\tictactoe_home.html:52
+#: .\app\templates\app\tictactoe_lobby.html:28
+msgid "Raum-Code"
+msgstr "Room code"
+
+# | msgid "Einstellungen"
+#: .\app\templates\app\battleship_home.html:66
+#: .\app\templates\app\home.html:320 .\app\templates\app\skribble_home.html:86
+#: .\app\templates\app\tictactoe_home.html:66
+msgid "Einladungen"
+msgstr "Invitations"
+
+# | msgid "Einstellungen"
+#: .\app\templates\app\battleship_home.html:67
+#: .\app\templates\app\tictactoe_home.html:67
+msgid "Offene Einladungen"
+msgstr "Pending invitations"
+
+#: .\app\templates\app\battleship_home.html:78
+#: .\app\templates\app\skribble_home.html:93
+#: .\app\templates\app\tictactoe_home.html:78
+#, python-format
+msgid "von %(user)s"
+msgstr "from %(user)s"
+
+# | msgid "Übernehmen"
+#: .\app\templates\app\battleship_home.html:84
+#: .\app\templates\app\profile.html:126
+#: .\app\templates\app\public_profile.html:138
+#: .\app\templates\app\skribble_home.html:99
+#: .\app\templates\app\tictactoe_home.html:84
+msgid "Annehmen"
+msgstr "Accept"
+
+#: .\app\templates\app\battleship_home.html:89
+#: .\app\templates\app\profile.html:129
+#: .\app\templates\app\public_profile.html:142
+#: .\app\templates\app\skribble_home.html:104
+#: .\app\templates\app\tictactoe_home.html:89
+msgid "Ablehnen"
+msgstr "Decline"
+
+#: .\app\templates\app\battleship_home.html:96
+msgid "Du hast aktuell keine offenen Schiffe-versenken-Einladungen."
+msgstr "You currently have no pending Battleship invitations."
+
+#: .\app\templates\app\battleship_home.html:104
+#: .\app\templates\app\skribble_home.html:149
+#: .\app\templates\app\tictactoe_home.html:104
+msgid "Verlauf"
+msgstr "History"
+
+#: .\app\templates\app\battleship_home.html:105
+#: .\app\templates\app\tictactoe_home.html:105
+msgid "Deine Räume"
+msgstr "Your rooms"
+
+#: .\app\templates\app\battleship_home.html:116
+#: .\app\templates\app\clock.html:123
+#: .\app\templates\app\tictactoe_home.html:116
+#: .\app\templates\app\tictactoe_lobby.html:118
+msgid "Runde"
+msgstr "Round"
+
+#: .\app\templates\app\battleship_home.html:121
+msgid "Du hast noch keinen Schiffe-versenken-Raum."
+msgstr "You do not have a Battleship room yet."
+
+# | msgid "Nutzerübersicht"
+#: .\app\templates\app\battleship_lobby.html:25
+#: .\app\templates\app\skribble_lobby.html:29
+#: .\app\templates\app\tictactoe_lobby.html:24
+msgid "Zur Übersicht"
+msgstr "Back to overview"
+
+#: .\app\templates\app\battleship_lobby.html:27
+#: .\app\templates\app\tictactoe_lobby.html:26
+msgid "Raum"
+msgstr "Room"
+
+# | msgid "Link (optional)"
+#: .\app\templates\app\battleship_lobby.html:34
+#: .\app\templates\app\skribble_lobby.html:41
+#: .\app\templates\app\tictactoe_lobby.html:33
+msgid "Link kopieren"
+msgstr "Copy link"
+
+#: .\app\templates\app\battleship_lobby.html:39
+#: .\app\templates\app\tictactoe_lobby.html:37
+msgid "Neue Runde"
+msgstr "New round"
+
+#: .\app\templates\app\battleship_lobby.html:46
+#: .\app\templates\app\skribble_lobby.html:60
+#: .\app\templates\app\tictactoe_lobby.html:43
+msgid "Verlassen"
+msgstr "Leave"
+
+#: .\app\templates\app\battleship_lobby.html:49
+#: .\app\templates\app\tictactoe_lobby.html:46
+msgid "Raum wirklich löschen?"
+msgstr "Really delete this room?"
+
+#: .\app\templates\app\battleship_lobby.html:53
+#: .\app\templates\app\chat.html:259
+#: .\app\templates\app\partials\home_section_card.html:143
+#: .\app\templates\app\partials\note_card.html:79
+#: .\app\templates\app\profile.html:398
+#: .\app\templates\app\stream_deck.html:327
+#: .\app\templates\app\tictactoe_lobby.html:50
+msgid "Löschen"
+msgstr "Delete"
+
+#: .\app\templates\app\battleship_lobby.html:61
+msgid "Kapitänsdeck"
+msgstr "Captain's deck"
+
+# | msgid "Spotify-Status"
+#: .\app\templates\app\battleship_lobby.html:71
+#: .\app\templates\app\public_profile.html:91
+#: .\app\templates\app\skribble_lobby.html:70
+#: .\app\templates\app\tictactoe_lobby.html:68
+msgid "Status"
+msgstr "Status"
+
+# | msgid "Keine Nutzer gefunden"
+#: .\app\templates\app\battleship_lobby.html:77
+msgid "Bereit melden"
+msgstr "Mark ready"
+
+#: .\app\templates\app\battleship_lobby.html:81
+msgid "Ausrichtung drehen"
+msgstr "Rotate orientation"
+
+#: .\app\templates\app\battleship_lobby.html:84
+msgid "Zufällige Flotte platzieren"
+msgstr "Place random fleet"
+
+#: .\app\templates\app\battleship_lobby.html:87
+msgid "Platzierung leeren"
+msgstr "Clear placement"
+
+# | msgid "Runde beenden"
+#: .\app\templates\app\battleship_lobby.html:96
+#: .\app\templates\app\skribble_home.html:23
+#: .\app\templates\app\skribble_lobby.html:85
+#: .\app\templates\app\tictactoe_lobby.html:74
+msgid "Freunde einladen"
+msgstr "Invite friends"
+
+#: .\app\templates\app\battleship_lobby.html:107
+#: .\app\templates\app\skribble_lobby.html:97
+#: .\app\templates\app\tictactoe_lobby.html:87
+msgid "Einladung offen"
+msgstr "Invitation pending"
+
+#: .\app\templates\app\battleship_lobby.html:109
+#: .\app\templates\app\skribble_lobby.html:99
+#: .\app\templates\app\tictactoe_lobby.html:89
+msgid "War schon eingeladen"
+msgstr "Was already invited"
+
+#: .\app\templates\app\battleship_lobby.html:111
+#: .\app\templates\app\skribble_lobby.html:101
+#: .\app\templates\app\tictactoe_lobby.html:91
+#: .\app\templates\app\users.html:93
+msgid "Freund"
+msgstr "Friend"
+
+# | msgid "Einloggen"
+#: .\app\templates\app\battleship_lobby.html:119
+#: .\app\templates\app\skribble_lobby.html:109
+#: .\app\templates\app\tictactoe_lobby.html:99
+msgid "Einladen"
+msgstr "Invite"
+
+#: .\app\templates\app\battleship_lobby.html:131
+#: .\app\templates\app\tictactoe_lobby.html:111
+msgid "Keine weiteren Freunde zum Einladen gefunden."
+msgstr "No other friends available to invite."
+
+#: .\app\templates\app\battleship_lobby.html:140
+msgid "Gefecht beendet"
+msgstr "Battle finished"
+
+#: .\app\templates\app\battleship_lobby.html:149
+msgid "Eigene Flotte"
+msgstr "Own fleet"
+
+#: .\app\templates\app\battleship_lobby.html:150
+msgid "Werft"
+msgstr "Shipyard"
+
+#: .\app\templates\app\battleship_lobby.html:154
+msgid "Eigenes Spielfeld"
+msgstr "Own board"
+
+#: .\app\templates\app\battleship_lobby.html:160
+msgid "Gegnerisches Radar"
+msgstr "Enemy radar"
+
+#: .\app\templates\app\battleship_lobby.html:161
+msgid "Zielgebiet"
+msgstr "Target area"
+
+#: .\app\templates\app\battleship_lobby.html:165
+msgid "Gegnerisches Spielfeld"
+msgstr "Enemy board"
 
 # | msgid "Nachricht"
 #: .\app\templates\app\chat.html:16
@@ -1685,12 +2166,12 @@ msgid "Gruppenbild"
 msgstr "Group picture"
 
 # | msgid "Noch kein Score"
-#: .\app\templates\app\chat.html:51 .\app\templates\app\home.html:255
+#: .\app\templates\app\chat.html:51 .\app\templates\app\home.html:257
 msgid "Noch keine Nachrichten"
 msgstr "No messages yet"
 
 # | msgid "Noch keine Widgets"
-#: .\app\templates\app\chat.html:61 .\app\templates\app\home.html:267
+#: .\app\templates\app\chat.html:61 .\app\templates\app\home.html:269
 msgid "Noch keine Chats."
 msgstr "No chats yet."
 
@@ -1764,14 +2245,6 @@ msgstr "Message options"
 #: .\app\templates\app\chat.html:257
 msgid "Reagieren"
 msgstr "React"
-
-#: .\app\templates\app\chat.html:259
-#: .\app\templates\app\partials\home_section_card.html:143
-#: .\app\templates\app\partials\note_card.html:79
-#: .\app\templates\app\profile.html:398
-#: .\app\templates\app\stream_deck.html:327
-msgid "Löschen"
-msgstr "Delete"
 
 # | msgid "Icon auswählen"
 #: .\app\templates\app\chat.html:262
@@ -1854,10 +2327,6 @@ msgstr "No locations saved yet."
 msgid "Stoppuhr"
 msgstr "Stopwatch"
 
-#: .\app\templates\app\clock.html:123
-msgid "Runde"
-msgstr "Lap"
-
 #: .\app\templates\app\clock.html:127 .\app\templates\app\clock.html:176
 msgid "Reset"
 msgstr "Reset"
@@ -1875,15 +2344,15 @@ msgid "Bereit"
 msgstr "Ready"
 
 #: .\app\templates\app\clock.html:152
-#: .\app\templates\app\unit_converter.html:101 .\app\views.py:1702
+#: .\app\templates\app\unit_converter.html:101 .\app\views.py:1736
 msgid "Stunden"
 msgstr "Hours"
 
-#: .\app\templates\app\clock.html:156 .\app\views.py:1701
+#: .\app\templates\app\clock.html:156 .\app\views.py:1735
 msgid "Minuten"
 msgstr "Minutes"
 
-#: .\app\templates\app\clock.html:160 .\app\views.py:1700
+#: .\app\templates\app\clock.html:160 .\app\views.py:1734
 msgid "Sekunden"
 msgstr "Seconds"
 
@@ -2086,8 +2555,8 @@ msgstr "Search on Google..."
 msgid "Widget-Bereich verschieben"
 msgstr "Move widget area"
 
-#: .\app\templates\app\home.html:54 .\app\templates\app\home.html:530
-#: .\app\views.py:476
+#: .\app\templates\app\home.html:54 .\app\templates\app\home.html:570
+#: .\app\views.py:506
 msgid "Widget hinzufügen"
 msgstr "Add widget"
 
@@ -2095,238 +2564,252 @@ msgstr "Add widget"
 msgid "Widget verschieben"
 msgstr "Move widget"
 
-#: .\app\templates\app\home.html:98 .\app\views.py:475
+#: .\app\templates\app\home.html:100 .\app\views.py:505
 msgid "Widget bearbeiten"
 msgstr "Edit widget"
 
-#: .\app\templates\app\home.html:106
+#: .\app\templates\app\home.html:108
 msgid "Widget löschen"
 msgstr "Delete widget"
 
-#: .\app\templates\app\home.html:139
+#: .\app\templates\app\home.html:141
 msgid "Gefühlt"
 msgstr "Feels like"
 
-#: .\app\templates\app\home.html:153
+#: .\app\templates\app\home.html:155
 msgid "Wetterseite öffnen"
 msgstr "Open weather page"
 
-#: .\app\templates\app\home.html:161
+#: .\app\templates\app\home.html:163
 msgid "aktive Notizen"
 msgstr "active notes"
 
-#: .\app\templates\app\home.html:169
+#: .\app\templates\app\home.html:171
 #: .\app\templates\app\partials\note_card.html:19
 msgid "Unbenannte Notiz"
 msgstr "Untitled Note"
 
-#: .\app\templates\app\home.html:176
+#: .\app\templates\app\home.html:178
 msgid "Noch keine angepinnten Notizen."
 msgstr "No pinned notes yet."
 
-#: .\app\templates\app\home.html:181
+#: .\app\templates\app\home.html:183
 msgid "Notizen öffnen"
 msgstr "Open Notes"
 
-#: .\app\templates\app\home.html:216
+#: .\app\templates\app\home.html:218
 msgid "Noch kein Score"
 msgstr "No score yet"
 
-#: .\app\templates\app\home.html:222
+#: .\app\templates\app\home.html:224
 msgid "Human Benchmark öffnen"
 msgstr "Open Human Benchmark"
 
 # | msgid "Eingeklappt"
-#: .\app\templates\app\home.html:231
+#: .\app\templates\app\home.html:233
 msgid "ungelesen"
 msgstr "unread"
 
 # | msgid "Uhr öffnen"
-#: .\app\templates\app\home.html:272
+#: .\app\templates\app\home.html:274
 msgid "Chats öffnen"
 msgstr "Open chats"
 
-#: .\app\templates\app\home.html:285
+#: .\app\templates\app\home.html:287
 msgid "Anfragen"
 msgstr "Requests"
 
 # | msgid "Noch keine Ergebnisse."
-#: .\app\templates\app\home.html:304
+#: .\app\templates\app\home.html:306
 msgid "Noch keine Freunde."
 msgstr "No friends yet."
 
 # | msgid "Wetterseite öffnen"
-#: .\app\templates\app\home.html:309
+#: .\app\templates\app\home.html:311
 msgid "Freunde öffnen"
 msgstr "Open friends"
 
-# | msgid "Einstellungen"
-#: .\app\templates\app\home.html:318 .\app\templates\app\skribble_home.html:86
-msgid "Einladungen"
-msgstr "Invitations"
-
-#: .\app\templates\app\home.html:322
+#: .\app\templates\app\home.html:324
 msgid "Lobbys"
 msgstr "Lobbies"
 
-#: .\app\templates\app\home.html:333
+#: .\app\templates\app\home.html:335
 msgid "von"
-msgstr "by"
+msgstr "from"
 
-#: .\app\templates\app\home.html:353
+#: .\app\templates\app\home.html:355
 msgid "Keine offenen Skribble-Einladungen."
 msgstr "No pending Skribble invitations."
 
-#: .\app\templates\app\home.html:358
+#: .\app\templates\app\home.html:360
 msgid "Skribble öffnen"
 msgstr "Open Skribble"
 
-#: .\app\templates\app\home.html:367
+#: .\app\templates\app\home.html:369
+msgid "Räume"
+msgstr "Rooms"
+
+# | msgid "Spiele"
+#: .\app\templates\app\home.html:373 .\app\templates\app\skribble_home.html:159
+#: .\app\templates\app\skribble_lobby.html:80
+#: .\app\templates\app\tictactoe_lobby.html:58
+msgid "Spieler"
+msgstr "Players"
+
+#: .\app\templates\app\home.html:392
+msgid "Noch kein offener Tic-Tac-Toe-Raum."
+msgstr "No open Tic Tac Toe room yet."
+
+#: .\app\templates\app\home.html:397
+msgid "Tic Tac Toe öffnen"
+msgstr "Open Tic Tac Toe"
+
+#: .\app\templates\app\home.html:406
 msgid "Links"
 msgstr "Links"
 
-#: .\app\templates\app\home.html:371
+#: .\app\templates\app\home.html:410
 msgid "Bereiche"
 msgstr "Sections"
 
-#: .\app\templates\app\home.html:379
+#: .\app\templates\app\home.html:418
 msgid "Wetter-Orte"
 msgstr "Weather locations"
 
-#: .\app\templates\app\home.html:389
+#: .\app\templates\app\home.html:428
 msgid "Noch keine Widgets"
 msgstr "No widgets yet"
 
-#: .\app\templates\app\home.html:390
+#: .\app\templates\app\home.html:429
 msgid ""
 "Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard."
 msgstr "Add your first widget and turn the homepage into a dashboard."
 
-#: .\app\templates\app\home.html:408
+#: .\app\templates\app\home.html:447
 msgid "Bereich hinzufügen"
 msgstr "Add section"
 
-#: .\app\templates\app\home.html:409
+#: .\app\templates\app\home.html:448
 msgid "Erstelle einen neuen Bereich für weitere Verknüpfungen."
 msgstr "Create a new section for more shortcuts."
 
-#: .\app\templates\app\home.html:420 .\app\views.py:474
+#: .\app\templates\app\home.html:459 .\app\views.py:504
 msgid "Neues Widget"
 msgstr "New widget"
 
-#: .\app\templates\app\home.html:433
+#: .\app\templates\app\home.html:472
 msgid "Widget-Titel"
 msgstr "Widget title"
 
-#: .\app\templates\app\home.html:434
+#: .\app\templates\app\home.html:473
 msgid "Mein Widget"
 msgstr "My widget"
 
-#: .\app\templates\app\home.html:438
+#: .\app\templates\app\home.html:477
 msgid "Widget-Typ"
 msgstr "Widget type"
 
-#: .\app\templates\app\home.html:452
+#: .\app\templates\app\home.html:492
 msgid "Wetter-Ort"
 msgstr "Weather location"
 
-#: .\app\templates\app\home.html:454
+#: .\app\templates\app\home.html:494
 msgid "Ersten gespeicherten Ort oder Berlin nutzen"
 msgstr "Use first saved location or Berlin"
 
-#: .\app\templates\app\home.html:459
+#: .\app\templates\app\home.html:499
 msgid "Du kannst weitere Orte auf der Wetterseite speichern."
 msgstr "You can save more locations on the weather page."
 
-#: .\app\templates\app\home.html:466
+#: .\app\templates\app\home.html:506
 msgid "Uhr-Farbstil"
 msgstr "Clock color style"
 
-#: .\app\templates\app\home.html:467
+#: .\app\templates\app\home.html:507
 msgid "Der Farbstil verändert nur die Optik des Uhr-Widgets."
 msgstr "The color style only changes the appearance of the clock widget."
 
-#: .\app\templates\app\home.html:484
+#: .\app\templates\app\home.html:524
 msgid "Uhr-Layout"
 msgstr "Clock layout"
 
-#: .\app\templates\app\home.html:485
+#: .\app\templates\app\home.html:525
 msgid "Hier wählst du die Anordnung, zum Beispiel digital oder analog."
 msgstr "Choose the layout here, for example digital or analog."
 
-#: .\app\templates\app\home.html:499
+#: .\app\templates\app\home.html:539
 msgid "Widget-Farbe"
 msgstr "Widget color"
 
-#: .\app\templates\app\home.html:541 .\app\views.py:465
+#: .\app\templates\app\home.html:581 .\app\views.py:495
 msgid "Neue Verknüpfung"
 msgstr "New shortcut"
 
-#: .\app\templates\app\home.html:567
+#: .\app\templates\app\home.html:607
 msgid "Icon auswählen"
 msgstr "Choose icon"
 
-#: .\app\templates\app\home.html:606
+#: .\app\templates\app\home.html:646
 msgid "Cloud"
 msgstr "Cloud"
 
-#: .\app\templates\app\home.html:614
+#: .\app\templates\app\home.html:654
 msgid "Gaming"
 msgstr "Gaming"
 
-#: .\app\templates\app\home.html:622
+#: .\app\templates\app\home.html:662
 msgid "Code"
 msgstr "Code"
 
-#: .\app\templates\app\home.html:630
+#: .\app\templates\app\home.html:670
 msgid "Server"
 msgstr "Server"
 
-#: .\app\templates\app\home.html:638
+#: .\app\templates\app\home.html:678
 msgid "Link"
 msgstr "Link"
 
-#: .\app\templates\app\home.html:646
+#: .\app\templates\app\home.html:686
 msgid "Home"
 msgstr "Home"
 
-#: .\app\templates\app\home.html:653
+#: .\app\templates\app\home.html:693
 msgid "Eigenes Icon, falls keins passt"
 msgstr "Custom icon if none fits"
 
-#: .\app\templates\app\home.html:654
+#: .\app\templates\app\home.html:694
 msgid "z.B. fa-solid fa-server"
 msgstr "e.g. fa-solid fa-server"
 
-#: .\app\templates\app\home.html:658
+#: .\app\templates\app\home.html:698
 msgid "Eigenes Bild, falls du kein Icon nutzen möchtest"
 msgstr "Custom image if you do not want to use an icon"
 
-#: .\app\templates\app\home.html:663
+#: .\app\templates\app\home.html:703
 msgid "Bild auswählen"
 msgstr "Choose image"
 
-#: .\app\templates\app\home.html:666 .\app\views.py:473
+#: .\app\templates\app\home.html:706 .\app\views.py:503
 msgid "Keine Datei ausgewählt"
 msgstr "No file selected"
 
-#: .\app\templates\app\home.html:677
+#: .\app\templates\app\home.html:717
 msgid "Beispiele:"
 msgstr "Examples:"
 
-#: .\app\templates\app\home.html:688 .\app\views.py:469
+#: .\app\templates\app\home.html:728 .\app\views.py:499
 msgid "Neuer Bereich"
 msgstr "New section"
 
-#: .\app\templates\app\home.html:701
+#: .\app\templates\app\home.html:741
 msgid "Bereichsname"
 msgstr "Section name"
 
-#: .\app\templates\app\home.html:706
+#: .\app\templates\app\home.html:746
 msgid "Bereichsfarbe"
 msgstr "Section color"
 
-#: .\app\templates\app\home.html:737 .\app\views.py:470
+#: .\app\templates\app\home.html:777 .\app\views.py:500
 msgid "Bereich erstellen"
 msgstr "Create section"
 
@@ -2338,21 +2821,21 @@ msgstr "Switch to reaction test"
 msgid "Benchmark Tests"
 msgstr "Benchmark tests"
 
-#: .\app\templates\app\human_benchmark.html:23 .\app\views.py:1112
+#: .\app\templates\app\human_benchmark.html:23 .\app\views.py:1142
 msgid "Reaktion"
 msgstr "Reaction"
 
-#: .\app\templates\app\human_benchmark.html:24 .\app\views.py:1113
+#: .\app\templates\app\human_benchmark.html:24 .\app\views.py:1143
 msgid "Aim Trainer"
 msgstr "Aim Trainer"
 
 #: .\app\templates\app\human_benchmark.html:25
-#: .\app\templates\app\human_benchmark.html:112 .\app\views.py:1114
+#: .\app\templates\app\human_benchmark.html:112 .\app\views.py:1144
 msgid "Typing Test"
 msgstr "Typing Test"
 
 #: .\app\templates\app\human_benchmark.html:26
-#: .\app\templates\app\human_benchmark.html:96 .\app\views.py:1115
+#: .\app\templates\app\human_benchmark.html:96 .\app\views.py:1145
 msgid "Visual Memory"
 msgstr "Visual Memory"
 
@@ -2417,7 +2900,7 @@ msgstr "Click start to begin the test."
 msgid "Warte auf Start..."
 msgstr "Waiting to start..."
 
-#: .\app\templates\app\human_benchmark.html:79 .\app\views.py:1207
+#: .\app\templates\app\human_benchmark.html:79 .\app\views.py:1237
 msgid "Test starten"
 msgstr "Start test"
 
@@ -2459,7 +2942,7 @@ msgid "Letzte 10 Ergebnisse"
 msgstr "Last 10 results"
 
 #: .\app\templates\app\human_benchmark.html:137
-#: .\app\templates\app\human_benchmark.html:147 .\app\views.py:1210
+#: .\app\templates\app\human_benchmark.html:147 .\app\views.py:1240
 msgid "Noch keine Ergebnisse."
 msgstr "No results yet."
 
@@ -2624,7 +3107,7 @@ msgstr ""
 "Save ideas, tasks, code snippets, server commands, or anything else you want "
 "to find later."
 
-#: .\app\templates\app\notes.html:31 .\app\views.py:1633
+#: .\app\templates\app\notes.html:31 .\app\views.py:1667
 msgid "Neue Notiz"
 msgstr "New note"
 
@@ -2632,7 +3115,7 @@ msgstr "New note"
 msgid "Titel, Inhalt oder Tags suchen..."
 msgstr "Search for title, content, or tags..."
 
-#: .\app\templates\app\notes.html:70 .\app\templates\app\skribble_lobby.html:47
+#: .\app\templates\app\notes.html:70 .\app\templates\app\skribble_lobby.html:48
 #: .\app\templates\app\stream_deck.html:77
 msgid "Zurücksetzen"
 msgstr "Reset"
@@ -2846,7 +3329,7 @@ msgstr "Collapsed"
 msgid "Bereich verschieben"
 msgstr "Move section"
 
-#: .\app\templates\app\partials\home_section_card.html:42 .\app\views.py:471
+#: .\app\templates\app\partials\home_section_card.html:42 .\app\views.py:501
 msgid "Bereich bearbeiten"
 msgstr "Edit section"
 
@@ -2944,19 +3427,6 @@ msgstr "Open friend list"
 #: .\app\templates\app\profile.html:116
 msgid "Offene Anfragen"
 msgstr "Pending requests"
-
-# | msgid "Übernehmen"
-#: .\app\templates\app\profile.html:126
-#: .\app\templates\app\public_profile.html:138
-#: .\app\templates\app\skribble_home.html:99
-msgid "Annehmen"
-msgstr "Accept"
-
-#: .\app\templates\app\profile.html:129
-#: .\app\templates\app\public_profile.html:142
-#: .\app\templates\app\skribble_home.html:104
-msgid "Ablehnen"
-msgstr "Decline"
 
 #: .\app\templates\app\profile.html:140
 msgid "Gesendete Anfragen"
@@ -3104,12 +3574,6 @@ msgstr "Info"
 msgid "Mitglied seit"
 msgstr "Member since"
 
-# | msgid "Spotify-Status"
-#: .\app\templates\app\public_profile.html:91
-#: .\app\templates\app\skribble_lobby.html:69
-msgid "Status"
-msgstr "Status"
-
 #: .\app\templates\app\public_profile.html:102
 msgid "Mein Profil bearbeiten"
 msgstr "Edit my profile"
@@ -3209,10 +3673,6 @@ msgstr "Activity"
 msgid "Freundesaktivität"
 msgstr "Friend activity"
 
-#: .\app\templates\app\skribble_home.html:14
-msgid "Freunde-Spiel"
-msgstr "Friends game"
-
 #: .\app\templates\app\skribble_home.html:18
 msgid "Zeichnen, raten, lachen."
 msgstr "Draw, guess, laugh."
@@ -3225,12 +3685,6 @@ msgstr "Create a lobby, invite your friends, and play together right away."
 #: .\app\templates\app\skribble_home.html:22
 msgid "Spiel-Funktionen"
 msgstr "Game features"
-
-# | msgid "Runde beenden"
-#: .\app\templates\app\skribble_home.html:23
-#: .\app\templates\app\skribble_lobby.html:84
-msgid "Freunde einladen"
-msgstr "Invite friends"
 
 # | msgid "Widget speichern"
 #: .\app\templates\app\skribble_home.html:24
@@ -3300,11 +3754,6 @@ msgstr "Use only custom words"
 msgid "Lobby erstellen"
 msgstr "Create lobby"
 
-#: .\app\templates\app\skribble_home.html:93
-#, python-format
-msgid "von %(user)s"
-msgstr "from %(user)s"
-
 #: .\app\templates\app\skribble_home.html:111
 msgid "Du hast aktuell keine offenen Spiel-Einladungen."
 msgstr "You currently have no pending game invitations."
@@ -3322,57 +3771,37 @@ msgstr "Active lobbies"
 msgid "Aktuell gibt es keine aktive Lobby von dir oder deinen Freunden."
 msgstr "There is currently no active lobby from you or your friends."
 
-#: .\app\templates\app\skribble_home.html:149
-msgid "Verlauf"
-msgstr "History"
-
 #: .\app\templates\app\skribble_home.html:150
 msgid "Deine Lobbys"
 msgstr "Your lobbies"
-
-# | msgid "Spiele"
-#: .\app\templates\app\skribble_home.html:159
-#: .\app\templates\app\skribble_lobby.html:79
-msgid "Spieler"
-msgstr "Players"
 
 #: .\app\templates\app\skribble_home.html:164
 msgid "Du bist noch in keiner Lobby."
 msgstr "You are not in any lobby yet."
 
-# | msgid "Nutzerübersicht"
-#: .\app\templates\app\skribble_lobby.html:28
-msgid "Zur Übersicht"
-msgstr "Back to overview"
-
-#: .\app\templates\app\skribble_lobby.html:32
+#: .\app\templates\app\skribble_lobby.html:33
 msgid "Lobby"
 msgstr "Lobby"
 
-#: .\app\templates\app\skribble_lobby.html:34
+#: .\app\templates\app\skribble_lobby.html:35
 msgid "Lobby-Code"
 msgstr "Lobby code"
 
-# | msgid "Link (optional)"
-#: .\app\templates\app\skribble_lobby.html:40
-msgid "Link kopieren"
-msgstr "Copy link"
-
 # | msgid "Stream starten"
-#: .\app\templates\app\skribble_lobby.html:44
+#: .\app\templates\app\skribble_lobby.html:45
 msgid "Spiel starten"
 msgstr "Start game"
 
-#: .\app\templates\app\skribble_lobby.html:49
+#: .\app\templates\app\skribble_lobby.html:50
 msgid "Lobby wirklich löschen? Alle Spieler und Zeichnungen werden entfernt."
 msgstr "Really delete the lobby? All players and drawings will be removed."
 
 # | msgid "Löschen"
-#: .\app\templates\app\skribble_lobby.html:52
+#: .\app\templates\app\skribble_lobby.html:53
 msgid "Lobby löschen"
 msgstr "Delete lobby"
 
-#: .\app\templates\app\skribble_lobby.html:56
+#: .\app\templates\app\skribble_lobby.html:57
 msgid ""
 "Lobby wirklich verlassen? Du kannst später über eine Einladung oder als "
 "Freund wieder beitreten."
@@ -3380,40 +3809,19 @@ msgstr ""
 "Really leave the lobby? You can rejoin later through an invitation or as a "
 "friend."
 
-#: .\app\templates\app\skribble_lobby.html:59
-msgid "Verlassen"
-msgstr "Leave"
-
 # | msgid "Speicher"
-#: .\app\templates\app\skribble_lobby.html:73
+#: .\app\templates\app\skribble_lobby.html:74
 msgid "Zeichner"
 msgstr "Drawer"
 
-#: .\app\templates\app\skribble_lobby.html:95
-msgid "Einladung offen"
-msgstr "Invitation pending"
-
-#: .\app\templates\app\skribble_lobby.html:97
-msgid "War schon eingeladen"
-msgstr "Was already invited"
-
-#: .\app\templates\app\skribble_lobby.html:99 .\app\templates\app\users.html:93
-msgid "Freund"
-msgstr "Friend"
-
-# | msgid "Eingeklappt"
-#: .\app\templates\app\skribble_lobby.html:107
-msgid "Eingeladen"
-msgstr "Invited"
-
-# | msgid "Einloggen"
-#: .\app\templates\app\skribble_lobby.html:107
-msgid "Einladen"
-msgstr "Invite"
-
-#: .\app\templates\app\skribble_lobby.html:119
+#: .\app\templates\app\skribble_lobby.html:86
 msgid "Es gibt gerade keine weiteren Freunde, die du einladen kannst."
 msgstr "There are currently no other friends you can invite."
+
+# | msgid "Eingeklappt"
+#: .\app\templates\app\skribble_lobby.html:109
+msgid "Eingeladen"
+msgstr "Invited"
 
 # | msgid "Aktuelles Wetter"
 #: .\app\templates\app\skribble_lobby.html:128
@@ -3878,6 +4286,40 @@ msgstr "Recent actions and notes"
 msgid "Protokoll schließen"
 msgstr "Close log"
 
+#: .\app\templates\app\tictactoe_home.html:21
+msgid ""
+"Erstelle einen Raum, teile den Code oder Link und spielt direkt "
+"gegeneinander."
+msgstr "Create a room, share the code or link, and start playing against each other right away."
+
+#: .\app\templates\app\tictactoe_home.html:96
+msgid "Du hast aktuell keine offenen Tic-Tac-Toe-Einladungen."
+msgstr "You currently have no pending Tic Tac Toe invitations."
+
+#: .\app\templates\app\tictactoe_home.html:121
+msgid "Du hast noch keinen Tic-Tac-Toe-Raum."
+msgstr "You do not have a Tic Tac Toe room yet."
+
+#: .\app\templates\app\tictactoe_lobby.html:76
+msgid "Der Raum ist voll. Es können keine weiteren Freunde eingeladen werden."
+msgstr "The room is full. No more friends can be invited."
+
+#: .\app\templates\app\tictactoe_lobby.html:119
+msgid "Du spielst"
+msgstr "You play"
+
+#: .\app\templates\app\tictactoe_lobby.html:120
+msgid "Am Zug"
+msgstr "Turn"
+
+#: .\app\templates\app\tictactoe_lobby.html:122
+msgid "Tic-Tac-Toe-Spielfeld"
+msgstr "Tic Tac Toe board"
+
+#: .\app\templates\app\tictactoe_lobby.html:124
+msgid "Feld"
+msgstr "Square"
+
 #: .\app\templates\app\unit_converter.html:22
 msgid ""
 "Rechne schnell Speichergrößen, Zeiten, Strecken und monatliche Kosten um."
@@ -3916,7 +4358,7 @@ msgstr "Swap units"
 msgid "Nach"
 msgstr "To"
 
-#: .\app\templates\app\unit_converter.html:83 .\app\views.py:1719
+#: .\app\templates\app\unit_converter.html:83 .\app\views.py:1753
 msgid "Gib einen Wert ein, um die Umrechnung zu starten."
 msgstr "Enter a value to start the conversion."
 
@@ -3928,7 +4370,7 @@ msgstr "Quick Examples"
 msgid "Häufige Umrechnungen"
 msgstr "Common Conversions"
 
-#: .\app\templates\app\unit_converter.html:106 .\app\views.py:1710
+#: .\app\templates\app\unit_converter.html:106 .\app\views.py:1744
 msgid "Meilen"
 msgstr "Miles"
 
@@ -4089,317 +4531,370 @@ msgstr "Create your own MyTools account."
 msgid "Schon einen Account?"
 msgstr "Already have an account?"
 
-#: .\app\views.py:44
+#: .\app\tictactoe_views.py:118
+msgid "Du hast gewonnen."
+msgstr "You won."
+
+#: .\app\tictactoe_views.py:120
+msgid "Dein Freund hat gewonnen."
+msgstr "Your friend won."
+
+#: .\app\tictactoe_views.py:122
+#, python-format
+msgid "%(symbol)s hat gewonnen."
+msgstr "%(symbol)s won."
+
+#: .\app\tictactoe_views.py:124
+msgid "Unentschieden."
+msgstr "Draw."
+
+#: .\app\tictactoe_views.py:126
+msgid "Du bist am Zug."
+msgstr "Your turn."
+
+#: .\app\tictactoe_views.py:128
+msgid "Warte auf den Zug deines Gegners."
+msgstr "Waiting for your opponent's move."
+
+#: .\app\tictactoe_views.py:243 .\app\tictactoe_views.py:295
+msgid "Dieser Tic-Tac-Toe-Raum ist bereits voll."
+msgstr "This Tic Tac Toe room is already full."
+
+#: .\app\tictactoe_views.py:269
+msgid "Dieser Freund ist schon im Raum."
+msgstr "This friend is already in the room."
+
+#: .\app\tictactoe_views.py:343
+msgid "Das Spiel läuft gerade nicht."
+msgstr "The game is not running right now."
+
+#: .\app\tictactoe_views.py:345
+msgid "Du bist in diesem Raum nur Zuschauer."
+msgstr "You are only spectating this room."
+
+#: .\app\tictactoe_views.py:349
+msgid "Dieses Feld ist schon belegt."
+msgstr "This square is already occupied."
+
+#: .\app\tictactoe_views.py:384
+msgid "Nur Spieler können neu starten."
+msgstr "Only players can restart."
+
+#: .\app\tictactoe_views.py:414 .\app\tictactoe_views.py:440
+msgid "Tic-Tac-Toe-Raum wurde gelöscht."
+msgstr "Tic Tac Toe room was deleted."
+
+#: .\app\views.py:45
 #, python-format
 msgid "%(name)s fehlt in der .env."
 msgstr "%(name)s is missing in the .env."
 
-#: .\app\views.py:102
+#: .\app\views.py:103
 msgid "Weltuhr-Ort wurde hinzugefügt."
 msgstr "World clock location was added."
 
-#: .\app\views.py:104
+#: .\app\views.py:105
 msgid "Bitte wähle einen gültigen Ort aus."
 msgstr "Please choose a valid location."
 
-#: .\app\views.py:111
+#: .\app\views.py:112
 msgid "Weltuhr-Ort wurde gelöscht."
 msgstr "World clock location was deleted."
 
-#: .\app\views.py:135
+#: .\app\views.py:136
 msgid "Timer wurde gespeichert."
 msgstr "Timer was saved."
 
-#: .\app\views.py:137
+#: .\app\views.py:138
 msgid "Bitte gib einen Namen und eine Dauer größer als 0 Sekunden ein."
 msgstr "Please enter a name and a duration greater than 0 seconds."
 
-#: .\app\views.py:144
+#: .\app\views.py:145
 msgid "Timer wurde gelöscht."
 msgstr "Timer was deleted."
 
-#: .\app\views.py:162
+#: .\app\views.py:163
 msgid "Der eigene Klingelton darf maximal 5 MB groß sein."
 msgstr "The custom ringtone must not be larger than 5 MB."
 
-#: .\app\views.py:167
+#: .\app\views.py:168
 msgid "Bitte lade eine Audio-Datei hoch."
 msgstr "Please upload an audio file."
 
-#: .\app\views.py:174
+#: .\app\views.py:175
 msgid "Uhr-Einstellungen wurden gespeichert."
 msgstr "Clock settings were saved."
 
-#: .\app\views.py:184
+#: .\app\views.py:185
 msgid "Eigener Klingelton wurde gelöscht."
 msgstr "Custom ringtone was deleted."
 
-#: .\app\views.py:214
+#: .\app\views.py:215
 msgid "Dein Account wurde erstellt."
 msgstr "Your account has been created."
 
-#: .\app\views.py:261 .\app\views.py:284
+#: .\app\views.py:262 .\app\views.py:285
 msgid "Wetter konnte nicht geladen werden."
 msgstr "Weather could not be loaded."
 
-#: .\app\views.py:272
+#: .\app\views.py:273
 msgid "Keine Beschreibung"
 msgstr "No description"
 
-#: .\app\views.py:466
+#: .\app\views.py:496
 #, python-format
 msgid "für \"%(section)s\""
 msgstr "for \"%(section)s\""
 
-#: .\app\views.py:467
+#: .\app\views.py:497
 msgid "Verknüpfung bearbeiten"
 msgstr "Edit shortcut"
 
-#: .\app\views.py:468
+#: .\app\views.py:498
 #, python-format
 msgid "in \"%(section)s\""
 msgstr "in \"%(section)s\""
 
-#: .\app\views.py:472 .\app\views.py:1655
+#: .\app\views.py:502 .\app\views.py:1689
 msgid "Änderungen speichern"
 msgstr "Save changes"
 
-#: .\app\views.py:477
+#: .\app\views.py:507
 msgid "Widget speichern"
 msgstr "Save widget"
 
-#: .\app\views.py:496
+#: .\app\views.py:526
 msgid "Ungültiges JSON"
 msgstr "Invalid JSON"
 
-#: .\app\views.py:569
+#: .\app\views.py:599
 msgid "Unbekannte Aktion"
 msgstr "Unknown action"
 
-#: .\app\views.py:599 .\app\views.py:653
+#: .\app\views.py:629 .\app\views.py:683
 msgid "Widget"
 msgstr "Widget"
 
-#: .\app\views.py:935 .\app\views.py:949 .\app\views.py:1080
+#: .\app\views.py:965 .\app\views.py:979 .\app\views.py:1110
 msgid "Ungültige Antwort der OpenWeather API."
 msgstr "Invalid response from OpenWeather API."
 
-#: .\app\views.py:958
+#: .\app\views.py:988
 msgid "Wettervorhersage konnte nicht geladen werden."
 msgstr "Weather forecast could not be loaded."
 
-#: .\app\views.py:1048
+#: .\app\views.py:1078
 msgid "OpenWeather API-Key ist ungültig."
 msgstr "OpenWeather API-Key is invalid."
 
-#: .\app\views.py:1054 .\app\views.py:1066
+#: .\app\views.py:1084 .\app\views.py:1096
 msgid "Standort nicht gefunden."
 msgstr "Location not found."
 
-#: .\app\views.py:1060
+#: .\app\views.py:1090
 #, python-format
 msgid "OpenWeather Fehler: %(message)s"
 msgstr "OpenWeather Error: %(message)s"
 
-#: .\app\views.py:1073 .\app\views.py:1087
+#: .\app\views.py:1103 .\app\views.py:1117
 #, python-format
 msgid "Verbindungsfehler: %(error)s"
 msgstr "Connection error: %(error)s"
 
-#: .\app\views.py:1203
+#: .\app\views.py:1233
 msgid "Lade Text..."
 msgstr "Loading text..."
 
-#: .\app\views.py:1204
+#: .\app\views.py:1234
 msgid "Übersetze..."
 msgstr "Translating..."
 
-#: .\app\views.py:1205
+#: .\app\views.py:1235
 msgid "Nächster Test"
 msgstr "Next test"
 
-#: .\app\views.py:1206
+#: .\app\views.py:1236
 msgid "Lädt..."
 msgstr "Loading..."
 
-#: .\app\views.py:1208
+#: .\app\views.py:1238
 msgid "Neuer Highscore!"
 msgstr "New high score!"
 
-#: .\app\views.py:1209
+#: .\app\views.py:1239
 msgid "Ergebnis gespeichert."
 msgstr "Result saved."
 
-#: .\app\views.py:1211
+#: .\app\views.py:1241
 msgid "Platz"
 msgstr "Rank"
 
-#: .\app\views.py:1213
+#: .\app\views.py:1243
 msgid "Score"
 msgstr "Score"
 
-#: .\app\views.py:1214
+#: .\app\views.py:1244
 msgid "Datum"
 msgstr "Date"
 
-#: .\app\views.py:1228
+#: .\app\views.py:1258
 msgid "Ungültige Anfrage."
 msgstr "Invalid request."
 
-#: .\app\views.py:1233
+#: .\app\views.py:1263
 msgid "Unbekannter Spielmodus."
 msgstr "Unknown game mode."
 
-#: .\app\views.py:1238 .\app\views.py:1241
+#: .\app\views.py:1268 .\app\views.py:1271
 msgid "Ungültiger Score."
 msgstr "Invalid score."
 
-#: .\app\views.py:1317 .\app\views.py:1383
+#: .\app\views.py:1347 .\app\views.py:1413
 msgid ""
 "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
 msgstr "Database table missing. Please run migration: python manage.py migrate"
 
-#: .\app\views.py:1327
+#: .\app\views.py:1357
 msgid "Ungültiges JSON."
 msgstr "Invalid JSON"
 
-#: .\app\views.py:1340
+#: .\app\views.py:1370
 msgid "Unbekannte Aktion."
 msgstr "Unknown action"
 
-#: .\app\views.py:1354 .\app\views.py:1411
+#: .\app\views.py:1384 .\app\views.py:1441
 msgid "Name fehlt."
 msgstr "Name is missing."
 
-#: .\app\views.py:1360 .\app\views.py:1417
+#: .\app\views.py:1390 .\app\views.py:1447
 msgid "Ungültige Nation."
 msgstr "Invalid nation."
 
-#: .\app\views.py:1366
+#: .\app\views.py:1396
 msgid "Bild fehlt."
 msgstr "Picture is missing."
 
-#: .\app\views.py:1393 .\app\views.py:1440
+#: .\app\views.py:1423 .\app\views.py:1470
 msgid "Methode nicht erlaubt."
 msgstr "Method not allowed."
 
-#: .\app\views.py:1458
+#: .\app\views.py:1488
 msgid "Suchbegriff fehlt."
 msgstr "Search term is missing."
 
-#: .\app\views.py:1472
+#: .\app\views.py:1502
 msgid "Pagination-Parameter sind ungültig."
 msgstr "Pagination parameters are invalid."
 
-#: .\app\views.py:1493 .\app\views.py:1526
+#: .\app\views.py:1523 .\app\views.py:1556
 msgid "Ungültige Antwort der Genius API."
 msgstr "Invalid response from Genius API."
 
-#: .\app\views.py:1499
+#: .\app\views.py:1529
 msgid "Genius API Fehler."
 msgstr "Genius API error."
 
-#: .\app\views.py:1521
+#: .\app\views.py:1551
 msgid "Genius API konnte nicht erreicht werden."
 msgstr "Genius API could not be reached."
 
-#: .\app\views.py:1537
+#: .\app\views.py:1567
 msgid "Latitude und Longitude fehlen."
 msgstr "Latitude and longitude are missing."
 
-#: .\app\views.py:1546
+#: .\app\views.py:1576
 msgid "Latitude und Longitude müssen Zahlen sein."
 msgstr "Latitude and longitude must be numbers."
 
-#: .\app\views.py:1570 .\app\views.py:1587
+#: .\app\views.py:1600 .\app\views.py:1617
 msgid "Ungültige Antwort der Tankerkönig API."
 msgstr "Invalid response from Tankerkönig API."
 
-#: .\app\views.py:1574
+#: .\app\views.py:1604
 msgid "Tankerkönig API Fehler."
 msgstr "Tankerkönig API error."
 
-#: .\app\views.py:1582
+#: .\app\views.py:1612
 msgid "Tankerkönig API konnte nicht erreicht werden."
 msgstr "Tankerkönig API could not be reached."
 
-#: .\app\views.py:1626
+#: .\app\views.py:1660
 msgid "Notiz wurde erstellt."
 msgstr "Note created."
 
-#: .\app\views.py:1634
+#: .\app\views.py:1668
 msgid "Notiz speichern"
 msgstr "Save note"
 
-#: .\app\views.py:1646
+#: .\app\views.py:1680
 msgid "Notiz wurde aktualisiert."
 msgstr "Note updated."
 
-#: .\app\views.py:1654
+#: .\app\views.py:1688
 msgid "Notiz bearbeiten"
 msgstr "Edit note"
 
-#: .\app\views.py:1664
+#: .\app\views.py:1698
 msgid "Notiz wurde gelöscht."
 msgstr "Note deleted."
 
-#: .\app\views.py:1684
+#: .\app\views.py:1718
 msgid "Notiz wurde archiviert."
 msgstr "Note archived."
 
-#: .\app\views.py:1686
+#: .\app\views.py:1720
 msgid "Notiz wurde wiederhergestellt."
 msgstr "Note restored."
 
-#: .\app\views.py:1694
+#: .\app\views.py:1728
 msgid "Kilobyte (KB)"
 msgstr "Kilobyte (KB)"
 
-#: .\app\views.py:1695
+#: .\app\views.py:1729
 msgid "Megabyte (MB)"
 msgstr "Megabyte (MB)"
 
-#: .\app\views.py:1696
+#: .\app\views.py:1730
 msgid "Gigabyte (GB)"
 msgstr "Gigabyte (GB)"
 
-#: .\app\views.py:1697
+#: .\app\views.py:1731
 msgid "Terabyte (TB)"
 msgstr "Terabyte (TB)"
 
-#: .\app\views.py:1703
+#: .\app\views.py:1737
 msgid "Tage"
 msgstr "Days"
 
-#: .\app\views.py:1706
+#: .\app\views.py:1740
 msgid "Millimeter"
 msgstr "Millimeter"
 
-#: .\app\views.py:1707
+#: .\app\views.py:1741
 msgid "Zentimeter"
 msgstr "Centimeters"
 
-#: .\app\views.py:1708
+#: .\app\views.py:1742
 msgid "Meter"
 msgstr "Meter"
 
-#: .\app\views.py:1709
+#: .\app\views.py:1743
 msgid "Kilometer"
 msgstr "Kilometer"
 
-#: .\app\views.py:1713
+#: .\app\views.py:1747
 msgid "Euro pro Tag"
 msgstr "Euros per day"
 
-#: .\app\views.py:1714
+#: .\app\views.py:1748
 msgid "Euro pro Woche"
 msgstr "Euros per week"
 
-#: .\app\views.py:1715
+#: .\app\views.py:1749
 msgid "Euro pro Monat"
 msgstr "Euros per month"
 
-#: .\app\views.py:1716
+#: .\app\views.py:1750
 msgid "Euro pro Jahr"
 msgstr "Euros per year"
 

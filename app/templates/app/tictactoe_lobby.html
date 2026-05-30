@@ -1,0 +1,130 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ game.name }} · {% translate 'Tic Tac Toe' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/tictactoe.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/tictactoe.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="ttt-page ttt-lobby-page"
+      data-state-url="{% url 'tictactoe_state_api' game.code %}"
+      data-move-url="{% url 'tictactoe_move_api' game.code %}"
+      data-reset-url="{% url 'tictactoe_reset_api' game.code %}">
+    <section class="ttt-lobby-top">
+        <div>
+            <a class="ttt-back" href="{% url 'tictactoe_home' %}">
+                <i class="fa-solid fa-arrow-left"></i>
+                {% translate 'Zur Übersicht' %}
+            </a>
+            <span class="ttt-eyebrow"><i class="fa-solid fa-table-cells"></i> {% translate 'Raum' %}</span>
+            <h1>{{ game.name }}</h1>
+            <p>{% translate 'Raum-Code' %}: <strong class="ttt-code">{{ game.code }}</strong></p>
+        </div>
+        <div class="ttt-top-actions">
+            <button class="ttt-secondary" type="button" id="ttt-copy-link">
+                <i class="fa-regular fa-copy"></i>
+                {% translate 'Link kopieren' %}
+            </button>
+            <button class="ttt-primary" type="button" id="ttt-reset">
+                <i class="fa-solid fa-rotate-right"></i>
+                {% translate 'Neue Runde' %}
+            </button>
+            <form method="post" action="{% url 'tictactoe_leave' game.code %}">
+                {% csrf_token %}
+                <button class="ttt-secondary" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    {% translate 'Verlassen' %}
+                </button>
+            </form>
+            <form method="post" action="{% url 'tictactoe_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
+                {% csrf_token %}
+                <button class="ttt-danger" type="submit">
+                    <i class="fa-solid fa-trash"></i>
+                    {% translate 'Löschen' %}
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="ttt-game-shell">
+        <aside class="ttt-panel ttt-score-panel">
+            <h2>{% translate 'Spieler' %}</h2>
+            <div class="ttt-player-row is-x">
+                <span>X</span>
+                <strong id="ttt-player-x">-</strong>
+            </div>
+            <div class="ttt-player-row is-o">
+                <span>O</span>
+                <strong id="ttt-player-o">-</strong>
+            </div>
+            <div class="ttt-status-card">
+                <small>{% translate 'Status' %}</small>
+                <strong id="ttt-status">-</strong>
+                <p id="ttt-message">-</p>
+            </div>
+
+            <div class="ttt-friends-box">
+                <h2>{% translate 'Freunde einladen' %}</h2>
+                {% if game.player_o_id %}
+                    <p class="ttt-muted">{% translate 'Der Raum ist voll. Es können keine weiteren Freunde eingeladen werden.' %}</p>
+                {% elif friend_invite_rows %}
+                    <div class="ttt-friend-list">
+                        {% for row in friend_invite_rows %}
+                            <div class="ttt-friend-row">
+                                <div class="ttt-friend-mini">
+                                    <span>{{ row.user.username|slice:":1"|upper }}</span>
+                                    <div>
+                                        <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
+                                        <small>
+                                            {% if row.is_invited %}
+                                                {% translate 'Einladung offen' %}
+                                            {% elif row.was_invited %}
+                                                {% translate 'War schon eingeladen' %}
+                                            {% else %}
+                                                {% translate 'Freund' %}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'tictactoe_invite_friend' game.code %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                    <button class="ttt-invite-button" type="submit" aria-label="{% translate 'Einladen' %}" {% if row.is_invited %}disabled{% endif %}>
+                                        {% if row.is_invited %}
+                                            <i class="fa-solid fa-check"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-plus"></i>
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="ttt-muted">{% translate 'Keine weiteren Freunde zum Einladen gefunden.' %}</p>
+                {% endif %}
+            </div>
+        </aside>
+
+        <section class="ttt-board-panel">
+            <div class="ttt-board-meta">
+                <span>{% translate 'Runde' %} <strong id="ttt-round">{{ game.round_number }}</strong></span>
+                <span>{% translate 'Du spielst' %} <strong id="ttt-symbol">-</strong></span>
+                <span>{% translate 'Am Zug' %} <strong id="ttt-current">X</strong></span>
+            </div>
+            <div class="ttt-board" id="ttt-board" aria-label="{% translate 'Tic-Tac-Toe-Spielfeld' %}">
+                {% for index in "012345678" %}
+                    <button type="button" class="ttt-cell" data-index="{{ forloop.counter0 }}" aria-label="{% translate 'Feld' %} {{ forloop.counter }}"></button>
+                {% endfor %}
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

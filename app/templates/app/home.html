@@ -88,6 +88,8 @@
                                                         <i class="fa-solid fa-user-group"></i>
                                                     {% elif widget.widget_type == "skribble" %}
                                                         <i class="fa-solid fa-palette"></i>
+                                                    {% elif widget.widget_type == "tictactoe" %}
+                                                        <i class="fa-solid fa-table-cells"></i>
                                                     {% else %}
                                                         <i class="fa-solid fa-gauge-high"></i>
                                                     {% endif %}
@@ -359,6 +361,43 @@
                                                         <i class="fa-solid fa-arrow-right"></i>
                                                     </a>
                                                 </div>
+                                            {% elif widget.widget_type == "tictactoe" %}
+                                                <div class="skribble-widget-content">
+                                                    <div class="stats-grid mini">
+                                                        <div>
+                                                            <strong>{{ data.active_count }}</strong>
+                                                            <span>{% translate 'Räume' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>2</strong>
+                                                            <span>{% translate 'Spieler' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.active_games %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for game in data.active_games %}
+                                                                <a href="{% url 'tictactoe_lobby' game.code %}">
+                                                                    <span class="widget-list-icon is-purple"><i class="fa-solid fa-table-cells"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ game.name }}</strong>
+                                                                        <small>{{ game.code }} · {{ game.get_status_display }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-solid fa-table-cells"></i>
+                                                            <span>{% translate 'Noch kein offener Tic-Tac-Toe-Raum.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'tictactoe_home' %}" class="widget-link">
+                                                        {% translate 'Tic Tac Toe öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
                                             {% else %}
                                                 <div class="stats-widget-content">
                                                     <div class="stats-grid">
@@ -443,6 +482,7 @@
                         <option value="chat">{% translate 'Chats' %}</option>
                         <option value="friends">{% translate 'Freunde' %}</option>
                         <option value="skribble">{% translate 'Skribble' %}</option>
+                        <option value="tictactoe">{% translate 'Tic Tac Toe' %}</option>
                         <option value="benchmark">{% translate 'Human Benchmark' %}</option>
                         <option value="stats">{% translate 'Schnellstatistiken' %}</option>
                     </select>
