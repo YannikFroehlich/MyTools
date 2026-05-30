@@ -250,7 +250,9 @@ document.addEventListener("DOMContentLoaded", () => {
         drawSendTimer = null;
         currentPoints = [];
         await drainSegmentQueue();
-        await refreshState(true);
+        // Drawer already has the stroke on canvas locally — no need for a full redraw.
+        // Viewers will pick it up via the delta mechanism on their next poll.
+        await refreshState(false);
     }
 
     function serializePoints(points) {
@@ -313,16 +315,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const delta = state.drawingDelta || [];
         const nextRevision = Number(state.drawingRevision || 0);
 
-        if (!isDrawing && (forceDraw || drawing.length > 0 || nextRevision < drawingRevision)) {
-            drawAll(drawing);
-            drawingRevision = nextRevision;
-            lastDrawingSignature = `${nextRevision}:full`;
-        } else if (!isDrawing && delta.length > 0) {
-            drawStrokes(delta);
-            drawingRevision = nextRevision;
-            lastDrawingSignature = `${nextRevision}:delta`;
-        } else if (nextRevision !== drawingRevision && !isDrawing) {
-            drawingRevision = nextRevision;
+        if (!isDrawing) {
+            if (forceDraw || nextRevision < drawingRevision || (drawing.length > 0 && drawingRevision === 0)) {
+                // Full redraw: forced, revision went backwards (clear), or initial load
+                drawAll(drawing);
+                drawingRevision = nextRevision;
+                lastDrawingSignature = `${nextRevision}:full`;
+            } else if (delta.length > 0 && nextRevision > drawingRevision) {
+                // Incremental: only paint new strokes
+                drawStrokes(delta);
+                drawingRevision = nextRevision;
+                lastDrawingSignature = `${nextRevision}:delta`;
+            } else if (nextRevision !== drawingRevision) {
+                drawingRevision = nextRevision;
+            }
         }
     }
 
