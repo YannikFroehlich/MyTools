@@ -24,6 +24,8 @@ from app.models import (
     Note,
     Shortcut,
     ShortcutSection,
+    TicTacToeGame,
+    TicTacToeInvite,
     UserProfile,
     WeatherLocation,
 )
@@ -1963,6 +1965,312 @@ class SkribbleLobbyTests(BaseTestCase):
         self.assertEqual(state["drawing"], [])
         self.assertEqual(len(state["drawingDelta"]), 1)
         self.assertEqual(state["drawingDelta"][0]["id"], "segment-2")
+
+
+class TicTacToeTests(BaseTestCase):
+    def test_home_post_creates_room_for_current_user(self):
+        response = self.client.post(reverse("tictactoe_home"), {
+            "action": "create",
+            "name": "Freunde-Runde",
+        })
+
+        game = TicTacToeGame.objects.get()
+
+        self.assertRedirects(response, reverse("tictactoe_lobby", args=[game.code]))
+        self.assertEqual(game.owner, self.user)
+        self.assertEqual(game.player_x, self.user)
+        self.assertEqual(game.status, TicTacToeGame.STATUS_WAITING)
+        self.assertEqual(game.normalized_board, [""] * 9)
+
+    def test_second_user_joins_as_o_and_starts_game(self):
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        self.client.force_login(other_user)
+
+        response = self.client.get(reverse("tictactoe_lobby", args=[game.code]))
+
+        self.assertEqual(response.status_code, 200)
+        game.refresh_from_db()
+        self.assertEqual(game.player_o, other_user)
+        self.assertEqual(game.status, TicTacToeGame.STATUS_PLAYING)
+
+    def test_move_api_rejects_wrong_turn_and_detects_win(self):
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            player_o=other_user,
+            code="TTT123",
+            status=TicTacToeGame.STATUS_PLAYING,
+            board=["X", "X", "", "O", "O", "", "", "", ""],
+            current_symbol=TicTacToeGame.SYMBOL_X,
+        )
+
+        self.client.force_login(other_user)
+        response = self.client.post(reverse("tictactoe_move_api", args=[game.code]), {"index": 5})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["error"], "Du bist noch nicht am Zug.")
+
+        self.client.force_login(self.user)
+        response = self.client.post(reverse("tictactoe_move_api", args=[game.code]), {"index": 2})
+
+        self.assertEqual(response.status_code, 200)
+        game.refresh_from_db()
+        self.assertEqual(game.status, TicTacToeGame.STATUS_FINISHED)
+        self.assertEqual(game.winner_symbol, TicTacToeGame.SYMBOL_X)
+        self.assertEqual(game.winning_line, [0, 1, 2])
+
+    def test_reset_api_starts_new_round(self):
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            player_o=other_user,
+            code="TTT123",
+            status=TicTacToeGame.STATUS_FINISHED,
+            board=["X", "X", "X", "O", "O", "", "", "", ""],
+            winner_symbol=TicTacToeGame.SYMBOL_X,
+            winning_line=[0, 1, 2],
+        )
+
+        response = self.client.post(reverse("tictactoe_reset_api", args=[game.code]))
+
+        self.assertEqual(response.status_code, 200)
+        game.refresh_from_db()
+        self.assertEqual(game.status, TicTacToeGame.STATUS_PLAYING)
+        self.assertEqual(game.normalized_board, [""] * 9)
+        self.assertEqual(game.round_number, 2)
+        self.assertEqual(game.current_symbol, TicTacToeGame.SYMBOL_X)
+
+    def test_player_can_invite_friend(self):
+        friend = get_user_model().objects.create_user(
+            username="freund",
+            password="testpass-123",
+        )
+        Friendship.objects.create(
+            from_user=self.user,
+            to_user=friend,
+            status=Friendship.STATUS_ACCEPTED,
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+
+        response = self.client.post(reverse("tictactoe_invite_friend", args=[game.code]), {
+            "friend_id": friend.id,
+        })
+
+        self.assertRedirects(response, reverse("tictactoe_lobby", args=[game.code]))
+        invite = TicTacToeInvite.objects.get(game=game, to_user=friend)
+        self.assertEqual(invite.from_user, self.user)
+        self.assertEqual(invite.status, TicTacToeInvite.STATUS_PENDING)
+
+    def test_invite_acceptance_redirects_to_game_and_joins_as_o(self):
+        friend = get_user_model().objects.create_user(
+            username="freund",
+            password="testpass-123",
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+        invite = TicTacToeInvite.objects.create(
+            game=game,
+            from_user=self.user,
+            to_user=friend,
+        )
+        self.client.force_login(friend)
+
+        response = self.client.post(reverse("tictactoe_invite_response", args=[invite.id]), {
+            "action": "accept",
+        })
+
+        self.assertRedirects(response, reverse("tictactoe_lobby", args=[game.code]), fetch_redirect_response=False)
+        invite.refresh_from_db()
+        self.assertEqual(invite.status, TicTacToeInvite.STATUS_ACCEPTED)
+
+        self.client.get(reverse("tictactoe_lobby", args=[game.code]))
+        game.refresh_from_db()
+        self.assertEqual(game.player_o, friend)
+        self.assertEqual(game.status, TicTacToeGame.STATUS_PLAYING)
+
+    def test_full_game_rejects_additional_invites(self):
+        second_user = get_user_model().objects.create_user(
+            username="zweiter",
+            password="testpass-123",
+        )
+        friend = get_user_model().objects.create_user(
+            username="freund",
+            password="testpass-123",
+        )
+        Friendship.objects.create(
+            from_user=self.user,
+            to_user=friend,
+            status=Friendship.STATUS_ACCEPTED,
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            player_o=second_user,
+            code="TTT123",
+            status=TicTacToeGame.STATUS_PLAYING,
+            board=[""] * 9,
+        )
+
+        response = self.client.post(reverse("tictactoe_invite_friend", args=[game.code]), {
+            "friend_id": friend.id,
+        })
+
+        self.assertRedirects(response, reverse("tictactoe_lobby", args=[game.code]))
+        self.assertFalse(TicTacToeInvite.objects.filter(game=game, to_user=friend).exists())
+
+    def test_third_user_cannot_join_full_game(self):
+        second_user = get_user_model().objects.create_user(
+            username="zweiter",
+            password="testpass-123",
+        )
+        third_user = get_user_model().objects.create_user(
+            username="dritter",
+            password="testpass-123",
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            player_o=second_user,
+            code="TTT123",
+            status=TicTacToeGame.STATUS_PLAYING,
+            board=[""] * 9,
+        )
+        self.client.force_login(third_user)
+
+        response = self.client.get(reverse("tictactoe_lobby", args=[game.code]))
+
+        self.assertRedirects(response, reverse("tictactoe_home"))
+        game.refresh_from_db()
+        self.assertEqual(game.player_o, second_user)
+
+    def test_delete_view_removes_game(self):
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+
+        response = self.client.post(reverse("tictactoe_delete", args=[game.code]))
+
+        self.assertRedirects(response, reverse("tictactoe_home"))
+        self.assertFalse(TicTacToeGame.objects.filter(code="TTT123").exists())
+
+    def test_leaving_empty_game_deletes_it(self):
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+
+        response = self.client.post(reverse("tictactoe_leave", args=[game.code]))
+
+        self.assertRedirects(response, reverse("tictactoe_home"))
+        self.assertFalse(TicTacToeGame.objects.filter(code="TTT123").exists())
+
+    def test_remaining_player_is_kept_when_opponent_leaves(self):
+        second_user = get_user_model().objects.create_user(
+            username="zweiter",
+            password="testpass-123",
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            player_o=second_user,
+            code="TTT123",
+            status=TicTacToeGame.STATUS_PLAYING,
+            board=["X", "", "", "", "", "", "", "", ""],
+            current_symbol=TicTacToeGame.SYMBOL_O,
+        )
+        self.client.force_login(second_user)
+
+        response = self.client.post(reverse("tictactoe_leave", args=[game.code]))
+
+        self.assertRedirects(response, reverse("tictactoe_home"))
+        game.refresh_from_db()
+        self.assertEqual(game.player_x, self.user)
+        self.assertIsNone(game.player_o)
+        self.assertEqual(game.status, TicTacToeGame.STATUS_WAITING)
+        self.assertEqual(game.normalized_board, [""] * 9)
+
+    def test_home_state_api_returns_current_games_and_invites(self):
+        friend = get_user_model().objects.create_user(
+            username="freund",
+            password="testpass-123",
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            name="Live-Raum",
+            board=[""] * 9,
+        )
+        invite_game = TicTacToeGame.objects.create(
+            owner=friend,
+            player_x=friend,
+            code="INV123",
+            name="Einladung",
+            board=[""] * 9,
+        )
+        TicTacToeInvite.objects.create(
+            game=invite_game,
+            from_user=friend,
+            to_user=self.user,
+        )
+
+        response = self.client.get(reverse("tictactoe_home_state_api"))
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data["ok"])
+        self.assertEqual(data["games"][0]["code"], game.code)
+        self.assertEqual(data["games"][0]["name"], "Live-Raum")
+        self.assertEqual(data["invites"][0]["gameName"], "Einladung")
+        self.assertEqual(data["invites"][0]["fromUser"], "freund")
+
+    def test_home_state_api_drops_deleted_games(self):
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+
+        first_response = self.client.get(reverse("tictactoe_home_state_api"))
+        self.assertEqual(first_response.json()["games"][0]["code"], game.code)
+
+        game.delete()
+        second_response = self.client.get(reverse("tictactoe_home_state_api"))
+
+        self.assertEqual(second_response.status_code, 200)
+        self.assertEqual(second_response.json()["games"], [])
 
 
 class TankstellenApiTests(BaseTestCase):

@@ -17,6 +17,7 @@ def current_profile(request):
             "incoming_friend_requests_count": 0,
             "unread_chat_messages_count": 0,
             "skribble_invites_count": 0,
+            "tictactoe_invites_count": 0,
             "total_notifications_count": 0,
         }
 
@@ -32,5 +33,6 @@ def current_profile(request):
         "incoming_friend_requests_count": counts["incoming_friend_requests"],
         "unread_chat_messages_count": counts["unread_chat_messages"],
         "skribble_invites_count": counts["skribble_invites"],
+        "tictactoe_invites_count": counts["tictactoe_invites"],
         "total_notifications_count": counts["total_notifications"],
     }

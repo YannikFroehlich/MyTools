@@ -687,6 +687,7 @@ class HomeWidget(models.Model):
     WIDGET_CHAT = "chat"
     WIDGET_FRIENDS = "friends"
     WIDGET_SKRIBBLE = "skribble"
+    WIDGET_TICTACTOE = "tictactoe"
 
     WIDGET_CHOICES = [
         (WIDGET_WEATHER, _("Wetter")),
@@ -697,6 +698,7 @@ class HomeWidget(models.Model):
         (WIDGET_CHAT, _("Chats")),
         (WIDGET_FRIENDS, _("Freunde")),
         (WIDGET_SKRIBBLE, _("Skribble")),
+        (WIDGET_TICTACTOE, _("Tic Tac Toe")),
     ]
 
     CLOCK_DESIGN_MINIMAL = "minimal"
@@ -893,6 +895,138 @@ class HumanBenchmarkHighScore(models.Model):
 
     def __str__(self):
         return f"{self.user} · {self.get_game_display()} · {self.display_score}"
+
+
+class TicTacToeGame(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_PLAYING = "playing"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_PLAYING, _("Läuft")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    SYMBOL_X = "X"
+    SYMBOL_O = "O"
+
+    SYMBOL_CHOICES = [
+        (SYMBOL_X, "X"),
+        (SYMBOL_O, "O"),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_tictactoe_games",
+    )
+    player_x = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="tictactoe_games_as_x",
+        null=True,
+        blank=True,
+    )
+    player_o = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="tictactoe_games_as_o",
+        null=True,
+        blank=True,
+    )
+    name = models.CharField(max_length=80, default="Tic Tac Toe")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+    board = models.JSONField(default=list, blank=True)
+    current_symbol = models.CharField(max_length=1, choices=SYMBOL_CHOICES, default=SYMBOL_X)
+    winner_symbol = models.CharField(max_length=1, choices=SYMBOL_CHOICES, blank=True)
+    winning_line = models.JSONField(default=list, blank=True)
+    round_number = models.PositiveIntegerField(default=1)
+    last_move_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Tic Tac Toe Spiel"
+        verbose_name_plural = "Tic Tac Toe Spiele"
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+            models.Index(fields=["player_x", "status"]),
+            models.Index(fields=["player_o", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def normalized_board(self):
+        board = self.board if isinstance(self.board, list) else []
+        board = [cell if cell in {self.SYMBOL_X, self.SYMBOL_O} else "" for cell in board[:9]]
+        return board + [""] * (9 - len(board))
+
+    def symbol_for_user(self, user):
+        if self.player_x_id == user.id:
+            return self.SYMBOL_X
+        if self.player_o_id == user.id:
+            return self.SYMBOL_O
+        return ""
+
+    def opponent_for_user(self, user):
+        if self.player_x_id == user.id:
+            return self.player_o
+        if self.player_o_id == user.id:
+            return self.player_x
+        return None
+
+
+class TicTacToeInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    game = models.ForeignKey(
+        TicTacToeGame,
+        on_delete=models.CASCADE,
+        related_name="invites",
+    )
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_tictactoe_invites",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_tictactoe_invites",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["game", "to_user"], name="unique_tictactoe_invite_per_game_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="tictactoe_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"]),
+            models.Index(fields=["game", "status"]),
+        ]
+        verbose_name = "Tic Tac Toe Einladung"
+        verbose_name_plural = "Tic Tac Toe Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user} · {self.game}"
 
 
 class DrawingGameLobby(models.Model):

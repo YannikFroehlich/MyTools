@@ -53,6 +53,18 @@ from .skribble_views import (
     skribble_state_api,
     skribble_update_avatar,
 )
+from .tictactoe_views import (
+    tictactoe_home,
+    tictactoe_delete,
+    tictactoe_invite_friend,
+    tictactoe_invite_response,
+    tictactoe_leave,
+    tictactoe_lobby,
+    tictactoe_home_state_api,
+    tictactoe_move_api,
+    tictactoe_reset_api,
+    tictactoe_state_api,
+)
 from .chat_views import (
     chat_group_leave_view,
     chat_group_member_action_view,
@@ -133,6 +145,17 @@ urlpatterns = [
 
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
+
+    path('tic-tac-toe/', tictactoe_home, name='tictactoe_home'),
+    path('tic-tac-toe/<slug:code>/', tictactoe_lobby, name='tictactoe_lobby'),
+    path('tic-tac-toe/<slug:code>/invite/', tictactoe_invite_friend, name='tictactoe_invite_friend'),
+    path('tic-tac-toe/invite/<int:invite_id>/', tictactoe_invite_response, name='tictactoe_invite_response'),
+    path('tic-tac-toe/<slug:code>/leave/', tictactoe_leave, name='tictactoe_leave'),
+    path('tic-tac-toe/<slug:code>/delete/', tictactoe_delete, name='tictactoe_delete'),
+    path('api/tic-tac-toe/<slug:code>/state/', tictactoe_state_api, name='tictactoe_state_api'),
+    path('api/tic-tac-toe/home-state/', tictactoe_home_state_api, name='tictactoe_home_state_api'),
+    path('api/tic-tac-toe/<slug:code>/move/', tictactoe_move_api, name='tictactoe_move_api'),
+    path('api/tic-tac-toe/<slug:code>/reset/', tictactoe_reset_api, name='tictactoe_reset_api'),
 
     path('skribble/', skribble_home, name='skribble_home'),
     path('skribble/<slug:code>/', skribble_lobby, name='skribble_lobby'),
