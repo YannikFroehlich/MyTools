@@ -25,6 +25,8 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Freundschaftssystem mit Anfragen, Freundesliste und befreundet-seit Anzeige
 - Chat-System mit Direktchats, Gruppenchats, Emoji-Reaktionen und Löschen eigener Nachrichten
 - Skribble-Zeichenspiel mit Lobby, Einladungen, Zeichnen, Raten, Punktestand und Rundenübersicht
+- Tic Tac Toe mit privaten Räumen, Freunde-Einladungen, Live-Übersicht und Host-/Löschlogik
+- Schiffe versenken mit privaten Räumen, manueller Flottenplatzierung, Sounds, Effekten und serverseitig geprüften Spielregeln
 - Notizen-App mit Pins, Archiv, Farben und Tags
 - Human Benchmark mit gespeicherten Ergebnissen, Highscores und Bestenliste pro Nutzer
 - OBS Dashboard für lokale OBS-WebSocket-Steuerung
@@ -178,6 +180,48 @@ Funktionen:
 - Punktestand und Spielstatus
 - Punkteübersicht nach jeder Runde, bevor der Host die nächste Runde startet
 - dezenter eigener Hintergrund und Logo
+
+---
+
+## 🎮 Tic Tac Toe
+
+Tic Tac Toe ist ein schnelles 1v1-Spiel für Freunde.
+
+Funktionen:
+
+- Räume erstellen und per Code oder Link teilen
+- Freunde einladen
+- offene Einladungen auf der Tic-Tac-Toe-Übersicht
+- Live-Aktualisierung der Raum- und Einladungsliste ohne Neuladen
+- maximal zwei Spieler pro Raum
+- automatische Sperre weiterer Einladungen, sobald der Raum voll ist
+- Spieler können Räume verlassen
+- leere Räume werden automatisch gelöscht
+- Host/Spieler können Räume löschen
+- serverseitig geprüfte Züge, Gewinnerkennung und neue Runden
+
+---
+
+## ⚓ Schiffe versenken
+
+Schiffe versenken ist ein taktisches 1v1-Spiel mit privaten Räumen und eigener Spieloberfläche.
+
+Funktionen:
+
+- Räume erstellen und per Code oder Link teilen
+- Freunde einladen
+- offene Einladungen und eigene Räume mit Live-Aktualisierung
+- maximal zwei Spieler pro Raum
+- keine weiteren Einladungen, sobald ein zweiter Spieler im Raum ist
+- manuelle Flottenplatzierung auf einem 8x8-Feld
+- Schiffsauswahl, horizontale/vertikale Ausrichtung, Zufallsplatzierung und Leeren
+- serverseitige Validierung der Flotte: richtige Schiffe, keine Überlappung, zusammenhängend und innerhalb des Spielfelds
+- abwechselndes Schießen mit Treffer/Wasser/versenkt-Anzeige
+- Treffer erlauben einen weiteren Schuss
+- Gewinnmeldung als Overlay
+- nur der Host kann eine neue Runde starten
+- Soundeffekte und Treffer-/Wasser-Effekte im Browser
+- gelöschte Räume leiten offene Clients automatisch zurück zur Übersicht
 
 ---
 
@@ -461,6 +505,8 @@ MyTools/
 │   ├── profile_views.py
 │   ├── chat_views.py
 │   ├── skribble_views.py
+│   ├── tictactoe_views.py
+│   ├── battleship_views.py
 │   └── urls.py
 ├── locale/
 ├── media/

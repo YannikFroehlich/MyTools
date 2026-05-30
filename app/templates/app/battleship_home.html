@@ -1,0 +1,133 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Schiffe versenken' %} · MyTools{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/battleship.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/battleship.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="bs-page bs-home-page"
+      data-home-state-url="{% url 'battleship_home_state_api' %}"
+      data-empty-invites-label="{% translate 'Du hast aktuell keine offenen Schiffe-versenken-Einladungen.' %}"
+      data-empty-games-label="{% translate 'Du hast noch keinen Schiffe-versenken-Raum.' %}"
+      data-from-label="{% translate 'von' %}"
+      data-accept-label="{% translate 'Annehmen' %}"
+      data-decline-label="{% translate 'Ablehnen' %}"
+      data-round-label="{% translate 'Runde' %}">
+    <section class="bs-hero">
+        <div>
+            <span class="bs-eyebrow"><i class="fa-solid fa-anchor"></i> {% translate 'Freunde-Spiel' %}</span>
+            <h1>{% translate 'Schiffe versenken' %}</h1>
+            <p>{% translate 'Erstelle einen Raum, lade einen Freund ein und versenkt euch gegenseitig die Flotte.' %}</p>
+        </div>
+        <div class="bs-radar-mark" aria-hidden="true">
+            <span></span>
+            <i class="fa-solid fa-ship"></i>
+        </div>
+    </section>
+
+    <section class="bs-home-grid">
+        <article class="bs-panel">
+            <h2>{% translate 'Neuen Raum erstellen' %}</h2>
+            <form method="post" class="bs-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <label>
+                    <span>{% translate 'Raum-Name' %}</span>
+                    <input type="text" name="name" maxlength="80" value="{% translate 'Schiffe versenken' %}">
+                </label>
+                <button class="bs-primary" type="submit">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate 'Raum erstellen' %}
+                </button>
+            </form>
+        </article>
+
+        <article class="bs-panel">
+            <h2>{% translate 'Mit Code beitreten' %}</h2>
+            <form method="post" class="bs-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="join">
+                <label>
+                    <span>{% translate 'Raum-Code' %}</span>
+                    <input type="text" name="code" maxlength="16" placeholder="SEA123" autocomplete="off">
+                </label>
+                <button class="bs-secondary" type="submit">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    {% translate 'Beitreten' %}
+                </button>
+            </form>
+        </article>
+    </section>
+
+    <section class="bs-panel">
+        <div class="bs-section-heading">
+            <div>
+                <span class="bs-eyebrow"><i class="fa-solid fa-envelope-open-text"></i> {% translate 'Einladungen' %}</span>
+                <h2>{% translate 'Offene Einladungen' %}</h2>
+            </div>
+        </div>
+
+        <div id="bs-invites-live">
+        {% if invites %}
+            <div class="bs-invite-list">
+                {% for invite in invites %}
+                    <div class="bs-invite-row">
+                        <div>
+                            <strong>{{ invite.game.name }}</strong>
+                            <span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span>
+                        </div>
+                        <div class="bs-inline-actions">
+                            <form method="post" action="{% url 'battleship_invite_response' invite.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="accept">
+                                <button class="bs-primary" type="submit">{% translate 'Annehmen' %}</button>
+                            </form>
+                            <form method="post" action="{% url 'battleship_invite_response' invite.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="decline">
+                                <button class="bs-secondary" type="submit">{% translate 'Ablehnen' %}</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="bs-muted">{% translate 'Du hast aktuell keine offenen Schiffe-versenken-Einladungen.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+
+    <section class="bs-panel">
+        <div class="bs-section-heading">
+            <div>
+                <span class="bs-eyebrow"><i class="fa-solid fa-clock-rotate-left"></i> {% translate 'Verlauf' %}</span>
+                <h2>{% translate 'Deine Räume' %}</h2>
+            </div>
+        </div>
+
+        <div id="bs-games-live">
+        {% if my_games %}
+            <div class="bs-room-grid">
+                {% for game in my_games %}
+                    <a class="bs-room-card" href="{% url 'battleship_lobby' game.code %}">
+                        <span class="bs-code">{{ game.code }}</span>
+                        <strong>{{ game.name }}</strong>
+                        <span>{{ game.get_status_display }} · {% translate 'Runde' %} {{ game.round_number }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="bs-muted">{% translate 'Du hast noch keinen Schiffe-versenken-Raum.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}

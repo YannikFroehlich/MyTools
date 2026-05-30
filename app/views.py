@@ -13,7 +13,7 @@ from django.utils.translation import gettext as _
 from dotenv import dotenv_values, load_dotenv
 
 from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
-    ShortcutSection, UserProfile, WeatherLocation
+    ShortcutSection, TicTacToeGame, UserProfile, WeatherLocation
 
 import json
 
@@ -385,6 +385,32 @@ def build_home_skribble_widget_data(user):
     }
 
 
+def build_home_tictactoe_widget_data(user):
+    active_games = (
+        TicTacToeGame.objects
+        .filter(
+            Q(owner=user) | Q(player_x=user) | Q(player_o=user),
+            status__in=[TicTacToeGame.STATUS_WAITING, TicTacToeGame.STATUS_PLAYING],
+        )
+        .distinct()
+        .select_related("player_x", "player_o")
+        .order_by("-updated_at")[:3]
+    )
+
+    return {
+        "active_count": (
+            TicTacToeGame.objects
+            .filter(
+                Q(owner=user) | Q(player_x=user) | Q(player_o=user),
+                status__in=[TicTacToeGame.STATUS_WAITING, TicTacToeGame.STATUS_PLAYING],
+            )
+            .distinct()
+            .count()
+        ),
+        "active_games": active_games,
+    }
+
+
 def build_home_widget_data(request, user):
     widgets = list(
         HomeWidget.objects
@@ -443,6 +469,9 @@ def build_home_widget_data(request, user):
 
         elif widget.widget_type == HomeWidget.WIDGET_SKRIBBLE:
             data = build_home_skribble_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_TICTACTOE:
+            data = build_home_tictactoe_widget_data(user)
 
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {
