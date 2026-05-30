@@ -468,6 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <strong>${escapeHtml(item.title)}</strong>
                     <small>${escapeHtml(item.text)}</small>
                 </span>
+                ${item.action_label ? `<em>${escapeHtml(item.action_label)}</em>` : ''}
                 ${Number(item.badge || 0) > 1 ? `<b>${escapeHtml(item.badge)}</b>` : ''}
             </a>
         `).join('');
@@ -556,6 +557,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             dropdown.classList.toggle('open', shouldOpen);
             button.classList.toggle('active', shouldOpen);
+
+            if (shouldOpen && buttonId === 'notification-center-button') {
+                refreshNotificationCounts();
+            }
         });
 
         dropdown.addEventListener('click', (event) => {

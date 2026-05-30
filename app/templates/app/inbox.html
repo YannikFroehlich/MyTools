@@ -21,6 +21,7 @@
         <a class="{% if tab == 'unread' %}is-active{% endif %}" href="?tab=unread">{% translate "Ungelesen" %}</a>
         <a class="{% if tab == 'chat' %}is-active{% endif %}" href="?tab=chat">{% translate "Chat" %}</a>
         <a class="{% if tab == 'friend' %}is-active{% endif %}" href="?tab=friend">{% translate "Freunde" %}</a>
+        <a class="{% if tab == 'skribble' %}is-active{% endif %}" href="?tab=skribble">{% translate "Skribble" %}</a>
         <form method="post" action="{% url 'inbox_mark_read' %}">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.get_full_path }}">
@@ -49,10 +50,10 @@
             {% endfor %}
 
             {% for invite in pending_skribble_invites %}
-                <a href="{% url 'skribble_home' %}" class="inbox-item is-live">
+                <a href="{% url 'skribble_lobby' invite.lobby.code %}" class="inbox-item is-live">
                     <i class="fa-solid fa-pencil"></i>
                     <span><strong>{% translate "Skribble-Einladung" %}</strong><small>{{ invite.lobby.name }} · @{{ invite.from_user.username }}</small></span>
-                    <em>{% translate "Ansehen" %}</em>
+                    <em>{% translate "Beitreten" %}</em>
                 </a>
             {% endfor %}
 

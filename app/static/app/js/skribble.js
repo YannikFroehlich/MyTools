@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         choose: root.dataset.chooseUrl,
         draw: root.dataset.drawUrl,
         guess: root.dataset.guessUrl,
+        invite: root.dataset.inviteUrl,
     };
 
     const csrfToken = getCookie("csrftoken");
@@ -23,16 +24,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const guessInput = document.getElementById("guess-input");
     const roundSummary = document.getElementById("round-summary");
     const continueRoundBtn = document.getElementById("continue-round-btn");
+    const logicalCanvasSize = {width: 1280, height: 760};
 
     let state = null;
     let isDrawing = false;
     let currentPoints = [];
+    let drawSendTimer = null;
+    let drawSendInFlight = false;
+    let drawSendPromise = Promise.resolve();
+    let segmentSequence = 0;
+    let pendingSegments = [];
     let lastDrawingSignature = "";
+    let drawingRevision = 0;
 
     initCanvas();
     bindEvents();
     refreshState();
-    setInterval(refreshState, 800);
+    setInterval(refreshState, 100);
 
     function getCookie(name) {
         const value = `; ${document.cookie}`;
@@ -50,6 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
             body: formData,
         });
         const json = await response.json().catch(() => ({ok: false}));
+        if (json.lobbyDeleted) {
+            handleDeletedLobby(json);
+            return json;
+        }
         if (!response.ok || !json.ok) {
             if (json.error) showToast(json.error);
             return json;
@@ -99,6 +111,11 @@ document.addEventListener("DOMContentLoaded", () => {
         clearBtn?.addEventListener("click", async () => {
             if (!canDraw()) return;
             clearCanvas();
+            currentPoints = [];
+            pendingSegments = [];
+            window.clearTimeout(drawSendTimer);
+            drawSendTimer = null;
+            drawingRevision = 0;
             await post(urls.draw, {action: "clear"});
             await refreshState(true);
         });
@@ -139,35 +156,118 @@ document.addEventListener("DOMContentLoaded", () => {
             const previous = currentPoints[currentPoints.length - 1];
             currentPoints.push(point);
             drawSegment(previous, point, brushColor.value, Number(brushSize.value));
+            queueSegment(previous, point);
         });
 
         canvas.addEventListener("pointerup", finishStroke);
         canvas.addEventListener("pointercancel", finishStroke);
     }
 
-    async function finishStroke() {
-        if (!isDrawing || currentPoints.length < 2) {
+    function scheduleStrokeFlush(delay = 16) {
+        if (drawSendTimer) return;
+        drawSendTimer = window.setTimeout(() => {
+            drawSendTimer = null;
+            drainSegmentQueue();
+        }, delay);
+    }
+
+    function queueSegment(from, to) {
+        pendingSegments.push({
+            id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
+            order: ++segmentSequence,
+            points: serializePoints([from, to]),
+            color: brushColor.value,
+            size: brushSize.value,
+        });
+
+        if (pendingSegments.length >= 6) {
+            drainSegmentQueue();
+        } else {
+            scheduleStrokeFlush();
+        }
+    }
+
+    async function drainSegmentQueue() {
+        window.clearTimeout(drawSendTimer);
+        drawSendTimer = null;
+        if (drawSendInFlight) return drawSendPromise;
+
+        drawSendInFlight = true;
+        drawSendPromise = (async () => {
+            try {
+                while (pendingSegments.length > 0) {
+                    const batch = pendingSegments.splice(0, 24);
+                    const result = await post(urls.draw, {
+                        action: "segments",
+                        segments: JSON.stringify(batch),
+                    });
+                    if (!result.ok) {
+                        pendingSegments = batch.concat(pendingSegments);
+                        break;
+                    }
+                }
+            } finally {
+                drawSendInFlight = false;
+            }
+        })();
+        return drawSendPromise;
+    }
+
+    async function finishStroke(event) {
+        if (!isDrawing) {
+            return;
+        }
+
+        if (canDraw() && event?.clientX != null) {
+            const releasePoint = pointFromEvent(event);
+            const previous = currentPoints[currentPoints.length - 1];
+            if (!previous || distanceBetween(previous, releasePoint) > 0.4) {
+                currentPoints.push(releasePoint);
+                if (previous) {
+                    drawSegment(previous, releasePoint, brushColor.value, Number(brushSize.value));
+                    queueSegment(previous, releasePoint);
+                }
+            }
+        }
+
+        if (currentPoints.length < 2) {
+            const dotPoint = currentPoints[0];
+            if (dotPoint) {
+                currentPoints = [dotPoint, {x: dotPoint.x + 0.6, y: dotPoint.y + 0.6}];
+                drawSegment(currentPoints[0], currentPoints[1], brushColor.value, Number(brushSize.value));
+                queueSegment(currentPoints[0], currentPoints[1]);
+            }
+        }
+
+        if (currentPoints.length < 2) {
             isDrawing = false;
             currentPoints = [];
             return;
         }
 
-        const points = currentPoints.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(";");
         isDrawing = false;
+        window.clearTimeout(drawSendTimer);
+        drawSendTimer = null;
         currentPoints = [];
-        await post(urls.draw, {
-            action: "stroke",
-            points,
-            color: brushColor.value,
-            size: brushSize.value,
-        });
+        await drainSegmentQueue();
+        // Drawer already has the stroke on canvas locally — no need for a full redraw.
+        // Viewers will pick it up via the delta mechanism on their next poll.
+        await refreshState(false);
+    }
+
+    function serializePoints(points) {
+        return points.map(point => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(";");
+    }
+
+    function distanceBetween(a, b) {
+        return Math.hypot((a?.x || 0) - (b?.x || 0), (a?.y || 0) - (b?.y || 0));
     }
 
     function pointFromEvent(event) {
         const rect = canvas.getBoundingClientRect();
         return {
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top,
+            x: ((event.clientX - rect.left) / rect.width) * logicalCanvasSize.width,
+            y: ((event.clientY - rect.top) / rect.height) * logicalCanvasSize.height,
         };
     }
 
@@ -177,8 +277,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function refreshState(forceDraw = false) {
         try {
-            const response = await fetch(urls.state, {headers: {"X-Requested-With": "XMLHttpRequest"}});
+            const after = forceDraw ? 0 : drawingRevision;
+            const separator = urls.state.includes("?") ? "&" : "?";
+            const response = await fetch(`${urls.state}${separator}after=${encodeURIComponent(after)}`, {
+                headers: {"X-Requested-With": "XMLHttpRequest"},
+            });
             const json = await response.json();
+            if (json.lobbyDeleted) {
+                handleDeletedLobby(json);
+                return;
+            }
             if (!json.ok) return;
             state = json.state;
             renderState(forceDraw);
@@ -198,14 +306,29 @@ document.addEventListener("DOMContentLoaded", () => {
         wordDisplay.classList.toggle("is-mask", !state.lobby.word && Boolean(state.lobby.maskedWord));
         renderWordChoices();
         renderPlayers();
+        renderFriendInvites();
         renderGuesses();
         renderRoundSummary();
         renderCanvasBlocker();
 
-        const signature = JSON.stringify(state.drawing || []);
-        if (forceDraw || signature !== lastDrawingSignature) {
-            drawAll(state.drawing || []);
-            lastDrawingSignature = signature;
+        const drawing = state.drawing || [];
+        const delta = state.drawingDelta || [];
+        const nextRevision = Number(state.drawingRevision || 0);
+
+        if (!isDrawing) {
+            if (forceDraw || nextRevision < drawingRevision || (drawing.length > 0 && drawingRevision === 0)) {
+                // Full redraw: forced, revision went backwards (clear), or initial load
+                drawAll(drawing);
+                drawingRevision = nextRevision;
+                lastDrawingSignature = `${nextRevision}:full`;
+            } else if (delta.length > 0 && nextRevision > drawingRevision) {
+                // Incremental: only paint new strokes
+                drawStrokes(delta);
+                drawingRevision = nextRevision;
+                lastDrawingSignature = `${nextRevision}:delta`;
+            } else if (nextRevision !== drawingRevision) {
+                drawingRevision = nextRevision;
+            }
         }
     }
 
@@ -247,6 +370,40 @@ document.addEventListener("DOMContentLoaded", () => {
                     <small>${player.hasGuessed ? "Wort erraten" : "im Spiel"}</small>
                 </div>
                 <div class="draw-player-score">${player.score}</div>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function renderFriendInvites() {
+        const list = document.getElementById("friend-invite-list");
+        const empty = document.getElementById("friend-invite-empty");
+        if (!list) return;
+
+        const rows = state.friendInvites || [];
+        list.innerHTML = "";
+        empty?.classList.toggle("hidden", rows.length > 0);
+
+        rows.forEach((friend) => {
+            const item = document.createElement("div");
+            item.className = "draw-friend-invite-row";
+            const status = friend.isInvited ? "Einladung offen" : (friend.wasInvited ? "War schon eingeladen" : "Freund");
+            const disabled = friend.isInvited ? "disabled" : "";
+            const label = friend.isInvited ? "Eingeladen" : "Einladen";
+            const buttonContent = friend.isInvited ? '<i class="fa-solid fa-check"></i>' : '<span aria-hidden="true">+</span>';
+            item.innerHTML = `
+                <div class="draw-friend-mini">
+                    <div class="draw-friend-avatar">${escapeHtml(friend.initial || "?")}</div>
+                    <div>
+                        <strong>${escapeHtml(friend.name)}</strong>
+                        <span>${escapeHtml(status)}</span>
+                    </div>
+                </div>
+                <form method="post" action="${escapeHtml(urls.invite)}">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${escapeHtml(csrfToken)}">
+                    <input type="hidden" name="friend_id" value="${escapeHtml(friend.id)}">
+                    <button class="draw-primary draw-invite-one" type="submit" aria-label="${escapeHtml(label)}" ${disabled}>${buttonContent}</button>
+                </form>
             `;
             list.appendChild(item);
         });
@@ -334,6 +491,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function drawAll(strokes) {
         clearCanvas();
+        drawStrokes(strokes);
+    }
+
+    function drawStrokes(strokes) {
         strokes.forEach((stroke) => {
             const points = parsePoints(stroke.points);
             for (let i = 1; i < points.length; i++) {
@@ -350,14 +511,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function drawSegment(from, to, color, size) {
+        const fromPoint = logicalToCanvasPoint(from);
+        const toPoint = logicalToCanvasPoint(to);
+        const scale = brushScale();
+
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.strokeStyle = color || "#111827";
-        ctx.lineWidth = size || 6;
+        ctx.lineWidth = (size || 6) * scale;
         ctx.beginPath();
-        ctx.moveTo(from.x, from.y);
-        ctx.lineTo(to.x, to.y);
+        ctx.moveTo(fromPoint.x, fromPoint.y);
+        ctx.lineTo(toPoint.x, toPoint.y);
         ctx.stroke();
+    }
+
+    function logicalToCanvasPoint(point) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: (point.x / logicalCanvasSize.width) * rect.width,
+            y: (point.y / logicalCanvasSize.height) * rect.height,
+        };
+    }
+
+    function brushScale() {
+        const rect = canvas.getBoundingClientRect();
+        return ((rect.width / logicalCanvasSize.width) + (rect.height / logicalCanvasSize.height)) / 2;
     }
 
     function parsePoints(value) {
@@ -400,5 +578,12 @@ document.addEventListener("DOMContentLoaded", () => {
         toast.textContent = message;
         clearTimeout(toast.timer);
         toast.timer = setTimeout(() => toast.remove(), 2200);
+    }
+
+    function handleDeletedLobby(payload) {
+        showToast(payload.error || "Diese Lobby wurde geloescht.");
+        window.setTimeout(() => {
+            window.location.href = payload.redirectUrl || "/skribble/";
+        }, 900);
     }
 });

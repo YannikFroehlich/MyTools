@@ -19,7 +19,7 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Widget-Designs, Farbstile und Layout-Optionen
 - Wetterseite mit OpenWeather API und gespeicherten Orten
 - Uhr-Seite mit lokaler Uhrzeit, Weltuhr, Stoppuhr, gespeicherten Timern und eigenen Timer-Sounds
-- dezenter Weltkarten-Hintergrund auf der Uhr-Seite über `app/static/app/img/worldmap.png`
+- dezenter Weltkarten-Hintergrund auf der Uhr-Seite über `app/static/app/img/worldmap.webp`
 - Profilseite mit Avatar, Banner, Namen und öffentlicher Profilansicht
 - Nutzerübersicht mit öffentlichen Profilen
 - Freundschaftssystem mit Anfragen, Freundesliste und befreundet-seit Anzeige
@@ -117,7 +117,7 @@ Funktionen:
 Das lokale Weltkartenbild liegt hier:
 
 ```text
-app/static/app/img/worldmap.png
+app/static/app/img/worldmap.webp
 ```
 
 ---
