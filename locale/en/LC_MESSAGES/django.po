@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 19:09+0200\n"
+"POT-Creation-Date: 2026-05-29 19:37+0200\n"
 "PO-Revision-Date: 2026-05-29 10:45+0000\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -72,7 +72,7 @@ msgstr "New chat message"
 msgid "Neuer Anhang"
 msgstr "New attachment"
 
-#: .\app\chat_views.py:313 .\app\templates\app\inbox.html:70
+#: .\app\chat_views.py:313 .\app\templates\app\inbox.html:71
 msgid "Gelesen"
 msgstr "Read"
 
@@ -355,6 +355,7 @@ msgstr "Friends"
 #: .\app\models.py:699 .\app\models.py:1225 .\app\platform_utils.py:11
 #: .\app\platform_utils.py:34 .\app\templates\app\about.html:238
 #: .\app\templates\app\base.html:74 .\app\templates\app\home.html:445
+#: .\app\templates\app\inbox.html:24
 #: .\app\templates\app\public_profile.html:229
 #: .\app\templates\app\skribble_home.html:4
 #: .\app\templates\app\skribble_home.html:16
@@ -536,24 +537,37 @@ msgstr "Done"
 msgid "%(count)s ungelesene Nachricht(en) von %(user)s"
 msgstr "%(count)s unread message(s) from %(user)s"
 
-#: .\app\notification_utils.py:102 .\app\templates\app\inbox.html:46
+#: .\app\notification_utils.py:93
+msgid "Zum Chat"
+msgstr "To chat"
+
+#: .\app\notification_utils.py:103 .\app\templates\app\inbox.html:47
 msgid "Freundschaftsanfrage"
 msgstr "Friend request"
 
-#: .\app\notification_utils.py:103
+#: .\app\notification_utils.py:104
 #, python-format
 msgid "%(user)s möchte mit dir befreundet sein"
 msgstr "%(user)s wants to be friends with you"
 
+#: .\app\notification_utils.py:106 .\app\templates\app\inbox.html:48
+msgid "Ansehen"
+msgstr "View"
+
 # | msgid "Einstellungen"
-#: .\app\notification_utils.py:114 .\app\templates\app\inbox.html:54
+#: .\app\notification_utils.py:116 .\app\templates\app\inbox.html:55
 msgid "Skribble-Einladung"
 msgstr "Skribble invitation"
 
-#: .\app\notification_utils.py:115
+#: .\app\notification_utils.py:117
 #, python-format
 msgid "%(user)s hat dich in %(lobby)s eingeladen"
 msgstr "%(user)s invited you to %(lobby)s"
+
+#: .\app\notification_utils.py:119 .\app\templates\app\inbox.html:56
+#: .\app\templates\app\skribble_home.html:137
+msgid "Beitreten"
+msgstr "Join"
 
 #: .\app\platform_forms.py:10
 msgid "Tool"
@@ -713,11 +727,11 @@ msgstr "This tool does not exist."
 msgid "Favoriten wurden aktualisiert."
 msgstr "Favorites have been updated."
 
-#: .\app\platform_views.py:112
+#: .\app\platform_views.py:117
 msgid "Feedback gespeichert"
 msgstr "Feedback saved"
 
-#: .\app\platform_views.py:113
+#: .\app\platform_views.py:118
 msgid "Danke! Dein Feedback wurde in MyTools abgelegt."
 msgstr "Thank you! Your feedback has been saved in MyTools."
 
@@ -1613,7 +1627,7 @@ msgstr "Open profile"
 msgid "ungelesene Nachricht"
 msgstr "unread message"
 
-#: .\app\templates\app\base.html:414 .\app\templates\app\inbox.html:38
+#: .\app\templates\app\base.html:414 .\app\templates\app\inbox.html:39
 msgid "ungelesene Nachrichten"
 msgstr "unread messages"
 
@@ -2467,23 +2481,19 @@ msgid "Ungelesen"
 msgstr "Unread"
 
 # | msgid "Alle Nutzer anzeigen"
-#: .\app\templates\app\inbox.html:27
+#: .\app\templates\app\inbox.html:28
 msgid "Alles gelesen"
 msgstr "All read"
 
-#: .\app\templates\app\inbox.html:33
+#: .\app\templates\app\inbox.html:34
 msgid "Aktuelle Hinweise"
 msgstr "Current notices"
 
-#: .\app\templates\app\inbox.html:39 .\app\templates\app\inbox.html:64
+#: .\app\templates\app\inbox.html:40 .\app\templates\app\inbox.html:65
 msgid "Öffnen"
 msgstr "Open"
 
-#: .\app\templates\app\inbox.html:47 .\app\templates\app\inbox.html:55
-msgid "Ansehen"
-msgstr "View"
-
-#: .\app\templates\app\inbox.html:77
+#: .\app\templates\app\inbox.html:78
 msgid "Deine Inbox ist leer."
 msgstr "Your inbox is empty."
 
@@ -3308,10 +3318,6 @@ msgstr "Lobby overview"
 msgid "Aktive Lobbys"
 msgstr "Active lobbies"
 
-#: .\app\templates\app\skribble_home.html:137
-msgid "Beitreten"
-msgstr "Join"
-
 #: .\app\templates\app\skribble_home.html:142
 msgid "Aktuell gibt es keine aktive Lobby von dir oder deinen Freunden."
 msgstr "There is currently no active lobby from you or your friends."
@@ -3396,12 +3402,12 @@ msgid "Freund"
 msgstr "Friend"
 
 # | msgid "Eingeklappt"
-#: .\app\templates\app\skribble_lobby.html:109
+#: .\app\templates\app\skribble_lobby.html:107
 msgid "Eingeladen"
 msgstr "Invited"
 
 # | msgid "Einloggen"
-#: .\app\templates\app\skribble_lobby.html:111
+#: .\app\templates\app\skribble_lobby.html:107
 msgid "Einladen"
 msgstr "Invite"
 

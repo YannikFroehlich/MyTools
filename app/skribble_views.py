@@ -1,5 +1,6 @@
 import random
 import string
+import json
 from datetime import timedelta
 
 from django.contrib import messages
@@ -33,6 +34,38 @@ DEFAULT_WORDS = [
 
 AVATAR_COLORS = ["#4f8cff", "#8b5cf6", "#22c55e", "#f97316", "#ef4444", "#06b6d4", "#ec4899", "#facc15"]
 ACCENT_COLORS = ["#ffffff", "#111827", "#dbeafe", "#fef3c7", "#dcfce7", "#fee2e2"]
+
+
+def _stroke_point_count(points):
+    return len([point for point in str(points or "").split(";") if point.strip()])
+
+
+def _int_from_request(value, default=0):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _normalize_segment(raw_segment):
+    if not isinstance(raw_segment, dict):
+        return None
+    segment_id = str(raw_segment.get("id", "")).strip()[:60]
+    points = str(raw_segment.get("points", "")).strip()
+    if not segment_id or _stroke_point_count(points) < 2:
+        return None
+    try:
+        size = min(max(int(raw_segment.get("size", 5) or 5), 1), 40)
+    except (TypeError, ValueError):
+        size = 5
+    order = _int_from_request(raw_segment.get("order"))
+    return {
+        "id": segment_id,
+        "order": order,
+        "points": points,
+        "color": str(raw_segment.get("color", "#111827"))[:20],
+        "size": size,
+    }
 
 
 def _generate_lobby_code():
@@ -281,7 +314,55 @@ def _handle_player_removed(lobby, removed_player_id=None, removed_index=None, wa
     ])
 
 
-def _serialize_state(lobby, user):
+def _friend_invite_rows(lobby, user):
+    friend_ids = Friendship.friend_ids_for_user(user)
+    current_player_ids = lobby.players.values_list("user_id", flat=True)
+    friends = (
+        User.objects
+        .filter(id__in=friend_ids, is_active=True)
+        .exclude(id__in=current_player_ids)
+        .order_by("username")
+    )
+    UserProfile.objects.bulk_create(
+        [UserProfile(user=friend) for friend in friends if not hasattr(friend, "profile")],
+        ignore_conflicts=True,
+    )
+    invited_friend_ids = set(
+        lobby.invites
+        .filter(status=DrawingGameInvite.STATUS_PENDING)
+        .values_list("to_user_id", flat=True)
+    )
+    accepted_invite_ids = set(
+        lobby.invites
+        .filter(status=DrawingGameInvite.STATUS_ACCEPTED)
+        .values_list("to_user_id", flat=True)
+    )
+    return [
+        {
+            "user": friend,
+            "is_invited": friend.id in invited_friend_ids,
+            "was_invited": friend.id in accepted_invite_ids,
+        }
+        for friend in friends
+    ]
+
+
+def _serialize_friend_invites(lobby, user):
+    rows = _friend_invite_rows(lobby, user)
+    return [
+        {
+            "id": row["user"].id,
+            "name": row["user"].get_full_name() or row["user"].username,
+            "username": row["user"].username,
+            "initial": (row["user"].username[:1] or "?").upper(),
+            "isInvited": row["is_invited"],
+            "wasInvited": row["was_invited"],
+        }
+        for row in rows
+    ]
+
+
+def _serialize_state(lobby, user, drawing_after=0):
     players = _players(lobby)
     drawer = _current_drawer(lobby, players)
     me = next((player for player in players if player.user_id == user.id), None)
@@ -289,6 +370,14 @@ def _serialize_state(lobby, user):
         round_number=lobby.current_round_number,
         turn_index=lobby.current_turn_index,
     ).order_by("created_at")[:80]
+
+    drawing = lobby.current_drawing or []
+    try:
+        drawing_after = max(0, int(drawing_after or 0))
+    except (TypeError, ValueError):
+        drawing_after = 0
+    if drawing_after > len(drawing):
+        drawing_after = 0
 
     return {
         "lobby": {
@@ -325,7 +414,10 @@ def _serialize_state(lobby, user):
             }
             for player in players
         ],
-        "drawing": lobby.current_drawing or [],
+        "friendInvites": _serialize_friend_invites(lobby, user),
+        "drawing": drawing if drawing_after <= 0 else [],
+        "drawingDelta": drawing[drawing_after:] if drawing_after > 0 else [],
+        "drawingRevision": len(drawing),
         "guesses": [
             {
                 "user": guess.user.username,
@@ -391,7 +483,11 @@ def skribble_home(request):
 
 @login_required
 def skribble_lobby(request, code):
-    lobby = get_object_or_404(DrawingGameLobby, code=code.upper())
+    lobby = DrawingGameLobby.objects.filter(code=code.upper()).first()
+    if not lobby:
+        messages.info(request, _("Diese Lobby wurde gelöscht."))
+        return redirect("skribble_home")
+
     if not _user_can_enter_lobby(lobby, request.user):
         messages.error(request, _("Du bist nicht für diese Lobby eingeladen."))
         return redirect("skribble_home")
@@ -403,23 +499,10 @@ def skribble_lobby(request, code):
     _get_or_create_player(lobby, request.user)
     DrawingGameInvite.objects.filter(lobby=lobby, to_user=request.user).update(status=DrawingGameInvite.STATUS_ACCEPTED)
 
-    friend_ids = Friendship.friend_ids_for_user(request.user)
-    friends = User.objects.filter(id__in=friend_ids, is_active=True).exclude(id__in=lobby.players.values_list("user_id", flat=True)).order_by("username")
-    UserProfile.objects.bulk_create([UserProfile(user=friend) for friend in friends if not hasattr(friend, "profile")], ignore_conflicts=True)
-    invited_friend_ids = set(lobby.invites.filter(status=DrawingGameInvite.STATUS_PENDING).values_list("to_user_id", flat=True))
-    accepted_invite_ids = set(lobby.invites.filter(status=DrawingGameInvite.STATUS_ACCEPTED).values_list("to_user_id", flat=True))
-    friend_invite_rows = [
-        {
-            "user": friend,
-            "is_invited": friend.id in invited_friend_ids,
-            "was_invited": friend.id in accepted_invite_ids,
-        }
-        for friend in friends
-    ]
+    friend_invite_rows = _friend_invite_rows(lobby, request.user)
 
     return render(request, "app/skribble_lobby.html", {
         "lobby": lobby,
-        "friends": friends,
         "friend_invite_rows": friend_invite_rows,
         "avatar_bases": DrawingGamePlayer.AVATAR_BASE_CHOICES,
         "avatar_colors": AVATAR_COLORS,
@@ -563,7 +646,15 @@ def skribble_restart(request, code):
 @require_POST
 def skribble_continue_round(request, code):
     with transaction.atomic():
-        lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
+        lobby = DrawingGameLobby.objects.select_for_update().filter(code=code.upper()).first()
+        if not lobby:
+            return JsonResponse({
+                "ok": False,
+                "lobbyDeleted": True,
+                "redirectUrl": reverse("skribble_home"),
+                "error": _("Diese Lobby wurde gelöscht."),
+            }, status=410)
+
         if lobby.owner_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Nur der Host kann fortfahren.")}, status=403)
         _continue_after_round_summary(lobby)
@@ -574,7 +665,15 @@ def skribble_continue_round(request, code):
 @require_GET
 def skribble_state_api(request, code):
     with transaction.atomic():
-        lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
+        lobby = DrawingGameLobby.objects.select_for_update().filter(code=code.upper()).first()
+        if not lobby:
+            return JsonResponse({
+                "ok": False,
+                "lobbyDeleted": True,
+                "redirectUrl": reverse("skribble_home"),
+                "error": _("Diese Lobby wurde gelöscht."),
+            }, status=410)
+
         if not lobby.players.filter(user=request.user).exists():
             return JsonResponse({"ok": False, "error": _("Kein Zugriff.")}, status=403)
         _maybe_advance_if_time_is_over(lobby)
@@ -582,7 +681,10 @@ def skribble_state_api(request, code):
         player = lobby.players.filter(user=request.user).first()
         if player:
             player.save(update_fields=["last_seen"])
-    return JsonResponse({"ok": True, "state": _serialize_state(lobby, request.user)})
+    return JsonResponse({
+        "ok": True,
+        "state": _serialize_state(lobby, request.user, request.GET.get("after", 0)),
+    })
 
 
 @login_required
@@ -612,25 +714,60 @@ def skribble_choose_word_api(request, code):
 @login_required
 @require_POST
 def skribble_draw_api(request, code):
-    lobby = get_object_or_404(DrawingGameLobby, code=code.upper())
-    drawer = _current_drawer(lobby)
-    if lobby.status != DrawingGameLobby.STATUS_PLAYING or not drawer or drawer.user_id != request.user.id or not lobby.current_word:
-        return JsonResponse({"ok": False}, status=403)
+    with transaction.atomic():
+        lobby = get_object_or_404(DrawingGameLobby.objects.select_for_update(), code=code.upper())
+        drawer = _current_drawer(lobby)
+        if lobby.status != DrawingGameLobby.STATUS_PLAYING or not drawer or drawer.user_id != request.user.id or not lobby.current_word:
+            return JsonResponse({"ok": False}, status=403)
 
-    action = request.POST.get("action", "stroke")
-    if action == "clear":
-        lobby.current_drawing = []
-    else:
-        stroke = {
-            "points": request.POST.get("points", ""),
-            "color": request.POST.get("color", "#111827")[:20],
-            "size": min(max(int(request.POST.get("size", 5) or 5), 1), 40),
-        }
-        drawing = lobby.current_drawing or []
-        if len(drawing) < 1200 and stroke["points"]:
-            drawing.append(stroke)
-        lobby.current_drawing = drawing
-    lobby.save(update_fields=["current_drawing", "updated_at"])
+        action = request.POST.get("action", "stroke")
+        if action == "clear":
+            lobby.current_drawing = []
+        elif action == "segments":
+            try:
+                raw_segments = json.loads(request.POST.get("segments", "[]"))
+            except ValueError:
+                raw_segments = []
+            drawing = lobby.current_drawing or []
+            existing_ids = {item.get("id") for item in drawing if item.get("id")}
+            for raw_segment in raw_segments[:80]:
+                segment = _normalize_segment(raw_segment)
+                if segment and segment["id"] not in existing_ids and len(drawing) < 8000:
+                    drawing.append(segment)
+                    existing_ids.add(segment["id"])
+            drawing.sort(key=lambda item: (_int_from_request(item.get("order")), str(item.get("id", ""))))
+            lobby.current_drawing = drawing
+        else:
+            stroke_id = request.POST.get("stroke_id", "").strip()[:40]
+            stroke_version = max(0, _int_from_request(request.POST.get("stroke_version")))
+            stroke = {
+                "id": stroke_id,
+                "version": stroke_version,
+                "points": request.POST.get("points", ""),
+                "color": request.POST.get("color", "#111827")[:20],
+                "size": min(max(int(request.POST.get("size", 5) or 5), 1), 40),
+            }
+            drawing = lobby.current_drawing or []
+            existing_index = next(
+                (index for index, item in enumerate(drawing) if stroke_id and item.get("id") == stroke_id),
+                None,
+            )
+            if stroke["points"] and existing_index is not None:
+                existing = drawing[existing_index]
+                existing_version = _int_from_request(existing.get("version"))
+                existing_points = existing.get("points", "")
+                if (
+                    stroke_version > existing_version
+                    or (
+                        stroke_version == existing_version
+                        and _stroke_point_count(stroke["points"]) >= _stroke_point_count(existing_points)
+                    )
+                ):
+                    drawing[existing_index] = stroke
+            elif len(drawing) < 2000 and stroke["points"]:
+                drawing.append(stroke)
+            lobby.current_drawing = drawing
+        lobby.save(update_fields=["current_drawing", "updated_at"])
     return JsonResponse({"ok": True})
 
 

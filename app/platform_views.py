@@ -55,27 +55,32 @@ def inbox_view(request):
     elif tab in [choice[0] for choice in InboxItem.TYPE_CHOICES]:
         inbox_items = inbox_items.filter(item_type=tab)
 
-    pending_friendships = Friendship.objects.select_related("from_user", "from_user__profile").filter(
-        to_user=request.user,
-        status=Friendship.STATUS_PENDING,
-    )[:8]
-    pending_skribble_invites = DrawingGameInvite.objects.select_related("from_user", "lobby").filter(
-        to_user=request.user,
-        status=DrawingGameInvite.STATUS_PENDING,
-    )[:8]
+    pending_friendships = []
+    pending_skribble_invites = []
+    if tab in ("all", "unread", "friend"):
+        pending_friendships = Friendship.objects.select_related("from_user", "from_user__profile").filter(
+            to_user=request.user,
+            status=Friendship.STATUS_PENDING,
+        )[:8]
+    if tab in ("all", "unread", "skribble"):
+        pending_skribble_invites = DrawingGameInvite.objects.select_related("from_user", "lobby").filter(
+            to_user=request.user,
+            status=DrawingGameInvite.STATUS_PENDING,
+        )[:8]
 
     unread_rooms = []
-    rooms = ChatRoom.objects.filter(room_memberships__user=request.user).prefetch_related("members")[:50]
-    for room in rooms:
-        membership = room.room_memberships.filter(user=request.user).first()
-        qs = room.messages.exclude(sender=request.user)
-        if membership and membership.last_read_at:
-            qs = qs.filter(created_at__gt=membership.last_read_at)
-        unread_count = qs.count()
-        if unread_count:
-            room.unread_count = unread_count
-            room.display_title = room.title_for(request.user)
-            unread_rooms.append(room)
+    if tab in ("all", "unread", "chat"):
+        rooms = ChatRoom.objects.filter(room_memberships__user=request.user).prefetch_related("members")[:50]
+        for room in rooms:
+            membership = room.room_memberships.filter(user=request.user).first()
+            qs = room.messages.exclude(sender=request.user)
+            if membership and membership.last_read_at:
+                qs = qs.filter(created_at__gt=membership.last_read_at)
+            unread_count = qs.count()
+            if unread_count:
+                room.unread_count = unread_count
+                room.display_title = room.title_for(request.user)
+                unread_rooms.append(room)
 
     return render(request, "app/inbox.html", {
         "tab": tab,

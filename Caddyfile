@@ -12,7 +12,7 @@
     }
 
     header {
-        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        Permissions-Policy "geolocation=(self), microphone=(), camera=()"
     }
 
     log {

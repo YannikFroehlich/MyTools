@@ -14,6 +14,7 @@ def _serialize_item(item):
         "title": str(item.get("title", "")),
         "text": str(item.get("text", "")),
         "url": item.get("url", "#"),
+        "action_label": str(item.get("action_label", "")),
         "badge": item.get("badge", 1),
         "created_at": created_at.isoformat() if created_at else "",
     }

@@ -72,8 +72,8 @@ body.dark-mode .clock-panel {
         rgba(var(--theme-accent-rgb), 0.24) 55%,
         rgba(var(--theme-accent-rgb), 0.15) 100%
     );
-    -webkit-mask-image: url("../img/worldmap.png");
-    mask-image: url("../img/worldmap.png");
+    -webkit-mask-image: url("../img/worldmap.webp");
+    mask-image: url("../img/worldmap.webp");
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: center right;
@@ -98,7 +98,7 @@ body.dark-mode .clock-hero-content::after {
 @supports not ((-webkit-mask-image: url("")) or (mask-image: url(""))) {
     .clock-hero-content::after {
         background: none;
-        background-image: url("../img/worldmap.png");
+        background-image: url("../img/worldmap.webp");
         background-repeat: no-repeat;
         background-position: center right;
         background-size: auto 124%;

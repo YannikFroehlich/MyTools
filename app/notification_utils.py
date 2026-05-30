@@ -17,7 +17,7 @@ def get_notification_counts(user):
     if not getattr(user, "is_authenticated", False):
         return counts
 
-    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile, _created = UserProfile.objects.get_or_create(user=user)
     muted_by_dnd = profile.status == UserProfile.STATUS_DND and profile.dnd_silence_notifications
 
     try:
@@ -71,7 +71,7 @@ def get_notification_items(user, limit=10):
     if not getattr(user, "is_authenticated", False):
         return []
 
-    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile, _created = UserProfile.objects.get_or_create(user=user)
     muted_by_dnd = profile.status == UserProfile.STATUS_DND and profile.dnd_silence_notifications
     items = []
 
@@ -90,6 +90,7 @@ def get_notification_items(user, limit=10):
                     "title": room_title,
                     "text": _("%(count)s ungelesene Nachricht(en) von %(user)s") % {"count": unread_count, "user": latest.sender.username},
                     "url": reverse("chat_room", args=[membership.room_id]),
+                    "action_label": _("Zum Chat"),
                     "created_at": latest.created_at,
                     "badge": unread_count,
                 })
@@ -102,6 +103,7 @@ def get_notification_items(user, limit=10):
                 "title": _("Freundschaftsanfrage"),
                 "text": _("%(user)s möchte mit dir befreundet sein") % {"user": friendship.from_user.username},
                 "url": reverse("profile") + "#friend-requests",
+                "action_label": _("Ansehen"),
                 "created_at": friendship.created_at,
                 "badge": 1,
             })
@@ -113,7 +115,8 @@ def get_notification_items(user, limit=10):
                 "icon": "fa-solid fa-pencil",
                 "title": _("Skribble-Einladung"),
                 "text": _("%(user)s hat dich in %(lobby)s eingeladen") % {"user": invite.from_user.username, "lobby": invite.lobby.name},
-                "url": reverse("skribble_home"),
+                "url": reverse("skribble_lobby", args=[invite.lobby.code]),
+                "action_label": _("Beitreten"),
                 "created_at": invite.created_at,
                 "badge": 1,
             })

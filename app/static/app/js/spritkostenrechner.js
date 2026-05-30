@@ -144,12 +144,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (!window.isSecureContext) {
+            setMessage('Standortabfrage braucht HTTPS oder localhost. Suche stattdessen per Stadt.');
+            return;
+        }
+
         toggleLoading(true);
         navigator.geolocation.getCurrentPosition(
             (position) => fetchStations(position.coords.latitude, position.coords.longitude),
             (error) => {
                 toggleLoading(false);
-                setMessage(`Standort-Fehler: ${error.message}`);
+                const blockedByPolicy = error.message?.toLowerCase().includes('permissions policy');
+                const blockedByUser = error.code === error.PERMISSION_DENIED;
+
+                if (blockedByPolicy) {
+                    setMessage('Standortabfrage ist durch die Seiten-Berechtigungen blockiert. Suche stattdessen per Stadt.');
+                } else if (blockedByUser) {
+                    setMessage('Standortzugriff wurde abgelehnt. Erlaube den Standort im Browser oder suche per Stadt.');
+                } else {
+                    setMessage('Standort konnte nicht ermittelt werden. Suche stattdessen per Stadt.');
+                }
             }
         );
     });

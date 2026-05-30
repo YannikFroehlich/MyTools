@@ -1045,7 +1045,7 @@
 
 /* ──────────────────────────────────────────────
    Skribble Update: eigener Hintergrund + mehr Farbe
-   Bild liegt in: app/static/app/img/Skribble-background.png
+   Bild liegt in: app/static/app/img/Skribble-background.webp
    ────────────────────────────────────────────── */
 .draw-panel {
     margin-top: 22px;
@@ -1064,7 +1064,7 @@
     pointer-events: none;
     background:
         linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(224, 242, 254, 0.34) 45%, rgba(253, 242, 248, 0.42)),
-        url("../img/Skribble-background.png") center / cover no-repeat,
+        url("../img/Skribble-background.webp") center / cover no-repeat,
         linear-gradient(135deg, #fff7ed, #dbeafe 48%, #fce7f3);
 }
 
@@ -1084,7 +1084,7 @@
 body.dark-mode .draw-lobby-page::before {
     background:
         linear-gradient(135deg, rgba(15, 23, 42, 0.80), rgba(30, 41, 59, 0.62) 46%, rgba(49, 46, 129, 0.68)),
-        url("../img/Skribble-background.png") center / cover no-repeat,
+        url("../img/Skribble-background.webp") center / cover no-repeat,
         linear-gradient(135deg, #0f172a, #172554 48%, #581c87);
 }
 
@@ -1293,7 +1293,7 @@ body.dark-mode .draw-canvas-wrap {
 
 /* ──────────────────────────────────────────────
    Skribble Update: Logo + bessere Text-Ausrichtung
-   Logo liegt in: app/static/app/img/Skribble-logo.png
+   Logo liegt in: app/static/app/img/Skribble-logo.webp
    ────────────────────────────────────────────── */
 .draw-hero-main,
 .draw-lobby-brand,
@@ -1556,7 +1556,7 @@ body.dark-mode .draw-logo {
     pointer-events: none;
     background:
         linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(224, 242, 254, 0.36) 45%, rgba(253, 242, 248, 0.44)),
-        url("../img/Skribble-background.png") center / cover no-repeat,
+        url("../img/Skribble-background.webp") center / cover no-repeat,
         linear-gradient(135deg, #fff7ed, #dbeafe 48%, #fce7f3);
 }
 
@@ -1587,7 +1587,7 @@ html.dark-mode .draw-home-page::before,
 [data-theme="dark"] .draw-home-page::before {
     background:
         linear-gradient(135deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.66) 46%, rgba(49, 46, 129, 0.70)),
-        url("../img/Skribble-background.png") center / cover no-repeat,
+        url("../img/Skribble-background.webp") center / cover no-repeat,
         linear-gradient(135deg, #0f172a, #172554 48%, #581c87);
 }
 
@@ -2926,7 +2926,7 @@ body:has(.draw-lobby-page) .site-footer {
 }
 
 .draw-lobby-page .draw-friend-invite-list {
-    max-height: 150px;
+    max-height: 122px;
     overflow: auto;
     gap: 8px;
 }
@@ -3715,6 +3715,30 @@ html.dark-mode .draw-lobby-page .draw-word-box-stage,
     background: linear-gradient(135deg, #ef4444, #f97316) !important;
 }
 
+.draw-lobby-page .draw-top-actions button:focus,
+.draw-lobby-page .draw-top-actions button:focus-visible {
+    outline: 0;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .20) !important;
+}
+
+.draw-lobby-page .draw-canvas-wrap {
+    isolation: isolate;
+}
+
+.draw-lobby-page .draw-canvas-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .86);
+}
+
+.draw-lobby-page #drawing-canvas {
+    outline: 0;
+}
+
 .draw-lobby-page .draw-game-shell {
     grid-template-columns: clamp(170px, 15vw, 230px) minmax(0, 1fr) clamp(290px, 24vw, 380px) !important;
     grid-template-areas: "players board chat";
@@ -3744,7 +3768,7 @@ html.dark-mode .draw-lobby-page .draw-word-box-stage,
 }
 
 .draw-left-stack {
-    grid-template-rows: auto minmax(230px, 1fr) minmax(110px, .42fr);
+    grid-template-rows: auto minmax(230px, 1fr) fit-content(176px);
 }
 
 .draw-right-stack {
@@ -3838,6 +3862,29 @@ html.dark-mode .draw-lobby-page .draw-word-box-stage,
     width: 34px;
     height: 30px;
     margin: 0;
+}
+
+.draw-lobby-page .draw-guess-form input {
+    background: rgba(15, 23, 42, .86) !important;
+    border-color: rgba(255, 255, 255, .30) !important;
+    color: #f8fafc !important;
+}
+
+.draw-lobby-page .draw-guess-form input::placeholder {
+    color: rgba(226, 232, 240, .58) !important;
+}
+
+.draw-lobby-page .draw-guess-form input:focus {
+    border-color: rgba(250, 204, 21, .72) !important;
+    box-shadow: 0 0 0 3px rgba(250, 204, 21, .16);
+}
+
+.draw-lobby-page .draw-brush-palette {
+    gap: 8px;
+}
+
+.draw-lobby-page .draw-brush-palette button {
+    margin: 1px;
 }
 
 .draw-round-summary {
@@ -4002,13 +4049,74 @@ html.dark-mode .draw-lobby-page .draw-word-box-stage,
 }
 
 .draw-lobby-page .draw-friend-invite-row {
-    grid-template-columns: 1fr;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 9px !important;
 }
 
-.draw-lobby-page .draw-friend-invite-row form,
+.draw-lobby-page .draw-friends-panel {
+    align-content: start;
+    grid-template-rows: auto auto !important;
+}
+
+.draw-lobby-page .draw-friends-panel .hidden {
+    display: none !important;
+}
+
+.draw-lobby-page .draw-friends-panel .draw-muted {
+    margin: 4px 0 0;
+}
+
+.draw-lobby-page .draw-friend-invite-list {
+    align-content: start;
+    max-height: 122px !important;
+    overflow: auto !important;
+}
+
+.draw-lobby-page .draw-friend-mini {
+    min-width: 0;
+}
+
+.draw-lobby-page .draw-friend-mini > div:last-child {
+    min-width: 0;
+}
+
+.draw-lobby-page .draw-friend-mini strong,
+.draw-lobby-page .draw-friend-mini span {
+    max-width: none;
+}
+
+.draw-lobby-page .draw-friend-mini strong {
+    font-size: .9rem;
+}
+
+.draw-lobby-page .draw-friend-mini span {
+    font-size: .72rem;
+}
+
+.draw-lobby-page .draw-friend-invite-row form {
+    width: auto;
+}
+
 .draw-lobby-page .draw-invite-one {
-    width: 100%;
+    width: auto;
+    min-width: 42px;
+    max-width: 42px;
+    padding: 0 !important;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.draw-lobby-page .draw-invite-one i {
+    margin: 0;
+}
+
+.draw-lobby-page .draw-invite-one i + * {
+    display: none;
 }
 
 .draw-lobby-page .draw-avatar-panel {
@@ -4047,7 +4155,7 @@ html.dark-mode .draw-lobby-page .draw-word-box-stage,
     }
 
     .draw-left-stack {
-        grid-template-rows: auto minmax(180px, 1fr) minmax(80px, .32fr);
+        grid-template-rows: auto minmax(180px, 1fr) fit-content(138px);
     }
 
     .draw-lobby-page .draw-tools {

@@ -21,13 +21,14 @@
       data-continue-url="{% url 'skribble_continue_round' lobby.code %}"
       data-choose-url="{% url 'skribble_choose_word_api' lobby.code %}"
       data-draw-url="{% url 'skribble_draw_api' lobby.code %}"
-      data-guess-url="{% url 'skribble_guess_api' lobby.code %}">
+      data-guess-url="{% url 'skribble_guess_api' lobby.code %}"
+      data-invite-url="{% url 'skribble_invite_friend' lobby.code %}">
 
     <section class="draw-lobby-top">
         <div class="draw-lobby-brand">
             <a href="{% url 'skribble_home' %}" class="draw-back"><i class="fa-solid fa-arrow-left"></i> {% translate 'Zur Übersicht' %}</a>
             <div class="draw-title-row">
-                <img class="draw-logo draw-logo-lobby" src="{% static 'app/img/Skribble-logo.png' %}" alt="{% translate 'Skribble' %}">
+                <img class="draw-logo draw-logo-lobby" src="{% static 'app/img/Skribble-logo.webp' %}" alt="{% translate 'Skribble' %}">
                 <div class="draw-lobby-copy">
                     <span class="draw-eyebrow"><i class="fa-solid fa-users"></i> {% translate 'Lobby' %}</span>
                     <h1>{{ lobby.name }}</h1>
@@ -82,8 +83,9 @@
 
             <article class="draw-panel draw-friends-panel">
                 <h2>{% translate 'Freunde einladen' %}</h2>
+                <p class="draw-muted{% if friend_invite_rows %} hidden{% endif %}" id="friend-invite-empty">{% translate 'Es gibt gerade keine weiteren Freunde, die du einladen kannst.' %}</p>
+                <div class="draw-friend-invite-list" id="friend-invite-list">
                 {% if friend_invite_rows %}
-                    <div class="draw-friend-invite-list">
                         {% for row in friend_invite_rows %}
                             <div class="draw-friend-invite-row">
                                 <div class="draw-friend-mini">
@@ -104,20 +106,18 @@
                                 <form method="post" action="{% url 'skribble_invite_friend' lobby.code %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="friend_id" value="{{ row.user.id }}">
-                                    <button class="draw-primary draw-invite-one" type="submit" {% if row.is_invited %}disabled{% endif %}>
+                                    <button class="draw-primary draw-invite-one" type="submit" aria-label="{% if row.is_invited %}{% translate 'Eingeladen' %}{% else %}{% translate 'Einladen' %}{% endif %}" {% if row.is_invited %}disabled{% endif %}>
                                         {% if row.is_invited %}
-                                            <i class="fa-solid fa-check"></i> {% translate 'Eingeladen' %}
+                                            <i class="fa-solid fa-check"></i>
                                         {% else %}
-                                            <i class="fa-solid fa-user-plus"></i> {% translate 'Einladen' %}
+                                            <span aria-hidden="true">+</span>
                                         {% endif %}
                                     </button>
                                 </form>
                             </div>
                         {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="draw-muted">{% translate 'Es gibt gerade keine weiteren Freunde, die du einladen kannst.' %}</p>
                 {% endif %}
+                </div>
             </article>
         </aside>
 
