@@ -1,0 +1,143 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ game.name }} · {% translate 'Vier gewinnt' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/connectfour.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/connectfour.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="c4-page c4-lobby-page"
+      data-state-url="{% url 'connectfour_state_api' game.code %}"
+      data-move-url="{% url 'connectfour_move_api' game.code %}"
+      data-reset-url="{% url 'connectfour_reset_api' game.code %}">
+    <section class="c4-lobby-top">
+        <div>
+            <a class="c4-back" href="{% url 'connectfour_home' %}">
+                <i class="fa-solid fa-arrow-left"></i>
+                {% translate 'Zur Übersicht' %}
+            </a>
+            <span class="c4-eyebrow"><i class="fa-solid fa-grip"></i> {% translate 'Raum' %}</span>
+            <h1>{{ game.name }}</h1>
+            <p>{% translate 'Raum-Code' %}: <strong class="c4-code">{{ game.code }}</strong></p>
+        </div>
+        <div class="c4-top-actions">
+            <button class="c4-secondary" type="button" id="c4-copy-link">
+                <i class="fa-regular fa-copy"></i>
+                {% translate 'Link kopieren' %}
+            </button>
+            <button class="c4-primary" type="button" id="c4-reset">
+                <i class="fa-solid fa-rotate-right"></i>
+                {% translate 'Neue Runde' %}
+            </button>
+            <form method="post" action="{% url 'connectfour_leave' game.code %}">
+                {% csrf_token %}
+                <button class="c4-secondary" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    {% translate 'Verlassen' %}
+                </button>
+            </form>
+            <form method="post" action="{% url 'connectfour_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
+                {% csrf_token %}
+                <button class="c4-danger" type="submit">
+                    <i class="fa-solid fa-trash"></i>
+                    {% translate 'Löschen' %}
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="c4-game-shell">
+        <aside class="c4-panel c4-score-panel">
+            <h2>{% translate 'Spieler' %}</h2>
+            <div class="c4-player-row is-red">
+                <span></span>
+                <strong id="c4-player-red">-</strong>
+            </div>
+            <div class="c4-player-row is-yellow">
+                <span></span>
+                <strong id="c4-player-yellow">-</strong>
+            </div>
+            <div class="c4-status-card">
+                <small>{% translate 'Status' %}</small>
+                <strong id="c4-status">-</strong>
+                <p id="c4-message">-</p>
+            </div>
+
+            <div class="c4-friends-box">
+                <h2>{% translate 'Freunde einladen' %}</h2>
+                {% if game.player_yellow_id %}
+                    <p class="c4-muted">{% translate 'Der Raum ist voll. Es können keine weiteren Freunde eingeladen werden.' %}</p>
+                {% elif friend_invite_rows %}
+                    <div class="c4-friend-list">
+                        {% for row in friend_invite_rows %}
+                            <div class="c4-friend-row">
+                                <div class="c4-friend-mini">
+                                    <span>{{ row.user.username|slice:":1"|upper }}</span>
+                                    <div>
+                                        <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
+                                        <small>
+                                            {% if row.is_invited %}
+                                                {% translate 'Einladung offen' %}
+                                            {% elif row.was_invited %}
+                                                {% translate 'War schon eingeladen' %}
+                                            {% else %}
+                                                {% translate 'Freund' %}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'connectfour_invite_friend' game.code %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                    <button class="c4-invite-button" type="submit" aria-label="{% translate 'Einladen' %}" {% if row.is_invited %}disabled{% endif %}>
+                                        {% if row.is_invited %}<i class="fa-solid fa-check"></i>{% else %}<i class="fa-solid fa-plus"></i>{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="c4-muted">{% translate 'Keine weiteren Freunde zum Einladen gefunden.' %}</p>
+                {% endif %}
+            </div>
+        </aside>
+
+        <section class="c4-board-panel">
+            <div class="c4-board-meta">
+                <span>{% translate 'Runde' %} <strong id="c4-round">{{ game.round_number }}</strong></span>
+                <span>{% translate 'Du spielst' %} <strong id="c4-disc">-</strong></span>
+                <span>{% translate 'Am Zug' %} <strong id="c4-current">Rot</strong></span>
+            </div>
+            <div class="c4-drop-zone" id="c4-drop-zone" aria-label="{% translate 'Spalten auswählen' %}">
+                {% for index in "0123456" %}
+                    <button type="button" class="c4-column-button" data-column="{{ forloop.counter0 }}" aria-label="{% translate 'Spalte' %} {{ forloop.counter }}">
+                        <i class="fa-solid fa-arrow-down"></i>
+                    </button>
+                {% endfor %}
+            </div>
+            <div class="c4-board-wrap">
+                <div class="c4-falling-disc hidden" id="c4-falling-disc"></div>
+                <div class="c4-board" id="c4-board" aria-label="{% translate 'Vier-gewinnt-Spielfeld' %}"></div>
+                <div class="c4-result-overlay hidden" id="c4-result-overlay" aria-live="polite">
+                    <div class="c4-result-card">
+                        <span class="c4-result-kicker" id="c4-result-kicker">{% translate 'Spiel beendet' %}</span>
+                        <h2 id="c4-result-title">-</h2>
+                        <p id="c4-result-text">-</p>
+                        <button class="c4-primary" type="button" id="c4-result-reset">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            {% translate 'Neue Runde' %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

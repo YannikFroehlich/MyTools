@@ -10,6 +10,8 @@ from .models import (
     ClockSettings,
     ClockTimerPreset,
     ClockWorldCity,
+    ConnectFourGame,
+    ConnectFourInvite,
     DrawingGameGuess as SkribbleGuess,
     DrawingGameInvite as SkribbleInvite,
     DrawingGameLobby as SkribbleLobby,
@@ -21,6 +23,10 @@ from .models import (
     Note,
     Shortcut,
     ShortcutSection,
+    StadtLandFlussInvite,
+    StadtLandFlussLobby,
+    StadtLandFlussPlayer,
+    StadtLandFlussRoundAnswer,
     ToolFavorite,
     ToolFeedback,
     UserProfile,
@@ -185,6 +191,49 @@ class SkribbleGuessAdmin(admin.ModelAdmin):
     list_display = ("lobby", "user", "round_number", "turn_index", "is_correct", "created_at")
     list_filter = ("is_correct", "created_at")
     search_fields = ("message", "user__username", "lobby__code")
+
+
+@admin.register(ConnectFourGame)
+class ConnectFourGameAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "owner", "status", "player_red", "player_yellow", "round_number", "updated_at")
+    list_filter = ("status", "owner", "created_at")
+    search_fields = ("name", "code", "owner__username", "player_red__username", "player_yellow__username")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(ConnectFourInvite)
+class ConnectFourInviteAdmin(admin.ModelAdmin):
+    list_display = ("game", "from_user", "to_user", "status", "created_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("game__code", "from_user__username", "to_user__username")
+
+
+@admin.register(StadtLandFlussLobby)
+class StadtLandFlussLobbyAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "owner", "status", "rounds_count", "round_time_seconds", "max_players", "updated_at")
+    list_filter = ("status", "owner", "created_at")
+    search_fields = ("name", "code", "owner__username", "owner__email")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(StadtLandFlussPlayer)
+class StadtLandFlussPlayerAdmin(admin.ModelAdmin):
+    list_display = ("display_name", "user", "lobby", "score", "joined_at")
+    search_fields = ("display_name", "user__username", "lobby__code")
+
+
+@admin.register(StadtLandFlussRoundAnswer)
+class StadtLandFlussRoundAnswerAdmin(admin.ModelAdmin):
+    list_display = ("lobby", "player", "round_number", "letter", "total_points", "is_submitted")
+    list_filter = ("is_submitted", "letter")
+    search_fields = ("lobby__code", "player__user__username")
+
+
+@admin.register(StadtLandFlussInvite)
+class StadtLandFlussInviteAdmin(admin.ModelAdmin):
+    list_display = ("lobby", "from_user", "to_user", "status", "created_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("lobby__code", "from_user__username", "to_user__username")
 
 
 @admin.register(ChatAttachment)

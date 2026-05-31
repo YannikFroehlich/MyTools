@@ -38,6 +38,7 @@ RUNSERVER_SERVE_STATIC = (
     "runserver" in sys.argv
     and os.getenv("RUNSERVER_SERVE_STATIC", "True") == "True"
 )
+IS_TESTING = "test" in sys.argv
 
 DOMAIN = hostname_from_value(os.getenv("DOMAIN", ""))
 
@@ -60,7 +61,7 @@ if DOMAIN and DOMAIN not in {"localhost", "127.0.0.1"}:
 
 FONTAWESOME_KIT_KEY = os.getenv("FONTAWESOME_KIT_KEY", "")
 
-if os.getenv("USE_SQLITE", "False") == "True":
+if IS_TESTING or os.getenv("USE_SQLITE", "False") == "True":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -181,7 +182,7 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
 
-if os.getenv("USE_LOCAL_CACHE", "False") == "True":
+if IS_TESTING or os.getenv("USE_LOCAL_CACHE", "False") == "True":
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",

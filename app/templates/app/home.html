@@ -399,6 +399,55 @@
                                                         <i class="fa-solid fa-arrow-right"></i>
                                                     </a>
                                                 </div>
+                                            {% elif widget.widget_type == "stadtlandfluss" %}
+                                                <div class="skribble-widget-content">
+                                                    <div class="stats-grid mini">
+                                                        <div>
+                                                            <strong>{{ data.pending_invites_count }}</strong>
+                                                            <span>{% translate 'Einladungen' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.active_count }}</strong>
+                                                            <span>{% translate 'Lobbys' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.pending_invites %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for invite in data.pending_invites %}
+                                                                <a href="{% url 'stadtlandfluss_lobby' invite.lobby.code %}">
+                                                                    <span class="widget-list-icon is-purple"><i class="fa-solid fa-pen-to-square"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ invite.lobby.name }}</strong>
+                                                                        <small>{% translate 'von' %} {{ invite.from_user.username }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% elif data.active_lobbies %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for lobby in data.active_lobbies %}
+                                                                <a href="{% url 'stadtlandfluss_lobby' lobby.code %}">
+                                                                    <span class="widget-list-icon is-purple"><i class="fa-solid fa-pen-to-square"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ lobby.name }}</strong>
+                                                                        <small>{{ lobby.code }} · {{ lobby.get_status_display }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-solid fa-pen-to-square"></i>
+                                                            <span>{% translate 'Noch keine Stadt-Land-Fluss-Lobby.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'stadtlandfluss_home' %}" class="widget-link">
+                                                        {% translate 'Stadt Land Fluss öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
                                             {% else %}
                                                 <div class="stats-widget-content">
                                                     <div class="stats-grid">
@@ -484,6 +533,7 @@
                         <option value="friends">{% translate 'Freunde' %}</option>
                         <option value="skribble">{% translate 'Skribble' %}</option>
                         <option value="tictactoe">{% translate 'Tic Tac Toe' %}</option>
+                        <option value="stadtlandfluss">{% translate 'Stadt Land Fluss' %}</option>
                         <option value="benchmark">{% translate 'Human Benchmark' %}</option>
                         <option value="stats">{% translate 'Schnellstatistiken' %}</option>
                     </select>

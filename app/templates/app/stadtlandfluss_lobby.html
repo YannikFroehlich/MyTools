@@ -1,0 +1,132 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ lobby.name }} · {% translate 'Stadt Land Fluss' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/stadtlandfluss.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/stadtlandfluss.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="slf-page slf-lobby-page"
+      data-state-url="{% url 'stadtlandfluss_state_api' lobby.code %}"
+      data-start-url="{% url 'stadtlandfluss_start' lobby.code %}"
+      data-draft-url="{% url 'stadtlandfluss_draft_api' lobby.code %}"
+      data-submit-url="{% url 'stadtlandfluss_submit_api' lobby.code %}"
+      data-vote-url="{% url 'stadtlandfluss_vote_api' lobby.code %}"
+      data-continue-url="{% url 'stadtlandfluss_continue' lobby.code %}"
+      data-restart-url="{% url 'stadtlandfluss_restart' lobby.code %}"
+      data-invite-url="{% url 'stadtlandfluss_invite_friend' lobby.code %}">
+    <section class="slf-lobby-top">
+        <div>
+            <a class="slf-back" href="{% url 'stadtlandfluss_home' %}"><i class="fa-solid fa-arrow-left"></i> {% translate 'Zur Übersicht' %}</a>
+            <span class="slf-eyebrow"><i class="fa-solid fa-pen-to-square"></i> {% translate 'Lobby' %}</span>
+            <h1>{{ lobby.name }}</h1>
+            <p>{% translate 'Lobby-Code' %}: <strong class="slf-code">{{ lobby.code }}</strong></p>
+        </div>
+        <div class="slf-top-actions">
+            <button class="slf-secondary" type="button" id="copy-lobby-link"><i class="fa-regular fa-copy"></i> {% translate 'Link kopieren' %}</button>
+            {% if lobby.owner_id == request.user.id %}
+                <button class="slf-primary" type="button" id="start-game-btn"><i class="fa-solid fa-play"></i> {% translate 'Starten' %}</button>
+                <button class="slf-secondary" type="button" id="restart-game-btn"><i class="fa-solid fa-rotate-right"></i> {% translate 'Zurücksetzen' %}</button>
+                <form method="post" action="{% url 'stadtlandfluss_delete' lobby.code %}" class="slf-inline-form" data-confirm="{% translate 'Lobby wirklich löschen?' %}">
+                    {% csrf_token %}
+                    <button class="slf-danger" type="submit"><i class="fa-solid fa-trash"></i> {% translate 'Löschen' %}</button>
+                </form>
+            {% endif %}
+            <form method="post" action="{% url 'stadtlandfluss_leave' lobby.code %}" class="slf-inline-form" data-confirm="{% translate 'Lobby wirklich verlassen?' %}">
+                {% csrf_token %}
+                <button class="slf-secondary" type="submit"><i class="fa-solid fa-right-from-bracket"></i> {% translate 'Verlassen' %}</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="slf-game-shell">
+        <aside class="slf-side-stack">
+            <article class="slf-panel slf-status-card">
+                <div>
+                    <span>{% translate 'Status' %}</span>
+                    <strong id="game-status">-</strong>
+                </div>
+                <div>
+                    <span>{% translate 'Runde' %}</span>
+                    <strong id="round-info">-</strong>
+                </div>
+            </article>
+
+            <article class="slf-panel">
+                <h2>{% translate 'Spieler' %}</h2>
+                <div id="players-list" class="slf-players"></div>
+            </article>
+
+            <article class="slf-panel">
+                <h2>{% translate 'Freunde einladen' %}</h2>
+                <p class="slf-muted{% if friend_invite_rows %} hidden{% endif %}" id="friend-invite-empty">{% translate 'Keine weiteren Freunde verfügbar.' %}</p>
+                <div class="slf-friend-list" id="friend-invite-list">
+                    {% for row in friend_invite_rows %}
+                        <div class="slf-friend-row">
+                            <div class="slf-friend-mini">
+                                <span>{{ row.user.username|slice:":1"|upper }}</span>
+                                <div>
+                                    <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
+                                    <small>{% if row.is_invited %}{% translate 'Einladung offen' %}{% elif row.was_invited %}{% translate 'War schon eingeladen' %}{% else %}{% translate 'Freund' %}{% endif %}</small>
+                                </div>
+                            </div>
+                            <form method="post" action="{% url 'stadtlandfluss_invite_friend' lobby.code %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                <button class="slf-icon-btn" type="submit" {% if row.is_invited %}disabled{% endif %} aria-label="{% translate 'Einladen' %}">
+                                    {% if row.is_invited %}<i class="fa-solid fa-check"></i>{% else %}<i class="fa-solid fa-plus"></i>{% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </aside>
+
+        <section class="slf-panel slf-board">
+            <div class="slf-board-header">
+                <div class="slf-letter-card">
+                    <span>{% translate 'Buchstabe' %}</span>
+                    <strong id="letter-display">-</strong>
+                </div>
+                <div class="slf-timer" id="timer-display">--</div>
+            </div>
+
+            <form id="answers-form" class="slf-answer-form">
+                <div id="answers-grid" class="slf-answer-grid"></div>
+                <button class="slf-primary" type="submit" id="submit-answers-btn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    {% translate 'Antworten abgeben' %}
+                </button>
+            </form>
+
+            <div id="waiting-panel" class="slf-waiting-panel">
+                <i class="fa-solid fa-hourglass-half"></i>
+                <strong>{% translate 'Warte auf den Start' %}</strong>
+                <span>{% translate 'Der Host startet die erste Runde, sobald genug Spieler da sind.' %}</span>
+            </div>
+
+            <div id="summary-panel" class="slf-summary-panel hidden">
+                <div class="slf-summary-head">
+                    <div>
+                        <span class="slf-eyebrow">{% translate 'Auswertung' %}</span>
+                        <h2 id="summary-title">-</h2>
+                    </div>
+                    <button type="button" class="slf-primary" id="continue-round-btn">
+                        <i class="fa-solid fa-forward-step"></i>
+                        <span>{% translate 'Weiter' %}</span>
+                    </button>
+                </div>
+                <div id="summary-table" class="slf-summary-table"></div>
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

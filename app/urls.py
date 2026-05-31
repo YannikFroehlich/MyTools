@@ -65,6 +65,18 @@ from .tictactoe_views import (
     tictactoe_reset_api,
     tictactoe_state_api,
 )
+from .connectfour_views import (
+    connectfour_delete,
+    connectfour_home,
+    connectfour_home_state_api,
+    connectfour_invite_friend,
+    connectfour_invite_response,
+    connectfour_leave,
+    connectfour_lobby,
+    connectfour_move_api,
+    connectfour_reset_api,
+    connectfour_state_api,
+)
 from .battleship_views import (
     battleship_attack_api,
     battleship_delete,
@@ -77,6 +89,22 @@ from .battleship_views import (
     battleship_place_api,
     battleship_reset_api,
     battleship_state_api,
+)
+from .stadtlandfluss_views import (
+    stadtlandfluss_continue,
+    stadtlandfluss_delete,
+    stadtlandfluss_draft_api,
+    stadtlandfluss_home,
+    stadtlandfluss_invite_friend,
+    stadtlandfluss_invite_response,
+    stadtlandfluss_leave,
+    stadtlandfluss_lobby,
+    stadtlandfluss_home_state_api,
+    stadtlandfluss_restart,
+    stadtlandfluss_start,
+    stadtlandfluss_state_api,
+    stadtlandfluss_submit_api,
+    stadtlandfluss_vote_api,
 )
 from .chat_views import (
     chat_group_leave_view,
@@ -170,6 +198,17 @@ urlpatterns = [
     path('api/tic-tac-toe/<slug:code>/move/', tictactoe_move_api, name='tictactoe_move_api'),
     path('api/tic-tac-toe/<slug:code>/reset/', tictactoe_reset_api, name='tictactoe_reset_api'),
 
+    path('vier-gewinnt/', connectfour_home, name='connectfour_home'),
+    path('vier-gewinnt/<slug:code>/', connectfour_lobby, name='connectfour_lobby'),
+    path('vier-gewinnt/<slug:code>/invite/', connectfour_invite_friend, name='connectfour_invite_friend'),
+    path('vier-gewinnt/invite/<int:invite_id>/', connectfour_invite_response, name='connectfour_invite_response'),
+    path('vier-gewinnt/<slug:code>/leave/', connectfour_leave, name='connectfour_leave'),
+    path('vier-gewinnt/<slug:code>/delete/', connectfour_delete, name='connectfour_delete'),
+    path('api/vier-gewinnt/home-state/', connectfour_home_state_api, name='connectfour_home_state_api'),
+    path('api/vier-gewinnt/<slug:code>/state/', connectfour_state_api, name='connectfour_state_api'),
+    path('api/vier-gewinnt/<slug:code>/move/', connectfour_move_api, name='connectfour_move_api'),
+    path('api/vier-gewinnt/<slug:code>/reset/', connectfour_reset_api, name='connectfour_reset_api'),
+
     path('schiffe-versenken/', battleship_home, name='battleship_home'),
     path('schiffe-versenken/<slug:code>/', battleship_lobby, name='battleship_lobby'),
     path('schiffe-versenken/<slug:code>/invite/', battleship_invite_friend, name='battleship_invite_friend'),
@@ -181,6 +220,21 @@ urlpatterns = [
     path('api/schiffe-versenken/<slug:code>/place/', battleship_place_api, name='battleship_place_api'),
     path('api/schiffe-versenken/<slug:code>/attack/', battleship_attack_api, name='battleship_attack_api'),
     path('api/schiffe-versenken/<slug:code>/reset/', battleship_reset_api, name='battleship_reset_api'),
+
+    path('stadt-land-fluss/', stadtlandfluss_home, name='stadtlandfluss_home'),
+    path('stadt-land-fluss/<slug:code>/', stadtlandfluss_lobby, name='stadtlandfluss_lobby'),
+    path('stadt-land-fluss/<slug:code>/invite/', stadtlandfluss_invite_friend, name='stadtlandfluss_invite_friend'),
+    path('stadt-land-fluss/invite/<int:invite_id>/', stadtlandfluss_invite_response, name='stadtlandfluss_invite_response'),
+    path('stadt-land-fluss/<slug:code>/start/', stadtlandfluss_start, name='stadtlandfluss_start'),
+    path('stadt-land-fluss/<slug:code>/continue/', stadtlandfluss_continue, name='stadtlandfluss_continue'),
+    path('stadt-land-fluss/<slug:code>/restart/', stadtlandfluss_restart, name='stadtlandfluss_restart'),
+    path('stadt-land-fluss/<slug:code>/leave/', stadtlandfluss_leave, name='stadtlandfluss_leave'),
+    path('stadt-land-fluss/<slug:code>/delete/', stadtlandfluss_delete, name='stadtlandfluss_delete'),
+    path('api/stadt-land-fluss/home-state/', stadtlandfluss_home_state_api, name='stadtlandfluss_home_state_api'),
+    path('api/stadt-land-fluss/<slug:code>/state/', stadtlandfluss_state_api, name='stadtlandfluss_state_api'),
+    path('api/stadt-land-fluss/<slug:code>/draft/', stadtlandfluss_draft_api, name='stadtlandfluss_draft_api'),
+    path('api/stadt-land-fluss/<slug:code>/submit/', stadtlandfluss_submit_api, name='stadtlandfluss_submit_api'),
+    path('api/stadt-land-fluss/<slug:code>/vote/', stadtlandfluss_vote_api, name='stadtlandfluss_vote_api'),
 
     path('skribble/', skribble_home, name='skribble_home'),
     path('skribble/<slug:code>/', skribble_lobby, name='skribble_lobby'),

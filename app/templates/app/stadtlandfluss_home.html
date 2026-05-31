@@ -1,0 +1,151 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Stadt Land Fluss' %} · MyTools{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/stadtlandfluss.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="slf-page slf-home-page" data-home-state-url="{% url 'stadtlandfluss_home_state_api' %}">
+    <section class="slf-hero">
+        <div>
+            <span class="slf-eyebrow"><i class="fa-solid fa-pen-to-square"></i> {% translate 'Mehrspieler-Wortduell' %}</span>
+            <h1>{% translate 'Stadt Land Fluss' %}</h1>
+            <p>{% translate 'Erstelle eine Lobby, lade Freunde ein und spielt mehrere Runden mit Timer, Buchstaben und automatischer Punktewertung.' %}</p>
+        </div>
+    </section>
+
+    <section class="slf-grid slf-home-grid">
+        <article class="slf-panel">
+            <h2>{% translate 'Neue Lobby erstellen' %}</h2>
+            <form method="post" class="slf-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <label>
+                    <span>{% translate 'Lobby-Name' %}</span>
+                    <input type="text" name="name" maxlength="80" value="{% translate 'Stadt Land Fluss' %}">
+                </label>
+                <div class="slf-form-row">
+                    <label>
+                        <span>{% translate 'Runden' %}</span>
+                        <input type="number" name="rounds_count" min="1" max="12" value="5">
+                    </label>
+                    <label>
+                        <span>{% translate 'Zeit' %}</span>
+                        <select name="round_time_seconds">
+                            <option value="45">45 {% translate 'Sek.' %}</option>
+                            <option value="60">60 {% translate 'Sek.' %}</option>
+                            <option value="90" selected>90 {% translate 'Sek.' %}</option>
+                            <option value="120">120 {% translate 'Sek.' %}</option>
+                            <option value="180">180 {% translate 'Sek.' %}</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>{% translate 'Max. Spieler' %}</span>
+                        <input type="number" name="max_players" min="2" max="16" value="8">
+                    </label>
+                </div>
+                <label>
+                    <span>{% translate 'Kategorien' %}</span>
+                    <textarea name="categories" rows="3">{{ default_categories }}</textarea>
+                </label>
+                <button class="slf-primary" type="submit">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate 'Lobby erstellen' %}
+                </button>
+            </form>
+        </article>
+
+        <aside class="slf-panel">
+            <h2>{% translate 'Raum beitreten' %}</h2>
+            <form method="post" class="slf-form slf-join-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="join">
+                <label>
+                    <span>{% translate 'Lobby-Code' %}</span>
+                    <input type="text" name="code" maxlength="16" placeholder="ABC123">
+                </label>
+                <button class="slf-secondary" type="submit">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    {% translate 'Beitreten' %}
+                </button>
+            </form>
+
+            <h2 class="slf-stack-title">{% translate 'Einladungen' %}</h2>
+            <div class="slf-list{% if not invites %} hidden{% endif %}" id="slf-invite-list">
+            {% if invites %}
+                    {% for invite in invites %}
+                        <div class="slf-list-item">
+                            <div>
+                                <strong>{{ invite.lobby.name }}</strong>
+                                <span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span>
+                            </div>
+                            <div class="slf-actions-inline">
+                                <form method="post" action="{% url 'stadtlandfluss_invite_response' invite.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="accept">
+                                    <button class="slf-small slf-accept" type="submit">{% translate 'Annehmen' %}</button>
+                                </form>
+                                <form method="post" action="{% url 'stadtlandfluss_invite_response' invite.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="decline">
+                                    <button class="slf-small" type="submit">{% translate 'Ablehnen' %}</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+            {% endif %}
+            </div>
+            <p class="slf-muted{% if invites %} hidden{% endif %}" id="slf-invite-empty">{% translate 'Du hast aktuell keine offenen Einladungen.' %}</p>
+        </aside>
+    </section>
+
+    <section class="slf-panel">
+        <div class="slf-section-heading">
+            <div>
+                <span class="slf-eyebrow"><i class="fa-solid fa-door-open"></i> {% translate 'Lobby-Übersicht' %}</span>
+                <h2>{% translate 'Aktive Lobbys' %}</h2>
+            </div>
+        </div>
+        <div class="slf-lobby-grid{% if not discover_lobbies %} hidden{% endif %}" id="slf-discover-list">
+        {% if discover_lobbies %}
+                {% for lobby in discover_lobbies %}
+                    <a href="{% url 'stadtlandfluss_lobby' lobby.code %}" class="slf-lobby-card">
+                        <span class="slf-status">{{ lobby.get_status_display }}</span>
+                        <strong>{{ lobby.name }}</strong>
+                        <span>@{{ lobby.owner.username }}</span>
+                        <div>
+                            <small><i class="fa-solid fa-users"></i> {{ lobby.players_count }} / {{ lobby.max_players }}</small>
+                            <small><i class="fa-solid fa-rotate"></i> {{ lobby.rounds_count }}</small>
+                            <small><i class="fa-solid fa-clock"></i> {{ lobby.round_time_seconds }}s</small>
+                        </div>
+                    </a>
+                {% endfor %}
+        {% endif %}
+        </div>
+        <p class="slf-muted{% if discover_lobbies %} hidden{% endif %}" id="slf-discover-empty">{% translate 'Aktuell gibt es keine aktive Lobby von dir oder deinen Freunden.' %}</p>
+    </section>
+
+    <section class="slf-panel">
+        <h2>{% translate 'Deine Lobbys' %}</h2>
+        <div class="slf-lobby-grid{% if not my_lobbies %} hidden{% endif %}" id="slf-my-lobbies-list">
+        {% if my_lobbies %}
+                {% for lobby in my_lobbies %}
+                    <a href="{% url 'stadtlandfluss_lobby' lobby.code %}" class="slf-lobby-card">
+                        <span class="slf-code">{{ lobby.code }}</span>
+                        <strong>{{ lobby.name }}</strong>
+                        <span>{{ lobby.players_count }} / {{ lobby.max_players }} {% translate 'Spieler' %} · {{ lobby.get_status_display }}</span>
+                    </a>
+                {% endfor %}
+        {% endif %}
+        </div>
+        <p class="slf-muted{% if my_lobbies %} hidden{% endif %}" id="slf-my-lobbies-empty">{% translate 'Du bist noch in keiner Lobby.' %}</p>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script defer src="{% static 'app/js/stadtlandfluss.js' %}"></script>
+{% endblock %}
