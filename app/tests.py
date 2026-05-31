@@ -729,6 +729,32 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(shortcut.url, "http://example.com")
         self.assertEqual(shortcut.icon, "fa-solid fa-code")
 
+    def test_edit_shortcut_can_remove_existing_image(self):
+        section = ShortcutSection.objects.create(name="Coding")
+        shortcut = Shortcut.objects.create(
+            section=section,
+            name="Django",
+            url="https://www.djangoproject.com",
+            icon="fa-solid fa-code",
+            image=self.get_test_image("shortcut.png"),
+        )
+
+        response = self.client.post(reverse("home"), {
+            "action": "edit_shortcut",
+            "shortcut_id": shortcut.id,
+            "section_id": section.id,
+            "name": "Django",
+            "url": "https://www.djangoproject.com",
+            "icon": "fa-solid fa-code",
+            "custom_icon": "",
+            "remove_image": "1",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+
+        shortcut.refresh_from_db()
+        self.assertFalse(shortcut.image)
+
     def test_delete_shortcut(self):
         section = ShortcutSection.objects.create(name="Coding")
         shortcut = Shortcut.objects.create(

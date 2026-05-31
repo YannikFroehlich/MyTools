@@ -831,6 +831,7 @@ def home(request):
             icon = request.POST.get("icon", "").strip()
             custom_icon = request.POST.get("custom_icon", "").strip()
             image = request.FILES.get("image")
+            remove_image = request.POST.get("remove_image") == "1"
 
             shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
