@@ -688,6 +688,7 @@ class HomeWidget(models.Model):
     WIDGET_FRIENDS = "friends"
     WIDGET_SKRIBBLE = "skribble"
     WIDGET_TICTACTOE = "tictactoe"
+    WIDGET_STADTLANDFLUSS = "stadtlandfluss"
 
     WIDGET_CHOICES = [
         (WIDGET_WEATHER, _("Wetter")),
@@ -699,6 +700,7 @@ class HomeWidget(models.Model):
         (WIDGET_FRIENDS, _("Freunde")),
         (WIDGET_SKRIBBLE, _("Skribble")),
         (WIDGET_TICTACTOE, _("Tic Tac Toe")),
+        (WIDGET_STADTLANDFLUSS, _("Stadt Land Fluss")),
     ]
 
     CLOCK_DESIGN_MINIMAL = "minimal"
@@ -1029,6 +1031,139 @@ class TicTacToeInvite(models.Model):
         return f"{self.from_user} -> {self.to_user} · {self.game}"
 
 
+class ConnectFourGame(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_PLAYING = "playing"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_PLAYING, _("Läuft")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    DISC_RED = "R"
+    DISC_YELLOW = "Y"
+
+    DISC_CHOICES = [
+        (DISC_RED, _("Rot")),
+        (DISC_YELLOW, _("Gelb")),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_connectfour_games",
+    )
+    player_red = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="connectfour_games_as_red",
+        null=True,
+        blank=True,
+    )
+    player_yellow = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="connectfour_games_as_yellow",
+        null=True,
+        blank=True,
+    )
+    name = models.CharField(max_length=80, default="Vier gewinnt")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+    board = models.JSONField(default=list, blank=True)
+    current_disc = models.CharField(max_length=1, choices=DISC_CHOICES, default=DISC_RED)
+    winner_disc = models.CharField(max_length=1, choices=DISC_CHOICES, blank=True)
+    winning_line = models.JSONField(default=list, blank=True)
+    last_move = models.JSONField(default=dict, blank=True)
+    round_number = models.PositiveIntegerField(default=1)
+    last_move_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Vier gewinnt Spiel"
+        verbose_name_plural = "Vier gewinnt Spiele"
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+            models.Index(fields=["player_red", "status"]),
+            models.Index(fields=["player_yellow", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def normalized_board(self):
+        board = self.board if isinstance(self.board, list) else []
+        board = [cell if cell in {self.DISC_RED, self.DISC_YELLOW} else "" for cell in board[:42]]
+        return board + [""] * (42 - len(board))
+
+    def disc_for_user(self, user):
+        if self.player_red_id == user.id:
+            return self.DISC_RED
+        if self.player_yellow_id == user.id:
+            return self.DISC_YELLOW
+        return ""
+
+    def opponent_for_user(self, user):
+        if self.player_red_id == user.id:
+            return self.player_yellow
+        if self.player_yellow_id == user.id:
+            return self.player_red
+        return None
+
+
+class ConnectFourInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    game = models.ForeignKey(
+        ConnectFourGame,
+        on_delete=models.CASCADE,
+        related_name="invites",
+    )
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_connectfour_invites",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_connectfour_invites",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["game", "to_user"], name="unique_connectfour_invite_per_game_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="connectfour_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"]),
+            models.Index(fields=["game", "status"]),
+        ]
+        verbose_name = "Vier gewinnt Einladung"
+        verbose_name_plural = "Vier gewinnt Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user} - {self.game}"
+
+
 class BattleshipGame(models.Model):
     STATUS_WAITING = "waiting"
     STATUS_SETUP = "setup"
@@ -1165,6 +1300,176 @@ class BattleshipInvite(models.Model):
         return f"{self.from_user} -> {self.to_user} · {self.game}"
 
 
+class StadtLandFlussLobby(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_PLAYING = "playing"
+    STATUS_ROUND_SUMMARY = "round_summary"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_PLAYING, _("Läuft")),
+        (STATUS_ROUND_SUMMARY, _("Rundenauswertung")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_stadtlandfluss_lobbies",
+    )
+    name = models.CharField(max_length=80, default="Stadt Land Fluss")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+    categories = models.JSONField(default=list, blank=True)
+    rounds_count = models.PositiveSmallIntegerField(default=5)
+    round_time_seconds = models.PositiveSmallIntegerField(default=90)
+    max_players = models.PositiveSmallIntegerField(default=8)
+    current_round_number = models.PositiveSmallIntegerField(default=0)
+    current_letter = models.CharField(max_length=1, blank=True)
+    used_letters = models.JSONField(default=list, blank=True)
+    round_started_at = models.DateTimeField(null=True, blank=True)
+    round_summary = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Stadt Land Fluss Lobby"
+        verbose_name_plural = "Stadt Land Fluss Lobbys"
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def normalized_categories(self):
+        categories = self.categories if isinstance(self.categories, list) else []
+        cleaned = [str(category).strip()[:40] for category in categories if str(category).strip()]
+        return cleaned or ["Stadt", "Land", "Fluss", "Name", "Tier", "Beruf"]
+
+
+class StadtLandFlussPlayer(models.Model):
+    lobby = models.ForeignKey(
+        StadtLandFlussLobby,
+        on_delete=models.CASCADE,
+        related_name="players",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="stadtlandfluss_players",
+    )
+    display_name = models.CharField(max_length=40, blank=True)
+    score = models.PositiveIntegerField(default=0)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["joined_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "user"], name="unique_stadtlandfluss_player_per_lobby"),
+        ]
+        verbose_name = "Stadt Land Fluss Spieler"
+        verbose_name_plural = "Stadt Land Fluss Spieler"
+
+    def __str__(self):
+        return f"{self.display_label} - {self.lobby.code}"
+
+    @property
+    def display_label(self):
+        return self.display_name or self.user.get_full_name() or self.user.username
+
+
+class StadtLandFlussRoundAnswer(models.Model):
+    lobby = models.ForeignKey(
+        StadtLandFlussLobby,
+        on_delete=models.CASCADE,
+        related_name="answers",
+    )
+    player = models.ForeignKey(
+        StadtLandFlussPlayer,
+        on_delete=models.CASCADE,
+        related_name="answers",
+    )
+    round_number = models.PositiveSmallIntegerField(default=1)
+    letter = models.CharField(max_length=1)
+    answers = models.JSONField(default=dict, blank=True)
+    points = models.JSONField(default=dict, blank=True)
+    total_points = models.PositiveSmallIntegerField(default=0)
+    is_submitted = models.BooleanField(default=False)
+    submitted_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["round_number", "player__joined_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["lobby", "player", "round_number"],
+                name="unique_stadtlandfluss_answer_per_round_player",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["lobby", "round_number"]),
+        ]
+        verbose_name = "Stadt Land Fluss Antwort"
+        verbose_name_plural = "Stadt Land Fluss Antworten"
+
+    def __str__(self):
+        return f"{self.player.display_label} - Runde {self.round_number}"
+
+
+class StadtLandFlussInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    lobby = models.ForeignKey(
+        StadtLandFlussLobby,
+        on_delete=models.CASCADE,
+        related_name="invites",
+    )
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_stadtlandfluss_invites",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_stadtlandfluss_invites",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "to_user"], name="unique_stadtlandfluss_invite_per_lobby_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="stadtlandfluss_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"]),
+            models.Index(fields=["lobby", "status"]),
+        ]
+        verbose_name = "Stadt Land Fluss Einladung"
+        verbose_name_plural = "Stadt Land Fluss Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user} - {self.lobby}"
+
+
 class DrawingGameLobby(models.Model):
     STATUS_WAITING = "waiting"
     STATUS_PLAYING = "playing"
@@ -1174,7 +1479,7 @@ class DrawingGameLobby(models.Model):
     STATUS_CHOICES = [
         (STATUS_WAITING, _("Wartet")),
         (STATUS_PLAYING, _("Läuft")),
-        (STATUS_ROUND_SUMMARY, _("Rundenuebersicht")),
+        (STATUS_ROUND_SUMMARY, _("Rundenübersicht")),
         (STATUS_FINISHED, _("Beendet")),
     ]
 

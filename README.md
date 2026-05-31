@@ -26,7 +26,9 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Chat-System mit Direktchats, Gruppenchats, Emoji-Reaktionen und Löschen eigener Nachrichten
 - Skribble-Zeichenspiel mit Lobby, Einladungen, Zeichnen, Raten, Punktestand und Rundenübersicht
 - Tic Tac Toe mit privaten Räumen, Freunde-Einladungen, Live-Übersicht und Host-/Löschlogik
+- Vier gewinnt mit animiertem Spielfeld, privaten Räumen, Einladungen, Live-Zügen und Gewinn-Popup
 - Schiffe versenken mit privaten Räumen, manueller Flottenplatzierung, Sounds, Effekten und serverseitig geprüften Spielregeln
+- Stadt Land Fluss mit Live-Runden, Stopp-Regel, manueller Auswertung, Voting und Endplatzierungen
 - Notizen-App mit Pins, Archiv, Farben und Tags
 - Human Benchmark mit gespeicherten Ergebnissen, Highscores und Bestenliste pro Nutzer
 - OBS Dashboard für lokale OBS-WebSocket-Steuerung
@@ -222,6 +224,49 @@ Funktionen:
 - nur der Host kann eine neue Runde starten
 - Soundeffekte und Treffer-/Wasser-Effekte im Browser
 - gelöschte Räume leiten offene Clients automatisch zurück zur Übersicht
+
+---
+
+## 🔴 Vier gewinnt
+
+Vier gewinnt ist ein animiertes 1v1-Spiel mit privaten Räumen und Live-Aktualisierung.
+
+Funktionen:
+
+- Räume erstellen und per Code oder Link teilen
+- Freunde einladen
+- offene Einladungen und eigene Räume mit Live-Aktualisierung
+- maximal zwei Spieler pro Raum
+- rote und gelbe Spielsteine mit klarer Spielerzuordnung
+- serverseitig geprüfte Spalten, Züge, Gewinnerkennung und Unentschieden
+- Fallanimation für neue Spielsteine
+- hervorgehobene Gewinnlinie
+- Gewinn- und Unentschieden-Meldung als Overlay
+- neue Runde direkt aus dem Ergebnis-Popup starten
+- Spieler können Räume verlassen
+- Räume können gelöscht werden
+
+---
+
+## 🧠 Stadt Land Fluss
+
+Stadt Land Fluss ist als gemeinsames Live-Spiel mit echten Runden und manueller Auswertung umgesetzt.
+
+Funktionen:
+
+- Lobbys erstellen und per Code oder Link teilen
+- Freunde einladen
+- offene Einladungen und eigene Lobbys mit Live-Aktualisierung
+- mehrere Spieler pro Lobby
+- Kategorien und Rundenzahl beim Erstellen festlegen
+- pro Runde zufälliger Buchstabe
+- Antwortentwürfe werden zwischengespeichert
+- sobald ein Spieler abgibt, ist die Runde für alle beendet
+- Auswertung nach Kategorien untereinander
+- Spieler entscheiden per Voting, welche Antworten zählen
+- Punktevergabe mit 20 Punkten für die einzige gültige Antwort einer Kategorie
+- finale Platzierungen nach der letzten Runde
+- Lobbys können verlassen, neu gestartet oder gelöscht werden
 
 ---
 

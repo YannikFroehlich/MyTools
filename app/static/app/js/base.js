@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ── LIVE BENACHRICHTIGUNGS-ZÄHLER ── */
     const notificationCountsUrl = body.dataset.notificationCountsUrl;
-    const notificationPollMs = 10000;
+    const notificationPollMs = 3000;
 
     function setNotificationBadgeValue(badge, value) {
         const normalizedValue = Number.isFinite(Number(value)) ? Number(value) : 0;

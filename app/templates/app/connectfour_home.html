@@ -1,0 +1,131 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Vier gewinnt' %} · MyTools{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/connectfour.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/connectfour.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="c4-page c4-home-page"
+      data-home-state-url="{% url 'connectfour_home_state_api' %}"
+      data-empty-invites-label="{% translate 'Du hast aktuell keine offenen Vier-gewinnt-Einladungen.' %}"
+      data-empty-games-label="{% translate 'Du hast noch keinen Vier-gewinnt-Raum.' %}"
+      data-from-label="{% translate 'von' %}"
+      data-accept-label="{% translate 'Annehmen' %}"
+      data-decline-label="{% translate 'Ablehnen' %}"
+      data-round-label="{% translate 'Runde' %}">
+    <section class="c4-hero">
+        <div>
+            <span class="c4-eyebrow"><i class="fa-solid fa-grip"></i> {% translate 'Freunde-Spiel' %}</span>
+            <h1>{% translate 'Vier gewinnt' %}</h1>
+            <p>{% translate 'Steine fallen lassen, Reihen bauen und mit vier in einer Linie gewinnen.' %}</p>
+        </div>
+        <div class="c4-hero-board" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+        </div>
+    </section>
+
+    <section class="c4-home-grid">
+        <article class="c4-panel">
+            <h2>{% translate 'Neuen Raum erstellen' %}</h2>
+            <form method="post" class="c4-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <label>
+                    <span>{% translate 'Raum-Name' %}</span>
+                    <input type="text" name="name" maxlength="80" value="{% translate 'Vier gewinnt' %}">
+                </label>
+                <button class="c4-primary" type="submit">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate 'Raum erstellen' %}
+                </button>
+            </form>
+        </article>
+
+        <article class="c4-panel">
+            <h2>{% translate 'Mit Code beitreten' %}</h2>
+            <form method="post" class="c4-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="join">
+                <label>
+                    <span>{% translate 'Raum-Code' %}</span>
+                    <input type="text" name="code" maxlength="16" placeholder="ABC123" autocomplete="off">
+                </label>
+                <button class="c4-secondary" type="submit">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    {% translate 'Beitreten' %}
+                </button>
+            </form>
+        </article>
+    </section>
+
+    <section class="c4-panel">
+        <div class="c4-section-heading">
+            <div>
+                <span class="c4-eyebrow"><i class="fa-solid fa-envelope-open-text"></i> {% translate 'Einladungen' %}</span>
+                <h2>{% translate 'Offene Einladungen' %}</h2>
+            </div>
+        </div>
+        <div id="c4-invites-live">
+        {% if invites %}
+            <div class="c4-invite-list" id="c4-invite-list">
+                {% for invite in invites %}
+                    <div class="c4-invite-row">
+                        <div>
+                            <strong>{{ invite.game.name }}</strong>
+                            <span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span>
+                        </div>
+                        <div class="c4-inline-actions">
+                            <form method="post" action="{% url 'connectfour_invite_response' invite.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="accept">
+                                <button class="c4-primary" type="submit">{% translate 'Annehmen' %}</button>
+                            </form>
+                            <form method="post" action="{% url 'connectfour_invite_response' invite.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="decline">
+                                <button class="c4-secondary" type="submit">{% translate 'Ablehnen' %}</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="c4-muted" id="c4-invites-empty">{% translate 'Du hast aktuell keine offenen Vier-gewinnt-Einladungen.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+
+    <section class="c4-panel">
+        <div class="c4-section-heading">
+            <div>
+                <span class="c4-eyebrow"><i class="fa-solid fa-clock-rotate-left"></i> {% translate 'Verlauf' %}</span>
+                <h2>{% translate 'Deine Räume' %}</h2>
+            </div>
+        </div>
+        <div id="c4-games-live">
+        {% if my_games %}
+            <div class="c4-room-grid" id="c4-room-grid">
+                {% for game in my_games %}
+                    <a class="c4-room-card" href="{% url 'connectfour_lobby' game.code %}">
+                        <span class="c4-code">{{ game.code }}</span>
+                        <strong>{{ game.name }}</strong>
+                        <span>{{ game.get_status_display }} · {% translate 'Runde' %} {{ game.round_number }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="c4-muted" id="c4-games-empty">{% translate 'Du hast noch keinen Vier-gewinnt-Raum.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}
