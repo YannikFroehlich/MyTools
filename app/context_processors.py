@@ -18,7 +18,9 @@ def current_profile(request):
             "unread_chat_messages_count": 0,
             "skribble_invites_count": 0,
             "tictactoe_invites_count": 0,
+            "connectfour_invites_count": 0,
             "battleship_invites_count": 0,
+            "stadtlandfluss_invites_count": 0,
             "total_notifications_count": 0,
         }
 
@@ -35,6 +37,8 @@ def current_profile(request):
         "unread_chat_messages_count": counts["unread_chat_messages"],
         "skribble_invites_count": counts["skribble_invites"],
         "tictactoe_invites_count": counts["tictactoe_invites"],
+        "connectfour_invites_count": counts["connectfour_invites"],
         "battleship_invites_count": counts["battleship_invites"],
+        "stadtlandfluss_invites_count": counts["stadtlandfluss_invites"],
         "total_notifications_count": counts["total_notifications"],
     }

@@ -96,6 +96,30 @@
                         {% endif %}
                     </a>
 
+                    <a href="{% url 'connectfour_home' %}" class="menu-item menu-item-with-badge">
+                        <span class="menu-item-main">
+                            <i class="fa-solid fa-grip"></i>
+                            {% translate 'Vier gewinnt' %}
+                        </span>
+                        {% if request.user.is_authenticated %}
+                            <span class="menu-badge js-notification-badge" data-notification-key="connectfour_invites" data-label-singular="{% translate 'offene Vier-gewinnt-Einladung' %}" data-label-plural="{% translate 'offene Vier-gewinnt-Einladungen' %}" aria-label="{% blocktranslate count count=connectfour_invites_count %}{{ count }} offene Vier-gewinnt-Einladung{% plural %}{{ count }} offene Vier-gewinnt-Einladungen{% endblocktranslate %}">
+                                {{ connectfour_invites_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
+                    <a href="{% url 'stadtlandfluss_home' %}" class="menu-item menu-item-with-badge">
+                        <span class="menu-item-main">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            {% translate 'Stadt Land Fluss' %}
+                        </span>
+                        {% if request.user.is_authenticated %}
+                            <span class="menu-badge js-notification-badge" data-notification-key="stadtlandfluss_invites" data-label-singular="{% translate 'offene Stadt-Land-Fluss-Einladung' %}" data-label-plural="{% translate 'offene Stadt-Land-Fluss-Einladungen' %}" aria-label="{% blocktranslate count count=stadtlandfluss_invites_count %}{{ count }} offene Stadt-Land-Fluss-Einladung{% plural %}{{ count }} offene Stadt-Land-Fluss-Einladungen{% endblocktranslate %}">
+                                {{ stadtlandfluss_invites_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
                     <a href="{% url 'skribble_home' %}" class="menu-item menu-item-with-badge">
                         <span class="menu-item-main">
                             <i class="fa-solid fa-pencil"></i>

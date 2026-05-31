@@ -13,7 +13,7 @@ from django.utils.translation import gettext as _
 from dotenv import dotenv_values, load_dotenv
 
 from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
-    ShortcutSection, TicTacToeGame, UserProfile, WeatherLocation
+    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UserProfile, WeatherLocation
 
 import json
 
@@ -411,6 +411,43 @@ def build_home_tictactoe_widget_data(user):
     }
 
 
+def build_home_stadtlandfluss_widget_data(user):
+    active_lobbies = (
+        StadtLandFlussLobby.objects
+        .filter(
+            Q(owner=user) | Q(players__user=user),
+            status__in=[
+                StadtLandFlussLobby.STATUS_WAITING,
+                StadtLandFlussLobby.STATUS_PLAYING,
+                StadtLandFlussLobby.STATUS_ROUND_SUMMARY,
+            ],
+        )
+        .distinct()
+        .order_by("-updated_at")[:3]
+    )
+
+    return {
+        "pending_invites_count": StadtLandFlussInvite.objects.filter(
+            to_user=user,
+            status=StadtLandFlussInvite.STATUS_PENDING,
+        ).count(),
+        "active_count": StadtLandFlussPlayer.objects.filter(
+            user=user,
+            lobby__status__in=[
+                StadtLandFlussLobby.STATUS_WAITING,
+                StadtLandFlussLobby.STATUS_PLAYING,
+                StadtLandFlussLobby.STATUS_ROUND_SUMMARY,
+            ],
+        ).count(),
+        "pending_invites": (
+            StadtLandFlussInvite.objects
+            .filter(to_user=user, status=StadtLandFlussInvite.STATUS_PENDING)
+            .select_related("lobby", "from_user")[:3]
+        ),
+        "active_lobbies": active_lobbies,
+    }
+
+
 def build_home_widget_data(request, user):
     widgets = list(
         HomeWidget.objects
@@ -472,6 +509,9 @@ def build_home_widget_data(request, user):
 
         elif widget.widget_type == HomeWidget.WIDGET_TICTACTOE:
             data = build_home_tictactoe_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_STADTLANDFLUSS:
+            data = build_home_stadtlandfluss_widget_data(user)
 
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {
