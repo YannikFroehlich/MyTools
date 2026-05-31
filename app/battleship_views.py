@@ -571,7 +571,7 @@ def battleship_leave(request, code):
 @require_POST
 def battleship_delete(request, code):
     game = get_object_or_404(BattleshipGame, code=code.upper())
-    if game.owner_id != request.user.id and not game.side_for_user(request.user):
+    if game.owner_id != request.user.id:
         messages.error(request, _("Du kannst diesen Raum nicht löschen."))
         return redirect("battleship_home")
     game.delete()

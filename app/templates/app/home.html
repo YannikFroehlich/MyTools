@@ -643,6 +643,7 @@
                 <input type="hidden" name="action" value="add_shortcut" id="shortcut-form-action">
                 <input type="hidden" name="shortcut_id" id="shortcut-id">
                 <input type="hidden" name="section_id" id="shortcut-section-id">
+                <input type="hidden" name="remove_image" value="" id="shortcut-remove-image">
 
                 <label>
                     {% translate 'Name' %}
@@ -758,6 +759,11 @@
                         </span>
                     </span>
                 </label>
+
+                <button type="button" class="shortcut-remove-image-button" id="shortcut-remove-image-button" hidden>
+                    <i class="fa-solid fa-trash"></i>
+                    {% translate 'Aktuelles Bild entfernen' %}
+                </button>
 
                 <button type="submit">
                     {% translate 'Speichern' %}

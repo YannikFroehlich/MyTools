@@ -34,3 +34,15 @@ class LoginRequiredMiddleware:
             settings.MEDIA_URL,
         )
         return any(path.startswith(prefix) for prefix in exempt_prefixes if prefix)
+
+
+class PermissionsPolicyMiddleware:
+    """Allow browser APIs the app intentionally uses."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        response["Permissions-Policy"] = "geolocation=(self), microphone=(), camera=()"
+        return response

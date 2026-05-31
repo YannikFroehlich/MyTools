@@ -16,6 +16,7 @@ from app.models import (
     AvatarCharacter,
     BattleshipGame,
     BattleshipInvite,
+    ConnectFourGame,
     DrawingGameLobby,
     DrawingGamePlayer,
     Friendship,
@@ -26,6 +27,8 @@ from app.models import (
     Note,
     Shortcut,
     ShortcutSection,
+    StadtLandFlussLobby,
+    StadtLandFlussPlayer,
     TicTacToeGame,
     TicTacToeInvite,
     UserProfile,
@@ -725,6 +728,32 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(shortcut.name, "Neu")
         self.assertEqual(shortcut.url, "http://example.com")
         self.assertEqual(shortcut.icon, "fa-solid fa-code")
+
+    def test_edit_shortcut_can_remove_existing_image(self):
+        section = ShortcutSection.objects.create(name="Coding")
+        shortcut = Shortcut.objects.create(
+            section=section,
+            name="Django",
+            url="https://www.djangoproject.com",
+            icon="fa-solid fa-code",
+            image=self.get_test_image("shortcut.png"),
+        )
+
+        response = self.client.post(reverse("home"), {
+            "action": "edit_shortcut",
+            "shortcut_id": shortcut.id,
+            "section_id": section.id,
+            "name": "Django",
+            "url": "https://www.djangoproject.com",
+            "icon": "fa-solid fa-code",
+            "custom_icon": "",
+            "remove_image": "1",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+
+        shortcut.refresh_from_db()
+        self.assertFalse(shortcut.image)
 
     def test_delete_shortcut(self):
         section = ShortcutSection.objects.create(name="Coding")
@@ -1930,6 +1959,20 @@ class SkribbleLobbyTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("skribble_home"))
 
+    def test_non_host_cannot_delete_lobby(self):
+        lobby = self.create_lobby()
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        DrawingGamePlayer.objects.create(lobby=lobby, user=other_user, display_name="Gegner")
+        self.client.force_login(other_user)
+
+        response = self.client.post(reverse("skribble_delete_lobby", args=[lobby.code]))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(DrawingGameLobby.objects.filter(code=lobby.code).exists())
+
     def test_draw_api_appends_segment_batches_without_losing_lines(self):
         lobby = self.create_lobby()
         lobby.status = DrawingGameLobby.STATUS_PLAYING
@@ -2206,6 +2249,43 @@ class TicTacToeTests(BaseTestCase):
         self.assertRedirects(response, reverse("tictactoe_home"))
         self.assertFalse(TicTacToeGame.objects.filter(code="TTT123").exists())
 
+    def test_non_host_cannot_delete_game(self):
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            player_o=other_user,
+            code="TTT123",
+            status=TicTacToeGame.STATUS_PLAYING,
+            board=[""] * 9,
+        )
+        self.client.force_login(other_user)
+
+        response = self.client.post(reverse("tictactoe_delete", args=[game.code]))
+
+        self.assertRedirects(response, reverse("tictactoe_home"))
+        self.assertTrue(TicTacToeGame.objects.filter(code=game.code).exists())
+
+    def test_state_api_reports_deleted_game_for_open_clients(self):
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+        code = game.code
+        game.delete()
+
+        response = self.client.get(reverse("tictactoe_state_api", args=[code]))
+
+        self.assertEqual(response.status_code, 410)
+        self.assertFalse(response.json()["ok"])
+        self.assertTrue(response.json()["gameDeleted"])
+        self.assertEqual(response.json()["redirectUrl"], reverse("tictactoe_home"))
+
     def test_leaving_empty_game_deletes_it(self):
         game = TicTacToeGame.objects.create(
             owner=self.user,
@@ -2295,6 +2375,98 @@ class TicTacToeTests(BaseTestCase):
 
         self.assertEqual(second_response.status_code, 200)
         self.assertEqual(second_response.json()["games"], [])
+
+
+class ConnectFourTests(BaseTestCase):
+    def create_game(self, **overrides):
+        data = {
+            "owner": self.user,
+            "player_red": self.user,
+            "code": "CFO123",
+        }
+        data.update(overrides)
+        return ConnectFourGame.objects.create(**data)
+
+    def test_owner_can_delete_game(self):
+        game = self.create_game()
+
+        response = self.client.post(reverse("connectfour_delete", args=[game.code]))
+
+        self.assertRedirects(response, reverse("connectfour_home"))
+        self.assertFalse(ConnectFourGame.objects.filter(code=game.code).exists())
+
+    def test_non_host_cannot_delete_game(self):
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        game = self.create_game(
+            player_yellow=other_user,
+            status=ConnectFourGame.STATUS_PLAYING,
+        )
+        self.client.force_login(other_user)
+
+        response = self.client.post(reverse("connectfour_delete", args=[game.code]))
+
+        self.assertRedirects(response, reverse("connectfour_home"))
+        self.assertTrue(ConnectFourGame.objects.filter(code=game.code).exists())
+
+    def test_state_api_reports_deleted_game_for_open_clients(self):
+        game = self.create_game()
+        code = game.code
+        game.delete()
+
+        response = self.client.get(reverse("connectfour_state_api", args=[code]))
+
+        self.assertEqual(response.status_code, 410)
+        self.assertFalse(response.json()["ok"])
+        self.assertTrue(response.json()["gameDeleted"])
+        self.assertEqual(response.json()["redirectUrl"], reverse("connectfour_home"))
+
+
+class StadtLandFlussTests(BaseTestCase):
+    def create_lobby(self):
+        lobby = StadtLandFlussLobby.objects.create(
+            owner=self.user,
+            name="SLF-Runde",
+            code="SLF123",
+        )
+        StadtLandFlussPlayer.objects.create(lobby=lobby, user=self.user, display_name=self.user.username)
+        return lobby
+
+    def test_owner_can_delete_lobby(self):
+        lobby = self.create_lobby()
+
+        response = self.client.post(reverse("stadtlandfluss_delete", args=[lobby.code]))
+
+        self.assertRedirects(response, reverse("stadtlandfluss_home"))
+        self.assertFalse(StadtLandFlussLobby.objects.filter(code=lobby.code).exists())
+
+    def test_non_host_cannot_delete_lobby(self):
+        lobby = self.create_lobby()
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        StadtLandFlussPlayer.objects.create(lobby=lobby, user=other_user, display_name="Gegner")
+        self.client.force_login(other_user)
+
+        response = self.client.post(reverse("stadtlandfluss_delete", args=[lobby.code]))
+
+        self.assertRedirects(response, reverse("stadtlandfluss_lobby", args=[lobby.code]))
+        self.assertTrue(StadtLandFlussLobby.objects.filter(code=lobby.code).exists())
+
+    def test_state_api_reports_deleted_lobby_for_open_clients(self):
+        lobby = self.create_lobby()
+        code = lobby.code
+        lobby.delete()
+
+        response = self.client.get(reverse("stadtlandfluss_state_api", args=[code]))
+
+        self.assertEqual(response.status_code, 410)
+        self.assertFalse(response.json()["ok"])
+        self.assertTrue(response.json()["lobbyDeleted"])
+        self.assertEqual(response.json()["redirectUrl"], reverse("stadtlandfluss_home"))
 
 
 class BattleshipTests(BaseTestCase):
@@ -2570,6 +2742,22 @@ class BattleshipTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("battleship_home"))
         self.assertFalse(BattleshipGame.objects.filter(code=game.code).exists())
+
+    def test_non_host_cannot_delete_game(self):
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        game = self.create_game(
+            player_b=other_user,
+            status=BattleshipGame.STATUS_SETUP,
+        )
+        self.client.force_login(other_user)
+
+        response = self.client.post(reverse("battleship_delete", args=[game.code]))
+
+        self.assertRedirects(response, reverse("battleship_home"))
+        self.assertTrue(BattleshipGame.objects.filter(code=game.code).exists())
 
     def test_state_api_reports_deleted_game_for_open_clients(self):
         game = self.create_game()

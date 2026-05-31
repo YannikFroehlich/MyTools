@@ -319,10 +319,14 @@ def connectfour_invite_response(request, invite_id):
 @login_required
 @require_GET
 def connectfour_state_api(request, code):
-    game = get_object_or_404(
-        ConnectFourGame.objects.select_related("owner", "player_red", "player_yellow"),
-        code=code.upper(),
-    )
+    game = ConnectFourGame.objects.select_related("owner", "player_red", "player_yellow").filter(code=code.upper()).first()
+    if not game:
+        return JsonResponse({
+            "ok": False,
+            "gameDeleted": True,
+            "error": _("Dieser Vier-gewinnt-Raum wurde gelöscht."),
+            "redirectUrl": reverse("connectfour_home"),
+        }, status=410)
     _ensure_game_ready(game)
     game.refresh_from_db()
     return JsonResponse({"ok": True, "game": _serialize_game(game, request.user)})
@@ -425,7 +429,7 @@ def connectfour_leave(request, code):
 @require_POST
 def connectfour_delete(request, code):
     game = get_object_or_404(ConnectFourGame, code=code.upper())
-    if game.owner_id != request.user.id and not game.disc_for_user(request.user):
+    if game.owner_id != request.user.id:
         messages.error(request, _("Du kannst diesen Raum nicht löschen."))
         return redirect("connectfour_home")
     game.delete()

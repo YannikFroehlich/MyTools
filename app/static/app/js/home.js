@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const shortcutCustomIconInput = document.getElementById("shortcut-custom-icon");
     const shortcutImageInput = document.getElementById("shortcut-image");
     const shortcutFileName = document.getElementById("shortcut-file-name");
+    const shortcutRemoveImageInput = document.getElementById("shortcut-remove-image");
+    const shortcutRemoveImageButton = document.getElementById("shortcut-remove-image-button");
     const shortcutModalSectionName = document.getElementById("shortcut-modal-section-name");
 
     const sectionModal = document.getElementById("section-modal");
@@ -365,6 +367,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (shortcutNameInput) shortcutNameInput.value = "";
         if (shortcutUrlInput) shortcutUrlInput.value = "";
         if (shortcutCustomIconInput) shortcutCustomIconInput.value = "";
+        if (shortcutRemoveImageInput) shortcutRemoveImageInput.value = "";
+        if (shortcutRemoveImageButton) shortcutRemoveImageButton.hidden = true;
         if (shortcutFileName) shortcutFileName.textContent = labels.noFileSelected || "Keine Datei ausgewählt";
         if (shortcutModalTitle) shortcutModalTitle.textContent = labels.newShortcut || "Neue Verknüpfung";
         setCheckedRadio(shortcutForm, "icon", "fa-brands fa-youtube");
@@ -375,6 +379,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (shortcutFileName) {
             shortcutFileName.textContent = fileName || labels.noFileSelected || "Keine Datei ausgewählt";
         }
+        if (fileName && shortcutRemoveImageInput) {
+            shortcutRemoveImageInput.value = "";
+        }
+    });
+
+    shortcutRemoveImageButton?.addEventListener("click", () => {
+        if (shortcutRemoveImageInput) shortcutRemoveImageInput.value = "1";
+        if (shortcutImageInput) shortcutImageInput.value = "";
+        if (shortcutFileName) shortcutFileName.textContent = labels.noFileSelected || "Keine Datei ausgewählt";
+        shortcutRemoveImageButton.hidden = true;
     });
 
     function openAddShortcutModal(sectionId, sectionName) {
@@ -401,6 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = card.dataset.shortcutName || card.querySelector("a span")?.textContent?.trim() || "";
         const url = card.dataset.shortcutUrl || card.querySelector("a")?.getAttribute("href") || "";
         const icon = card.dataset.shortcutIcon || "";
+        const hasImage = card.dataset.shortcutHasImage === "true";
 
         if (shortcutFormActionInput) shortcutFormActionInput.value = "edit_shortcut";
         if (shortcutIdInput) shortcutIdInput.value = shortcutId;
@@ -412,6 +427,10 @@ document.addEventListener("DOMContentLoaded", () => {
             shortcutModalSectionName.textContent = sectionName
                 ? formatLabel(labels.shortcutInSection || 'in "%(section)s"', { section: sectionName })
                 : "";
+        }
+        if (shortcutRemoveImageButton) shortcutRemoveImageButton.hidden = !hasImage;
+        if (hasImage && shortcutFileName) {
+            shortcutFileName.textContent = labels.currentImage || "Aktuelles Bild vorhanden";
         }
 
         const matchingIcon = shortcutForm?.querySelector(`input[name='icon'][value="${CSS.escape(icon)}"]`);
