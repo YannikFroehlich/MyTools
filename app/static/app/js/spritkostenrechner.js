@@ -138,13 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    geoBtn?.addEventListener('click', () => {
+    function isLocalhost() {
+        return ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+    }
+
+    function requestBrowserLocation() {
         if (!navigator.geolocation) {
             setMessage('Dein Browser unterstützt keine Standortabfrage.');
             return;
         }
 
-        if (!window.isSecureContext) {
+        if (!window.isSecureContext && !isLocalhost()) {
             setMessage('Standortabfrage braucht HTTPS oder localhost. Suche stattdessen per Stadt.');
             return;
         }
@@ -164,8 +168,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     setMessage('Standort konnte nicht ermittelt werden. Suche stattdessen per Stadt.');
                 }
+            },
+            {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 12000,
             }
         );
+    }
+
+    geoBtn?.addEventListener('click', async () => {
+        if (navigator.permissions?.query) {
+            try {
+                const permission = await navigator.permissions.query({ name: 'geolocation' });
+                if (permission.state === 'denied') {
+                    setMessage('Standortzugriff ist im Browser blockiert. Erlaube den Standort in den Website-Einstellungen und klicke dann erneut.');
+                    return;
+                }
+            } catch (error) {
+                console.debug('Berechtigungsstatus konnte nicht gelesen werden:', error);
+            }
+        }
+
+        requestBrowserLocation();
     });
 
     searchBtn?.addEventListener('click', async () => {

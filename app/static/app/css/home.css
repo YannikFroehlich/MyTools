@@ -210,6 +210,9 @@
 .shortcuts-section {
     width: 100%;
     text-align: left;
+    --shortcut-section-rgb: var(--theme-accent-rgb);
+    --shortcut-section-start: var(--theme-accent-start);
+    --shortcut-section-end: var(--theme-accent-end);
 
     animation: homeFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -236,6 +239,7 @@
 
 .shortcut-image-icon {
     background: rgba(255, 255, 255, 0.92);
+    background: linear-gradient(135deg, var(--shortcut-section-start), var(--shortcut-section-end));
     padding: 0;
     overflow: hidden;
 }
@@ -387,7 +391,7 @@
 }
 
 .shortcut-card::after {
-    content: "";
+    content: none;
     position: absolute;
     width: 90px;
     height: 90px;
@@ -690,7 +694,7 @@
     padding-top: 0.2rem;
     padding-bottom: 0.8rem;
 
-    background: rgba(255, 255, 255, 0.96);
+    background: transparent;
 }
 
 .shortcut-modal-header h3 {
@@ -956,7 +960,7 @@ body.dark-mode .shortcut-card:hover {
 }
 
 body.dark-mode .shortcut-card::after {
-    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.13), transparent 65%);
+    background: none;
 }
 
 body.dark-mode .shortcut-card a {
@@ -1067,7 +1071,8 @@ body.dark-mode #shortcut-modal-section-name {
 }
 
 body.dark-mode .shortcut-modal-header {
-    background: rgba(17, 24, 39, 0.98);
+    background: transparent;
+    border-bottom-color: rgba(203, 213, 225, 0.1);
 }
 
 body.dark-mode .shortcut-form label,
@@ -1408,6 +1413,34 @@ body.dark-mode .shortcut-file-name {
 
 /* ───────────────── CLEAN FEATURE ADDITIONS ───────────────── */
 
+.shortcut-remove-image-button {
+    justify-self: start;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(239, 68, 68, 0.24);
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    font-weight: 850;
+    box-shadow: none;
+}
+
+.shortcut-remove-image-button:hover {
+    background: rgba(239, 68, 68, 0.16);
+    color: #b91c1c;
+    transform: none;
+}
+
+.shortcut-remove-image-button[hidden] {
+    display: none;
+}
+
+body.dark-mode .shortcut-remove-image-button {
+    border-color: rgba(248, 113, 113, 0.28);
+    background: rgba(248, 113, 113, 0.12);
+    color: #fecaca;
+}
+
 .section-title-area {
     display: flex;
     align-items: center;
@@ -1433,9 +1466,21 @@ body.dark-mode .shortcut-file-name {
     box-shadow: 0 0 0 5px rgba(var(--theme-accent-rgb), 0.1);
 }
 
+.section-color-blue {
+    --shortcut-section-rgb: var(--theme-accent-rgb);
+    --shortcut-section-start: var(--theme-accent-start);
+    --shortcut-section-end: var(--theme-accent-end);
+}
+
 .section-color-green .section-color-dot {
     background: #22c55e;
     box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.12);
+}
+
+.section-color-green {
+    --shortcut-section-rgb: 34, 197, 94;
+    --shortcut-section-start: #22c55e;
+    --shortcut-section-end: #16a34a;
 }
 
 .section-color-purple .section-color-dot {
@@ -1443,14 +1488,32 @@ body.dark-mode .shortcut-file-name {
     box-shadow: 0 0 0 5px rgba(139, 92, 246, 0.12);
 }
 
+.section-color-purple {
+    --shortcut-section-rgb: 139, 92, 246;
+    --shortcut-section-start: #8b5cf6;
+    --shortcut-section-end: #7c3aed;
+}
+
 .section-color-orange .section-color-dot {
     background: #f97316;
     box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.12);
 }
 
+.section-color-orange {
+    --shortcut-section-rgb: 249, 115, 22;
+    --shortcut-section-start: #f97316;
+    --shortcut-section-end: #ea580c;
+}
+
 .section-color-red .section-color-dot {
     background: #ef4444;
     box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.12);
+}
+
+.section-color-red {
+    --shortcut-section-rgb: 239, 68, 68;
+    --shortcut-section-start: #ef4444;
+    --shortcut-section-end: #dc2626;
 }
 
 .section-status-badge {
@@ -3552,8 +3615,8 @@ body.dark-mode .shortcut-menu-danger:focus-visible i {
 .shortcut-image-icon {
     overflow: hidden;
     padding: 0;
-    background: rgba(255, 255, 255, 0.82);
-    border: 1px solid rgba(120, 140, 180, 0.16);
+    background: linear-gradient(135deg, var(--shortcut-section-start), var(--shortcut-section-end));
+    border: 1px solid rgba(var(--shortcut-section-rgb), 0.34);
 }
 
 .shortcut-image-icon img {
@@ -3593,8 +3656,8 @@ body.dark-mode .shortcut-card a {
 }
 
 body.dark-mode .shortcut-image-icon {
-    background: rgba(15, 23, 42, 0.72);
-    border-color: rgba(203, 213, 225, 0.16);
+    background: linear-gradient(135deg, var(--shortcut-section-start), var(--shortcut-section-end));
+    border-color: rgba(var(--shortcut-section-rgb), 0.36);
 }
 
 body.dark-mode .shortcut-favorite {

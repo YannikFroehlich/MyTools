@@ -1,5 +1,6 @@
 from django import template
 from django.urls import reverse
+from urllib.parse import urlencode
 
 register = template.Library()
 
@@ -13,4 +14,9 @@ def media_thumb(file_field, spec):
     if not name:
         return ""
 
-    return reverse("media_thumbnail", kwargs={"spec": spec, "source": name})
+    url = reverse("media_thumbnail", kwargs={"spec": spec, "source": name})
+    try:
+        modified = file_field.storage.get_modified_time(name)
+        return f"{url}?{urlencode({'v': int(modified.timestamp())})}"
+    except (OSError, ValueError):
+        return url

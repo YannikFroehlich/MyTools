@@ -1344,7 +1344,13 @@ body.dark-mode .chat-sidebar-hero p:last-child {
 .chat-attachment-name { grid-column: 2 / 4; margin-top: -4px; color: #64748b; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 body.dark-mode .chat-search-form,
 body.dark-mode .chat-attachment { background: rgba(255,255,255,.08); border-color: rgba(203,213,225,.12); }
-body.dark-mode .chat-search-form input { color:#f8fafc; }
+body.dark-mode .chat-search-form input {
+    background: transparent !important;
+    border: 0;
+    box-shadow: none;
+    color:#f8fafc;
+    appearance: none;
+}
 body.dark-mode .chat-attachment-name { color:#cbd5e1; }
 @media (max-width: 760px) { .chat-window-header { flex-wrap: wrap; } .chat-search-form { order: 3; width: 100%; min-width: 100%; } .chat-compose { grid-template-columns: 42px minmax(0,1fr) 48px; } .chat-attachment-name { grid-column: 1 / -1; } }
 
