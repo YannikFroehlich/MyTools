@@ -200,7 +200,7 @@
 
 .user-card.has-profile-banner {
     background-image:
-        linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.62)),
+        linear-gradient(90deg, rgba(6, 10, 20, 0.95), rgba(6, 10, 20, 0.74)),
         var(--profile-banner-url);
     background-position: center;
     background-size: cover;
@@ -213,8 +213,8 @@
     position: absolute;
     inset: 0;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 42%),
-        radial-gradient(circle at top right, rgba(var(--theme-accent-rgb), 0.22), transparent 44%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(6, 10, 20, 0.18) 48%, rgba(6, 10, 20, 0.28)),
+        radial-gradient(circle at top right, rgba(var(--theme-accent-rgb), 0.1), transparent 44%);
     pointer-events: none;
 }
 
@@ -652,7 +652,7 @@ body.dark-mode .public-profile-card {
 
 body.dark-mode .user-card.has-profile-banner {
     background-image:
-        linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.62)),
+        linear-gradient(90deg, rgba(6, 10, 20, 0.95), rgba(6, 10, 20, 0.74)),
         var(--profile-banner-url);
     background-position: center;
     background-size: cover;
@@ -968,6 +968,19 @@ body.dark-mode .public-profile-card {
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+body.dark-mode .users-search {
+    background: linear-gradient(145deg, rgba(24, 31, 46, 0.96), rgba(15, 23, 42, 0.9));
+    border-color: rgba(96, 165, 250, 0.26);
+}
+
+body.dark-mode .user-card.has-profile-banner {
+    background-image:
+        linear-gradient(90deg, rgba(6, 10, 20, 0.95), rgba(6, 10, 20, 0.74)),
+        var(--profile-banner-url);
+    background-position: center;
+    background-size: cover;
+}
+
 body.dark-mode .user-card:hover,
 body.dark-mode .friend-preview-card:hover {
     border-color: rgba(var(--theme-accent-rgb), 0.38);
@@ -983,6 +996,13 @@ body.dark-mode .public-profile-info-list strong,
 body.dark-mode .public-profile-benchmark-score strong,
 body.dark-mode .friend-preview-card strong {
     color: #f8fafc;
+}
+
+body.dark-mode .users-search input {
+    background: transparent !important;
+    box-shadow: none;
+    border: 0;
+    appearance: none;
 }
 
 body.dark-mode .user-username,
@@ -1001,7 +1021,11 @@ body.dark-mode .friend-preview-card small {
 
 body.dark-mode .user-bio-empty,
 body.dark-mode .users-search input::placeholder {
-    color: #94a3b8;
+    color: #cbd5e1;
+}
+
+body.dark-mode .users-search i {
+    color: #93c5fd;
 }
 
 body.dark-mode .users-clear-search,
@@ -1062,6 +1086,19 @@ body.dark-mode .user-card.has-profile-banner .user-bio,
 body.dark-mode .user-card.has-profile-banner .user-meta,
 body.dark-mode .user-card.has-profile-banner .user-open {
     color: #ffffff;
+}
+
+.user-card.has-profile-banner .user-status-line,
+.user-card.has-profile-banner .user-status-text {
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.user-card.has-profile-banner .user-activity-row span {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 /* ── Freunde-Seite: Karten luftiger darstellen ── */

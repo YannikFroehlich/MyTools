@@ -308,10 +308,14 @@ def tictactoe_invite_response(request, invite_id):
 @login_required
 @require_GET
 def tictactoe_state_api(request, code):
-    game = get_object_or_404(
-        TicTacToeGame.objects.select_related("owner", "player_x", "player_o"),
-        code=code.upper(),
-    )
+    game = TicTacToeGame.objects.select_related("owner", "player_x", "player_o").filter(code=code.upper()).first()
+    if not game:
+        return JsonResponse({
+            "ok": False,
+            "gameDeleted": True,
+            "error": _("Dieser Tic-Tac-Toe-Raum wurde gelöscht."),
+            "redirectUrl": reverse("tictactoe_home"),
+        }, status=410)
     _ensure_game_ready(game)
     game.refresh_from_db()
     return JsonResponse({
@@ -432,7 +436,7 @@ def tictactoe_leave(request, code):
 @require_POST
 def tictactoe_delete(request, code):
     game = get_object_or_404(TicTacToeGame, code=code.upper())
-    if game.owner_id != request.user.id and not game.symbol_for_user(request.user):
+    if game.owner_id != request.user.id:
         messages.error(request, _("Du kannst diesen Raum nicht löschen."))
         return redirect("tictactoe_home")
 

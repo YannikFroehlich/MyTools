@@ -95,6 +95,7 @@
                     data-shortcut-url="{{ shortcut.url|escape }}"
                     data-shortcut-icon="{{ shortcut.icon|escape }}"
                     data-shortcut-section-id="{{ section.id }}"
+                    data-shortcut-has-image="{% if shortcut.image %}true{% else %}false{% endif %}"
                 >
                     <div class="shortcut-card-actions">
                         <button

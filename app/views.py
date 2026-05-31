@@ -797,6 +797,7 @@ def home(request):
             icon = request.POST.get("icon", "").strip()
             custom_icon = request.POST.get("custom_icon", "").strip()
             image = request.FILES.get("image")
+            remove_image = request.POST.get("remove_image") == "1"
 
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
 
@@ -846,7 +847,13 @@ def home(request):
                 shortcut.url = url
                 shortcut.icon = icon or "fa-solid fa-link"
 
+                if remove_image and shortcut.image:
+                    shortcut.image.delete(save=False)
+                    shortcut.image = None
+
                 if image:
+                    if shortcut.image:
+                        shortcut.image.delete(save=False)
                     shortcut.image = image
 
                 shortcut.save()
