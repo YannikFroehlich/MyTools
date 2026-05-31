@@ -43,6 +43,7 @@
                     {% translate 'Verlassen' %}
                 </button>
             </form>
+            {% if game.owner_id == request.user.id %}
             <form method="post" action="{% url 'connectfour_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
                 {% csrf_token %}
                 <button class="c4-danger" type="submit">
@@ -50,6 +51,7 @@
                     {% translate 'Löschen' %}
                 </button>
             </form>
+            {% endif %}
         </div>
     </section>
 

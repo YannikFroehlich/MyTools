@@ -41,12 +41,34 @@ def _thumbnail_path(source, spec, original_path):
     return Path(settings.MEDIA_ROOT) / "_thumbs" / spec / source_path.parent / thumb_name
 
 
+def _has_transparency(image):
+    if image.mode in {"RGBA", "LA"}:
+        return True
+    return image.mode == "P" and "transparency" in image.info
+
+
+def _thumbnail_needs_refresh(original_path, thumb_path):
+    if not thumb_path.exists():
+        return True
+
+    if thumb_path.stat().st_mtime < original_path.stat().st_mtime:
+        return True
+
+    try:
+        with Image.open(original_path) as original, Image.open(thumb_path) as thumb:
+            return _has_transparency(original) and not _has_transparency(thumb)
+    except (OSError, UnidentifiedImageError):
+        return True
+
+
 def _generate_thumbnail(original_path, thumb_path, spec):
     width, height, mode = THUMBNAIL_SPECS[spec]
     thumb_path.parent.mkdir(parents=True, exist_ok=True)
 
     with Image.open(original_path) as image:
         image = ImageOps.exif_transpose(image)
+        if _has_transparency(image):
+            image = image.convert("RGBA")
 
         if mode == "cover":
             image = ImageOps.fit(image, (width, height), method=Image.Resampling.LANCZOS)
@@ -73,10 +95,7 @@ def media_thumbnail(request, spec, source):
     thumb_path = _thumbnail_path(source, spec, original_path)
 
     try:
-        if (
-            not thumb_path.exists()
-            or thumb_path.stat().st_mtime < original_path.stat().st_mtime
-        ):
+        if _thumbnail_needs_refresh(original_path, thumb_path):
             _generate_thumbnail(original_path, thumb_path, spec)
     except (OSError, UnidentifiedImageError) as exc:
         raise Http404 from exc

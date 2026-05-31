@@ -54,6 +54,7 @@ Funktionen:
 
 - eigene Verknüpfungen mit Name, URL und Icon
 - optional eigene Bilder für Shortcuts
+- transparente Shortcut-Bilder behalten ihre Transparenz in Thumbnails und nutzen die Bereichsfarbe als Hintergrund
 - eigene Bereiche/Kategorien
 - Bereiche farblich markieren
 - Bereiche ein- und ausklappen
@@ -199,7 +200,8 @@ Funktionen:
 - automatische Sperre weiterer Einladungen, sobald der Raum voll ist
 - Spieler können Räume verlassen
 - leere Räume werden automatisch gelöscht
-- Host/Spieler können Räume löschen
+- nur der Host kann Räume löschen
+- gelöschte Räume leiten offene Clients automatisch zurück zur Übersicht
 - serverseitig geprüfte Züge, Gewinnerkennung und neue Runden
 
 ---
@@ -244,7 +246,8 @@ Funktionen:
 - Gewinn- und Unentschieden-Meldung als Overlay
 - neue Runde direkt aus dem Ergebnis-Popup starten
 - Spieler können Räume verlassen
-- Räume können gelöscht werden
+- nur der Host kann Räume löschen
+- gelöschte Räume leiten offene Clients automatisch zurück zur Übersicht
 
 ---
 
@@ -266,7 +269,9 @@ Funktionen:
 - Spieler entscheiden per Voting, welche Antworten zählen
 - Punktevergabe mit 20 Punkten für die einzige gültige Antwort einer Kategorie
 - finale Platzierungen nach der letzten Runde
-- Lobbys können verlassen, neu gestartet oder gelöscht werden
+- Spieler können Lobbys verlassen
+- nur der Host kann Lobbys neu starten oder löschen
+- gelöschte Lobbys leiten offene Clients automatisch zurück zur Übersicht
 
 ---
 
@@ -338,7 +343,8 @@ Der Spritkostenrechner nutzt die **Tankerkönig API**.
 
 Funktionen:
 
-- Tankstellenabfrage über Standortdaten
+- Tankstellenabfrage über Browser-Standortfreigabe
+- Stadtsuche als Alternative zur Standortfreigabe
 - Preisübersicht
 - API-Endpunkt unter `/api/tankstellen/`
 - Fehlermeldung, wenn der API-Key fehlt oder die API nicht erreichbar ist

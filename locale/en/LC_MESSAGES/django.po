@@ -1487,8 +1487,8 @@ msgid "Szenen, Quellen, Audio, Stream und Aufnahme lokal steuern."
 msgstr "Control scenes, sources, audio, stream, and recording locally."
 
 #: .\app\templates\app\about.html:183
-msgid "Tankstellen- und Preisabfrage über Tankerkönig."
-msgstr "Find gas stations and check prices with Tankerkönig."
+msgid "Tankstellen- und Preisabfrage per Standortfreigabe oder Stadtsuche."
+msgstr "Find gas stations and check prices using location permission or city search."
 
 #: .\app\templates\app\about.html:191
 msgid "Song- und Künstler-Suche über die Genius API."
@@ -1530,34 +1530,34 @@ msgstr ""
 
 #: .\app\templates\app\about.html:247
 msgid ""
-"Schnelles 1v1-Spiel mit privaten Räumen, Freunde-Einladungen und Live-"
-"Übersicht."
+"Schnelles 1v1-Spiel mit privaten Räumen, Einladungen und Host-gesteuertem "
+"Löschen."
 msgstr ""
-"Fast 1v1 game with private rooms, friend invitations, and a live overview."
+"Fast 1v1 game with private rooms, invitations, and host-controlled deletion."
 
 #: .\app\templates\app\about.html:255
 msgid ""
-"1v1-Gefecht mit manueller Flottenplatzierung, Sounds, Effekten und geprüften "
-"Spielregeln."
+"1v1-Gefecht mit manueller Flottenplatzierung, geprüften Regeln und Host-"
+"gesteuertem Löschen."
 msgstr ""
-"1v1 battle with manual fleet placement, sounds, effects, and validated game "
-"rules."
+"1v1 battle with manual fleet placement, validated rules, and host-controlled "
+"deletion."
 
 #: .\app\templates\app\about.html:263
 msgid ""
-"Animiertes 1v1-Spiel mit privaten Räumen, Freunde-Einladungen, Live-Zügen "
-"und Gewinn-Popup."
+"Animiertes 1v1-Spiel mit privaten Räumen, Live-Zügen und automatischer "
+"Rückleitung nach Löschung."
 msgstr ""
-"Animated 1v1 game with private rooms, friend invitations, live moves, and a "
-"winner popup."
+"Animated 1v1 game with private rooms, live moves, and automatic redirect "
+"after deletion."
 
 #: .\app\templates\app\about.html:271
 msgid ""
-"Live-Runden mit Einladungen, Stopp-Regel, manueller Auswertung und "
-"Endplatzierungen."
+"Live-Runden mit Einladungen, Stopp-Regel, manueller Auswertung und Host-"
+"gesteuerten Lobbys."
 msgstr ""
-"Live rounds with invitations, stop rule, manual evaluation, and final "
-"rankings."
+"Live rounds with invitations, stop rule, manual evaluation, and host-"
+"controlled lobbies."
 
 # | msgid "Profilseite mit Avatar, persönlichen Daten und öffentlicher Ansicht."
 #: .\app\templates\app\about.html:279

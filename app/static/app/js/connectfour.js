@@ -90,6 +90,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {"X-Requested-With": "XMLHttpRequest"},
             });
             const json = await response.json();
+            if (json.gameDeleted) {
+                handleDeletedGame(json);
+                return;
+            }
             if (json.ok) {
                 game = json.game;
                 render(force);
@@ -240,6 +244,13 @@ document.addEventListener("DOMContentLoaded", () => {
         toast.textContent = message;
         clearTimeout(toast.timer);
         toast.timer = setTimeout(() => toast.remove(), 2200);
+    }
+
+    function handleDeletedGame(payload) {
+        showToast(payload.error || "Dieser Raum wurde gelöscht.");
+        window.setTimeout(() => {
+            window.location.href = payload.redirectUrl || "/vier-gewinnt/";
+        }, 900);
     }
 
     function initHomePage(rootElement) {

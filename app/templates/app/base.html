@@ -215,16 +215,6 @@
                         {% translate 'Notizen' %}
                     </a>
 
-                    <a href="{% url 'favorites' %}" class="menu-item">
-                        <i class="fa-solid fa-star"></i>
-                        {% translate 'Favoriten' %}
-                    </a>
-
-                    <a href="{% url 'inbox' %}" class="menu-item">
-                        <i class="fa-solid fa-inbox"></i>
-                        {% translate 'Inbox' %}
-                    </a>
-
                     <a href="{% url 'feedback' %}" class="menu-item">
                         <i class="fa-solid fa-comment-dots"></i>
                         {% translate 'Feedback' %}
@@ -446,16 +436,6 @@
                         <a href="{% url 'friends_list' request.user.id %}" class="profile-menu-item">
                             <i class="fa-solid fa-user-group"></i>
                             {% translate 'Freunde' %}
-                        </a>
-
-                        <a href="{% url 'favorites' %}" class="profile-menu-item">
-                            <i class="fa-solid fa-star"></i>
-                            {% translate 'Favoriten' %}
-                        </a>
-
-                        <a href="{% url 'inbox' %}" class="profile-menu-item">
-                            <i class="fa-solid fa-inbox"></i>
-                            {% translate 'Inbox' %}
                         </a>
 
                         <a href="{% url 'chat' %}" class="profile-menu-item profile-menu-item-with-badge">
