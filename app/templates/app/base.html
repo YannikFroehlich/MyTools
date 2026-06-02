@@ -120,6 +120,18 @@
                         {% endif %}
                     </a>
 
+                    <a href="{% url 'uno_home' %}" class="menu-item menu-item-with-badge">
+                        <span class="menu-item-main">
+                            <i class="fa-solid fa-layer-group"></i>
+                            {% translate 'Uno' %}
+                        </span>
+                        {% if request.user.is_authenticated %}
+                            <span class="menu-badge js-notification-badge" data-notification-key="uno_invites" data-label-singular="{% translate 'offene Uno-Einladung' %}" data-label-plural="{% translate 'offene Uno-Einladungen' %}" aria-label="{% blocktranslate count count=uno_invites_count %}{{ count }} offene Uno-Einladung{% plural %}{{ count }} offene Uno-Einladungen{% endblocktranslate %}">
+                                {{ uno_invites_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
                     <a href="{% url 'skribble_home' %}" class="menu-item menu-item-with-badge">
                         <span class="menu-item-main">
                             <i class="fa-solid fa-pencil"></i>

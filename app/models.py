@@ -689,6 +689,7 @@ class HomeWidget(models.Model):
     WIDGET_SKRIBBLE = "skribble"
     WIDGET_TICTACTOE = "tictactoe"
     WIDGET_STADTLANDFLUSS = "stadtlandfluss"
+    WIDGET_UNO = "uno"
 
     WIDGET_CHOICES = [
         (WIDGET_WEATHER, _("Wetter")),
@@ -701,6 +702,7 @@ class HomeWidget(models.Model):
         (WIDGET_SKRIBBLE, _("Skribble")),
         (WIDGET_TICTACTOE, _("Tic Tac Toe")),
         (WIDGET_STADTLANDFLUSS, _("Stadt Land Fluss")),
+        (WIDGET_UNO, _("Uno")),
     ]
 
     CLOCK_DESIGN_MINIMAL = "minimal"
@@ -1298,6 +1300,153 @@ class BattleshipInvite(models.Model):
 
     def __str__(self):
         return f"{self.from_user} -> {self.to_user} · {self.game}"
+
+
+class UnoGame(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_PLAYING = "playing"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_PLAYING, _("L\u00e4uft")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_uno_games",
+    )
+    name = models.CharField(max_length=80, default="Uno")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+    max_players = models.PositiveSmallIntegerField(default=4)
+    draw_until_playable = models.BooleanField(default=False)
+    stacking = models.BooleanField(default=True)
+    jump_in = models.BooleanField(default=False)
+    seven_zero = models.BooleanField(default=False)
+    force_play_drawn_card = models.BooleanField(default=False)
+    keep_bluff_challenge = models.BooleanField(default=False)
+    deck = models.JSONField(default=list, blank=True)
+    discard_pile = models.JSONField(default=list, blank=True)
+    hands = models.JSONField(default=dict, blank=True)
+    current_color = models.CharField(max_length=12, blank=True)
+    current_player_index = models.PositiveSmallIntegerField(default=0)
+    direction = models.SmallIntegerField(default=1)
+    pending_draw = models.PositiveSmallIntegerField(default=0)
+    has_drawn_this_turn = models.BooleanField(default=False)
+    uno_calls = models.JSONField(default=dict, blank=True)
+    winner_user_id = models.PositiveIntegerField(null=True, blank=True)
+    round_number = models.PositiveIntegerField(default=1)
+    action_log = models.JSONField(default=list, blank=True)
+    last_move_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Uno Spiel"
+        verbose_name_plural = "Uno Spiele"
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def is_full(self):
+        return self.players.count() >= self.max_players
+
+    def player_for_user(self, user):
+        return self.players.filter(user=user).first()
+
+
+class UnoPlayer(models.Model):
+    game = models.ForeignKey(
+        UnoGame,
+        on_delete=models.CASCADE,
+        related_name="players",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="uno_players",
+    )
+    display_name = models.CharField(max_length=40, blank=True)
+    seat = models.PositiveSmallIntegerField(default=0)
+    is_ready = models.BooleanField(default=False)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["seat", "joined_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["game", "user"], name="unique_uno_player_per_game"),
+            models.UniqueConstraint(fields=["game", "seat"], name="unique_uno_seat_per_game"),
+        ]
+        indexes = [
+            models.Index(fields=["game", "seat"]),
+            models.Index(fields=["user", "last_seen"]),
+        ]
+        verbose_name = "Uno Spieler"
+        verbose_name_plural = "Uno Spieler"
+
+    def __str__(self):
+        return f"{self.display_label} - {self.game.code}"
+
+    @property
+    def display_label(self):
+        return self.display_name or self.user.get_full_name() or self.user.username
+
+
+class UnoInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    game = models.ForeignKey(
+        UnoGame,
+        on_delete=models.CASCADE,
+        related_name="invites",
+    )
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_uno_invites",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_uno_invites",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["game", "to_user"], name="unique_uno_invite_per_game_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="uno_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"]),
+            models.Index(fields=["game", "status"]),
+        ]
+        verbose_name = "Uno Einladung"
+        verbose_name_plural = "Uno Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user} - {self.game}"
 
 
 class StadtLandFlussLobby(models.Model):
