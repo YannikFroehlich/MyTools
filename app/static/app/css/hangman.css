@@ -148,6 +148,10 @@
     grid-column: 1 / -1;
 }
 
+.hm-form label:has(textarea[name="custom_words"]) {
+    display: none;
+}
+
 .hm-join-form {
     grid-template-columns: 1fr;
 }
@@ -644,6 +648,68 @@
     align-items: stretch;
 }
 
+.hm-word-form,
+.hm-review-panel {
+    min-width: 0;
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.hm-word-form {
+    grid-template-columns: minmax(160px, 1fr) minmax(140px, 0.85fr) auto;
+    align-items: stretch;
+}
+
+.hm-word-form input {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 14px;
+    padding: 0 14px;
+    background: rgba(15, 23, 42, 0.82);
+    color: #ffffff;
+    outline: none;
+}
+
+.hm-review-panel {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+}
+
+.hm-review-panel small {
+    display: block;
+    margin-bottom: 3px;
+    color: rgba(226, 232, 240, 0.76);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.hm-review-panel strong {
+    display: block;
+    color: #ffffff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hm-review-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.hm-word-form.hidden,
+.hm-review-panel.hidden,
+.hm-guess-form.hidden,
+.hm-keyboard.hidden {
+    display: none;
+}
+
 .hm-guess-form input {
     min-height: 44px;
 }
@@ -806,10 +872,17 @@
     }
 
     .hm-form,
+    .hm-word-form,
+    .hm-review-panel,
     .hm-guess-form,
     .hm-board-meta,
     .hm-letter-summary {
         grid-template-columns: 1fr;
+    }
+
+    .hm-review-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
     }
 
     .hm-action-grid {
@@ -818,5 +891,313 @@
 
     .hm-keyboard {
         grid-template-columns: repeat(7, minmax(32px, 1fr));
+    }
+}
+
+/* Compact in-room lobby, matching the UNO room proportions on desktop. */
+@media (min-width: 981px) {
+    body:has(.hm-lobby-page) {
+        overflow: hidden;
+    }
+
+    body:has(.hm-lobby-page) .site-footer {
+        display: none;
+    }
+
+    .hm-lobby-page {
+        width: min(1500px, calc(100% - 18px));
+        height: calc(100dvh - var(--nav-height, 60px) - 18px);
+        margin: 9px auto;
+        overflow: hidden;
+    }
+
+    .hm-lobby-layout {
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .hm-left-column {
+        grid-template-rows: auto minmax(120px, 0.9fr) auto minmax(84px, 0.72fr);
+        gap: 10px;
+        overflow: hidden;
+    }
+
+    .hm-room-card-top,
+    .hm-panel,
+    .hm-board-panel {
+        border-radius: 18px;
+        padding: 12px;
+    }
+
+    .hm-room-card-top {
+        gap: 9px;
+    }
+
+    .hm-back {
+        font-size: 0.88rem;
+    }
+
+    .hm-eyebrow {
+        margin-bottom: 4px;
+        font-size: 0.7rem;
+    }
+
+    .hm-room-card-top h1 {
+        max-width: 196px;
+        font-size: clamp(1.45rem, 2.8vw, 2.55rem);
+        line-height: 0.96;
+    }
+
+    .hm-code {
+        padding: 3px 8px;
+        font-size: 0.82rem;
+    }
+
+    .hm-action-grid {
+        gap: 7px;
+    }
+
+    .hm-action-grid form {
+        display: contents;
+    }
+
+    .hm-primary,
+    .hm-secondary,
+    .hm-danger {
+        min-height: 36px;
+        padding: 0 11px;
+        border-radius: 12px;
+        font-size: 0.86rem;
+        gap: 7px;
+    }
+
+    .hm-panel h2 {
+        font-size: 1rem;
+    }
+
+    .hm-panel-heading {
+        margin-bottom: 8px;
+    }
+
+    .hm-player-list,
+    .hm-friend-list {
+        gap: 8px;
+        overflow-y: auto;
+    }
+
+    .hm-player-row,
+    .hm-friend-row {
+        padding: 8px;
+        border-radius: 13px;
+    }
+
+    .hm-status-panel {
+        padding: 10px 12px;
+    }
+
+    .hm-status-panel strong {
+        font-size: 1rem;
+    }
+
+    .hm-status-panel p {
+        margin-top: 3px;
+        font-size: 0.88rem;
+        line-height: 1.28;
+    }
+
+    .hm-friends-box {
+        display: flex;
+        min-height: 0;
+    }
+
+    .hm-friend-mini > span {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
+
+    .hm-invite-button {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+    }
+
+    .hm-board-panel {
+        grid-template-rows: auto minmax(0, 1fr) auto auto;
+        gap: 10px;
+        overflow: hidden;
+    }
+
+    .hm-board-meta {
+        gap: 8px;
+    }
+
+    .hm-board-meta span {
+        padding: 7px 10px;
+        border-radius: 12px;
+        font-size: 0.86rem;
+    }
+
+    .hm-play-area {
+        grid-template-columns: minmax(190px, 0.44fr) minmax(0, 1fr);
+        gap: 10px;
+        min-height: 0;
+    }
+
+    .hm-hangman-card {
+        padding: 8px;
+    }
+
+    .hm-hangman-svg {
+        width: min(100%, 300px);
+        min-height: 170px;
+        max-height: min(310px, 100%);
+    }
+
+    .hm-word-card {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .hm-word {
+        gap: 6px;
+        min-height: 62px;
+    }
+
+    .hm-letter-tile {
+        min-width: 34px;
+        height: 44px;
+        border-radius: 10px;
+        font-size: clamp(1.1rem, 1.8vw, 1.85rem);
+    }
+
+    .hm-letter-tile.is-space {
+        min-width: 14px;
+    }
+
+    .hm-letter-summary {
+        gap: 8px;
+    }
+
+    .hm-letter-summary > div {
+        padding: 8px 10px;
+        border-radius: 12px;
+    }
+
+    .hm-last-guess {
+        min-height: 18px;
+        font-size: 0.88rem;
+    }
+
+    .hm-guess-form input {
+        min-height: 38px;
+    }
+
+    .hm-keyboard {
+        gap: 6px;
+    }
+
+    .hm-key {
+        min-height: 34px;
+        border-radius: 11px;
+        padding: 0 5px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-height: 760px) and (min-width: 981px) {
+    .hm-lobby-page {
+        height: calc(100dvh - var(--nav-height, 60px) - 12px);
+        margin: 6px auto;
+    }
+
+    .hm-left-column {
+        grid-template-rows: auto minmax(92px, 1fr) auto minmax(70px, 0.55fr);
+        gap: 8px;
+    }
+
+    .hm-friends-box {
+        display: flex;
+    }
+
+    .hm-room-card-top,
+    .hm-panel,
+    .hm-board-panel {
+        padding: 10px;
+    }
+
+    .hm-room-card-top {
+        gap: 7px;
+    }
+
+    .hm-room-card-top h1 {
+        font-size: 1.55rem;
+    }
+
+    .hm-action-grid {
+        gap: 6px;
+    }
+
+    .hm-primary,
+    .hm-secondary,
+    .hm-danger {
+        min-height: 34px;
+        padding: 0 9px;
+        font-size: 0.82rem;
+    }
+
+    .hm-panel-heading {
+        margin-bottom: 6px;
+    }
+
+    .hm-player-row,
+    .hm-friend-row {
+        padding: 6px 7px;
+    }
+
+    .hm-status-panel p {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .hm-board-panel {
+        gap: 8px;
+    }
+
+    .hm-hangman-svg {
+        min-height: 150px;
+        max-height: min(260px, 100%);
+    }
+
+    .hm-word-card {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .hm-word {
+        min-height: 52px;
+        gap: 5px;
+    }
+
+    .hm-letter-tile {
+        min-width: 30px;
+        height: 38px;
+        border-radius: 9px;
+    }
+
+    .hm-letter-summary > div {
+        padding: 7px 9px;
+    }
+
+    .hm-guess-form input {
+        min-height: 34px;
+    }
+
+    .hm-key {
+        min-height: 30px;
+        font-size: 0.84rem;
     }
 }

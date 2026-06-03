@@ -16,7 +16,9 @@
 <main class="hm-page hm-lobby-page"
       data-state-url="{% url 'hangman_state_api' lobby.code %}"
       data-start-url="{% url 'hangman_start_api' lobby.code %}"
+      data-word-url="{% url 'hangman_word_api' lobby.code %}"
       data-guess-url="{% url 'hangman_guess_api' lobby.code %}"
+      data-review-url="{% url 'hangman_review_api' lobby.code %}"
       data-reset-url="{% url 'hangman_reset_api' lobby.code %}">
     <section class="hm-lobby-layout">
         <aside class="hm-left-column">
@@ -167,6 +169,32 @@
                         </div>
                     </div>
                     <p class="hm-last-guess" id="hm-last-guess"></p>
+                </div>
+            </div>
+
+            <form class="hm-word-form hidden" id="hm-word-form">
+                <input type="text" name="word" id="hm-word-input" maxlength="80" placeholder="{% translate 'Geheimes Wort eingeben' %}" autocomplete="off">
+                <input type="text" name="hint" id="hm-word-hint-input" maxlength="120" placeholder="{% translate 'Hinweis optional' %}" autocomplete="off">
+                <button class="hm-primary" type="submit">
+                    <i class="fa-solid fa-lock"></i>
+                    {% translate 'Wort setzen' %}
+                </button>
+            </form>
+
+            <div class="hm-review-panel hidden" id="hm-review-panel">
+                <div>
+                    <small>{% translate 'Tipp wartet' %}</small>
+                    <strong id="hm-review-guess">-</strong>
+                </div>
+                <div class="hm-review-actions">
+                    <button class="hm-primary" type="button" data-review-result="correct">
+                        <i class="fa-solid fa-check"></i>
+                        {% translate 'Richtig' %}
+                    </button>
+                    <button class="hm-danger" type="button" data-review-result="wrong">
+                        <i class="fa-solid fa-xmark"></i>
+                        {% translate 'Falsch' %}
+                    </button>
                 </div>
             </div>
 

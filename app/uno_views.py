@@ -429,10 +429,20 @@ def _serialize_game(game, user):
     can_act = game.status == UnoGame.STATUS_PLAYING and current and current.user_id == user.id
     playable_ids = [card["id"] for card in own_hand if can_act and _is_playable(card, top_card, game.current_color, game.pending_draw)]
 
+    can_call_uno = bool(
+        player
+        and can_act
+        and len(own_hand) == 2
+        and playable_ids
+        and not (game.uno_calls or {}).get(str(user.id))
+    )
+
     if game.status == UnoGame.STATUS_WAITING:
         message = _("Warte auf Spieler. Der Host startet ab 2 Spielern.")
     elif game.status == UnoGame.STATUS_FINISHED:
         message = _("Gewonnen: %(name)s") % {"name": winner.display_label if winner else _("Unbekannt")}
+    elif can_call_uno:
+        message = _("Sag Uno, bevor du deine vorletzte Karte legst.")
     elif can_act and game.pending_draw:
         message = _("Du musst +%(count)s ziehen oder stapeln.") % {"count": game.pending_draw}
     elif can_act:
@@ -461,7 +471,7 @@ def _serialize_game(game, user):
         "playableIds": playable_ids,
         "canAct": can_act,
         "canStart": game.owner_id == user.id and game.status == UnoGame.STATUS_WAITING and len(players) >= 2,
-        "canCallUno": bool(player and len(own_hand) == 1 and not (game.uno_calls or {}).get(str(user.id))),
+        "canCallUno": can_call_uno,
         "message": message,
         "winnerName": winner.display_label if winner else "",
         "winnerUserId": game.winner_user_id,
@@ -647,6 +657,9 @@ def uno_play_api(request, code):
         if card["value"] == "7" and game.seven_zero and len(players) > 1 and not target_user_id:
             return JsonResponse({"ok": False, "error": _("W\u00e4hle einen Spieler zum Tauschen.")}, status=400)
 
+        hand_count_before = len(hand)
+        uno_calls = dict(game.uno_calls or {})
+        had_called_uno = bool(uno_calls.get(str(request.user.id)))
         hand.remove(card)
         hands[str(request.user.id)] = hand
         game.hands = hands
@@ -655,11 +668,17 @@ def uno_play_api(request, code):
         if is_jump_in:
             game.current_player_index = players.index(player)
         _apply_card_effect(game, card, player, chosen_color, target_user_id)
-        uno_calls = dict(game.uno_calls or {})
+        _append_log(game, _("%(name)s legt %(card)s.") % {"name": player.display_label, "card": card["label"]})
+        if hand_count_before == 2 and not had_called_uno and game.status == UnoGame.STATUS_PLAYING:
+            hands = dict(game.hands or {})
+            drawn = _draw_cards(game, hands, request.user.id, 1)
+            game.hands = hands
+            hand = list(hands.get(str(request.user.id), []))
+            if drawn:
+                _append_log(game, _("%(name)s hat Uno vergessen und zieht 1 Strafkarte.") % {"name": player.display_label})
         if len(hand) != 1:
             uno_calls.pop(str(request.user.id), None)
         game.uno_calls = uno_calls
-        _append_log(game, _("%(name)s legt %(card)s.") % {"name": player.display_label, "card": card["label"]})
         if not hand:
             game.status = UnoGame.STATUS_FINISHED
             game.winner_user_id = request.user.id
@@ -724,9 +743,15 @@ def uno_pass_api(request, code):
 def uno_call_api(request, code):
     with transaction.atomic():
         game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        players = _ordered_players(game)
+        current = _current_player(game, players)
+        player = next((row for row in players if row.user_id == request.user.id), None)
+        if not player or not current or current.user_id != request.user.id or game.status != UnoGame.STATUS_PLAYING:
+            return JsonResponse({"ok": False, "error": _("Du kannst Uno nur sagen, wenn du am Zug bist.")}, status=400)
         hands = dict(game.hands or {})
-        if len(hands.get(str(request.user.id), [])) != 1:
-            return JsonResponse({"ok": False, "error": _("Uno kannst du nur mit einer Karte sagen.")}, status=400)
+        hand = list(hands.get(str(request.user.id), []))
+        if len(hand) != 2 or not _has_playable(hand, game):
+            return JsonResponse({"ok": False, "error": _("Uno sagst du, bevor du deine vorletzte Karte legst.")}, status=400)
         calls = dict(game.uno_calls or {})
         calls[str(request.user.id)] = True
         game.uno_calls = calls

@@ -19,6 +19,7 @@ from .models import Friendship, HangmanInvite, HangmanLobby, HangmanPlayer, User
 
 
 PLAYER_TIMEOUT = timedelta(seconds=35)
+TOTAL_ROUNDS = 4
 DEFAULT_WORDS = [
     ("PYTHON", "Programmiersprache"),
     ("DJANGO", "Webframework"),
@@ -102,6 +103,45 @@ def _is_word_solved(lobby):
     return "_" not in masked and bool(lobby.word)
 
 
+def _players_for_roles(lobby):
+    return list(lobby.players.select_related("user").order_by("joined_at", "id"))
+
+
+def _role_user_ids(lobby, players=None):
+    players = players if players is not None else _players_for_roles(lobby)
+    if len(players) != 2:
+        return None, None
+    setter_index = (max(1, int(lobby.round_number or 1)) - 1) % 2
+    setter = players[setter_index]
+    guesser = players[1 - setter_index]
+    return setter.user_id, guesser.user_id
+
+
+def _round_phase(lobby):
+    data = lobby.last_guess if isinstance(lobby.last_guess, dict) else {}
+    phase = data.get("phase")
+    if phase:
+        return phase
+    if lobby.status == HangmanLobby.STATUS_WAITING:
+        return "waiting"
+    if lobby.status == HangmanLobby.STATUS_FINISHED:
+        return "game_over"
+    if lobby.word:
+        return "guessing"
+    return "word_setup"
+
+
+def _public_pending_guess(lobby):
+    data = lobby.last_guess if isinstance(lobby.last_guess, dict) else {}
+    if not data.get("pending"):
+        return {}
+    return {
+        "player": data.get("player", ""),
+        "guess": data.get("guess", ""),
+        "guessType": data.get("guessType", "letter"),
+    }
+
+
 def _mark_player_seen(lobby, user):
     HangmanPlayer.objects.filter(lobby=lobby, user=user).update(last_seen=timezone.now())
 
@@ -143,34 +183,164 @@ def _reset_to_waiting(lobby):
     lobby.guessed_letters = []
     lobby.wrong_letters = []
     lobby.winner = None
-    lobby.last_guess = {}
+    lobby.last_guess = {"phase": "waiting"}
     lobby.started_at = None
     lobby.finished_at = None
 
 
-def _start_round(lobby):
-    word, hint = _pick_word(lobby)
-    lobby.word = word
-    lobby.word_hint = hint
+def _prepare_word_setup(lobby):
     lobby.status = HangmanLobby.STATUS_PLAYING
+    lobby.word = ""
+    lobby.word_hint = ""
     lobby.guessed_letters = []
     lobby.wrong_letters = []
     lobby.winner = None
-    lobby.last_guess = {}
+    lobby.last_guess = {"phase": "word_setup"}
     lobby.started_at = timezone.now()
     lobby.finished_at = None
 
 
-def _serialize_player(player):
+def _finish_game(lobby):
+    players = list(lobby.players.select_related("user").order_by("-score", "joined_at", "id"))
+    winner = None
+    if players:
+        top_score = players[0].score
+        if top_score > 0 and len([player for player in players if player.score == top_score]) == 1:
+            winner = players[0].user
+    lobby.status = HangmanLobby.STATUS_FINISHED
+    lobby.winner = winner
+    lobby.finished_at = timezone.now()
+    data = dict(lobby.last_guess or {})
+    data.update({
+        "phase": "game_over",
+        "pending": False,
+        "gameComplete": True,
+        "finalWinnerName": _player_name(winner) if winner else "",
+    })
+    lobby.last_guess = data
+
+
+def _serialize_player(player, setter_id=None, guesser_id=None):
+    if player.user_id == setter_id:
+        role = _("Wortgeber")
+    elif player.user_id == guesser_id:
+        role = _("Rater")
+    else:
+        role = _("Spieler")
     return {
         "id": player.id,
         "name": player.display_label,
         "score": player.score,
         "isOwner": player.lobby.owner_id == player.user_id,
+        "role": role,
+        "isSetter": player.user_id == setter_id,
+        "isGuesser": player.user_id == guesser_id,
     }
 
 
 def _serialize_lobby(lobby, user):
+    return _serialize_lobby_manual(lobby, user)
+
+
+def _serialize_lobby_manual(lobby, user):
+    players = _players_for_roles(lobby)
+    setter_id, guesser_id = _role_user_ids(lobby, players)
+    phase = _round_phase(lobby)
+    setter = next((player for player in players if player.user_id == setter_id), None)
+    guesser = next((player for player in players if player.user_id == guesser_id), None)
+    masked = _masked_word(lobby)
+    wrong_values = lobby.wrong_letters if isinstance(lobby.wrong_letters, list) else []
+    mistakes = len(wrong_values)
+    is_setter = setter_id == user.id
+    is_guesser = guesser_id == user.id
+    has_two_players = len(players) == 2
+    can_start = (
+        lobby.status in {HangmanLobby.STATUS_WAITING, HangmanLobby.STATUS_FINISHED}
+        and lobby.owner_id == user.id
+        and has_two_players
+    )
+    can_set_word = lobby.status == HangmanLobby.STATUS_PLAYING and phase == "word_setup" and is_setter
+    can_guess = lobby.status == HangmanLobby.STATUS_PLAYING and phase == "guessing" and is_guesser
+    can_review_guess = lobby.status == HangmanLobby.STATUS_PLAYING and phase == "review" and is_setter
+    can_advance_round = (
+        lobby.status == HangmanLobby.STATUS_PLAYING
+        and phase == "round_over"
+        and lobby.owner_id == user.id
+        and lobby.round_number < TOTAL_ROUNDS
+    )
+    can_reset_game = lobby.status == HangmanLobby.STATUS_FINISHED and lobby.owner_id == user.id
+
+    if lobby.status == HangmanLobby.STATUS_WAITING:
+        if len(players) < 2:
+            message = _("Hangman startet erst mit genau 2 Spielern.")
+        else:
+            message = _("Bereit. Der Host kann Runde 1 starten.")
+    elif phase == "word_setup":
+        if is_setter:
+            message = _("Gib ein Wort ein. Der andere Spieler sieht es nicht.")
+        else:
+            message = _("%(user)s gibt gerade ein Wort ein.") % {"user": setter.display_label if setter else _("Der Wortgeber")}
+    elif phase == "review":
+        pending = _public_pending_guess(lobby)
+        if is_setter:
+            message = _("Bewerte den Tipp: %(guess)s") % {"guess": pending.get("guess", "")}
+        else:
+            message = _("Warte auf die Bewertung durch den Wortgeber.")
+    elif phase == "round_over":
+        message = _("Runde beendet. Der Host kann die naechste Runde starten.")
+    elif lobby.status == HangmanLobby.STATUS_FINISHED and lobby.winner_id:
+        if lobby.winner_id == user.id:
+            message = _("Du hast nach 4 Runden gewonnen.")
+        else:
+            message = _("%(user)s hat nach 4 Runden gewonnen.") % {"user": _player_name(lobby.winner)}
+    elif lobby.status == HangmanLobby.STATUS_FINISHED:
+        message = _("Unentschieden nach 4 Runden.")
+    elif is_setter:
+        message = _("Warte auf den Tipp des Raters.")
+    else:
+        message = _("Rate einen Buchstaben oder direkt das ganze Wort.")
+
+    visible_word = ""
+    if lobby.status == HangmanLobby.STATUS_FINISHED or phase in {"round_over", "game_over"}:
+        visible_word = lobby.word
+
+    return {
+        "id": lobby.id,
+        "name": lobby.name,
+        "code": lobby.code,
+        "status": lobby.status,
+        "statusLabel": lobby.get_status_display(),
+        "roundNumber": lobby.round_number,
+        "maxRounds": TOTAL_ROUNDS,
+        "roundPhase": phase,
+        "maskedWord": masked,
+        "wordLength": len([char for char in lobby.word if char not in {" ", "-"}]),
+        "hint": lobby.word_hint,
+        "guessedLetters": lobby.normalized_guessed_letters,
+        "wrongLetters": lobby.normalized_wrong_letters + ([_("Wort")] * len([value for value in wrong_values if str(value).startswith("?")])),
+        "mistakes": mistakes,
+        "maxMistakes": lobby.max_mistakes,
+        "lastGuess": lobby.last_guess or {},
+        "word": visible_word,
+        "secretWord": lobby.word if is_setter and lobby.status == HangmanLobby.STATUS_PLAYING else "",
+        "winnerName": _player_name(lobby.winner),
+        "players": [_serialize_player(player, setter_id, guesser_id) for player in players],
+        "isOwner": lobby.owner_id == user.id,
+        "isSetter": is_setter,
+        "isGuesser": is_guesser,
+        "setterName": setter.display_label if setter else "",
+        "guesserName": guesser.display_label if guesser else "",
+        "canStart": can_start,
+        "canSetWord": can_set_word,
+        "canGuess": can_guess,
+        "canReviewGuess": can_review_guess,
+        "canAdvanceRound": can_advance_round,
+        "canResetGame": can_reset_game,
+        "pendingGuess": _public_pending_guess(lobby),
+        "message": message,
+        "updatedAt": timezone.localtime(lobby.updated_at).strftime("%d.%m.%Y %H:%M"),
+    }
+
     players = list(lobby.players.select_related("user").order_by("-score", "joined_at"))
     masked = _masked_word(lobby)
     wrong_values = lobby.wrong_letters if isinstance(lobby.wrong_letters, list) else []
@@ -256,6 +426,8 @@ def _serialize_home_invite(invite):
 
 def _friend_invite_rows(lobby, user):
     current_ids = list(lobby.players.values_list("user_id", flat=True))
+    if len(current_ids) >= 2:
+        return []
     friends = (
         User.objects
         .filter(id__in=Friendship.friend_ids_for_user(user), is_active=True)
@@ -276,7 +448,7 @@ def _friend_invite_rows(lobby, user):
 
 @login_required
 def hangman_home(request):
-    _cleanup_stale_lobbies(keep_user_id=request.user.id)
+    _cleanup_stale_lobbies()
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "create":
@@ -309,7 +481,7 @@ def hangman_home(request):
 @login_required
 @require_GET
 def hangman_home_state_api(request):
-    _cleanup_stale_lobbies(keep_user_id=request.user.id)
+    _cleanup_stale_lobbies()
     return JsonResponse({
         "ok": True,
         "games": [_serialize_home_lobby(lobby) for lobby in _home_lobbies_for_user(request.user)],
@@ -330,6 +502,10 @@ def hangman_lobby(request, code):
         messages.warning(request, _("Diese Hangman-Lobby war leer und wurde gelöscht."))
         return redirect("hangman_home")
 
+    if not lobby.players.filter(user=request.user).exists() and lobby.players.count() >= 2:
+        messages.error(request, _("Hangman geht nur zu zweit. Dieser Raum ist schon voll."))
+        return redirect("hangman_home")
+
     _join_lobby(lobby, request.user)
     return render(request, "app/hangman_lobby.html", {
         "lobby": lobby,
@@ -344,6 +520,9 @@ def hangman_invite_friend(request, code):
     if not lobby.players.filter(user=request.user).exists() and lobby.owner_id != request.user.id:
         messages.error(request, _("Du bist nicht in diesem Raum."))
         return redirect("hangman_home")
+    if lobby.players.count() >= 2:
+        messages.error(request, _("Hangman geht nur zu zweit. Der Raum ist schon voll."))
+        return redirect("hangman_lobby", code=lobby.code)
     friend = get_object_or_404(User, id=request.POST.get("friend_id"), is_active=True)
     if friend.id not in Friendship.friend_ids_for_user(request.user):
         messages.error(request, _("Du kannst nur Freunde einladen."))
@@ -397,8 +576,46 @@ def hangman_start_api(request, code):
             return JsonResponse({"ok": False, "error": _("Nur der Host kann die Runde starten.")}, status=403)
         if not lobby.players.exists():
             _join_lobby(lobby, request.user)
-        _start_round(lobby)
+        if lobby.players.count() != 2:
+            return JsonResponse({"ok": False, "error": _("Hangman startet nur mit genau 2 Spielern.")}, status=400)
+        if lobby.status == HangmanLobby.STATUS_FINISHED:
+            lobby.players.update(score=0)
+            lobby.round_number = 1
+        elif lobby.status != HangmanLobby.STATUS_WAITING:
+            return JsonResponse({"ok": False, "error": _("Diese Runde laeuft schon.")}, status=400)
+        _prepare_word_setup(lobby)
         lobby.save()
+    return JsonResponse({"ok": True, "game": _serialize_lobby(lobby, request.user)})
+
+
+@login_required
+@require_POST
+def hangman_word_api(request, code):
+    word = _normalize_word(request.POST.get("word", ""))
+    hint = (request.POST.get("hint", "") or "").strip()[:120]
+    if len(word.replace(" ", "").replace("-", "")) < 3:
+        return JsonResponse({"ok": False, "error": _("Bitte gib ein Wort mit mindestens 3 Buchstaben ein.")}, status=400)
+
+    with transaction.atomic():
+        lobby = get_object_or_404(HangmanLobby.objects.select_for_update(), code=code.upper())
+        player = lobby.players.select_for_update().filter(user=request.user).first()
+        if not player:
+            return JsonResponse({"ok": False, "error": _("Du bist nicht in diesem Raum.")}, status=403)
+        player.last_seen = timezone.now()
+        player.save(update_fields=["last_seen"])
+        setter_id, _guesser_id = _role_user_ids(lobby)
+        if setter_id != request.user.id:
+            return JsonResponse({"ok": False, "error": _("Nur der Wortgeber kann das Wort setzen.")}, status=403)
+        if lobby.status != HangmanLobby.STATUS_PLAYING or _round_phase(lobby) != "word_setup":
+            return JsonResponse({"ok": False, "error": _("Gerade kann kein Wort gesetzt werden.")}, status=400)
+
+        lobby.word = word
+        lobby.word_hint = hint
+        lobby.guessed_letters = []
+        lobby.wrong_letters = []
+        lobby.last_guess = {"phase": "guessing"}
+        lobby.save()
+
     return JsonResponse({"ok": True, "game": _serialize_lobby(lobby, request.user)})
 
 
@@ -418,6 +635,38 @@ def hangman_guess_api(request, code):
         player.save(update_fields=["last_seen"])
         if lobby.status != HangmanLobby.STATUS_PLAYING:
             return JsonResponse({"ok": False, "error": _("Die Runde läuft gerade nicht.")}, status=400)
+
+        if _round_phase(lobby) != "guessing":
+            return JsonResponse({"ok": False, "error": _("Warte erst auf den Wortgeber.")}, status=400)
+        _setter_id, guesser_id = _role_user_ids(lobby)
+        if guesser_id != request.user.id:
+            return JsonResponse({"ok": False, "error": _("Nur der Rater kann tippen.")}, status=403)
+        if not lobby.word:
+            return JsonResponse({"ok": False, "error": _("Es wurde noch kein Wort gesetzt.")}, status=400)
+
+        letters = set(lobby.normalized_guessed_letters)
+        wrong_letter_set = set(lobby.normalized_wrong_letters)
+        compact_guess = guess.replace(" ", "").replace("-", "")
+        if len(compact_guess) == 1:
+            guess = _normalize_letter(guess)
+            guess_type = "letter"
+            if guess in letters or guess in wrong_letter_set:
+                return JsonResponse({"ok": False, "error": _("Dieser Buchstabe wurde schon geraten.")}, status=400)
+        else:
+            guess_type = "word"
+
+        lobby.last_guess = {
+            "phase": "review",
+            "pending": True,
+            "player": player.display_label,
+            "playerId": request.user.id,
+            "guess": guess,
+            "guessType": guess_type,
+            "correct": None,
+            "points": 0,
+        }
+        lobby.save()
+        return JsonResponse({"ok": True, "game": _serialize_lobby(lobby, request.user)})
 
         letters = set(lobby.normalized_guessed_letters)
         wrong_values = list(lobby.wrong_letters if isinstance(lobby.wrong_letters, list) else [])
@@ -473,14 +722,133 @@ def hangman_guess_api(request, code):
 
 @login_required
 @require_POST
+def hangman_review_api(request, code):
+    result = (request.POST.get("result") or "").strip().lower()
+    if result not in {"correct", "wrong"}:
+        return JsonResponse({"ok": False, "error": _("Bitte waehle richtig oder falsch.")}, status=400)
+    mark_correct = result == "correct"
+
+    with transaction.atomic():
+        lobby = get_object_or_404(
+            HangmanLobby.objects.select_for_update().select_related("winner"),
+            code=code.upper(),
+        )
+        player = lobby.players.select_for_update().filter(user=request.user).first()
+        if not player:
+            return JsonResponse({"ok": False, "error": _("Du bist nicht in diesem Raum.")}, status=403)
+        player.last_seen = timezone.now()
+        player.save(update_fields=["last_seen"])
+        setter_id, guesser_id = _role_user_ids(lobby)
+        if setter_id != request.user.id:
+            return JsonResponse({"ok": False, "error": _("Nur der Wortgeber kann den Tipp bewerten.")}, status=403)
+        pending = dict(lobby.last_guess or {})
+        if lobby.status != HangmanLobby.STATUS_PLAYING or _round_phase(lobby) != "review" or not pending.get("pending"):
+            return JsonResponse({"ok": False, "error": _("Es wartet kein Tipp auf Bewertung.")}, status=400)
+
+        guess = _normalize_word(pending.get("guess", ""))
+        guess_type = pending.get("guessType") or "letter"
+        letters = set(lobby.normalized_guessed_letters)
+        wrong_values = list(lobby.wrong_letters if isinstance(lobby.wrong_letters, list) else [])
+        points = 0
+        round_winner_id = None
+        round_winner_name = ""
+
+        guesser_player = lobby.players.select_for_update().filter(user_id=guesser_id).first()
+        setter_player = lobby.players.select_for_update().filter(user_id=setter_id).first()
+
+        if guess_type == "letter":
+            letter = _normalize_letter(guess)
+            occurrences = lobby.word.count(letter)
+            if mark_correct and not occurrences:
+                return JsonResponse({"ok": False, "error": _("Der Buchstabe kommt im Wort nicht vor.")}, status=400)
+            if not mark_correct and occurrences:
+                return JsonResponse({"ok": False, "error": _("Der Buchstabe ist im Wort. Markiere ihn als richtig.")}, status=400)
+            if mark_correct:
+                letters.add(letter)
+                points = occurrences * 10
+                if guesser_player and points:
+                    guesser_player.score += points
+                    guesser_player.save(update_fields=["score", "last_seen"])
+            else:
+                wrong_values.append(letter)
+        else:
+            is_word_match = guess == lobby.word
+            if mark_correct and not is_word_match:
+                return JsonResponse({"ok": False, "error": _("Das ist nicht das gesuchte Wort.")}, status=400)
+            if not mark_correct and is_word_match:
+                return JsonResponse({"ok": False, "error": _("Das ist das Wort. Markiere es als richtig.")}, status=400)
+            if mark_correct:
+                letters.update([char for char in lobby.word if char in GERMAN_LETTERS])
+                points = 50
+                if guesser_player:
+                    guesser_player.score += points
+                    guesser_player.save(update_fields=["score", "last_seen"])
+            else:
+                wrong_values.append(f"?{len(wrong_values) + 1}")
+
+        lobby.guessed_letters = sorted(letters)
+        lobby.wrong_letters = wrong_values
+
+        if _is_word_solved(lobby):
+            round_winner_id = guesser_id
+            round_winner_name = guesser_player.display_label if guesser_player else ""
+            if guesser_player:
+                guesser_player.score += 50
+                guesser_player.save(update_fields=["score", "last_seen"])
+                points += 50
+        elif len(wrong_values) >= lobby.max_mistakes:
+            round_winner_id = setter_id
+            round_winner_name = setter_player.display_label if setter_player else ""
+            if setter_player:
+                setter_player.score += 50
+                setter_player.save(update_fields=["score", "last_seen"])
+
+        next_phase = "guessing"
+        if round_winner_id:
+            next_phase = "round_over"
+
+        lobby.last_guess = {
+            "phase": next_phase,
+            "pending": False,
+            "player": pending.get("player", ""),
+            "playerId": pending.get("playerId"),
+            "guess": guess,
+            "guessType": guess_type,
+            "correct": mark_correct,
+            "points": points,
+            "roundWinnerId": round_winner_id,
+            "roundWinnerName": round_winner_name,
+        }
+
+        if round_winner_id and lobby.round_number >= TOTAL_ROUNDS:
+            _finish_game(lobby)
+
+        lobby.save()
+
+    return JsonResponse({"ok": True, "game": _serialize_lobby(lobby, request.user)})
+
+
+@login_required
+@require_POST
 def hangman_reset_api(request, code):
     with transaction.atomic():
         lobby = get_object_or_404(HangmanLobby.objects.select_for_update(), code=code.upper())
         if lobby.owner_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Nur der Host kann eine neue Runde vorbereiten.")}, status=403)
-        lobby.round_number += 1
-        lobby.players.update(score=0)
-        _reset_to_waiting(lobby)
+        if lobby.players.count() != 2:
+            return JsonResponse({"ok": False, "error": _("Hangman braucht genau 2 Spieler.")}, status=400)
+        phase = _round_phase(lobby)
+        if lobby.status == HangmanLobby.STATUS_FINISHED:
+            lobby.round_number = 1
+            lobby.players.update(score=0)
+            _reset_to_waiting(lobby)
+        elif phase == "round_over" and lobby.round_number < TOTAL_ROUNDS:
+            lobby.round_number += 1
+            _prepare_word_setup(lobby)
+        else:
+            lobby.round_number = 1
+            lobby.players.update(score=0)
+            _reset_to_waiting(lobby)
         lobby.save()
     return JsonResponse({"ok": True, "game": _serialize_lobby(lobby, request.user)})
 
