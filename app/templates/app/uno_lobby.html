@@ -1,0 +1,193 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ game.name }} - {% translate 'Uno' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/uno.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/uno.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="uno-page uno-lobby-page"
+      data-state-url="{% url 'uno_state_api' game.code %}"
+      data-start-url="{% url 'uno_start_api' game.code %}"
+      data-play-url="{% url 'uno_play_api' game.code %}"
+      data-draw-url="{% url 'uno_draw_api' game.code %}"
+      data-pass-url="{% url 'uno_pass_api' game.code %}"
+      data-call-url="{% url 'uno_call_api' game.code %}"
+      data-catch-url="{% url 'uno_catch_api' game.code %}"
+      data-reset-url="{% url 'uno_reset_api' game.code %}">
+    <section class="uno-lobby-top">
+        <div>
+            <a class="uno-back" href="{% url 'uno_home' %}">
+                <i class="fa-solid fa-arrow-left"></i>
+                Zur &Uuml;bersicht
+            </a>
+            <span class="uno-eyebrow"><i class="fa-solid fa-layer-group"></i> {% translate 'Raum' %}</span>
+            <h1>{{ game.name }}</h1>
+            <p>{% translate 'Raum-Code' %}: <strong class="uno-code">{{ game.code }}</strong></p>
+        </div>
+        <div class="uno-top-actions">
+            <button class="uno-secondary" type="button" id="uno-copy-link">
+                <i class="fa-regular fa-copy"></i>
+                {% translate 'Link kopieren' %}
+            </button>
+            <button class="uno-secondary uno-sound-toggle" type="button" id="uno-sound-toggle" aria-pressed="true">
+                <i class="fa-solid fa-volume-high"></i>
+                Sound
+            </button>
+            <button class="uno-primary" type="button" id="uno-start">
+                <i class="fa-solid fa-play"></i>
+                {% translate 'Starten' %}
+            </button>
+            <button class="uno-primary" type="button" id="uno-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}>
+                <i class="fa-solid fa-rotate-right"></i>
+                {% translate 'Neue Runde' %}
+            </button>
+            <form method="post" action="{% url 'uno_leave' game.code %}">
+                {% csrf_token %}
+                <button class="uno-secondary" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    {% translate 'Verlassen' %}
+                </button>
+            </form>
+            {% if game.owner_id == request.user.id %}
+                <form method="post" action="{% url 'uno_delete' game.code %}" data-confirm="Raum wirklich l&ouml;schen?">
+                    {% csrf_token %}
+                    <button class="uno-danger" type="submit">
+                        <i class="fa-solid fa-trash"></i>
+                        L&ouml;schen
+                    </button>
+                </form>
+            {% else %}
+                <button class="uno-danger" type="button" disabled title="Nur der Host kann diesen Raum l&ouml;schen.">
+                    <i class="fa-solid fa-trash"></i>
+                    L&ouml;schen
+                </button>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="uno-game-shell">
+        <aside class="uno-panel uno-side-panel">
+            <h2>{% translate 'Spieler' %}</h2>
+            <div class="uno-player-list" id="uno-player-list"></div>
+
+            <div class="uno-status-card">
+                <small>{% translate 'Status' %}</small>
+                <strong id="uno-status">-</strong>
+                <p id="uno-message">-</p>
+            </div>
+
+            <div class="uno-rule-pills" id="uno-rule-pills"></div>
+
+            <details class="uno-log-panel">
+                <summary>
+                    <span>{% translate 'Protokoll' %}</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </summary>
+                <div class="uno-log" id="uno-log"></div>
+            </details>
+
+            <div class="uno-friends-box">
+                <h2>{% translate 'Freunde einladen' %}</h2>
+                {% if game.is_full %}
+                    <p class="uno-muted">{% translate 'Der Raum ist voll.' %}</p>
+                {% elif friend_invite_rows %}
+                    <div class="uno-friend-list">
+                        {% for row in friend_invite_rows %}
+                            <div class="uno-friend-row">
+                                <div class="uno-friend-mini">
+                                    <span>{{ row.user.username|slice:":1"|upper }}</span>
+                                    <div>
+                                        <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
+                                        <small>
+                                            {% if row.is_invited %}
+                                                {% translate 'Einladung offen' %}
+                                            {% elif row.was_invited %}
+                                                {% translate 'War schon eingeladen' %}
+                                            {% else %}
+                                                {% translate 'Freund' %}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'uno_invite_friend' game.code %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                    <button class="uno-invite-button" type="submit" aria-label="{% translate 'Einladen' %}" {% if row.is_invited %}disabled{% endif %}>
+                                        {% if row.is_invited %}<i class="fa-solid fa-check"></i>{% else %}<i class="fa-solid fa-plus"></i>{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="uno-muted">{% translate 'Keine weiteren Freunde zum Einladen gefunden.' %}</p>
+                {% endif %}
+            </div>
+        </aside>
+
+        <section class="uno-table-panel">
+            <div class="uno-table-meta">
+                <span>{% translate 'Runde' %} <strong id="uno-round">{{ game.round_number }}</strong></span>
+                <span>{% translate 'Richtung' %} <strong id="uno-direction">-</strong></span>
+                <span>{% translate 'Stapel' %} <strong id="uno-deck-count">0</strong></span>
+            </div>
+
+            <div class="uno-arena" id="uno-arena">
+                <div class="uno-turn-ring" aria-hidden="true"></div>
+                <div class="uno-table-players" id="uno-table-players"></div>
+
+                <div class="uno-table-center">
+                    <button class="uno-pile uno-draw-pile" type="button" id="uno-draw-pile" aria-label="{% translate 'Karte ziehen' %}">
+                        <span>{% translate 'Deck' %}</span>
+                        <strong id="uno-deck-count-large">0</strong>
+                    </button>
+                    <div class="uno-top-card-slot" id="uno-top-card-slot"></div>
+                    <div class="uno-current-color" id="uno-current-color">{% translate 'Farbe' %}</div>
+                </div>
+
+                <button class="uno-primary uno-arena-call" type="button" id="uno-call">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    {% translate 'Uno!' %}
+                </button>
+
+                <div class="uno-hand-wrap uno-arena-hand">
+                    <div class="uno-hand" id="uno-hand"></div>
+                </div>
+            </div>
+
+            <div class="uno-winner-modal hidden" id="uno-winner-modal" role="dialog" aria-modal="true" aria-labelledby="uno-winner-title">
+                <div class="uno-winner-card">
+                    <span class="uno-winner-kicker">Runde beendet</span>
+                    <h2 id="uno-winner-title">Gewonnen!</h2>
+                    <strong id="uno-winner-name">-</strong>
+                    <button class="uno-primary" type="button" id="uno-winner-close">
+                        <i class="fa-solid fa-check"></i>
+                        Weiter
+                    </button>
+                </div>
+            </div>
+
+            <div class="uno-color-picker hidden" id="uno-color-picker">
+                <span>Farbe w&auml;hlen</span>
+                <button type="button" data-color="red" class="is-red" aria-label="{% translate 'Rot' %}"></button>
+                <button type="button" data-color="yellow" class="is-yellow" aria-label="{% translate 'Gelb' %}"></button>
+                <button type="button" data-color="green" class="is-green" aria-label="Gruen"></button>
+                <button type="button" data-color="blue" class="is-blue" aria-label="{% translate 'Blau' %}"></button>
+            </div>
+
+            <div class="uno-target-picker hidden" id="uno-target-picker">
+                <span>Tauschziel w&auml;hlen</span>
+                <div id="uno-target-list"></div>
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

@@ -900,3 +900,44 @@ body.dark-mode .leaderboard-rank {
         padding-inline: 0.55rem;
     }
 }
+
+/* Highscore card refinement:
+   The highscore panel should not stretch to the full height of the recent-score list. */
+.scoreboard-layout {
+    align-items: start;
+}
+
+.score-panel-feature {
+    min-height: 0;
+    height: auto;
+    align-self: start;
+    justify-content: flex-start;
+    gap: 1.2rem;
+    padding: 1.15rem;
+}
+
+.score-panel-feature .score-panel-title {
+    margin-bottom: 0;
+}
+
+.score-feature-score {
+    margin-top: 0.65rem;
+    font-size: clamp(2.15rem, 4.2vw, 3.6rem);
+}
+
+.score-panel-feature .score-panel-hint {
+    margin-top: 0;
+}
+
+@media (min-width: 981px) {
+    .score-panel-feature {
+        min-height: 190px;
+    }
+}
+
+@media (max-width: 980px) {
+    .score-panel-feature {
+        min-height: 145px;
+    }
+}
+

@@ -31,13 +31,15 @@
         </div>
         <div class="slf-top-actions">
             <button class="slf-secondary" type="button" id="copy-lobby-link"><i class="fa-regular fa-copy"></i> {% translate 'Link kopieren' %}</button>
+            <button class="slf-primary" type="button" id="start-game-btn" {% if lobby.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann starten.' %}"{% endif %}><i class="fa-solid fa-play"></i> {% translate 'Starten' %}</button>
+            <button class="slf-secondary" type="button" id="restart-game-btn" {% if lobby.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann zurücksetzen.' %}"{% endif %}><i class="fa-solid fa-rotate-right"></i> {% translate 'Zurücksetzen' %}</button>
             {% if lobby.owner_id == request.user.id %}
-                <button class="slf-primary" type="button" id="start-game-btn"><i class="fa-solid fa-play"></i> {% translate 'Starten' %}</button>
-                <button class="slf-secondary" type="button" id="restart-game-btn"><i class="fa-solid fa-rotate-right"></i> {% translate 'Zurücksetzen' %}</button>
                 <form method="post" action="{% url 'stadtlandfluss_delete' lobby.code %}" class="slf-inline-form" data-confirm="{% translate 'Lobby wirklich löschen?' %}">
                     {% csrf_token %}
                     <button class="slf-danger" type="submit"><i class="fa-solid fa-trash"></i> {% translate 'Löschen' %}</button>
                 </form>
+            {% else %}
+                <button class="slf-danger" type="button" disabled title="{% translate 'Nur der Host kann diese Lobby löschen.' %}"><i class="fa-solid fa-trash"></i> {% translate 'Löschen' %}</button>
             {% endif %}
             <form method="post" action="{% url 'stadtlandfluss_leave' lobby.code %}" class="slf-inline-form" data-confirm="{% translate 'Lobby wirklich verlassen?' %}">
                 {% csrf_token %}

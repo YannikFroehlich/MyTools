@@ -1,0 +1,148 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Uno' %} - MyTools{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/uno.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/uno.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="uno-page uno-home-page"
+      data-home-state-url="{% url 'uno_home_state_api' %}"
+      data-empty-invites-label="{% translate 'Du hast aktuell keine offenen Uno-Einladungen.' %}"
+      data-empty-games-label="{% translate 'Du hast noch keinen Uno-Raum.' %}"
+      data-from-label="{% translate 'von' %}"
+      data-accept-label="{% translate 'Annehmen' %}"
+      data-decline-label="{% translate 'Ablehnen' %}"
+      data-round-label="{% translate 'Runde' %}">
+    <section class="uno-hero">
+        <div>
+            <span class="uno-eyebrow"><i class="fa-solid fa-layer-group"></i> {% translate 'Kartenspiel' %}</span>
+            <h1>{% translate 'Uno' %}</h1>
+            <p>{% translate 'Erstelle einen Raum, stelle die Regeln ein und spiele mit bis zu vier Freunden.' %}</p>
+        </div>
+        <div class="uno-card-fan" aria-hidden="true">
+            <span class="uno-demo-card is-red">7</span>
+            <span class="uno-demo-card is-yellow">+2</span>
+            <span class="uno-demo-card is-green">0</span>
+            <span class="uno-demo-card is-blue">↺</span>
+        </div>
+    </section>
+
+    <section class="uno-home-grid">
+        <article class="uno-panel">
+            <h2>{% translate 'Neuen Raum erstellen' %}</h2>
+            <form method="post" class="uno-form uno-create-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <label>
+                    <span>{% translate 'Raum-Name' %}</span>
+                    <input type="text" name="name" maxlength="80" value="{% translate 'Uno' %}">
+                </label>
+                <label>
+                    <span>{% translate 'Maximale Spieler' %}</span>
+                    <select name="max_players">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                    </select>
+                </label>
+                <div class="uno-rule-grid">
+                    <label><input type="checkbox" name="jump_in"><span>{% translate 'Jump-In' %}</span></label>
+                    <label><input type="checkbox" name="seven_zero"><span>{% translate '7-0 Regel' %}</span></label>
+                    <label><input type="checkbox" name="draw_until_playable"><span>{% translate 'Ziehen bis spielbar' %}</span></label>
+                    <label><input type="checkbox" name="force_play_drawn_card"><span>{% translate 'Gezogene Karte muss raus' %}</span></label>
+                    <label><input type="checkbox" name="keep_bluff_challenge"><span>{% translate '+4 Challenge vormerken' %}</span></label>
+                </div>
+                <button class="uno-primary" type="submit">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate 'Raum erstellen' %}
+                </button>
+            </form>
+        </article>
+
+        <article class="uno-panel">
+            <h2>{% translate 'Mit Code beitreten' %}</h2>
+            <form method="post" class="uno-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="join">
+                <label>
+                    <span>{% translate 'Raum-Code' %}</span>
+                    <input type="text" name="code" maxlength="16" placeholder="ABC123" autocomplete="off">
+                </label>
+                <button class="uno-secondary" type="submit">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    {% translate 'Beitreten' %}
+                </button>
+            </form>
+        </article>
+    </section>
+
+    <section class="uno-panel">
+        <div class="uno-section-heading">
+            <div>
+                <span class="uno-eyebrow"><i class="fa-solid fa-envelope-open-text"></i> {% translate 'Einladungen' %}</span>
+                <h2>{% translate 'Offene Einladungen' %}</h2>
+            </div>
+        </div>
+        <div id="uno-invites-live">
+        {% if invites %}
+            <div class="uno-invite-list" id="uno-invite-list">
+                {% for invite in invites %}
+                    <div class="uno-invite-row">
+                        <div>
+                            <strong>{{ invite.game.name }}</strong>
+                            <span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span>
+                        </div>
+                        <div class="uno-inline-actions">
+                            <form method="post" action="{% url 'uno_invite_response' invite.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="accept">
+                                <button class="uno-primary" type="submit">{% translate 'Annehmen' %}</button>
+                            </form>
+                            <form method="post" action="{% url 'uno_invite_response' invite.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="decline">
+                                <button class="uno-secondary" type="submit">{% translate 'Ablehnen' %}</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="uno-muted" id="uno-invites-empty">{% translate 'Du hast aktuell keine offenen Uno-Einladungen.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+
+    <section class="uno-panel">
+        <div class="uno-section-heading">
+            <div>
+                <span class="uno-eyebrow"><i class="fa-solid fa-clock-rotate-left"></i> {% translate 'Verlauf' %}</span>
+                <h2>Deine R&auml;ume</h2>
+            </div>
+        </div>
+        <div id="uno-games-live">
+        {% if my_games %}
+            <div class="uno-room-grid" id="uno-room-grid">
+                {% for game in my_games %}
+                    <a class="uno-room-card" href="{% url 'uno_lobby' game.code %}">
+                        <span class="uno-code">{{ game.code }}</span>
+                        <strong>{{ game.name }}</strong>
+                        <span>{{ game.get_status_display }} - {% translate 'Runde' %} {{ game.round_number }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="uno-muted" id="uno-games-empty">{% translate 'Du hast noch keinen Uno-Raum.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}
