@@ -74,6 +74,9 @@ def _join_lobby(lobby, user):
     return player
 
 
+def _delete_empty_lobbies():
+    StadtLandFlussLobby.objects.filter(players__isnull=True).delete()
+
 def _next_letter(lobby):
     used = [str(letter).upper() for letter in (lobby.used_letters if isinstance(lobby.used_letters, list) else [])]
     available = [letter for letter in LETTER_POOL if letter not in used]
@@ -440,6 +443,7 @@ def _serialize_home_invite(invite):
 
 @login_required
 def stadtlandfluss_home(request):
+    _delete_empty_lobbies()
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "create":
@@ -472,6 +476,7 @@ def stadtlandfluss_home(request):
 @login_required
 @require_GET
 def stadtlandfluss_home_state_api(request):
+    _delete_empty_lobbies()
     return JsonResponse({
         "ok": True,
         "invites": [_serialize_home_invite(invite) for invite in _home_invites_for_user(request.user)],
@@ -482,10 +487,16 @@ def stadtlandfluss_home_state_api(request):
 
 @login_required
 def stadtlandfluss_lobby(request, code):
-    lobby = get_object_or_404(
-        StadtLandFlussLobby.objects.select_related("owner").prefetch_related("players"),
-        code=code.upper(),
+    lobby = (
+        StadtLandFlussLobby.objects
+        .select_related("owner")
+        .prefetch_related("players")
+        .filter(code=code.upper())
+        .first()
     )
+    if not lobby:
+        messages.warning(request, _("Diese Stadt-Land-Fluss-Lobby existiert nicht mehr."))
+        return redirect("stadtlandfluss_home")
     is_member = lobby.players.filter(user=request.user).exists()
     if not is_member and lobby.players.count() >= lobby.max_players:
         messages.error(request, _("Diese Stadt-Land-Fluss-Lobby ist bereits voll."))

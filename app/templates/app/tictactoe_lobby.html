@@ -32,7 +32,7 @@
                 <i class="fa-regular fa-copy"></i>
                 {% translate 'Link kopieren' %}
             </button>
-            <button class="ttt-primary" type="button" id="ttt-reset">
+            <button class="ttt-primary" type="button" id="ttt-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}>
                 <i class="fa-solid fa-rotate-right"></i>
                 {% translate 'Neue Runde' %}
             </button>
@@ -44,13 +44,18 @@
                 </button>
             </form>
             {% if game.owner_id == request.user.id %}
-            <form method="post" action="{% url 'tictactoe_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
-                {% csrf_token %}
-                <button class="ttt-danger" type="submit">
+                <form method="post" action="{% url 'tictactoe_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
+                    {% csrf_token %}
+                    <button class="ttt-danger" type="submit">
+                        <i class="fa-solid fa-trash"></i>
+                        {% translate 'Löschen' %}
+                    </button>
+                </form>
+            {% else %}
+                <button class="ttt-danger" type="button" disabled title="{% translate 'Nur der Host kann diesen Raum löschen.' %}">
                     <i class="fa-solid fa-trash"></i>
                     {% translate 'Löschen' %}
                 </button>
-            </form>
             {% endif %}
         </div>
     </section>
@@ -121,10 +126,23 @@
                 <span>{% translate 'Du spielst' %} <strong id="ttt-symbol">-</strong></span>
                 <span>{% translate 'Am Zug' %} <strong id="ttt-current">X</strong></span>
             </div>
-            <div class="ttt-board" id="ttt-board" aria-label="{% translate 'Tic-Tac-Toe-Spielfeld' %}">
-                {% for index in "012345678" %}
-                    <button type="button" class="ttt-cell" data-index="{{ forloop.counter0 }}" aria-label="{% translate 'Feld' %} {{ forloop.counter }}"></button>
-                {% endfor %}
+            <div class="ttt-board-wrap">
+                <div class="ttt-board" id="ttt-board" aria-label="{% translate 'Tic-Tac-Toe-Spielfeld' %}">
+                    {% for index in "012345678" %}
+                        <button type="button" class="ttt-cell" data-index="{{ forloop.counter0 }}" aria-label="{% translate 'Feld' %} {{ forloop.counter }}"></button>
+                    {% endfor %}
+                </div>
+                <div class="ttt-result-overlay hidden" id="ttt-result-overlay" aria-live="polite">
+                    <div class="ttt-result-card">
+                        <span class="ttt-result-kicker" id="ttt-result-kicker">{% translate 'Spiel beendet' %}</span>
+                        <h2 id="ttt-result-title">-</h2>
+                        <p id="ttt-result-text">-</p>
+                        <button class="ttt-primary" type="button" id="ttt-result-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}>
+                            <i class="fa-solid fa-rotate-right"></i>
+                            {% translate 'Neue Runde' %}
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
     </section>

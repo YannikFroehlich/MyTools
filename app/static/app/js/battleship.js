@@ -176,10 +176,11 @@ document.addEventListener("DOMContentLoaded", () => {
         placeButton.style.display = game.canPlace || game.status === "setup" ? "inline-flex" : "none";
         const resetButton = document.getElementById("bs-reset");
         if (resetButton) {
-            resetButton.hidden = !game.isOwner;
+            resetButton.hidden = false;
             resetButton.disabled = !game.isOwner || isPosting;
         }
         placementTools?.classList.toggle("is-hidden", !game.canPlace);
+        syncHostControls();
         renderVictoryOverlay();
 
         const ownShips = new Set(game.own.ships || []);
@@ -230,6 +231,10 @@ document.addEventListener("DOMContentLoaded", () => {
         hasRenderedBattleState = true;
         lastEnemyShots = enemyShots;
         lastOwnShotsReceived = shotsReceived;
+    }
+
+    function syncHostControls() {
+        document.getElementById("bs-reset")?.toggleAttribute("disabled", !game?.isOwner || isPosting);
     }
 
     function renderVictoryOverlay() {

@@ -41,7 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.getElementById("ttt-reset")?.addEventListener("click", async () => {
-            if (isPosting) return;
+            if (isPosting || !game?.isOwner) return;
+            await post(urls.reset);
+        });
+
+        document.getElementById("ttt-result-reset")?.addEventListener("click", async () => {
+            if (isPosting || !game?.isOwner) return;
             await post(urls.reset);
         });
 
@@ -113,6 +118,43 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         board.classList.toggle("is-your-turn", Boolean(game.canMove));
+        syncHostControls();
+        renderResultOverlay();
+    }
+
+    function syncHostControls() {
+        const disabled = isPosting || !game?.isOwner;
+        document.getElementById("ttt-reset")?.toggleAttribute("disabled", disabled);
+        document.getElementById("ttt-result-reset")?.toggleAttribute("disabled", disabled);
+    }
+
+    function renderResultOverlay() {
+        const overlay = document.getElementById("ttt-result-overlay");
+        const title = document.getElementById("ttt-result-title");
+        const text = document.getElementById("ttt-result-text");
+        const kicker = document.getElementById("ttt-result-kicker");
+        if (!overlay || !title || !text || !kicker) return;
+
+        const isFinished = game.status === "finished";
+        overlay.classList.toggle("hidden", !isFinished);
+        if (!isFinished) return;
+
+        overlay.classList.toggle("is-x", game.winnerSymbol === "X");
+        overlay.classList.toggle("is-o", game.winnerSymbol === "O");
+        overlay.classList.toggle("is-draw", !game.winnerSymbol);
+
+        if (!game.winnerSymbol) {
+            kicker.textContent = "Unentschieden";
+            title.textContent = "Keiner hat gewonnen";
+            text.textContent = "Alle Felder sind voll. Der Host kann eine neue Runde starten.";
+            return;
+        }
+
+        const winnerName = game.players[game.winnerSymbol] || game.winnerSymbol;
+        const playerWon = game.playerSymbol && game.playerSymbol === game.winnerSymbol;
+        kicker.textContent = playerWon ? "Gewonnen" : "Spiel beendet";
+        title.textContent = playerWon ? "Du hast gewonnen!" : `${winnerName} hat gewonnen`;
+        text.textContent = `${game.winnerSymbol} hat drei Felder in einer Reihe.`;
     }
 
     function getCookie(name) {

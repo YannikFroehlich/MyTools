@@ -691,3 +691,241 @@
         border-radius: 6px;
     }
 }
+
+.bs-primary:disabled,
+.bs-secondary:disabled,
+.bs-danger:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+    filter: grayscale(0.35);
+    transform: none;
+}
+
+.bs-primary:disabled:hover,
+.bs-secondary:disabled:hover,
+.bs-danger:disabled:hover {
+    transform: none;
+    filter: grayscale(0.35);
+}
+
+/* Compact home lobby overview: show create/join, invitations and open rooms without page scrolling on desktop. */
+@media (min-width: 981px) {
+    body:has(.bs-home-page) {
+        overflow: hidden;
+    }
+
+    .bs-home-page {
+        width: min(1260px, calc(100% - 16px));
+        height: calc(100dvh - var(--nav-height, 60px) - 16px);
+        margin: 8px auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 10px;
+        overflow: hidden;
+    }
+
+    .bs-home-page ~ .site-footer,
+    body:has(.bs-home-page) .site-footer {
+        display: none;
+    }
+
+    .bs-home-page .bs-hero {
+        grid-column: 1 / -1;
+        min-height: 0;
+        padding: 14px 18px;
+        border-radius: 18px;
+    }
+
+    .bs-home-page .bs-hero h1 {
+        font-size: clamp(1.8rem, 3.2vw, 3.1rem);
+        line-height: .95;
+    }
+
+    .bs-home-page .bs-hero p {
+        margin: 6px 0 0;
+        max-width: 760px;
+        font-size: .92rem;
+        line-height: 1.35;
+    }
+
+    .bs-home-page .bs-eyebrow {
+        margin-bottom: 5px;
+        font-size: .68rem;
+    }
+
+    .bs-home-page .bs-home-grid {
+        grid-column: 1 / -1;
+        margin-top: 0;
+        gap: 10px;
+    }
+
+    .bs-home-page .bs-panel {
+        min-height: 0;
+        padding: 12px;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .bs-home-page .bs-panel h2 {
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .bs-home-page .bs-form {
+        gap: 8px;
+    }
+
+    .bs-home-page .bs-form label {
+        gap: 5px;
+    }
+
+    .bs-home-page .bs-form span,
+    .bs-home-page .bs-muted,
+    .bs-home-page .bs-room-card span,
+    .bs-home-page .bs-invite-row span {
+        font-size: .82rem;
+    }
+
+    .bs-home-page .bs-form input,
+    .bs-home-page .bs-form select {
+        min-height: 36px;
+        padding: 0 10px;
+        border-radius: 11px;
+        font-size: .9rem;
+    }
+
+    .bs-home-page .bs-primary,
+    .bs-home-page .bs-secondary,
+    .bs-home-page .bs-danger {
+        min-height: 36px;
+        padding: 0 11px;
+        border-radius: 11px;
+        font-size: .86rem;
+        gap: 7px;
+    }
+
+    .bs-home-page > .bs-panel:nth-of-type(3),
+    .bs-home-page > .bs-panel:nth-of-type(4) {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .bs-home-page > .bs-panel:nth-of-type(3) {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .bs-home-page > .bs-panel:nth-of-type(4) {
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    .bs-home-page .bs-section-heading {
+        margin-bottom: 8px;
+    }
+
+    .bs-home-page .bs-section-heading h2 {
+        margin: 0;
+    }
+
+    .bs-home-page #bs-invites-live,
+    .bs-home-page #bs-games-live {
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 3px;
+    }
+
+    .bs-home-page .bs-invite-list,
+    .bs-home-page .bs-room-grid {
+        gap: 8px;
+    }
+
+    .bs-home-page .bs-room-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+
+    .bs-home-page .bs-invite-row,
+    .bs-home-page .bs-room-card {
+        padding: 9px;
+        border-radius: 12px;
+    }
+
+    .bs-home-page .bs-room-card {
+        gap: 4px;
+    }
+
+    .bs-home-page .bs-code {
+        padding: 3px 8px;
+        font-size: .82rem;
+    }
+
+    .bs-home-page .bs-inline-actions {
+        gap: 6px;
+    }
+}
+
+@media (min-width: 981px) {
+    .bs-home-page .bs-radar-mark {
+        width: 88px;
+        height: 88px;
+        min-width: 88px;
+    }
+}
+
+/* Footer visibility fix:
+   Do not hide the site footer on multiplayer pages.
+   Let the page flow normally, but keep the compact internal lobby lists. */
+.bs-home-page,
+.bs-lobby-page {
+    overflow: visible;
+}
+
+.bs-home-page {
+    height: auto;
+}
+
+@media (min-width: 901px) {
+    .bs-home-page {
+        min-height: auto;
+    }
+}
+
+/* Final footer fix for in-room multiplayer lobbies:
+   The game lobby pages must not use a clipped 100dvh layout,
+   otherwise the global site footer cannot appear below them. */
+.bs-lobby-page {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+}
+
+.bs-lobby-page ~ .site-footer,
+.bs-home-page ~ .site-footer {
+    display: block !important;
+}
+
+@media (min-width: 901px) {
+    .bs-lobby-page {
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+}
+
+/* Fix radar sweep alignment:
+   The sweep line now starts exactly in the radar center and rotates around the ship icon. */
+.bs-radar-mark span {
+    left: 50%;
+    top: 50%;
+    width: 50%;
+    transform-origin: left center;
+    transform: translateY(-50%);
+    animation: bs-sweep-centered 3.8s linear infinite;
+}
+
+@keyframes bs-sweep-centered {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+

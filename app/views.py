@@ -13,7 +13,7 @@ from django.utils.translation import gettext as _
 from dotenv import dotenv_values, load_dotenv
 
 from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
-    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UserProfile, WeatherLocation
+    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
 
 import json
 
@@ -448,6 +448,35 @@ def build_home_stadtlandfluss_widget_data(user):
     }
 
 
+def build_home_uno_widget_data(user):
+    active_games = (
+        UnoGame.objects
+        .filter(
+            Q(owner=user) | Q(players__user=user),
+            status__in=[UnoGame.STATUS_WAITING, UnoGame.STATUS_PLAYING],
+        )
+        .distinct()
+        .order_by("-updated_at")[:3]
+    )
+
+    return {
+        "pending_invites_count": UnoInvite.objects.filter(
+            to_user=user,
+            status=UnoInvite.STATUS_PENDING,
+        ).count(),
+        "active_count": UnoPlayer.objects.filter(
+            user=user,
+            game__status__in=[UnoGame.STATUS_WAITING, UnoGame.STATUS_PLAYING],
+        ).count(),
+        "pending_invites": (
+            UnoInvite.objects
+            .filter(to_user=user, status=UnoInvite.STATUS_PENDING)
+            .select_related("game", "from_user")[:3]
+        ),
+        "active_games": active_games,
+    }
+
+
 def build_home_widget_data(request, user):
     widgets = list(
         HomeWidget.objects
@@ -512,6 +541,9 @@ def build_home_widget_data(request, user):
 
         elif widget.widget_type == HomeWidget.WIDGET_STADTLANDFLUSS:
             data = build_home_stadtlandfluss_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_UNO:
+            data = build_home_uno_widget_data(user)
 
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {

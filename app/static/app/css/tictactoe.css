@@ -484,3 +484,480 @@
         align-items: stretch;
     }
 }
+
+.ttt-primary:disabled,
+.ttt-secondary:disabled,
+.ttt-danger:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+    filter: grayscale(0.35);
+    transform: none;
+}
+
+.ttt-primary:disabled:hover,
+.ttt-secondary:disabled:hover,
+.ttt-danger:disabled:hover {
+    transform: none;
+    filter: grayscale(0.35);
+}
+
+.ttt-board-wrap {
+    position: relative;
+    width: min(100%, 620px);
+    margin: 0 auto;
+}
+
+.ttt-board-wrap .ttt-board {
+    width: 100%;
+}
+
+.ttt-result-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    border-radius: 22px;
+    background: rgba(15, 23, 42, 0.74);
+    backdrop-filter: blur(10px);
+}
+
+.ttt-result-overlay.hidden {
+    display: none;
+}
+
+.ttt-result-card {
+    width: min(100%, 420px);
+    display: grid;
+    gap: 12px;
+    justify-items: center;
+    text-align: center;
+    padding: clamp(22px, 5vw, 34px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(49, 46, 129, 0.92));
+    box-shadow: 0 26px 80px rgba(0, 0, 0, 0.38);
+}
+
+.ttt-result-kicker {
+    display: inline-flex;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(250, 204, 21, 0.16);
+    color: #fde68a;
+    font-size: 0.78rem;
+    font-weight: 1000;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ttt-result-card h2 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    line-height: 1;
+}
+
+.ttt-result-card p {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.78);
+    font-weight: 800;
+}
+
+.ttt-result-card .ttt-primary {
+    margin-top: 6px;
+}
+
+/* Compact lobby layout: keep the full Tic Tac Toe game visible without page scrolling. */
+.ttt-lobby-page {
+    width: min(1180px, calc(100% - 20px));
+    height: calc(100dvh - var(--nav-height, 60px) - 20px);
+    margin: 10px auto;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 12px;
+    overflow: hidden;
+}
+.ttt-lobby-page .ttt-lobby-top {
+    padding: 14px 16px;
+    gap: 12px;
+    border-radius: 18px;
+}
+
+.ttt-lobby-page .ttt-back {
+    margin-bottom: 5px;
+    font-size: 0.88rem;
+}
+
+.ttt-lobby-page .ttt-eyebrow {
+    margin-bottom: 4px;
+    font-size: 0.7rem;
+}
+
+.ttt-lobby-page .ttt-lobby-top h1 {
+    font-size: clamp(1.55rem, 3.4vw, 2.8rem);
+    line-height: 0.96;
+}
+
+.ttt-lobby-page .ttt-lobby-top p {
+    margin: 4px 0 0;
+    font-size: 0.92rem;
+}
+
+.ttt-lobby-page .ttt-top-actions {
+    gap: 8px;
+}
+
+.ttt-lobby-page .ttt-primary,
+.ttt-lobby-page .ttt-secondary,
+.ttt-lobby-page .ttt-danger {
+    min-height: 38px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.ttt-lobby-page .ttt-game-shell {
+    height: 100%;
+    min-height: 0;
+    margin-top: 0;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 12px;
+}
+
+.ttt-lobby-page .ttt-panel,
+.ttt-lobby-page .ttt-board-panel {
+    min-height: 0;
+    padding: 14px;
+    border-radius: 18px;
+}
+
+.ttt-lobby-page .ttt-score-panel {
+    overflow: hidden;
+}
+
+.ttt-lobby-page .ttt-panel h2 {
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.ttt-lobby-page .ttt-player-row {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 13px;
+}
+
+.ttt-lobby-page .ttt-player-row span {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 1.25rem;
+}
+
+.ttt-lobby-page .ttt-status-card {
+    gap: 4px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 13px;
+}
+
+.ttt-lobby-page .ttt-status-card p {
+    font-size: 0.86rem;
+    line-height: 1.25;
+}
+
+.ttt-lobby-page .ttt-friends-box {
+    margin-top: 10px;
+}
+
+.ttt-lobby-page .ttt-friend-list {
+    max-height: min(185px, 23dvh);
+    overflow-y: auto;
+    padding-right: 3px;
+}
+
+.ttt-lobby-page .ttt-friend-row {
+    padding: 8px;
+    border-radius: 13px;
+}
+
+.ttt-lobby-page .ttt-friend-mini {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 8px;
+}
+
+.ttt-lobby-page .ttt-friend-mini > span,
+.ttt-lobby-page .ttt-invite-button {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+}
+
+.ttt-lobby-page .ttt-board-panel {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-content: start;
+}
+
+.ttt-lobby-page .ttt-board-meta {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.ttt-lobby-page .ttt-board-wrap,
+.ttt-lobby-page .ttt-board {
+    width: min(100%, 56dvh, 520px);
+}
+
+.ttt-lobby-page .ttt-board {
+    gap: clamp(6px, 1.2vw, 10px);
+}
+
+.ttt-lobby-page .ttt-cell {
+    border-radius: 15px;
+    font-size: clamp(2.6rem, 8dvh, 5.6rem);
+}
+
+.ttt-lobby-page .ttt-result-overlay {
+    border-radius: 18px;
+}
+
+.ttt-lobby-page .ttt-result-card {
+    width: min(100%, 360px);
+    padding: clamp(18px, 4dvh, 28px);
+    border-radius: 20px;
+}
+
+.ttt-lobby-page .ttt-result-card h2 {
+    font-size: clamp(1.7rem, 5dvh, 3rem);
+}
+
+@media (max-width: 860px) {
+    .ttt-lobby-page {
+        height: auto;
+        min-height: calc(100dvh - var(--nav-height, 60px) - 18px);
+        overflow: visible;
+    }
+
+    .ttt-lobby-page .ttt-game-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .ttt-lobby-page .ttt-board-wrap,
+    .ttt-lobby-page .ttt-board {
+        width: min(100%, 430px);
+    }
+}
+
+/* Compact home lobby overview: show create/join, invitations and open rooms without page scrolling on desktop. */
+@media (min-width: 981px) {
+    body:has(.ttt-home-page) {
+        overflow: hidden;
+    }
+
+    .ttt-home-page {
+        width: min(1260px, calc(100% - 16px));
+        height: calc(100dvh - var(--nav-height, 60px) - 16px);
+        margin: 8px auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 10px;
+        overflow: hidden;
+    }
+
+    .ttt-home-page ~ .site-footer,
+    body:has(.ttt-home-page) .site-footer {
+        display: none;
+    }
+
+    .ttt-home-page .ttt-hero {
+        grid-column: 1 / -1;
+        min-height: 0;
+        padding: 14px 18px;
+        border-radius: 18px;
+    }
+
+    .ttt-home-page .ttt-hero h1 {
+        font-size: clamp(1.8rem, 3.2vw, 3.1rem);
+        line-height: .95;
+    }
+
+    .ttt-home-page .ttt-hero p {
+        margin: 6px 0 0;
+        max-width: 760px;
+        font-size: .92rem;
+        line-height: 1.35;
+    }
+
+    .ttt-home-page .ttt-eyebrow {
+        margin-bottom: 5px;
+        font-size: .68rem;
+    }
+
+    .ttt-home-page .ttt-home-grid {
+        grid-column: 1 / -1;
+        margin-top: 0;
+        gap: 10px;
+    }
+
+    .ttt-home-page .ttt-panel {
+        min-height: 0;
+        padding: 12px;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .ttt-home-page .ttt-panel h2 {
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .ttt-home-page .ttt-form {
+        gap: 8px;
+    }
+
+    .ttt-home-page .ttt-form label {
+        gap: 5px;
+    }
+
+    .ttt-home-page .ttt-form span,
+    .ttt-home-page .ttt-muted,
+    .ttt-home-page .ttt-room-card span,
+    .ttt-home-page .ttt-invite-row span {
+        font-size: .82rem;
+    }
+
+    .ttt-home-page .ttt-form input,
+    .ttt-home-page .ttt-form select {
+        min-height: 36px;
+        padding: 0 10px;
+        border-radius: 11px;
+        font-size: .9rem;
+    }
+
+    .ttt-home-page .ttt-primary,
+    .ttt-home-page .ttt-secondary,
+    .ttt-home-page .ttt-danger {
+        min-height: 36px;
+        padding: 0 11px;
+        border-radius: 11px;
+        font-size: .86rem;
+        gap: 7px;
+    }
+
+    .ttt-home-page > .ttt-panel:nth-of-type(3),
+    .ttt-home-page > .ttt-panel:nth-of-type(4) {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .ttt-home-page > .ttt-panel:nth-of-type(3) {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .ttt-home-page > .ttt-panel:nth-of-type(4) {
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    .ttt-home-page .ttt-section-heading {
+        margin-bottom: 8px;
+    }
+
+    .ttt-home-page .ttt-section-heading h2 {
+        margin: 0;
+    }
+
+    .ttt-home-page #ttt-invites-live,
+    .ttt-home-page #ttt-games-live {
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 3px;
+    }
+
+    .ttt-home-page .ttt-invite-list,
+    .ttt-home-page .ttt-room-grid {
+        gap: 8px;
+    }
+
+    .ttt-home-page .ttt-room-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+
+    .ttt-home-page .ttt-invite-row,
+    .ttt-home-page .ttt-room-card {
+        padding: 9px;
+        border-radius: 12px;
+    }
+
+    .ttt-home-page .ttt-room-card {
+        gap: 4px;
+    }
+
+    .ttt-home-page .ttt-code {
+        padding: 3px 8px;
+        font-size: .82rem;
+    }
+
+    .ttt-home-page .ttt-inline-actions {
+        gap: 6px;
+    }
+}
+
+@media (min-width: 981px) {
+    .ttt-home-page .ttt-hero-mark {
+        width: 92px;
+        gap: 7px;
+    }
+
+    .ttt-home-page .ttt-hero-mark span {
+        border-radius: 12px;
+        font-size: 2rem;
+    }
+}
+
+/* Footer visibility fix:
+   Do not hide the site footer on multiplayer pages.
+   Let the page flow normally, but keep the compact internal lobby lists. */
+.ttt-home-page,
+.ttt-lobby-page {
+    overflow: visible;
+}
+
+.ttt-home-page {
+    height: auto;
+}
+
+@media (min-width: 901px) {
+    .ttt-home-page {
+        min-height: auto;
+    }
+}
+
+/* Final footer fix for in-room multiplayer lobbies:
+   The game lobby pages must not use a clipped 100dvh layout,
+   otherwise the global site footer cannot appear below them. */
+.ttt-lobby-page {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+}
+
+.ttt-lobby-page ~ .site-footer,
+.ttt-home-page ~ .site-footer {
+    display: block !important;
+}
+
+@media (min-width: 901px) {
+    .ttt-lobby-page {
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+}
+
