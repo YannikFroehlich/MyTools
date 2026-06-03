@@ -100,9 +100,11 @@ def apply_profile_privacy(profile, viewer):
     if not (is_self or is_friend) and not profile.privacy_show_online:
         profile.is_online = False
         profile.last_seen_at = None
+        profile.activity_status = ""
     if profile.status == UserProfile.STATUS_INVISIBLE and not is_self:
         profile.is_online = False
         profile.last_seen_at = None
+        profile.activity_status = ""
     return profile
 
 
@@ -311,6 +313,7 @@ def public_profile_view(request, user_id):
     decorate_users_with_presence([profile_user])
     profile.is_online = getattr(profile_user, "is_online", False)
     profile.last_seen_at = getattr(profile_user, "last_seen_at", None)
+    profile.activity_status = getattr(profile_user, "activity_status", "")
     apply_profile_privacy(profile, request.user)
     blocked_by_viewer = UserBlock.objects.filter(blocker=request.user, blocked=profile_user).exists()
     viewer_blocked = UserBlock.objects.filter(blocker=profile_user, blocked=request.user).exists()

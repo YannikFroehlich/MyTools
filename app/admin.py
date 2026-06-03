@@ -19,6 +19,9 @@ from .models import (
     Friendship,
     HumanBenchmarkHighScore,
     HumanBenchmarkScore,
+    HangmanInvite,
+    HangmanLobby,
+    HangmanPlayer,
     InboxItem,
     Note,
     Shortcut,
@@ -235,6 +238,28 @@ class StadtLandFlussInviteAdmin(admin.ModelAdmin):
     list_filter = ("status", "created_at")
     search_fields = ("lobby__code", "from_user__username", "to_user__username")
 
+
+
+
+@admin.register(HangmanLobby)
+class HangmanLobbyAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "owner", "status", "round_number", "max_mistakes", "updated_at")
+    list_filter = ("status", "owner", "created_at")
+    search_fields = ("name", "code", "owner__username", "owner__email", "word")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(HangmanPlayer)
+class HangmanPlayerAdmin(admin.ModelAdmin):
+    list_display = ("display_name", "user", "lobby", "score", "joined_at", "last_seen")
+    search_fields = ("display_name", "user__username", "lobby__code")
+
+
+@admin.register(HangmanInvite)
+class HangmanInviteAdmin(admin.ModelAdmin):
+    list_display = ("lobby", "from_user", "to_user", "status", "created_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("lobby__code", "from_user__username", "to_user__username")
 
 @admin.register(ChatAttachment)
 class ChatAttachmentAdmin(admin.ModelAdmin):

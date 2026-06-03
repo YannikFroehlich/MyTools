@@ -20,6 +20,8 @@ ROWS = 6
 COLUMNS = 7
 BOARD_SIZE = ROWS * COLUMNS
 DIRECTIONS = [(0, 1), (1, 0), (1, 1), (1, -1)]
+PLAYER_STALE_AFTER_SECONDS = 20
+LEGACY_PLAYER_STALE_AFTER_SECONDS = 120
 
 
 def _generate_game_code():
@@ -85,8 +87,74 @@ def _reset_waiting_game(game):
     game.last_move_at = None
 
 
+def _mark_player_seen(game, user):
+    now = timezone.now()
+    update_fields = []
+    if game.player_red_id == user.id:
+        game.player_red_last_seen = now
+        update_fields.append("player_red_last_seen")
+    if game.player_yellow_id == user.id:
+        game.player_yellow_last_seen = now
+        update_fields.append("player_yellow_last_seen")
+    if update_fields:
+        game.save(update_fields=update_fields)
+
+
+def _player_slot_is_stale(last_seen, updated_at, now):
+    if last_seen:
+        return last_seen < now - timezone.timedelta(seconds=PLAYER_STALE_AFTER_SECONDS)
+    return updated_at < now - timezone.timedelta(seconds=LEGACY_PLAYER_STALE_AFTER_SECONDS)
+
+
+def _cleanup_game_players(game):
+    now = timezone.now()
+    changed = False
+
+    if game.player_red_id and _player_slot_is_stale(game.player_red_last_seen, game.updated_at, now):
+        game.player_red = None
+        game.player_red_last_seen = None
+        changed = True
+    if game.player_yellow_id and _player_slot_is_stale(game.player_yellow_last_seen, game.updated_at, now):
+        game.player_yellow = None
+        game.player_yellow_last_seen = None
+        changed = True
+
+    if not changed:
+        return False
+
+    if not game.player_red_id and not game.player_yellow_id:
+        game.delete()
+        return True
+
+    if not game.player_red_id and game.player_yellow_id:
+        game.player_red = game.player_yellow
+        game.player_red_last_seen = game.player_yellow_last_seen
+        game.player_yellow = None
+        game.player_yellow_last_seen = None
+
+    if game.owner_id not in [game.player_red_id, game.player_yellow_id]:
+        game.owner = game.player_red or game.player_yellow
+
+    _reset_waiting_game(game)
+    game.invites.filter(status=ConnectFourInvite.STATUS_PENDING).update(status=ConnectFourInvite.STATUS_DECLINED)
+    game.save()
+    return True
+
+
+def _cleanup_stale_games():
+    for game in ConnectFourGame.objects.select_related("owner", "player_red", "player_yellow"):
+        _cleanup_game_players(game)
+
+
+def _transfer_owner_if_needed(game, leaving_user):
+    if game.owner_id != leaving_user.id:
+        return
+    game.owner = game.player_red or game.player_yellow
+
+
 def _delete_empty_games():
     ConnectFourGame.objects.filter(player_red__isnull=True, player_yellow__isnull=True).delete()
+    _cleanup_stale_games()
 
 def _home_games_for_user(user):
     return (
@@ -221,6 +289,7 @@ def connectfour_home(request):
             game = ConnectFourGame.objects.create(
                 owner=request.user,
                 player_red=request.user,
+                player_red_last_seen=timezone.now(),
                 name=(request.POST.get("name", "").strip() or _("Vier gewinnt"))[:80],
                 code=_generate_game_code(),
                 board=[""] * BOARD_SIZE,
@@ -262,14 +331,24 @@ def connectfour_lobby(request, code):
         messages.warning(request, _("Diese Vier-gewinnt-Lobby existiert nicht mehr."))
         return redirect("connectfour_home")
 
+    if game.disc_for_user(request.user):
+        _mark_player_seen(game, request.user)
+        game.refresh_from_db()
+
+    if _cleanup_game_players(game):
+        messages.warning(request, _("Diese Vier-gewinnt-Lobby war leer und wurde aufgeräumt."))
+        return redirect("connectfour_home")
+
     if not game.disc_for_user(request.user) and game.player_yellow_id is None:
         game.player_yellow = request.user
+        game.player_yellow_last_seen = timezone.now()
         game.status = ConnectFourGame.STATUS_PLAYING
-        game.save(update_fields=["player_yellow", "status", "updated_at"])
+        game.save(update_fields=["player_yellow", "player_yellow_last_seen", "status", "updated_at"])
     elif not game.disc_for_user(request.user):
         messages.error(request, _("Dieser Vier-gewinnt-Raum ist bereits voll."))
         return redirect("connectfour_home")
 
+    _mark_player_seen(game, request.user)
     _ensure_game_ready(game)
     return render(request, "app/connectfour_lobby.html", {
         "game": game,
@@ -337,6 +416,16 @@ def connectfour_state_api(request, code):
             "error": _("Dieser Vier-gewinnt-Raum wurde gelöscht."),
             "redirectUrl": reverse("connectfour_home"),
         }, status=410)
+    if game.disc_for_user(request.user):
+        _mark_player_seen(game, request.user)
+        game.refresh_from_db()
+    if _cleanup_game_players(game):
+        return JsonResponse({
+            "ok": False,
+            "gameDeleted": True,
+            "error": _("Dieser Vier-gewinnt-Raum wurde gelöscht oder auf Wartemodus zurückgesetzt."),
+            "redirectUrl": reverse("connectfour_home"),
+        }, status=410)
     _ensure_game_ready(game)
     game.refresh_from_db()
     return JsonResponse({"ok": True, "game": _serialize_game(game, request.user)})
@@ -358,6 +447,8 @@ def connectfour_move_api(request, code):
             code=code.upper(),
         )
         player_disc = game.disc_for_user(request.user)
+        if player_disc:
+            _mark_player_seen(game, request.user)
         board = game.normalized_board
 
         if game.status != ConnectFourGame.STATUS_PLAYING:
@@ -401,6 +492,7 @@ def connectfour_reset_api(request, code):
         game = get_object_or_404(ConnectFourGame.objects.select_for_update(), code=code.upper())
         if game.owner_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Nur der Host kann eine neue Runde starten.")}, status=403)
+        _mark_player_seen(game, request.user)
         game.board = [""] * BOARD_SIZE
         game.current_disc = ConnectFourGame.DISC_RED
         game.winner_disc = ""
@@ -418,17 +510,28 @@ def connectfour_reset_api(request, code):
 def connectfour_leave(request, code):
     with transaction.atomic():
         game = get_object_or_404(ConnectFourGame.objects.select_for_update(), code=code.upper())
+        if not game.disc_for_user(request.user):
+            messages.info(request, _("Du bist nicht mehr in diesem Raum."))
+            return redirect("connectfour_home")
+
         if game.player_red_id == request.user.id:
             game.player_red = None
+            game.player_red_last_seen = None
         if game.player_yellow_id == request.user.id:
             game.player_yellow = None
+            game.player_yellow_last_seen = None
+
+        _transfer_owner_if_needed(game, request.user)
+
         if not game.player_red_id and not game.player_yellow_id:
             game.delete()
             messages.info(request, _("Vier-gewinnt-Raum wurde gelöscht."))
             return redirect("connectfour_home")
         if not game.player_red_id and game.player_yellow_id:
             game.player_red = game.player_yellow
+            game.player_red_last_seen = game.player_yellow_last_seen
             game.player_yellow = None
+            game.player_yellow_last_seen = None
         _reset_waiting_game(game)
         game.invites.filter(status=ConnectFourInvite.STATUS_PENDING).update(status=ConnectFourInvite.STATUS_DECLINED)
         game.save()

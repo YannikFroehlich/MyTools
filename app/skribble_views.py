@@ -34,6 +34,7 @@ DEFAULT_WORDS = [
 
 AVATAR_COLORS = ["#4f8cff", "#8b5cf6", "#22c55e", "#f97316", "#ef4444", "#06b6d4", "#ec4899", "#facc15"]
 ACCENT_COLORS = ["#ffffff", "#111827", "#dbeafe", "#fef3c7", "#dcfce7", "#fee2e2"]
+LOBBY_PLAYER_TIMEOUT = timedelta(seconds=30)
 
 
 def _stroke_point_count(points):
@@ -89,8 +90,48 @@ def _get_or_create_player(lobby, user):
     return player
 
 
-def _delete_empty_lobbies():
+def _cleanup_lobby_players(lobby, keep_user_id=None):
+    stale_before = timezone.now() - LOBBY_PLAYER_TIMEOUT
+    players = _players(lobby)
+    stale_players = [
+        (index, player)
+        for index, player in enumerate(players)
+        if player.user_id != keep_user_id and player.last_seen < stale_before
+    ]
+    if not stale_players:
+        return False
+
+    removed_owner = any(player.user_id == lobby.owner_id for _, player in stale_players)
+    removed_current_drawer = any(index == lobby.current_turn_index for index, _ in stale_players)
+    first_removed_index = stale_players[0][0] if stale_players else None
+
+    for _, player in stale_players:
+        player.delete()
+
+    if not lobby.players.exists():
+        lobby.delete()
+        return True
+
+    if removed_owner or not lobby.players.filter(user_id=lobby.owner_id).exists():
+        next_owner = lobby.players.select_related("user").order_by("joined_at", "id").first()
+        if next_owner:
+            lobby.owner = next_owner.user
+
+    if removed_current_drawer or lobby.status == DrawingGameLobby.STATUS_PLAYING:
+        _handle_player_removed(lobby, removed_index=first_removed_index, was_current_drawer=removed_current_drawer)
+    else:
+        lobby.save(update_fields=["owner", "updated_at"])
+    return False
+
+
+def _cleanup_stale_lobbies():
+    for lobby in DrawingGameLobby.objects.select_related("owner").prefetch_related("players"):
+        _cleanup_lobby_players(lobby)
     DrawingGameLobby.objects.filter(players__isnull=True).delete()
+
+
+def _delete_empty_lobbies():
+    _cleanup_stale_lobbies()
 
 def _user_can_enter_lobby(lobby, user):
     if lobby.owner_id == user.id:
@@ -291,7 +332,7 @@ def _handle_player_removed(lobby, removed_player_id=None, removed_index=None, wa
         lobby.current_turn_index = 0
         lobby.players.update(has_guessed_current_word=False)
         lobby.save(update_fields=[
-            "status", "current_word", "current_word_choices", "current_drawing",
+            "owner", "status", "current_word", "current_word_choices", "current_drawing",
             "round_started_at", "current_turn_index", "updated_at",
         ])
         return
@@ -312,7 +353,7 @@ def _handle_player_removed(lobby, removed_player_id=None, removed_index=None, wa
         lobby.players.update(has_guessed_current_word=False)
 
     lobby.save(update_fields=[
-        "status", "current_round_number", "current_turn_index", "current_word",
+        "owner", "status", "current_round_number", "current_turn_index", "current_word",
         "current_word_choices", "current_drawing", "round_started_at", "updated_at",
     ])
 
@@ -496,11 +537,19 @@ def skribble_lobby(request, code):
         messages.error(request, _("Du bist nicht für diese Lobby eingeladen."))
         return redirect("skribble_home")
 
+    if lobby.players.filter(user=request.user).exists():
+        lobby.players.filter(user=request.user).update(last_seen=timezone.now())
+    if _cleanup_lobby_players(lobby, keep_user_id=request.user.id):
+        messages.warning(request, _("Diese Skribble-Lobby existiert nicht mehr."))
+        return redirect("skribble_home")
+    lobby.refresh_from_db()
+
     if lobby.players.count() >= lobby.max_players and not lobby.players.filter(user=request.user).exists():
         messages.error(request, _("Diese Lobby ist bereits voll."))
         return redirect("skribble_home")
 
-    _get_or_create_player(lobby, request.user)
+    player = _get_or_create_player(lobby, request.user)
+    player.save(update_fields=["last_seen"])
     DrawingGameInvite.objects.filter(lobby=lobby, to_user=request.user).update(status=DrawingGameInvite.STATUS_ACCEPTED)
 
     friend_invite_rows = _friend_invite_rows(lobby, request.user)
@@ -543,10 +592,17 @@ def skribble_invite_response(request, invite_id):
     invite = get_object_or_404(DrawingGameInvite, id=invite_id, to_user=request.user)
     action = request.POST.get("action")
     if action == "accept":
+        lobby = invite.lobby
+        is_member = lobby.players.filter(user=request.user).exists()
+        if not is_member and lobby.players.count() >= lobby.max_players:
+            invite.status = DrawingGameInvite.STATUS_DECLINED
+            invite.save(update_fields=["status", "updated_at"])
+            messages.error(request, _("Diese Runde ist voll."))
+            return redirect("skribble_home")
         invite.status = DrawingGameInvite.STATUS_ACCEPTED
         invite.save(update_fields=["status", "updated_at"])
-        _get_or_create_player(invite.lobby, request.user)
-        return redirect("skribble_lobby", code=invite.lobby.code)
+        _get_or_create_player(lobby, request.user)
+        return redirect("skribble_lobby", code=lobby.code)
     invite.status = DrawingGameInvite.STATUS_DECLINED
     invite.save(update_fields=["status", "updated_at"])
     messages.info(request, _("Einladung wurde abgelehnt."))
@@ -573,10 +629,15 @@ def skribble_leave_lobby(request, code):
             messages.info(request, _("Skribble-Lobby wurde gelöscht."))
             return redirect("skribble_home")
 
+        if lobby.owner_id == request.user.id:
+            next_owner = lobby.players.select_related("user").order_by("joined_at", "id").first()
+            if next_owner:
+                lobby.owner = next_owner.user
+
         if was_current_drawer or lobby.status == DrawingGameLobby.STATUS_PLAYING:
             _handle_player_removed(lobby, removed_player_id=request.user.id, removed_index=removed_index, was_current_drawer=was_current_drawer)
         else:
-            lobby.save(update_fields=["updated_at"])
+            lobby.save(update_fields=["owner", "updated_at"])
 
     messages.info(request, _("Du hast die Lobby verlassen. Du kannst über eine Einladung oder als Freund wieder beitreten."))
     return redirect("skribble_home")
@@ -685,11 +746,18 @@ def skribble_state_api(request, code):
 
         if not lobby.players.filter(user=request.user).exists():
             return JsonResponse({"ok": False, "error": _("Kein Zugriff.")}, status=403)
+        lobby.players.filter(user=request.user).update(last_seen=timezone.now())
+        if _cleanup_lobby_players(lobby, keep_user_id=request.user.id):
+            return JsonResponse({
+                "ok": False,
+                "lobbyDeleted": True,
+                "redirectUrl": reverse("skribble_home"),
+                "error": _("Diese Lobby wurde gelöscht."),
+            }, status=410)
+        lobby.refresh_from_db()
         _maybe_advance_if_time_is_over(lobby)
         lobby.refresh_from_db()
         player = lobby.players.filter(user=request.user).first()
-        if player:
-            player.save(update_fields=["last_seen"])
     return JsonResponse({
         "ok": True,
         "state": _serialize_state(lobby, request.user, request.GET.get("after", 0)),

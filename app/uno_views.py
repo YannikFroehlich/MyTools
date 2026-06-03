@@ -286,10 +286,14 @@ def _home_games_for_user(user):
     )
 
 
-def _delete_empty_games():
-    stale_before = timezone.now() - UNO_PLAYER_TIMEOUT
-    UnoPlayer.objects.filter(last_seen__lt=stale_before).delete()
+def _cleanup_stale_games():
+    for game in UnoGame.objects.prefetch_related("players", "players__user").all():
+        _cleanup_game_players(game)
     UnoGame.objects.filter(players__isnull=True).delete()
+
+
+def _delete_empty_games():
+    _cleanup_stale_games()
 
 
 def _remove_player_from_game(game, user):
@@ -306,6 +310,59 @@ def _remove_player_from_game(game, user):
         if game.winner_user_id == user.id:
             game.winner_user_id = None
     return removed_count
+
+
+def _reset_to_waiting_lobby(game):
+    game.status = UnoGame.STATUS_WAITING
+    game.deck = []
+    game.discard_pile = []
+    game.hands = {}
+    game.current_color = ""
+    game.current_player_index = 0
+    game.direction = 1
+    game.pending_draw = 0
+    game.has_drawn_this_turn = False
+    game.uno_calls = {}
+    game.winner_user_id = None
+    game.last_move_at = None
+
+
+def _cleanup_game_players(game, keep_user_id=None):
+    stale_before = timezone.now() - UNO_PLAYER_TIMEOUT
+    stale_players = [
+        player
+        for player in _ordered_players(game)
+        if player.user_id != keep_user_id and player.last_seen < stale_before
+    ]
+    if not stale_players:
+        return False
+
+    removed_owner = any(player.user_id == game.owner_id for player in stale_players)
+    for player in stale_players:
+        _remove_player_from_game(game, player.user)
+
+    players_after = _ordered_players(game)
+    if not players_after:
+        game.delete()
+        return True
+
+    if removed_owner or game.owner_id not in [player.user_id for player in players_after]:
+        game.owner = players_after[0].user
+
+    if game.status == UnoGame.STATUS_PLAYING:
+        if len(players_after) >= 2:
+            game.current_player_index = game.current_player_index % len(players_after)
+            game.pending_draw = 0
+            game.has_drawn_this_turn = False
+            _append_log(game, _("Inaktive Spieler wurden automatisch aus dem Raum entfernt."))
+        else:
+            _reset_to_waiting_lobby(game)
+            _append_log(game, _("Inaktive Spieler wurden entfernt. Warte auf weitere Spieler."))
+    else:
+        game.current_player_index = game.current_player_index % len(players_after)
+
+    game.save()
+    return False
 
 def _home_invites_for_user(user):
     return (
@@ -527,12 +584,14 @@ def uno_invite_response(request, invite_id):
 @login_required
 @require_GET
 def uno_state_api(request, code):
-    _delete_empty_games()
     game = UnoGame.objects.filter(code=code.upper()).first()
     if not game:
         return JsonResponse({"ok": False, "gameDeleted": True, "error": _("Dieser Uno-Raum wurde gelöscht."), "redirectUrl": reverse("uno_home")}, status=410)
 
     game.players.filter(user=request.user).update(last_seen=timezone.now())
+    if _cleanup_game_players(game, keep_user_id=request.user.id):
+        return JsonResponse({"ok": False, "gameDeleted": True, "error": _("Dieser Uno-Raum wurde gelöscht."), "redirectUrl": reverse("uno_home")}, status=410)
+    game.refresh_from_db()
 
     if not game.players.exists():
         game.delete()
@@ -715,24 +774,45 @@ def uno_reset_api(request, code):
 def uno_leave(request, code):
     with transaction.atomic():
         game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        players_before = _ordered_players(game)
+        removed_index = next((index for index, player in enumerate(players_before) if player.user_id == request.user.id), None)
+        current_index_before = game.current_player_index % len(players_before) if players_before else 0
+        removed_current_player = removed_index == current_index_before
 
-        _remove_player_from_game(game, request.user)
+        removed_count = _remove_player_from_game(game, request.user)
+        if not removed_count:
+            messages.info(request, _("Du bist nicht mehr in diesem Raum."))
+            return redirect("uno_home")
 
-        if not game.players.exists():
+        players_after = _ordered_players(game)
+        if not players_after:
             game.delete()
             messages.info(request, _("Uno-Raum wurde gelöscht."))
             return redirect("uno_home")
 
         if game.owner_id == request.user.id:
-            next_owner = game.players.select_related("user").order_by("seat", "joined_at").first()
-            if next_owner:
-                game.owner = next_owner.user
+            game.owner = players_after[0].user
 
         if game.status == UnoGame.STATUS_PLAYING:
-            game.status = UnoGame.STATUS_FINISHED
-            _append_log(game, _("Ein Spieler hat den Raum verlassen."))
+            if len(players_after) >= 2:
+                if removed_index is not None:
+                    if removed_current_player:
+                        game.current_player_index = removed_index % len(players_after)
+                        game.pending_draw = 0
+                        game.has_drawn_this_turn = False
+                    elif removed_index < current_index_before:
+                        game.current_player_index = max(0, current_index_before - 1) % len(players_after)
+                    else:
+                        game.current_player_index = current_index_before % len(players_after)
+                else:
+                    game.current_player_index = game.current_player_index % len(players_after)
+                _append_log(game, _("Ein Spieler hat den Raum verlassen. Die Runde läuft weiter."))
+            else:
+                _reset_to_waiting_lobby(game)
+                _append_log(game, _("Ein Spieler hat den Raum verlassen. Warte auf weitere Spieler."))
+        else:
+            game.current_player_index = game.current_player_index % len(players_after)
 
-        game.current_player_index = game.current_player_index % max(1, game.players.count())
         game.save()
     return redirect("uno_home")
 

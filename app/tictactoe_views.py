@@ -1,5 +1,6 @@
 import random
 import string
+from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -14,6 +15,9 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
 from .models import Friendship, TicTacToeGame, TicTacToeInvite, UserProfile
+
+
+GAME_PLAYER_TIMEOUT = timedelta(seconds=30)
 
 
 WINNING_LINES = [
@@ -69,8 +73,78 @@ def _reset_waiting_game(game):
     game.last_move_at = None
 
 
-def _delete_empty_games():
+def _transfer_owner_if_needed(game, leaving_user):
+    if game.owner_id != leaving_user.id:
+        return
+    game.owner = game.player_x or game.player_o
+
+
+def _mark_player_seen(game, user):
+    now = timezone.now()
+    update_fields = []
+    if game.player_x_id == user.id:
+        game.player_x_last_seen = now
+        update_fields.append("player_x_last_seen")
+    if game.player_o_id == user.id:
+        game.player_o_last_seen = now
+        update_fields.append("player_o_last_seen")
+    if update_fields:
+        game.save(update_fields=update_fields)
+
+
+def _player_slot_is_stale(last_seen, updated_at, now):
+    if last_seen:
+        return last_seen < now - GAME_PLAYER_TIMEOUT
+    return updated_at < now - GAME_PLAYER_TIMEOUT
+
+
+def _cleanup_game_players(game, keep_user_id=None):
+    now = timezone.now()
+    changed = False
+
+    if game.player_x_id and game.player_x_id != keep_user_id and _player_slot_is_stale(game.player_x_last_seen, game.updated_at, now):
+        game.player_x = None
+        game.player_x_last_seen = None
+        changed = True
+    if game.player_o_id and game.player_o_id != keep_user_id and _player_slot_is_stale(game.player_o_last_seen, game.updated_at, now):
+        game.player_o = None
+        game.player_o_last_seen = None
+        changed = True
+
+    if not changed:
+        return False
+
+    if not game.player_x_id and not game.player_o_id:
+        game.delete()
+        return True
+
+    if not game.player_x_id and game.player_o_id:
+        game.player_x = game.player_o
+        game.player_x_last_seen = game.player_o_last_seen
+        game.player_o = None
+        game.player_o_last_seen = None
+
+    if game.owner_id not in [game.player_x_id, game.player_o_id]:
+        game.owner = game.player_x or game.player_o
+
+    _reset_waiting_game(game)
+    game.invites.filter(status=TicTacToeInvite.STATUS_PENDING).update(status=TicTacToeInvite.STATUS_DECLINED)
+    game.save(update_fields=[
+        "owner", "player_x", "player_o", "player_x_last_seen", "player_o_last_seen",
+        "board", "current_symbol", "winner_symbol", "winning_line", "status",
+        "last_move_at", "updated_at",
+    ])
+    return False
+
+
+def _cleanup_stale_games():
+    for game in TicTacToeGame.objects.select_related("owner", "player_x", "player_o"):
+        _cleanup_game_players(game)
     TicTacToeGame.objects.filter(player_x__isnull=True, player_o__isnull=True).delete()
+
+
+def _delete_empty_games():
+    _cleanup_stale_games()
 
 
 def _friend_invite_rows(game, user):
@@ -205,6 +279,7 @@ def tictactoe_home(request):
             game = TicTacToeGame.objects.create(
                 owner=request.user,
                 player_x=request.user,
+                player_x_last_seen=timezone.now(),
                 name=name[:80],
                 code=_generate_game_code(),
                 board=[""] * 9,
@@ -246,14 +321,23 @@ def tictactoe_lobby(request, code):
         messages.warning(request, _("Diese Tic-Tac-Toe-Lobby existiert nicht mehr."))
         return redirect("tictactoe_home")
 
+    if game.symbol_for_user(request.user):
+        _mark_player_seen(game, request.user)
+    if _cleanup_game_players(game, keep_user_id=request.user.id):
+        messages.warning(request, _("Diese Tic-Tac-Toe-Lobby existiert nicht mehr."))
+        return redirect("tictactoe_home")
+    game.refresh_from_db()
+
     if not game.symbol_for_user(request.user) and game.player_o_id is None:
         game.player_o = request.user
+        game.player_o_last_seen = timezone.now()
         game.status = TicTacToeGame.STATUS_PLAYING
-        game.save(update_fields=["player_o", "status", "updated_at"])
+        game.save(update_fields=["player_o", "player_o_last_seen", "status", "updated_at"])
     elif not game.symbol_for_user(request.user):
         messages.error(request, _("Dieser Tic-Tac-Toe-Raum ist bereits voll."))
         return redirect("tictactoe_home")
 
+    _mark_player_seen(game, request.user)
     _ensure_game_ready(game)
 
     return render(request, "app/tictactoe_lobby.html", {
@@ -321,6 +405,14 @@ def tictactoe_invite_response(request, invite_id):
 def tictactoe_state_api(request, code):
     game = TicTacToeGame.objects.select_related("owner", "player_x", "player_o").filter(code=code.upper()).first()
     if not game:
+        return JsonResponse({
+            "ok": False,
+            "gameDeleted": True,
+            "error": _("Dieser Tic-Tac-Toe-Raum wurde gelöscht."),
+            "redirectUrl": reverse("tictactoe_home"),
+        }, status=410)
+    _mark_player_seen(game, request.user)
+    if _cleanup_game_players(game, keep_user_id=request.user.id):
         return JsonResponse({
             "ok": False,
             "gameDeleted": True,
@@ -419,10 +511,18 @@ def tictactoe_leave(request, code):
     with transaction.atomic():
         game = get_object_or_404(TicTacToeGame.objects.select_for_update(), code=code.upper())
 
+        if not game.symbol_for_user(request.user):
+            messages.info(request, _("Du bist nicht mehr in diesem Raum."))
+            return redirect(reverse("tictactoe_home"))
+
         if game.player_x_id == request.user.id:
             game.player_x = None
+            game.player_x_last_seen = None
         if game.player_o_id == request.user.id:
             game.player_o = None
+            game.player_o_last_seen = None
+
+        _transfer_owner_if_needed(game, request.user)
 
         if not game.player_x_id and not game.player_o_id:
             game.delete()
@@ -431,13 +531,16 @@ def tictactoe_leave(request, code):
 
         if not game.player_x_id and game.player_o_id:
             game.player_x = game.player_o
+            game.player_x_last_seen = game.player_o_last_seen
             game.player_o = None
+            game.player_o_last_seen = None
 
         _reset_waiting_game(game)
         game.invites.filter(status=TicTacToeInvite.STATUS_PENDING).update(status=TicTacToeInvite.STATUS_DECLINED)
         game.save(update_fields=[
-            "player_x", "player_o", "board", "current_symbol", "winner_symbol",
-            "winning_line", "status", "last_move_at", "updated_at",
+            "owner", "player_x", "player_o", "player_x_last_seen", "player_o_last_seen",
+            "board", "current_symbol", "winner_symbol", "winning_line", "status",
+            "last_move_at", "updated_at",
         ])
 
     return redirect(reverse("tictactoe_home"))

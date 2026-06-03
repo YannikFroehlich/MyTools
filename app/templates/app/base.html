@@ -132,6 +132,18 @@
                         {% endif %}
                     </a>
 
+                    <a href="{% url 'hangman_home' %}" class="menu-item menu-item-with-badge">
+                        <span class="menu-item-main">
+                            <i class="fa-solid fa-user-secret"></i>
+                            {% translate 'Hangman' %}
+                        </span>
+                        {% if request.user.is_authenticated %}
+                            <span class="menu-badge js-notification-badge" data-notification-key="hangman_invites" data-label-singular="{% translate 'offene Hangman-Einladung' %}" data-label-plural="{% translate 'offene Hangman-Einladungen' %}" aria-label="{% blocktranslate count count=hangman_invites_count %}{{ count }} offene Hangman-Einladung{% plural %}{{ count }} offene Hangman-Einladungen{% endblocktranslate %}">
+                                {{ hangman_invites_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+
                     <a href="{% url 'skribble_home' %}" class="menu-item menu-item-with-badge">
                         <span class="menu-item-main">
                             <i class="fa-solid fa-pencil"></i>
