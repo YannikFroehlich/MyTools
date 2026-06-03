@@ -122,11 +122,13 @@ function initLobbyPage() {
         });
 
         document.getElementById("start-game-btn")?.addEventListener("click", async () => {
+            if (!state?.isOwner) return;
             await post(urls.start);
             await refreshState(true);
         });
 
         document.getElementById("restart-game-btn")?.addEventListener("click", async () => {
+            if (!state?.isOwner) return;
             await post(urls.restart);
             lastAnswerRound = null;
             await refreshState(true);
@@ -229,7 +231,8 @@ function initLobbyPage() {
         renderPanels();
         renderSummary();
 
-        document.getElementById("start-game-btn")?.toggleAttribute("disabled", state.status !== "waiting" && state.status !== "finished");
+        document.getElementById("start-game-btn")?.toggleAttribute("disabled", !state.isOwner || (state.status !== "waiting" && state.status !== "finished"));
+        document.getElementById("restart-game-btn")?.toggleAttribute("disabled", !state.isOwner);
     }
 
     function labelStatus(status) {

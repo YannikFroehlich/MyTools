@@ -1,0 +1,1977 @@
+.uno-page {
+    width: min(1360px, calc(100% - 18px));
+    margin: 28px auto 56px;
+    color: #f8fafc;
+}
+
+.uno-lobby-page {
+    width: min(1500px, calc(100% - 18px));
+}
+
+.uno-hero,
+.uno-panel,
+.uno-lobby-top,
+.uno-table-panel {
+    border: 1px solid rgba(255, 255, 255, .16);
+    background:
+        linear-gradient(145deg, rgba(16, 24, 39, .96), rgba(48, 24, 44, .90)),
+        rgba(15, 23, 42, .92);
+    border-radius: 20px;
+    box-shadow: 0 24px 70px rgba(2, 6, 23, .28);
+}
+
+.uno-lobby-page .uno-lobby-top,
+.uno-lobby-page .uno-side-panel,
+.uno-lobby-page .uno-table-panel {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(252, 211, 77, .16), transparent 32%),
+        linear-gradient(145deg, rgba(127, 29, 29, .96), rgba(35, 9, 9, .96));
+}
+
+.uno-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 34px;
+    overflow: hidden;
+}
+
+.uno-eyebrow,
+.uno-muted,
+.uno-form span,
+.uno-status-card small,
+.uno-status-card p,
+.uno-room-card span,
+.uno-lobby-top p {
+    color: rgba(226, 232, 240, .72);
+}
+
+.uno-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: #fbbf24;
+    font-size: .78rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.uno-hero h1,
+.uno-lobby-top h1 {
+    margin: 0;
+    font-size: clamp(2.2rem, 6vw, 4.8rem);
+    line-height: .95;
+}
+
+.uno-hero p {
+    max-width: 660px;
+    color: rgba(226, 232, 240, .78);
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.uno-card-fan {
+    position: relative;
+    width: 260px;
+    height: 180px;
+}
+
+.uno-demo-card {
+    position: absolute;
+    width: 96px;
+    height: 142px;
+    display: grid;
+    place-items: center;
+    border: 5px solid #fff;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 1000;
+    box-shadow: 0 18px 30px rgba(0, 0, 0, .28);
+}
+
+.uno-demo-card:nth-child(1) { left: 0; top: 28px; transform: rotate(-18deg); }
+.uno-demo-card:nth-child(2) { left: 54px; top: 8px; transform: rotate(-6deg); }
+.uno-demo-card:nth-child(3) { left: 112px; top: 12px; transform: rotate(7deg); }
+.uno-demo-card:nth-child(4) { left: 168px; top: 34px; transform: rotate(18deg); }
+
+.is-red,
+.uno-card[data-color="red"],
+.uno-current-color[data-color="red"] { background: linear-gradient(145deg, #ef4444, #991b1b); }
+.is-yellow,
+.uno-card[data-color="yellow"],
+.uno-current-color[data-color="yellow"] { background: linear-gradient(145deg, #facc15, #b45309); }
+.is-green,
+.uno-card[data-color="green"],
+.uno-current-color[data-color="green"] { background: linear-gradient(145deg, #22c55e, #166534); }
+.is-blue,
+.uno-card[data-color="blue"],
+.uno-current-color[data-color="blue"] { background: linear-gradient(145deg, #3b82f6, #1e3a8a); }
+.uno-card[data-color="wild"] { background: conic-gradient(#ef4444, #facc15, #22c55e, #3b82f6, #ef4444); }
+
+.uno-home-grid,
+.uno-game-shell {
+    display: grid;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.uno-home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.uno-home-page > .uno-panel {
+    margin-top: 22px;
+}
+
+.uno-game-shell {
+    grid-template-columns: 300px minmax(0, 1fr);
+    align-items: start;
+}
+
+.uno-panel,
+.uno-table-panel {
+    padding: 22px;
+}
+
+.uno-table-panel {
+    position: relative;
+}
+
+.uno-panel h2,
+.uno-hand-wrap h2 {
+    margin: 0 0 16px;
+}
+
+.uno-form {
+    display: grid;
+    gap: 14px;
+}
+
+.uno-form label {
+    display: grid;
+    gap: 8px;
+    font-weight: 800;
+}
+
+.uno-form input[type="text"],
+.uno-form select {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid rgba(148, 163, 184, .24);
+    border-radius: 14px;
+    padding: 0 14px;
+    background: rgba(15, 23, 42, .66);
+    color: #fff;
+    outline: 0;
+}
+
+.uno-rule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.uno-rule-grid label {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .09);
+    border: 1px solid rgba(255, 255, 255, .12);
+}
+
+.uno-primary,
+.uno-secondary,
+.uno-danger {
+    min-height: 44px;
+    border: 0;
+    border-radius: 14px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #fff;
+    font-weight: 900;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform .16s ease, filter .16s ease;
+}
+
+.uno-primary { background: linear-gradient(135deg, #ef4444, #f59e0b); }
+.uno-secondary {
+    background: linear-gradient(135deg, rgba(8, 145, 178, .76), rgba(14, 116, 144, .28));
+    border: 1px solid rgba(125, 211, 252, .34);
+}
+.uno-danger { background: linear-gradient(135deg, #dc2626, #7f1d1d); }
+
+.uno-sound-toggle.is-muted {
+    background: rgba(15, 23, 42, .46);
+    color: rgba(226, 232, 240, .66);
+}
+
+.uno-primary:not(:disabled):hover,
+.uno-secondary:not(:disabled):hover,
+.uno-danger:not(:disabled):hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+.uno-primary:disabled,
+.uno-secondary:disabled,
+.uno-danger:disabled {
+    opacity: .42;
+    cursor: default;
+}
+
+.uno-room-grid,
+.uno-invite-list,
+.uno-friend-list,
+.uno-player-list {
+    display: grid;
+    gap: 10px;
+}
+
+.uno-room-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.uno-room-card,
+.uno-invite-row,
+.uno-friend-row,
+.uno-player-row {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .09);
+    border: 1px solid rgba(255, 255, 255, .12);
+}
+
+.uno-room-card {
+    display: grid;
+    gap: 6px;
+    padding: 15px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.uno-invite-row,
+.uno-friend-row,
+.uno-player-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+}
+
+.uno-player-row {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+}
+
+.uno-player-row.is-current {
+    outline: 2px solid rgba(251, 191, 36, .78);
+}
+
+.uno-player-avatar,
+.uno-friend-mini > span {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    background: rgba(251, 191, 36, .22);
+    color: #fff;
+    font-weight: 1000;
+}
+
+.uno-player-avatar.has-image,
+.uno-seat-avatar.has-image {
+    overflow: hidden;
+    padding: 0;
+    background: rgba(255, 255, 255, .18);
+}
+
+.uno-player-avatar img,
+.uno-seat-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: inherit;
+}
+
+.uno-player-row small,
+.uno-invite-row span,
+.uno-friend-row small {
+    display: block;
+    margin-top: 2px;
+    color: rgba(226, 232, 240, .68);
+}
+
+.uno-inline-actions,
+.uno-top-actions,
+.uno-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.uno-code {
+    display: inline-flex;
+    width: max-content;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(251, 191, 36, .18);
+    color: #fde68a;
+    font-weight: 1000;
+    letter-spacing: .06em;
+}
+
+.uno-lobby-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 24px;
+}
+
+.uno-lobby-page .uno-lobby-top h1 {
+    color: #fff7ed;
+    text-shadow: 0 4px 0 #7f1d1d, 0 0 30px rgba(251, 191, 36, .38);
+}
+
+.uno-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: rgba(226, 232, 240, .76);
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.uno-top-actions {
+    justify-content: flex-end;
+}
+
+.uno-status-card {
+    display: grid;
+    gap: 6px;
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, .46);
+}
+
+.uno-status-card p {
+    margin: 0;
+    line-height: 1.45;
+}
+
+.uno-rule-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.uno-rule-pills span {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .10);
+    color: rgba(226, 232, 240, .82);
+    font-size: .82rem;
+    font-weight: 800;
+}
+
+.uno-friends-box {
+    margin-top: 18px;
+}
+
+.uno-friend-mini {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.uno-friend-mini strong,
+.uno-friend-mini small,
+.uno-player-row strong,
+.uno-player-row small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.uno-invite-button,
+.uno-catch-button {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, #ef4444, #facc15);
+    cursor: pointer;
+    font-weight: 1000;
+}
+
+.uno-table-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    color: rgba(226, 232, 240, .76);
+    font-weight: 800;
+}
+
+.uno-table-meta strong {
+    color: #fff;
+}
+
+.uno-arena {
+    position: relative;
+    min-height: clamp(560px, 64vw, 760px);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 50% 52%, rgba(255, 255, 210, .86) 0 9%, rgba(250, 204, 21, .56) 10% 19%, rgba(249, 115, 22, .34) 20% 35%, transparent 58%),
+        repeating-conic-gradient(from 16deg, rgba(255, 255, 255, .07) 0 9deg, transparent 9deg 34deg),
+        conic-gradient(from 90deg, #991b1b, #ef4444, #f97316, #b91c1c, #450a0a, #991b1b),
+        linear-gradient(145deg, #7f1d1d, #111827);
+    border: 1px solid rgba(255, 255, 255, .14);
+    box-shadow: inset 0 0 100px rgba(255, 184, 77, .26), inset 0 -70px 120px rgba(69, 10, 10, .62), 0 28px 70px rgba(2, 6, 23, .36);
+    overflow: hidden;
+}
+
+.uno-arena::before,
+.uno-arena::after,
+.uno-turn-ring {
+    content: "";
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.uno-arena::before {
+    border: 3px solid rgba(255, 255, 255, .13);
+    box-shadow: inset 0 0 52px rgba(255, 255, 255, .10), 0 0 70px rgba(239, 68, 68, .22);
+}
+
+.uno-arena::after {
+    inset: 22%;
+    background:
+        conic-gradient(from 0deg, transparent 0 15%, rgba(255, 255, 255, .30) 15% 18%, transparent 18% 50%, rgba(255, 255, 255, .22) 50% 53%, transparent 53% 100%);
+    opacity: .34;
+    animation: uno-ring-spin 18s linear infinite;
+}
+
+.uno-turn-ring {
+    inset: 16%;
+    border: 2px dashed rgba(255, 255, 255, .16);
+    animation: uno-ring-spin 28s linear infinite reverse;
+}
+
+.uno-table-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: 126px 150px 118px;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 2vw, 24px);
+    transform: translate(-50%, -50%);
+}
+
+.uno-pile {
+    width: 112px;
+    height: 156px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    border: 4px solid rgba(255, 255, 255, .92);
+    background: repeating-linear-gradient(135deg, #111827 0 12px, #1f2937 12px 24px);
+    color: #fff;
+    font-weight: 1000;
+    box-shadow: 0 18px 34px rgba(0, 0, 0, .28);
+    cursor: default;
+}
+
+button.uno-pile {
+    border: 4px solid rgba(255, 255, 255, .92);
+    padding: 0;
+    font: inherit;
+}
+
+.uno-draw-pile.is-clickable {
+    cursor: pointer;
+}
+
+.uno-draw-pile.is-clickable:hover {
+    transform: translateY(-5px);
+    filter: brightness(1.08);
+}
+
+.uno-draw-pile:disabled {
+    opacity: .72;
+}
+
+.uno-pile span,
+.uno-pile strong {
+    grid-area: 1 / 1;
+}
+
+.uno-pile span {
+    transform: translateY(-22px);
+    color: rgba(255, 255, 255, .70);
+}
+
+.uno-pile strong {
+    transform: translateY(20px);
+    font-size: 2.4rem;
+}
+
+.uno-top-card-slot {
+    display: grid;
+    place-items: center;
+    perspective: 700px;
+}
+
+.uno-card {
+    position: relative;
+    width: 112px;
+    height: 160px;
+    display: grid;
+    place-items: center;
+    border: 5px solid #fff;
+    border-radius: 16px;
+    color: #fff;
+    box-shadow: 0 18px 34px rgba(0, 0, 0, .34), inset 0 1px 0 rgba(255, 255, 255, .32);
+    overflow: hidden;
+}
+
+.uno-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(125deg, rgba(255, 255, 255, .32), transparent 28%, transparent 62%, rgba(255, 255, 255, .16));
+    pointer-events: none;
+}
+
+.uno-card.is-large {
+    width: 124px;
+    height: 178px;
+}
+
+.uno-card::after {
+    content: "";
+    position: absolute;
+    inset: 24% 12%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .20);
+    transform: rotate(-22deg);
+}
+
+.uno-card strong,
+.uno-card-corner {
+    position: relative;
+    z-index: 1;
+}
+
+.uno-card strong {
+    font-size: 2rem;
+    line-height: 1;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .18);
+}
+
+.uno-card.is-large strong {
+    font-size: 2.6rem;
+}
+
+.uno-skip-icon {
+    position: relative;
+    width: 1.35em;
+    height: 1.35em;
+    display: inline-block;
+    border: .14em solid currentColor;
+    border-radius: 50%;
+    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .18));
+}
+
+.uno-skip-icon::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1.42em;
+    height: .14em;
+    border-radius: 999px;
+    background: currentColor;
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.uno-card-corner {
+    position: absolute;
+    left: 9px;
+    top: 8px;
+    font-size: .9rem;
+    font-weight: 1000;
+}
+
+.uno-current-color {
+    width: 108px;
+    min-height: 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    color: #fff;
+    font-weight: 1000;
+    border: 2px solid rgba(255, 255, 255, .70);
+}
+
+.uno-table-players {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.uno-seat {
+    position: absolute;
+    width: min(260px, 32%);
+    min-height: 130px;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    transition: filter .18s ease, transform .18s ease;
+}
+
+.uno-seat-label {
+    min-width: 180px;
+    max-width: 240px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: 14px;
+    background:
+        linear-gradient(90deg, rgba(6, 182, 212, .98), rgba(14, 116, 144, .74) 58%, rgba(14, 116, 144, .08));
+    border: 1px solid rgba(186, 230, 253, .62);
+    box-shadow: 0 16px 28px rgba(0, 0, 0, .30), inset 0 1px 0 rgba(255, 255, 255, .28);
+}
+
+.uno-seat.is-you .uno-seat-label {
+    background:
+        linear-gradient(90deg, rgba(251, 191, 36, .98), rgba(245, 158, 11, .82) 58%, rgba(245, 158, 11, .12));
+    border-color: rgba(254, 243, 199, .78);
+}
+
+.uno-seat.is-you {
+    min-height: 60px;
+}
+
+.uno-seat.is-you .uno-seat-label {
+    min-width: 132px;
+    max-width: 166px;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 7px;
+    padding: 5px 8px;
+    border-radius: 12px;
+}
+
+.uno-seat.is-you .uno-seat-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+}
+
+.uno-seat.is-you .uno-seat-label strong {
+    font-size: .88rem;
+}
+
+.uno-seat.is-you .uno-seat-label small {
+    font-size: .68rem;
+}
+
+.uno-seat.is-current .uno-seat-label {
+    animation: uno-current-glow 1.4s ease-in-out infinite alternate;
+}
+
+.uno-seat-avatar {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .92);
+    color: #111827;
+    font-weight: 1000;
+}
+
+.uno-seat-label strong,
+.uno-seat-label small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.uno-seat-label small {
+    color: rgba(255, 255, 255, .82);
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.uno-seat-hand {
+    position: relative;
+    width: 210px;
+    height: 92px;
+}
+
+.uno-seat-hand::after {
+    content: "";
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: -10px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, .28), transparent 68%);
+    filter: blur(2px);
+    transform: perspective(160px) rotateX(62deg);
+}
+
+.uno-card-back {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 50px;
+    height: 74px;
+    border: 3px solid rgba(255, 255, 255, .92);
+    border-radius: 9px;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(255, 255, 255, .22), transparent 30%),
+        linear-gradient(145deg, #dc2626, #7f1d1d);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, .24);
+    transform: translateX(calc(-50% + var(--card-shift))) rotate(var(--card-rotate));
+    transform-origin: 50% 100%;
+}
+
+.uno-card-back::after {
+    content: "UNO";
+    position: absolute;
+    inset: 16px 5px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #facc15;
+    color: #111827;
+    font-size: .62rem;
+    font-weight: 1000;
+    transform: rotate(-18deg);
+}
+
+.uno-winner-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 42%, rgba(251, 191, 36, .34), rgba(127, 29, 29, .78) 44%, rgba(15, 23, 42, .72));
+    backdrop-filter: blur(5px);
+}
+
+.uno-winner-modal.hidden {
+    display: none;
+}
+
+.uno-winner-card {
+    width: min(520px, 94vw);
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    padding: 30px;
+    border-radius: 20px;
+    border: 3px solid rgba(255, 255, 255, .86);
+    color: #fff;
+    text-align: center;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, .28), transparent 34%),
+        linear-gradient(145deg, rgba(239, 68, 68, .98), rgba(153, 27, 27, .98));
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .46), inset 0 1px 0 rgba(255, 255, 255, .35);
+    animation: uno-winner-pop .28s ease-out both;
+}
+
+.uno-winner-kicker {
+    font-size: .8rem;
+    font-weight: 1000;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .82);
+}
+
+.uno-winner-card h2 {
+    margin: 0;
+    font-size: clamp(2.2rem, 6vw, 4.8rem);
+    line-height: .92;
+    text-transform: uppercase;
+    text-shadow: 0 4px 0 rgba(0, 0, 0, .20);
+}
+
+.uno-winner-card strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    line-height: 1.05;
+    color: #fef3c7;
+    text-shadow: 0 3px 0 rgba(0, 0, 0, .18);
+}
+
+.uno-winner-card button {
+    margin-top: 10px;
+}
+
+.uno-seat-1-0,
+.uno-seat-2-0,
+.uno-seat-3-0,
+.uno-seat-4-0 { left: 50%; top: 88%; }
+.uno-seat-2-1 { left: 50%; top: 15%; }
+.uno-seat-3-1 { left: 84%; top: 47%; }
+.uno-seat-3-2 { left: 50%; top: 15%; }
+.uno-seat-4-1 { left: 84%; top: 47%; }
+.uno-seat-4-2 { left: 50%; top: 15%; }
+.uno-seat-4-3 { left: 16%; top: 47%; }
+
+.uno-seat-2-1 .uno-seat-hand,
+.uno-seat-3-2 .uno-seat-hand,
+.uno-seat-4-2 .uno-seat-hand {
+    transform: scale(.92);
+}
+
+.uno-seat-3-1 .uno-seat-hand,
+.uno-seat-4-1 .uno-seat-hand,
+.uno-seat-4-3 .uno-seat-hand {
+    transform: scale(.88);
+}
+
+.uno-seat.is-count-changed.is-drawing {
+    animation: uno-seat-draw .42s ease-out;
+}
+
+.uno-seat.is-count-changed.is-playing {
+    animation: uno-seat-play .42s ease-out;
+}
+
+.uno-card.is-just-played {
+    animation: uno-card-land .38s cubic-bezier(.2, 1.35, .42, 1);
+}
+
+.uno-draw-pile.is-pulse {
+    animation: uno-pile-pulse .36s ease-out;
+}
+
+.uno-arena.is-card-played .uno-turn-ring {
+    border-color: rgba(255, 255, 255, .42);
+}
+
+.uno-actions {
+    justify-content: center;
+    margin: 16px 0;
+}
+
+.uno-arena-call {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    z-index: 12;
+    min-width: 96px;
+}
+
+.uno-color-picker,
+.uno-target-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0 16px;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .08);
+}
+
+.uno-color-picker span,
+.uno-target-picker span {
+    color: rgba(226, 232, 240, .76);
+    font-weight: 900;
+}
+
+.uno-color-picker button {
+    width: 34px;
+    height: 34px;
+    border: 2px solid rgba(255, 255, 255, .70);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.uno-color-picker button.is-selected,
+#uno-target-list button.is-selected {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+}
+
+#uno-target-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#uno-target-list button {
+    min-height: 36px;
+    border: 0;
+    border-radius: 999px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, .14);
+    color: #fff;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.uno-hand-wrap {
+    margin-top: 18px;
+}
+
+.uno-arena-hand {
+    position: absolute;
+    left: 18px;
+    right: 132px;
+    bottom: 10px;
+    z-index: 11;
+    margin: 0;
+    pointer-events: none;
+}
+
+.uno-hand {
+    min-height: 118px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 8px 8px 12px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(69, 10, 10, 0), rgba(69, 10, 10, .32));
+    pointer-events: auto;
+}
+
+.uno-hand-card {
+    flex: 0 0 auto;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: default;
+    transform-origin: bottom center;
+    transition: transform .16s ease, filter .16s ease;
+}
+
+.uno-hand-card.is-playable {
+    cursor: pointer;
+}
+
+.uno-hand-card.is-playable:hover {
+    transform: translateY(-10px);
+    filter: brightness(1.08);
+}
+
+.uno-log-panel {
+    margin-top: 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(255, 255, 255, .10);
+    overflow: hidden;
+}
+
+.uno-log-panel summary {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 12px;
+    color: rgba(226, 232, 240, .82);
+    font-size: .88rem;
+    font-weight: 900;
+    cursor: pointer;
+    list-style: none;
+}
+
+.uno-log-panel summary::-webkit-details-marker {
+    display: none;
+}
+
+.uno-log-panel summary i {
+    transition: transform .16s ease;
+}
+
+.uno-log-panel[open] summary i {
+    transform: rotate(180deg);
+}
+
+.uno-log {
+    display: grid;
+    gap: 4px;
+    max-height: 160px;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    color: rgba(226, 232, 240, .72);
+    font-size: .78rem;
+}
+
+.uno-log span {
+    padding: 6px 8px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, .34);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.uno-toast {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 9999;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, .94);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .14);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .28);
+    font-weight: 900;
+}
+
+body.dark-mode .uno-hero,
+body.dark-mode .uno-panel,
+body.dark-mode .uno-lobby-top,
+body.dark-mode .uno-table-panel {
+    background:
+        linear-gradient(145deg, rgba(15, 23, 42, .96), rgba(35, 32, 56, .90)),
+        rgba(15, 23, 42, .92);
+}
+
+body.dark-mode .uno-lobby-page .uno-lobby-top,
+body.dark-mode .uno-lobby-page .uno-side-panel,
+body.dark-mode .uno-lobby-page .uno-table-panel {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(252, 211, 77, .16), transparent 32%),
+        linear-gradient(145deg, rgba(127, 29, 29, .96), rgba(35, 9, 9, .96));
+}
+
+@keyframes uno-ring-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes uno-current-glow {
+    from {
+        box-shadow: 0 16px 28px rgba(0, 0, 0, .24), 0 0 0 rgba(251, 191, 36, 0);
+    }
+    to {
+        box-shadow: 0 16px 28px rgba(0, 0, 0, .24), 0 0 24px rgba(251, 191, 36, .72);
+    }
+}
+
+@keyframes uno-seat-draw {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    45% { transform: translate(-50%, -50%) scale(1.07) rotate(1deg); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes uno-seat-play {
+    0% { transform: translate(-50%, -50%) translateY(0); }
+    45% { transform: translate(-50%, -50%) translateY(-10px) scale(1.04); }
+    100% { transform: translate(-50%, -50%) translateY(0); }
+}
+
+@keyframes uno-card-land {
+    0% {
+        opacity: .2;
+        transform: translateY(-44px) rotateX(55deg) scale(.86);
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(4px) rotateX(0) scale(1.04);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotateX(0) scale(1);
+    }
+}
+
+@keyframes uno-winner-pop {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(.92);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes uno-pile-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.07) rotate(-2deg); }
+    100% { transform: scale(1); }
+}
+
+.uno-lobby-page {
+    margin-top: 12px;
+}
+
+.uno-lobby-page .uno-lobby-top {
+    gap: 12px;
+    padding: 14px 16px;
+}
+
+.uno-lobby-page .uno-lobby-top h1 {
+    font-size: clamp(1.7rem, 4vw, 3.2rem);
+}
+
+.uno-lobby-page .uno-lobby-top p {
+    margin: 6px 0 0;
+}
+
+.uno-lobby-page .uno-game-shell {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.uno-lobby-page .uno-panel,
+.uno-lobby-page .uno-table-panel {
+    padding: 14px;
+}
+
+.uno-lobby-page .uno-status-card {
+    margin-top: 12px;
+    padding: 12px;
+}
+
+.uno-lobby-page .uno-rule-pills,
+.uno-lobby-page .uno-friends-box,
+.uno-lobby-page .uno-log-panel {
+    margin-top: 10px;
+}
+
+.uno-lobby-page .uno-table-meta {
+    margin-bottom: 8px;
+}
+
+.uno-lobby-page .uno-arena {
+    min-height: clamp(450px, calc(100vh - 260px), 620px);
+}
+
+.uno-lobby-page .uno-table-center {
+    grid-template-columns: 100px 118px 96px;
+    gap: 10px;
+}
+
+.uno-lobby-page .uno-pile {
+    width: 88px;
+    height: 124px;
+}
+
+.uno-lobby-page .uno-pile strong {
+    font-size: 1.8rem;
+}
+
+.uno-lobby-page .uno-card {
+    width: 88px;
+    height: 126px;
+}
+
+.uno-lobby-page .uno-card.is-large {
+    width: 100px;
+    height: 144px;
+}
+
+.uno-lobby-page .uno-card strong {
+    font-size: 1.65rem;
+}
+
+.uno-lobby-page .uno-card.is-large strong {
+    font-size: 2.1rem;
+}
+
+.uno-lobby-page .uno-current-color {
+    width: 92px;
+    min-height: 38px;
+    font-size: .82rem;
+    text-align: center;
+}
+
+.uno-lobby-page .uno-seat {
+    width: min(230px, 31%);
+    min-height: 108px;
+}
+
+.uno-lobby-page .uno-seat-label {
+    min-width: 158px;
+    max-width: 210px;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    padding: 6px 8px;
+}
+
+.uno-lobby-page .uno-seat-avatar {
+    width: 34px;
+    height: 34px;
+}
+
+.uno-lobby-page .uno-seat-hand {
+    width: 168px;
+    height: 70px;
+}
+
+.uno-lobby-page .uno-card-back {
+    width: 38px;
+    height: 56px;
+    border-width: 2px;
+}
+
+.uno-lobby-page .uno-card-back::after {
+    inset: 12px 4px;
+    font-size: .48rem;
+}
+
+.uno-lobby-page .uno-color-picker,
+.uno-lobby-page .uno-target-picker {
+    margin: 8px 0 10px;
+    padding: 8px;
+}
+
+.uno-lobby-page .uno-arena-call {
+    right: 16px;
+    bottom: 16px;
+}
+
+.uno-lobby-page .uno-arena-hand {
+    left: 16px;
+    right: 126px;
+    bottom: 12px;
+}
+
+.uno-lobby-page .uno-hand {
+    min-height: 108px;
+    gap: 8px;
+    padding: 6px 8px 10px;
+}
+
+.uno-lobby-page .uno-hand .uno-card {
+    width: 76px;
+    height: 108px;
+    border-width: 4px;
+    border-radius: 12px;
+}
+
+.uno-lobby-page .uno-hand .uno-card strong {
+    font-size: 1.45rem;
+}
+
+.uno-lobby-page .uno-seat-1-0,
+.uno-lobby-page .uno-seat-2-0,
+.uno-lobby-page .uno-seat-3-0,
+.uno-lobby-page .uno-seat-4-0 {
+    top: 66%;
+}
+
+@media (max-width: 960px) {
+    .uno-page {
+        width: min(100% - 18px, 1240px);
+        margin-top: 16px;
+    }
+
+    .uno-hero,
+    .uno-lobby-top {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 22px;
+    }
+
+    .uno-home-grid,
+    .uno-game-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .uno-card-fan {
+        width: 210px;
+        height: 150px;
+    }
+
+    .uno-demo-card {
+        width: 74px;
+        height: 112px;
+    }
+
+    .uno-arena {
+        min-height: 620px;
+        border-radius: 22px;
+    }
+
+    .uno-table-center {
+        grid-template-columns: 92px 104px 92px;
+        gap: 8px;
+    }
+
+    .uno-pile {
+        width: 82px;
+        height: 116px;
+        border-width: 3px;
+    }
+
+    .uno-pile strong {
+        font-size: 1.6rem;
+    }
+
+    .uno-card.is-large {
+        width: 92px;
+        height: 132px;
+        border-width: 4px;
+    }
+
+    .uno-current-color {
+        width: 82px;
+        min-height: 40px;
+        font-size: .78rem;
+        text-align: center;
+    }
+
+    .uno-seat {
+        width: min(220px, 46%);
+        min-height: 108px;
+    }
+
+    .uno-seat-label {
+        min-width: 150px;
+        max-width: 190px;
+        grid-template-columns: 34px minmax(0, 1fr) auto;
+        padding: 7px 8px;
+    }
+
+    .uno-seat-avatar {
+        width: 34px;
+        height: 34px;
+    }
+
+    .uno-seat-hand {
+        width: 160px;
+        height: 66px;
+    }
+
+    .uno-card-back {
+        width: 38px;
+        height: 56px;
+        border-width: 2px;
+    }
+
+    .uno-card-back::after {
+        inset: 12px 4px;
+        font-size: .48rem;
+    }
+
+    .uno-seat-1-0,
+    .uno-seat-2-0,
+    .uno-seat-3-0,
+    .uno-seat-4-0 { left: 50%; top: 90%; }
+
+    .uno-lobby-page .uno-seat-1-0,
+    .uno-lobby-page .uno-seat-2-0,
+    .uno-lobby-page .uno-seat-3-0,
+    .uno-lobby-page .uno-seat-4-0 { top: 64%; }
+    .uno-seat-2-1,
+    .uno-seat-3-2,
+    .uno-seat-4-2 { left: 50%; top: 12%; }
+    .uno-seat-3-1,
+    .uno-seat-4-1 { left: 78%; top: 48%; }
+    .uno-seat-4-3 { left: 22%; top: 48%; }
+
+    .uno-arena-hand {
+        left: 10px;
+        right: 104px;
+        bottom: 10px;
+    }
+
+    .uno-arena-call {
+        right: 10px;
+        bottom: 14px;
+        min-width: 86px;
+        padding: 0 12px;
+    }
+
+    .uno-hand {
+        min-height: 104px;
+    }
+
+    .uno-lobby-page .uno-hand .uno-card {
+        width: 68px;
+        height: 98px;
+    }
+
+    .uno-card {
+        width: 88px;
+        height: 126px;
+        border-width: 4px;
+    }
+
+    .uno-top-actions,
+    .uno-inline-actions,
+    .uno-top-actions form,
+    .uno-primary,
+    .uno-secondary,
+    .uno-danger {
+        width: 100%;
+    }
+
+    .uno-rule-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Compact home lobby overview: show create/join, invitations and open rooms without page scrolling on desktop. */
+@media (min-width: 981px) {
+    body:has(.uno-home-page) {
+        overflow: hidden;
+    }
+
+    .uno-home-page {
+        width: min(1260px, calc(100% - 16px));
+        height: calc(100dvh - var(--nav-height, 60px) - 16px);
+        margin: 8px auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 10px;
+        overflow: hidden;
+    }
+
+    .uno-home-page ~ .site-footer,
+    body:has(.uno-home-page) .site-footer {
+        display: none;
+    }
+
+    .uno-home-page .uno-hero {
+        grid-column: 1 / -1;
+        min-height: 0;
+        padding: 14px 18px;
+        border-radius: 18px;
+    }
+
+    .uno-home-page .uno-hero h1 {
+        font-size: clamp(1.8rem, 3.2vw, 3.1rem);
+        line-height: .95;
+    }
+
+    .uno-home-page .uno-hero p {
+        margin: 6px 0 0;
+        max-width: 760px;
+        font-size: .92rem;
+        line-height: 1.35;
+    }
+
+    .uno-home-page .uno-eyebrow {
+        margin-bottom: 5px;
+        font-size: .68rem;
+    }
+
+    .uno-home-page .uno-home-grid {
+        grid-column: 1 / -1;
+        margin-top: 0;
+        gap: 10px;
+    }
+
+    .uno-home-page .uno-panel {
+        min-height: 0;
+        padding: 12px;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .uno-home-page .uno-panel h2 {
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .uno-home-page .uno-form {
+        gap: 8px;
+    }
+
+    .uno-home-page .uno-form label {
+        gap: 5px;
+    }
+
+    .uno-home-page .uno-form span,
+    .uno-home-page .uno-muted,
+    .uno-home-page .uno-room-card span,
+    .uno-home-page .uno-invite-row span {
+        font-size: .82rem;
+    }
+
+    .uno-home-page .uno-form input,
+    .uno-home-page .uno-form select {
+        min-height: 36px;
+        padding: 0 10px;
+        border-radius: 11px;
+        font-size: .9rem;
+    }
+
+    .uno-home-page .uno-primary,
+    .uno-home-page .uno-secondary,
+    .uno-home-page .uno-danger {
+        min-height: 36px;
+        padding: 0 11px;
+        border-radius: 11px;
+        font-size: .86rem;
+        gap: 7px;
+    }
+
+    .uno-home-page > .uno-panel:nth-of-type(3),
+    .uno-home-page > .uno-panel:nth-of-type(4) {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .uno-home-page > .uno-panel:nth-of-type(3) {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .uno-home-page > .uno-panel:nth-of-type(4) {
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    .uno-home-page .uno-section-heading {
+        margin-bottom: 8px;
+    }
+
+    .uno-home-page .uno-section-heading h2 {
+        margin: 0;
+    }
+
+    .uno-home-page #uno-invites-live,
+    .uno-home-page #uno-games-live {
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 3px;
+    }
+
+    .uno-home-page .uno-invite-list,
+    .uno-home-page .uno-room-grid {
+        gap: 8px;
+    }
+
+    .uno-home-page .uno-room-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+
+    .uno-home-page .uno-invite-row,
+    .uno-home-page .uno-room-card {
+        padding: 9px;
+        border-radius: 12px;
+    }
+
+    .uno-home-page .uno-room-card {
+        gap: 4px;
+    }
+
+    .uno-home-page .uno-code {
+        padding: 3px 8px;
+        font-size: .82rem;
+    }
+
+    .uno-home-page .uno-inline-actions {
+        gap: 6px;
+    }
+}
+
+@media (min-width: 981px) {
+    .uno-home-page .uno-card-fan {
+        width: 150px;
+        height: 92px;
+        transform: scale(.72);
+        transform-origin: right center;
+    }
+
+    .uno-home-page .uno-rule-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .uno-home-page .uno-rule-grid label {
+        min-height: 32px;
+        padding: 7px 8px;
+        border-radius: 10px;
+        font-size: .78rem;
+    }
+}
+
+/* Footer visibility fix:
+   Do not hide the site footer on multiplayer pages.
+   Let the page flow normally, but keep the compact internal lobby lists. */
+.uno-home-page,
+.uno-lobby-page {
+    overflow: visible;
+}
+
+.uno-home-page {
+    height: auto;
+}
+
+@media (min-width: 901px) {
+    .uno-home-page {
+        min-height: auto;
+    }
+}
+
+/* Final footer fix for in-room multiplayer lobbies:
+   The game lobby pages must not use a clipped 100dvh layout,
+   otherwise the global site footer cannot appear below them. */
+.uno-lobby-page {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+}
+
+.uno-lobby-page ~ .site-footer,
+.uno-home-page ~ .site-footer {
+    display: block !important;
+}
+
+@media (min-width: 901px) {
+    .uno-lobby-page {
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+}
+
+/* Small UNO checkbox polish only:
+   keep the compact lobby/card layout unchanged and style only the checkbox itself. */
+.uno-rule-grid input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    margin: 0;
+    border-radius: 5px;
+    border: 2px solid rgba(226, 232, 240, .78);
+    background: rgba(255, 255, 255, .92);
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+    transition: background .14s ease, border-color .14s ease, box-shadow .14s ease, transform .14s ease;
+}
+
+.uno-rule-grid input[type="checkbox"]::after {
+    content: "";
+    width: 8px;
+    height: 5px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) scale(0);
+    transform-origin: center;
+    margin-top: -1px;
+    transition: transform .12s ease;
+}
+
+.uno-rule-grid input[type="checkbox"]:checked {
+    border-color: #fbbf24;
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, .16);
+}
+
+.uno-rule-grid input[type="checkbox"]:checked::after {
+    transform: rotate(-45deg) scale(1);
+}
+
+.uno-rule-grid input[type="checkbox"]:hover {
+    transform: scale(1.05);
+    border-color: #fbbf24;
+}
+
+.uno-rule-grid input[type="checkbox"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(125, 211, 252, .22);
+}
+
+.uno-rule-grid label {
+    cursor: pointer;
+}
+
+/* Fix only the visible UNO checkbox box: force it to stay perfectly square. */
+.uno-rule-grid input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    inline-size: 18px !important;
+    block-size: 18px !important;
+    aspect-ratio: 1 / 1 !important;
+    flex: 0 0 18px !important;
+    padding: 0 !important;
+}
+
+/* UNO table cleanup:
+   Remove the rotating background rings and make the own player info box smaller
+   and positioned outside the center card/deck area. */
+.uno-arena::before,
+.uno-arena::after,
+.uno-turn-ring {
+    display: none !important;
+    animation: none !important;
+}
+
+.uno-seat.is-you {
+    left: 50% !important;
+    top: auto !important;
+    bottom: 132px !important;
+    width: auto !important;
+    min-height: 0 !important;
+    transform: translateX(-50%) !important;
+    z-index: 14;
+}
+
+.uno-seat.is-you .uno-seat-label {
+    min-width: 118px;
+    max-width: 142px;
+    min-height: 52px;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 7px;
+    padding: 6px 8px;
+    border-radius: 12px;
+}
+
+.uno-seat.is-you .uno-seat-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+}
+
+.uno-seat.is-you .uno-seat-label strong {
+    font-size: 0.84rem;
+    line-height: 1.05;
+}
+
+.uno-seat.is-you .uno-seat-label small {
+    font-size: 0.66rem;
+    line-height: 1.05;
+}
+
+.uno-seat.is-you .uno-seat-hand,
+.uno-seat.is-you .uno-seat-hand::after {
+    display: none !important;
+}
+
+.uno-table-center {
+    z-index: 8;
+}
+
+.uno-arena-hand {
+    z-index: 11;
+    right: 132px;
+}
+
+/* UNO in-room lobby layout like Connect Four:
+   Room info/actions left above the player panel, game table on the right.
+   The table gets a little more height, but the page stays compact on desktop. */
+@media (min-width: 981px) {
+    .uno-lobby-page {
+        width: min(1500px, calc(100% - 18px));
+        min-height: auto !important;
+        margin: 10px auto 24px;
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+        overflow: visible !important;
+    }
+
+    .uno-lobby-page .uno-lobby-top {
+        grid-column: 1;
+        grid-row: 1;
+        display: grid;
+        align-content: start;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 18px;
+    }
+
+    .uno-lobby-page .uno-lobby-top > div:first-child {
+        min-width: 0;
+    }
+
+    .uno-lobby-page .uno-back {
+        margin-bottom: 5px;
+        font-size: 0.88rem;
+    }
+
+    .uno-lobby-page .uno-eyebrow {
+        margin-bottom: 4px;
+        font-size: 0.7rem;
+    }
+
+    .uno-lobby-page .uno-lobby-top h1 {
+        font-size: clamp(1.45rem, 2.8vw, 2.55rem);
+        line-height: 0.96;
+    }
+
+    .uno-lobby-page .uno-lobby-top p {
+        margin: 4px 0 0;
+        font-size: 0.9rem;
+    }
+
+    .uno-lobby-page .uno-top-actions {
+        justify-content: flex-start;
+        gap: 7px;
+    }
+
+    .uno-lobby-page .uno-top-actions form {
+        display: contents;
+    }
+
+    .uno-lobby-page .uno-primary,
+    .uno-lobby-page .uno-secondary,
+    .uno-lobby-page .uno-danger {
+        min-height: 36px;
+        padding: 0 11px;
+        border-radius: 12px;
+        font-size: 0.86rem;
+        gap: 7px;
+    }
+
+    .uno-lobby-page .uno-game-shell {
+        display: contents;
+    }
+
+    .uno-lobby-page .uno-side-panel {
+        grid-column: 1;
+        grid-row: 2;
+        min-height: 0;
+        padding: 12px;
+        border-radius: 18px;
+        overflow: visible;
+    }
+
+    .uno-lobby-page .uno-side-panel h2 {
+        margin-bottom: 9px;
+        font-size: 1rem;
+    }
+
+    .uno-lobby-page .uno-status-card {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 13px;
+    }
+
+    .uno-lobby-page .uno-rule-pills {
+        margin-top: 10px;
+        gap: 6px;
+    }
+
+    .uno-lobby-page .uno-rule-pills span {
+        padding: 5px 8px;
+        font-size: 0.76rem;
+    }
+
+    .uno-lobby-page .uno-player-list,
+    .uno-lobby-page .uno-friend-list {
+        gap: 8px;
+    }
+
+    .uno-lobby-page .uno-player-row,
+    .uno-lobby-page .uno-friend-row {
+        padding: 8px;
+        border-radius: 13px;
+    }
+
+    .uno-lobby-page .uno-player-row {
+        grid-template-columns: 36px minmax(0, 1fr) auto;
+        gap: 8px;
+    }
+
+    .uno-lobby-page .uno-player-avatar,
+    .uno-lobby-page .uno-friend-mini > span {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
+
+    .uno-lobby-page .uno-friends-box {
+        margin-top: 10px;
+    }
+
+    .uno-lobby-page .uno-friend-list {
+        max-height: min(170px, 22dvh);
+        overflow-y: auto;
+        padding-right: 3px;
+    }
+
+    .uno-lobby-page .uno-table-panel {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        min-height: 0;
+        padding: 12px 16px;
+        border-radius: 18px;
+    }
+
+    .uno-lobby-page .uno-table-meta {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    .uno-lobby-page .uno-arena {
+        min-height: clamp(600px, calc(100dvh - var(--nav-height, 60px) - 112px), 790px);
+        border-radius: 18px;
+    }
+
+    .uno-lobby-page .uno-actions {
+        margin: 10px 0;
+    }
+
+    .uno-lobby-page .uno-log-panel {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 980px) {
+    .uno-lobby-page .uno-game-shell {
+        display: grid;
+    }
+}
+
+/* Small spacing tweak: a bit more space between the own player info box and the hand cards. */
+.uno-seat.is-you {
+    bottom: 150px !important;
+}
+

@@ -33,12 +33,10 @@
                 <i class="fa-regular fa-copy"></i>
                 {% translate 'Link kopieren' %}
             </button>
-            {% if game.owner_id == request.user.id %}
-                <button class="bs-primary" type="button" id="bs-reset">
-                    <i class="fa-solid fa-rotate-right"></i>
-                    {% translate 'Neue Runde' %}
-                </button>
-            {% endif %}
+            <button class="bs-primary" type="button" id="bs-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}>
+                <i class="fa-solid fa-rotate-right"></i>
+                {% translate 'Neue Runde' %}
+            </button>
             <form method="post" action="{% url 'battleship_leave' game.code %}">
                 {% csrf_token %}
                 <button class="bs-secondary" type="submit">
@@ -47,13 +45,18 @@
                 </button>
             </form>
             {% if game.owner_id == request.user.id %}
-            <form method="post" action="{% url 'battleship_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
-                {% csrf_token %}
-                <button class="bs-danger" type="submit">
+                <form method="post" action="{% url 'battleship_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
+                    {% csrf_token %}
+                    <button class="bs-danger" type="submit">
+                        <i class="fa-solid fa-trash"></i>
+                        {% translate 'Löschen' %}
+                    </button>
+                </form>
+            {% else %}
+                <button class="bs-danger" type="button" disabled title="{% translate 'Nur der Host kann diesen Raum löschen.' %}">
                     <i class="fa-solid fa-trash"></i>
                     {% translate 'Löschen' %}
                 </button>
-            </form>
             {% endif %}
         </div>
     </section>
