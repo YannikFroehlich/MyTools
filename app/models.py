@@ -939,6 +939,8 @@ class TicTacToeGame(models.Model):
         null=True,
         blank=True,
     )
+    player_x_last_seen = models.DateTimeField(null=True, blank=True)
+    player_o_last_seen = models.DateTimeField(null=True, blank=True)
     name = models.CharField(max_length=80, default="Tic Tac Toe")
     code = models.SlugField(max_length=16, unique=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
@@ -1071,6 +1073,8 @@ class ConnectFourGame(models.Model):
         null=True,
         blank=True,
     )
+    player_red_last_seen = models.DateTimeField(null=True, blank=True)
+    player_yellow_last_seen = models.DateTimeField(null=True, blank=True)
     name = models.CharField(max_length=80, default="Vier gewinnt")
     code = models.SlugField(max_length=16, unique=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
@@ -1206,6 +1210,8 @@ class BattleshipGame(models.Model):
         null=True,
         blank=True,
     )
+    player_a_last_seen = models.DateTimeField(null=True, blank=True)
+    player_b_last_seen = models.DateTimeField(null=True, blank=True)
     name = models.CharField(max_length=80, default="Schiffe versenken")
     code = models.SlugField(max_length=16, unique=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)

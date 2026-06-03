@@ -101,7 +101,9 @@
 
                         <p class="user-username">@{{ profile.user.username }}</p>
                         <span class="user-status-line {% if profile.is_online %}is-online{% endif %}">
-                            {% if profile.is_online %}
+                            {% if profile.activity_status %}
+                                {{ profile.activity_status }}
+                            {% elif profile.is_online %}
                                 {% translate "Online" %}
                             {% elif profile.last_seen_at %}
                                 {% translate "Zuletzt online" %} {{ profile.last_seen_at|timesince }}

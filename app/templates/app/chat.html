@@ -225,7 +225,7 @@
 
                     <div class="chat-member-strip">
                         {% for member in active_room_members %}
-                            <a href="{% url 'public_profile' member.id %}" title="{{ member.username }}">
+                            <a href="{% url 'public_profile' member.id %}" title="{% if member.activity_status %}{{ member.username }} · {{ member.activity_status }}{% else %}{{ member.username }}{% endif %}">
                                 {% if member.profile.avatar %}
                                     <img src="{{ member.profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
                                 {% else %}
