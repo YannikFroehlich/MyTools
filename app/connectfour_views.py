@@ -85,6 +85,9 @@ def _reset_waiting_game(game):
     game.last_move_at = None
 
 
+def _delete_empty_games():
+    ConnectFourGame.objects.filter(player_red__isnull=True, player_yellow__isnull=True).delete()
+
 def _home_games_for_user(user):
     return (
         ConnectFourGame.objects
@@ -211,6 +214,7 @@ def _serialize_game(game, user):
 
 @login_required
 def connectfour_home(request):
+    _delete_empty_games()
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "create":
@@ -238,6 +242,7 @@ def connectfour_home(request):
 @login_required
 @require_GET
 def connectfour_home_state_api(request):
+    _delete_empty_games()
     return JsonResponse({
         "ok": True,
         "games": [_serialize_home_game(game) for game in _home_games_for_user(request.user)],
@@ -247,10 +252,15 @@ def connectfour_home_state_api(request):
 
 @login_required
 def connectfour_lobby(request, code):
-    game = get_object_or_404(
-        ConnectFourGame.objects.select_related("owner", "player_red", "player_yellow"),
-        code=code.upper(),
+    game = (
+        ConnectFourGame.objects
+        .select_related("owner", "player_red", "player_yellow")
+        .filter(code=code.upper())
+        .first()
     )
+    if not game:
+        messages.warning(request, _("Diese Vier-gewinnt-Lobby existiert nicht mehr."))
+        return redirect("connectfour_home")
 
     if not game.disc_for_user(request.user) and game.player_yellow_id is None:
         game.player_yellow = request.user
@@ -389,8 +399,8 @@ def connectfour_move_api(request, code):
 def connectfour_reset_api(request, code):
     with transaction.atomic():
         game = get_object_or_404(ConnectFourGame.objects.select_for_update(), code=code.upper())
-        if not game.disc_for_user(request.user):
-            return JsonResponse({"ok": False, "error": _("Nur Spieler können neu starten.")}, status=403)
+        if game.owner_id != request.user.id:
+            return JsonResponse({"ok": False, "error": _("Nur der Host kann eine neue Runde starten.")}, status=403)
         game.board = [""] * BOARD_SIZE
         game.current_disc = ConnectFourGame.DISC_RED
         game.winner_disc = ""

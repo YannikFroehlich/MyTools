@@ -1452,3 +1452,526 @@ body.dark-mode .uno-lobby-page .uno-table-panel {
         grid-template-columns: 1fr;
     }
 }
+
+/* Compact home lobby overview: show create/join, invitations and open rooms without page scrolling on desktop. */
+@media (min-width: 981px) {
+    body:has(.uno-home-page) {
+        overflow: hidden;
+    }
+
+    .uno-home-page {
+        width: min(1260px, calc(100% - 16px));
+        height: calc(100dvh - var(--nav-height, 60px) - 16px);
+        margin: 8px auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 10px;
+        overflow: hidden;
+    }
+
+    .uno-home-page ~ .site-footer,
+    body:has(.uno-home-page) .site-footer {
+        display: none;
+    }
+
+    .uno-home-page .uno-hero {
+        grid-column: 1 / -1;
+        min-height: 0;
+        padding: 14px 18px;
+        border-radius: 18px;
+    }
+
+    .uno-home-page .uno-hero h1 {
+        font-size: clamp(1.8rem, 3.2vw, 3.1rem);
+        line-height: .95;
+    }
+
+    .uno-home-page .uno-hero p {
+        margin: 6px 0 0;
+        max-width: 760px;
+        font-size: .92rem;
+        line-height: 1.35;
+    }
+
+    .uno-home-page .uno-eyebrow {
+        margin-bottom: 5px;
+        font-size: .68rem;
+    }
+
+    .uno-home-page .uno-home-grid {
+        grid-column: 1 / -1;
+        margin-top: 0;
+        gap: 10px;
+    }
+
+    .uno-home-page .uno-panel {
+        min-height: 0;
+        padding: 12px;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .uno-home-page .uno-panel h2 {
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .uno-home-page .uno-form {
+        gap: 8px;
+    }
+
+    .uno-home-page .uno-form label {
+        gap: 5px;
+    }
+
+    .uno-home-page .uno-form span,
+    .uno-home-page .uno-muted,
+    .uno-home-page .uno-room-card span,
+    .uno-home-page .uno-invite-row span {
+        font-size: .82rem;
+    }
+
+    .uno-home-page .uno-form input,
+    .uno-home-page .uno-form select {
+        min-height: 36px;
+        padding: 0 10px;
+        border-radius: 11px;
+        font-size: .9rem;
+    }
+
+    .uno-home-page .uno-primary,
+    .uno-home-page .uno-secondary,
+    .uno-home-page .uno-danger {
+        min-height: 36px;
+        padding: 0 11px;
+        border-radius: 11px;
+        font-size: .86rem;
+        gap: 7px;
+    }
+
+    .uno-home-page > .uno-panel:nth-of-type(3),
+    .uno-home-page > .uno-panel:nth-of-type(4) {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .uno-home-page > .uno-panel:nth-of-type(3) {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .uno-home-page > .uno-panel:nth-of-type(4) {
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    .uno-home-page .uno-section-heading {
+        margin-bottom: 8px;
+    }
+
+    .uno-home-page .uno-section-heading h2 {
+        margin: 0;
+    }
+
+    .uno-home-page #uno-invites-live,
+    .uno-home-page #uno-games-live {
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 3px;
+    }
+
+    .uno-home-page .uno-invite-list,
+    .uno-home-page .uno-room-grid {
+        gap: 8px;
+    }
+
+    .uno-home-page .uno-room-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+
+    .uno-home-page .uno-invite-row,
+    .uno-home-page .uno-room-card {
+        padding: 9px;
+        border-radius: 12px;
+    }
+
+    .uno-home-page .uno-room-card {
+        gap: 4px;
+    }
+
+    .uno-home-page .uno-code {
+        padding: 3px 8px;
+        font-size: .82rem;
+    }
+
+    .uno-home-page .uno-inline-actions {
+        gap: 6px;
+    }
+}
+
+@media (min-width: 981px) {
+    .uno-home-page .uno-card-fan {
+        width: 150px;
+        height: 92px;
+        transform: scale(.72);
+        transform-origin: right center;
+    }
+
+    .uno-home-page .uno-rule-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .uno-home-page .uno-rule-grid label {
+        min-height: 32px;
+        padding: 7px 8px;
+        border-radius: 10px;
+        font-size: .78rem;
+    }
+}
+
+/* Footer visibility fix:
+   Do not hide the site footer on multiplayer pages.
+   Let the page flow normally, but keep the compact internal lobby lists. */
+.uno-home-page,
+.uno-lobby-page {
+    overflow: visible;
+}
+
+.uno-home-page {
+    height: auto;
+}
+
+@media (min-width: 901px) {
+    .uno-home-page {
+        min-height: auto;
+    }
+}
+
+/* Final footer fix for in-room multiplayer lobbies:
+   The game lobby pages must not use a clipped 100dvh layout,
+   otherwise the global site footer cannot appear below them. */
+.uno-lobby-page {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+}
+
+.uno-lobby-page ~ .site-footer,
+.uno-home-page ~ .site-footer {
+    display: block !important;
+}
+
+@media (min-width: 901px) {
+    .uno-lobby-page {
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+}
+
+/* Small UNO checkbox polish only:
+   keep the compact lobby/card layout unchanged and style only the checkbox itself. */
+.uno-rule-grid input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    margin: 0;
+    border-radius: 5px;
+    border: 2px solid rgba(226, 232, 240, .78);
+    background: rgba(255, 255, 255, .92);
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+    transition: background .14s ease, border-color .14s ease, box-shadow .14s ease, transform .14s ease;
+}
+
+.uno-rule-grid input[type="checkbox"]::after {
+    content: "";
+    width: 8px;
+    height: 5px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) scale(0);
+    transform-origin: center;
+    margin-top: -1px;
+    transition: transform .12s ease;
+}
+
+.uno-rule-grid input[type="checkbox"]:checked {
+    border-color: #fbbf24;
+    background: linear-gradient(135deg, #ef4444, #f59e0b);
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, .16);
+}
+
+.uno-rule-grid input[type="checkbox"]:checked::after {
+    transform: rotate(-45deg) scale(1);
+}
+
+.uno-rule-grid input[type="checkbox"]:hover {
+    transform: scale(1.05);
+    border-color: #fbbf24;
+}
+
+.uno-rule-grid input[type="checkbox"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(125, 211, 252, .22);
+}
+
+.uno-rule-grid label {
+    cursor: pointer;
+}
+
+/* Fix only the visible UNO checkbox box: force it to stay perfectly square. */
+.uno-rule-grid input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    inline-size: 18px !important;
+    block-size: 18px !important;
+    aspect-ratio: 1 / 1 !important;
+    flex: 0 0 18px !important;
+    padding: 0 !important;
+}
+
+/* UNO table cleanup:
+   Remove the rotating background rings and make the own player info box smaller
+   and positioned outside the center card/deck area. */
+.uno-arena::before,
+.uno-arena::after,
+.uno-turn-ring {
+    display: none !important;
+    animation: none !important;
+}
+
+.uno-seat.is-you {
+    left: 50% !important;
+    top: auto !important;
+    bottom: 132px !important;
+    width: auto !important;
+    min-height: 0 !important;
+    transform: translateX(-50%) !important;
+    z-index: 14;
+}
+
+.uno-seat.is-you .uno-seat-label {
+    min-width: 118px;
+    max-width: 142px;
+    min-height: 52px;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 7px;
+    padding: 6px 8px;
+    border-radius: 12px;
+}
+
+.uno-seat.is-you .uno-seat-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+}
+
+.uno-seat.is-you .uno-seat-label strong {
+    font-size: 0.84rem;
+    line-height: 1.05;
+}
+
+.uno-seat.is-you .uno-seat-label small {
+    font-size: 0.66rem;
+    line-height: 1.05;
+}
+
+.uno-seat.is-you .uno-seat-hand,
+.uno-seat.is-you .uno-seat-hand::after {
+    display: none !important;
+}
+
+.uno-table-center {
+    z-index: 8;
+}
+
+.uno-arena-hand {
+    z-index: 11;
+    right: 132px;
+}
+
+/* UNO in-room lobby layout like Connect Four:
+   Room info/actions left above the player panel, game table on the right.
+   The table gets a little more height, but the page stays compact on desktop. */
+@media (min-width: 981px) {
+    .uno-lobby-page {
+        width: min(1500px, calc(100% - 18px));
+        min-height: auto !important;
+        margin: 10px auto 24px;
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+        overflow: visible !important;
+    }
+
+    .uno-lobby-page .uno-lobby-top {
+        grid-column: 1;
+        grid-row: 1;
+        display: grid;
+        align-content: start;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 18px;
+    }
+
+    .uno-lobby-page .uno-lobby-top > div:first-child {
+        min-width: 0;
+    }
+
+    .uno-lobby-page .uno-back {
+        margin-bottom: 5px;
+        font-size: 0.88rem;
+    }
+
+    .uno-lobby-page .uno-eyebrow {
+        margin-bottom: 4px;
+        font-size: 0.7rem;
+    }
+
+    .uno-lobby-page .uno-lobby-top h1 {
+        font-size: clamp(1.45rem, 2.8vw, 2.55rem);
+        line-height: 0.96;
+    }
+
+    .uno-lobby-page .uno-lobby-top p {
+        margin: 4px 0 0;
+        font-size: 0.9rem;
+    }
+
+    .uno-lobby-page .uno-top-actions {
+        justify-content: flex-start;
+        gap: 7px;
+    }
+
+    .uno-lobby-page .uno-top-actions form {
+        display: contents;
+    }
+
+    .uno-lobby-page .uno-primary,
+    .uno-lobby-page .uno-secondary,
+    .uno-lobby-page .uno-danger {
+        min-height: 36px;
+        padding: 0 11px;
+        border-radius: 12px;
+        font-size: 0.86rem;
+        gap: 7px;
+    }
+
+    .uno-lobby-page .uno-game-shell {
+        display: contents;
+    }
+
+    .uno-lobby-page .uno-side-panel {
+        grid-column: 1;
+        grid-row: 2;
+        min-height: 0;
+        padding: 12px;
+        border-radius: 18px;
+        overflow: visible;
+    }
+
+    .uno-lobby-page .uno-side-panel h2 {
+        margin-bottom: 9px;
+        font-size: 1rem;
+    }
+
+    .uno-lobby-page .uno-status-card {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 13px;
+    }
+
+    .uno-lobby-page .uno-rule-pills {
+        margin-top: 10px;
+        gap: 6px;
+    }
+
+    .uno-lobby-page .uno-rule-pills span {
+        padding: 5px 8px;
+        font-size: 0.76rem;
+    }
+
+    .uno-lobby-page .uno-player-list,
+    .uno-lobby-page .uno-friend-list {
+        gap: 8px;
+    }
+
+    .uno-lobby-page .uno-player-row,
+    .uno-lobby-page .uno-friend-row {
+        padding: 8px;
+        border-radius: 13px;
+    }
+
+    .uno-lobby-page .uno-player-row {
+        grid-template-columns: 36px minmax(0, 1fr) auto;
+        gap: 8px;
+    }
+
+    .uno-lobby-page .uno-player-avatar,
+    .uno-lobby-page .uno-friend-mini > span {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
+
+    .uno-lobby-page .uno-friends-box {
+        margin-top: 10px;
+    }
+
+    .uno-lobby-page .uno-friend-list {
+        max-height: min(170px, 22dvh);
+        overflow-y: auto;
+        padding-right: 3px;
+    }
+
+    .uno-lobby-page .uno-table-panel {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        min-height: 0;
+        padding: 12px 16px;
+        border-radius: 18px;
+    }
+
+    .uno-lobby-page .uno-table-meta {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    .uno-lobby-page .uno-arena {
+        min-height: clamp(600px, calc(100dvh - var(--nav-height, 60px) - 112px), 790px);
+        border-radius: 18px;
+    }
+
+    .uno-lobby-page .uno-actions {
+        margin: 10px 0;
+    }
+
+    .uno-lobby-page .uno-log-panel {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 980px) {
+    .uno-lobby-page .uno-game-shell {
+        display: grid;
+    }
+}
+
+/* Small spacing tweak: a bit more space between the own player info box and the hand cards. */
+.uno-seat.is-you {
+    bottom: 150px !important;
+}
+

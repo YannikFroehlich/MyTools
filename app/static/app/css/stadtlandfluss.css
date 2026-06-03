@@ -793,3 +793,250 @@ body.dark-mode .slf-final-card.place-1 {
         width: 100%;
     }
 }
+
+.slf-primary:disabled,
+.slf-secondary:disabled,
+.slf-danger:disabled,
+.slf-small:disabled,
+.slf-icon-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+    filter: grayscale(0.35);
+    transform: none;
+}
+
+/* Compact Stadt-Land-Fluss home lobby overview: all important sections visible with internal scrolling. */
+@media (min-width: 981px) {
+    body:has(.slf-home-page) {
+        overflow: hidden;
+    }
+
+    .slf-home-page {
+        width: min(1280px, calc(100% - 16px));
+        height: calc(100dvh - var(--nav-height, 60px) - 16px);
+        margin: 8px auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+        grid-template-rows: auto minmax(0, 1.1fr) minmax(0, .9fr);
+        gap: 10px;
+        overflow: hidden;
+    }
+
+    .slf-home-page ~ .site-footer,
+    body:has(.slf-home-page) .site-footer {
+        display: none;
+    }
+
+    .slf-home-page .slf-hero {
+        grid-column: 1 / -1;
+        padding: 14px 18px;
+        border-radius: 18px;
+        min-height: 0;
+    }
+
+    .slf-home-page .slf-hero h1 {
+        font-size: clamp(1.8rem, 3.2vw, 3.1rem);
+        line-height: .95;
+    }
+
+    .slf-home-page .slf-hero p {
+        margin: 6px 0 0;
+        max-width: 850px;
+        font-size: .92rem;
+        line-height: 1.35;
+    }
+
+    .slf-home-page .slf-eyebrow {
+        margin-bottom: 5px;
+        font-size: .68rem;
+    }
+
+    .slf-home-page .slf-home-grid {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        margin-top: 0;
+        gap: 10px;
+        min-height: 0;
+        grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+    }
+
+    .slf-home-page > .slf-panel:nth-of-type(3),
+    .slf-home-page > .slf-panel:nth-of-type(4) {
+        grid-row: 3;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .slf-home-page > .slf-panel:nth-of-type(3) { grid-column: 1; }
+    .slf-home-page > .slf-panel:nth-of-type(4) { grid-column: 2; }
+
+    .slf-home-page .slf-panel {
+        min-height: 0;
+        padding: 12px;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .slf-home-page .slf-panel h2,
+    .slf-home-page .slf-stack-title {
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .slf-home-page .slf-form {
+        gap: 8px;
+    }
+
+    .slf-home-page .slf-form-row {
+        gap: 7px;
+    }
+
+    .slf-home-page .slf-form label {
+        gap: 5px;
+    }
+
+    .slf-home-page .slf-form input,
+    .slf-home-page .slf-form select,
+    .slf-home-page .slf-form textarea {
+        min-height: 34px;
+        padding: 7px 9px;
+        border-radius: 10px;
+        font-size: .86rem;
+    }
+
+    .slf-home-page .slf-form textarea {
+        min-height: 46px;
+        max-height: 58px;
+        resize: none;
+    }
+
+    .slf-home-page .slf-primary,
+    .slf-home-page .slf-secondary,
+    .slf-home-page .slf-small {
+        min-height: 34px;
+        padding: 0 10px;
+        border-radius: 10px;
+        font-size: .82rem;
+    }
+
+    .slf-home-page .slf-list,
+    .slf-home-page .slf-lobby-grid {
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 3px;
+        gap: 8px;
+    }
+
+    .slf-home-page .slf-list-item,
+    .slf-home-page .slf-lobby-card {
+        padding: 9px;
+        border-radius: 12px;
+    }
+
+    .slf-home-page .slf-lobby-grid {
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    }
+
+    .slf-home-page .slf-section-heading {
+        margin-bottom: 8px;
+    }
+
+    .slf-home-page .slf-muted,
+    .slf-home-page .slf-list-item span,
+    .slf-home-page .slf-lobby-card span,
+    .slf-home-page .slf-form span,
+    .slf-home-page .slf-lobby-card small {
+        font-size: .82rem;
+    }
+}
+
+/* Fix: Stadt-Land-Fluss create form has an extra categories field, so it needs a little more room.
+   Keep the lobby compact, but prevent the create button from being cut off. */
+.slf-home-page .slf-home-grid {
+    align-items: stretch;
+}
+
+.slf-home-page .slf-home-grid > .slf-panel:first-child {
+    min-height: 0;
+    overflow: visible;
+}
+
+.slf-home-page .slf-home-grid > .slf-panel:first-child .slf-form {
+    gap: 8px;
+}
+
+.slf-home-page .slf-home-grid > .slf-panel:first-child .slf-form textarea,
+.slf-home-page .slf-home-grid > .slf-panel:first-child textarea {
+    min-height: 72px;
+    max-height: 96px;
+    resize: vertical;
+}
+
+.slf-home-page .slf-home-grid > .slf-panel:first-child .slf-primary,
+.slf-home-page .slf-home-grid > .slf-panel:first-child button[type="submit"] {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+@media (min-width: 901px) {
+    .slf-home-page {
+        height: auto;
+        min-height: calc(100dvh - var(--nav-height, 60px) - 16px);
+        overflow: visible;
+    }
+
+    .slf-home-page .slf-home-grid {
+        grid-template-columns: minmax(330px, 0.95fr) minmax(300px, 0.85fr);
+    }
+
+    .slf-home-page > .slf-panel {
+        overflow: visible;
+    }
+
+    .slf-home-page .slf-home-sections {
+        max-height: min(285px, 33dvh);
+        overflow-y: auto;
+    }
+}
+
+/* Footer visibility fix:
+   Do not hide the site footer on multiplayer pages.
+   Let the page flow normally, but keep the compact internal lobby lists. */
+.slf-home-page,
+.slf-lobby-page {
+    overflow: visible;
+}
+
+.slf-home-page {
+    height: auto;
+}
+
+@media (min-width: 901px) {
+    .slf-home-page {
+        min-height: auto;
+    }
+}
+
+/* Final footer fix for in-room multiplayer lobbies:
+   The game lobby pages must not use a clipped 100dvh layout,
+   otherwise the global site footer cannot appear below them. */
+.slf-lobby-page {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+}
+
+.slf-lobby-page ~ .site-footer,
+.slf-home-page ~ .site-footer {
+    display: block !important;
+}
+
+@media (min-width: 901px) {
+    .slf-lobby-page {
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+}
+

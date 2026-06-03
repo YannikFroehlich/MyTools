@@ -80,11 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.getElementById("start-game-btn")?.addEventListener("click", async () => {
+            if (!state?.lobby?.isOwner) return;
             await post(urls.start);
             await refreshState(true);
         });
 
         document.getElementById("restart-game-btn")?.addEventListener("click", async () => {
+            if (!state?.lobby?.isOwner) return;
             await post(urls.restart);
             await refreshState(true);
         });
@@ -310,6 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderGuesses();
         renderRoundSummary();
         renderCanvasBlocker();
+        syncHostControls();
 
         const drawing = state.drawing || [];
         const delta = state.drawingDelta || [];
@@ -330,6 +333,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 drawingRevision = nextRevision;
             }
         }
+    }
+
+    function syncHostControls() {
+        const isOwner = Boolean(state?.lobby?.isOwner);
+        document.getElementById("start-game-btn")?.toggleAttribute("disabled", !isOwner || state?.lobby?.status !== "waiting");
+        document.getElementById("restart-game-btn")?.toggleAttribute("disabled", !isOwner);
     }
 
     function labelStatus(status) {

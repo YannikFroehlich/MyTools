@@ -1,5 +1,6 @@
 import random
 import string
+from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -32,6 +33,9 @@ VALUE_LABELS = {
     "wild4": "+4",
 }
 
+
+
+UNO_PLAYER_TIMEOUT = timedelta(seconds=30)
 
 def _generate_game_code():
     alphabet = string.ascii_uppercase + string.digits
@@ -282,6 +286,27 @@ def _home_games_for_user(user):
     )
 
 
+def _delete_empty_games():
+    stale_before = timezone.now() - UNO_PLAYER_TIMEOUT
+    UnoPlayer.objects.filter(last_seen__lt=stale_before).delete()
+    UnoGame.objects.filter(players__isnull=True).delete()
+
+
+def _remove_player_from_game(game, user):
+    removed_count, _ = game.players.filter(user=user).delete()
+    if removed_count:
+        hands = dict(game.hands or {})
+        hands.pop(str(user.id), None)
+        game.hands = hands
+
+        uno_calls = dict(game.uno_calls or {})
+        uno_calls.pop(str(user.id), None)
+        game.uno_calls = uno_calls
+
+        if game.winner_user_id == user.id:
+            game.winner_user_id = None
+    return removed_count
+
 def _home_invites_for_user(user):
     return (
         UnoInvite.objects
@@ -412,6 +437,7 @@ def _serialize_game(game, user):
 
 @login_required
 def uno_home(request):
+    _delete_empty_games()
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "create":
@@ -447,12 +473,16 @@ def uno_home(request):
 @login_required
 @require_GET
 def uno_home_state_api(request):
+    _delete_empty_games()
     return JsonResponse({"ok": True, "games": [_serialize_home_game(game) for game in _home_games_for_user(request.user)], "invites": [_serialize_home_invite(invite) for invite in _home_invites_for_user(request.user)]})
 
 
 @login_required
 def uno_lobby(request, code):
-    game = get_object_or_404(UnoGame.objects.select_related("owner"), code=code.upper())
+    game = UnoGame.objects.select_related("owner").filter(code=code.upper()).first()
+    if not game:
+        messages.warning(request, _("Diese Uno-Lobby existiert nicht mehr."))
+        return redirect("uno_home")
     if not _join_game(game, request.user):
         messages.error(request, _("Dieser Uno-Raum ist voll oder l\u00e4uft bereits."))
         return redirect("uno_home")
@@ -497,9 +527,17 @@ def uno_invite_response(request, invite_id):
 @login_required
 @require_GET
 def uno_state_api(request, code):
+    _delete_empty_games()
     game = UnoGame.objects.filter(code=code.upper()).first()
     if not game:
-        return JsonResponse({"ok": False, "gameDeleted": True, "error": _("Dieser Uno-Raum wurde gel\u00f6scht."), "redirectUrl": reverse("uno_home")}, status=410)
+        return JsonResponse({"ok": False, "gameDeleted": True, "error": _("Dieser Uno-Raum wurde gelöscht."), "redirectUrl": reverse("uno_home")}, status=410)
+
+    game.players.filter(user=request.user).update(last_seen=timezone.now())
+
+    if not game.players.exists():
+        game.delete()
+        return JsonResponse({"ok": False, "gameDeleted": True, "error": _("Dieser Uno-Raum wurde gelöscht."), "redirectUrl": reverse("uno_home")}, status=410)
+
     return JsonResponse({"ok": True, "game": _serialize_game(game, request.user)})
 
 
@@ -677,18 +715,24 @@ def uno_reset_api(request, code):
 def uno_leave(request, code):
     with transaction.atomic():
         game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
-        player = game.player_for_user(request.user)
-        if player:
-            player.delete()
+
+        _remove_player_from_game(game, request.user)
+
         if not game.players.exists():
             game.delete()
-            messages.info(request, _("Uno-Raum wurde gel\u00f6scht."))
+            messages.info(request, _("Uno-Raum wurde gelöscht."))
             return redirect("uno_home")
+
         if game.owner_id == request.user.id:
-            game.owner = game.players.order_by("seat", "joined_at").first().user
+            next_owner = game.players.select_related("user").order_by("seat", "joined_at").first()
+            if next_owner:
+                game.owner = next_owner.user
+
         if game.status == UnoGame.STATUS_PLAYING:
             game.status = UnoGame.STATUS_FINISHED
             _append_log(game, _("Ein Spieler hat den Raum verlassen."))
+
+        game.current_player_index = game.current_player_index % max(1, game.players.count())
         game.save()
     return redirect("uno_home")
 

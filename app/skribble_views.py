@@ -89,6 +89,9 @@ def _get_or_create_player(lobby, user):
     return player
 
 
+def _delete_empty_lobbies():
+    DrawingGameLobby.objects.filter(players__isnull=True).delete()
+
 def _user_can_enter_lobby(lobby, user):
     if lobby.owner_id == user.id:
         return True
@@ -431,6 +434,7 @@ def _serialize_state(lobby, user, drawing_after=0):
 
 @login_required
 def skribble_home(request):
+    _delete_empty_lobbies()
     if request.method == "POST":
         name = request.POST.get("name", "").strip() or _("Zeichen-Lobby")
         rounds_count = min(max(int(request.POST.get("rounds_count", 3) or 3), 1), 10)
@@ -485,7 +489,7 @@ def skribble_home(request):
 def skribble_lobby(request, code):
     lobby = DrawingGameLobby.objects.filter(code=code.upper()).first()
     if not lobby:
-        messages.info(request, _("Diese Lobby wurde gelöscht."))
+        messages.warning(request, _("Diese Skribble-Lobby existiert nicht mehr."))
         return redirect("skribble_home")
 
     if not _user_can_enter_lobby(lobby, request.user):
@@ -563,6 +567,11 @@ def skribble_leave_lobby(request, code):
         removed_index = next((index for index, item in enumerate(players) if item.id == player.id), None)
         was_current_drawer = removed_index == lobby.current_turn_index
         player.delete()
+
+        if not lobby.players.exists():
+            lobby.delete()
+            messages.info(request, _("Skribble-Lobby wurde gelöscht."))
+            return redirect("skribble_home")
 
         if was_current_drawer or lobby.status == DrawingGameLobby.STATUS_PLAYING:
             _handle_player_removed(lobby, removed_player_id=request.user.id, removed_index=removed_index, was_current_drawer=was_current_drawer)

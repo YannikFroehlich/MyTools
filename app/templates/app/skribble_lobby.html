@@ -40,19 +40,23 @@
             <button class="draw-secondary" type="button" id="copy-lobby-link">
                 <i class="fa-regular fa-copy"></i> {% translate 'Link kopieren' %}
             </button>
+            <button class="draw-primary" type="button" id="start-game-btn" {% if lobby.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann das Spiel starten.' %}"{% endif %}>
+                <i class="fa-solid fa-play"></i> {% translate 'Spiel starten' %}
+            </button>
+            <button class="draw-secondary" type="button" id="restart-game-btn" {% if lobby.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann zurücksetzen.' %}"{% endif %}>
+                <i class="fa-solid fa-rotate-right"></i> {% translate 'Zurücksetzen' %}
+            </button>
             {% if lobby.owner_id == request.user.id %}
-                <button class="draw-primary" type="button" id="start-game-btn">
-                    <i class="fa-solid fa-play"></i> {% translate 'Spiel starten' %}
-                </button>
-                <button class="draw-secondary" type="button" id="restart-game-btn">
-                    <i class="fa-solid fa-rotate-right"></i> {% translate 'Zurücksetzen' %}
-                </button>
                 <form method="post" action="{% url 'skribble_delete_lobby' lobby.code %}" class="draw-inline-form" data-confirm="{% translate 'Lobby wirklich löschen? Alle Spieler und Zeichnungen werden entfernt.' %}">
                     {% csrf_token %}
                     <button class="draw-danger" type="submit">
                         <i class="fa-solid fa-trash"></i> {% translate 'Lobby löschen' %}
                     </button>
                 </form>
+            {% else %}
+                <button class="draw-danger" type="button" disabled title="{% translate 'Nur der Host kann diese Lobby löschen.' %}">
+                    <i class="fa-solid fa-trash"></i> {% translate 'Lobby löschen' %}
+                </button>
             {% endif %}
             <form method="post" action="{% url 'skribble_leave_lobby' lobby.code %}" class="draw-inline-form" data-confirm="{% translate 'Lobby wirklich verlassen? Du kannst später über eine Einladung oder als Freund wieder beitreten.' %}">
                 {% csrf_token %}

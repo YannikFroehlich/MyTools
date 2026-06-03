@@ -45,7 +45,7 @@
                 <i class="fa-solid fa-play"></i>
                 {% translate 'Starten' %}
             </button>
-            <button class="uno-primary" type="button" id="uno-reset">
+            <button class="uno-primary" type="button" id="uno-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}>
                 <i class="fa-solid fa-rotate-right"></i>
                 {% translate 'Neue Runde' %}
             </button>
@@ -57,13 +57,18 @@
                 </button>
             </form>
             {% if game.owner_id == request.user.id %}
-            <form method="post" action="{% url 'uno_delete' game.code %}" data-confirm="Raum wirklich l&ouml;schen?">
-                {% csrf_token %}
-                <button class="uno-danger" type="submit">
+                <form method="post" action="{% url 'uno_delete' game.code %}" data-confirm="Raum wirklich l&ouml;schen?">
+                    {% csrf_token %}
+                    <button class="uno-danger" type="submit">
+                        <i class="fa-solid fa-trash"></i>
+                        L&ouml;schen
+                    </button>
+                </form>
+            {% else %}
+                <button class="uno-danger" type="button" disabled title="Nur der Host kann diesen Raum l&ouml;schen.">
                     <i class="fa-solid fa-trash"></i>
                     L&ouml;schen
                 </button>
-            </form>
             {% endif %}
         </div>
     </section>

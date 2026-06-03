@@ -32,7 +32,7 @@
                 <i class="fa-regular fa-copy"></i>
                 {% translate 'Link kopieren' %}
             </button>
-            <button class="c4-primary" type="button" id="c4-reset">
+            <button class="c4-primary" type="button" id="c4-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}>
                 <i class="fa-solid fa-rotate-right"></i>
                 {% translate 'Neue Runde' %}
             </button>
@@ -44,13 +44,18 @@
                 </button>
             </form>
             {% if game.owner_id == request.user.id %}
-            <form method="post" action="{% url 'connectfour_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
-                {% csrf_token %}
-                <button class="c4-danger" type="submit">
+                <form method="post" action="{% url 'connectfour_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
+                    {% csrf_token %}
+                    <button class="c4-danger" type="submit">
+                        <i class="fa-solid fa-trash"></i>
+                        {% translate 'Löschen' %}
+                    </button>
+                </form>
+            {% else %}
+                <button class="c4-danger" type="button" disabled title="{% translate 'Nur der Host kann diesen Raum löschen.' %}">
                     <i class="fa-solid fa-trash"></i>
                     {% translate 'Löschen' %}
                 </button>
-            </form>
             {% endif %}
         </div>
     </section>
@@ -132,7 +137,7 @@
                         <span class="c4-result-kicker" id="c4-result-kicker">{% translate 'Spiel beendet' %}</span>
                         <h2 id="c4-result-title">-</h2>
                         <p id="c4-result-text">-</p>
-                        <button class="c4-primary" type="button" id="c4-result-reset">
+                        <button class="c4-primary" type="button" id="c4-result-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}>
                             <i class="fa-solid fa-rotate-right"></i>
                             {% translate 'Neue Runde' %}
                         </button>

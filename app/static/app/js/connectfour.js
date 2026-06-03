@@ -67,13 +67,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.getElementById("c4-reset")?.addEventListener("click", async () => {
-            if (isPosting) return;
+            if (isPosting || !game?.isOwner) return;
             lastMoveKey = "";
             await post(urls.reset, {}, true);
         });
 
         document.getElementById("c4-result-reset")?.addEventListener("click", async () => {
-            if (isPosting) return;
+            if (isPosting || !game?.isOwner) return;
             lastMoveKey = "";
             await post(urls.reset, {}, true);
         });
@@ -160,8 +160,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         board.classList.toggle("is-your-turn", Boolean(game.canMove));
         dropZone.classList.toggle("is-your-turn", Boolean(game.canMove));
+        syncHostControls();
         renderResultOverlay();
         animateLastMove();
+    }
+
+    function syncHostControls() {
+        const disabled = isPosting || !game?.isOwner;
+        document.getElementById("c4-reset")?.toggleAttribute("disabled", disabled);
+        document.getElementById("c4-result-reset")?.toggleAttribute("disabled", disabled);
     }
 
     function renderResultOverlay() {

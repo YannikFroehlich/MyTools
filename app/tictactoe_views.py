@@ -69,6 +69,10 @@ def _reset_waiting_game(game):
     game.last_move_at = None
 
 
+def _delete_empty_games():
+    TicTacToeGame.objects.filter(player_x__isnull=True, player_o__isnull=True).delete()
+
+
 def _friend_invite_rows(game, user):
     if game.player_o_id:
         return []
@@ -192,6 +196,7 @@ def _serialize_home_invite(invite):
 
 @login_required
 def tictactoe_home(request):
+    _delete_empty_games()
     if request.method == "POST":
         action = request.POST.get("action")
 
@@ -221,6 +226,7 @@ def tictactoe_home(request):
 @login_required
 @require_GET
 def tictactoe_home_state_api(request):
+    _delete_empty_games()
     return JsonResponse({
         "ok": True,
         "games": [_serialize_home_game(game) for game in _home_games_for_user(request.user)],
@@ -230,10 +236,15 @@ def tictactoe_home_state_api(request):
 
 @login_required
 def tictactoe_lobby(request, code):
-    game = get_object_or_404(
-        TicTacToeGame.objects.select_related("owner", "player_x", "player_o"),
-        code=code.upper(),
+    game = (
+        TicTacToeGame.objects
+        .select_related("owner", "player_x", "player_o")
+        .filter(code=code.upper())
+        .first()
     )
+    if not game:
+        messages.warning(request, _("Diese Tic-Tac-Toe-Lobby existiert nicht mehr."))
+        return redirect("tictactoe_home")
 
     if not game.symbol_for_user(request.user) and game.player_o_id is None:
         game.player_o = request.user
@@ -384,8 +395,8 @@ def tictactoe_reset_api(request, code):
             TicTacToeGame.objects.select_for_update().select_related("owner", "player_x", "player_o"),
             code=code.upper(),
         )
-        if not game.symbol_for_user(request.user):
-            return JsonResponse({"ok": False, "error": _("Nur Spieler können neu starten.")}, status=403)
+        if game.owner_id != request.user.id:
+            return JsonResponse({"ok": False, "error": _("Nur der Host kann eine neue Runde starten.")}, status=403)
 
         game.board = [""] * 9
         game.current_symbol = TicTacToeGame.SYMBOL_X

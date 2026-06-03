@@ -167,6 +167,9 @@ def _reset_waiting_game(game):
     game.last_move_at = None
 
 
+def _delete_empty_games():
+    BattleshipGame.objects.filter(player_a__isnull=True, player_b__isnull=True).delete()
+
 def _home_games_for_user(user):
     return (
         BattleshipGame.objects
@@ -308,6 +311,7 @@ def _serialize_game(game, user):
 
 @login_required
 def battleship_home(request):
+    _delete_empty_games()
     if request.method == "POST":
         action = request.POST.get("action")
         if action == "create":
@@ -335,6 +339,7 @@ def battleship_home(request):
 @login_required
 @require_GET
 def battleship_home_state_api(request):
+    _delete_empty_games()
     return JsonResponse({
         "ok": True,
         "games": [_serialize_home_game(game) for game in _home_games_for_user(request.user)],
@@ -344,10 +349,15 @@ def battleship_home_state_api(request):
 
 @login_required
 def battleship_lobby(request, code):
-    game = get_object_or_404(
-        BattleshipGame.objects.select_related("owner", "player_a", "player_b"),
-        code=code.upper(),
+    game = (
+        BattleshipGame.objects
+        .select_related("owner", "player_a", "player_b")
+        .filter(code=code.upper())
+        .first()
     )
+    if not game:
+        messages.warning(request, _("Diese Schiffe-versenken-Lobby existiert nicht mehr."))
+        return redirect("battleship_home")
 
     if not game.side_for_user(request.user) and not game.player_b_id:
         game.player_b = request.user
