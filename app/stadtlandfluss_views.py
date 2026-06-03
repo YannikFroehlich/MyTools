@@ -1,5 +1,6 @@
 import random
 import string
+from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -24,6 +25,7 @@ from .models import (
 
 
 DEFAULT_CATEGORIES = ["Stadt", "Land", "Fluss", "Name", "Tier", "Beruf"]
+LOBBY_PLAYER_TIMEOUT = timedelta(seconds=30)
 LETTER_POOL = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 
@@ -74,8 +76,41 @@ def _join_lobby(lobby, user):
     return player
 
 
-def _delete_empty_lobbies():
+def _cleanup_lobby_players(lobby, keep_user_id=None):
+    stale_before = timezone.now() - LOBBY_PLAYER_TIMEOUT
+    stale_players = list(lobby.players.select_related("user").filter(last_seen__lt=stale_before))
+    stale_players = [player for player in stale_players if player.user_id != keep_user_id]
+    if not stale_players:
+        return False
+
+    removed_owner = any(player.user_id == lobby.owner_id for player in stale_players)
+    for player in stale_players:
+        player.delete()
+
+    if not lobby.players.exists():
+        lobby.delete()
+        return True
+
+    if removed_owner or not lobby.players.filter(user_id=lobby.owner_id).exists():
+        next_owner = lobby.players.select_related("user").order_by("joined_at", "id").first()
+        if next_owner:
+            lobby.owner = next_owner.user
+
+    if lobby.status == StadtLandFlussLobby.STATUS_PLAYING:
+        _score_round(lobby, "player_left")
+    else:
+        lobby.save(update_fields=["owner", "updated_at"])
+    return False
+
+
+def _cleanup_stale_lobbies():
+    for lobby in StadtLandFlussLobby.objects.select_related("owner").prefetch_related("players"):
+        _cleanup_lobby_players(lobby)
     StadtLandFlussLobby.objects.filter(players__isnull=True).delete()
+
+
+def _delete_empty_lobbies():
+    _cleanup_stale_lobbies()
 
 def _next_letter(lobby):
     used = [str(letter).upper() for letter in (lobby.used_letters if isinstance(lobby.used_letters, list) else [])]
@@ -497,6 +532,12 @@ def stadtlandfluss_lobby(request, code):
     if not lobby:
         messages.warning(request, _("Diese Stadt-Land-Fluss-Lobby existiert nicht mehr."))
         return redirect("stadtlandfluss_home")
+    if lobby.players.filter(user=request.user).exists():
+        lobby.players.filter(user=request.user).update(last_seen=timezone.now())
+    if _cleanup_lobby_players(lobby, keep_user_id=request.user.id):
+        messages.warning(request, _("Diese Stadt-Land-Fluss-Lobby existiert nicht mehr."))
+        return redirect("stadtlandfluss_home")
+    lobby.refresh_from_db()
     is_member = lobby.players.filter(user=request.user).exists()
     if not is_member and lobby.players.count() >= lobby.max_players:
         messages.error(request, _("Diese Stadt-Land-Fluss-Lobby ist bereits voll."))
@@ -545,9 +586,21 @@ def stadtlandfluss_invite_response(request, invite_id):
         to_user=request.user,
     )
     if request.POST.get("action") == "accept":
+        lobby = invite.lobby
+        is_member = lobby.players.filter(user=request.user).exists()
+        if not is_member and lobby.players.count() >= lobby.max_players:
+            invite.status = StadtLandFlussInvite.STATUS_DECLINED
+            invite.save(update_fields=["status", "updated_at"])
+            messages.error(request, _("Diese Runde ist voll."))
+            return redirect("stadtlandfluss_home")
+        if not is_member and lobby.status != StadtLandFlussLobby.STATUS_WAITING:
+            invite.status = StadtLandFlussInvite.STATUS_DECLINED
+            invite.save(update_fields=["status", "updated_at"])
+            messages.error(request, _("Diese Runde läuft bereits."))
+            return redirect("stadtlandfluss_home")
         invite.status = StadtLandFlussInvite.STATUS_ACCEPTED
         invite.save(update_fields=["status", "updated_at"])
-        return redirect("stadtlandfluss_lobby", code=invite.lobby.code)
+        return redirect("stadtlandfluss_lobby", code=lobby.code)
 
     invite.status = StadtLandFlussInvite.STATUS_DECLINED
     invite.save(update_fields=["status", "updated_at"])
@@ -566,6 +619,15 @@ def stadtlandfluss_state_api(request, code):
             "error": _("Diese Stadt-Land-Fluss-Lobby wurde gelöscht."),
             "redirectUrl": reverse("stadtlandfluss_home"),
         }, status=410)
+    lobby.players.filter(user=request.user).update(last_seen=timezone.now())
+    if _cleanup_lobby_players(lobby, keep_user_id=request.user.id):
+        return JsonResponse({
+            "ok": False,
+            "lobbyDeleted": True,
+            "error": _("Diese Stadt-Land-Fluss-Lobby wurde gelöscht."),
+            "redirectUrl": reverse("stadtlandfluss_home"),
+        }, status=410)
+    lobby.refresh_from_db()
     if not lobby.players.filter(user=request.user).exists():
         return JsonResponse({"ok": False, "error": _("Du bist nicht in dieser Lobby.")}, status=403)
     return JsonResponse({"ok": True, "state": _serialize_lobby(lobby, request.user)})
@@ -750,7 +812,8 @@ def stadtlandfluss_leave(request, code):
             return redirect("stadtlandfluss_home")
         if lobby.owner_id == request.user.id:
             next_owner = lobby.players.select_related("user").order_by("joined_at").first()
-            lobby.owner = next_owner.user
+            if next_owner:
+                lobby.owner = next_owner.user
         if lobby.status == StadtLandFlussLobby.STATUS_PLAYING:
             _score_round(lobby, "player_left")
         lobby.save()

@@ -50,7 +50,9 @@
 
                 <p>@{{ profile_user.username }}</p>
                 <span class="public-profile-status {% if profile.is_online %}is-online{% endif %}">
-                    {% if profile.is_online %}
+                    {% if profile.activity_status %}
+                        {{ profile.activity_status }}
+                    {% elif profile.is_online %}
                         {% translate "Online" %}
                     {% elif profile.last_seen_at %}
                         {% translate "Zuletzt online" %} {{ profile.last_seen_at|timesince }}
@@ -91,6 +93,7 @@
                 <div>
                     <span>{% translate "Status" %}</span>
                     <strong>{{ profile.get_status_display }}</strong>
+                    {% if profile.activity_status %}<small>{{ profile.activity_status }}</small>{% endif %}
                     {% if profile.status_text %}<small>{{ profile.status_text }}</small>{% endif %}
                 </div>
             </div>
