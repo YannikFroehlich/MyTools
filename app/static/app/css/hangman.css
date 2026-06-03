@@ -1,0 +1,822 @@
+.hm-page {
+    width: min(1180px, calc(100% - 28px));
+    margin: 28px auto 56px;
+    color: #f8fafc;
+}
+
+.hm-page * {
+    box-sizing: border-box;
+}
+
+.hm-hero,
+.hm-panel,
+.hm-room-card-top,
+.hm-board-panel {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background:
+        linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.9)),
+        rgba(15, 23, 42, 0.92);
+    border-radius: 22px;
+    box-shadow: 0 24px 70px rgba(2, 6, 23, 0.3);
+}
+
+.hm-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 34px;
+    overflow: hidden;
+}
+
+.hm-eyebrow,
+.hm-muted,
+.hm-form span,
+.hm-room-card span,
+.hm-status-panel small,
+.hm-letter-summary small,
+.hm-player-row small,
+.hm-friend-mini small {
+    color: rgba(226, 232, 240, 0.76);
+}
+
+.hm-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.hm-hero h1,
+.hm-room-card-top h1 {
+    margin: 0;
+    font-size: clamp(2.1rem, 5vw, 4.4rem);
+    line-height: 0.95;
+}
+
+.hm-hero p {
+    max-width: 660px;
+    margin: 14px 0 0;
+    color: rgba(226, 232, 240, 0.8);
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.hm-hero-mark {
+    padding: 18px 22px;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fde68a;
+    font-size: clamp(2rem, 5vw, 5rem);
+    font-weight: 1000;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
+    transform: rotate(-4deg);
+}
+
+.hm-home-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.hm-home-page > .hm-panel {
+    margin-top: 18px;
+}
+
+.hm-panel,
+.hm-board-panel,
+.hm-room-card-top {
+    padding: 18px;
+}
+
+.hm-panel h2 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.hm-form {
+    display: grid;
+    grid-template-columns: 1fr 160px;
+    gap: 12px;
+}
+
+.hm-form label,
+.hm-guess-form {
+    display: grid;
+    gap: 7px;
+}
+
+.hm-form label {
+    font-weight: 800;
+}
+
+.hm-form input,
+.hm-form textarea,
+.hm-guess-form input {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 14px;
+    padding: 0 14px;
+    background: rgba(15, 23, 42, 0.82);
+    color: #ffffff;
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.hm-form textarea {
+    min-height: 84px;
+    padding-top: 12px;
+    resize: vertical;
+}
+
+.hm-form input:focus,
+.hm-form textarea:focus,
+.hm-guess-form input:focus {
+    border-color: rgba(125, 211, 252, 0.72);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.16);
+}
+
+.hm-wide {
+    grid-column: 1 / -1;
+}
+
+.hm-join-form {
+    grid-template-columns: 1fr;
+}
+
+.hm-primary,
+.hm-secondary,
+.hm-danger,
+.hm-invite-button,
+.hm-key {
+    border: 0;
+    border-radius: 14px;
+    font-weight: 950;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: transform 0.16s ease, filter 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.hm-primary,
+.hm-secondary,
+.hm-danger {
+    min-height: 44px;
+    padding: 10px 14px;
+}
+
+.hm-primary {
+    background: linear-gradient(135deg, #22d3ee, #6366f1);
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(99, 102, 241, 0.28);
+}
+
+.hm-secondary {
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #f8fafc;
+}
+
+.hm-danger {
+    background: rgba(244, 63, 94, 0.14);
+    border: 1px solid rgba(251, 113, 133, 0.38);
+    color: #fecdd3;
+}
+
+.hm-primary:hover:not(:disabled),
+.hm-secondary:hover:not(:disabled),
+.hm-danger:hover:not(:disabled),
+.hm-invite-button:hover:not(:disabled),
+.hm-key:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+.hm-primary:disabled,
+.hm-secondary:disabled,
+.hm-danger:disabled,
+.hm-invite-button:disabled,
+.hm-key:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.hm-section-heading,
+.hm-inline-actions,
+.hm-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hm-panel-heading {
+    margin-bottom: 10px;
+}
+
+.hm-mini-pill {
+    min-width: 30px;
+    min-height: 30px;
+    display: inline-grid;
+    place-items: center;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.28);
+    color: #a5f3fc;
+    font-size: 0.8rem;
+    font-weight: 950;
+}
+
+.hm-invite-list,
+.hm-room-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.hm-room-grid {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.hm-invite-row,
+.hm-room-card {
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hm-invite-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+}
+
+.hm-invite-row span,
+.hm-room-card span {
+    display: block;
+    margin-top: 4px;
+}
+
+.hm-room-card {
+    color: #fff;
+    text-decoration: none;
+}
+
+.hm-code {
+    display: inline-flex;
+    width: max-content;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(254, 240, 138, 0.18);
+    color: #fde68a !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-weight: 1000;
+    letter-spacing: 0.08em;
+}
+
+.hm-lobby-page {
+    width: min(1220px, calc(100% - 22px));
+    height: calc(100vh - 86px);
+    margin: 12px auto 0;
+    overflow: hidden;
+}
+
+.hm-lobby-layout {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 330px minmax(0, 1fr);
+    gap: 14px;
+}
+
+.hm-left-column {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(88px, 0.7fr) auto minmax(120px, 1fr);
+    gap: 10px;
+}
+
+.hm-room-card-top,
+.hm-panel,
+.hm-board-panel {
+    min-width: 0;
+}
+
+.hm-room-card-top {
+    display: grid;
+    gap: 12px;
+}
+
+.hm-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: max-content;
+    color: rgba(226, 232, 240, 0.82);
+    text-decoration: none;
+    font-weight: 850;
+}
+
+.hm-room-title-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 10px;
+}
+
+.hm-room-card-top h1 {
+    max-width: 210px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1.9rem;
+}
+
+.hm-action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.hm-action-grid form,
+.hm-action-grid button {
+    width: 100%;
+}
+
+.hm-players-panel,
+.hm-friends-box {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.hm-player-list,
+.hm-friend-list {
+    display: grid;
+    gap: 8px;
+    min-height: 0;
+    overflow: auto;
+    padding-right: 2px;
+    scrollbar-width: thin;
+}
+
+.hm-player-row,
+.hm-friend-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.76);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.hm-player-row.is-owner {
+    border-color: rgba(253, 230, 138, 0.42);
+    background: rgba(120, 53, 15, 0.24);
+}
+
+.hm-player-name,
+.hm-friend-mini strong {
+    display: block;
+    color: #ffffff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hm-player-score {
+    flex: none;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.24);
+    color: #a5f3fc;
+    font-size: 0.78rem;
+    font-weight: 950;
+}
+
+.hm-status-panel {
+    padding: 13px 16px;
+    background:
+        linear-gradient(145deg, rgba(8, 47, 73, 0.74), rgba(30, 41, 59, 0.92)),
+        rgba(15, 23, 42, 0.92);
+    border-color: rgba(125, 211, 252, 0.26);
+}
+
+.hm-status-panel small,
+.hm-letter-summary small {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.hm-status-panel strong {
+    display: block;
+    font-size: 1.05rem;
+}
+
+.hm-status-panel p {
+    margin: 4px 0 0;
+    color: rgba(241, 245, 249, 0.88);
+    line-height: 1.35;
+}
+
+.hm-friend-row {
+    padding: 8px;
+}
+
+.hm-friend-mini {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hm-friend-mini > span {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #22d3ee, #6366f1);
+    color: #ffffff;
+    font-weight: 1000;
+}
+
+.hm-invite-button {
+    width: 38px;
+    height: 38px;
+    flex: none;
+    background: rgba(34, 211, 238, 0.14);
+    border: 1px solid rgba(34, 211, 238, 0.34);
+    color: #a5f3fc;
+}
+
+.hm-board-panel {
+    position: relative;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.hm-board-meta {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    gap: 10px;
+}
+
+.hm-board-meta span {
+    min-width: 0;
+    padding: 9px 12px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    color: rgba(226, 232, 240, 0.78);
+    font-size: 0.88rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hm-board-meta strong {
+    color: #ffffff;
+}
+
+.hm-play-area {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(220px, 0.52fr) minmax(0, 1fr);
+    gap: 14px;
+}
+
+.hm-hangman-card,
+.hm-word-card {
+    min-height: 0;
+    border-radius: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.68);
+}
+
+.hm-hangman-card {
+    display: grid;
+    place-items: center;
+    padding: 12px;
+}
+
+.hm-hangman-svg {
+    width: min(100%, 330px);
+    height: 100%;
+    min-height: 220px;
+    max-height: 355px;
+}
+
+.hm-gallow,
+.hm-body-part {
+    fill: none;
+    stroke: #e2e8f0;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hm-gallow {
+    opacity: 0.78;
+}
+
+.hm-support {
+    stroke-width: 6;
+    opacity: 0.45;
+}
+
+.hm-body-part {
+    opacity: 0;
+    stroke: #fb7185;
+    transition: opacity 0.18s ease, filter 0.18s ease;
+}
+
+.hm-body-part.is-visible {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(251, 113, 133, 0.35));
+}
+
+.hm-word-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+    padding: 16px;
+}
+
+.hm-word {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    min-height: 82px;
+    align-items: center;
+}
+
+.hm-letter-tile {
+    min-width: 40px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-size: clamp(1.35rem, 2.2vw, 2.2rem);
+    font-weight: 1000;
+    text-transform: uppercase;
+}
+
+.hm-letter-tile.is-empty {
+    color: rgba(226, 232, 240, 0.58);
+}
+
+.hm-letter-tile.is-space {
+    min-width: 20px;
+    background: transparent;
+    border: 0;
+}
+
+.hm-letter-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.hm-letter-summary > div {
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hm-letter-summary p,
+.hm-last-guess {
+    margin: 0;
+    color: #ffffff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hm-last-guess {
+    min-height: 22px;
+    color: rgba(226, 232, 240, 0.82);
+}
+
+.hm-last-guess.is-correct {
+    color: #86efac;
+}
+
+.hm-last-guess.is-wrong {
+    color: #fda4af;
+}
+
+.hm-guess-form {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: stretch;
+}
+
+.hm-guess-form input {
+    min-height: 44px;
+}
+
+.hm-keyboard {
+    display: grid;
+    grid-template-columns: repeat(13, minmax(28px, 1fr));
+    gap: 7px;
+}
+
+.hm-key {
+    min-height: 38px;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.hm-key.is-correct {
+    background: rgba(34, 197, 94, 0.18);
+    border-color: rgba(74, 222, 128, 0.42);
+    color: #bbf7d0;
+}
+
+.hm-key.is-wrong {
+    background: rgba(244, 63, 94, 0.16);
+    border-color: rgba(251, 113, 133, 0.42);
+    color: #fecdd3;
+}
+
+.hm-result-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(2, 6, 23, 0.64);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+}
+
+.hm-result-overlay.hidden {
+    display: none;
+}
+
+.hm-result-card {
+    width: min(440px, 100%);
+    padding: 24px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.96));
+    text-align: center;
+    box-shadow: 0 26px 80px rgba(0, 0, 0, 0.36);
+}
+
+.hm-result-card span {
+    color: #a5f3fc;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+}
+
+.hm-result-card h2 {
+    margin: 8px 0;
+    font-size: 2rem;
+}
+
+.hm-result-card p {
+    margin: 0 0 16px;
+    color: rgba(226, 232, 240, 0.8);
+}
+
+.hm-toast {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 2000;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+}
+
+@media (max-width: 980px) {
+    .hm-home-grid,
+    .hm-lobby-layout,
+    .hm-play-area {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-lobby-page {
+        height: auto;
+        min-height: calc(100vh - 86px);
+        overflow: visible;
+    }
+
+    .hm-left-column {
+        grid-template-rows: auto;
+    }
+
+    .hm-board-panel {
+        min-height: 620px;
+    }
+}
+
+@media (max-height: 760px) and (min-width: 981px) {
+    .hm-lobby-page {
+        height: calc(100vh - 72px);
+        margin-top: 8px;
+    }
+
+    .hm-left-column {
+        grid-template-rows: auto minmax(80px, 0.8fr) auto;
+    }
+
+    .hm-friends-box {
+        display: none;
+    }
+
+    .hm-panel,
+    .hm-room-card-top,
+    .hm-board-panel {
+        padding: 14px;
+    }
+
+    .hm-action-grid {
+        gap: 6px;
+    }
+
+    .hm-primary,
+    .hm-secondary,
+    .hm-danger {
+        min-height: 38px;
+        padding: 8px 10px;
+    }
+
+    .hm-key {
+        min-height: 32px;
+    }
+
+    .hm-letter-tile {
+        height: 44px;
+        min-width: 34px;
+    }
+}
+
+@media (max-width: 680px) {
+    .hm-page {
+        width: min(100% - 16px, 1180px);
+        margin-top: 12px;
+    }
+
+    .hm-hero {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 24px;
+    }
+
+    .hm-form,
+    .hm-guess-form,
+    .hm-board-meta,
+    .hm-letter-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-keyboard {
+        grid-template-columns: repeat(7, minmax(32px, 1fr));
+    }
+}

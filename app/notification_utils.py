@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from .models import BattleshipInvite, ChatMessage, ChatRoomMember, ConnectFourInvite, DrawingGameInvite, Friendship, StadtLandFlussInvite, TicTacToeInvite, UnoInvite, UserProfile
+from .models import BattleshipInvite, ChatMessage, ChatRoomMember, ConnectFourInvite, DrawingGameInvite, Friendship, HangmanInvite, StadtLandFlussInvite, TicTacToeInvite, UnoInvite, UserProfile
 
 
 def get_notification_counts(user):
@@ -16,6 +16,7 @@ def get_notification_counts(user):
         "battleship_invites": 0,
         "stadtlandfluss_invites": 0,
         "uno_invites": 0,
+        "hangman_invites": 0,
         "total_notifications": 0,
     }
 
@@ -89,6 +90,15 @@ def get_notification_counts(user):
         counts["uno_invites"] = 0
 
     try:
+        if profile.notify_skribble and not muted_by_dnd:
+            counts["hangman_invites"] = HangmanInvite.objects.filter(
+                to_user=user,
+                status=HangmanInvite.STATUS_PENDING,
+            ).count()
+    except Exception:
+        counts["hangman_invites"] = 0
+
+    try:
         if not profile.notify_chat or muted_by_dnd:
             raise StopIteration
         unread_count = 0
@@ -117,6 +127,7 @@ def get_notification_counts(user):
         + counts["battleship_invites"]
         + counts["stadtlandfluss_invites"]
         + counts["uno_invites"]
+        + counts["hangman_invites"]
     )
 
     return counts
@@ -231,6 +242,18 @@ def get_notification_items(user, limit=10):
                 "title": _("Uno-Einladung"),
                 "text": _("%(user)s hat dich in %(game)s eingeladen") % {"user": invite.from_user.username, "game": invite.game.name},
                 "url": reverse("uno_lobby", args=[invite.game.code]),
+                "action_label": _("Beitreten"),
+                "created_at": invite.created_at,
+                "badge": 1,
+            })
+
+        for invite in HangmanInvite.objects.filter(to_user=user, status=HangmanInvite.STATUS_PENDING).select_related("lobby", "from_user").order_by("-created_at")[:limit]:
+            items.append({
+                "type": "hangman",
+                "icon": "fa-solid fa-user-secret",
+                "title": _("Hangman-Einladung"),
+                "text": _("%(user)s hat dich in %(lobby)s eingeladen") % {"user": invite.from_user.username, "lobby": invite.lobby.name},
+                "url": reverse("hangman_lobby", args=[invite.lobby.code]),
                 "action_label": _("Beitreten"),
                 "created_at": invite.created_at,
                 "badge": 1,

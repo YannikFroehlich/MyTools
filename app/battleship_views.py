@@ -1,6 +1,7 @@
 import json
 import random
 import string
+from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -16,6 +17,8 @@ from django.views.decorators.http import require_GET, require_POST
 
 from .models import BattleshipGame, BattleshipInvite, Friendship, UserProfile
 
+
+GAME_PLAYER_TIMEOUT = timedelta(seconds=30)
 
 BOARD_SIZE = 8
 FLEET = [4, 3, 3, 2, 2]
@@ -167,8 +170,78 @@ def _reset_waiting_game(game):
     game.last_move_at = None
 
 
-def _delete_empty_games():
+def _transfer_owner_if_needed(game, leaving_user):
+    if game.owner_id != leaving_user.id:
+        return
+    game.owner = game.player_a or game.player_b
+
+
+def _mark_player_seen(game, user):
+    now = timezone.now()
+    update_fields = []
+    if game.player_a_id == user.id:
+        game.player_a_last_seen = now
+        update_fields.append("player_a_last_seen")
+    if game.player_b_id == user.id:
+        game.player_b_last_seen = now
+        update_fields.append("player_b_last_seen")
+    if update_fields:
+        game.save(update_fields=update_fields)
+
+
+def _player_slot_is_stale(last_seen, updated_at, now):
+    if last_seen:
+        return last_seen < now - GAME_PLAYER_TIMEOUT
+    return updated_at < now - GAME_PLAYER_TIMEOUT
+
+
+def _cleanup_game_players(game, keep_user_id=None):
+    now = timezone.now()
+    changed = False
+
+    if game.player_a_id and game.player_a_id != keep_user_id and _player_slot_is_stale(game.player_a_last_seen, game.updated_at, now):
+        game.player_a = None
+        game.player_a_last_seen = None
+        changed = True
+    if game.player_b_id and game.player_b_id != keep_user_id and _player_slot_is_stale(game.player_b_last_seen, game.updated_at, now):
+        game.player_b = None
+        game.player_b_last_seen = None
+        changed = True
+
+    if not changed:
+        return False
+
+    if not game.player_a_id and not game.player_b_id:
+        game.delete()
+        return True
+
+    if not game.player_a_id and game.player_b_id:
+        game.player_a = game.player_b
+        game.player_a_last_seen = game.player_b_last_seen
+        game.player_b = None
+        game.player_b_last_seen = None
+
+    if game.owner_id not in [game.player_a_id, game.player_b_id]:
+        game.owner = game.player_a or game.player_b
+
+    _reset_waiting_game(game)
+    game.invites.filter(status=BattleshipInvite.STATUS_PENDING).update(status=BattleshipInvite.STATUS_DECLINED)
+    game.save(update_fields=[
+        "owner", "player_a", "player_b", "player_a_last_seen", "player_b_last_seen",
+        "status", "fleet_a", "fleet_b", "shots_a", "shots_b", "ready_a", "ready_b",
+        "current_turn", "winner_side", "last_move_at", "updated_at",
+    ])
+    return False
+
+
+def _cleanup_stale_games():
+    for game in BattleshipGame.objects.select_related("owner", "player_a", "player_b"):
+        _cleanup_game_players(game)
     BattleshipGame.objects.filter(player_a__isnull=True, player_b__isnull=True).delete()
+
+
+def _delete_empty_games():
+    _cleanup_stale_games()
 
 def _home_games_for_user(user):
     return (
@@ -319,6 +392,7 @@ def battleship_home(request):
             game = BattleshipGame.objects.create(
                 owner=request.user,
                 player_a=request.user,
+                player_a_last_seen=timezone.now(),
                 name=name[:80],
                 code=_generate_game_code(),
             )
@@ -359,13 +433,23 @@ def battleship_lobby(request, code):
         messages.warning(request, _("Diese Schiffe-versenken-Lobby existiert nicht mehr."))
         return redirect("battleship_home")
 
+    if game.side_for_user(request.user):
+        _mark_player_seen(game, request.user)
+    if _cleanup_game_players(game, keep_user_id=request.user.id):
+        messages.warning(request, _("Diese Schiffe-versenken-Lobby existiert nicht mehr."))
+        return redirect("battleship_home")
+    game.refresh_from_db()
+
     if not game.side_for_user(request.user) and not game.player_b_id:
         game.player_b = request.user
+        game.player_b_last_seen = timezone.now()
         game.status = BattleshipGame.STATUS_SETUP
-        game.save(update_fields=["player_b", "status", "updated_at"])
+        game.save(update_fields=["player_b", "player_b_last_seen", "status", "updated_at"])
     elif not game.side_for_user(request.user):
         messages.error(request, _("Dieser Schiffe-versenken-Raum ist bereits voll."))
         return redirect("battleship_home")
+
+    _mark_player_seen(game, request.user)
 
     if game.is_full and game.status == BattleshipGame.STATUS_WAITING:
         game.status = BattleshipGame.STATUS_SETUP
@@ -435,6 +519,16 @@ def battleship_state_api(request, code):
             "error": _("Dieser Schiffe-versenken-Raum wurde gelöscht."),
             "redirectUrl": reverse("battleship_home"),
         }, status=410)
+
+    _mark_player_seen(game, request.user)
+    if _cleanup_game_players(game, keep_user_id=request.user.id):
+        return JsonResponse({
+            "ok": False,
+            "gameDeleted": True,
+            "error": _("Dieser Schiffe-versenken-Raum wurde gelöscht."),
+            "redirectUrl": reverse("battleship_home"),
+        }, status=410)
+    game.refresh_from_db()
 
     return JsonResponse({"ok": True, "game": _serialize_game(game, request.user)})
 
@@ -556,10 +650,18 @@ def battleship_reset_api(request, code):
 def battleship_leave(request, code):
     with transaction.atomic():
         game = get_object_or_404(BattleshipGame.objects.select_for_update(), code=code.upper())
+        if not game.side_for_user(request.user):
+            messages.info(request, _("Du bist nicht mehr in diesem Raum."))
+            return redirect("battleship_home")
+
         if game.player_a_id == request.user.id:
             game.player_a = None
+            game.player_a_last_seen = None
         if game.player_b_id == request.user.id:
             game.player_b = None
+            game.player_b_last_seen = None
+
+        _transfer_owner_if_needed(game, request.user)
 
         if not game.player_a_id and not game.player_b_id:
             game.delete()
@@ -568,7 +670,9 @@ def battleship_leave(request, code):
 
         if not game.player_a_id and game.player_b_id:
             game.player_a = game.player_b
+            game.player_a_last_seen = game.player_b_last_seen
             game.player_b = None
+            game.player_b_last_seen = None
 
         _reset_waiting_game(game)
         game.invites.filter(status=BattleshipInvite.STATUS_PENDING).update(status=BattleshipInvite.STATUS_DECLINED)

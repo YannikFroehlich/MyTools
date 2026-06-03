@@ -1,0 +1,70 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Hangman' %} · MyTools{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/hangman.css' %}">{% endblock %}
+{% block scripts %}{{ block.super }}<script defer src="{% static 'app/js/hangman.js' %}"></script>{% endblock %}
+
+{% block content %}
+<main class="hm-page hm-home-page" data-home-state-url="{% url 'hangman_home_state_api' %}" data-empty-invites-label="{% translate 'Du hast aktuell keine offenen Hangman-Einladungen.' %}" data-empty-games-label="{% translate 'Du hast noch keinen Hangman-Raum.' %}" data-from-label="{% translate 'von' %}" data-accept-label="{% translate 'Annehmen' %}" data-decline-label="{% translate 'Ablehnen' %}" data-round-label="{% translate 'Runde' %}">
+    <section class="hm-hero">
+        <div>
+            <span class="hm-eyebrow"><i class="fa-solid fa-user-secret"></i> {% translate 'Multiplayer-Wortspiel' %}</span>
+            <h1>{% translate 'Hangman' %}</h1>
+            <p>{% translate 'Erstellt einen Raum, ladet Freunde ein und ratet Buchstaben oder das ganze Wort.' %}</p>
+        </div>
+        <div class="hm-hero-mark" aria-hidden="true">_ A _</div>
+    </section>
+
+    <section class="hm-home-grid">
+        <article class="hm-panel">
+            <h2>{% translate 'Neuen Raum erstellen' %}</h2>
+            <form method="post" class="hm-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <label><span>{% translate 'Raum-Name' %}</span><input type="text" name="name" maxlength="80" value="{% translate 'Hangman' %}"></label>
+                <label><span>{% translate 'Fehler erlaubt' %}</span><input type="number" name="max_mistakes" min="5" max="12" value="8"></label>
+                <label class="hm-wide"><span>{% translate 'Eigene Wörter optional' %}</span><textarea name="custom_words" rows="3" placeholder="{% translate 'Wort|Hinweis pro Zeile, z. B. Python|Programmiersprache' %}"></textarea></label>
+                <button class="hm-primary" type="submit"><i class="fa-solid fa-plus"></i> {% translate 'Raum erstellen' %}</button>
+            </form>
+        </article>
+
+        <article class="hm-panel">
+            <h2>{% translate 'Mit Code beitreten' %}</h2>
+            <form method="post" class="hm-form hm-join-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="join">
+                <label><span>{% translate 'Raum-Code' %}</span><input type="text" name="code" maxlength="16" placeholder="ABC123" autocomplete="off"></label>
+                <button class="hm-secondary" type="submit"><i class="fa-solid fa-right-to-bracket"></i> {% translate 'Beitreten' %}</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="hm-panel">
+        <div class="hm-section-heading"><div><span class="hm-eyebrow"><i class="fa-solid fa-envelope-open-text"></i> {% translate 'Einladungen' %}</span><h2>{% translate 'Offene Einladungen' %}</h2></div></div>
+        <div id="hm-invites-live">
+        {% if invites %}
+            <div class="hm-invite-list" id="hm-invite-list">
+                {% for invite in invites %}
+                    <div class="hm-invite-row"><div><strong>{{ invite.lobby.name }}</strong><span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span></div><div class="hm-inline-actions"><form method="post" action="{% url 'hangman_invite_response' invite.id %}">{% csrf_token %}<input type="hidden" name="action" value="accept"><button class="hm-primary" type="submit">{% translate 'Annehmen' %}</button></form><form method="post" action="{% url 'hangman_invite_response' invite.id %}">{% csrf_token %}<input type="hidden" name="action" value="decline"><button class="hm-secondary" type="submit">{% translate 'Ablehnen' %}</button></form></div></div>
+                {% endfor %}
+            </div>
+        {% else %}<p class="hm-muted" id="hm-invites-empty">{% translate 'Du hast aktuell keine offenen Hangman-Einladungen.' %}</p>{% endif %}
+        </div>
+    </section>
+
+    <section class="hm-panel">
+        <div class="hm-section-heading"><div><span class="hm-eyebrow"><i class="fa-solid fa-clock-rotate-left"></i> {% translate 'Verlauf' %}</span><h2>{% translate 'Deine Räume' %}</h2></div></div>
+        <div id="hm-games-live">
+        {% if my_lobbies %}
+            <div class="hm-room-grid" id="hm-room-grid">
+                {% for lobby in my_lobbies %}
+                    <a class="hm-room-card" href="{% url 'hangman_lobby' lobby.code %}"><span class="hm-code">{{ lobby.code }}</span><strong>{{ lobby.name }}</strong><span>{{ lobby.get_status_display }} · {% translate 'Runde' %} {{ lobby.round_number }}</span></a>
+                {% endfor %}
+            </div>
+        {% else %}<p class="hm-muted" id="hm-games-empty">{% translate 'Du hast noch keinen Hangman-Raum.' %}</p>{% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}
