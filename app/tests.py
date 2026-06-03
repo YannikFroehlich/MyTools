@@ -10,6 +10,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.signals import pre_save
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from app.forms import NoteForm
 from app.models import (
@@ -24,6 +25,8 @@ from app.models import (
     HomeWidget,
     HumanBenchmarkHighScore,
     HumanBenchmarkScore,
+    HangmanLobby,
+    HangmanPlayer,
     Note,
     Shortcut,
     ShortcutSection,
@@ -31,6 +34,8 @@ from app.models import (
     StadtLandFlussPlayer,
     TicTacToeGame,
     TicTacToeInvite,
+    UnoGame,
+    UnoPlayer,
     UserProfile,
     WeatherLocation,
 )
@@ -249,6 +254,149 @@ class ModelTests(BaseTestCase):
         )
 
         self.assertEqual(str(highscore), f"{self.user} · Typing Test · 82 WPM")
+
+
+class MultiplayerRoomCleanupTests(BaseTestCase):
+    def test_home_state_apis_delete_empty_rooms_for_all_games(self):
+        empty_rooms = [
+            (
+                TicTacToeGame.objects.create(owner=self.user, code="TTTEMPTY", board=[""] * 9),
+                "tictactoe_home_state_api",
+                TicTacToeGame,
+            ),
+            (
+                ConnectFourGame.objects.create(owner=self.user, code="CFOEMPTY"),
+                "connectfour_home_state_api",
+                ConnectFourGame,
+            ),
+            (
+                BattleshipGame.objects.create(owner=self.user, code="SEAEMPTY"),
+                "battleship_home_state_api",
+                BattleshipGame,
+            ),
+            (
+                UnoGame.objects.create(owner=self.user, code="UNOEMPTY"),
+                "uno_home_state_api",
+                UnoGame,
+            ),
+            (
+                StadtLandFlussLobby.objects.create(owner=self.user, code="SLFEMPTY"),
+                "stadtlandfluss_home_state_api",
+                StadtLandFlussLobby,
+            ),
+            (
+                DrawingGameLobby.objects.create(owner=self.user, code="DRWEMPTY"),
+                "skribble_home",
+                DrawingGameLobby,
+            ),
+            (
+                HangmanLobby.objects.create(owner=self.user, code="HGMEMPTY"),
+                "hangman_home_state_api",
+                HangmanLobby,
+            ),
+        ]
+
+        for room, home_state_route, model in empty_rooms:
+            with self.subTest(route=home_state_route):
+                response = self.client.get(reverse(home_state_route))
+
+                self.assertEqual(response.status_code, 200)
+                self.assertFalse(model.objects.filter(pk=room.pk).exists())
+
+    def test_hangman_home_state_deletes_current_users_stale_room(self):
+        lobby = HangmanLobby.objects.create(owner=self.user, code="HGMSTALE")
+        player = HangmanPlayer.objects.create(lobby=lobby, user=self.user, display_name=self.user.username)
+        HangmanPlayer.objects.filter(pk=player.pk).update(
+            last_seen=timezone.now() - timezone.timedelta(minutes=20)
+        )
+
+        response = self.client.get(reverse("hangman_home_state_api"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(HangmanLobby.objects.filter(pk=lobby.pk).exists())
+
+
+class HangmanManualModeTests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.other = get_user_model().objects.create_user(
+            username="otheruser",
+            password="testpass-123",
+        )
+
+    def create_two_player_lobby(self, code="HGM2P", first_user=None, second_user=None):
+        first_user = first_user or self.user
+        second_user = second_user or self.other
+        lobby = HangmanLobby.objects.create(owner=self.user, code=code, max_mistakes=8)
+        HangmanPlayer.objects.create(lobby=lobby, user=first_user, display_name=first_user.username)
+        HangmanPlayer.objects.create(lobby=lobby, user=second_user, display_name=second_user.username)
+        return lobby
+
+    def test_hangman_manual_review_reveals_letter_after_setter_confirms(self):
+        lobby = self.create_two_player_lobby()
+
+        start_response = self.client.post(reverse("hangman_start_api", args=[lobby.code]))
+        self.assertEqual(start_response.status_code, 200)
+        self.assertTrue(start_response.json()["game"]["canSetWord"])
+
+        word_response = self.client.post(reverse("hangman_word_api", args=[lobby.code]), {
+            "word": "PYTHON",
+            "hint": "Code",
+        })
+        self.assertEqual(word_response.status_code, 200)
+        self.assertEqual(word_response.json()["game"]["roundPhase"], "guessing")
+
+        self.client.force_login(self.other)
+        guess_response = self.client.post(reverse("hangman_guess_api", args=[lobby.code]), {"guess": "P"})
+        self.assertEqual(guess_response.status_code, 200)
+        guess_game = guess_response.json()["game"]
+        self.assertEqual(guess_game["roundPhase"], "review")
+        self.assertEqual(guess_game["pendingGuess"]["guess"], "P")
+        self.assertEqual(guess_game["guessedLetters"], [])
+        self.assertEqual(guess_game["mistakes"], 0)
+
+        self.client.force_login(self.user)
+        review_response = self.client.post(reverse("hangman_review_api", args=[lobby.code]), {"result": "correct"})
+        self.assertEqual(review_response.status_code, 200)
+        review_game = review_response.json()["game"]
+        self.assertEqual(review_game["roundPhase"], "guessing")
+        self.assertIn("P", review_game["guessedLetters"])
+        self.assertEqual(review_game["maskedWord"][0], "P")
+        self.assertEqual(review_game["mistakes"], 0)
+
+    def test_hangman_finishes_after_fourth_round_review(self):
+        lobby = self.create_two_player_lobby(code="HGM4P", first_user=self.other, second_user=self.user)
+        lobby.status = HangmanLobby.STATUS_PLAYING
+        lobby.round_number = 4
+        lobby.word = "PYTHON"
+        lobby.last_guess = {
+            "phase": "review",
+            "pending": True,
+            "player": self.other.username,
+            "playerId": self.other.id,
+            "guess": "PYTHON",
+            "guessType": "word",
+        }
+        lobby.save()
+
+        response = self.client.post(reverse("hangman_review_api", args=[lobby.code]), {"result": "correct"})
+
+        self.assertEqual(response.status_code, 200)
+        game = response.json()["game"]
+        self.assertEqual(game["status"], HangmanLobby.STATUS_FINISHED)
+        self.assertEqual(game["roundPhase"], "game_over")
+        lobby.refresh_from_db()
+        self.assertEqual(lobby.winner, self.other)
+
+    def test_hangman_room_rejects_third_player(self):
+        lobby = self.create_two_player_lobby()
+        third = get_user_model().objects.create_user(username="thirduser", password="testpass-123")
+        self.client.force_login(third)
+
+        response = self.client.get(reverse("hangman_lobby", args=[lobby.code]))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(lobby.players.filter(user=third).exists())
 
 
 class MediaThumbnailTests(BaseTestCase):
@@ -2467,6 +2615,68 @@ class StadtLandFlussTests(BaseTestCase):
         self.assertFalse(response.json()["ok"])
         self.assertTrue(response.json()["lobbyDeleted"])
         self.assertEqual(response.json()["redirectUrl"], reverse("stadtlandfluss_home"))
+
+
+class UnoTests(BaseTestCase):
+    def create_started_game(self):
+        other_user = get_user_model().objects.create_user(
+            username="gegner",
+            password="testpass-123",
+        )
+        game = UnoGame.objects.create(
+            owner=self.user,
+            code="UNO123",
+            status=UnoGame.STATUS_PLAYING,
+            current_color="red",
+            discard_pile=[{"id": "red-5-a", "color": "red", "value": "5", "type": "number", "label": "5"}],
+            deck=[{"id": "green-1-a", "color": "green", "value": "1", "type": "number", "label": "1"}],
+            hands={
+                str(self.user.id): [
+                    {"id": "red-7-a", "color": "red", "value": "7", "type": "number", "label": "7"},
+                    {"id": "blue-9-a", "color": "blue", "value": "9", "type": "number", "label": "9"},
+                ],
+                str(other_user.id): [
+                    {"id": "yellow-2-a", "color": "yellow", "value": "2", "type": "number", "label": "2"},
+                ],
+            },
+        )
+        UnoPlayer.objects.create(game=game, user=self.user, seat=0)
+        UnoPlayer.objects.create(game=game, user=other_user, seat=1)
+        return game
+
+    def test_uno_can_be_called_before_playing_penultimate_card(self):
+        game = self.create_started_game()
+
+        call_response = self.client.post(reverse("uno_call_api", args=[game.code]))
+        self.assertEqual(call_response.status_code, 200)
+        self.assertTrue(call_response.json()["game"]["players"][0]["saidUno"])
+
+        play_response = self.client.post(reverse("uno_play_api", args=[game.code]), {
+            "card_id": "red-7-a",
+        })
+
+        self.assertEqual(play_response.status_code, 200)
+        game.refresh_from_db()
+        self.assertEqual(len(game.hands[str(self.user.id)]), 1)
+        self.assertEqual(game.hands[str(self.user.id)][0]["id"], "blue-9-a")
+        self.assertTrue((game.uno_calls or {}).get(str(self.user.id)))
+
+    def test_forgetting_uno_before_penultimate_card_draws_one_penalty_card(self):
+        game = self.create_started_game()
+
+        response = self.client.post(reverse("uno_play_api", args=[game.code]), {
+            "card_id": "red-7-a",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        game.refresh_from_db()
+        self.assertEqual(len(game.hands[str(self.user.id)]), 2)
+        self.assertEqual(
+            [card["id"] for card in game.hands[str(self.user.id)]],
+            ["blue-9-a", "green-1-a"],
+        )
+        self.assertFalse((game.uno_calls or {}).get(str(self.user.id)))
+        self.assertIn("Uno vergessen", " ".join(game.action_log))
 
 
 class BattleshipTests(BaseTestCase):

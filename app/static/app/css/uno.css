@@ -1975,3 +1975,1523 @@ body.dark-mode .uno-lobby-page .uno-table-panel {
     bottom: 150px !important;
 }
 
+/* UNO polish pass: richer table, clearer turn focus and a more tactile hand. */
+.uno-lobby-page .uno-table-panel {
+    background:
+        radial-gradient(circle at 86% 9%, rgba(34, 197, 94, .16), transparent 26%),
+        radial-gradient(circle at 12% 14%, rgba(59, 130, 246, .18), transparent 28%),
+        linear-gradient(145deg, rgba(127, 29, 29, .97), rgba(35, 9, 9, .98));
+}
+
+.uno-lobby-page .uno-table-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.uno-lobby-page .uno-table-meta span {
+    min-width: 0;
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, .42);
+    border: 1px solid rgba(255, 255, 255, .12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+.uno-table-surface {
+    position: absolute;
+    inset: 18px;
+    border-radius: 28px;
+    background:
+        radial-gradient(ellipse at center, rgba(22, 163, 74, .34), transparent 38%),
+        radial-gradient(ellipse at 50% 50%, transparent 0 45%, rgba(255, 255, 255, .10) 45.4% 46%, transparent 46.4%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 18px),
+        linear-gradient(145deg, rgba(20, 83, 45, .48), rgba(69, 10, 10, .14));
+    border: 1px solid rgba(255, 255, 255, .11);
+    box-shadow:
+        inset 0 0 60px rgba(255, 255, 255, .06),
+        inset 0 -34px 74px rgba(2, 6, 23, .28);
+    pointer-events: none;
+}
+
+.uno-table-emblem {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 172px;
+    height: 86px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, .18);
+    border: 2px solid rgba(255, 255, 255, .12);
+    font-size: 2.4rem;
+    font-weight: 1000;
+    letter-spacing: .08em;
+    transform: translate(-50%, -50%) rotate(-15deg);
+}
+
+.uno-arena {
+    background:
+        radial-gradient(circle at 50% 52%, rgba(255, 242, 184, .46) 0 12%, rgba(250, 204, 21, .20) 13% 24%, transparent 48%),
+        conic-gradient(from 90deg, #7f1d1d, #dc2626, #f97316, #15803d, #1d4ed8, #7f1d1d),
+        linear-gradient(145deg, #111827, #450a0a);
+}
+
+.uno-arena[data-color="red"] { box-shadow: inset 0 0 88px rgba(239, 68, 68, .34), inset 0 -70px 120px rgba(69, 10, 10, .62), 0 28px 70px rgba(2, 6, 23, .36); }
+.uno-arena[data-color="yellow"] { box-shadow: inset 0 0 88px rgba(250, 204, 21, .34), inset 0 -70px 120px rgba(69, 10, 10, .62), 0 28px 70px rgba(2, 6, 23, .36); }
+.uno-arena[data-color="green"] { box-shadow: inset 0 0 88px rgba(34, 197, 94, .34), inset 0 -70px 120px rgba(69, 10, 10, .62), 0 28px 70px rgba(2, 6, 23, .36); }
+.uno-arena[data-color="blue"] { box-shadow: inset 0 0 88px rgba(59, 130, 246, .38), inset 0 -70px 120px rgba(69, 10, 10, .62), 0 28px 70px rgba(2, 6, 23, .36); }
+
+.uno-arena.is-your-turn .uno-table-surface {
+    border-color: rgba(251, 191, 36, .48);
+    animation: uno-turn-surface 1.6s ease-in-out infinite alternate;
+}
+
+.uno-table-center {
+    padding: 14px 18px;
+    border-radius: 24px;
+    background: rgba(15, 23, 42, .24);
+    border: 1px solid rgba(255, 255, 255, .10);
+    box-shadow: 0 20px 54px rgba(0, 0, 0, .20), inset 0 1px 0 rgba(255, 255, 255, .10);
+    backdrop-filter: blur(3px);
+}
+
+.uno-pile {
+    position: relative;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(255, 255, 255, .20), transparent 28%),
+        repeating-linear-gradient(135deg, #111827 0 10px, #1f2937 10px 20px);
+    transform-style: preserve-3d;
+    transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.uno-pile::before,
+.uno-pile::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    z-index: -1;
+    border: 3px solid rgba(255, 255, 255, .72);
+    border-radius: inherit;
+    background: inherit;
+    transform: translate(5px, 5px);
+    opacity: .62;
+}
+
+.uno-pile::after {
+    transform: translate(10px, 10px);
+    opacity: .36;
+}
+
+.uno-pile.is-pulse {
+    animation: uno-pile-pulse .44s ease-out;
+}
+
+.uno-top-card-slot {
+    position: relative;
+    min-width: 118px;
+    min-height: 150px;
+}
+
+.uno-top-card-slot::before {
+    content: "";
+    position: absolute;
+    inset: 12px 6px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .10);
+    border: 2px dashed rgba(255, 255, 255, .18);
+    transform: rotate(4deg);
+}
+
+.uno-card {
+    transform-style: preserve-3d;
+    transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.uno-card::before {
+    background:
+        linear-gradient(125deg, rgba(255, 255, 255, .40), transparent 25%, transparent 62%, rgba(255, 255, 255, .16)),
+        radial-gradient(circle at 24% 18%, rgba(255, 255, 255, .32), transparent 18%);
+}
+
+.uno-card::after {
+    inset: 23% 10%;
+    border: 2px solid rgba(255, 255, 255, .18);
+    background: rgba(255, 255, 255, .20);
+    box-shadow: inset 0 0 18px rgba(255, 255, 255, .16);
+}
+
+.uno-card.is-just-played {
+    animation: uno-card-played .46s cubic-bezier(.2, .85, .28, 1.2);
+}
+
+.uno-hand {
+    align-items: end;
+    justify-content: center;
+    gap: 0;
+    padding: 14px 12px 16px;
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, .58), rgba(15, 23, 42, .32)),
+        rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 18px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 16px 34px rgba(0, 0, 0, .18);
+}
+
+.uno-hand-card {
+    flex: 0 0 auto;
+    margin-inline: -8px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: default;
+    transform: translateY(8px) rotate(var(--hand-tilt));
+    transform-origin: 50% 120%;
+    transition: transform .18s ease, filter .18s ease, z-index .18s ease;
+}
+
+.uno-hand-card .uno-card {
+    box-shadow: 0 18px 28px rgba(0, 0, 0, .34), inset 0 1px 0 rgba(255, 255, 255, .32);
+}
+
+.uno-hand-card.is-playable {
+    cursor: pointer;
+    animation: uno-playable-breathe 1.5s ease-in-out infinite alternate;
+}
+
+.uno-hand-card.is-playable .uno-card {
+    outline: 3px solid rgba(251, 191, 36, .72);
+    outline-offset: 3px;
+}
+
+.uno-hand-card:hover,
+.uno-hand-card:focus-visible {
+    z-index: 30;
+    transform: translateY(-16px) rotate(0deg) scale(1.06);
+    filter: brightness(1.06);
+    outline: none;
+}
+
+.uno-seat-label {
+    backdrop-filter: blur(2px);
+}
+
+.uno-seat.is-current .uno-seat-label::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 18px;
+    border: 2px solid rgba(251, 191, 36, .46);
+    pointer-events: none;
+    animation: uno-seat-ring 1.4s ease-in-out infinite;
+}
+
+.uno-seat-label {
+    position: relative;
+}
+
+.uno-card-back {
+    background:
+        radial-gradient(ellipse at center, #facc15 0 20%, transparent 21%),
+        linear-gradient(145deg, #ef4444, #7f1d1d);
+}
+
+.uno-arena-call {
+    box-shadow: 0 14px 32px rgba(239, 68, 68, .30);
+}
+
+.uno-arena.is-your-turn .uno-arena-call:not(:disabled) {
+    animation: uno-call-nudge 1.1s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .uno-arena.is-your-turn .uno-table-surface,
+    .uno-card.is-just-played,
+    .uno-hand-card.is-playable,
+    .uno-seat.is-current .uno-seat-label,
+    .uno-seat.is-current .uno-seat-label::after,
+    .uno-arena.is-your-turn .uno-arena-call:not(:disabled) {
+        animation: none !important;
+    }
+
+    .uno-card,
+    .uno-hand-card,
+    .uno-pile {
+        transition: none !important;
+    }
+}
+
+@media (max-width: 980px) {
+    .uno-table-surface {
+        inset: 10px;
+        border-radius: 22px;
+    }
+
+    .uno-table-emblem {
+        width: 132px;
+        height: 66px;
+        font-size: 1.8rem;
+    }
+
+    .uno-lobby-page .uno-table-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .uno-hand-card {
+        margin-inline: -10px;
+    }
+}
+
+@keyframes uno-turn-surface {
+    from { box-shadow: inset 0 0 60px rgba(255, 255, 255, .06), inset 0 -34px 74px rgba(2, 6, 23, .28), 0 0 0 rgba(251, 191, 36, 0); }
+    to { box-shadow: inset 0 0 60px rgba(255, 255, 255, .08), inset 0 -34px 74px rgba(2, 6, 23, .28), 0 0 28px rgba(251, 191, 36, .28); }
+}
+
+@keyframes uno-card-played {
+    0% { opacity: .35; transform: translate3d(-70px, 52px, 0) rotate(-18deg) scale(.78); }
+    68% { opacity: 1; transform: translate3d(4px, -4px, 0) rotate(3deg) scale(1.08); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0) scale(1); }
+}
+
+@keyframes uno-playable-breathe {
+    from { filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0)); }
+    to { filter: drop-shadow(0 0 13px rgba(251, 191, 36, .46)); }
+}
+
+@keyframes uno-seat-ring {
+    from { opacity: .45; transform: scale(.98); }
+    to { opacity: 1; transform: scale(1.04); }
+}
+
+@keyframes uno-call-nudge {
+    from { transform: translateY(0); }
+    to { transform: translateY(-4px); }
+}
+
+/* UNO viewport fit:
+   Keep the full in-room table visible on desktop without page scrolling. */
+@media (min-width: 981px) {
+    body:has(.uno-lobby-page) {
+        overflow: hidden !important;
+    }
+
+    body:has(.uno-lobby-page) .site-footer,
+    .uno-lobby-page ~ .site-footer {
+        display: none !important;
+    }
+
+    .uno-lobby-page {
+        width: min(1500px, calc(100% - 14px)) !important;
+        height: calc(100dvh - var(--nav-height, 60px) - 12px) !important;
+        min-height: 0 !important;
+        margin: 6px auto !important;
+        display: grid !important;
+        grid-template-columns: 300px minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 10px;
+        align-items: stretch;
+        overflow: hidden !important;
+    }
+
+    .uno-lobby-page .uno-lobby-top {
+        min-height: 0;
+        gap: 9px;
+        padding: 11px 12px;
+        overflow: hidden;
+    }
+
+    .uno-lobby-page .uno-lobby-top h1 {
+        font-size: clamp(1.3rem, 2.45vw, 2.15rem);
+    }
+
+    .uno-lobby-page .uno-lobby-top p {
+        margin-top: 3px;
+        font-size: .84rem;
+    }
+
+    .uno-lobby-page .uno-top-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .uno-lobby-page .uno-top-actions form {
+        display: contents;
+    }
+
+    .uno-lobby-page .uno-primary,
+    .uno-lobby-page .uno-secondary,
+    .uno-lobby-page .uno-danger {
+        min-height: 32px;
+        padding: 0 8px;
+        border-radius: 10px;
+        font-size: .78rem;
+        gap: 5px;
+    }
+
+    .uno-lobby-page .uno-side-panel {
+        min-height: 0;
+        padding: 10px;
+        overflow: hidden;
+        display: grid;
+        grid-template-rows: auto minmax(72px, .8fr) auto auto minmax(0, .7fr);
+        gap: 8px;
+    }
+
+    .uno-lobby-page .uno-side-panel h2 {
+        margin-bottom: 0;
+        font-size: .95rem;
+    }
+
+    .uno-lobby-page .uno-player-list,
+    .uno-lobby-page .uno-friend-list,
+    .uno-lobby-page .uno-log {
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 2px;
+    }
+
+    .uno-lobby-page .uno-player-row,
+    .uno-lobby-page .uno-friend-row {
+        padding: 6px 7px;
+        border-radius: 11px;
+    }
+
+    .uno-lobby-page .uno-player-row {
+        grid-template-columns: 32px minmax(0, 1fr) auto;
+    }
+
+    .uno-lobby-page .uno-player-avatar,
+    .uno-lobby-page .uno-friend-mini > span {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+    }
+
+    .uno-lobby-page .uno-status-card {
+        margin-top: 0;
+        padding: 8px;
+        border-radius: 11px;
+    }
+
+    .uno-lobby-page .uno-status-card p {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        font-size: .78rem;
+        line-height: 1.2;
+    }
+
+    .uno-lobby-page .uno-rule-pills,
+    .uno-lobby-page .uno-log-panel,
+    .uno-lobby-page .uno-friends-box {
+        margin-top: 0;
+    }
+
+    .uno-lobby-page .uno-rule-pills {
+        gap: 5px;
+    }
+
+    .uno-lobby-page .uno-rule-pills span {
+        padding: 4px 6px;
+        font-size: .68rem;
+    }
+
+    .uno-lobby-page .uno-log-panel summary {
+        min-height: 28px;
+        font-size: .8rem;
+    }
+
+    .uno-lobby-page .uno-table-panel {
+        min-height: 0;
+        padding: 10px;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 8px;
+        overflow: hidden;
+    }
+
+    .uno-lobby-page .uno-table-meta {
+        margin-bottom: 0;
+        gap: 6px;
+        font-size: .78rem;
+    }
+
+    .uno-lobby-page .uno-table-meta span {
+        padding: 5px 7px;
+        border-radius: 10px;
+    }
+
+    .uno-lobby-page .uno-arena {
+        min-height: 0 !important;
+        height: 100%;
+        border-radius: 16px;
+    }
+
+    .uno-table-surface {
+        inset: 12px;
+        border-radius: 22px;
+    }
+
+    .uno-lobby-page .uno-table-center {
+        grid-template-columns: 80px 94px 78px;
+        gap: 8px;
+        padding: 9px 10px;
+        border-radius: 18px;
+    }
+
+    .uno-lobby-page .uno-pile {
+        width: 72px;
+        height: 102px;
+        border-width: 3px;
+        border-radius: 12px;
+    }
+
+    .uno-lobby-page .uno-pile span {
+        font-size: .72rem;
+        transform: translateY(-17px);
+    }
+
+    .uno-lobby-page .uno-pile strong {
+        font-size: 1.45rem;
+        transform: translateY(17px);
+    }
+
+    .uno-lobby-page .uno-top-card-slot {
+        min-width: 88px;
+        min-height: 118px;
+    }
+
+    .uno-lobby-page .uno-card.is-large {
+        width: 82px;
+        height: 118px;
+        border-width: 4px;
+        border-radius: 13px;
+    }
+
+    .uno-lobby-page .uno-current-color {
+        width: 76px;
+        min-height: 32px;
+        font-size: .72rem;
+    }
+
+    .uno-lobby-page .uno-seat {
+        width: min(200px, 29%);
+        min-height: 84px;
+    }
+
+    .uno-lobby-page .uno-seat-label {
+        min-width: 136px;
+        max-width: 184px;
+        grid-template-columns: 30px minmax(0, 1fr) auto;
+        gap: 6px;
+        padding: 5px 7px;
+        border-radius: 11px;
+    }
+
+    .uno-lobby-page .uno-seat-label strong {
+        font-size: .78rem;
+    }
+
+    .uno-lobby-page .uno-seat-label small {
+        font-size: .65rem;
+    }
+
+    .uno-lobby-page .uno-seat-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+    }
+
+    .uno-lobby-page .uno-seat-hand {
+        width: 138px;
+        height: 54px;
+    }
+
+    .uno-lobby-page .uno-card-back {
+        width: 30px;
+        height: 44px;
+        border-width: 2px;
+    }
+
+    .uno-lobby-page .uno-card-back::after {
+        inset: 9px 3px;
+        font-size: .4rem;
+    }
+
+    .uno-seat.is-you {
+        bottom: 110px !important;
+    }
+
+    .uno-seat.is-you .uno-seat-label {
+        min-width: 108px;
+        max-width: 128px;
+        min-height: 42px;
+        grid-template-columns: 24px minmax(0, 1fr);
+        padding: 5px 7px;
+    }
+
+    .uno-seat.is-you .uno-seat-avatar {
+        width: 24px;
+        height: 24px;
+    }
+
+    .uno-lobby-page .uno-arena-hand {
+        left: 12px;
+        right: 106px;
+        bottom: 9px;
+    }
+
+    .uno-lobby-page .uno-hand {
+        min-height: 88px;
+        padding: 8px 10px 10px;
+        border-radius: 14px;
+    }
+
+    .uno-lobby-page .uno-hand-card {
+        margin-inline: -7px;
+        transform: translateY(5px) rotate(var(--hand-tilt));
+    }
+
+    .uno-lobby-page .uno-hand-card:hover,
+    .uno-lobby-page .uno-hand-card:focus-visible {
+        transform: translateY(-10px) rotate(0deg) scale(1.04);
+    }
+
+    .uno-lobby-page .uno-hand .uno-card {
+        width: 58px;
+        height: 82px;
+        border-width: 3px;
+        border-radius: 10px;
+    }
+
+    .uno-lobby-page .uno-hand .uno-card strong {
+        font-size: 1.12rem;
+    }
+
+    .uno-lobby-page .uno-card-corner {
+        left: 6px;
+        top: 5px;
+        font-size: .7rem;
+    }
+
+    .uno-lobby-page .uno-arena-call {
+        right: 12px;
+        bottom: 14px;
+        min-width: 82px;
+        min-height: 34px;
+    }
+
+    .uno-lobby-page .uno-color-picker,
+    .uno-lobby-page .uno-target-picker {
+        position: absolute;
+        left: 50%;
+        bottom: 118px;
+        z-index: 24;
+        max-width: min(560px, calc(100% - 32px));
+        margin: 0;
+        padding: 9px 10px;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, .78);
+        border: 1px solid rgba(255, 255, 255, .16);
+        box-shadow: 0 18px 42px rgba(0, 0, 0, .34);
+        backdrop-filter: blur(7px);
+        transform: translateX(-50%);
+    }
+
+    .uno-lobby-page .uno-color-picker.hidden,
+    .uno-lobby-page .uno-target-picker.hidden {
+        display: none;
+    }
+
+    .uno-lobby-page .uno-color-picker button {
+        width: 30px;
+        height: 30px;
+    }
+
+    .uno-lobby-page #uno-target-list button {
+        min-height: 30px;
+        padding: 0 10px;
+        font-size: .78rem;
+    }
+}
+
+@media (max-height: 780px) and (min-width: 981px) {
+    .uno-lobby-page {
+        grid-template-columns: 286px minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .uno-lobby-page .uno-lobby-top,
+    .uno-lobby-page .uno-side-panel,
+    .uno-lobby-page .uno-table-panel {
+        padding: 8px;
+    }
+
+    .uno-lobby-page .uno-lobby-top h1 {
+        font-size: 1.42rem;
+    }
+
+    .uno-lobby-page .uno-primary,
+    .uno-lobby-page .uno-secondary,
+    .uno-lobby-page .uno-danger {
+        min-height: 30px;
+        font-size: .72rem;
+    }
+
+    .uno-lobby-page .uno-side-panel {
+        grid-template-rows: auto minmax(64px, .8fr) auto auto minmax(0, .5fr);
+        gap: 6px;
+    }
+
+    .uno-lobby-page .uno-table-center {
+        transform: translate(-50%, -54%) scale(.94);
+    }
+
+    .uno-table-emblem {
+        width: 128px;
+        height: 64px;
+        font-size: 1.75rem;
+    }
+
+    .uno-seat.is-you {
+        bottom: 96px !important;
+    }
+
+    .uno-lobby-page .uno-arena-hand {
+        right: 96px;
+        bottom: 7px;
+    }
+
+    .uno-lobby-page .uno-hand {
+        min-height: 78px;
+        padding-block: 6px 8px;
+    }
+
+    .uno-lobby-page .uno-hand .uno-card {
+        width: 52px;
+        height: 74px;
+    }
+
+    .uno-lobby-page .uno-arena-call {
+        min-width: 76px;
+        bottom: 11px;
+    }
+
+    .uno-lobby-page .uno-color-picker,
+    .uno-lobby-page .uno-target-picker {
+        bottom: 100px;
+        padding: 7px 8px;
+    }
+}
+
+/* Cleaner player list cards in the side panel. */
+.uno-player-list {
+    align-content: start;
+}
+
+.uno-player-row {
+    position: relative;
+    isolation: isolate;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .055)),
+        rgba(15, 23, 42, .38);
+    border: 1px solid rgba(255, 255, 255, .14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10);
+    overflow: hidden;
+}
+
+.uno-player-row::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: rgba(148, 163, 184, .38);
+}
+
+.uno-player-row.is-current {
+    outline: 0;
+    border-color: rgba(251, 191, 36, .58);
+    background:
+        linear-gradient(135deg, rgba(251, 191, 36, .16), rgba(255, 255, 255, .065)),
+        rgba(15, 23, 42, .42);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 0 0 1px rgba(251, 191, 36, .14), 0 10px 24px rgba(0, 0, 0, .18);
+}
+
+.uno-player-row.is-current::before {
+    background: linear-gradient(180deg, #fbbf24, #ef4444);
+}
+
+.uno-player-avatar {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, .22);
+}
+
+.uno-player-row strong {
+    line-height: 1.08;
+}
+
+.uno-player-row small {
+    color: rgba(226, 232, 240, .74);
+    font-weight: 800;
+}
+
+.uno-player-row .uno-catch-button {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+}
+
+@media (min-width: 981px) {
+    .uno-lobby-page .uno-player-list {
+        gap: 6px;
+    }
+
+    .uno-lobby-page .uno-player-row {
+        min-height: 46px;
+        padding: 7px 8px 7px 10px;
+        grid-template-columns: 30px minmax(0, 1fr) auto;
+        align-items: center;
+    }
+
+    .uno-lobby-page .uno-player-row strong {
+        font-size: .86rem;
+    }
+
+    .uno-lobby-page .uno-player-row small {
+        margin-top: 1px;
+        font-size: .72rem;
+    }
+}
+
+/* More UNO-like card faces, without image assets. */
+.uno-card {
+    border-color: rgba(255, 255, 255, .96);
+    border-radius: 15px;
+    background-clip: padding-box;
+    box-shadow:
+        0 18px 34px rgba(0, 0, 0, .36),
+        inset 0 1px 0 rgba(255, 255, 255, .38),
+        inset 0 -12px 20px rgba(0, 0, 0, .16);
+}
+
+.uno-card[data-color="red"] {
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 255, 255, .22), transparent 16%),
+        linear-gradient(145deg, #ff4b3e, #c1121f 58%, #7f1d1d);
+}
+
+.uno-card[data-color="yellow"] {
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 255, 255, .28), transparent 16%),
+        linear-gradient(145deg, #ffe45e, #facc15 54%, #b45309);
+}
+
+.uno-card[data-color="green"] {
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 255, 255, .20), transparent 16%),
+        linear-gradient(145deg, #42e66c, #16a34a 55%, #14532d);
+}
+
+.uno-card[data-color="blue"] {
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 255, 255, .22), transparent 16%),
+        linear-gradient(145deg, #4ea3ff, #2563eb 55%, #172554);
+}
+
+.uno-card[data-color="wild"] {
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 255, 255, .20), transparent 16%),
+        conic-gradient(from -45deg, #ef4444 0 25%, #facc15 0 50%, #22c55e 0 75%, #3b82f6 0 100%);
+}
+
+.uno-card::before {
+    inset: 16% 7%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .92);
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, .42),
+        0 5px 10px rgba(0, 0, 0, .16);
+    transform: rotate(-24deg);
+}
+
+.uno-card::after {
+    inset: 0;
+    border-radius: inherit;
+    background:
+        linear-gradient(130deg, rgba(255, 255, 255, .30), transparent 24%, transparent 70%, rgba(255, 255, 255, .10)),
+        radial-gradient(circle at 78% 85%, rgba(0, 0, 0, .18), transparent 24%);
+    border: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+.uno-card-face {
+    width: 70%;
+    aspect-ratio: 1 / 1.1;
+    display: grid;
+    place-items: center;
+    color: inherit;
+    font-size: 2.5rem;
+    font-weight: 1000;
+    line-height: .9;
+    text-align: center;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, .28),
+        0 0 10px rgba(0, 0, 0, .16);
+    transform: rotate(-12deg);
+}
+
+.uno-card[data-color="yellow"] .uno-card-face,
+.uno-card[data-color="yellow"] .uno-card-corner {
+    color: #fff7ed;
+    text-shadow: 0 2px 0 rgba(120, 53, 15, .42), 0 0 8px rgba(120, 53, 15, .20);
+}
+
+.uno-card-corner {
+    left: auto;
+    top: auto;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .90);
+    color: currentColor;
+    font-size: .82rem;
+    line-height: 1;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .22);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .16);
+}
+
+.uno-card-corner-top {
+    left: 7px;
+    top: 7px;
+}
+
+.uno-card-corner-bottom {
+    right: 7px;
+    bottom: 7px;
+    transform: rotate(180deg);
+}
+
+.uno-skip-icon,
+.uno-reverse-icon,
+.uno-draw-icon,
+.uno-wild-icon {
+    position: relative;
+    z-index: 1;
+    display: inline-grid;
+    place-items: center;
+    color: currentColor;
+}
+
+.uno-skip-icon {
+    width: 1.36em;
+    height: 1.36em;
+    border-width: .15em;
+}
+
+.uno-reverse-icon {
+    width: 1.3em;
+    height: 1.3em;
+    border-radius: 50%;
+    font-size: .9em;
+    border: .11em solid currentColor;
+}
+
+.uno-draw-icon {
+    font-size: .86em;
+    letter-spacing: 0;
+}
+
+.uno-wild-icon {
+    width: 1.75em;
+    min-height: 1.28em;
+    padding: .12em .18em;
+    border-radius: 999px;
+    color: #111827;
+    background: rgba(255, 255, 255, .92);
+    font-size: .54em;
+    letter-spacing: .02em;
+    text-shadow: none;
+}
+
+.uno-card.is-large .uno-card-face {
+    font-size: 3rem;
+}
+
+.uno-card.is-large .uno-card-corner {
+    width: 31px;
+    height: 31px;
+    font-size: .9rem;
+}
+
+.uno-lobby-page .uno-hand .uno-card .uno-card-face {
+    font-size: 1.55rem;
+}
+
+.uno-lobby-page .uno-hand .uno-card .uno-card-corner {
+    width: 19px;
+    height: 19px;
+    font-size: .56rem;
+}
+
+.uno-lobby-page .uno-card.is-large .uno-card-face {
+    font-size: 2.05rem;
+}
+
+.uno-lobby-page .uno-card.is-large .uno-card-corner {
+    width: 24px;
+    height: 24px;
+    font-size: .72rem;
+}
+
+/* Contrast correction for UNO-like faces:
+   central symbols sit on the white oval in the card color, corner values stay white. */
+.uno-card {
+    --uno-card-ink: #ffffff;
+}
+
+.uno-card[data-color="red"] { --uno-card-ink: #dc2626; }
+.uno-card[data-color="yellow"] { --uno-card-ink: #b45309; }
+.uno-card[data-color="green"] { --uno-card-ink: #16a34a; }
+.uno-card[data-color="blue"] { --uno-card-ink: #2563eb; }
+.uno-card[data-color="wild"] { --uno-card-ink: #111827; }
+
+.uno-card .uno-card-face {
+    color: var(--uno-card-ink);
+    text-shadow:
+        0 1px 0 rgba(255, 255, 255, .55),
+        0 2px 8px rgba(0, 0, 0, .14);
+}
+
+.uno-card[data-color="yellow"] .uno-card-face {
+    color: #b45309;
+    text-shadow:
+        0 1px 0 rgba(255, 255, 255, .60),
+        0 2px 8px rgba(120, 53, 15, .16);
+}
+
+.uno-card .uno-card-corner,
+.uno-card[data-color="yellow"] .uno-card-corner {
+    background: transparent;
+    color: #ffffff;
+    box-shadow: none;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, .26),
+        0 0 7px rgba(0, 0, 0, .24);
+}
+
+.uno-card[data-color="yellow"] .uno-card-corner {
+    text-shadow:
+        0 2px 0 rgba(120, 53, 15, .34),
+        0 0 7px rgba(120, 53, 15, .26);
+}
+
+.uno-card .uno-wild-icon {
+    color: #111827;
+    background: rgba(255, 255, 255, .92);
+}
+
+/* Final card-face contrast: dark UNO center with white symbols. */
+.uno-card::before {
+    background:
+        radial-gradient(circle at 34% 24%, rgba(255, 255, 255, .18), transparent 18%),
+        linear-gradient(145deg, #111827, #020617);
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, .16),
+        inset 0 -10px 18px rgba(0, 0, 0, .45),
+        0 5px 10px rgba(0, 0, 0, .22);
+}
+
+.uno-card .uno-card-face,
+.uno-card[data-color="yellow"] .uno-card-face {
+    color: #ffffff;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, .42),
+        0 0 9px rgba(255, 255, 255, .18);
+}
+
+.uno-card .uno-wild-icon {
+    color: #ffffff;
+    background: transparent;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, .42),
+        0 0 9px rgba(255, 255, 255, .18);
+}
+
+/* UNO reference style: colored face, big white oval ring, white value with black outline. */
+.uno-card {
+    border-color: #ffffff;
+    border-radius: 16px;
+}
+
+.uno-card::before {
+    content: "";
+    position: absolute;
+    left: -35%;
+    top: 7%;
+    width: 158%;
+    height: 84%;
+    border: max(7px, .09em) solid #ffffff;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+    transform: rotate(-36deg);
+    pointer-events: none;
+}
+
+.uno-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, .18), transparent 22%, transparent 72%, rgba(0, 0, 0, .12));
+    box-shadow: inset 0 -10px 18px rgba(0, 0, 0, .12);
+    transform: none;
+    pointer-events: none;
+}
+
+.uno-card .uno-card-face,
+.uno-card[data-color="yellow"] .uno-card-face {
+    color: #ffffff;
+    font-weight: 1000;
+    -webkit-text-stroke: .09em #050505;
+    paint-order: stroke fill;
+    text-shadow:
+        .06em .08em 0 #050505,
+        0 .03em 0 #050505;
+    transform: rotate(-12deg);
+}
+
+.uno-card .uno-card-corner,
+.uno-card[data-color="yellow"] .uno-card-corner {
+    width: auto;
+    height: auto;
+    min-width: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #ffffff;
+    box-shadow: none;
+    font-weight: 1000;
+    -webkit-text-stroke: .11em #050505;
+    paint-order: stroke fill;
+    text-shadow:
+        .06em .08em 0 #050505,
+        0 .03em 0 #050505;
+}
+
+.uno-card-corner-top {
+    left: 8px;
+    top: 7px;
+}
+
+.uno-card-corner-bottom {
+    right: 8px;
+    bottom: 7px;
+    transform: rotate(180deg);
+}
+
+.uno-card .uno-skip-icon,
+.uno-card .uno-reverse-icon,
+.uno-card .uno-draw-icon,
+.uno-card .uno-wild-icon {
+    color: #ffffff;
+    background: transparent;
+    -webkit-text-stroke: .06em #050505;
+    paint-order: stroke fill;
+    filter: drop-shadow(.08em .08em 0 #050505);
+    text-shadow: none;
+}
+
+.uno-card .uno-skip-icon {
+    border-color: #ffffff;
+    filter: drop-shadow(.08em .08em 0 #050505);
+}
+
+.uno-card .uno-skip-icon::after {
+    background: #ffffff;
+}
+
+.uno-card .uno-reverse-icon {
+    border-color: #ffffff;
+}
+
+.uno-lobby-page .uno-hand .uno-card::before {
+    border-width: 5px;
+}
+
+.uno-lobby-page .uno-hand .uno-card .uno-card-face {
+    -webkit-text-stroke-width: .08em;
+}
+
+.uno-lobby-page .uno-hand .uno-card .uno-card-corner {
+    -webkit-text-stroke-width: .09em;
+}
+
+/* Final UNO card replica pass based on the provided reference sheet. */
+.uno-card {
+    --uno-stroke: #050505;
+    border: 4px solid #ffffff !important;
+    border-radius: 9px !important;
+    color: #ffffff !important;
+    font-family: "Arial Black", "Impact", system-ui, sans-serif;
+    overflow: hidden;
+    box-shadow:
+        0 12px 22px rgba(0, 0, 0, .34),
+        inset 0 1px 0 rgba(255, 255, 255, .18) !important;
+}
+
+.uno-card[data-color="red"] {
+    background: #d81008 !important;
+}
+
+.uno-card[data-color="yellow"] {
+    background: #ffd414 !important;
+}
+
+.uno-card[data-color="green"] {
+    background: #05984a !important;
+}
+
+.uno-card[data-color="blue"] {
+    background: #12a7df !important;
+}
+
+.uno-card[data-color="wild"] {
+    background: #090909 !important;
+}
+
+.uno-card::before {
+    content: "" !important;
+    position: absolute !important;
+    left: -38% !important;
+    top: 10% !important;
+    width: 170% !important;
+    height: 76% !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    transform: rotate(-35deg) !important;
+    pointer-events: none !important;
+}
+
+.uno-card::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border: 0 !important;
+    border-radius: inherit !important;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, .14), transparent 18%, transparent 72%, rgba(0, 0, 0, .10)) !important;
+    box-shadow: inset 0 -8px 16px rgba(0, 0, 0, .10) !important;
+    transform: none !important;
+    pointer-events: none !important;
+}
+
+.uno-card-face {
+    z-index: 2 !important;
+    width: auto !important;
+    aspect-ratio: auto !important;
+    color: #ffffff !important;
+    font-style: italic;
+    font-size: clamp(2.25rem, 40%, 3rem);
+    line-height: .9;
+    letter-spacing: 0;
+    transform: rotate(-10deg) skewX(-6deg) !important;
+    -webkit-text-stroke: 3px var(--uno-stroke) !important;
+    paint-order: stroke fill !important;
+    text-shadow:
+        2px 3px 0 var(--uno-stroke),
+        -1px 0 0 var(--uno-stroke),
+        0 -1px 0 var(--uno-stroke),
+        1px 0 0 var(--uno-stroke),
+        0 1px 0 var(--uno-stroke) !important;
+}
+
+.uno-card.is-large .uno-card-face {
+    font-size: 3.05rem !important;
+    -webkit-text-stroke-width: 3.4px !important;
+}
+
+.uno-card-corner {
+    z-index: 3 !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #ffffff !important;
+    font-style: italic;
+    font-size: .78rem !important;
+    line-height: 1 !important;
+    -webkit-text-stroke: 1.4px var(--uno-stroke) !important;
+    paint-order: stroke fill !important;
+    text-shadow:
+        1px 1px 0 var(--uno-stroke),
+        -1px 0 0 var(--uno-stroke),
+        0 -1px 0 var(--uno-stroke),
+        1px 0 0 var(--uno-stroke),
+        0 1px 0 var(--uno-stroke) !important;
+    box-shadow: none !important;
+}
+
+.uno-card-corner-top {
+    left: 5px !important;
+    top: 5px !important;
+}
+
+.uno-card-corner-bottom {
+    right: 5px !important;
+    bottom: 5px !important;
+    transform: rotate(180deg) !important;
+}
+
+.uno-card[data-value="skip"] .uno-card-face,
+.uno-card[data-value="reverse"] .uno-card-face,
+.uno-card[data-value="draw2"] .uno-card-face,
+.uno-card[data-value="wild"] .uno-card-face,
+.uno-card[data-value="wild4"] .uno-card-face {
+    font-size: 2rem !important;
+}
+
+.uno-card .uno-skip-icon {
+    width: 1.1em !important;
+    height: 1.1em !important;
+    border: .18em solid #ffffff !important;
+    border-radius: 50% !important;
+    filter:
+        drop-shadow(2px 2px 0 var(--uno-stroke))
+        drop-shadow(-1px 0 0 var(--uno-stroke)) !important;
+}
+
+.uno-card .uno-skip-icon::after {
+    width: 1.28em !important;
+    height: .18em !important;
+    background: #ffffff !important;
+    box-shadow:
+        1px 1px 0 var(--uno-stroke),
+        -1px -1px 0 var(--uno-stroke) !important;
+}
+
+.uno-card .uno-reverse-icon {
+    width: auto !important;
+    height: auto !important;
+    border: 0 !important;
+    font-size: 1.55em !important;
+    filter: none !important;
+}
+
+.uno-card .uno-draw-icon {
+    font-size: .9em !important;
+}
+
+.uno-card .uno-wild-icon {
+    width: 1.8em !important;
+    min-height: 1.18em !important;
+    border-radius: 50% !important;
+    background: conic-gradient(from -35deg, #ef4444 0 25%, #3b82f6 0 50%, #22c55e 0 75%, #facc15 0 100%) !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff;
+    font-size: .48em !important;
+    -webkit-text-stroke: 1.2px var(--uno-stroke) !important;
+    filter: drop-shadow(2px 2px 0 var(--uno-stroke)) !important;
+}
+
+.uno-card[data-value="wild4"] .uno-wild-icon {
+    background:
+        linear-gradient(135deg, transparent 0 32%, rgba(255, 255, 255, .96) 33% 67%, transparent 68%),
+        conic-gradient(from -35deg, #ef4444 0 25%, #3b82f6 0 50%, #22c55e 0 75%, #facc15 0 100%) !important;
+}
+
+.uno-lobby-page .uno-hand .uno-card {
+    border-width: 3px !important;
+    border-radius: 8px !important;
+}
+
+.uno-lobby-page .uno-hand .uno-card::before {
+    left: -42% !important;
+    top: 9% !important;
+    width: 178% !important;
+    height: 78% !important;
+}
+
+.uno-lobby-page .uno-hand .uno-card .uno-card-face {
+    font-size: 1.55rem !important;
+    -webkit-text-stroke-width: 2px !important;
+    text-shadow:
+        1px 2px 0 var(--uno-stroke),
+        -1px 0 0 var(--uno-stroke),
+        0 -1px 0 var(--uno-stroke),
+        1px 0 0 var(--uno-stroke),
+        0 1px 0 var(--uno-stroke) !important;
+}
+
+.uno-lobby-page .uno-hand .uno-card .uno-card-corner {
+    font-size: .5rem !important;
+    -webkit-text-stroke-width: .9px !important;
+}
+
+.uno-lobby-page .uno-card.is-large .uno-card-face {
+    font-size: 2.2rem !important;
+    -webkit-text-stroke-width: 2.5px !important;
+}
+
+.uno-lobby-page .uno-card.is-large .uno-card-corner {
+    font-size: .64rem !important;
+    -webkit-text-stroke-width: 1.1px !important;
+}
+
+/* Simple custom MyTools UNO cards:
+   solid color background, large centered value, rainbow for Wunsch/+4. */
+.uno-card,
+.uno-lobby-page .uno-hand .uno-card,
+.uno-lobby-page .uno-card.is-large {
+    border: 4px solid rgba(255, 255, 255, .94) !important;
+    border-radius: 13px !important;
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    display: grid !important;
+    place-items: center !important;
+    overflow: hidden !important;
+    box-shadow:
+        0 14px 24px rgba(0, 0, 0, .34),
+        inset 0 1px 0 rgba(255, 255, 255, .22),
+        inset 0 -16px 24px rgba(0, 0, 0, .16) !important;
+}
+
+.uno-card[data-color="red"],
+.uno-lobby-page .uno-hand .uno-card[data-color="red"],
+.uno-lobby-page .uno-card.is-large[data-color="red"] {
+    background: #e11d1d !important;
+}
+
+.uno-card[data-color="yellow"],
+.uno-lobby-page .uno-hand .uno-card[data-color="yellow"],
+.uno-lobby-page .uno-card.is-large[data-color="yellow"] {
+    background: #facc15 !important;
+}
+
+.uno-card[data-color="green"],
+.uno-lobby-page .uno-hand .uno-card[data-color="green"],
+.uno-lobby-page .uno-card.is-large[data-color="green"] {
+    background: #16a34a !important;
+}
+
+.uno-card[data-color="blue"],
+.uno-lobby-page .uno-hand .uno-card[data-color="blue"],
+.uno-lobby-page .uno-card.is-large[data-color="blue"] {
+    background: #2563eb !important;
+}
+
+.uno-card[data-color="wild"],
+.uno-card[data-value="wild"],
+.uno-card[data-value="wild4"],
+.uno-lobby-page .uno-hand .uno-card[data-color="wild"],
+.uno-lobby-page .uno-hand .uno-card[data-value="wild"],
+.uno-lobby-page .uno-hand .uno-card[data-value="wild4"],
+.uno-lobby-page .uno-card.is-large[data-color="wild"],
+.uno-lobby-page .uno-card.is-large[data-value="wild"],
+.uno-lobby-page .uno-card.is-large[data-value="wild4"] {
+    background: conic-gradient(from 45deg, #ef4444, #facc15, #22c55e, #38bdf8, #8b5cf6, #ef4444) !important;
+}
+
+.uno-card::before,
+.uno-card::after {
+    display: none !important;
+}
+
+.uno-card .uno-card-corner {
+    display: none !important;
+}
+
+.uno-card .uno-card-face,
+.uno-card[data-color="yellow"] .uno-card-face,
+.uno-lobby-page .uno-hand .uno-card .uno-card-face,
+.uno-lobby-page .uno-card.is-large .uno-card-face {
+    z-index: 1 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    color: #ffffff !important;
+    font-family: "Arial Black", Impact, system-ui, sans-serif !important;
+    font-style: normal !important;
+    font-size: clamp(2rem, 42%, 3rem) !important;
+    font-weight: 1000 !important;
+    line-height: .95 !important;
+    letter-spacing: 0 !important;
+    text-align: center !important;
+    transform: none !important;
+    -webkit-text-stroke: 0 !important;
+    paint-order: normal !important;
+    text-shadow:
+        0 3px 0 rgba(0, 0, 0, .28),
+        0 0 12px rgba(0, 0, 0, .24) !important;
+}
+
+.uno-card[data-color="yellow"] .uno-card-face,
+.uno-lobby-page .uno-hand .uno-card[data-color="yellow"] .uno-card-face,
+.uno-lobby-page .uno-card.is-large[data-color="yellow"] .uno-card-face {
+    color: #111827 !important;
+    text-shadow:
+        0 2px 0 rgba(255, 255, 255, .34),
+        0 0 10px rgba(120, 53, 15, .18) !important;
+}
+
+.uno-card .uno-action-symbol,
+.uno-card .uno-skip-icon,
+.uno-card .uno-reverse-icon,
+.uno-card .uno-draw-icon,
+.uno-card .uno-wild-icon {
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #ffffff !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    font: inherit !important;
+    filter: none !important;
+    -webkit-text-stroke: 0 !important;
+    text-shadow: inherit !important;
+}
+
+.uno-card[data-color="yellow"] .uno-action-symbol,
+.uno-lobby-page .uno-hand .uno-card[data-color="yellow"] .uno-action-symbol,
+.uno-lobby-page .uno-card.is-large[data-color="yellow"] .uno-action-symbol {
+    color: #111827 !important;
+}
+
+.uno-card[data-value="wild"] .uno-card-face {
+    max-width: 88%;
+    font-size: clamp(.9rem, 24%, 1.45rem) !important;
+    text-transform: uppercase;
+}
+
+.uno-lobby-page .uno-hand .uno-card .uno-card-face {
+    font-size: 1.35rem !important;
+}
+
+.uno-lobby-page .uno-hand .uno-card[data-value="wild"] .uno-card-face {
+    font-size: .62rem !important;
+}
+
+.uno-lobby-page .uno-card.is-large .uno-card-face {
+    font-size: 2rem !important;
+}
+
+.uno-lobby-page .uno-card.is-large[data-value="wild"] .uno-card-face {
+    font-size: .95rem !important;
+}
+

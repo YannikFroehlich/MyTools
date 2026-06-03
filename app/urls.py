@@ -116,8 +116,10 @@ from .hangman_views import (
     hangman_leave,
     hangman_lobby,
     hangman_reset_api,
+    hangman_review_api,
     hangman_start_api,
     hangman_state_api,
+    hangman_word_api,
 )
 from .uno_views import (
     uno_call_api,
@@ -276,7 +278,9 @@ urlpatterns = [
     path('api/hangman/home-state/', hangman_home_state_api, name='hangman_home_state_api'),
     path('api/hangman/<slug:code>/state/', hangman_state_api, name='hangman_state_api'),
     path('api/hangman/<slug:code>/start/', hangman_start_api, name='hangman_start_api'),
+    path('api/hangman/<slug:code>/word/', hangman_word_api, name='hangman_word_api'),
     path('api/hangman/<slug:code>/guess/', hangman_guess_api, name='hangman_guess_api'),
+    path('api/hangman/<slug:code>/review/', hangman_review_api, name='hangman_review_api'),
     path('api/hangman/<slug:code>/reset/', hangman_reset_api, name='hangman_reset_api'),
 
     path('uno/', uno_home, name='uno_home'),
