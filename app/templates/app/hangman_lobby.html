@@ -1,0 +1,197 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ lobby.name }} · {% translate 'Hangman' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/hangman.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/hangman.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="hm-page hm-lobby-page"
+      data-state-url="{% url 'hangman_state_api' lobby.code %}"
+      data-start-url="{% url 'hangman_start_api' lobby.code %}"
+      data-guess-url="{% url 'hangman_guess_api' lobby.code %}"
+      data-reset-url="{% url 'hangman_reset_api' lobby.code %}">
+    <section class="hm-lobby-layout">
+        <aside class="hm-left-column">
+            <section class="hm-room-card-top">
+                <a class="hm-back" href="{% url 'hangman_home' %}">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    {% translate 'Zurück' %}
+                </a>
+
+                <div class="hm-room-title-row">
+                    <div>
+                        <span class="hm-eyebrow"><i class="fa-solid fa-user-secret"></i> {% translate 'Hangman Raum' %}</span>
+                        <h1>{{ lobby.name }}</h1>
+                    </div>
+                    <strong class="hm-code">{{ lobby.code }}</strong>
+                </div>
+
+                <div class="hm-action-grid">
+                    <button class="hm-secondary" type="button" id="hm-copy-link">
+                        <i class="fa-regular fa-copy"></i>
+                        {% translate 'Link' %}
+                    </button>
+                    <button class="hm-primary" type="button" id="hm-start" {% if lobby.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann starten.' %}"{% endif %}>
+                        <i class="fa-solid fa-play"></i>
+                        {% translate 'Starten' %}
+                    </button>
+                    <button class="hm-secondary" type="button" id="hm-reset" {% if lobby.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann zurücksetzen.' %}"{% endif %}>
+                        <i class="fa-solid fa-rotate-right"></i>
+                        {% translate 'Neue Runde' %}
+                    </button>
+                    <form method="post" action="{% url 'hangman_leave' lobby.code %}">
+                        {% csrf_token %}
+                        <button class="hm-secondary" type="submit">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            {% translate 'Verlassen' %}
+                        </button>
+                    </form>
+                    {% if lobby.owner_id == request.user.id %}
+                        <form method="post" action="{% url 'hangman_delete' lobby.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
+                            {% csrf_token %}
+                            <button class="hm-danger" type="submit">
+                                <i class="fa-solid fa-trash"></i>
+                                {% translate 'Löschen' %}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="hm-panel hm-players-panel">
+                <div class="hm-panel-heading">
+                    <h2>{% translate 'Spieler' %}</h2>
+                    <span class="hm-mini-pill" id="hm-player-count">0</span>
+                </div>
+                <div class="hm-player-list" id="hm-player-list"></div>
+            </section>
+
+            <section class="hm-panel hm-status-panel">
+                <small>{% translate 'Status' %}</small>
+                <strong id="hm-status">-</strong>
+                <p id="hm-message">-</p>
+            </section>
+
+            <section class="hm-panel hm-friends-box">
+                <div class="hm-panel-heading">
+                    <h2>{% translate 'Freunde einladen' %}</h2>
+                    <span class="hm-mini-pill"><i class="fa-solid fa-user-plus"></i></span>
+                </div>
+
+                {% if friend_invite_rows %}
+                    <div class="hm-friend-list">
+                        {% for row in friend_invite_rows %}
+                            <div class="hm-friend-row">
+                                <div class="hm-friend-mini">
+                                    <span>{{ row.user.username|slice:":1"|upper }}</span>
+                                    <div>
+                                        <strong>{{ row.user.get_full_name|default:row.user.username }}</strong>
+                                        <small>
+                                            {% if row.is_invited %}
+                                                {% translate 'Einladung offen' %}
+                                            {% elif row.was_invited %}
+                                                {% translate 'War schon eingeladen' %}
+                                            {% else %}
+                                                {% translate 'Freund' %}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'hangman_invite_friend' lobby.code %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                    <button class="hm-invite-button" type="submit" aria-label="{% translate 'Freund einladen' %}" {% if row.is_invited %}disabled{% endif %}>
+                                        {% if row.is_invited %}
+                                            <i class="fa-solid fa-check"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-plus"></i>
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="hm-muted">{% translate 'Keine weiteren Freunde zum Einladen gefunden.' %}</p>
+                {% endif %}
+            </section>
+        </aside>
+
+        <section class="hm-board-panel">
+            <div class="hm-board-meta">
+                <span>{% translate 'Runde' %} <strong id="hm-round">{{ lobby.round_number }}</strong></span>
+                <span>{% translate 'Fehler' %} <strong id="hm-mistakes">0/{{ lobby.max_mistakes }}</strong></span>
+                <span>{% translate 'Hinweis' %} <strong id="hm-hint">-</strong></span>
+            </div>
+
+            <div class="hm-play-area">
+                <div class="hm-hangman-card" aria-label="{% translate 'Hangman Zeichnung' %}">
+                    <svg class="hm-hangman-svg" viewBox="0 0 240 220" role="img" aria-hidden="true">
+                        <line class="hm-gallow" x1="35" y1="205" x2="205" y2="205" />
+                        <line class="hm-gallow" x1="65" y1="205" x2="65" y2="24" />
+                        <line class="hm-gallow" x1="65" y1="24" x2="160" y2="24" />
+                        <line class="hm-gallow" x1="160" y1="24" x2="160" y2="52" />
+                        <line class="hm-gallow hm-support" x1="65" y1="58" x2="99" y2="24" />
+                        <circle class="hm-body-part" data-part="0" cx="160" cy="72" r="20" />
+                        <line class="hm-body-part" data-part="1" x1="160" y1="92" x2="160" y2="142" />
+                        <line class="hm-body-part" data-part="2" x1="160" y1="105" x2="130" y2="128" />
+                        <line class="hm-body-part" data-part="3" x1="160" y1="105" x2="190" y2="128" />
+                        <line class="hm-body-part" data-part="4" x1="160" y1="142" x2="134" y2="178" />
+                        <line class="hm-body-part" data-part="5" x1="160" y1="142" x2="186" y2="178" />
+                        <line class="hm-body-part" data-part="6" x1="151" y1="66" x2="156" y2="71" />
+                        <line class="hm-body-part" data-part="6" x1="156" y1="66" x2="151" y2="71" />
+                        <line class="hm-body-part" data-part="7" x1="164" y1="66" x2="169" y2="71" />
+                        <line class="hm-body-part" data-part="7" x1="169" y1="66" x2="164" y2="71" />
+                        <path class="hm-body-part" data-part="7" d="M150 82 Q160 76 170 82" />
+                    </svg>
+                </div>
+
+                <div class="hm-word-card">
+                    <div class="hm-word" id="hm-word" aria-live="polite"></div>
+                    <div class="hm-letter-summary">
+                        <div>
+                            <small>{% translate 'Richtig' %}</small>
+                            <p id="hm-guessed">-</p>
+                        </div>
+                        <div>
+                            <small>{% translate 'Falsch' %}</small>
+                            <p id="hm-wrong">-</p>
+                        </div>
+                    </div>
+                    <p class="hm-last-guess" id="hm-last-guess"></p>
+                </div>
+            </div>
+
+            <form class="hm-guess-form" id="hm-guess-form">
+                <input type="text" name="guess" id="hm-guess-input" maxlength="80" placeholder="{% translate 'Buchstabe oder ganzes Wort raten' %}" autocomplete="off">
+                <button class="hm-primary" type="submit">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    {% translate 'Raten' %}
+                </button>
+            </form>
+
+            <div class="hm-keyboard" id="hm-keyboard" aria-label="{% translate 'Buchstaben-Tastatur' %}"></div>
+
+            <div class="hm-result-overlay hidden" id="hm-result-overlay" aria-live="polite">
+                <div class="hm-result-card">
+                    <span>{% translate 'Runde beendet' %}</span>
+                    <h2 id="hm-result-title">-</h2>
+                    <p id="hm-result-text">-</p>
+                    <button class="hm-primary" type="button" id="hm-result-reset" {% if lobby.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}>
+                        <i class="fa-solid fa-rotate-right"></i>
+                        {% translate 'Neue Runde' %}
+                    </button>
+                </div>
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

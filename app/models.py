@@ -2014,3 +2014,153 @@ class ToolFeedback(models.Model):
 
     def __str__(self):
         return self.title
+
+class HangmanLobby(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_PLAYING = "playing"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_PLAYING, _("Läuft")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_hangman_lobbies",
+    )
+    name = models.CharField(max_length=80, default="Hangman")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+    word = models.CharField(max_length=80, blank=True)
+    word_hint = models.CharField(max_length=120, blank=True)
+    guessed_letters = models.JSONField(default=list, blank=True)
+    wrong_letters = models.JSONField(default=list, blank=True)
+    max_mistakes = models.PositiveSmallIntegerField(default=8)
+    round_number = models.PositiveSmallIntegerField(default=1)
+    custom_words = models.TextField(blank=True)
+    winner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="won_hangman_lobbies",
+        null=True,
+        blank=True,
+    )
+    last_guess = models.JSONField(default=dict, blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = "Hangman Lobby"
+        verbose_name_plural = "Hangman Lobbys"
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def normalized_guessed_letters(self):
+        letters = self.guessed_letters if isinstance(self.guessed_letters, list) else []
+        return sorted({str(letter).upper()[:1] for letter in letters if str(letter).strip()})
+
+    @property
+    def normalized_wrong_letters(self):
+        letters = self.wrong_letters if isinstance(self.wrong_letters, list) else []
+        cleaned = []
+        for letter in letters:
+            value = str(letter).upper().strip()
+            if not value or value.startswith("?"):
+                continue
+            cleaned.append(value[:1])
+        return sorted(set(cleaned))
+
+
+class HangmanPlayer(models.Model):
+    lobby = models.ForeignKey(
+        HangmanLobby,
+        on_delete=models.CASCADE,
+        related_name="players",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="hangman_players",
+    )
+    display_name = models.CharField(max_length=40, blank=True)
+    score = models.PositiveIntegerField(default=0)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["joined_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "user"], name="unique_hangman_player_per_lobby"),
+        ]
+        indexes = [
+            models.Index(fields=["lobby", "last_seen"]),
+            models.Index(fields=["user", "last_seen"]),
+        ]
+        verbose_name = "Hangman Spieler"
+        verbose_name_plural = "Hangman Spieler"
+
+    def __str__(self):
+        return f"{self.display_label} - {self.lobby.code}"
+
+    @property
+    def display_label(self):
+        return self.display_name or self.user.get_full_name() or self.user.username
+
+
+class HangmanInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    lobby = models.ForeignKey(
+        HangmanLobby,
+        on_delete=models.CASCADE,
+        related_name="invites",
+    )
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_hangman_invites",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_hangman_invites",
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "to_user"], name="unique_hangman_invite_per_lobby_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="hangman_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"]),
+            models.Index(fields=["lobby", "status"]),
+        ]
+        verbose_name = "Hangman Einladung"
+        verbose_name_plural = "Hangman Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user} - {self.lobby}"

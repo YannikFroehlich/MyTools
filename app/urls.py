@@ -106,6 +106,19 @@ from .stadtlandfluss_views import (
     stadtlandfluss_submit_api,
     stadtlandfluss_vote_api,
 )
+from .hangman_views import (
+    hangman_delete,
+    hangman_guess_api,
+    hangman_home,
+    hangman_home_state_api,
+    hangman_invite_friend,
+    hangman_invite_response,
+    hangman_leave,
+    hangman_lobby,
+    hangman_reset_api,
+    hangman_start_api,
+    hangman_state_api,
+)
 from .uno_views import (
     uno_call_api,
     uno_catch_api,
@@ -252,6 +265,19 @@ urlpatterns = [
     path('api/stadt-land-fluss/<slug:code>/draft/', stadtlandfluss_draft_api, name='stadtlandfluss_draft_api'),
     path('api/stadt-land-fluss/<slug:code>/submit/', stadtlandfluss_submit_api, name='stadtlandfluss_submit_api'),
     path('api/stadt-land-fluss/<slug:code>/vote/', stadtlandfluss_vote_api, name='stadtlandfluss_vote_api'),
+
+
+    path('hangman/', hangman_home, name='hangman_home'),
+    path('hangman/<slug:code>/', hangman_lobby, name='hangman_lobby'),
+    path('hangman/<slug:code>/invite/', hangman_invite_friend, name='hangman_invite_friend'),
+    path('hangman/invite/<int:invite_id>/', hangman_invite_response, name='hangman_invite_response'),
+    path('hangman/<slug:code>/leave/', hangman_leave, name='hangman_leave'),
+    path('hangman/<slug:code>/delete/', hangman_delete, name='hangman_delete'),
+    path('api/hangman/home-state/', hangman_home_state_api, name='hangman_home_state_api'),
+    path('api/hangman/<slug:code>/state/', hangman_state_api, name='hangman_state_api'),
+    path('api/hangman/<slug:code>/start/', hangman_start_api, name='hangman_start_api'),
+    path('api/hangman/<slug:code>/guess/', hangman_guess_api, name='hangman_guess_api'),
+    path('api/hangman/<slug:code>/reset/', hangman_reset_api, name='hangman_reset_api'),
 
     path('uno/', uno_home, name='uno_home'),
     path('uno/<slug:code>/', uno_lobby, name='uno_lobby'),
