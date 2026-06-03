@@ -161,6 +161,14 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("uno-deck-count").textContent = game.deckCount;
         document.getElementById("uno-deck-count-large").textContent = game.deckCount;
 
+        const arena = document.getElementById("uno-arena");
+        if (arena) {
+            arena.dataset.color = game.currentColor || "";
+            arena.classList.toggle("is-your-turn", Boolean(game.canAct));
+            arena.classList.toggle("is-waiting", game.status === "waiting");
+            arena.classList.toggle("is-finished", game.status === "finished");
+        }
+
         const colorBadge = document.getElementById("uno-current-color");
         colorBadge.textContent = game.pendingDraw ? `${game.currentColorLabel} - +${game.pendingDraw}` : game.currentColorLabel;
         colorBadge.dataset.color = game.currentColor || "";
@@ -316,9 +324,20 @@ document.addEventListener("DOMContentLoaded", () => {
             hand.innerHTML = `<p class="uno-muted">Keine Karten auf der Hand.</p>`;
             return;
         }
-        hand.innerHTML = game.hand.map((card) => {
+        const total = game.hand.length;
+        hand.innerHTML = game.hand.map((card, index) => {
             const playable = game.playableIds.includes(card.id);
-            return `<button type="button" class="uno-hand-card ${playable ? "is-playable" : ""}" data-card-id="${escapeHtml(card.id)}">${cardMarkup(card, "uno-card")}</button>`;
+            const spread = index - ((total - 1) / 2);
+            const tilt = Math.max(-18, Math.min(18, spread * 2.8));
+            return `
+                <button type="button"
+                        class="uno-hand-card ${playable ? "is-playable" : ""}"
+                        data-card-id="${escapeHtml(card.id)}"
+                        style="--hand-index:${index};--hand-total:${total};--hand-tilt:${tilt}deg;"
+                        aria-label="${escapeHtml(card.label)}${playable ? " spielen" : ""}">
+                    ${cardMarkup(card, "uno-card")}
+                </button>
+            `;
         }).join("");
         hand.querySelectorAll(".uno-hand-card").forEach((button) => {
             button.addEventListener("click", () => {
@@ -360,7 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!pendingCard) return;
         if (pendingCard.color === "wild" && !chosenColor) return;
         if (pendingCard.value === "7" && game.rules.sevenZero && game.players.length > 1 && !targetUserId) return;
-        post(urls.play, {card_id: pendingCard.id, color: chosenColor, target_user_id: targetUserId});
+        post(urls.play, {card_id: pendingCard.id, color: chosenColor, target_user_id: targetUserId}, "card");
     }
 
     function renderLog() {
@@ -372,15 +391,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function cardMarkup(card, className) {
-        const value = card.value === "reverse" ? "\u21ba" : escapeHtml(card.label);
-        const cornerValue = card.value === "skip" ? "\u2298" : value;
-        const mainValue = card.value === "skip" ? `<span class="uno-skip-icon" aria-label="Aussetzen"></span>` : value;
+        const value = cardValueMarkup(card);
+        const cornerValue = cardCornerValue(card);
         return `
-            <span class="${className}" data-color="${escapeHtml(card.color)}">
-                <span class="uno-card-corner">${cornerValue}</span>
-                <strong>${mainValue}</strong>
+            <span class="${className}" data-color="${escapeHtml(card.color)}" data-value="${escapeHtml(card.value)}" data-type="${escapeHtml(card.type || "")}">
+                <span class="uno-card-corner uno-card-corner-top">${cornerValue}</span>
+                <strong class="uno-card-face">${value}</strong>
+                <span class="uno-card-corner uno-card-corner-bottom">${cornerValue}</span>
             </span>
         `;
+    }
+
+    function cardCornerValue(card) {
+        if (card.value === "skip") return "\u2298";
+        if (card.value === "reverse") return "\u21ba";
+        if (card.value === "draw2") return "+2";
+        if (card.value === "wild4") return "+4";
+        if (card.value === "wild") return "W";
+        return escapeHtml(card.label);
+    }
+
+    function cardValueMarkup(card) {
+        if (card.value === "skip") return `<span class="uno-action-symbol" aria-label="Aussetzen">\u2298</span>`;
+        if (card.value === "reverse") return `<span class="uno-action-symbol" aria-label="Richtungswechsel">\u21bb</span>`;
+        if (card.value === "draw2") return `<span class="uno-action-symbol" aria-label="Zieh zwei">+2</span>`;
+        if (card.value === "wild4") return `<span class="uno-action-symbol" aria-label="Zieh vier">+4</span>`;
+        if (card.value === "wild") return `<span class="uno-action-symbol" aria-label="Farbwahl">Wunsch</span>`;
+        return escapeHtml(card.label);
     }
 
     function updateSoundButton() {

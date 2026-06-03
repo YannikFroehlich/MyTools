@@ -10,7 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const urls = {
         state: root.dataset.stateUrl,
         start: root.dataset.startUrl,
+        word: root.dataset.wordUrl,
         guess: root.dataset.guessUrl,
+        review: root.dataset.reviewUrl,
         reset: root.dataset.resetUrl,
     };
 
@@ -19,6 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const keyboard = document.getElementById("hm-keyboard");
     const guessForm = document.getElementById("hm-guess-form");
     const guessInput = document.getElementById("hm-guess-input");
+    const wordForm = document.getElementById("hm-word-form");
+    const wordInput = document.getElementById("hm-word-input");
+    const wordHintInput = document.getElementById("hm-word-hint-input");
+    const reviewPanel = document.getElementById("hm-review-panel");
     let game = null;
     let isPosting = false;
 
@@ -42,18 +48,29 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.getElementById("hm-start")?.addEventListener("click", async () => {
-            if (isPosting || !game?.isOwner) return;
+            if (isPosting || !game?.canStart) return;
             await post(urls.start);
         });
 
         document.getElementById("hm-reset")?.addEventListener("click", async () => {
-            if (isPosting || !game?.isOwner) return;
+            if (isPosting || !(game?.canAdvanceRound || game?.canResetGame)) return;
             await post(urls.reset);
         });
 
         document.getElementById("hm-result-reset")?.addEventListener("click", async () => {
-            if (isPosting || !game?.isOwner) return;
+            if (isPosting || !(game?.canAdvanceRound || game?.canResetGame)) return;
             await post(urls.reset);
+        });
+
+        wordForm?.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            if (!game?.canSetWord || isPosting) return;
+            const word = wordInput?.value.trim() || "";
+            const hint = wordHintInput?.value.trim() || "";
+            if (!word) return;
+            await post(urls.word, {word, hint});
+            if (wordInput) wordInput.value = "";
+            if (wordHintInput) wordHintInput.value = "";
         });
 
         guessForm?.addEventListener("submit", async (event) => {
@@ -71,6 +88,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!button || button.disabled || !game?.canGuess || isPosting) return;
             await post(urls.guess, {guess: button.dataset.letter});
             guessInput?.focus();
+        });
+
+        reviewPanel?.addEventListener("click", async (event) => {
+            const button = event.target.closest("[data-review-result]");
+            if (!button || isPosting || !game?.canReviewGuess) return;
+            await post(urls.review, {result: button.dataset.reviewResult});
         });
     }
 
@@ -123,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setText("hm-status", game.statusLabel || "-");
         setText("hm-message", game.message || "-");
-        setText("hm-round", game.roundNumber ?? "-");
+        setText("hm-round", `${game.roundNumber ?? "-"} / ${game.maxRounds ?? 4}`);
         setText("hm-mistakes", `${game.mistakes ?? 0}/${game.maxMistakes ?? 8}`);
         setText("hm-hint", game.hint || "Kein Hinweis");
         setText("hm-guessed", formatLetters(game.guessedLetters));
@@ -135,6 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
         renderDrawing();
         renderKeyboard();
         renderLastGuess();
+        renderWordForm();
+        renderReviewPanel();
         renderResultOverlay();
         syncControls();
     }
@@ -153,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="hm-player-row ${player.isOwner ? "is-owner" : ""}">
                 <div>
                     <strong class="hm-player-name">${escapeHtml(player.name)}</strong>
-                    <small>${player.isOwner ? "Host" : "Spieler"}</small>
+                    <small>${escapeHtml(player.role || "Spieler")}${player.isOwner ? " - Host" : ""}</small>
                 </div>
                 <span class="hm-player-score">${Number(player.score || 0)} P</span>
             </div>
@@ -188,6 +213,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderKeyboard() {
         if (!keyboard) return;
+        const visible = game?.roundPhase === "guessing" && game?.isGuesser;
+        keyboard.classList.toggle("hidden", !visible);
+        if (!visible) {
+            keyboard.innerHTML = "";
+            return;
+        }
         const guessed = new Set((game?.guessedLetters || []).map((letter) => String(letter).toUpperCase()));
         const wrong = new Set((game?.wrongLetters || []).map((letter) => String(letter).toUpperCase()).filter((letter) => letter.length === 1));
         const disabled = isPosting || !game?.canGuess;
@@ -200,12 +231,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }).join("");
     }
 
+    function renderWordForm() {
+        if (!wordForm) return;
+        const visible = Boolean(game?.canSetWord);
+        wordForm.classList.toggle("hidden", !visible);
+    }
+
+    function renderReviewPanel() {
+        if (!reviewPanel) return;
+        const pending = game?.pendingGuess || {};
+        const visible = game?.roundPhase === "review" && Boolean(pending.guess);
+        reviewPanel.classList.toggle("hidden", !visible);
+        setText("hm-review-guess", pending.guess ? `${pending.player || "Rater"}: ${pending.guess}` : "-");
+        reviewPanel.querySelectorAll("[data-review-result]").forEach((button) => {
+            button.toggleAttribute("disabled", isPosting || !game?.canReviewGuess);
+        });
+    }
+
     function renderLastGuess() {
         const element = document.getElementById("hm-last-guess");
         if (!element) return;
 
         const last = game.lastGuess || {};
         element.classList.remove("is-correct", "is-wrong");
+        if (last.pending) {
+            element.textContent = `${last.player || "Rater"}: ${last.guess || ""} wartet auf Bewertung`;
+            return;
+        }
         if (!last.player) {
             element.textContent = "";
             return;
@@ -216,6 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
             element.textContent = `${last.player}: ${last.guess} war richtig (+${last.points || 0} Punkte)`;
         } else {
             element.textContent = `${last.player}: ${last.guess} war falsch`;
+        }
+        if (last.roundWinnerName) {
+            element.textContent += ` - Runde an ${last.roundWinnerName}`;
         }
     }
 
@@ -231,28 +286,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (game.winnerName) {
             title.textContent = `${game.winnerName} hat gewonnen`;
-            text.textContent = `Das Wort war: ${game.word || "-"}`;
+            text.textContent = `Endstand: ${formatScores(game.players)}. Letztes Wort: ${game.word || "-"}`;
         } else {
-            title.textContent = "Nicht geschafft";
-            text.textContent = `Das gesuchte Wort war: ${game.word || "-"}`;
+            title.textContent = "Unentschieden";
+            text.textContent = `Endstand: ${formatScores(game.players)}. Letztes Wort: ${game.word || "-"}`;
         }
     }
 
     function syncControls() {
-        const ownerDisabled = isPosting || !game?.isOwner;
-        document.getElementById("hm-start")?.toggleAttribute("disabled", ownerDisabled || game?.status === "playing");
-        document.getElementById("hm-reset")?.toggleAttribute("disabled", ownerDisabled);
-        document.getElementById("hm-result-reset")?.toggleAttribute("disabled", ownerDisabled);
+        document.getElementById("hm-start")?.toggleAttribute("disabled", isPosting || !game?.canStart);
+        document.getElementById("hm-reset")?.toggleAttribute("disabled", isPosting || !(game?.canAdvanceRound || game?.canResetGame));
+        document.getElementById("hm-result-reset")?.toggleAttribute("disabled", isPosting || !(game?.canAdvanceRound || game?.canResetGame));
 
         const guessDisabled = isPosting || !game?.canGuess;
+        guessForm?.classList.toggle("hidden", !(game?.roundPhase === "guessing" && game?.isGuesser));
         if (guessInput) guessInput.disabled = guessDisabled;
         guessForm?.querySelector("button[type='submit']")?.toggleAttribute("disabled", guessDisabled);
+        const wordDisabled = isPosting || !game?.canSetWord;
+        if (wordInput) wordInput.disabled = wordDisabled;
+        if (wordHintInput) wordHintInput.disabled = wordDisabled;
+        wordForm?.querySelector("button[type='submit']")?.toggleAttribute("disabled", wordDisabled);
+        reviewPanel?.querySelectorAll("[data-review-result]").forEach((button) => {
+            button.toggleAttribute("disabled", isPosting || !game?.canReviewGuess);
+        });
         renderKeyboard();
     }
 
     function formatLetters(values) {
         const letters = values || [];
         return letters.length ? letters.join(", ") : "-";
+    }
+
+    function formatScores(players) {
+        const values = players || [];
+        return values.length ? values.map((player) => `${player.name}: ${Number(player.score || 0)} P`).join(" | ") : "-";
     }
 
     function setText(id, value) {
