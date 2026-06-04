@@ -1,0 +1,122 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Datei-Share" %} | MyTools{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/performance_tools.css' %}">{% endblock %}
+
+{% block content %}
+<section class="perf-page">
+    <div class="perf-hero">
+        <div>
+            <p class="perf-kicker">Private Sharing</p>
+            <h1>{% translate "Datei-Share" %}</h1>
+            <p>{% blocktranslate %}Teile Dateien bis {{ max_share_mb }} MB mit Freunden oder über einen privaten Link.{% endblocktranslate %}</p>
+        </div>
+        <div class="perf-hero-icon"><i class="fa-solid fa-share-nodes"></i></div>
+    </div>
+
+    <div class="share-layout">
+        <form class="share-upload-card share-upload-panel" method="post" action="{% url 'file_share_upload' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="share-section-title">
+                <span><i class="fa-solid fa-cloud-arrow-up"></i></span>
+                <div>
+                    <h2>{% translate "Neue Datei teilen" %}</h2>
+                    <p>{% blocktranslate %}Maximal {{ max_share_mb }} MB · gespeichert als Datei, nicht in der Datenbank.{% endblocktranslate %}</p>
+                </div>
+            </div>
+
+            <label class="share-file-input share-drop-card">
+                <input type="file" name="file" required>
+                <span class="share-drop-icon"><i class="fa-solid fa-file-arrow-up"></i></span>
+                <strong>{% translate "Datei auswählen oder hier ablegen" %}</strong>
+                <small>{% translate "Bilder, PDFs, ZIPs und andere Dateien" %}</small>
+            </label>
+
+            <div class="share-toggle-box">
+                <label class="share-check">
+                    <input type="checkbox" name="is_public_link">
+                    <span>
+                        <b>{% translate "Privaten Link erstellen" %}</b>
+                        <small>{% translate "Zusätzlich zum Teilen mit Freunden als Link nutzbar." %}</small>
+                    </span>
+                </label>
+            </div>
+
+            <div class="friend-picker">
+                <div class="friend-picker-head">
+                    <strong>{% translate "Freunde auswählen" %}</strong>
+                    <small>{% translate "Optional" %}</small>
+                </div>
+                {% if friends %}
+                    <div class="friend-grid">
+                        {% for friend in friends %}
+                            <label>
+                                <input type="checkbox" name="recipients" value="{{ friend.id }}">
+                                <span>{{ friend.get_full_name|default:friend.username }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>{% translate "Du hast noch keine Freunde, kannst aber einen privaten Link erstellen." %}</p>
+                {% endif %}
+            </div>
+
+            <button class="perf-primary share-submit" type="submit"><i class="fa-solid fa-paper-plane"></i>{% translate "Datei teilen" %}</button>
+        </form>
+
+        <div class="share-lists">
+            <section class="share-card share-list-card">
+                <div class="share-card-head">
+                    <div>
+                        <h2>{% translate "Von dir geteilt" %}</h2>
+                        <p>{% translate "Deine Uploads, Links und Downloads auf einen Blick." %}</p>
+                    </div>
+                </div>
+                {% for share in own_shares %}
+                    <article class="share-row">
+                        <span class="share-file-icon"><i class="{{ share.icon_class }}"></i></span>
+                        <div class="share-row-main">
+                            <strong>{{ share.original_name }}</strong>
+                            <span>{{ share.human_size }} · {{ share.download_count }} {% translate "Downloads" %}</span>
+                            {% if share.is_public_link %}<small>{{ request.scheme }}://{{ request.get_host }}{% url 'file_share_download' share.token %}</small>{% endif %}
+                        </div>
+                        <div class="share-row-actions">
+                            <a href="{% url 'file_share_download' share.token %}" title="{% translate 'Download' %}"><i class="fa-solid fa-download"></i></a>
+                            <form method="post" action="{% url 'file_share_delete' share.id %}">
+                                {% csrf_token %}
+                                <button type="submit" title="{% translate 'Löschen' %}"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="empty-state"><p>{% translate "Du hast noch nichts geteilt." %}</p></div>
+                {% endfor %}
+            </section>
+
+            <section class="share-card share-list-card">
+                <div class="share-card-head">
+                    <div>
+                        <h2>{% translate "Mit dir geteilt" %}</h2>
+                        <p>{% translate "Dateien, die Freunde für dich freigegeben haben." %}</p>
+                    </div>
+                </div>
+                {% for share in received_shares %}
+                    <article class="share-row">
+                        <span class="share-file-icon"><i class="{{ share.icon_class }}"></i></span>
+                        <div class="share-row-main">
+                            <strong>{{ share.original_name }}</strong>
+                            <span>{{ share.human_size }} · {% translate "von" %} {{ share.owner.get_full_name|default:share.owner.username }}</span>
+                        </div>
+                        <div class="share-row-actions">
+                            <a href="{% url 'file_share_download' share.token %}" title="{% translate 'Download' %}"><i class="fa-solid fa-download"></i></a>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="empty-state"><p>{% translate "Noch keine Dateien erhalten." %}</p></div>
+                {% endfor %}
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -154,6 +154,15 @@ from .chat_views import (
     start_direct_chat,
 )
 from .notification_views import notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
+
+from .performance_tools_views import (
+    file_share_delete_view,
+    file_share_download_view,
+    file_share_upload_view,
+    file_share_view,
+    image_tools_view,
+    leaderboard_view,
+)
 from .platform_views import (
     favorite_toggle_view,
     favorites_view,
@@ -172,6 +181,13 @@ urlpatterns = [
     path('inbox/', inbox_view, name='inbox'),
     path('inbox/read/', inbox_mark_read_view, name='inbox_mark_read'),
     path('feedback/', feedback_view, name='feedback'),
+
+    path('leaderboard/', leaderboard_view, name='leaderboard'),
+    path('bild-tools/', image_tools_view, name='image_tools'),
+    path('datei-share/', file_share_view, name='file_share'),
+    path('datei-share/upload/', file_share_upload_view, name='file_share_upload'),
+    path('datei-share/<str:token>/download/', file_share_download_view, name='file_share_download'),
+    path('datei-share/<int:share_id>/delete/', file_share_delete_view, name='file_share_delete'),
     path('uhr/', clock_view, name='clock'),
 
     path('profile/', profile_view, name='profile'),

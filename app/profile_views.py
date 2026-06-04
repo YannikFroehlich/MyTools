@@ -1,7 +1,5 @@
 import base64
 import re
-import uuid
-
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -16,6 +14,12 @@ from django.views.decorators.http import require_GET, require_POST
 
 from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, ProfileGalleryImage, SkribbleStats, UserBlock, UserProfile, UserReport
 from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
+from .image_optimization import (
+    GALLERY_IMAGE_MAX_SIZE,
+    PROFILE_AVATAR_MAX_SIZE,
+    PROFILE_BANNER_MAX_SIZE,
+    optimize_uploaded_image,
+)
 from .presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
 
 User = get_user_model()
@@ -247,31 +251,70 @@ def profile_view(request):
 
             if cropped_avatar.startswith("data:image"):
                 try:
-                    format_part, image_data = cropped_avatar.split(";base64,")
-                    extension = format_part.split("/")[-1].lower()
-
-                    if extension == "jpeg":
-                        extension = "jpg"
-
-                    file_name = f"profile_{request.user.id}_{uuid.uuid4().hex}.{extension}"
+                    _format_part, image_data = cropped_avatar.split(";base64,")
                     decoded_file = base64.b64decode(image_data)
+                    optimized_avatar = optimize_uploaded_image(
+                        ContentFile(decoded_file),
+                        prefix=f"profile_{request.user.id}",
+                        max_size=PROFILE_AVATAR_MAX_SIZE,
+                        quality=82,
+                        target_bytes=120 * 1024,
+                    )
 
                     if profile.avatar:
                         profile.avatar.delete(save=False)
 
                     profile.avatar.save(
-                        file_name,
-                        ContentFile(decoded_file),
+                        optimized_avatar.filename,
+                        optimized_avatar.file,
                         save=False,
                     )
                 except Exception:
                     messages.error(request, _("Das Profilbild konnte nicht verarbeitet werden."))
                     return redirect("profile")
-            elif request.FILES.get("avatar") and old_avatar and old_avatar != profile.avatar:
-                old_avatar.delete(save=False)
+            elif request.FILES.get("avatar"):
+                try:
+                    optimized_avatar = optimize_uploaded_image(
+                        request.FILES["avatar"],
+                        prefix=f"profile_{request.user.id}",
+                        max_size=PROFILE_AVATAR_MAX_SIZE,
+                        quality=82,
+                        target_bytes=120 * 1024,
+                    )
 
-            if request.FILES.get("profile_banner") and old_profile_banner and old_profile_banner != profile.profile_banner:
-                old_profile_banner.delete(save=False)
+                    if old_avatar:
+                        old_avatar.delete(save=False)
+
+                    profile.avatar.save(
+                        optimized_avatar.filename,
+                        optimized_avatar.file,
+                        save=False,
+                    )
+                except Exception:
+                    messages.error(request, _("Das Profilbild konnte nicht verarbeitet werden."))
+                    return redirect("profile")
+
+            if request.FILES.get("profile_banner"):
+                try:
+                    optimized_banner = optimize_uploaded_image(
+                        request.FILES["profile_banner"],
+                        prefix=f"profile_banner_{request.user.id}",
+                        max_size=PROFILE_BANNER_MAX_SIZE,
+                        quality=84,
+                        target_bytes=280 * 1024,
+                    )
+
+                    if old_profile_banner:
+                        old_profile_banner.delete(save=False)
+
+                    profile.profile_banner.save(
+                        optimized_banner.filename,
+                        optimized_banner.file,
+                        save=False,
+                    )
+                except Exception:
+                    messages.error(request, _("Das Profilbanner konnte nicht verarbeitet werden."))
+                    return redirect("profile")
 
             # Profil speichern
             profile.save()
@@ -522,6 +565,25 @@ def profile_gallery_upload_view(request):
     if form.is_valid():
         image = form.save(commit=False)
         image.user = request.user
+
+        if request.FILES.get("image"):
+            try:
+                optimized_gallery_image = optimize_uploaded_image(
+                    request.FILES["image"],
+                    prefix=f"gallery_{request.user.id}",
+                    max_size=GALLERY_IMAGE_MAX_SIZE,
+                    quality=84,
+                    target_bytes=450 * 1024,
+                )
+                image.image.save(
+                    optimized_gallery_image.filename,
+                    optimized_gallery_image.file,
+                    save=False,
+                )
+            except Exception:
+                messages.error(request, _("Das Galeriebild konnte nicht verarbeitet werden."))
+                return redirect("profile")
+
         image.save()
         messages.success(request, _("Galeriebild hochgeladen."))
     else:

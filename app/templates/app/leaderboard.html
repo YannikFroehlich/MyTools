@@ -1,0 +1,52 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Leaderboard" %} | MyTools{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/performance_tools.css' %}">{% endblock %}
+
+{% block content %}
+<section class="perf-page">
+    <div class="perf-hero">
+        <div>
+            <p class="perf-kicker">MyTools Rankings</p>
+            <h1>{% translate "Globales Leaderboard" %}</h1>
+            <p>{% translate "Alle wichtigen Scores gesammelt auf einer schnellen, kompakten Seite." %}</p>
+        </div>
+        <div class="perf-hero-icon"><i class="fa-solid fa-trophy"></i></div>
+    </div>
+
+    <div class="perf-stats-grid">
+        <article><strong>{{ players_total }}</strong><span>{% translate "Nutzer" %}</span></article>
+        <article><strong>{{ human_total }}</strong><span>{% translate "Benchmark Scores" %}</span></article>
+        <article><strong>{{ multiplayer_games }}</strong><span>{% translate "beendete Duelle" %}</span></article>
+    </div>
+
+    <div class="leaderboard-grid">
+        {% for board in boards %}
+            <article class="leaderboard-card">
+                <div class="leaderboard-head">
+                    <span><i class="{{ board.icon }}"></i></span>
+                    <h2>{{ board.title }}</h2>
+                </div>
+                {% if board.rows %}
+                    <ol class="leaderboard-list">
+                        {% for row in board.rows %}
+                            <li>
+                                <span class="rank">#{{ row.rank }}</span>
+                                <span class="player">{{ row.name }}</span>
+                                <strong>{{ row.score }}</strong>
+                                <small>{{ row.detail }}</small>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fa-regular fa-face-smile"></i>
+                        <p>{% translate "Noch keine Scores vorhanden." %}</p>
+                    </div>
+                {% endif %}
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

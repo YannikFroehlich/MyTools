@@ -67,6 +67,11 @@
                         {% translate 'Human Benchmark' %}
                     </a>
 
+                    <a href="{% url 'leaderboard' %}" class="menu-item">
+                        <i class="fa-solid fa-trophy"></i>
+                        {% translate 'Leaderboard' %}
+                    </a>
+
                     <a href="{% url 'drift-circuit' %}" class="menu-item">
                         <i class="fa-solid fa-car-side"></i>
                         {% translate 'Racing Game' %}
@@ -257,6 +262,16 @@
                     <a href="{% url 'unit_converter' %}" class="menu-item">
                         <i class="fa-solid fa-calculator"></i>
                         {% translate 'Einheitenrechner' %}
+                    </a>
+
+                    <a href="{% url 'image_tools' %}" class="menu-item">
+                        <i class="fa-regular fa-image"></i>
+                        {% translate 'Bild Tools' %}
+                    </a>
+
+                    <a href="{% url 'file_share' %}" class="menu-item">
+                        <i class="fa-solid fa-share-nodes"></i>
+                        {% translate 'Datei-Share' %}
                     </a>
 
                     <a href="{% url 'randomizer_tools' %}" class="menu-item">

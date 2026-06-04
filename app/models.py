@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import get_valid_filename
 
 
 class NotificationDismissal(models.Model):
@@ -2312,3 +2313,67 @@ class HangmanInvite(models.Model):
 
     def __str__(self):
         return f"{self.from_user} -> {self.to_user} - {self.lobby}"
+
+
+def file_share_upload_path(instance, filename):
+    safe_name = get_valid_filename(filename.rsplit("/", 1)[-1])[:180] or "datei"
+    return f"file_shares/user_{instance.owner_id}/{instance.token}_{safe_name}"
+
+
+class FileShare(models.Model):
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_file_shares",
+    )
+    recipients = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name="received_file_shares",
+    )
+    file = models.FileField(upload_to=file_share_upload_path)
+    original_name = models.CharField(max_length=180)
+    size = models.PositiveBigIntegerField(default=0)
+    content_type = models.CharField(max_length=120, blank=True)
+    token = models.CharField(max_length=48, unique=True)
+    is_public_link = models.BooleanField(default=False)
+    download_count = models.PositiveIntegerField(default=0)
+    last_downloaded_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["owner", "-created_at"]),
+            models.Index(fields=["token"]),
+            models.Index(fields=["is_public_link", "-created_at"]),
+        ]
+        verbose_name = "Dateifreigabe"
+        verbose_name_plural = "Dateifreigaben"
+
+    def __str__(self):
+        return f"{self.original_name} · {self.owner}"
+
+    @property
+    def human_size(self):
+        size = float(self.size or 0)
+        for unit in ["B", "KB", "MB", "GB"]:
+            if size < 1024 or unit == "GB":
+                return f"{size:.1f} {unit}" if unit != "B" else f"{int(size)} B"
+            size /= 1024
+
+    @property
+    def icon_class(self):
+        content = self.content_type or ""
+        name = (self.original_name or "").lower()
+        if content.startswith("image/"):
+            return "fa-regular fa-file-image"
+        if name.endswith((".zip", ".rar", ".7z", ".tar", ".gz")):
+            return "fa-regular fa-file-zipper"
+        if name.endswith((".pdf",)):
+            return "fa-regular fa-file-pdf"
+        if name.endswith((".doc", ".docx", ".odt")):
+            return "fa-regular fa-file-word"
+        if name.endswith((".xls", ".xlsx", ".csv")):
+            return "fa-regular fa-file-excel"
+        return "fa-regular fa-file"
