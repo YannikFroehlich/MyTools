@@ -77,6 +77,25 @@ class UserProfile(models.Model):
     sound_notifications = models.BooleanField(default=True)
     dnd_silence_notifications = models.BooleanField(default=True)
 
+    FILE_SHARE_LIMIT_50 = "50"
+    FILE_SHARE_LIMIT_100 = "100"
+    FILE_SHARE_LIMIT_500 = "500"
+    FILE_SHARE_LIMIT_UNLIMITED = "unlimited"
+
+    FILE_SHARE_LIMIT_CHOICES = [
+        (FILE_SHARE_LIMIT_50, _("50 MB")),
+        (FILE_SHARE_LIMIT_100, _("100 MB")),
+        (FILE_SHARE_LIMIT_500, _("500 MB")),
+        (FILE_SHARE_LIMIT_UNLIMITED, _("Unbegrenzt")),
+    ]
+
+    file_share_limit = models.CharField(
+        max_length=20,
+        choices=FILE_SHARE_LIMIT_CHOICES,
+        default=FILE_SHARE_LIMIT_50,
+        verbose_name=_("Datei-Share Upload-Limit"),
+    )
+
     CARD_STYLE_GLASS = "glass"
     CARD_STYLE_NEON = "neon"
     CARD_STYLE_GAMER = "gamer"
@@ -185,6 +204,18 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"Profil von {self.user.username}"
+
+    @property
+    def file_share_max_size(self):
+        if self.file_share_limit == self.FILE_SHARE_LIMIT_UNLIMITED:
+            return None
+        return int(self.file_share_limit) * 1024 * 1024
+
+    @property
+    def file_share_limit_label(self):
+        if self.file_share_limit == self.FILE_SHARE_LIMIT_UNLIMITED:
+            return _("Unbegrenzt")
+        return _("%(size)s MB") % {"size": self.file_share_limit}
 
     @property
     def avatar_url(self):
