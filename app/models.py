@@ -75,6 +75,106 @@ class UserProfile(models.Model):
     browser_notifications = models.BooleanField(default=False)
     sound_notifications = models.BooleanField(default=True)
     dnd_silence_notifications = models.BooleanField(default=True)
+
+    CARD_STYLE_GLASS = "glass"
+    CARD_STYLE_NEON = "neon"
+    CARD_STYLE_GAMER = "gamer"
+    CARD_STYLE_SOFT = "soft"
+    CARD_STYLE_MINIMAL = "minimal"
+
+    CARD_STYLE_CHOICES = [
+        (CARD_STYLE_GLASS, _("Glass")),
+        (CARD_STYLE_NEON, _("Neon")),
+        (CARD_STYLE_GAMER, _("Gamer")),
+        (CARD_STYLE_SOFT, _("Soft")),
+        (CARD_STYLE_MINIMAL, _("Minimal")),
+    ]
+
+    CARD_PATTERN_NONE = "none"
+    CARD_PATTERN_GRID = "grid"
+    CARD_PATTERN_DOTS = "dots"
+    CARD_PATTERN_LINES = "lines"
+    CARD_PATTERN_ORBS = "orbs"
+
+    CARD_PATTERN_CHOICES = [
+        (CARD_PATTERN_NONE, _("Ohne Muster")),
+        (CARD_PATTERN_GRID, _("Grid")),
+        (CARD_PATTERN_DOTS, _("Dots")),
+        (CARD_PATTERN_LINES, _("Lines")),
+        (CARD_PATTERN_ORBS, _("Orbs")),
+    ]
+
+    CARD_RADIUS_SOFT = "soft"
+    CARD_RADIUS_ROUND = "round"
+    CARD_RADIUS_BOLD = "bold"
+    CARD_RADIUS_MAX = "max"
+
+    CARD_RADIUS_CHOICES = [
+        (CARD_RADIUS_SOFT, _("Leicht rund")),
+        (CARD_RADIUS_ROUND, _("Rund")),
+        (CARD_RADIUS_BOLD, _("Sehr rund")),
+        (CARD_RADIUS_MAX, _("Maximal")),
+    ]
+
+    CARD_AVATAR_ROUNDED = "rounded"
+    CARD_AVATAR_CIRCLE = "circle"
+    CARD_AVATAR_SQUARE = "square"
+    CARD_AVATAR_HEX = "hex"
+
+    CARD_AVATAR_CHOICES = [
+        (CARD_AVATAR_ROUNDED, _("Abgerundet")),
+        (CARD_AVATAR_CIRCLE, _("Kreis")),
+        (CARD_AVATAR_SQUARE, _("Quadrat")),
+        (CARD_AVATAR_HEX, _("Hexagon")),
+    ]
+
+    CARD_TEXT_EFFECT_NONE = "none"
+    CARD_TEXT_EFFECT_SHADOW = "shadow"
+    CARD_TEXT_EFFECT_GLOW = "glow"
+    CARD_TEXT_EFFECT_OUTLINE = "outline"
+
+    CARD_TEXT_EFFECT_CHOICES = [
+        (CARD_TEXT_EFFECT_NONE, _("Normal")),
+        (CARD_TEXT_EFFECT_SHADOW, _("Schatten")),
+        (CARD_TEXT_EFFECT_GLOW, _("Glow")),
+        (CARD_TEXT_EFFECT_OUTLINE, _("Outline")),
+    ]
+
+    CARD_PATTERN_SUBTLE = "subtle"
+    CARD_PATTERN_NORMAL = "normal"
+    CARD_PATTERN_STRONG = "strong"
+
+    CARD_PATTERN_STRENGTH_CHOICES = [
+        (CARD_PATTERN_SUBTLE, _("Dezent")),
+        (CARD_PATTERN_NORMAL, _("Normal")),
+        (CARD_PATTERN_STRONG, _("Stark")),
+    ]
+
+    CARD_GRADIENT_CHOICES = [
+        ("45", _("Diagonal rechts")),
+        ("90", _("Horizontal")),
+        ("135", _("Diagonal links")),
+        ("180", _("Vertikal")),
+        ("225", _("Diagonal dunkel")),
+    ]
+
+    profile_card_style = models.CharField(max_length=20, choices=CARD_STYLE_CHOICES, default=CARD_STYLE_GLASS)
+    profile_card_primary = models.CharField(max_length=7, default="#7c3aed")
+    profile_card_secondary = models.CharField(max_length=7, default="#06b6d4")
+    profile_card_tertiary = models.CharField(max_length=7, default="#c026d3")
+    profile_card_text = models.CharField(max_length=7, default="#ffffff")
+    profile_card_border = models.CharField(max_length=7, default="#ffffff")
+    profile_card_badge_bg = models.CharField(max_length=7, default="#ffffff")
+    profile_card_pattern = models.CharField(max_length=20, choices=CARD_PATTERN_CHOICES, default=CARD_PATTERN_ORBS)
+    profile_card_pattern_strength = models.CharField(max_length=20, choices=CARD_PATTERN_STRENGTH_CHOICES, default=CARD_PATTERN_NORMAL)
+    profile_card_gradient_angle = models.CharField(max_length=10, choices=CARD_GRADIENT_CHOICES, default="135")
+    profile_card_radius = models.CharField(max_length=20, choices=CARD_RADIUS_CHOICES, default=CARD_RADIUS_BOLD)
+    profile_card_avatar_shape = models.CharField(max_length=20, choices=CARD_AVATAR_CHOICES, default=CARD_AVATAR_ROUNDED)
+    profile_card_text_effect = models.CharField(max_length=20, choices=CARD_TEXT_EFFECT_CHOICES, default=CARD_TEXT_EFFECT_SHADOW)
+    profile_card_glow = models.BooleanField(default=True)
+    profile_card_shine = models.BooleanField(default=True)
+    profile_card_badge_icon = models.CharField(max_length=40, default="fa-solid fa-star")
+    profile_card_badge_text = models.CharField(max_length=28, blank=True, default="MyTools")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -100,6 +200,32 @@ class UserProfile(models.Model):
             return f"{first_name[:1]}{last_name[:1]}".upper()
 
         return (self.user.username[:2] or "MT").upper()
+
+    @property
+    def profile_card_style_vars(self):
+        return (
+            f"--profile-card-primary: {self.profile_card_primary}; "
+            f"--profile-card-secondary: {self.profile_card_secondary}; "
+            f"--profile-card-tertiary: {self.profile_card_tertiary}; "
+            f"--profile-card-text: {self.profile_card_text}; "
+            f"--profile-card-border: {self.profile_card_border}; "
+            f"--profile-card-badge-bg: {self.profile_card_badge_bg}; "
+            f"--profile-card-angle: {self.profile_card_gradient_angle}deg;"
+        )
+
+    @property
+    def profile_card_classes(self):
+        glow_class = " profile-showcase-card-glow" if self.profile_card_glow else ""
+        shine_class = " profile-showcase-card-shine" if self.profile_card_shine else ""
+        return (
+            f"profile-showcase-card-{self.profile_card_style} "
+            f"profile-showcase-pattern-{self.profile_card_pattern} "
+            f"profile-showcase-pattern-strength-{self.profile_card_pattern_strength} "
+            f"profile-showcase-radius-{self.profile_card_radius} "
+            f"profile-showcase-avatar-{self.profile_card_avatar_shape} "
+            f"profile-showcase-text-{self.profile_card_text_effect}"
+            f"{glow_class}{shine_class}"
+        )
 
 
 class UserPresence(models.Model):

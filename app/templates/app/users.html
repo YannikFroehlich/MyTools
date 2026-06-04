@@ -68,9 +68,10 @@
             {% for profile in profiles %}
                 <a
                     href="{% url 'public_profile' profile.user.id %}"
-                    class="user-card {% if profile.profile_banner %}has-profile-banner{% endif %}"
-                    {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner|media_thumb:'banner' }}');"{% endif %}
+                    class="user-card user-card-profile-showcase {{ profile.profile_card_classes }}"
+                    style="{{ profile.profile_card_style_vars }}"
                 >
+                    <div class="user-card-pattern"></div>
                     <div class="user-avatar">
                         {% if profile.avatar %}
                             <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
@@ -102,6 +103,14 @@
                         </div>
 
                         <p class="user-username">@{{ profile.user.username }}</p>
+
+                        {% if profile.profile_card_badge_text %}
+                            <span class="user-profile-card-badge">
+                                <i class="{{ profile.profile_card_badge_icon }}"></i>
+                                {{ profile.profile_card_badge_text }}
+                            </span>
+                        {% endif %}
+
                         <span class="user-status-line {% if profile.is_online %}is-online{% endif %}" data-presence-target="status" data-presence-user-id="{{ profile.user.id }}">
                             {% if profile.activity_status %}
                                 {{ profile.activity_status }}

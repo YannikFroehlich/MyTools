@@ -14,6 +14,7 @@
 
 
 {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/profile.css' %}">
     <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
 {% endblock %}
 
@@ -198,6 +199,34 @@
         </aside>
 
         <div class="public-profile-main">
+        <article class="public-profile-card public-profile-showcase-card-wrap">
+            <p class="users-kicker">{% translate "Showcase" %}</p>
+            <h2>{% translate "Profilkarte" %}</h2>
+            <div class="profile-showcase-card {{ profile.profile_card_classes }}" style="{{ profile.profile_card_style_vars }}">
+                <div class="profile-showcase-card-pattern"></div>
+                <div class="profile-showcase-card-top">
+                    <span class="profile-showcase-card-avatar">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                        {% else %}
+                            {{ profile.initials }}
+                        {% endif %}
+                    </span>
+                    {% if profile.profile_card_badge_text %}
+                        <span class="profile-showcase-card-badge"><i class="{{ profile.profile_card_badge_icon }}"></i>{{ profile.profile_card_badge_text }}</span>
+                    {% endif %}
+                </div>
+                <strong>
+                    {% if profile_user.get_full_name %}
+                        {{ profile_user.get_full_name }}
+                    {% else %}
+                        {{ profile_user.username }}
+                    {% endif %}
+                </strong>
+                <span>@{{ profile_user.username }}</span>
+            </div>
+        </article>
+
         <article class="public-profile-card public-profile-about-card">
             <p class="users-kicker">{% translate "Über mich" %}</p>
             <h2>{% translate "Beschreibung" %}</h2>

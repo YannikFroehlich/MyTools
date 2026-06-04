@@ -24,6 +24,7 @@ from .views import (
     stream_deck,
     tankstellen_api,
     unit_converter_view,
+    randomizer_tools_view,
     weather,
 )
 from .profile_views import (
@@ -32,6 +33,7 @@ from .profile_views import (
     friends_list_view,
     friendship_action_view,
     profile_gallery_upload_view,
+    profile_card_designer_view,
     profile_view,
     report_user_view,
     public_profile_view,
@@ -173,6 +175,7 @@ urlpatterns = [
     path('uhr/', clock_view, name='clock'),
 
     path('profile/', profile_view, name='profile'),
+    path('profile/card-designer/', profile_card_designer_view, name='profile_card_designer'),
     path('profile/gallery/upload/', profile_gallery_upload_view, name='profile_gallery_upload'),
     path('profile/gallery/<int:image_id>/delete/', delete_gallery_image_view, name='profile_gallery_delete'),
     path('users/', users_view, name='users'),
@@ -221,6 +224,7 @@ urlpatterns = [
     path('notes/<int:pk>/archive/', note_toggle_archive_view, name='note_toggle_archive'),
 
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
+    path('randomizer/', randomizer_tools_view, name='randomizer_tools'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
 
     path('tic-tac-toe/', tictactoe_home, name='tictactoe_home'),

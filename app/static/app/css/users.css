@@ -1692,3 +1692,402 @@ body.dark-mode .public-profile-info-list small { color:#cbd5e1; }
 .public-report-box summary::-webkit-details-marker { display: none; }
 .public-report-box form { padding: 0 12px 12px; display: grid; gap: 8px; }
 body.dark-mode .public-report-box { background: rgba(255,255,255,.07); border-color: rgba(203,213,225,.12); }
+
+/* Nutzerübersicht: Profilkarten-Designer auch hier verwenden */
+.user-card-profile-showcase {
+    --profile-card-primary: #7c3aed;
+    --profile-card-secondary: #06b6d4;
+    --profile-card-text: #ffffff;
+    isolation: isolate;
+    min-height: 244px;
+    align-items: flex-start;
+    color: var(--profile-card-text);
+    background: linear-gradient(135deg, var(--profile-card-primary), var(--profile-card-secondary));
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+}
+
+.user-card-profile-showcase.profile-showcase-card-glow {
+    box-shadow:
+        0 20px 54px color-mix(in srgb, var(--profile-card-primary), transparent 60%),
+        0 0 36px color-mix(in srgb, var(--profile-card-secondary), transparent 72%);
+}
+
+.user-card-profile-showcase::before,
+.user-card-profile-showcase::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+.user-card-profile-showcase::before {
+    width: 178px;
+    height: 178px;
+    right: -58px;
+    top: -64px;
+    background: rgba(255, 255, 255, 0.22);
+    filter: blur(2px);
+}
+
+.user-card-profile-showcase::after {
+    width: 124px;
+    height: 124px;
+    left: -46px;
+    bottom: -48px;
+    background: color-mix(in srgb, var(--profile-card-secondary), white 18%);
+    opacity: 0.42;
+    filter: blur(6px);
+}
+
+.user-card-profile-showcase.profile-showcase-card-neon {
+    background:
+        radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--profile-card-secondary), white 18%), transparent 26%),
+        linear-gradient(135deg, #070717, var(--profile-card-primary) 52%, var(--profile-card-secondary));
+    border-color: color-mix(in srgb, var(--profile-card-secondary), white 30%);
+}
+
+.user-card-profile-showcase.profile-showcase-card-gamer {
+    background: linear-gradient(135deg, #111827, var(--profile-card-primary) 48%, #020617 100%);
+}
+
+.user-card-profile-showcase.profile-showcase-card-soft {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--profile-card-primary), white 42%), color-mix(in srgb, var(--profile-card-secondary), white 38%));
+}
+
+.user-card-profile-showcase.profile-showcase-card-minimal {
+    background: rgba(15, 23, 42, 0.92);
+    border-color: color-mix(in srgb, var(--profile-card-primary), white 18%);
+}
+
+.user-card-profile-showcase .user-card-pattern {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.24;
+    pointer-events: none;
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-grid .user-card-pattern {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.45) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px);
+    background-size: 28px 28px;
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-dots .user-card-pattern {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.65) 1.4px, transparent 1.6px);
+    background-size: 18px 18px;
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-lines .user-card-pattern {
+    background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.48) 0 1px, transparent 1px 13px);
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-orbs .user-card-pattern {
+    opacity: 0.34;
+    background:
+        radial-gradient(circle at 16% 26%, rgba(255, 255, 255, 0.52), transparent 18%),
+        radial-gradient(circle at 82% 70%, rgba(255, 255, 255, 0.44), transparent 17%);
+}
+
+.user-card-profile-showcase .user-avatar {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+}
+
+.user-card-profile-showcase .user-title-row h2,
+.user-card-profile-showcase .user-username,
+.user-card-profile-showcase .user-bio,
+.user-card-profile-showcase .user-meta,
+.user-card-profile-showcase .user-open,
+.user-card-profile-showcase .user-status-line,
+.user-card-profile-showcase .user-status-text,
+.user-card-profile-showcase .user-activity-row span {
+    color: var(--profile-card-text);
+}
+
+.user-card-profile-showcase .user-username,
+.user-card-profile-showcase .user-bio,
+.user-card-profile-showcase .user-meta,
+.user-card-profile-showcase .user-status-line,
+.user-card-profile-showcase .user-status-text {
+    opacity: 0.84;
+}
+
+.user-card-profile-showcase .user-bio-empty {
+    color: var(--profile-card-text);
+    opacity: 0.7;
+}
+
+.user-card-profile-showcase .user-own-badge,
+.user-card-profile-showcase .user-profile-card-badge,
+.user-card-profile-showcase .user-activity-row span {
+    background: rgba(255, 255, 255, 0.17);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: var(--profile-card-text);
+}
+
+.user-profile-card-badge {
+    width: fit-content;
+    max-width: 170px;
+    margin-top: 8px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.74rem;
+    font-weight: 900;
+    line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-card-profile-showcase .user-status-line {
+    margin-top: 8px;
+}
+
+.user-card-profile-showcase:hover {
+    border-color: rgba(255, 255, 255, 0.42);
+    box-shadow:
+        0 24px 70px color-mix(in srgb, var(--profile-card-primary), transparent 68%),
+        0 0 28px color-mix(in srgb, var(--profile-card-secondary), transparent 78%);
+}
+
+/* Fix: Profilkarten-Design darf nicht durch Light-/Darkmode überschrieben werden */
+.user-card-profile-showcase {
+    color-scheme: only light;
+    forced-color-adjust: none;
+    color: var(--profile-card-text) !important;
+    background: linear-gradient(135deg, var(--profile-card-primary), var(--profile-card-secondary)) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-glow {
+    box-shadow:
+        0 20px 54px color-mix(in srgb, var(--profile-card-primary), transparent 60%),
+        0 0 36px color-mix(in srgb, var(--profile-card-secondary), transparent 72%) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-neon {
+    background:
+        radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--profile-card-secondary), white 18%), transparent 26%),
+        linear-gradient(135deg, #070717, var(--profile-card-primary) 52%, var(--profile-card-secondary)) !important;
+    border-color: color-mix(in srgb, var(--profile-card-secondary), white 30%) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-gamer {
+    background: linear-gradient(135deg, #111827, var(--profile-card-primary) 48%, #020617 100%) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-soft {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--profile-card-primary), white 42%), color-mix(in srgb, var(--profile-card-secondary), white 38%)) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-minimal {
+    background: rgba(15, 23, 42, 0.92) !important;
+    border-color: color-mix(in srgb, var(--profile-card-primary), white 18%) !important;
+}
+
+.user-card-profile-showcase::before {
+    background: rgba(255, 255, 255, 0.22) !important;
+}
+
+.user-card-profile-showcase::after {
+    background: color-mix(in srgb, var(--profile-card-secondary), white 18%) !important;
+    opacity: 0.42 !important;
+}
+
+.user-card-profile-showcase .user-card-pattern {
+    opacity: 0.24 !important;
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-grid .user-card-pattern {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.45) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-dots .user-card-pattern {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.65) 1.4px, transparent 1.6px) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-lines .user-card-pattern {
+    background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.48) 0 1px, transparent 1px 13px) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-orbs .user-card-pattern {
+    opacity: 0.34 !important;
+    background:
+        radial-gradient(circle at 16% 26%, rgba(255, 255, 255, 0.52), transparent 18%),
+        radial-gradient(circle at 82% 70%, rgba(255, 255, 255, 0.44), transparent 17%) !important;
+}
+
+.user-card-profile-showcase .user-title-row h2,
+.user-card-profile-showcase .user-username,
+.user-card-profile-showcase .user-bio,
+.user-card-profile-showcase .user-bio-empty,
+.user-card-profile-showcase .user-meta,
+.user-card-profile-showcase .user-meta span,
+.user-card-profile-showcase .user-meta i,
+.user-card-profile-showcase .user-open,
+.user-card-profile-showcase .user-open i,
+.user-card-profile-showcase .user-status-line,
+.user-card-profile-showcase .user-status-text,
+.user-card-profile-showcase .user-activity-row span,
+.user-card-profile-showcase .user-own-badge,
+.user-card-profile-showcase .user-profile-card-badge {
+    color: var(--profile-card-text) !important;
+}
+
+.user-card-profile-showcase .user-username,
+.user-card-profile-showcase .user-bio,
+.user-card-profile-showcase .user-meta,
+.user-card-profile-showcase .user-status-line,
+.user-card-profile-showcase .user-status-text {
+    opacity: 0.84 !important;
+}
+
+.user-card-profile-showcase .user-bio-empty {
+    opacity: 0.7 !important;
+}
+
+.user-card-profile-showcase .user-own-badge,
+.user-card-profile-showcase .user-profile-card-badge,
+.user-card-profile-showcase .user-activity-row span {
+    background: rgba(255, 255, 255, 0.17) !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+.user-card-profile-showcase .user-status-line.is-online::before {
+    background: #22c55e !important;
+    box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.12) !important;
+}
+
+.user-card-profile-showcase:hover {
+    border-color: rgba(255, 255, 255, 0.42) !important;
+    box-shadow:
+        0 24px 70px color-mix(in srgb, var(--profile-card-primary), transparent 68%),
+        0 0 28px color-mix(in srgb, var(--profile-card-secondary), transparent 78%) !important;
+}
+
+/* Nutzerübersicht: zusätzliche Profilkarten-Optionen */
+.user-card-profile-showcase {
+    --profile-card-tertiary: #c026d3;
+    --profile-card-border: #ffffff;
+    --profile-card-badge-bg: #ffffff;
+    --profile-card-angle: 135deg;
+    background: linear-gradient(var(--profile-card-angle), var(--profile-card-primary), var(--profile-card-secondary)) !important;
+    border-color: color-mix(in srgb, var(--profile-card-border), transparent 55%) !important;
+}
+
+.user-card-profile-showcase::before {
+    background: color-mix(in srgb, var(--profile-card-border), transparent 72%) !important;
+}
+
+.user-card-profile-showcase::after {
+    background: color-mix(in srgb, var(--profile-card-tertiary), white 12%) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-neon {
+    background:
+        radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--profile-card-tertiary), white 16%), transparent 25%),
+        linear-gradient(var(--profile-card-angle), #070717, var(--profile-card-primary) 50%, var(--profile-card-secondary)) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-gamer {
+    background:
+        radial-gradient(circle at 85% 18%, color-mix(in srgb, var(--profile-card-tertiary), transparent 55%), transparent 27%),
+        linear-gradient(var(--profile-card-angle), #111827, var(--profile-card-primary) 46%, #020617 100%) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-soft {
+    background: linear-gradient(var(--profile-card-angle), color-mix(in srgb, var(--profile-card-primary), white 42%), color-mix(in srgb, var(--profile-card-secondary), white 38%)) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-minimal {
+    background: linear-gradient(var(--profile-card-angle), rgba(15, 23, 42, 0.96), color-mix(in srgb, var(--profile-card-primary), #020617 74%)) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-glow {
+    box-shadow:
+        0 22px 70px color-mix(in srgb, var(--profile-card-primary), transparent 60%),
+        0 0 42px color-mix(in srgb, var(--profile-card-tertiary), transparent 64%) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-card-shine::before {
+    box-shadow: inset 0 0 45px rgba(255, 255, 255, 0.14);
+}
+
+.user-card-profile-showcase.profile-showcase-card-shine .user-card-pattern::after {
+    content: "";
+    position: absolute;
+    inset: -40% -70% auto auto;
+    width: 70%;
+    height: 170%;
+    transform: rotate(24deg);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.26), transparent);
+    pointer-events: none;
+}
+
+.user-card-profile-showcase.profile-showcase-radius-soft { border-radius: 18px !important; }
+.user-card-profile-showcase.profile-showcase-radius-round { border-radius: 26px !important; }
+.user-card-profile-showcase.profile-showcase-radius-bold { border-radius: 34px !important; }
+.user-card-profile-showcase.profile-showcase-radius-max { border-radius: 46px !important; }
+
+.user-card-profile-showcase.profile-showcase-avatar-rounded .user-avatar { border-radius: 22px !important; }
+.user-card-profile-showcase.profile-showcase-avatar-circle .user-avatar { border-radius: 999px !important; }
+.user-card-profile-showcase.profile-showcase-avatar-square .user-avatar { border-radius: 12px !important; }
+.user-card-profile-showcase.profile-showcase-avatar-hex .user-avatar {
+    border-radius: 18px !important;
+    clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%);
+}
+
+.user-card-profile-showcase.profile-showcase-pattern-strength-subtle .user-card-pattern { opacity: .12 !important; }
+.user-card-profile-showcase.profile-showcase-pattern-strength-normal .user-card-pattern { opacity: .26 !important; }
+.user-card-profile-showcase.profile-showcase-pattern-strength-strong .user-card-pattern { opacity: .42 !important; }
+
+.user-card-profile-showcase .user-profile-card-badge,
+.user-card-profile-showcase .user-own-badge,
+.user-card-profile-showcase .user-activity-row span {
+    background: color-mix(in srgb, var(--profile-card-badge-bg), transparent 76%) !important;
+    border-color: color-mix(in srgb, var(--profile-card-badge-bg), transparent 62%) !important;
+}
+
+.user-card-profile-showcase.profile-showcase-text-none .user-title-row h2,
+.user-card-profile-showcase.profile-showcase-text-none .user-username,
+.user-card-profile-showcase.profile-showcase-text-none .user-bio,
+.user-card-profile-showcase.profile-showcase-text-none .user-status-line,
+.user-card-profile-showcase.profile-showcase-text-none .user-meta,
+.user-card-profile-showcase.profile-showcase-text-none .user-open,
+.user-card-profile-showcase.profile-showcase-text-none .user-profile-card-badge { text-shadow: none !important; }
+
+.user-card-profile-showcase.profile-showcase-text-shadow .user-title-row h2,
+.user-card-profile-showcase.profile-showcase-text-shadow .user-username,
+.user-card-profile-showcase.profile-showcase-text-shadow .user-bio,
+.user-card-profile-showcase.profile-showcase-text-shadow .user-status-line,
+.user-card-profile-showcase.profile-showcase-text-shadow .user-meta,
+.user-card-profile-showcase.profile-showcase-text-shadow .user-open,
+.user-card-profile-showcase.profile-showcase-text-shadow .user-profile-card-badge { text-shadow: 0 2px 12px rgba(0,0,0,.24) !important; }
+
+.user-card-profile-showcase.profile-showcase-text-glow .user-title-row h2,
+.user-card-profile-showcase.profile-showcase-text-glow .user-username,
+.user-card-profile-showcase.profile-showcase-text-glow .user-bio,
+.user-card-profile-showcase.profile-showcase-text-glow .user-status-line,
+.user-card-profile-showcase.profile-showcase-text-glow .user-meta,
+.user-card-profile-showcase.profile-showcase-text-glow .user-open,
+.user-card-profile-showcase.profile-showcase-text-glow .user-profile-card-badge { text-shadow: 0 0 16px color-mix(in srgb, var(--profile-card-tertiary), white 18%) !important; }
+
+.user-card-profile-showcase.profile-showcase-text-outline .user-title-row h2,
+.user-card-profile-showcase.profile-showcase-text-outline .user-username,
+.user-card-profile-showcase.profile-showcase-text-outline .user-bio,
+.user-card-profile-showcase.profile-showcase-text-outline .user-status-line,
+.user-card-profile-showcase.profile-showcase-text-outline .user-meta,
+.user-card-profile-showcase.profile-showcase-text-outline .user-open,
+.user-card-profile-showcase.profile-showcase-text-outline .user-profile-card-badge {
+    text-shadow: 1px 1px 0 rgba(0,0,0,.35), -1px -1px 0 rgba(0,0,0,.25), 0 2px 12px rgba(0,0,0,.2) !important;
+}

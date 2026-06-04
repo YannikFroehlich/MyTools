@@ -99,6 +99,40 @@
                     <i class="fa-solid fa-user-plus"></i>
                     {% translate "Nutzer finden" %}
                 </a>
+                <a href="{% url 'profile_card_designer' %}">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                    {% translate "Profilkarte designen" %}
+                </a>
+            </div>
+
+
+
+            <div class="profile-showcase-card {{ profile.profile_card_classes }}" style="{{ profile.profile_card_style_vars }}">
+                <div class="profile-showcase-card-pattern"></div>
+                <div class="profile-showcase-card-top">
+                    <span class="profile-showcase-card-avatar">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                        {% else %}
+                            {{ profile.initials }}
+                        {% endif %}
+                    </span>
+                    {% if profile.profile_card_badge_text %}
+                        <span class="profile-showcase-card-badge"><i class="{{ profile.profile_card_badge_icon }}"></i>{{ profile.profile_card_badge_text }}</span>
+                    {% endif %}
+                </div>
+                <strong>
+                    {% if request.user.get_full_name %}
+                        {{ request.user.get_full_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </strong>
+                <span>@{{ request.user.username }}</span>
+                <a href="{% url 'profile_card_designer' %}" class="profile-showcase-edit-link">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {% translate "Design bearbeiten" %}
+                </a>
             </div>
 
             <div class="profile-friends-summary" id="friend-requests">
