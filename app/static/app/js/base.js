@@ -283,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 activeCustomTheme = { ...preset };
                 syncThemeInputs(activeCustomTheme);
                 applyCustomTheme(activeCustomTheme);
-                updateThemePreview(activeCustomTheme);
                 localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
             } else if (!activeCustomTheme) {
                 syncThemeInputs(defaultThemeForMode());
@@ -330,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         updateThemeRadiusLabel(completeTheme);
-        updateThemePreview(completeTheme);
     }
 
     function updateActivePresetButton(presetName) {
@@ -403,21 +401,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateThemePreview(theme) {
-        const preview = document.getElementById('theme-preview-card');
-
-        if (!preview) {
-            return;
-        }
-
-        const completeTheme = normalizedTheme(theme);
-        preview.style.setProperty('--preview-nav-start', completeTheme.navStart);
-        preview.style.setProperty('--preview-nav-end', completeTheme.navEnd);
-        preview.style.setProperty('--preview-page-bg', completeTheme.pageBg);
-        preview.style.setProperty('--preview-card-bg', completeTheme.cardBg || completeTheme.footerBg);
-        preview.style.setProperty('--preview-radius', `${completeTheme.radius || 22}px`);
-    }
-
     function readThemeInputs() {
         return {
             navStart: themeInputs.navStart?.value || defaultTheme.navStart,
@@ -438,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
         activeCustomTheme = readThemeInputs();
         applyCustomTheme(activeCustomTheme);
         updateThemeRadiusLabel(activeCustomTheme);
-        updateThemePreview(activeCustomTheme);
         localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
         showThemeSaveHint();
     }
