@@ -24,6 +24,7 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Nutzerübersicht mit öffentlichen Profilen
 - Freundschaftssystem mit Anfragen, Freundesliste und befreundet-seit Anzeige
 - Chat-System mit Direktchats, Gruppenchats, Emoji-Reaktionen und Löschen eigener Nachrichten
+- Datei-Share mit Freunden, privaten Links, Mehrfachupload, Fortschrittsanzeige und Admin-Limits pro Nutzer
 - Skribble-Zeichenspiel mit Lobby, Einladungen, Zeichnen, Raten, Punktestand und Rundenübersicht
 - Tic Tac Toe mit privaten Räumen, Freunde-Einladungen, Live-Übersicht und Host-/Löschlogik
 - Vier gewinnt mit animiertem Spielfeld, privaten Räumen, Einladungen, Live-Zügen und Gewinn-Popup
@@ -144,6 +145,7 @@ Funktionen:
 - Schnellzugriff auf Freunde und Freundschaftsanfragen im Profilmenü
 - Account-Informationen wie Mitglied seit und letzte Aktivität
 - Profil-Statistiken, z. B. Freunde, Chats und Highscores
+- Datei-Share Upload-Limit pro Nutzer im Admin einstellbar: 50 MB, 100 MB, 500 MB oder unbegrenzt
 
 ---
 
@@ -163,6 +165,24 @@ Funktionen:
 - eigene Nachrichten löschen
 - auf empfangene Nachrichten mit Emojis reagieren
 - Reaktionen erneut anklicken, um sie wieder zu entfernen
+
+---
+
+## 📤 Datei-Share
+
+Der Datei-Share erlaubt private Dateifreigaben innerhalb von MyTools.
+
+Funktionen:
+
+- Dateien mit Freunden teilen
+- privaten Link für einzelne Freigaben erstellen
+- mehrere Dateien auf einmal auswählen oder per Drag & Drop ablegen
+- ausgewählte Dateien mit Name, Typ und Größe anzeigen
+- Upload-Fortschritt mit Prozentanzeige
+- pro Nutzer konfigurierbares Upload-Limit im Django-Admin
+- Standardlimit 50 MB pro Datei
+- optionale Limits 100 MB, 500 MB oder unbegrenzt
+- Speicherung als Datei im Media-Verzeichnis statt als Datenbank-Blob
 
 ---
 

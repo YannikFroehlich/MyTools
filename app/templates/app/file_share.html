@@ -10,28 +10,48 @@
         <div>
             <p class="perf-kicker">Private Sharing</p>
             <h1>{% translate "Datei-Share" %}</h1>
-            <p>{% blocktranslate %}Teile Dateien bis {{ max_share_mb }} MB mit Freunden oder über einen privaten Link.{% endblocktranslate %}</p>
+            {% if max_share_unlimited %}
+                <p>{% translate "Teile Dateien ohne festes Upload-Limit mit Freunden oder über einen privaten Link." %}</p>
+            {% else %}
+                <p>{% blocktranslate %}Teile Dateien bis {{ max_share_mb }} pro Datei mit Freunden oder über einen privaten Link.{% endblocktranslate %}</p>
+            {% endif %}
         </div>
         <div class="perf-hero-icon"><i class="fa-solid fa-share-nodes"></i></div>
     </div>
 
     <div class="share-layout">
-        <form class="share-upload-card share-upload-panel" method="post" action="{% url 'file_share_upload' %}" enctype="multipart/form-data">
+        <form class="share-upload-card share-upload-panel" method="post" action="{% url 'file_share_upload' %}" enctype="multipart/form-data" data-share-upload-panel data-share-success-url="{% url 'file_share' %}" data-share-max-size="{{ max_share_bytes }}" data-share-max-label="{{ max_share_mb }}" data-label-selected-one="{% translate 'Ausgewählte Datei' %}" data-label-selected-many="{% translate 'ausgewählte Dateien' %}" data-label-file-generic="{% translate 'Datei' %}" data-label-too-large="{% translate 'zu groß' %}" data-label-max-short="{% translate 'max.' %}" data-label-upload-preparing="{% translate 'Upload wird vorbereitet...' %}" data-label-upload-running="{% translate 'Upload läuft...' %}" data-label-upload-complete="{% translate 'Upload abgeschlossen.' %}" data-label-upload-failed="{% translate 'Upload fehlgeschlagen.' %}" data-label-oversized="{% translate 'Mindestens eine Datei ist zu groß. Maximal erlaubt:' %}">
             {% csrf_token %}
             <div class="share-section-title">
                 <span><i class="fa-solid fa-cloud-arrow-up"></i></span>
                 <div>
                     <h2>{% translate "Neue Datei teilen" %}</h2>
-                    <p>{% blocktranslate %}Maximal {{ max_share_mb }} MB · gespeichert als Datei, nicht in der Datenbank.{% endblocktranslate %}</p>
+                    {% if max_share_unlimited %}
+                        <p>{% translate "Kein festes Upload-Limit · gespeichert als Datei, nicht in der Datenbank." %}</p>
+                    {% else %}
+                        <p>{% blocktranslate %}Maximal {{ max_share_mb }} pro Datei · gespeichert als Datei, nicht in der Datenbank.{% endblocktranslate %}</p>
+                    {% endif %}
                 </div>
             </div>
 
-            <label class="share-file-input share-drop-card">
-                <input type="file" name="file" required>
+            <label class="share-file-input share-drop-card" data-share-drop-card>
+                <input type="file" name="files" required multiple data-share-file-input>
                 <span class="share-drop-icon"><i class="fa-solid fa-file-arrow-up"></i></span>
                 <strong>{% translate "Datei auswählen oder hier ablegen" %}</strong>
                 <small>{% translate "Bilder, PDFs, ZIPs und andere Dateien" %}</small>
             </label>
+
+
+            <div class="share-selected-file" data-share-selected-file hidden aria-live="polite">
+                <span class="share-selected-file-icon"><i class="fa-solid fa-file-lines"></i></span>
+                <div class="share-selected-file-main">
+                    <small data-share-selected-count>{% translate "Ausgewählte Datei" %}</small>
+                    <div class="share-selected-file-list" data-share-file-list></div>
+                </div>
+                <button type="button" data-share-file-clear aria-label="{% translate 'Auswahl entfernen' %}">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
             <div class="share-toggle-box">
                 <label class="share-check">
@@ -62,7 +82,17 @@
                 {% endif %}
             </div>
 
-            <button class="perf-primary share-submit" type="submit"><i class="fa-solid fa-paper-plane"></i>{% translate "Datei teilen" %}</button>
+            <button class="perf-primary share-submit" type="submit" data-share-submit><i class="fa-solid fa-paper-plane"></i>{% translate "Datei teilen" %}</button>
+
+            <div class="share-upload-progress" data-share-upload-progress hidden aria-live="polite">
+                <div class="share-upload-progress-head">
+                    <span data-share-upload-status>{% translate "Upload wird vorbereitet..." %}</span>
+                    <strong data-share-upload-percent>0%</strong>
+                </div>
+                <div class="share-upload-progress-track">
+                    <span data-share-upload-bar></span>
+                </div>
+            </div>
         </form>
 
         <div class="share-lists">
@@ -119,4 +149,183 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+(() => {
+    const panels = document.querySelectorAll('[data-share-upload-panel]');
+    if (!panels.length) {
+        return;
+    }
+
+    const formatSize = (size) => {
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let value = Number(size || 0);
+        let index = 0;
+        while (value >= 1024 && index < units.length - 1) {
+            value /= 1024;
+            index += 1;
+        }
+        return index === 0 ? `${value} ${units[index]}` : `${value.toFixed(1)} ${units[index]}`;
+    };
+
+    const renderFiles = (panel) => {
+        const input = panel.querySelector('[data-share-file-input]');
+        const dropCard = panel.querySelector('[data-share-drop-card]');
+        const selectedCard = panel.querySelector('[data-share-selected-file]');
+        const selectedCount = panel.querySelector('[data-share-selected-count]');
+        const fileList = panel.querySelector('[data-share-file-list]');
+        const files = Array.from(input?.files || []);
+        const maxSize = Number(panel.dataset.shareMaxSize || 0);
+
+        dropCard?.classList.toggle('has-file', files.length > 0);
+        if (!selectedCard || !selectedCount || !fileList) {
+            return;
+        }
+
+        selectedCard.hidden = files.length === 0;
+        fileList.innerHTML = '';
+        if (!files.length) {
+            return;
+        }
+
+        selectedCount.textContent = files.length === 1 ? panel.dataset.labelSelectedOne : `${files.length} ${panel.dataset.labelSelectedMany}`;
+        files.forEach((file) => {
+            const row = document.createElement('div');
+            row.className = 'share-selected-file-row';
+            if (maxSize && file.size > maxSize) {
+                row.classList.add('is-too-large');
+            }
+
+            const name = document.createElement('strong');
+            name.textContent = file.name;
+
+            const meta = document.createElement('span');
+            const limitNote = maxSize && file.size > maxSize ? ` · ${panel.dataset.labelTooLarge} (${panel.dataset.labelMaxShort} ${panel.dataset.shareMaxLabel})` : '';
+            meta.textContent = `${file.type || panel.dataset.labelFileGeneric} · ${formatSize(file.size)}${limitNote}`;
+
+            row.append(name, meta);
+            fileList.append(row);
+        });
+    };
+
+    const setProgress = (panel, percent, text) => {
+        const progress = panel.querySelector('[data-share-upload-progress]');
+        const bar = panel.querySelector('[data-share-upload-bar]');
+        const percentElement = panel.querySelector('[data-share-upload-percent]');
+        const statusElement = panel.querySelector('[data-share-upload-status]');
+        if (!progress || !bar || !percentElement || !statusElement) {
+            return;
+        }
+
+        const safePercent = Math.max(0, Math.min(100, Math.round(percent || 0)));
+        progress.hidden = false;
+        bar.style.width = `${safePercent}%`;
+        percentElement.textContent = `${safePercent}%`;
+        statusElement.textContent = text;
+    };
+
+    const setLocked = (panel, locked) => {
+        panel.classList.toggle('is-uploading', locked);
+        panel.querySelector('[data-share-submit]')?.toggleAttribute('disabled', locked);
+        panel.querySelector('[data-share-file-input]')?.toggleAttribute('disabled', locked);
+        panel.querySelector('[data-share-file-clear]')?.toggleAttribute('disabled', locked);
+    };
+
+    const uploadPanel = (panel) => {
+        const input = panel.querySelector('[data-share-file-input]');
+        if (!input?.files?.length) {
+            return;
+        }
+
+        const maxSize = Number(panel.dataset.shareMaxSize || 0);
+        const hasOversizedFile = Array.from(input.files).some((file) => maxSize && file.size > maxSize);
+        if (hasOversizedFile) {
+            renderFiles(panel);
+            setProgress(panel, 0, `${panel.dataset.labelOversized} ${panel.dataset.shareMaxLabel}.`);
+            return;
+        }
+
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData(panel);
+        setLocked(panel, true);
+        setProgress(panel, 0, panel.dataset.labelUploadPreparing);
+
+        xhr.upload.addEventListener('progress', (event) => {
+            if (!event.lengthComputable) {
+                setProgress(panel, 0, panel.dataset.labelUploadRunning);
+                return;
+            }
+            setProgress(panel, (event.loaded / event.total) * 100, panel.dataset.labelUploadRunning);
+        });
+
+        xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                setProgress(panel, 100, panel.dataset.labelUploadComplete);
+                let redirectUrl = panel.dataset.shareSuccessUrl || window.location.href;
+                try {
+                    redirectUrl = JSON.parse(xhr.responseText).redirect_url || redirectUrl;
+                } catch (_error) {
+                    redirectUrl = xhr.responseURL || redirectUrl;
+                }
+                window.location.href = redirectUrl;
+                return;
+            }
+
+            setLocked(panel, false);
+            setProgress(panel, 0, panel.dataset.labelUploadFailed);
+        });
+
+        xhr.addEventListener('error', () => {
+            setLocked(panel, false);
+            setProgress(panel, 0, panel.dataset.labelUploadFailed);
+        });
+
+        xhr.open('POST', panel.action);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send(formData);
+    };
+
+    panels.forEach((panel) => {
+        const input = panel.querySelector('[data-share-file-input]');
+        const clearButton = panel.querySelector('[data-share-file-clear]');
+        const dropCard = panel.querySelector('[data-share-drop-card]');
+
+        input?.addEventListener('change', () => renderFiles(panel));
+        clearButton?.addEventListener('click', () => {
+            if (input) {
+                input.value = '';
+            }
+            renderFiles(panel);
+        });
+        ['dragenter', 'dragover'].forEach((eventName) => {
+            dropCard?.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                dropCard.classList.add('is-dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach((eventName) => {
+            dropCard?.addEventListener(eventName, () => {
+                dropCard.classList.remove('is-dragover');
+            });
+        });
+
+        dropCard?.addEventListener('drop', (event) => {
+            event.preventDefault();
+            if (input && event.dataTransfer?.files?.length) {
+                input.files = event.dataTransfer.files;
+                renderFiles(panel);
+            }
+        });
+        panel.addEventListener('submit', (event) => {
+            event.preventDefault();
+            uploadPanel(panel);
+        });
+        renderFiles(panel);
+    });
+})();
+</script>
 {% endblock %}

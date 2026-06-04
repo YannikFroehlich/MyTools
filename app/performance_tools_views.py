@@ -8,7 +8,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Max, Q, Sum, Value
 from django.db.models.functions import Coalesce
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -28,9 +28,9 @@ from .models import (
     SkribbleStats,
     StadtLandFlussPlayer,
     TicTacToeGame,
+    UserProfile,
 )
 
-MAX_SHARE_SIZE = 50 * 1024 * 1024
 MAX_SHARE_RECIPIENTS = 20
 
 
@@ -46,12 +46,23 @@ def _human_size(size):
         size /= 1024
 
 
+def _file_share_limit(user):
+    profile, _created = UserProfile.objects.get_or_create(user=user)
+    return {
+        "size": profile.file_share_max_size,
+        "label": profile.file_share_limit_label,
+        "is_unlimited": profile.file_share_max_size is None,
+    }
+
+
 def _build_win_rows(model, cases, title, icon, limit=10):
     totals = {}
     for case in cases:
+        winner_relation = case["winner"][:-3] if case["winner"].endswith("_id") else case["winner"]
         qs = (
             model.objects
             .filter(status=case["finished"], **{case["win_field"]: case["win_value"]})
+            .filter(**{f"{winner_relation}__profile__privacy_show_highscores": True})
             .exclude(**{case["winner"]: None})
             .values(case["winner"])
             .annotate(total=Count("id"))
@@ -69,6 +80,19 @@ def _build_win_rows(model, cases, title, icon, limit=10):
             continue
         rows.append({"rank": index, "name": _display_name(user), "score": score, "detail": _("Siege")})
     return {"title": title, "icon": icon, "rows": rows}
+
+
+def _decorate_leaderboards(boards):
+    decorated = []
+    for index, board in enumerate(boards):
+        rows = board.get("rows") or []
+        decorated.append({
+            **board,
+            "accent": f"leaderboard-accent-{(index % 4) + 1}",
+            "top_row": rows[0] if rows else None,
+            "row_count": len(rows),
+        })
+    return decorated
 
 
 def _human_benchmark_rows(game, title, lower_is_better=False, limit=10):
@@ -122,7 +146,8 @@ def leaderboard_view(request):
 
     stadt_rows = []
     stadt_qs = (
-        StadtLandFlussPlayer.objects.values("user", "user__username", "user__first_name", "user__last_name")
+        StadtLandFlussPlayer.objects.filter(user__profile__privacy_show_highscores=True)
+        .values("user", "user__username", "user__first_name", "user__last_name")
         .annotate(total=Coalesce(Sum("score"), Value(0)), last_played=Max("last_seen"))
         .order_by("-total", "-last_played")[:10]
     )
@@ -133,7 +158,8 @@ def leaderboard_view(request):
 
     hangman_rows = []
     hangman_qs = (
-        HangmanPlayer.objects.values("user", "user__username", "user__first_name", "user__last_name")
+        HangmanPlayer.objects.filter(user__profile__privacy_show_highscores=True)
+        .values("user", "user__username", "user__first_name", "user__last_name")
         .annotate(total=Coalesce(Sum("score"), Value(0)), games=Count("id"))
         .order_by("-total", "-games")[:10]
     )
@@ -153,10 +179,12 @@ def leaderboard_view(request):
     ], _("Vier gewinnt"), "fa-solid fa-circle-dot"))
 
     context = {
-        "boards": boards,
+        "boards": _decorate_leaderboards(boards),
+        "boards_total": len(boards),
         "human_total": human_total,
         "multiplayer_games": multiplayer_games,
         "players_total": User.objects.filter(is_active=True).count(),
+        "visible_scores_total": sum(len(board.get("rows", [])) for board in boards),
     }
     return render(request, "app/leaderboard.html", context)
 
@@ -173,6 +201,7 @@ def _friends_queryset(user):
 
 @login_required
 def file_share_view(request):
+    share_limit = _file_share_limit(request.user)
     friends = _friends_queryset(request.user)
     own_shares = (
         FileShare.objects.filter(owner=request.user)
@@ -191,19 +220,28 @@ def file_share_view(request):
         "friends": friends,
         "own_shares": Paginator(own_shares, 12).get_page(request.GET.get("own_page")),
         "received_shares": Paginator(received_shares, 12).get_page(request.GET.get("received_page")),
-        "max_share_mb": MAX_SHARE_SIZE // 1024 // 1024,
+        "max_share_mb": share_limit["label"],
+        "max_share_bytes": share_limit["size"] or "",
+        "max_share_unlimited": share_limit["is_unlimited"],
     })
 
 
 @login_required
 @require_POST
 def file_share_upload_view(request):
-    upload = request.FILES.get("file")
-    if not upload:
+    share_limit = _file_share_limit(request.user)
+    uploads = request.FILES.getlist("files") or request.FILES.getlist("file")
+    if not uploads:
         messages.error(request, _("Bitte wähle eine Datei aus."))
         return redirect("file_share")
-    if upload.size > MAX_SHARE_SIZE:
-        messages.error(request, _("Die Datei ist zu groß. Maximal erlaubt sind %(size)s MB.") % {"size": MAX_SHARE_SIZE // 1024 // 1024})
+
+    oversized = [
+        upload
+        for upload in uploads
+        if share_limit["size"] is not None and upload.size > share_limit["size"]
+    ]
+    if oversized:
+        messages.error(request, _("Die Datei ist zu groß. Maximal erlaubt sind %(size)s.") % {"size": share_limit["label"]})
         return redirect("file_share")
 
     selected_ids = request.POST.getlist("recipients")[:MAX_SHARE_RECIPIENTS]
@@ -213,19 +251,29 @@ def file_share_upload_view(request):
         messages.error(request, _("Wähle mindestens einen Freund oder aktiviere den privaten Link."))
         return redirect("file_share")
 
-    safe_name = get_valid_filename(Path(upload.name).name)[:180] or "datei"
-    share = FileShare.objects.create(
-        owner=request.user,
-        file=upload,
-        original_name=safe_name,
-        size=upload.size,
-        content_type=getattr(upload, "content_type", "")[:120],
-        token=get_random_string(40),
-        is_public_link=is_public,
-    )
-    if recipients:
-        share.recipients.set(recipients)
-    messages.success(request, _("Datei wurde geteilt."))
+    created_count = 0
+    for upload in uploads:
+        safe_name = get_valid_filename(Path(upload.name).name)[:180] or "datei"
+        share = FileShare.objects.create(
+            owner=request.user,
+            file=upload,
+            original_name=safe_name,
+            size=upload.size,
+            content_type=getattr(upload, "content_type", "")[:120],
+            token=get_random_string(40),
+            is_public_link=is_public,
+        )
+        if recipients:
+            share.recipients.set(recipients)
+        created_count += 1
+
+    if created_count == 1:
+        messages.success(request, _("Datei wurde geteilt."))
+    else:
+        messages.success(request, _("%(count)s Dateien wurden geteilt.") % {"count": created_count})
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({"success": True, "redirect_url": reverse("file_share"), "count": created_count})
     return redirect("file_share")
 
 

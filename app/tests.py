@@ -20,6 +20,7 @@ from app.models import (
     ConnectFourGame,
     DrawingGameLobby,
     DrawingGamePlayer,
+    FileShare,
     Friendship,
     HomeLayoutPreference,
     HomeWidget,
@@ -2208,6 +2209,39 @@ class SkribbleLobbyTests(BaseTestCase):
         self.assertEqual(state["drawing"], [])
         self.assertEqual(len(state["drawingDelta"]), 1)
         self.assertEqual(state["drawingDelta"][0]["id"], "segment-2")
+
+
+class FileShareTests(BaseTestCase):
+    def test_file_share_view_uses_default_profile_limit(self):
+        response = self.client.get(reverse("file_share"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["max_share_mb"], "50 MB")
+        self.assertEqual(response.context["max_share_bytes"], 50 * 1024 * 1024)
+        self.assertFalse(response.context["max_share_unlimited"])
+
+    def test_file_share_view_uses_custom_profile_limit(self):
+        profile, _created = UserProfile.objects.get_or_create(user=self.user)
+        profile.file_share_limit = UserProfile.FILE_SHARE_LIMIT_500
+        profile.save(update_fields=["file_share_limit"])
+
+        response = self.client.get(reverse("file_share"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["max_share_mb"], "500 MB")
+        self.assertEqual(response.context["max_share_bytes"], 500 * 1024 * 1024)
+
+    def test_file_share_upload_accepts_multiple_files(self):
+        response = self.client.post(reverse("file_share_upload"), {
+            "is_public_link": "on",
+            "files": [
+                SimpleUploadedFile("a.txt", b"a", content_type="text/plain"),
+                SimpleUploadedFile("b.txt", b"b", content_type="text/plain"),
+            ],
+        })
+
+        self.assertRedirects(response, reverse("file_share"))
+        self.assertEqual(FileShare.objects.filter(owner=self.user).count(), 2)
 
 
 class TicTacToeTests(BaseTestCase):
