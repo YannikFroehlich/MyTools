@@ -1,0 +1,156 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Bild Tools" %} | MyTools{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/performance_tools.css' %}">{% endblock %}
+
+{% block content %}
+<section class="perf-page image-tool-page">
+    <div class="perf-hero">
+        <div>
+            <p class="perf-kicker">Client Side</p>
+            <h1>{% translate "Bildkompressor & Konverter" %}</h1>
+            <p>{% translate "Komprimiert Bilder direkt im Browser. Kein Upload, keine Serverlast, schnelle Verarbeitung auch bei größeren Bildern." %}</p>
+        </div>
+        <div class="perf-hero-icon"><i class="fa-regular fa-image"></i></div>
+    </div>
+
+    <div class="image-tool-shell image-tool-shell-v2" data-image-tool>
+        <section class="image-drop image-drop-v2" data-drop-zone>
+            <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,avif,image/avif" hidden>
+
+            <button type="button" class="image-empty-picker" data-pick-image data-empty-picker>
+                <span class="image-upload-orb"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+                <strong data-drop-title>{% translate "Bild hier reinziehen" %}</strong>
+                <small data-drop-subtitle>{% translate "oder klicken zum Auswählen · PNG, JPG, WebP, AVIF" %}</small>
+            </button>
+
+            <div class="image-selected-panel" data-selected-info hidden>
+                <div class="image-selected-preview-v2">
+                    <img alt="" data-selected-preview>
+                </div>
+                <div class="image-selected-content">
+                    <div class="image-selected-topline">
+                        <span class="image-status-pill"><i class="fa-solid fa-check"></i> {% translate "Ausgewählt" %}</span>
+                        <button type="button" class="image-change-button" data-pick-image-secondary>
+                            <i class="fa-solid fa-rotate"></i>
+                            {% translate "Anderes Bild" %}
+                        </button>
+                    </div>
+                    <h2 data-selected-name>-</h2>
+                    <div class="image-meta-grid">
+                        <span><b>{% translate "Größe" %}</b><em data-selected-size>-</em></span>
+                        <span><b>{% translate "Format" %}</b><em data-selected-format>-</em></span>
+                        <span><b>{% translate "Auflösung" %}</b><em data-selected-dimensions>-</em></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="image-options-card image-options-card-v2">
+            <div class="image-card-head">
+                <div>
+                    <p class="perf-kicker">Settings</p>
+                    <h2>{% translate "Optimierung" %}</h2>
+                </div>
+                <span class="image-local-badge"><i class="fa-solid fa-bolt"></i> {% translate "Lokal" %}</span>
+            </div>
+
+            <div class="image-preset-row" aria-label="Presets">
+                <button type="button" class="image-preset active" data-preset="balanced">{% translate "Ausgeglichen" %}</button>
+                <button type="button" class="image-preset" data-preset="small">{% translate "Kleinste Datei" %}</button>
+                <button type="button" class="image-preset" data-preset="quality">{% translate "Hohe Qualität" %}</button>
+                <button type="button" class="image-preset" data-preset="avatar">{% translate "Profilbild" %}</button>
+            </div>
+
+            <div class="option-grid option-grid-v2">
+                <label>
+                    <span>{% translate "Zielformat" %}</span>
+                    <select id="image-format">
+                        <option value="image/webp">WebP {% translate "empfohlen" %}</option>
+                        <option value="image/jpeg">JPG</option>
+                        <option value="image/png">PNG</option>
+                    </select>
+                </label>
+                <label>
+                    <span>{% translate "Qualität" %}</span>
+                    <div class="range-line">
+                        <input id="image-quality" type="range" min="0.25" max="1" step="0.01" value="0.82">
+                        <b id="quality-label">82%</b>
+                    </div>
+                </label>
+                <label>
+                    <span>{% translate "Max. Breite" %}</span>
+                    <input id="image-width" type="number" min="64" max="8192" value="1920">
+                </label>
+                <label>
+                    <span>{% translate "Max. Höhe" %}</span>
+                    <input id="image-height" type="number" min="64" max="8192" value="1080">
+                </label>
+                <label>
+                    <span>{% translate "Skalierung" %}</span>
+                    <select id="image-scale-mode">
+                        <option value="contain">{% translate "In Max-Größe einpassen" %}</option>
+                        <option value="percent">{% translate "Prozentual verkleinern" %}</option>
+                        <option value="original">{% translate "Original-Auflösung behalten" %}</option>
+                    </select>
+                </label>
+                <label>
+                    <span>{% translate "Prozent" %}</span>
+                    <input id="image-scale-percent" type="number" min="5" max="100" value="100">
+                </label>
+                <label>
+                    <span>{% translate "Glättung" %}</span>
+                    <select id="image-smoothing">
+                        <option value="high">{% translate "Hoch" %}</option>
+                        <option value="medium">{% translate "Mittel" %}</option>
+                        <option value="low">{% translate "Schnell" %}</option>
+                    </select>
+                </label>
+                <label>
+                    <span>{% translate "JPG Hintergrund" %}</span>
+                    <input id="image-bg" type="color" value="#ffffff">
+                </label>
+            </div>
+
+            <div class="image-toggle-list">
+                <label><input id="image-no-upscale" type="checkbox" checked> <span>{% translate "Nicht hochskalieren" %}</span></label>
+                <label><input id="image-strip-meta" type="checkbox" checked disabled> <span>{% translate "Metadaten entfernen" %}</span></label>
+                <label><input id="image-auto-download" type="checkbox"> <span>{% translate "Nach Optimierung automatisch herunterladen" %}</span></label>
+            </div>
+
+            <div class="image-estimate" data-estimate hidden>
+                <span>{% translate "Zielgröße" %}: <b data-target-dimensions>-</b></span>
+                <span>{% translate "Hinweis" %}: {% translate "Canvas entfernt EXIF/Metadaten automatisch." %}</span>
+            </div>
+
+            <button type="button" class="perf-primary image-main-action" data-convert disabled>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                {% translate "Bild optimieren" %}
+            </button>
+        </section>
+
+        <section class="image-result-card image-result-card-v2" hidden data-result>
+            <div class="image-result-head">
+                <div>
+                    <p class="perf-kicker">Result</p>
+                    <h2>{% translate "Optimiertes Bild" %}</h2>
+                </div>
+                <a class="perf-primary" data-download href="#" download="optimiert.webp">
+                    <i class="fa-solid fa-download"></i>
+                    {% translate "Download" %}
+                </a>
+            </div>
+            <div class="image-preview-wrap"><img alt="" data-preview></div>
+            <div class="image-result-info image-result-info-v2">
+                <div><span>{% translate "Vorher" %}</span><strong data-before-size>-</strong></div>
+                <div><span>{% translate "Nachher" %}</span><strong data-after-size>-</strong></div>
+                <div><span>{% translate "Ersparnis" %}</span><strong data-saved-size>-</strong></div>
+                <div><span>{% translate "Ausgabe" %}</span><strong data-output-meta>-</strong></div>
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'app/js/image_tools.js' %}" defer></script>{% endblock %}

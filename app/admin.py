@@ -16,6 +16,7 @@ from .models import (
     DrawingGameInvite as SkribbleInvite,
     DrawingGameLobby as SkribbleLobby,
     DrawingGamePlayer as SkribblePlayer,
+    FileShare,
     Friendship,
     HumanBenchmarkHighScore,
     HumanBenchmarkScore,
@@ -322,3 +323,12 @@ try:
         search_fields = ("user__username",)
 except admin.sites.AlreadyRegistered:
     pass
+
+
+@admin.register(FileShare)
+class FileShareAdmin(admin.ModelAdmin):
+    list_display = ("original_name", "owner", "size", "is_public_link", "download_count", "created_at")
+    list_filter = ("is_public_link", "content_type", "created_at")
+    search_fields = ("original_name", "owner__username", "owner__email", "token")
+    readonly_fields = ("token", "download_count", "last_downloaded_at", "created_at")
+    filter_horizontal = ("recipients",)

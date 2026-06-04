@@ -1,0 +1,138 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Randomizer" %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/randomizer_tools.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="randomizer-page">
+    <div class="randomizer-hero">
+        <div>
+            <p class="randomizer-kicker">{% translate "Fun Tools" %}</p>
+            <h1>{% translate "Randomizer Tools" %}</h1>
+            <p>{% translate "Entscheidungsrad, Teams, Zufallszahlen und Würfel in einer Seite." %}</p>
+        </div>
+        <div class="randomizer-hero-orb" aria-hidden="true"><i class="fa-solid fa-shuffle"></i></div>
+    </div>
+
+    <div class="randomizer-tab-header" aria-label="{% translate 'Randomizer Tools' %}">
+        <button type="button" class="randomizer-tab active" data-randomizer-tab="wheel">
+            <i class="fa-solid fa-circle-notch"></i>
+            <span>{% translate "Glücksrad" %}</span>
+        </button>
+        <button type="button" class="randomizer-tab" data-randomizer-tab="teams">
+            <i class="fa-solid fa-people-group"></i>
+            <span>{% translate "Team Generator" %}</span>
+        </button>
+        <button type="button" class="randomizer-tab" data-randomizer-tab="number">
+            <i class="fa-solid fa-hashtag"></i>
+            <span>{% translate "Zufallszahl" %}</span>
+        </button>
+        <button type="button" class="randomizer-tab" data-randomizer-tab="dice">
+            <i class="fa-solid fa-dice"></i>
+            <span>{% translate "Würfel" %}</span>
+        </button>
+        <button type="button" class="randomizer-tab" data-randomizer-tab="starter">
+            <i class="fa-solid fa-hand-point-up"></i>
+            <span>{% translate "Wer fängt an?" %}</span>
+        </button>
+    </div>
+
+    <div class="randomizer-tool-stage">
+        <article class="randomizer-card randomizer-card-wide randomizer-panel active" data-randomizer-panel="wheel">
+            <div class="randomizer-card-head">
+                <div>
+                    <p class="randomizer-kicker">{% translate "Glücksrad" %}</p>
+                    <h2>{% translate "Entscheidungsrad" %}</h2>
+                </div>
+                <button type="button" class="randomizer-action" id="wheel-spin"><i class="fa-solid fa-rotate"></i>{% translate "Drehen" %}</button>
+            </div>
+
+            <div class="wheel-layout">
+                <div class="wheel-stage">
+                    <div class="wheel-pointer"></div>
+                    <div class="decision-wheel" id="decision-wheel"></div>
+                </div>
+                <div class="randomizer-controls">
+                    <label>
+                        <span>{% translate "Optionen" %}</span>
+                        <textarea id="wheel-options" rows="7">Pizza
+Burger
+Döner
+Pasta
+Sushi
+Wraps</textarea>
+                    </label>
+                    <div class="randomizer-result" id="wheel-result">{% translate "Bereit zum Drehen" %}</div>
+                </div>
+            </div>
+        </article>
+
+        <article class="randomizer-card randomizer-panel" data-randomizer-panel="teams">
+            <div class="randomizer-card-head">
+                <div>
+                    <p class="randomizer-kicker">{% translate "Teams" %}</p>
+                    <h2>{% translate "Team Generator" %}</h2>
+                </div>
+                <button type="button" class="randomizer-action" id="teams-generate"><i class="fa-solid fa-people-group"></i>{% translate "Mischen" %}</button>
+            </div>
+            <label><span>{% translate "Namen" %}</span><textarea id="teams-names" rows="8">Yannik
+Max
+Lisa
+Tom
+Sarah
+Ben</textarea></label>
+            <div class="team-options">
+                <label><span>{% translate "Teams" %}</span><input type="number" id="teams-count" min="2" max="10" value="2"></label>
+            </div>
+            <div class="team-result" id="teams-result"></div>
+        </article>
+
+        <article class="randomizer-card randomizer-panel randomizer-mini" data-randomizer-panel="number">
+            <p class="randomizer-kicker">{% translate "Zahl" %}</p>
+            <h2>{% translate "Zufallszahl" %}</h2>
+            <div class="number-inputs">
+                <label><span>Min</span><input type="number" id="number-min" value="1"></label>
+                <label><span>Max</span><input type="number" id="number-max" value="100"></label>
+            </div>
+            <button type="button" class="randomizer-big-button" id="number-roll">{% translate "Generieren" %}</button>
+            <div class="randomizer-big-result" id="number-result">?</div>
+        </article>
+
+        <article class="randomizer-card randomizer-panel randomizer-mini" data-randomizer-panel="dice">
+            <p class="randomizer-kicker">{% translate "Würfel" %}</p>
+            <h2>{% translate "Dice Roller" %}</h2>
+            <div class="number-inputs">
+                <label><span>{% translate "Anzahl" %}</span><input type="number" id="dice-count" min="1" max="12" value="2"></label>
+                <label><span>{% translate "Seiten" %}</span><input type="number" id="dice-sides" min="2" max="100" value="6"></label>
+            </div>
+            <button type="button" class="randomizer-big-button" id="dice-roll">{% translate "Würfeln" %}</button>
+            <div class="dice-result" id="dice-result"></div>
+        </article>
+
+        <article class="randomizer-card randomizer-panel" data-randomizer-panel="starter">
+            <div class="randomizer-card-head">
+                <div>
+                    <p class="randomizer-kicker">{% translate "Start" %}</p>
+                    <h2>{% translate "Wer fängt an?" %}</h2>
+                </div>
+                <button type="button" class="randomizer-action" id="starter-pick"><i class="fa-solid fa-hand-point-up"></i>{% translate "Wählen" %}</button>
+            </div>
+            <label><span>{% translate "Spieler" %}</span><textarea id="starter-names" rows="7">Yannik
+Max
+Lisa
+Tom</textarea></label>
+            <div class="randomizer-result" id="starter-result">{% translate "Noch niemand" %}</div>
+        </article>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/randomizer_tools.js' %}" defer></script>
+{% endblock %}

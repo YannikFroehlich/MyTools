@@ -15,6 +15,7 @@ GAME_ACTIVITY_LABELS = {
     "battleship": _("spielt Schiffe versenken"),
     "stadtlandfluss": _("spielt Stadt Land Fluss"),
     "skribble": _("spielt Skribble"),
+    "hangman": _("spielt Hangman"),
 }
 
 
@@ -62,6 +63,7 @@ def _collect_game_activity_for_users(user_ids):
         BattleshipGame,
         ConnectFourGame,
         DrawingGameLobby,
+        HangmanLobby,
         StadtLandFlussLobby,
         TicTacToeGame,
         UnoPlayer,
@@ -115,6 +117,14 @@ def _collect_game_activity_for_users(user_ids):
         for player in lobby.players.all():
             if player.user_id in user_ids:
                 _set_activity(activity_by_user_id, player.user_id, GAME_ACTIVITY_LABELS["skribble"], lobby.updated_at)
+
+    for lobby in HangmanLobby.objects.filter(
+        players__user_id__in=user_ids,
+        status__in=ACTIVE_GAME_STATUSES,
+    ).prefetch_related("players").only("status", "updated_at").distinct():
+        for player in lobby.players.all():
+            if player.user_id in user_ids:
+                _set_activity(activity_by_user_id, player.user_id, GAME_ACTIVITY_LABELS["hangman"], lobby.updated_at)
 
     return activity_by_user_id
 

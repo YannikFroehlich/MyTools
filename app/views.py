@@ -1848,3 +1848,8 @@ def stream_deck(request):
         "spotify_client_id": get_env_value("SPOTIFY_CLIENT_ID") or "",
         "spotify_redirect_uri": get_env_value("SPOTIFY_REDIRECT_URI") or request.build_absolute_uri(request.path),
     })
+
+
+@login_required
+def randomizer_tools_view(request):
+    return render(request, "app/randomizer_tools.html")

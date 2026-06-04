@@ -40,9 +40,9 @@
         </div>
     </div>
 
-    {% if messages %}
+    {% if profile_messages %}
         <div class="profile-messages">
-            {% for message in messages %}
+            {% for message in profile_messages %}
                 <div class="profile-message profile-message-{{ message.tags }}">
                     <i class="fa-solid fa-circle-check"></i>
                     {{ message }}
@@ -98,6 +98,40 @@
                 <a href="{% url 'users' %}">
                     <i class="fa-solid fa-user-plus"></i>
                     {% translate "Nutzer finden" %}
+                </a>
+                <a href="{% url 'profile_card_designer' %}">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                    {% translate "Profilkarte designen" %}
+                </a>
+            </div>
+
+
+
+            <div class="profile-showcase-card {{ profile.profile_card_classes }}" style="{{ profile.profile_card_style_vars }}">
+                <div class="profile-showcase-card-pattern"></div>
+                <div class="profile-showcase-card-top">
+                    <span class="profile-showcase-card-avatar">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                        {% else %}
+                            {{ profile.initials }}
+                        {% endif %}
+                    </span>
+                    {% if profile.profile_card_badge_text %}
+                        <span class="profile-showcase-card-badge"><i class="{{ profile.profile_card_badge_icon }}"></i>{{ profile.profile_card_badge_text }}</span>
+                    {% endif %}
+                </div>
+                <strong>
+                    {% if request.user.get_full_name %}
+                        {{ request.user.get_full_name }}
+                    {% else %}
+                        {{ request.user.username }}
+                    {% endif %}
+                </strong>
+                <span>@{{ request.user.username }}</span>
+                <a href="{% url 'profile_card_designer' %}" class="profile-showcase-edit-link">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {% translate "Design bearbeiten" %}
                 </a>
             </div>
 
@@ -372,38 +406,6 @@
         </form>
     </div>
 
-
-    <div class="profile-card profile-gallery-card">
-        <div class="profile-form-header">
-            <div>
-                <p class="profile-kicker">{% translate "Galerie" %}</p>
-                <h2>{% translate "Profilbilder-Galerie" %}</h2>
-            </div>
-        </div>
-        <form class="profile-gallery-upload" method="post" enctype="multipart/form-data" action="{% url 'profile_gallery_upload' %}">
-            {% csrf_token %}
-            {{ gallery_form.image }}
-            {{ gallery_form.caption }}
-            <label>{{ gallery_form.is_public }} <span>{{ gallery_form.is_public.label }}</span></label>
-            <button type="submit" class="profile-save-button"><i class="fa-solid fa-upload"></i>{% translate "Hochladen" %}</button>
-        </form>
-        {% if gallery_images %}
-            <div class="profile-gallery-grid">
-                {% for image in gallery_images %}
-                    <div class="profile-gallery-item">
-                        <img src="{{ image.image|media_thumb:'gallery' }}" alt="{{ image.caption|default:'Galeriebild' }}" width="640" height="640" loading="lazy" decoding="async">
-                        <div>
-                            <span>{% if image.caption %}{{ image.caption }}{% else %}{% translate 'Ohne Beschreibung' %}{% endif %}</span>
-                            <form method="post" action="{% url 'profile_gallery_delete' image.id %}">
-                                {% csrf_token %}
-                                <button type="submit" title="{% translate 'Löschen' %}"><i class="fa-solid fa-trash"></i></button>
-                            </form>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
 
     {% if blocked_users %}
         <div class="profile-card profile-blocked-card">

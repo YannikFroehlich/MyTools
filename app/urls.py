@@ -24,6 +24,7 @@ from .views import (
     stream_deck,
     tankstellen_api,
     unit_converter_view,
+    randomizer_tools_view,
     weather,
 )
 from .profile_views import (
@@ -32,9 +33,11 @@ from .profile_views import (
     friends_list_view,
     friendship_action_view,
     profile_gallery_upload_view,
+    profile_card_designer_view,
     profile_view,
     report_user_view,
     public_profile_view,
+    user_presence_api,
     users_view,
 )
 from .skribble_views import (
@@ -150,7 +153,16 @@ from .chat_views import (
     send_chat_message,
     start_direct_chat,
 )
-from .notification_views import notification_center_api, notification_counts_api
+from .notification_views import notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
+
+from .performance_tools_views import (
+    file_share_delete_view,
+    file_share_download_view,
+    file_share_upload_view,
+    file_share_view,
+    image_tools_view,
+    leaderboard_view,
+)
 from .platform_views import (
     favorite_toggle_view,
     favorites_view,
@@ -169,9 +181,17 @@ urlpatterns = [
     path('inbox/', inbox_view, name='inbox'),
     path('inbox/read/', inbox_mark_read_view, name='inbox_mark_read'),
     path('feedback/', feedback_view, name='feedback'),
+
+    path('leaderboard/', leaderboard_view, name='leaderboard'),
+    path('bild-tools/', image_tools_view, name='image_tools'),
+    path('datei-share/', file_share_view, name='file_share'),
+    path('datei-share/upload/', file_share_upload_view, name='file_share_upload'),
+    path('datei-share/<str:token>/download/', file_share_download_view, name='file_share_download'),
+    path('datei-share/<int:share_id>/delete/', file_share_delete_view, name='file_share_delete'),
     path('uhr/', clock_view, name='clock'),
 
     path('profile/', profile_view, name='profile'),
+    path('profile/card-designer/', profile_card_designer_view, name='profile_card_designer'),
     path('profile/gallery/upload/', profile_gallery_upload_view, name='profile_gallery_upload'),
     path('profile/gallery/<int:image_id>/delete/', delete_gallery_image_view, name='profile_gallery_delete'),
     path('users/', users_view, name='users'),
@@ -194,6 +214,9 @@ urlpatterns = [
     path('api/chat/<int:room_id>/messages/', chat_messages_api, name='chat_messages_api'),
     path('api/notifications/counts/', notification_counts_api, name='notification_counts_api'),
     path('api/notifications/center/', notification_center_api, name='notification_center_api'),
+    path('api/notifications/dismiss/', notification_dismiss_api, name='notification_dismiss_api'),
+    path('api/notifications/dismiss-all/', notification_dismiss_all_api, name='notification_dismiss_all_api'),
+    path('api/users/presence/', user_presence_api, name='user_presence_api'),
 
     path('weather/', weather, name='weather'),
     path('obs-dashboard/', obs_dashboard, name='obs-dashboard'),
@@ -217,6 +240,7 @@ urlpatterns = [
     path('notes/<int:pk>/archive/', note_toggle_archive_view, name='note_toggle_archive'),
 
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
+    path('randomizer/', randomizer_tools_view, name='randomizer_tools'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
 
     path('tic-tac-toe/', tictactoe_home, name='tictactoe_home'),
