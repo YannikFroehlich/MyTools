@@ -1691,32 +1691,4 @@ body.dark-mode .public-profile-info-list small { color:#cbd5e1; }
 }
 .public-report-box summary::-webkit-details-marker { display: none; }
 .public-report-box form { padding: 0 12px 12px; display: grid; gap: 8px; }
-.public-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
-}
-.public-gallery-item {
-    overflow: hidden;
-    border-radius: 18px;
-    display: grid;
-    text-decoration: none;
-    color: inherit;
-    background: rgba(148, 163, 184, .1);
-    border: 1px solid rgba(148, 163, 184, .16);
-}
-.public-gallery-item img {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-    display: block;
-}
-.public-gallery-item span {
-    padding: 9px 10px;
-    font-weight: 850;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-body.dark-mode .public-report-box,
-body.dark-mode .public-gallery-item { background: rgba(255,255,255,.07); border-color: rgba(203,213,225,.12); }
+body.dark-mode .public-report-box { background: rgba(255,255,255,.07); border-color: rgba(203,213,225,.12); }

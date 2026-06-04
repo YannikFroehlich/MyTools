@@ -35,6 +35,7 @@ from .profile_views import (
     profile_view,
     report_user_view,
     public_profile_view,
+    user_presence_api,
     users_view,
 )
 from .skribble_views import (
@@ -196,6 +197,7 @@ urlpatterns = [
     path('api/notifications/center/', notification_center_api, name='notification_center_api'),
     path('api/notifications/dismiss/', notification_dismiss_api, name='notification_dismiss_api'),
     path('api/notifications/dismiss-all/', notification_dismiss_all_api, name='notification_dismiss_all_api'),
+    path('api/users/presence/', user_presence_api, name='user_presence_api'),
 
     path('weather/', weather, name='weather'),
     path('obs-dashboard/', obs_dashboard, name='obs-dashboard'),

@@ -12,12 +12,14 @@
     | MyTools
 {% endblock %}
 
+
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
 {% endblock %}
 
+
 {% block content %}
-<section class="public-profile-page">
+<section class="public-profile-page" data-presence-api-url="{% url 'user_presence_api' %}">
     <div
         class="public-profile-hero {% if profile.profile_banner %}has-profile-banner{% endif %}"
         {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner|media_thumb:'banner' }}');"{% endif %}
@@ -34,7 +36,7 @@
                 {% else %}
                     <span>{{ profile.initials }}</span>
                 {% endif %}
-                {% if profile.is_online %}<span class="public-profile-online-dot" title="{% translate 'Online' %}"></span>{% endif %}
+                <span class="public-profile-online-dot" data-presence-target="dot" data-presence-user-id="{{ profile_user.id }}" title="{% translate 'Online' %}" {% if not profile.is_online %}hidden{% endif %}></span>
             </div>
 
             <div class="public-profile-title">
@@ -49,7 +51,7 @@
                 </h1>
 
                 <p>@{{ profile_user.username }}</p>
-                <span class="public-profile-status {% if profile.is_online %}is-online{% endif %}">
+                <span class="public-profile-status {% if profile.is_online %}is-online{% endif %}" data-presence-target="status" data-presence-user-id="{{ profile_user.id }}">
                     {% if profile.activity_status %}
                         {{ profile.activity_status }}
                     {% elif profile.is_online %}
@@ -93,7 +95,7 @@
                 <div>
                     <span>{% translate "Status" %}</span>
                     <strong>{{ profile.get_status_display }}</strong>
-                    {% if profile.activity_status %}<small>{{ profile.activity_status }}</small>{% endif %}
+                    <small data-presence-target="activity-detail" data-presence-user-id="{{ profile_user.id }}" {% if not profile.activity_status %}hidden{% endif %}>{{ profile.activity_status }}</small>
                     {% if profile.status_text %}<small>{{ profile.status_text }}</small>{% endif %}
                 </div>
             </div>
@@ -354,3 +356,7 @@
     </div>
 </section>
 {% endblock %}
+{% block extra_js %}
+    <script src="{% static 'app/js/user_presence.js' %}" defer></script>
+{% endblock %}
+

@@ -5,12 +5,14 @@
 
 {% block title %}{% translate "Freunde" %} | MyTools{% endblock %}
 
+
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
 {% endblock %}
 
+
 {% block content %}
-<section class="users-page friends-page">
+<section class="users-page friends-page" data-presence-api-url="{% url 'user_presence_api' %}">
     <div class="users-hero">
         <div>
             <p class="users-kicker">{% translate "Freundesliste" %}</p>
@@ -57,7 +59,7 @@
                         {% else %}
                             <span>{{ profile.initials }}</span>
                         {% endif %}
-                        {% if profile.is_online %}<span class="user-online-dot" title="{% translate 'Online' %}"></span>{% endif %}
+                        <span class="user-online-dot" data-presence-target="dot" data-presence-user-id="{{ profile.user.id }}" title="{% translate 'Online' %}" {% if not profile.is_online %}hidden{% endif %}></span>
                     </div>
 
                     <div class="user-content">
@@ -72,7 +74,7 @@
                         </div>
 
                         <p class="user-username">@{{ profile.user.username }}</p>
-                        <span class="user-status-line {% if profile.is_online %}is-online{% endif %}">
+                        <span class="user-status-line {% if profile.is_online %}is-online{% endif %}" data-presence-target="status" data-presence-user-id="{{ profile.user.id }}">
                             {% if profile.activity_status %}
                                 {{ profile.activity_status }}
                             {% elif profile.is_online %}
@@ -138,3 +140,7 @@
     {% endif %}
 </section>
 {% endblock %}
+{% block extra_js %}
+    <script src="{% static 'app/js/user_presence.js' %}" defer></script>
+{% endblock %}
+

@@ -34,9 +34,9 @@
         </div>
     </div>
 
-    {% if messages %}
+    {% if clock_messages %}
         <div class="clock-messages">
-            {% for message in messages %}
+            {% for message in clock_messages %}
                 <div class="clock-message clock-message-{{ message.tags|default:'info' }}">
                     {{ message }}
                 </div>

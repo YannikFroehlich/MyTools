@@ -6,10 +6,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.timesince import timesince
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, ProfileGalleryImage, SkribbleStats, UserBlock, UserProfile, UserReport
 from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
@@ -145,6 +147,71 @@ def is_blocked_between(user_a, user_b):
     return UserBlock.objects.filter(
         Q(blocker=user_a, blocked=user_b) | Q(blocker=user_b, blocked=user_a)
     ).exists()
+
+
+def _profile_presence_text(profile):
+    if profile.activity_status:
+        return str(profile.activity_status)
+
+    if profile.is_online:
+        return str(_("Online"))
+
+    if profile.last_seen_at:
+        return f'{_("Zuletzt online")} {timesince(profile.last_seen_at)}'
+
+    return str(_("Offline"))
+
+
+def _profile_presence_payload(profile):
+    return {
+        "userId": profile.user_id,
+        "isOnline": bool(profile.is_online),
+        "statusLine": _profile_presence_text(profile),
+        "activityStatus": str(profile.activity_status or ""),
+    }
+
+
+@login_required
+@require_GET
+def user_presence_api(request):
+    raw_ids = request.GET.get("ids", "")
+    user_ids = []
+
+    for raw_id in raw_ids.split(","):
+        raw_id = raw_id.strip()
+        if not raw_id.isdigit():
+            continue
+
+        user_id = int(raw_id)
+        if user_id not in user_ids:
+            user_ids.append(user_id)
+
+        if len(user_ids) >= 50:
+            break
+
+    if not user_ids:
+        return JsonResponse({"profiles": []})
+
+    profiles = list(
+        UserProfile.objects
+        .select_related("user")
+        .filter(user_id__in=user_ids, user__is_active=True)
+    )
+
+    decorate_profiles_with_presence(profiles)
+
+    for profile in profiles:
+        apply_profile_privacy(profile, request.user)
+
+    profiles_by_user_id = {profile.user_id: profile for profile in profiles}
+
+    return JsonResponse({
+        "profiles": [
+            _profile_presence_payload(profiles_by_user_id[user_id])
+            for user_id in user_ids
+            if user_id in profiles_by_user_id
+        ]
+    })
 
 
 @login_required
