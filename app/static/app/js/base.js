@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const themeStorageKey = 'customTheme';
     const themePresetStorageKey = 'customThemePreset';
+    const themeSlotsStorageKey = 'customThemeSlots';
 
     const defaultTheme = {
         navStart: '#1a56d6',
@@ -36,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cardBg: '#ffffff',
         footerBg: '#ffffff',
         radius: 22,
-        compact: false,
         pattern: false,
     };
 
@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cardBg: '#1c2231',
         footerBg: '#1a1d2b',
         radius: 22,
-        compact: false,
         pattern: false,
     };
 
@@ -58,19 +57,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 navStart: '#0f766e',
                 navEnd: '#34d399',
                 pageBg: '#dff3ec',
+                cardBg: '#f7fffb',
                 footerBg: '#f7fffb',
             },
             rose: {
                 navStart: '#be185d',
                 navEnd: '#fb7185',
                 pageBg: '#f8dfe8',
+                cardBg: '#fff7fa',
                 footerBg: '#fff7fa',
             },
             graphite: {
                 navStart: '#111827',
                 navEnd: '#64748b',
                 pageBg: '#e2e8f0',
+                cardBg: '#f8fafc',
                 footerBg: '#f8fafc',
+            },
+            violet: {
+                navStart: '#6d28d9',
+                navEnd: '#a78bfa',
+                pageBg: '#ede9fe',
+                cardBg: '#faf5ff',
+                footerBg: '#f5f3ff',
+            },
+            sunset: {
+                navStart: '#ea580c',
+                navEnd: '#facc15',
+                pageBg: '#ffedd5',
+                cardBg: '#fff7ed',
+                footerBg: '#fff7ed',
             },
         },
         dark: {
@@ -79,19 +95,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 navStart: '#064e3b',
                 navEnd: '#047857',
                 pageBg: '#0f1f1b',
+                cardBg: '#13231f',
                 footerBg: '#13231f',
             },
             rose: {
                 navStart: '#831843',
                 navEnd: '#be185d',
                 pageBg: '#21121b',
+                cardBg: '#2a1621',
                 footerBg: '#2a1621',
             },
             graphite: {
                 navStart: '#020617',
                 navEnd: '#334155',
                 pageBg: '#111827',
+                cardBg: '#1f2937',
                 footerBg: '#1f2937',
+            },
+            violet: {
+                navStart: '#4c1d95',
+                navEnd: '#7c3aed',
+                pageBg: '#171026',
+                cardBg: '#211734',
+                footerBg: '#211734',
+            },
+            sunset: {
+                navStart: '#7c2d12',
+                navEnd: '#c2410c',
+                pageBg: '#1f130d',
+                cardBg: '#2c1a10',
+                footerBg: '#2c1a10',
             },
         },
     };
@@ -147,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.style.setProperty('--theme-card-bg', theme.cardBg || theme.footerBg || '#ffffff');
         document.documentElement.style.setProperty('--theme-card-radius', `${theme.radius || 22}px`);
         document.documentElement.style.setProperty('--theme-text', readableTextColor(theme.pageBg));
-        body.classList.toggle('theme-compact-mode', Boolean(theme.compact));
         body.classList.toggle('theme-pattern-mode', Boolean(theme.pattern));
         document.documentElement.style.setProperty('--theme-footer-text', readableTextColor(theme.footerBg));
         document.documentElement.style.setProperty('--theme-footer-border', 'rgba(0, 0, 0, 0.08)');
@@ -156,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearCustomTheme() {
         body.classList.remove('custom-theme');
-        body.classList.remove('theme-compact-mode', 'theme-pattern-mode');
+        body.classList.remove('theme-pattern-mode');
 
         [
             '--theme-nav-start',
@@ -251,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 activeCustomTheme = { ...preset };
                 syncThemeInputs(activeCustomTheme);
                 applyCustomTheme(activeCustomTheme);
+                updateThemePreview(activeCustomTheme);
                 localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
             } else if (!activeCustomTheme) {
                 syncThemeInputs(defaultThemeForMode());
@@ -273,12 +306,116 @@ document.addEventListener('DOMContentLoaded', () => {
         radius: document.getElementById('theme-radius'),
     };
 
+    const themeRadiusValue = document.getElementById('theme-radius-value');
+    const themeSaveHint = document.getElementById('theme-save-hint');
+    const themeRandomButton = document.getElementById('theme-random-button');
+
+    function normalizedTheme(theme) {
+        return { ...defaultThemeForMode(), ...(theme || {}) };
+    }
+
+    function updateThemeRadiusLabel(theme) {
+        if (themeRadiusValue) {
+            themeRadiusValue.textContent = `${Number(theme.radius || defaultTheme.radius)}px`;
+        }
+    }
+
     function syncThemeInputs(theme) {
+        const completeTheme = normalizedTheme(theme);
+
         Object.entries(themeInputs).forEach(([key, input]) => {
-            if (input && theme[key] !== undefined) {
-                input.value = theme[key];
+            if (input && completeTheme[key] !== undefined) {
+                input.value = completeTheme[key];
             }
         });
+
+        updateThemeRadiusLabel(completeTheme);
+        updateThemePreview(completeTheme);
+    }
+
+    function updateActivePresetButton(presetName) {
+        document.querySelectorAll('.theme-preset').forEach((button) => {
+            button.classList.toggle('is-active', Boolean(presetName && button.dataset.preset === presetName));
+        });
+    }
+
+    function showThemeSaveHint() {
+        if (!themeSaveHint) {
+            return;
+        }
+
+        themeSaveHint.classList.remove('is-visible');
+        void themeSaveHint.offsetWidth;
+        themeSaveHint.classList.add('is-visible');
+
+        window.clearTimeout(showThemeSaveHint.timeoutId);
+        showThemeSaveHint.timeoutId = window.setTimeout(() => {
+            themeSaveHint.classList.remove('is-visible');
+        }, 1200);
+    }
+
+    function loadThemeSlots() {
+        try {
+            const slots = JSON.parse(localStorage.getItem(themeSlotsStorageKey));
+            return Array.from({ length: 3 }, (_, index) => slots?.[index] || null);
+        } catch (error) {
+            localStorage.removeItem(themeSlotsStorageKey);
+            return [null, null, null];
+        }
+    }
+
+    let themeSlots = loadThemeSlots();
+
+    function saveThemeSlots() {
+        localStorage.setItem(themeSlotsStorageKey, JSON.stringify(themeSlots));
+    }
+
+    function slotColorPreview(theme) {
+        if (!theme) {
+            return '';
+        }
+
+        return `linear-gradient(135deg, ${theme.navStart}, ${theme.navEnd})`;
+    }
+
+    function updateThemeSlotsUi() {
+        document.querySelectorAll('.theme-slot').forEach((slotElement) => {
+            const slotIndex = Number(slotElement.dataset.slot);
+            const slotTheme = themeSlots[slotIndex];
+            const status = slotElement.querySelector('[data-slot-status]');
+            const loadButton = slotElement.querySelector('[data-slot-load]');
+            const deleteButton = slotElement.querySelector('[data-slot-delete]');
+
+            slotElement.classList.toggle('is-filled', Boolean(slotTheme));
+            slotElement.style.setProperty('--slot-preview', slotColorPreview(slotTheme) || 'linear-gradient(135deg, #cbd5e1, #94a3b8)');
+
+            if (status) {
+                status.textContent = slotTheme ? 'Gespeichert' : 'Leer';
+            }
+
+            if (loadButton) {
+                loadButton.disabled = !slotTheme;
+            }
+
+            if (deleteButton) {
+                deleteButton.disabled = !slotTheme;
+            }
+        });
+    }
+
+    function updateThemePreview(theme) {
+        const preview = document.getElementById('theme-preview-card');
+
+        if (!preview) {
+            return;
+        }
+
+        const completeTheme = normalizedTheme(theme);
+        preview.style.setProperty('--preview-nav-start', completeTheme.navStart);
+        preview.style.setProperty('--preview-nav-end', completeTheme.navEnd);
+        preview.style.setProperty('--preview-page-bg', completeTheme.pageBg);
+        preview.style.setProperty('--preview-card-bg', completeTheme.cardBg || completeTheme.footerBg);
+        preview.style.setProperty('--preview-radius', `${completeTheme.radius || 22}px`);
     }
 
     function readThemeInputs() {
@@ -289,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
             cardBg: themeInputs.cardBg?.value || defaultTheme.cardBg,
             footerBg: themeInputs.footerBg?.value || defaultTheme.footerBg,
             radius: Number(themeInputs.radius?.value || defaultTheme.radius),
-            compact: document.getElementById('theme-compact-toggle')?.classList.contains('is-active') || false,
             pattern: document.getElementById('theme-pattern-toggle')?.classList.contains('is-active') || false,
         };
     }
@@ -297,16 +433,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveThemeFromInputs() {
         activeThemePreset = null;
         localStorage.removeItem(themePresetStorageKey);
+        updateActivePresetButton(null);
 
         activeCustomTheme = readThemeInputs();
         applyCustomTheme(activeCustomTheme);
+        updateThemeRadiusLabel(activeCustomTheme);
+        updateThemePreview(activeCustomTheme);
         localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
+        showThemeSaveHint();
     }
 
     if (themeEditorButton && themeEditorPanel) {
         syncThemeInputs(activeCustomTheme || defaultThemeForMode());
-        document.getElementById('theme-compact-toggle')?.classList.toggle('is-active', Boolean((activeCustomTheme || {}).compact));
+        updateActivePresetButton(activeThemePreset);
         document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active', Boolean((activeCustomTheme || {}).pattern));
+        updateThemeSlotsUi();
 
         themeEditorButton.addEventListener('click', (event) => {
             event.stopPropagation();
@@ -321,29 +462,105 @@ document.addEventListener('DOMContentLoaded', () => {
             input?.addEventListener('input', saveThemeFromInputs);
         });
 
-        ['theme-compact-toggle', 'theme-pattern-toggle'].forEach((id) => {
-            const toggle = document.getElementById(id);
-            toggle?.addEventListener('click', () => {
-                toggle.classList.toggle('is-active');
-                saveThemeFromInputs();
+        document.querySelectorAll('[data-slot-save]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const slotIndex = Number(button.dataset.slotSave);
+                themeSlots[slotIndex] = { ...readThemeInputs() };
+                saveThemeSlots();
+                updateThemeSlotsUi();
+                showThemeSaveHint();
             });
+        });
+
+        document.querySelectorAll('[data-slot-load]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const slotIndex = Number(button.dataset.slotLoad);
+                const slotTheme = themeSlots[slotIndex];
+
+                if (!slotTheme) {
+                    return;
+                }
+
+                activeThemePreset = null;
+                localStorage.removeItem(themePresetStorageKey);
+                updateActivePresetButton(null);
+
+                activeCustomTheme = normalizedTheme(slotTheme);
+                syncThemeInputs(activeCustomTheme);
+                document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active', Boolean(activeCustomTheme.pattern));
+                applyCustomTheme(activeCustomTheme);
+                localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
+                showThemeSaveHint();
+            });
+        });
+
+        document.querySelectorAll('[data-slot-delete]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const slotIndex = Number(button.dataset.slotDelete);
+                themeSlots[slotIndex] = null;
+                saveThemeSlots();
+                updateThemeSlotsUi();
+                showThemeSaveHint();
+            });
+        });
+
+        document.getElementById('theme-pattern-toggle')?.addEventListener('click', () => {
+            document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active');
+            saveThemeFromInputs();
         });
 
         document.querySelectorAll('.theme-preset').forEach((button) => {
             button.addEventListener('click', () => {
-                const preset = themePresets[currentMode()][button.dataset.preset] || defaultThemeForMode();
+                const preset = normalizedTheme(themePresets[currentMode()][button.dataset.preset]);
 
                 syncThemeInputs(preset);
-                document.getElementById('theme-compact-toggle')?.classList.remove('is-active');
                 document.getElementById('theme-pattern-toggle')?.classList.remove('is-active');
                 activeThemePreset = button.dataset.preset;
                 activeCustomTheme = { ...preset };
 
                 applyCustomTheme(activeCustomTheme);
+                updateActivePresetButton(activeThemePreset);
+                showThemeSaveHint();
 
                 localStorage.setItem(themePresetStorageKey, activeThemePreset);
                 localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
             });
+        });
+
+        themeRandomButton?.addEventListener('click', () => {
+            const hue = Math.floor(Math.random() * 360);
+            const secondHue = (hue + 38) % 360;
+            const isDark = currentMode() === 'dark';
+
+            activeThemePreset = null;
+            localStorage.removeItem(themePresetStorageKey);
+            updateActivePresetButton(null);
+
+            const hslToHex = (h, s, l) => {
+                const saturation = s / 100;
+                const lightness = l / 100;
+                const k = (n) => (n + h / 30) % 12;
+                const a = saturation * Math.min(lightness, 1 - lightness);
+                const f = (n) => lightness - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+                const toHex = (value) => Math.round(255 * value).toString(16).padStart(2, '0');
+
+                return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
+            };
+
+            activeCustomTheme = {
+                navStart: hslToHex(hue, 72, isDark ? 36 : 44),
+                navEnd: hslToHex(secondHue, 82, isDark ? 48 : 62),
+                pageBg: hslToHex(hue, isDark ? 26 : 58, isDark ? 10 : 92),
+                cardBg: hslToHex(hue, isDark ? 24 : 60, isDark ? 15 : 98),
+                footerBg: hslToHex(hue, isDark ? 24 : 55, isDark ? 13 : 97),
+                radius: Number(themeInputs.radius?.value || defaultTheme.radius),
+                pattern: document.getElementById('theme-pattern-toggle')?.classList.contains('is-active') || false,
+            };
+
+            syncThemeInputs(activeCustomTheme);
+            applyCustomTheme(activeCustomTheme);
+            localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
+            showThemeSaveHint();
         });
 
         themeResetButton?.addEventListener('click', () => {
@@ -354,9 +571,10 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem(themePresetStorageKey);
 
             syncThemeInputs(defaultThemeForMode());
-            document.getElementById('theme-compact-toggle')?.classList.remove('is-active');
+            updateActivePresetButton(null);
             document.getElementById('theme-pattern-toggle')?.classList.remove('is-active');
             clearCustomTheme();
+            showThemeSaveHint();
         });
 
         document.addEventListener('click', (event) => {
@@ -436,8 +654,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const notificationCenterUrl = body.dataset.notificationCenterUrl;
+    const notificationDismissUrl = body.dataset.notificationDismissUrl;
+    const notificationDismissAllUrl = body.dataset.notificationDismissAllUrl;
     const notificationList = document.querySelector('.js-notification-list');
     const notificationTotal = document.querySelector('.js-notification-total');
+    const notificationClearAllButton = document.querySelector('.js-notification-clear-all');
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -446,6 +667,45 @@ document.addEventListener('DOMContentLoaded', () => {
             .replaceAll('>', '&gt;')
             .replaceAll('"', '&quot;')
             .replaceAll("'", '&#039;');
+    }
+
+    function getCookie(name) {
+        const cookies = document.cookie ? document.cookie.split(';') : [];
+
+        for (const cookie of cookies) {
+            const trimmed = cookie.trim();
+            if (trimmed.startsWith(`${name}=`)) {
+                return decodeURIComponent(trimmed.slice(name.length + 1));
+            }
+        }
+
+        return '';
+    }
+
+    async function postNotificationAction(url, data = {}) {
+        if (!url) return;
+
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Accept': 'application/json',
+            },
+            body: formData,
+            cache: 'no-store',
+        });
+
+        if (!response.ok) return;
+        const payload = await response.json();
+
+        if (payload.ok) {
+            updateNotificationBadges(payload.counts);
+            updateNotificationCenter(payload.counts, payload.items);
+        }
     }
 
     function renderNotificationItems(items = []) {
@@ -462,15 +722,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         notificationList.innerHTML = items.map((item) => `
-            <a class="notification-center-item is-${escapeHtml(item.type)}" href="${escapeHtml(item.url || '#')}">
-                <span class="notification-center-item-icon"><i class="${escapeHtml(item.icon || 'fa-solid fa-bell')}"></i></span>
-                <span class="notification-center-item-main">
-                    <strong>${escapeHtml(item.title)}</strong>
-                    <small>${escapeHtml(item.text)}</small>
-                </span>
-                ${item.action_label ? `<em>${escapeHtml(item.action_label)}</em>` : ''}
-                ${Number(item.badge || 0) > 1 ? `<b>${escapeHtml(item.badge)}</b>` : ''}
-            </a>
+            <div class="notification-center-item is-${escapeHtml(item.type)}" data-notification-key="${escapeHtml(item.key || '')}">
+                <a class="notification-center-item-link" href="${escapeHtml(item.url || '#')}">
+                    <span class="notification-center-item-icon"><i class="${escapeHtml(item.icon || 'fa-solid fa-bell')}"></i></span>
+                    <span class="notification-center-item-main">
+                        <strong>${escapeHtml(item.title)}</strong>
+                        <small>${escapeHtml(item.text)}</small>
+                    </span>
+                    ${item.action_label ? `<em>${escapeHtml(item.action_label)}</em>` : ''}
+                    ${Number(item.badge || 0) > 1 ? `<b>${escapeHtml(item.badge)}</b>` : ''}
+                </a>
+                <button class="notification-item-delete js-notification-delete" type="button" title="Benachrichtigung löschen" aria-label="Benachrichtigung löschen">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
         `).join('');
     }
 
@@ -478,9 +743,43 @@ document.addEventListener('DOMContentLoaded', () => {
         if (notificationTotal && counts) {
             notificationTotal.textContent = String(Number(counts.total_notifications || 0));
         }
+        if (notificationClearAllButton && counts) {
+            notificationClearAllButton.disabled = Number(counts.total_notifications || 0) <= 0;
+        }
         if (Array.isArray(items)) {
             renderNotificationItems(items);
         }
+    }
+
+    if (notificationList) {
+        notificationList.addEventListener('click', (event) => {
+            const deleteButton = event.target.closest('.js-notification-delete');
+            if (!deleteButton) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const item = deleteButton.closest('.notification-center-item');
+            const key = item?.dataset.notificationKey || '';
+            if (!key) return;
+
+            deleteButton.disabled = true;
+            postNotificationAction(notificationDismissUrl, { key }).catch(() => {
+                deleteButton.disabled = false;
+            });
+        });
+    }
+
+    if (notificationClearAllButton) {
+        notificationClearAllButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            notificationClearAllButton.disabled = true;
+            postNotificationAction(notificationDismissAllUrl).catch(() => {
+                notificationClearAllButton.disabled = false;
+            });
+        });
     }
 
     async function refreshNotificationCounts() {

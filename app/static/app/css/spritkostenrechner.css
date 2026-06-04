@@ -93,7 +93,8 @@ body.dark-mode .fuel-page {
 }
 
 .fuel-search-bar,
-.calc-group {
+.calc-group,
+.range-group {
     display: grid;
     grid-template-columns: auto minmax(180px, 1fr) auto auto;
     gap: 0.75rem;
@@ -103,6 +104,22 @@ body.dark-mode .fuel-page {
 
 .calc-group {
     grid-template-columns: minmax(150px, 1fr) auto minmax(180px, 1fr);
+}
+
+.range-group {
+    grid-template-columns: minmax(180px, 1fr);
+}
+
+.fuel-card-separator {
+    height: 1px;
+    margin: 1.35rem 0 1.2rem;
+    background: linear-gradient(90deg, transparent, rgba(var(--theme-accent-rgb), 0.28), transparent);
+}
+
+.calc-help {
+    margin: -0.35rem 0 1rem;
+    color: #64748b;
+    font-size: 0.95rem;
 }
 
 .fuel-page input,
@@ -226,6 +243,10 @@ body.dark-mode .fuel-page {
     transition: transform 0.18s ease;
 }
 
+.result-badge-secondary {
+    background: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.92), rgba(var(--theme-accent-end-rgb), 0.92));
+}
+
 .result-badge.is-updated {
     transform: scale(1.015);
 }
@@ -296,7 +317,8 @@ body.dark-mode .station-info strong {
 
 body.dark-mode .fuel-card h2,
 body.dark-mode .station-address,
-body.dark-mode .spinner-container p {
+body.dark-mode .spinner-container p,
+body.dark-mode .calc-help {
     color: rgba(255, 255, 255, 0.72);
 }
 
@@ -358,7 +380,8 @@ body.dark-mode .empty-state {
     }
 
     .fuel-search-bar,
-    .calc-group {
+    .calc-group,
+    .range-group {
         grid-template-columns: 1fr;
     }
 

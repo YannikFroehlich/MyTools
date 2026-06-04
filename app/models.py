@@ -4,6 +4,28 @@ from django.core.validators import FileExtensionValidator
 from django.utils.translation import gettext_lazy as _
 
 
+class NotificationDismissal(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="dismissed_notifications",
+    )
+    key = models.CharField(max_length=160)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "key")
+        indexes = [
+            models.Index(fields=["user", "key"]),
+            models.Index(fields=["created_at"]),
+        ]
+        verbose_name = "gelöschte Benachrichtigung"
+        verbose_name_plural = "gelöschte Benachrichtigungen"
+
+    def __str__(self):
+        return f"{self.user} · {self.key}"
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

@@ -13,9 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const consumptionInput = document.getElementById('consumption');
     const timeUnit = document.getElementById('time-unit');
     const resultElement = document.getElementById('calc-result');
+    const tankSizeInput = document.getElementById('tank-size');
+    const rangeResultElement = document.getElementById('range-result');
     const apiUrl = page?.dataset.apiUrl || '/api/tankstellen/';
 
-    if (!page || !spinner || !stationList || !fuelType || !resultElement) {
+    if (!page || !spinner || !stationList || !fuelType || !resultElement || !rangeResultElement) {
         return;
     }
 
@@ -42,21 +44,51 @@ document.addEventListener('DOMContentLoaded', () => {
         })} €`;
     }
 
-    function calculate() {
+    function pulseResult(element) {
+        element.classList.add('is-updated');
+        window.setTimeout(() => element.classList.remove('is-updated'), 180);
+    }
+
+    function formatGermanNumber(value, fractionDigits = 1) {
+        return Number(value).toLocaleString('de-DE', {
+            minimumFractionDigits: fractionDigits,
+            maximumFractionDigits: fractionDigits,
+        });
+    }
+
+    function calculateCosts(consumption) {
         const km = parseFloat(kmInput.value);
-        const consumption = parseFloat(consumptionInput.value);
         const multiplier = parseFloat(timeUnit.value);
         const period = timeUnit.options[timeUnit.selectedIndex].text;
 
         if (km > 0 && consumption > 0 && multiplier > 0 && cheapestPrice > 0) {
             const total = ((km * multiplier) / 100) * consumption * cheapestPrice;
             resultElement.textContent = `Kosten ${period}: ${total.toFixed(2).replace('.', ',')} €`;
-            resultElement.classList.add('is-updated');
-            window.setTimeout(() => resultElement.classList.remove('is-updated'), 180);
+            pulseResult(resultElement);
             return;
         }
 
-        resultElement.textContent = 'Ergebnis: -- €';
+        resultElement.textContent = 'Kosten: -- €';
+    }
+
+    function calculateRange(consumption) {
+        const tankSize = parseFloat(tankSizeInput?.value);
+
+        if (tankSize > 0 && consumption > 0) {
+            const range = (tankSize / consumption) * 100;
+            rangeResultElement.textContent = `Reichweite: ca. ${formatGermanNumber(range, 1)} km`;
+            pulseResult(rangeResultElement);
+            return;
+        }
+
+        rangeResultElement.textContent = 'Reichweite: -- km';
+    }
+
+    function calculate() {
+        const consumption = parseFloat(consumptionInput.value);
+
+        calculateCosts(consumption);
+        calculateRange(consumption);
     }
 
     function renderStations(stations) {
@@ -232,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    [kmInput, consumptionInput, timeUnit].forEach((element) => {
+    [kmInput, consumptionInput, timeUnit, tankSizeInput].forEach((element) => {
         element?.addEventListener('input', calculate);
     });
 });

@@ -150,7 +150,7 @@ from .chat_views import (
     send_chat_message,
     start_direct_chat,
 )
-from .notification_views import notification_center_api, notification_counts_api
+from .notification_views import notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
 from .platform_views import (
     favorite_toggle_view,
     favorites_view,
@@ -194,6 +194,8 @@ urlpatterns = [
     path('api/chat/<int:room_id>/messages/', chat_messages_api, name='chat_messages_api'),
     path('api/notifications/counts/', notification_counts_api, name='notification_counts_api'),
     path('api/notifications/center/', notification_center_api, name='notification_center_api'),
+    path('api/notifications/dismiss/', notification_dismiss_api, name='notification_dismiss_api'),
+    path('api/notifications/dismiss-all/', notification_dismiss_all_api, name='notification_dismiss_all_api'),
 
     path('weather/', weather, name='weather'),
     path('obs-dashboard/', obs_dashboard, name='obs-dashboard'),

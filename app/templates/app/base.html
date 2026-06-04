@@ -31,7 +31,7 @@
         <script src="{% static 'app/js/base.js' %}" defer></script>
     {% endblock %}
 </head>
-<body{% if request.user.is_authenticated %} data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}"{% endif %}>
+<body{% if request.user.is_authenticated %} data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}"{% endif %}>
     <nav>
         <div class="logo">
             <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
@@ -309,73 +309,155 @@
                         </button>
                     </div>
 
-                    <div class="theme-preset-row" aria-label="{% translate 'Design-Vorlagen' %}">
-                        <button type="button" class="theme-preset" data-preset="sky" title="{% translate 'Blau' %}">
-                            <span style="background: linear-gradient(135deg, #1a56d6, #5aadee);"></span>
-                        </button>
-
-                        <button type="button" class="theme-preset" data-preset="forest" title="{% translate 'Gr&uuml;n' %}">
-                            <span style="background: linear-gradient(135deg, #0f766e, #34d399);"></span>
-                        </button>
-
-                        <button type="button" class="theme-preset" data-preset="rose" title="{% translate 'Rose' %}">
-                            <span style="background: linear-gradient(135deg, #be185d, #fb7185);"></span>
-                        </button>
-
-                        <button type="button" class="theme-preset" data-preset="graphite" title="{% translate 'Graphit' %}">
-                            <span style="background: linear-gradient(135deg, #111827, #64748b);"></span>
-                        </button>
+                    <div class="theme-editor-intro">
+                        <p>{% translate 'Passe Farben, Rundungen und Hintergrund-Effekt live an. Deine Auswahl wird automatisch gespeichert.' %}</p>
                     </div>
 
-                    <div class="theme-control-grid">
-                        <label>
-                            <span>{% translate 'Header links' %}</span>
-                            <input type="color" id="theme-nav-start" value="#1a56d6">
-                        </label>
-
-                        <label>
-                            <span>{% translate 'Header rechts' %}</span>
-                            <input type="color" id="theme-nav-end" value="#5aadee">
-                        </label>
-
-                        <label>
-                            <span>{% translate 'Hintergrund' %}</span>
-                            <input type="color" id="theme-page-bg" value="#dce5f5">
-                        </label>
-
-                        <label>
-                            <span>{% translate 'Karten' %}</span>
-                            <input type="color" id="theme-card-bg" value="#ffffff">
-                        </label>
-
-                        <label>
-                            <span>{% translate 'Footer' %}</span>
-                            <input type="color" id="theme-footer-bg" value="#ffffff">
-                        </label>
-
-                        <label>
-                            <span>{% translate 'Rundung' %}</span>
-                            <input type="range" id="theme-radius" min="12" max="34" value="22">
-                        </label>
+                    <div class="theme-preview-card" id="theme-preview-card" aria-hidden="true">
+                        <div class="theme-preview-nav"></div>
+                        <div class="theme-preview-body">
+                            <span></span>
+                            <strong>{% translate 'Live-Vorschau' %}</strong>
+                            <small>{% translate 'Karten, Hintergrund und Akzentfarbe' %}</small>
+                        </div>
                     </div>
 
-                    <div class="theme-option-row">
-                        <button type="button" class="theme-toggle-option" id="theme-compact-toggle">
-                            <i class="fa-solid fa-compress"></i>
-                            {% translate 'Kompakter Modus' %}
-                        </button>
-                        <button type="button" class="theme-toggle-option" id="theme-pattern-toggle">
-                            <i class="fa-solid fa-circle-nodes"></i>
-                            {% translate 'Dezentes Muster' %}
-                        </button>
+                    <div class="theme-editor-section">
+                        <div class="theme-section-title">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>{% translate 'Vorlagen' %}</span>
+                        </div>
+                        <div class="theme-preset-row" aria-label="{% translate 'Design-Vorlagen' %}">
+                            <button type="button" class="theme-preset" data-preset="sky" title="{% translate 'Blau' %}">
+                                <span style="background: linear-gradient(135deg, #1a56d6, #5aadee);"></span>
+                            </button>
+
+                            <button type="button" class="theme-preset" data-preset="forest" title="{% translate 'Gr&uuml;n' %}">
+                                <span style="background: linear-gradient(135deg, #0f766e, #34d399);"></span>
+                            </button>
+
+                            <button type="button" class="theme-preset" data-preset="rose" title="{% translate 'Rose' %}">
+                                <span style="background: linear-gradient(135deg, #be185d, #fb7185);"></span>
+                            </button>
+
+                            <button type="button" class="theme-preset" data-preset="graphite" title="{% translate 'Graphit' %}">
+                                <span style="background: linear-gradient(135deg, #111827, #64748b);"></span>
+                            </button>
+
+                            <button type="button" class="theme-preset" data-preset="violet" title="{% translate 'Violett' %}">
+                                <span style="background: linear-gradient(135deg, #6d28d9, #a78bfa);"></span>
+                            </button>
+
+                            <button type="button" class="theme-preset" data-preset="sunset" title="{% translate 'Sunset' %}">
+                                <span style="background: linear-gradient(135deg, #ea580c, #facc15);"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="theme-editor-section">
+                        <div class="theme-section-title">
+                            <i class="fa-solid fa-palette"></i>
+                            <span>{% translate 'Farben' %}</span>
+                        </div>
+                        <div class="theme-control-grid">
+                            <label>
+                                <span>{% translate 'Header links' %}</span>
+                                <input type="color" id="theme-nav-start" value="#1a56d6">
+                            </label>
+
+                            <label>
+                                <span>{% translate 'Header rechts' %}</span>
+                                <input type="color" id="theme-nav-end" value="#5aadee">
+                            </label>
+
+                            <label>
+                                <span>{% translate 'Hintergrund' %}</span>
+                                <input type="color" id="theme-page-bg" value="#dce5f5">
+                            </label>
+
+                            <label>
+                                <span>{% translate 'Karten' %}</span>
+                                <input type="color" id="theme-card-bg" value="#ffffff">
+                            </label>
+
+                            <label>
+                                <span>{% translate 'Footer' %}</span>
+                                <input type="color" id="theme-footer-bg" value="#ffffff">
+                            </label>
+
+                            <label>
+                                <span>{% translate 'Rundung' %} <b id="theme-radius-value">22px</b></span>
+                                <input type="range" id="theme-radius" min="8" max="38" value="22">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="theme-editor-section">
+                        <div class="theme-section-title">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>{% translate 'Eigene Farbkombis' %}</span>
+                        </div>
+                        <div class="theme-slot-list" id="theme-slot-list" aria-label="{% translate 'Eigene Design-Speicherpl&auml;tze' %}">
+                            <div class="theme-slot" data-slot="0">
+                                <div>
+                                    <strong>{% translate 'Platz 1' %}</strong>
+                                    <small data-slot-status>{% translate 'Leer' %}</small>
+                                </div>
+                                <div class="theme-slot-actions">
+                                    <button type="button" class="theme-slot-save" data-slot-save="0">{% translate 'Speichern' %}</button>
+                                    <button type="button" class="theme-slot-load" data-slot-load="0">{% translate 'Laden' %}</button>
+                                    <button type="button" class="theme-slot-delete" data-slot-delete="0" aria-label="{% translate 'Speicherplatz 1 l&ouml;schen' %}"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="theme-slot" data-slot="1">
+                                <div>
+                                    <strong>{% translate 'Platz 2' %}</strong>
+                                    <small data-slot-status>{% translate 'Leer' %}</small>
+                                </div>
+                                <div class="theme-slot-actions">
+                                    <button type="button" class="theme-slot-save" data-slot-save="1">{% translate 'Speichern' %}</button>
+                                    <button type="button" class="theme-slot-load" data-slot-load="1">{% translate 'Laden' %}</button>
+                                    <button type="button" class="theme-slot-delete" data-slot-delete="1" aria-label="{% translate 'Speicherplatz 2 l&ouml;schen' %}"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="theme-slot" data-slot="2">
+                                <div>
+                                    <strong>{% translate 'Platz 3' %}</strong>
+                                    <small data-slot-status>{% translate 'Leer' %}</small>
+                                </div>
+                                <div class="theme-slot-actions">
+                                    <button type="button" class="theme-slot-save" data-slot-save="2">{% translate 'Speichern' %}</button>
+                                    <button type="button" class="theme-slot-load" data-slot-load="2">{% translate 'Laden' %}</button>
+                                    <button type="button" class="theme-slot-delete" data-slot-delete="2" aria-label="{% translate 'Speicherplatz 3 l&ouml;schen' %}"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="theme-editor-section">
+                        <div class="theme-section-title">
+                            <i class="fa-solid fa-sliders"></i>
+                            <span>{% translate 'Optionen' %}</span>
+                        </div>
+                        <div class="theme-option-row single-option">
+                            <button type="button" class="theme-toggle-option" id="theme-pattern-toggle">
+                                <i class="fa-solid fa-circle-nodes"></i>
+                                {% translate 'Hintergrund-Effekt' %}
+                            </button>
+                        </div>
                     </div>
 
                     <div class="theme-editor-actions">
+                        <button type="button" id="theme-random-button" class="theme-secondary-action">
+                            <i class="fa-solid fa-shuffle"></i>
+                            {% translate 'Zufällig' %}
+                        </button>
                         <button type="button" id="theme-reset-button">
                             <i class="fa-solid fa-rotate-left"></i>
                             {% translate 'Zur&uuml;cksetzen' %}
                         </button>
                     </div>
+                    <div class="theme-save-hint" id="theme-save-hint" aria-live="polite">{% translate 'Automatisch gespeichert' %}</div>
                 </div>
             </div>
 
@@ -397,7 +479,10 @@
                                 <strong>{% translate 'Benachrichtigungen' %}</strong>
                                 <small>{% translate 'Chats, Freundschaftsanfragen und Skribble' %}</small>
                             </div>
-                            <span class="notification-center-total js-notification-total">{{ total_notifications_count }}</span>
+                            <div class="notification-center-header-actions">
+                                <button class="notification-clear-all-button js-notification-clear-all" type="button">{% translate 'Alle löschen' %}</button>
+                                <span class="notification-center-total js-notification-total">{{ total_notifications_count }}</span>
+                            </div>
                         </div>
                         <div class="notification-center-list js-notification-list">
                             <div class="notification-center-empty">
