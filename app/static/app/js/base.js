@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const defaultTheme = {
         navStart: '#1a56d6',
         navEnd: '#5aadee',
-        pageBg: '#dce5f5',
+        pageBgLight: '#dce5f5',
+        pageBgDark: '#12151f',
         cardBg: '#ffffff',
         footerBg: '#ffffff',
         radius: 22,
@@ -43,7 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const darkDefaultTheme = {
         navStart: '#0e2d6e',
         navEnd: '#2a6ea0',
-        pageBg: '#12151f',
+        pageBgLight: '#dce5f5',
+        pageBgDark: '#12151f',
         cardBg: '#1c2231',
         footerBg: '#1a1d2b',
         radius: 22,
@@ -56,35 +58,40 @@ document.addEventListener('DOMContentLoaded', () => {
             forest: {
                 navStart: '#0f766e',
                 navEnd: '#34d399',
-                pageBg: '#dff3ec',
+                pageBgLight: '#dff3ec',
+                pageBgDark: '#0f1f1b',
                 cardBg: '#f7fffb',
                 footerBg: '#f7fffb',
             },
             rose: {
                 navStart: '#be185d',
                 navEnd: '#fb7185',
-                pageBg: '#f8dfe8',
+                pageBgLight: '#f8dfe8',
+                pageBgDark: '#21121b',
                 cardBg: '#fff7fa',
                 footerBg: '#fff7fa',
             },
             graphite: {
                 navStart: '#111827',
                 navEnd: '#64748b',
-                pageBg: '#e2e8f0',
+                pageBgLight: '#e2e8f0',
+                pageBgDark: '#111827',
                 cardBg: '#f8fafc',
                 footerBg: '#f8fafc',
             },
             violet: {
                 navStart: '#6d28d9',
                 navEnd: '#a78bfa',
-                pageBg: '#ede9fe',
+                pageBgLight: '#ede9fe',
+                pageBgDark: '#171026',
                 cardBg: '#faf5ff',
                 footerBg: '#f5f3ff',
             },
             sunset: {
                 navStart: '#ea580c',
                 navEnd: '#facc15',
-                pageBg: '#ffedd5',
+                pageBgLight: '#ffedd5',
+                pageBgDark: '#1f130d',
                 cardBg: '#fff7ed',
                 footerBg: '#fff7ed',
             },
@@ -94,35 +101,40 @@ document.addEventListener('DOMContentLoaded', () => {
             forest: {
                 navStart: '#064e3b',
                 navEnd: '#047857',
-                pageBg: '#0f1f1b',
+                pageBgLight: '#dff3ec',
+                pageBgDark: '#0f1f1b',
                 cardBg: '#13231f',
                 footerBg: '#13231f',
             },
             rose: {
                 navStart: '#831843',
                 navEnd: '#be185d',
-                pageBg: '#21121b',
+                pageBgLight: '#f8dfe8',
+                pageBgDark: '#21121b',
                 cardBg: '#2a1621',
                 footerBg: '#2a1621',
             },
             graphite: {
                 navStart: '#020617',
                 navEnd: '#334155',
-                pageBg: '#111827',
+                pageBgLight: '#e2e8f0',
+                pageBgDark: '#111827',
                 cardBg: '#1f2937',
                 footerBg: '#1f2937',
             },
             violet: {
                 navStart: '#4c1d95',
                 navEnd: '#7c3aed',
-                pageBg: '#171026',
+                pageBgLight: '#ede9fe',
+                pageBgDark: '#171026',
                 cardBg: '#211734',
                 footerBg: '#211734',
             },
             sunset: {
                 navStart: '#7c2d12',
                 navEnd: '#c2410c',
-                pageBg: '#1f130d',
+                pageBgLight: '#ffedd5',
+                pageBgDark: '#1f130d',
                 cardBg: '#2c1a10',
                 footerBg: '#2c1a10',
             },
@@ -165,25 +177,52 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${r}, ${g}, ${b}`;
     }
 
+    function migrateLegacyTheme(theme) {
+        const migratedTheme = { ...(theme || {}) };
+
+        if (migratedTheme.pageBg && !migratedTheme.pageBgLight && !migratedTheme.pageBgDark) {
+            if (currentMode() === 'dark') {
+                migratedTheme.pageBgDark = migratedTheme.pageBg;
+                migratedTheme.pageBgLight = defaultTheme.pageBgLight;
+            } else {
+                migratedTheme.pageBgLight = migratedTheme.pageBg;
+                migratedTheme.pageBgDark = darkDefaultTheme.pageBgDark;
+            }
+        }
+
+        delete migratedTheme.pageBg;
+        return migratedTheme;
+    }
+
+    function themePageBgForMode(theme) {
+        const completeTheme = migrateLegacyTheme(theme);
+        return currentMode() === 'dark'
+            ? (completeTheme.pageBgDark || darkDefaultTheme.pageBgDark)
+            : (completeTheme.pageBgLight || defaultTheme.pageBgLight);
+    }
+
     function applyCustomTheme(theme) {
+        const completeTheme = migrateLegacyTheme(theme);
+        const pageBackground = themePageBgForMode(completeTheme);
+
         body.classList.add('custom-theme');
 
-        document.documentElement.style.setProperty('--theme-nav-start', theme.navStart);
-        document.documentElement.style.setProperty('--theme-nav-end', theme.navEnd);
-        document.documentElement.style.setProperty('--theme-accent-start', theme.navStart);
-        document.documentElement.style.setProperty('--theme-accent-end', theme.navEnd);
-        document.documentElement.style.setProperty('--theme-accent-text', readableTextColor(theme.navStart));
-        document.documentElement.style.setProperty('--theme-accent-rgb', rgbString(theme.navStart));
-        document.documentElement.style.setProperty('--theme-accent-end-rgb', rgbString(theme.navEnd));
-        document.documentElement.style.setProperty('--theme-page-bg', theme.pageBg);
-        document.documentElement.style.setProperty('--theme-footer-bg', theme.footerBg);
-        document.documentElement.style.setProperty('--theme-card-bg', theme.cardBg || theme.footerBg || '#ffffff');
-        document.documentElement.style.setProperty('--theme-card-radius', `${theme.radius || 22}px`);
-        document.documentElement.style.setProperty('--theme-text', readableTextColor(theme.pageBg));
-        body.classList.toggle('theme-pattern-mode', Boolean(theme.pattern));
-        document.documentElement.style.setProperty('--theme-footer-text', readableTextColor(theme.footerBg));
+        document.documentElement.style.setProperty('--theme-nav-start', completeTheme.navStart);
+        document.documentElement.style.setProperty('--theme-nav-end', completeTheme.navEnd);
+        document.documentElement.style.setProperty('--theme-accent-start', completeTheme.navStart);
+        document.documentElement.style.setProperty('--theme-accent-end', completeTheme.navEnd);
+        document.documentElement.style.setProperty('--theme-accent-text', readableTextColor(completeTheme.navStart));
+        document.documentElement.style.setProperty('--theme-accent-rgb', rgbString(completeTheme.navStart));
+        document.documentElement.style.setProperty('--theme-accent-end-rgb', rgbString(completeTheme.navEnd));
+        document.documentElement.style.setProperty('--theme-page-bg', pageBackground);
+        document.documentElement.style.setProperty('--theme-footer-bg', completeTheme.footerBg);
+        document.documentElement.style.setProperty('--theme-card-bg', completeTheme.cardBg || completeTheme.footerBg || '#ffffff');
+        document.documentElement.style.setProperty('--theme-card-radius', `${completeTheme.radius || 22}px`);
+        document.documentElement.style.setProperty('--theme-text', readableTextColor(pageBackground));
+        body.classList.toggle('theme-pattern-mode', Boolean(completeTheme.pattern));
+        document.documentElement.style.setProperty('--theme-footer-text', readableTextColor(completeTheme.footerBg));
         document.documentElement.style.setProperty('--theme-footer-border', 'rgba(0, 0, 0, 0.08)');
-        document.documentElement.style.setProperty('--theme-nav-shadow', `rgba(${rgbString(theme.navStart)}, 0.28)`);
+        document.documentElement.style.setProperty('--theme-nav-shadow', `rgba(${rgbString(completeTheme.navStart)}, 0.28)`);
     }
 
     function clearCustomTheme() {
@@ -214,8 +253,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const storedTheme = JSON.parse(localStorage.getItem(themeStorageKey));
 
             if (storedTheme) {
-                applyCustomTheme(storedTheme);
-                return storedTheme;
+                const migratedTheme = migrateLegacyTheme(storedTheme);
+                applyCustomTheme(migratedTheme);
+                localStorage.setItem(themeStorageKey, JSON.stringify(migratedTheme));
+                return migratedTheme;
             }
         } catch (error) {
             localStorage.removeItem(themeStorageKey);
@@ -223,9 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return null;
     }
-
-    let activeCustomTheme = loadCustomTheme();
-    let activeThemePreset = localStorage.getItem(themePresetStorageKey);
 
     /* ── THEME FLASH OVERLAY ── */
     const flash = document.createElement('div');
@@ -244,6 +282,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.head.removeChild(noTrans);
     }
+
+    let activeCustomTheme = loadCustomTheme();
+    let activeThemePreset = localStorage.getItem(themePresetStorageKey);
 
     /* ── DARK MODE BUTTON ── */
     const darkModeButton = document.getElementById('darkmode-button');
@@ -284,7 +325,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 syncThemeInputs(activeCustomTheme);
                 applyCustomTheme(activeCustomTheme);
                 localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
-            } else if (!activeCustomTheme) {
+            } else if (activeCustomTheme) {
+                syncThemeInputs(activeCustomTheme);
+                applyCustomTheme(activeCustomTheme);
+                localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
+            } else {
                 syncThemeInputs(defaultThemeForMode());
             }
         });
@@ -299,7 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeInputs = {
         navStart: document.getElementById('theme-nav-start'),
         navEnd: document.getElementById('theme-nav-end'),
-        pageBg: document.getElementById('theme-page-bg'),
+        pageBgLight: document.getElementById('theme-page-bg-light'),
+        pageBgDark: document.getElementById('theme-page-bg-dark'),
         cardBg: document.getElementById('theme-card-bg'),
         footerBg: document.getElementById('theme-footer-bg'),
         radius: document.getElementById('theme-radius'),
@@ -310,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeRandomButton = document.getElementById('theme-random-button');
 
     function normalizedTheme(theme) {
-        return { ...defaultThemeForMode(), ...(theme || {}) };
+        return { ...defaultThemeForMode(), ...migrateLegacyTheme(theme || {}) };
     }
 
     function updateThemeRadiusLabel(theme) {
@@ -405,7 +451,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return {
             navStart: themeInputs.navStart?.value || defaultTheme.navStart,
             navEnd: themeInputs.navEnd?.value || defaultTheme.navEnd,
-            pageBg: themeInputs.pageBg?.value || defaultTheme.pageBg,
+            pageBgLight: themeInputs.pageBgLight?.value || defaultTheme.pageBgLight,
+            pageBgDark: themeInputs.pageBgDark?.value || darkDefaultTheme.pageBgDark,
             cardBg: themeInputs.cardBg?.value || defaultTheme.cardBg,
             footerBg: themeInputs.footerBg?.value || defaultTheme.footerBg,
             radius: Number(themeInputs.radius?.value || defaultTheme.radius),
@@ -532,7 +579,8 @@ document.addEventListener('DOMContentLoaded', () => {
             activeCustomTheme = {
                 navStart: hslToHex(hue, 72, isDark ? 36 : 44),
                 navEnd: hslToHex(secondHue, 82, isDark ? 48 : 62),
-                pageBg: hslToHex(hue, isDark ? 26 : 58, isDark ? 10 : 92),
+                pageBgLight: hslToHex(hue, 58, 92),
+                pageBgDark: hslToHex(hue, 26, 10),
                 cardBg: hslToHex(hue, isDark ? 24 : 60, isDark ? 15 : 98),
                 footerBg: hslToHex(hue, isDark ? 24 : 55, isDark ? 13 : 97),
                 radius: Number(themeInputs.radius?.value || defaultTheme.radius),
