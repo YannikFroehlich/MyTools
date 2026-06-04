@@ -540,20 +540,34 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(response.context["total_users"], 2)
         self.assertTrue(UserProfile.objects.filter(user=other_user).exists())
 
-    def test_users_page_uses_profile_banner_as_card_background(self):
+    def test_users_page_uses_profile_card_design_for_user_cards(self):
         other_user = get_user_model().objects.create_user(
-            username="bannerlistuser",
+            username="cardstyleuser",
             password="testpass-123",
         )
         UserProfile.objects.create(
             user=other_user,
-            profile_banner=self.get_test_image("list-banner.png"),
+            profile_card_primary="#123456",
+            profile_card_secondary="#abcdef",
+            profile_card_tertiary="#fedcba",
+            profile_card_text="#ffffff",
+            profile_card_border="#00ff99",
+            profile_card_badge_bg="#112233",
+            profile_card_badge_text="Tester",
+            profile_card_style="glass",
+            profile_card_pattern="grid",
+            profile_card_radius="bold",
         )
 
         response = self.client.get(reverse("users"))
 
-        self.assertContains(response, "has-profile-banner")
-        self.assertContains(response, "profile_banners/list-banner")
+        self.assertContains(response, "user-card-profile-showcase")
+        self.assertContains(response, "profile-showcase-card-glass")
+        self.assertContains(response, "profile-showcase-pattern-grid")
+        self.assertContains(response, "--profile-card-primary: #123456")
+        self.assertContains(response, "--profile-card-secondary: #abcdef")
+        self.assertContains(response, "--profile-card-border: #00ff99")
+        self.assertContains(response, "Tester")
 
     def test_users_page_search_filters_by_username(self):
         get_user_model().objects.create_user(username="serverfreund", password="testpass-123")
@@ -637,20 +651,34 @@ class ProfileViewTests(BaseTestCase):
         self.assertIn("acceptedfriend", usernames)
         self.assertNotIn("pendingfriend", usernames)
 
-    def test_public_profile_uses_profile_banner(self):
+    def test_public_profile_uses_profile_card_design_for_hero(self):
         other_user = get_user_model().objects.create_user(
-            username="banneruser",
+            username="cardhero",
             password="testpass-123",
         )
         UserProfile.objects.create(
             user=other_user,
-            profile_banner=self.get_test_image("profile-banner.png"),
+            profile_card_primary="#123456",
+            profile_card_secondary="#abcdef",
+            profile_card_tertiary="#fedcba",
+            profile_card_text="#ffffff",
+            profile_card_border="#00ff99",
+            profile_card_badge_bg="#112233",
+            profile_card_badge_text="HeroBadge",
+            profile_card_style="glass",
+            profile_card_pattern="grid",
+            profile_card_radius="bold",
         )
 
         response = self.client.get(reverse("public_profile", args=[other_user.id]))
 
-        self.assertContains(response, "has-profile-banner")
-        self.assertContains(response, "profile_banners/profile-banner")
+        self.assertContains(response, "public-profile-card-theme")
+        self.assertContains(response, "profile-showcase-card-glass")
+        self.assertContains(response, "profile-showcase-pattern-grid")
+        self.assertContains(response, "--profile-card-primary: #123456")
+        self.assertContains(response, "--profile-card-secondary: #abcdef")
+        self.assertContains(response, "--profile-card-border: #00ff99")
+        self.assertContains(response, "HeroBadge")
 
     def test_public_profile_shows_profile_users_human_benchmark_highscores(self):
         other_user = get_user_model().objects.create_user(

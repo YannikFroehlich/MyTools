@@ -1,21 +1,39 @@
 import base64
-import uuid
-
+import re
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.timesince import timesince
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, ProfileGalleryImage, SkribbleStats, UserBlock, UserProfile, UserReport
 from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
+from .image_optimization import (
+    GALLERY_IMAGE_MAX_SIZE,
+    PROFILE_AVATAR_MAX_SIZE,
+    PROFILE_BANNER_MAX_SIZE,
+    optimize_uploaded_image,
+)
 from .presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
 
 User = get_user_model()
+
+
+def _is_hex_color(value):
+    return bool(re.fullmatch(r"#[0-9a-fA-F]{6}", value or ""))
+
+
+def _clean_fa_icon(value):
+    value = (value or "").strip()[:40]
+    if re.fullmatch(r"[a-z0-9\- ]+", value):
+        return value
+    return "fa-solid fa-star"
 
 
 def get_profile_human_benchmark_highscores(user):
@@ -147,6 +165,71 @@ def is_blocked_between(user_a, user_b):
     ).exists()
 
 
+def _profile_presence_text(profile):
+    if profile.activity_status:
+        return str(profile.activity_status)
+
+    if profile.is_online:
+        return str(_("Online"))
+
+    if profile.last_seen_at:
+        return f'{_("Zuletzt online")} {timesince(profile.last_seen_at)}'
+
+    return str(_("Offline"))
+
+
+def _profile_presence_payload(profile):
+    return {
+        "userId": profile.user_id,
+        "isOnline": bool(profile.is_online),
+        "statusLine": _profile_presence_text(profile),
+        "activityStatus": str(profile.activity_status or ""),
+    }
+
+
+@login_required
+@require_GET
+def user_presence_api(request):
+    raw_ids = request.GET.get("ids", "")
+    user_ids = []
+
+    for raw_id in raw_ids.split(","):
+        raw_id = raw_id.strip()
+        if not raw_id.isdigit():
+            continue
+
+        user_id = int(raw_id)
+        if user_id not in user_ids:
+            user_ids.append(user_id)
+
+        if len(user_ids) >= 50:
+            break
+
+    if not user_ids:
+        return JsonResponse({"profiles": []})
+
+    profiles = list(
+        UserProfile.objects
+        .select_related("user")
+        .filter(user_id__in=user_ids, user__is_active=True)
+    )
+
+    decorate_profiles_with_presence(profiles)
+
+    for profile in profiles:
+        apply_profile_privacy(profile, request.user)
+
+    profiles_by_user_id = {profile.user_id: profile for profile in profiles}
+
+    return JsonResponse({
+        "profiles": [
+            _profile_presence_payload(profiles_by_user_id[user_id])
+            for user_id in user_ids
+            if user_id in profiles_by_user_id
+        ]
+    })
+
+
 @login_required
 def profile_view(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
@@ -168,31 +251,70 @@ def profile_view(request):
 
             if cropped_avatar.startswith("data:image"):
                 try:
-                    format_part, image_data = cropped_avatar.split(";base64,")
-                    extension = format_part.split("/")[-1].lower()
-
-                    if extension == "jpeg":
-                        extension = "jpg"
-
-                    file_name = f"profile_{request.user.id}_{uuid.uuid4().hex}.{extension}"
+                    _format_part, image_data = cropped_avatar.split(";base64,")
                     decoded_file = base64.b64decode(image_data)
+                    optimized_avatar = optimize_uploaded_image(
+                        ContentFile(decoded_file),
+                        prefix=f"profile_{request.user.id}",
+                        max_size=PROFILE_AVATAR_MAX_SIZE,
+                        quality=82,
+                        target_bytes=120 * 1024,
+                    )
 
                     if profile.avatar:
                         profile.avatar.delete(save=False)
 
                     profile.avatar.save(
-                        file_name,
-                        ContentFile(decoded_file),
+                        optimized_avatar.filename,
+                        optimized_avatar.file,
                         save=False,
                     )
                 except Exception:
                     messages.error(request, _("Das Profilbild konnte nicht verarbeitet werden."))
                     return redirect("profile")
-            elif request.FILES.get("avatar") and old_avatar and old_avatar != profile.avatar:
-                old_avatar.delete(save=False)
+            elif request.FILES.get("avatar"):
+                try:
+                    optimized_avatar = optimize_uploaded_image(
+                        request.FILES["avatar"],
+                        prefix=f"profile_{request.user.id}",
+                        max_size=PROFILE_AVATAR_MAX_SIZE,
+                        quality=82,
+                        target_bytes=120 * 1024,
+                    )
 
-            if request.FILES.get("profile_banner") and old_profile_banner and old_profile_banner != profile.profile_banner:
-                old_profile_banner.delete(save=False)
+                    if old_avatar:
+                        old_avatar.delete(save=False)
+
+                    profile.avatar.save(
+                        optimized_avatar.filename,
+                        optimized_avatar.file,
+                        save=False,
+                    )
+                except Exception:
+                    messages.error(request, _("Das Profilbild konnte nicht verarbeitet werden."))
+                    return redirect("profile")
+
+            if request.FILES.get("profile_banner"):
+                try:
+                    optimized_banner = optimize_uploaded_image(
+                        request.FILES["profile_banner"],
+                        prefix=f"profile_banner_{request.user.id}",
+                        max_size=PROFILE_BANNER_MAX_SIZE,
+                        quality=84,
+                        target_bytes=280 * 1024,
+                    )
+
+                    if old_profile_banner:
+                        old_profile_banner.delete(save=False)
+
+                    profile.profile_banner.save(
+                        optimized_banner.filename,
+                        optimized_banner.file,
+                        save=False,
+                    )
+                except Exception:
+                    messages.error(request, _("Das Profilbanner konnte nicht verarbeitet werden."))
+                    return redirect("profile")
 
             # Profil speichern
             profile.save()
@@ -443,6 +565,25 @@ def profile_gallery_upload_view(request):
     if form.is_valid():
         image = form.save(commit=False)
         image.user = request.user
+
+        if request.FILES.get("image"):
+            try:
+                optimized_gallery_image = optimize_uploaded_image(
+                    request.FILES["image"],
+                    prefix=f"gallery_{request.user.id}",
+                    max_size=GALLERY_IMAGE_MAX_SIZE,
+                    quality=84,
+                    target_bytes=450 * 1024,
+                )
+                image.image.save(
+                    optimized_gallery_image.filename,
+                    optimized_gallery_image.file,
+                    save=False,
+                )
+            except Exception:
+                messages.error(request, _("Das Galeriebild konnte nicht verarbeitet werden."))
+                return redirect("profile")
+
         image.save()
         messages.success(request, _("Galeriebild hochgeladen."))
     else:
@@ -497,3 +638,110 @@ def report_user_view(request, user_id):
     else:
         messages.error(request, _("Die Meldung konnte nicht gespeichert werden."))
     return redirect(next_url)
+
+
+def _is_valid_hex_color(value):
+    if not isinstance(value, str):
+        return False
+    value = value.strip()
+    if len(value) != 7 or not value.startswith('#'):
+        return False
+    return all(char in '0123456789abcdefABCDEF' for char in value[1:])
+
+
+@login_required
+def profile_card_designer_view(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        style_values = {choice[0] for choice in UserProfile.CARD_STYLE_CHOICES}
+        pattern_values = {choice[0] for choice in UserProfile.CARD_PATTERN_CHOICES}
+        pattern_strength_values = {choice[0] for choice in UserProfile.CARD_PATTERN_STRENGTH_CHOICES}
+        radius_values = {choice[0] for choice in UserProfile.CARD_RADIUS_CHOICES}
+        avatar_values = {choice[0] for choice in UserProfile.CARD_AVATAR_CHOICES}
+        text_effect_values = {choice[0] for choice in UserProfile.CARD_TEXT_EFFECT_CHOICES}
+        gradient_values = {choice[0] for choice in UserProfile.CARD_GRADIENT_CHOICES}
+
+        style = request.POST.get("profile_card_style", profile.profile_card_style)
+        pattern = request.POST.get("profile_card_pattern", profile.profile_card_pattern)
+        pattern_strength = request.POST.get("profile_card_pattern_strength", profile.profile_card_pattern_strength)
+        gradient_angle = request.POST.get("profile_card_gradient_angle", profile.profile_card_gradient_angle)
+        radius = request.POST.get("profile_card_radius", profile.profile_card_radius)
+        avatar_shape = request.POST.get("profile_card_avatar_shape", profile.profile_card_avatar_shape)
+        text_effect = request.POST.get("profile_card_text_effect", profile.profile_card_text_effect)
+        primary = request.POST.get("profile_card_primary", profile.profile_card_primary)
+        secondary = request.POST.get("profile_card_secondary", profile.profile_card_secondary)
+        tertiary = request.POST.get("profile_card_tertiary", profile.profile_card_tertiary)
+        text = request.POST.get("profile_card_text", profile.profile_card_text)
+        border = request.POST.get("profile_card_border", profile.profile_card_border)
+        badge_bg = request.POST.get("profile_card_badge_bg", profile.profile_card_badge_bg)
+        badge_icon = request.POST.get("profile_card_badge_icon", profile.profile_card_badge_icon).strip()
+        badge_text = request.POST.get("profile_card_badge_text", profile.profile_card_badge_text).strip()
+
+        if style in style_values:
+            profile.profile_card_style = style
+        if pattern in pattern_values:
+            profile.profile_card_pattern = pattern
+        if pattern_strength in pattern_strength_values:
+            profile.profile_card_pattern_strength = pattern_strength
+        if gradient_angle in gradient_values:
+            profile.profile_card_gradient_angle = gradient_angle
+        if radius in radius_values:
+            profile.profile_card_radius = radius
+        if avatar_shape in avatar_values:
+            profile.profile_card_avatar_shape = avatar_shape
+        if text_effect in text_effect_values:
+            profile.profile_card_text_effect = text_effect
+
+        color_fields = {
+            "profile_card_primary": primary,
+            "profile_card_secondary": secondary,
+            "profile_card_tertiary": tertiary,
+            "profile_card_text": text,
+            "profile_card_border": border,
+            "profile_card_badge_bg": badge_bg,
+        }
+        for field_name, color_value in color_fields.items():
+            if _is_valid_hex_color(color_value):
+                setattr(profile, field_name, color_value)
+
+        if badge_icon:
+            profile.profile_card_badge_icon = badge_icon[:40]
+        else:
+            profile.profile_card_badge_icon = "fa-solid fa-star"
+
+        profile.profile_card_badge_text = badge_text[:28]
+        profile.profile_card_glow = request.POST.get("profile_card_glow") == "on"
+        profile.profile_card_shine = request.POST.get("profile_card_shine") == "on"
+        profile.save(update_fields=[
+            "profile_card_style",
+            "profile_card_primary",
+            "profile_card_secondary",
+            "profile_card_tertiary",
+            "profile_card_text",
+            "profile_card_border",
+            "profile_card_badge_bg",
+            "profile_card_pattern",
+            "profile_card_pattern_strength",
+            "profile_card_gradient_angle",
+            "profile_card_radius",
+            "profile_card_avatar_shape",
+            "profile_card_text_effect",
+            "profile_card_glow",
+            "profile_card_shine",
+            "profile_card_badge_icon",
+            "profile_card_badge_text",
+        ])
+        messages.success(request, _("Profilkarte wurde gespeichert."))
+        return redirect("profile_card_designer")
+
+    return render(request, "app/profile_card_designer.html", {
+        "profile": profile,
+        "style_choices": UserProfile.CARD_STYLE_CHOICES,
+        "pattern_choices": UserProfile.CARD_PATTERN_CHOICES,
+        "pattern_strength_choices": UserProfile.CARD_PATTERN_STRENGTH_CHOICES,
+        "gradient_choices": UserProfile.CARD_GRADIENT_CHOICES,
+        "radius_choices": UserProfile.CARD_RADIUS_CHOICES,
+        "avatar_choices": UserProfile.CARD_AVATAR_CHOICES,
+        "text_effect_choices": UserProfile.CARD_TEXT_EFFECT_CHOICES,
+    })

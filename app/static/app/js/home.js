@@ -262,10 +262,53 @@ document.addEventListener("DOMContentLoaded", () => {
         suggestionsBox.style.display = "block";
     }
 
+    function getDirectUrl(query) {
+        const trimmedQuery = query.trim();
+
+        if (!trimmedQuery || /\s/.test(trimmedQuery)) {
+            return null;
+        }
+
+        const hasProtocol = /^https?:\/\//i.test(trimmedQuery);
+        const looksLikeLocalhost = /^(localhost|127(?:\.\d{1,3}){3}|0\.0\.0\.0)(?::\d{1,5})?(?:[/?#].*)?$/i.test(trimmedQuery);
+        const looksLikeIpAddress = /^(?:\d{1,3}\.){3}\d{1,3}(?::\d{1,5})?(?:[/?#].*)?$/.test(trimmedQuery);
+        const looksLikeDomain = /^(?:[a-z0-9-]+\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#].*)?$/i.test(trimmedQuery);
+        const looksLikeWwwDomain = /^www\./i.test(trimmedQuery);
+
+        if (!hasProtocol && !looksLikeDomain && !looksLikeWwwDomain && !looksLikeLocalhost && !looksLikeIpAddress) {
+            return null;
+        }
+
+        const urlCandidate = hasProtocol
+            ? trimmedQuery
+            : looksLikeLocalhost || looksLikeIpAddress
+                ? `http://${trimmedQuery}`
+                : `https://${trimmedQuery}`;
+
+        try {
+            const url = new URL(urlCandidate);
+
+            if (!['http:', 'https:'].includes(url.protocol)) {
+                return null;
+            }
+
+            return url.href;
+        } catch (error) {
+            return null;
+        }
+    }
+
     function searchGoogle(query) {
         const trimmedQuery = query.trim();
 
         if (!trimmedQuery) {
+            return;
+        }
+
+        const directUrl = getDirectUrl(trimmedQuery);
+
+        if (directUrl) {
+            window.location.href = directUrl;
             return;
         }
 

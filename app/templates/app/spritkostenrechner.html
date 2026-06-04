@@ -54,7 +54,20 @@
                 <input type="number" id="consumption" placeholder="{% translate 'Verbrauch (l/100km)' %}" min="0" step="0.1">
             </div>
 
-            <div id="calc-result" class="result-badge">{% translate 'Ergebnis' %}: -- €</div>
+            <div id="calc-result" class="result-badge">{% translate 'Kosten' %}: -- €</div>
+
+            <div class="fuel-card-separator"></div>
+
+            <h2><i class="fa-solid fa-road"></i> {% translate 'Reichweitenrechner' %}</h2>
+            <p class="calc-help">
+                {% translate 'Nutzt den Verbrauch oben und berechnet, wie weit du mit einer Tankfüllung kommst.' %}
+            </p>
+
+            <div class="range-group">
+                <input type="number" id="tank-size" placeholder="{% translate 'Tankgröße (Liter)' %}" min="0" step="0.1">
+            </div>
+
+            <div id="range-result" class="result-badge result-badge-secondary">{% translate 'Reichweite' %}: -- km</div>
         </section>
     </div>
 {% endblock %}

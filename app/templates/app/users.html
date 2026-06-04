@@ -5,12 +5,14 @@
 
 {% block title %}{% translate "Nutzer" %} | MyTools{% endblock %}
 
+
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
 {% endblock %}
 
+
 {% block content %}
-<section class="users-page">
+<section class="users-page" data-presence-api-url="{% url 'user_presence_api' %}">
     <div class="users-hero">
         <div>
             <p class="users-kicker">{% translate "Nutzerübersicht" %}</p>
@@ -66,16 +68,17 @@
             {% for profile in profiles %}
                 <a
                     href="{% url 'public_profile' profile.user.id %}"
-                    class="user-card {% if profile.profile_banner %}has-profile-banner{% endif %}"
-                    {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner|media_thumb:'banner' }}');"{% endif %}
+                    class="user-card user-card-profile-showcase {{ profile.profile_card_classes }}"
+                    style="{{ profile.profile_card_style_vars }}"
                 >
+                    <div class="user-card-pattern"></div>
                     <div class="user-avatar">
                         {% if profile.avatar %}
                             <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                         {% else %}
                             <span>{{ profile.initials }}</span>
                         {% endif %}
-                        {% if profile.is_online %}<span class="user-online-dot" title="{% translate 'Online' %}"></span>{% endif %}
+                        <span class="user-online-dot" data-presence-target="dot" data-presence-user-id="{{ profile.user.id }}" title="{% translate 'Online' %}" {% if not profile.is_online %}hidden{% endif %}></span>
                     </div>
 
                     <div class="user-content">
@@ -100,7 +103,15 @@
                         </div>
 
                         <p class="user-username">@{{ profile.user.username }}</p>
-                        <span class="user-status-line {% if profile.is_online %}is-online{% endif %}">
+
+                        {% if profile.profile_card_badge_text %}
+                            <span class="user-profile-card-badge">
+                                <i class="{{ profile.profile_card_badge_icon }}"></i>
+                                {{ profile.profile_card_badge_text }}
+                            </span>
+                        {% endif %}
+
+                        <span class="user-status-line {% if profile.is_online %}is-online{% endif %}" data-presence-target="status" data-presence-user-id="{{ profile.user.id }}">
                             {% if profile.activity_status %}
                                 {{ profile.activity_status }}
                             {% elif profile.is_online %}
@@ -159,3 +170,7 @@
     {% endif %}
 </section>
 {% endblock %}
+{% block extra_js %}
+    <script src="{% static 'app/js/user_presence.js' %}" defer></script>
+{% endblock %}
+
