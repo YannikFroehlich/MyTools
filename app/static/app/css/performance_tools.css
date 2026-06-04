@@ -3,6 +3,13 @@
     margin: 34px auto 60px;
 }
 
+.leaderboard-page {
+    --leaderboard-ink: #0f172a;
+    --leaderboard-muted: #64748b;
+    --leaderboard-card: rgba(255, 255, 255, 0.9);
+    --leaderboard-line: rgba(148, 163, 184, 0.22);
+}
+
 .perf-hero {
     display: flex;
     align-items: center;
@@ -11,13 +18,21 @@
     padding: 26px;
     border: 1px solid rgba(148, 163, 184, 0.22);
     border-radius: 28px;
-    background: linear-gradient(135deg, rgba(79, 140, 255, 0.16), rgba(168, 85, 247, 0.15)), rgba(255, 255, 255, 0.78);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(245, 158, 11, 0.12)), rgba(255, 255, 255, 0.82);
     box-shadow: 0 22px 70px rgba(15, 23, 42, 0.12);
     backdrop-filter: blur(18px);
 }
 
+.leaderboard-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 330px);
+    align-items: stretch;
+}
+
 body.dark-mode .perf-hero,
+body.dark-mode .perf-stats-grid article,
 body.dark-mode .leaderboard-card,
+body.dark-mode .leaderboard-hero-panel,
 body.dark-mode .image-options-card,
 body.dark-mode .image-result-card,
 body.dark-mode .share-upload-card,
@@ -30,9 +45,9 @@ body.dark-mode .share-card {
 .perf-kicker {
     margin: 0 0 8px;
     font-size: 0.78rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
     text-transform: uppercase;
-    color: #4f8cff;
+    color: #0ea5e9;
     font-weight: 800;
 }
 
@@ -49,7 +64,11 @@ body.dark-mode .share-card {
 }
 
 body.dark-mode .perf-hero p:last-child,
+body.dark-mode .leaderboard-head small,
 body.dark-mode .leaderboard-list small,
+body.dark-mode .leaderboard-hero-panel dt,
+body.dark-mode .perf-stats-grid span,
+body.dark-mode .leaderboard-champion small,
 body.dark-mode .share-row span,
 body.dark-mode .share-row small,
 body.dark-mode .friend-picker p {
@@ -67,6 +86,71 @@ body.dark-mode .friend-picker p {
     font-size: 2rem;
     background: linear-gradient(135deg, #4f8cff, #a855f7);
     box-shadow: 0 18px 45px rgba(79, 140, 255, 0.28);
+}
+
+.leaderboard-hero-copy {
+    align-self: center;
+}
+
+.leaderboard-hero-panel {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 14px;
+    align-content: center;
+    padding: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.64);
+}
+
+.leaderboard-hero-icon {
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 1.7rem;
+    background: linear-gradient(135deg, #0ea5e9, #f59e0b);
+    box-shadow: 0 18px 40px rgba(14, 165, 233, 0.22);
+}
+
+.leaderboard-hero-panel dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+}
+
+.leaderboard-hero-panel dt,
+.leaderboard-hero-panel dd {
+    margin: 0;
+}
+
+.leaderboard-hero-panel dt {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+.leaderboard-hero-panel dd {
+    color: var(--leaderboard-ink);
+    font-size: 1.7rem;
+    font-weight: 900;
+}
+
+.leaderboard-hero-panel > span {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 8px 11px;
+    border-radius: 999px;
+    color: #0f766e;
+    background: rgba(20, 184, 166, 0.12);
+    font-size: 0.82rem;
+    font-weight: 850;
 }
 
 .perf-stats-grid {
@@ -89,12 +173,27 @@ body.dark-mode .friend-picker p {
 }
 
 .perf-stats-grid article {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     padding: 18px 20px;
+}
+
+.perf-stats-grid article > i {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    border-radius: 15px;
+    color: #0ea5e9;
+    background: rgba(14, 165, 233, 0.12);
 }
 
 .perf-stats-grid strong {
     display: block;
     font-size: 1.8rem;
+    line-height: 1;
 }
 
 .perf-stats-grid span {
@@ -108,7 +207,34 @@ body.dark-mode .friend-picker p {
 }
 
 .leaderboard-card {
+    --board-color: #0ea5e9;
+    --board-color-rgb: 14, 165, 233;
+    position: relative;
+    overflow: hidden;
     padding: 20px;
+}
+
+.leaderboard-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: var(--board-color);
+}
+
+.leaderboard-accent-2 {
+    --board-color: #10b981;
+    --board-color-rgb: 16, 185, 129;
+}
+
+.leaderboard-accent-3 {
+    --board-color: #f59e0b;
+    --board-color-rgb: 245, 158, 11;
+}
+
+.leaderboard-accent-4 {
+    --board-color: #ef4444;
+    --board-color-rgb: 239, 68, 68;
 }
 
 .leaderboard-head {
@@ -125,12 +251,69 @@ body.dark-mode .friend-picker p {
     height: 42px;
     border-radius: 16px;
     color: white;
-    background: linear-gradient(135deg, #4f8cff, #a855f7);
+    background: var(--board-color);
+    box-shadow: 0 12px 28px rgba(var(--board-color-rgb), 0.22);
 }
 
 .leaderboard-head h2 {
     margin: 0;
     font-size: 1.05rem;
+}
+
+.leaderboard-head small {
+    color: #64748b;
+    font-size: 0.82rem;
+    font-weight: 750;
+}
+
+.leaderboard-champion {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+    padding: 13px;
+    border-radius: 18px;
+    border: 1px solid rgba(var(--board-color-rgb), 0.2);
+    background: linear-gradient(135deg, rgba(var(--board-color-rgb), 0.14), rgba(255, 255, 255, 0.52));
+}
+
+.leaderboard-champion > span {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    color: var(--board-color);
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.leaderboard-champion small,
+.leaderboard-champion strong {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.leaderboard-champion small {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+.leaderboard-champion strong {
+    font-size: 1rem;
+}
+
+.leaderboard-champion b {
+    max-width: 108px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--board-color);
+    text-align: right;
 }
 
 .leaderboard-list {
@@ -143,17 +326,29 @@ body.dark-mode .friend-picker p {
 
 .leaderboard-list li {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: 34px minmax(0, 1fr) minmax(54px, auto);
     gap: 4px 10px;
     align-items: center;
     padding: 12px;
     border-radius: 16px;
-    background: rgba(79, 140, 255, 0.08);
+    background: rgba(var(--board-color-rgb), 0.08);
+    border: 1px solid transparent;
 }
 
 .leaderboard-list .rank {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
     font-weight: 900;
-    color: #4f8cff;
+    color: var(--board-color);
+    background: rgba(255, 255, 255, 0.68);
+}
+
+.leaderboard-list .is-podium {
+    border-color: rgba(var(--board-color-rgb), 0.2);
+    background: linear-gradient(135deg, rgba(var(--board-color-rgb), 0.16), rgba(var(--board-color-rgb), 0.06));
 }
 
 .leaderboard-list .player {
@@ -164,9 +359,22 @@ body.dark-mode .friend-picker p {
     font-weight: 750;
 }
 
+.leaderboard-score {
+    max-width: 120px;
+    min-width: 0;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .leaderboard-list small {
     grid-column: 2 / 4;
     color: #64748b;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .empty-state {
@@ -175,6 +383,35 @@ body.dark-mode .friend-picker p {
     min-height: 120px;
     text-align: center;
     color: #64748b;
+}
+
+body.dark-mode .leaderboard-page {
+    --leaderboard-ink: #e5edf7;
+    --leaderboard-card: rgba(15, 23, 42, 0.86);
+    --leaderboard-line: rgba(148, 163, 184, 0.22);
+}
+
+body.dark-mode .leaderboard-hero-panel dd,
+body.dark-mode .leaderboard-champion strong {
+    color: #e5edf7;
+}
+
+body.dark-mode .leaderboard-hero-panel > span {
+    color: #5eead4;
+}
+
+body.dark-mode .perf-stats-grid article > i,
+body.dark-mode .leaderboard-list .rank,
+body.dark-mode .leaderboard-champion > span {
+    background: rgba(15, 23, 42, 0.62);
+}
+
+body.dark-mode .perf-stats-grid strong {
+    color: #e5edf7;
+}
+
+body.dark-mode .leaderboard-champion {
+    background: linear-gradient(135deg, rgba(var(--board-color-rgb), 0.18), rgba(15, 23, 42, 0.42));
 }
 
 .image-tool-shell {
@@ -414,6 +651,37 @@ body.dark-mode .friend-picker p {
     .share-layout {
         display: grid;
     }
+
+    .leaderboard-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .leaderboard-hero-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .leaderboard-hero-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .leaderboard-hero-panel dl {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .leaderboard-list li {
+        grid-template-columns: 34px minmax(0, 1fr);
+    }
+
+    .leaderboard-score {
+        grid-column: 2;
+        max-width: none;
+        text-align: left;
+    }
+
+    .leaderboard-list small {
+        grid-column: 2;
+    }
 }
 
 /* Improved image selection feedback */
@@ -553,13 +821,14 @@ body.dark-mode .share-card-head p {
 
 .share-drop-card {
     display: grid;
-    place-items: center;
+    justify-items: start;
+    align-items: center;
     gap: 8px;
     min-height: 178px;
     padding: 22px;
     border: 2px dashed rgba(79, 140, 255, 0.4);
     border-radius: 22px;
-    text-align: center;
+    text-align: left;
     background: radial-gradient(circle at top, rgba(79, 140, 255, 0.16), transparent 60%), rgba(79, 140, 255, 0.07);
     transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
@@ -568,6 +837,12 @@ body.dark-mode .share-card-head p {
     transform: translateY(-2px);
     border-color: rgba(168, 85, 247, 0.55);
     background: radial-gradient(circle at top, rgba(168, 85, 247, 0.18), transparent 60%), rgba(79, 140, 255, 0.1);
+}
+
+.share-drop-card.is-dragover,
+.share-drop-card.has-file {
+    border-color: rgba(34, 197, 94, 0.58);
+    background: radial-gradient(circle at top, rgba(34, 197, 94, 0.18), transparent 60%), rgba(34, 197, 94, 0.08);
 }
 
 .share-drop-card input {
@@ -595,6 +870,125 @@ body.dark-mode .share-card-head p {
 
 body.dark-mode .share-drop-card small {
     color: #94a3b8;
+}
+
+.share-selected-file[hidden] {
+    display: none;
+}
+
+.share-selected-file {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid rgba(34, 197, 94, 0.24);
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(79, 140, 255, 0.08));
+}
+
+.share-selected-file-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+    color: #16a34a;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.share-selected-file-main {
+    min-width: 0;
+}
+
+.share-selected-file-main small {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.share-selected-file-main small {
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+.share-selected-file-list {
+    display: grid;
+    gap: 7px;
+    margin-top: 8px;
+}
+
+.share-selected-file-row {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    padding: 8px 10px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.52);
+}
+
+.share-selected-file-row strong,
+.share-selected-file-row span {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.share-selected-file-row span {
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+.share-selected-file-row.is-too-large {
+    outline: 1px solid rgba(239, 68, 68, 0.32);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.share-selected-file-row.is-too-large span {
+    color: #dc2626;
+}
+
+.share-selected-file button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 13px;
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    transition: color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+}
+
+.share-selected-file button:hover {
+    color: #ef4444;
+    transform: translateY(-1px);
+    background: rgba(239, 68, 68, 0.12);
+}
+
+body.dark-mode .share-selected-file {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.14), rgba(79, 140, 255, 0.1));
+}
+
+body.dark-mode .share-selected-file-icon,
+body.dark-mode .share-selected-file button,
+body.dark-mode .share-selected-file-row {
+    background: rgba(15, 23, 42, 0.62);
+}
+
+body.dark-mode .share-selected-file-main small,
+body.dark-mode .share-selected-file-row span {
+    color: #94a3b8;
+}
+
+body.dark-mode .share-selected-file-row.is-too-large span {
+    color: #fca5a5;
 }
 
 .share-toggle-box {
@@ -661,6 +1055,63 @@ body.dark-mode .friend-grid label {
 
 .share-submit {
     width: 100%;
+}
+
+.share-submit:disabled {
+    cursor: wait;
+    opacity: 0.72;
+}
+
+.share-upload-progress[hidden] {
+    display: none;
+}
+
+.share-upload-progress {
+    display: grid;
+    gap: 9px;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid rgba(79, 140, 255, 0.2);
+    border-radius: 16px;
+    background: rgba(79, 140, 255, 0.07);
+}
+
+.share-upload-progress-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: #64748b;
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
+.share-upload-progress-head strong {
+    color: #4f8cff;
+}
+
+.share-upload-progress-track {
+    overflow: hidden;
+    height: 9px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.22);
+}
+
+.share-upload-progress-track span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #22c55e, #4f8cff);
+    transition: width 0.16s ease;
+}
+
+body.dark-mode .share-upload-progress {
+    background: rgba(15, 23, 42, 0.42);
+}
+
+body.dark-mode .share-upload-progress-head {
+    color: #94a3b8;
 }
 
 .share-list-card {
@@ -764,6 +1215,15 @@ body.dark-mode .friend-grid label {
     .image-selected-card,
     .share-row {
         grid-template-columns: 1fr;
+    }
+
+    .share-selected-file {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .share-selected-file button {
+        grid-column: 1 / -1;
+        width: 100%;
     }
 
     .image-change-button,

@@ -5,36 +5,85 @@
 {% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/performance_tools.css' %}">{% endblock %}
 
 {% block content %}
-<section class="perf-page">
-    <div class="perf-hero">
-        <div>
+<section class="perf-page leaderboard-page">
+    <div class="perf-hero leaderboard-hero">
+        <div class="leaderboard-hero-copy">
             <p class="perf-kicker">MyTools Rankings</p>
             <h1>{% translate "Globales Leaderboard" %}</h1>
             <p>{% translate "Alle wichtigen Scores gesammelt auf einer schnellen, kompakten Seite." %}</p>
         </div>
-        <div class="perf-hero-icon"><i class="fa-solid fa-trophy"></i></div>
+        <aside class="leaderboard-hero-panel" aria-label="{% translate 'Leaderboard Überblick' %}">
+            <div class="leaderboard-hero-icon">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <dl>
+                <div>
+                    <dt>{% translate "Ranglisten" %}</dt>
+                    <dd>{{ boards_total }}</dd>
+                </div>
+                <div>
+                    <dt>{% translate "Top-Einträge" %}</dt>
+                    <dd>{{ visible_scores_total }}</dd>
+                </div>
+            </dl>
+            <span><i class="fa-solid fa-shield-halved"></i>{% translate "Öffentliche Scores" %}</span>
+        </aside>
     </div>
 
     <div class="perf-stats-grid">
-        <article><strong>{{ players_total }}</strong><span>{% translate "Nutzer" %}</span></article>
-        <article><strong>{{ human_total }}</strong><span>{% translate "Benchmark Scores" %}</span></article>
-        <article><strong>{{ multiplayer_games }}</strong><span>{% translate "beendete Duelle" %}</span></article>
+        <article>
+            <i class="fa-solid fa-users"></i>
+            <div><strong>{{ players_total }}</strong><span>{% translate "Nutzer" %}</span></div>
+        </article>
+        <article>
+            <i class="fa-solid fa-stopwatch"></i>
+            <div><strong>{{ human_total }}</strong><span>{% translate "Benchmark Scores" %}</span></div>
+        </article>
+        <article>
+            <i class="fa-solid fa-gamepad"></i>
+            <div><strong>{{ multiplayer_games }}</strong><span>{% translate "beendete Duelle" %}</span></div>
+        </article>
     </div>
 
     <div class="leaderboard-grid">
         {% for board in boards %}
-            <article class="leaderboard-card">
+            <article class="leaderboard-card {{ board.accent }}">
                 <div class="leaderboard-head">
                     <span><i class="{{ board.icon }}"></i></span>
-                    <h2>{{ board.title }}</h2>
+                    <div>
+                        <h2>{{ board.title }}</h2>
+                        <small>
+                            {% blocktranslate count count=board.row_count %}{{ count }} Eintrag{% plural %}{{ count }} Einträge{% endblocktranslate %}
+                        </small>
+                    </div>
                 </div>
+                {% if board.top_row %}
+                    <div class="leaderboard-champion">
+                        <span><i class="fa-solid fa-crown"></i></span>
+                        <div>
+                            <small>{% translate "Aktuell vorne" %}</small>
+                            <strong>{{ board.top_row.name }}</strong>
+                        </div>
+                        <b>{{ board.top_row.score }}</b>
+                    </div>
+                {% endif %}
                 {% if board.rows %}
                     <ol class="leaderboard-list">
                         {% for row in board.rows %}
-                            <li>
-                                <span class="rank">#{{ row.rank }}</span>
+                            <li class="{% if forloop.counter <= 3 %}is-podium is-top-{{ forloop.counter }}{% endif %}">
+                                <span class="rank">
+                                    {% if forloop.counter == 1 %}
+                                        <i class="fa-solid fa-medal"></i>
+                                    {% elif forloop.counter == 2 %}
+                                        <i class="fa-solid fa-award"></i>
+                                    {% elif forloop.counter == 3 %}
+                                        <i class="fa-solid fa-star"></i>
+                                    {% else %}
+                                        #{{ row.rank }}
+                                    {% endif %}
+                                </span>
                                 <span class="player">{{ row.name }}</span>
-                                <strong>{{ row.score }}</strong>
+                                <strong class="leaderboard-score">{{ row.score }}</strong>
                                 <small>{{ row.detail }}</small>
                             </li>
                         {% endfor %}
