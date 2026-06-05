@@ -28,6 +28,9 @@ from app.models import (
     HumanBenchmarkScore,
     HangmanLobby,
     HangmanPlayer,
+    KniffelGame,
+    KniffelInvite,
+    KniffelPlayer,
     Note,
     Shortcut,
     ShortcutSection,
@@ -279,6 +282,11 @@ class MultiplayerRoomCleanupTests(BaseTestCase):
                 UnoGame.objects.create(owner=self.user, code="UNOEMPTY"),
                 "uno_home_state_api",
                 UnoGame,
+            ),
+            (
+                KniffelGame.objects.create(owner=self.user, code="KNFEMPTY"),
+                "kniffel_home_state_api",
+                KniffelGame,
             ),
             (
                 StadtLandFlussLobby.objects.create(owner=self.user, code="SLFEMPTY"),
@@ -2739,6 +2747,102 @@ class UnoTests(BaseTestCase):
         )
         self.assertFalse((game.uno_calls or {}).get(str(self.user.id)))
         self.assertIn("Uno vergessen", " ".join(game.action_log))
+
+
+class KniffelTests(BaseTestCase):
+    def create_game_with_players(self, player_count=2, **overrides):
+        game = KniffelGame.objects.create(
+            owner=self.user,
+            code=overrides.pop("code", "KNF123"),
+            **overrides,
+        )
+        KniffelPlayer.objects.create(game=game, user=self.user, seat=0)
+        players = [self.user]
+        for index in range(1, player_count):
+            user = get_user_model().objects.create_user(
+                username=f"kniffel{index}",
+                password="testpass-123",
+            )
+            KniffelPlayer.objects.create(game=game, user=user, seat=index)
+            players.append(user)
+        return game, players
+
+    def test_home_post_creates_room_for_current_user(self):
+        response = self.client.post(reverse("kniffel_home"), {
+            "action": "create",
+            "name": "Wuerfelrunde",
+            "max_players": "5",
+        })
+
+        game = KniffelGame.objects.get()
+
+        self.assertRedirects(response, reverse("kniffel_lobby", args=[game.code]))
+        self.assertEqual(game.owner, self.user)
+        self.assertEqual(game.players.get().user, self.user)
+        self.assertEqual(game.max_players, 5)
+
+    def test_player_can_invite_friend_and_friend_accepts(self):
+        friend = get_user_model().objects.create_user(
+            username="kniffelfreund",
+            password="testpass-123",
+        )
+        Friendship.objects.create(
+            from_user=self.user,
+            to_user=friend,
+            status=Friendship.STATUS_ACCEPTED,
+        )
+        game, _players = self.create_game_with_players(player_count=1)
+
+        response = self.client.post(reverse("kniffel_invite_friend", args=[game.code]), {
+            "friend_id": friend.id,
+        })
+
+        self.assertRedirects(response, reverse("kniffel_lobby", args=[game.code]))
+        invite = KniffelInvite.objects.get(game=game, to_user=friend)
+        self.assertEqual(invite.status, KniffelInvite.STATUS_PENDING)
+
+        self.client.force_login(friend)
+        response = self.client.post(reverse("kniffel_invite_response", args=[invite.id]), {
+            "action": "accept",
+        })
+
+        self.assertRedirects(response, reverse("kniffel_lobby", args=[game.code]), fetch_redirect_response=False)
+        invite.refresh_from_db()
+        self.assertEqual(invite.status, KniffelInvite.STATUS_ACCEPTED)
+
+        lobby_response = self.client.get(reverse("kniffel_lobby", args=[game.code]))
+
+        self.assertEqual(lobby_response.status_code, 200)
+        self.assertTrue(KniffelPlayer.objects.filter(game=game, user=friend).exists())
+
+    def test_roll_score_and_leave_keeps_three_player_game_running(self):
+        game, players = self.create_game_with_players(player_count=3)
+
+        start_response = self.client.post(reverse("kniffel_start_api", args=[game.code]))
+        self.assertEqual(start_response.status_code, 200)
+
+        roll_response = self.client.post(reverse("kniffel_roll_api", args=[game.code]), {
+            "kept_indices": "[]",
+        })
+        self.assertEqual(roll_response.status_code, 200)
+        dice = roll_response.json()["game"]["dice"]
+        self.assertEqual(len(dice), 5)
+
+        score_response = self.client.post(reverse("kniffel_score_api", args=[game.code]), {
+            "category": "chance",
+        })
+        self.assertEqual(score_response.status_code, 200)
+        game.refresh_from_db()
+        self.assertIn("chance", game.scores[str(self.user.id)])
+        self.assertEqual(game.current_player_index, 1)
+
+        self.client.force_login(players[2])
+        leave_response = self.client.post(reverse("kniffel_leave", args=[game.code]))
+
+        self.assertRedirects(leave_response, reverse("kniffel_home"))
+        game.refresh_from_db()
+        self.assertEqual(game.status, KniffelGame.STATUS_PLAYING)
+        self.assertEqual(game.players.count(), 2)
 
 
 class BattleshipTests(BaseTestCase):

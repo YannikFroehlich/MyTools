@@ -22,6 +22,7 @@ def current_profile(request):
             "battleship_invites_count": 0,
             "stadtlandfluss_invites_count": 0,
             "uno_invites_count": 0,
+            "kniffel_invites_count": 0,
             "hangman_invites_count": 0,
             "total_notifications_count": 0,
         }
@@ -43,6 +44,7 @@ def current_profile(request):
         "battleship_invites_count": counts["battleship_invites"],
         "stadtlandfluss_invites_count": counts["stadtlandfluss_invites"],
         "uno_invites_count": counts["uno_invites"],
+        "kniffel_invites_count": counts["kniffel_invites"],
         "hangman_invites_count": counts["hangman_invites"],
         "total_notifications_count": counts["total_notifications"],
     }

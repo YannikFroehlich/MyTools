@@ -61,105 +61,171 @@
                     <i class="fa-solid fa-chevron-down games-menu-chevron"></i>
                 </button>
 
-                <div class="menu-dropdown" id="games-menu-dropdown">
-                    <a href="{% url 'human-benchmark' %}" class="menu-item">
-                        <i class="fa-solid fa-stopwatch"></i>
-                        {% translate 'Human Benchmark' %}
-                    </a>
-
-                    <a href="{% url 'leaderboard' %}" class="menu-item">
-                        <i class="fa-solid fa-trophy"></i>
-                        {% translate 'Leaderboard' %}
-                    </a>
-
-                    <a href="{% url 'drift-circuit' %}" class="menu-item">
-                        <i class="fa-solid fa-car-side"></i>
-                        {% translate 'Racing Game' %}
-                    </a>
-
-                    <a href="{% url 'tictactoe_home' %}" class="menu-item menu-item-with-badge">
-                        <span class="menu-item-main">
-                            <i class="fa-solid fa-table-cells"></i>
-                            {% translate 'Tic Tac Toe' %}
-                        </span>
-                        {% if request.user.is_authenticated %}
-                            <span class="menu-badge js-notification-badge" data-notification-key="tictactoe_invites" data-label-singular="{% translate 'offene Tic-Tac-Toe-Einladung' %}" data-label-plural="{% translate 'offene Tic-Tac-Toe-Einladungen' %}" aria-label="{% blocktranslate count count=tictactoe_invites_count %}{{ count }} offene Tic-Tac-Toe-Einladung{% plural %}{{ count }} offene Tic-Tac-Toe-Einladungen{% endblocktranslate %}">
-                                {{ tictactoe_invites_count }}
+                <div class="menu-dropdown games-menu-panel" id="games-menu-dropdown">
+                    <div class="games-menu-top">
+                        <div class="games-menu-title">
+                            <span class="games-menu-kicker">
+                                <i class="fa-solid fa-gamepad"></i>
+                                {% translate 'Spielebibliothek' %}
                             </span>
-                        {% endif %}
-                    </a>
+                            <strong>{% translate 'Alle Spiele' %}</strong>
+                        </div>
 
-                    <a href="{% url 'battleship_home' %}" class="menu-item menu-item-with-badge">
-                        <span class="menu-item-main">
-                            <i class="fa-solid fa-anchor"></i>
-                            {% translate 'Schiffe versenken' %}
-                        </span>
-                        {% if request.user.is_authenticated %}
-                            <span class="menu-badge js-notification-badge" data-notification-key="battleship_invites" data-label-singular="{% translate 'offene Schiffe-versenken-Einladung' %}" data-label-plural="{% translate 'offene Schiffe-versenken-Einladungen' %}" aria-label="{% blocktranslate count count=battleship_invites_count %}{{ count }} offene Schiffe-versenken-Einladung{% plural %}{{ count }} offene Schiffe-versenken-Einladungen{% endblocktranslate %}">
-                                {{ battleship_invites_count }}
-                            </span>
-                        {% endif %}
-                    </a>
+                        <a href="{% url 'leaderboard' %}" class="games-menu-leaderboard-link" data-game-card data-game-name="{% translate 'Leaderboard' %}" data-game-category="{% translate 'Scores Rangliste' %}">
+                            <i class="fa-solid fa-trophy"></i>
+                            {% translate 'Rangliste' %}
+                        </a>
+                    </div>
 
-                    <a href="{% url 'connectfour_home' %}" class="menu-item menu-item-with-badge">
-                        <span class="menu-item-main">
-                            <i class="fa-solid fa-grip"></i>
-                            {% translate 'Vier gewinnt' %}
-                        </span>
-                        {% if request.user.is_authenticated %}
-                            <span class="menu-badge js-notification-badge" data-notification-key="connectfour_invites" data-label-singular="{% translate 'offene Vier-gewinnt-Einladung' %}" data-label-plural="{% translate 'offene Vier-gewinnt-Einladungen' %}" aria-label="{% blocktranslate count count=connectfour_invites_count %}{{ count }} offene Vier-gewinnt-Einladung{% plural %}{{ count }} offene Vier-gewinnt-Einladungen{% endblocktranslate %}">
-                                {{ connectfour_invites_count }}
-                            </span>
-                        {% endif %}
-                    </a>
+                    <label class="games-menu-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input id="games-menu-search" type="search" placeholder="{% translate 'Spiel suchen...' %}" autocomplete="off">
+                    </label>
 
-                    <a href="{% url 'stadtlandfluss_home' %}" class="menu-item menu-item-with-badge">
-                        <span class="menu-item-main">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            {% translate 'Stadt Land Fluss' %}
-                        </span>
-                        {% if request.user.is_authenticated %}
-                            <span class="menu-badge js-notification-badge" data-notification-key="stadtlandfluss_invites" data-label-singular="{% translate 'offene Stadt-Land-Fluss-Einladung' %}" data-label-plural="{% translate 'offene Stadt-Land-Fluss-Einladungen' %}" aria-label="{% blocktranslate count count=stadtlandfluss_invites_count %}{{ count }} offene Stadt-Land-Fluss-Einladung{% plural %}{{ count }} offene Stadt-Land-Fluss-Einladungen{% endblocktranslate %}">
-                                {{ stadtlandfluss_invites_count }}
-                            </span>
-                        {% endif %}
-                    </a>
+                    <div class="games-menu-content">
+                        <section class="games-menu-section" data-game-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-bolt"></i>
+                                {% translate 'Schnellstart' %}
+                            </div>
 
-                    <a href="{% url 'uno_home' %}" class="menu-item menu-item-with-badge">
-                        <span class="menu-item-main">
-                            <i class="fa-solid fa-layer-group"></i>
-                            {% translate 'Uno' %}
-                        </span>
-                        {% if request.user.is_authenticated %}
-                            <span class="menu-badge js-notification-badge" data-notification-key="uno_invites" data-label-singular="{% translate 'offene Uno-Einladung' %}" data-label-plural="{% translate 'offene Uno-Einladungen' %}" aria-label="{% blocktranslate count count=uno_invites_count %}{{ count }} offene Uno-Einladung{% plural %}{{ count }} offene Uno-Einladungen{% endblocktranslate %}">
-                                {{ uno_invites_count }}
-                            </span>
-                        {% endif %}
-                    </a>
+                            <div class="games-menu-grid">
+                                <a href="{% url 'human-benchmark' %}" class="game-menu-card is-cyan" data-game-card data-game-name="{% translate 'Human Benchmark' %}" data-game-category="{% translate 'Solo Scores Reaktion Aim Typing Visual' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-stopwatch"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Human Benchmark' %}</strong>
+                                        <small>{% translate 'Solo-Scores' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="{% url 'hangman_home' %}" class="menu-item menu-item-with-badge">
-                        <span class="menu-item-main">
-                            <i class="fa-solid fa-user-secret"></i>
-                            {% translate 'Hangman' %}
-                        </span>
-                        {% if request.user.is_authenticated %}
-                            <span class="menu-badge js-notification-badge" data-notification-key="hangman_invites" data-label-singular="{% translate 'offene Hangman-Einladung' %}" data-label-plural="{% translate 'offene Hangman-Einladungen' %}" aria-label="{% blocktranslate count count=hangman_invites_count %}{{ count }} offene Hangman-Einladung{% plural %}{{ count }} offene Hangman-Einladungen{% endblocktranslate %}">
-                                {{ hangman_invites_count }}
-                            </span>
-                        {% endif %}
-                    </a>
+                                <a href="{% url 'drift-circuit' %}" class="game-menu-card is-orange" data-game-card data-game-name="{% translate 'Racing Game' %}" data-game-category="{% translate 'Solo Racing Drift Auto' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-car-side"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Racing Game' %}</strong>
+                                        <small>{% translate 'Racing' %}</small>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
 
-                    <a href="{% url 'skribble_home' %}" class="menu-item menu-item-with-badge">
-                        <span class="menu-item-main">
-                            <i class="fa-solid fa-pencil"></i>
-                            {% translate 'Skribble' %}
-                        </span>
-                        {% if request.user.is_authenticated %}
-                            <span class="menu-badge js-notification-badge" data-notification-key="skribble_invites" data-label-singular="{% translate 'offene Skribble-Einladung' %}" data-label-plural="{% translate 'offene Skribble-Einladungen' %}" aria-label="{% blocktranslate count count=skribble_invites_count %}{{ count }} offene Skribble-Einladung{% plural %}{{ count }} offene Skribble-Einladungen{% endblocktranslate %}">
-                                {{ skribble_invites_count }}
-                            </span>
-                        {% endif %}
-                    </a>
+                        <section class="games-menu-section" data-game-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-user-group"></i>
+                                {% translate 'Mehrspieler' %}
+                            </div>
+
+                            <div class="games-menu-grid">
+                                <a href="{% url 'tictactoe_home' %}" class="game-menu-card is-blue" data-game-card data-game-name="{% translate 'Tic Tac Toe' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-table-cells"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Tic Tac Toe' %}</strong>
+                                        <small>{% translate '1v1' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ tictactoe_invites_count }}" data-notification-key="tictactoe_invites" data-label-singular="{% translate 'offene Tic-Tac-Toe-Einladung' %}" data-label-plural="{% translate 'offene Tic-Tac-Toe-Einladungen' %}" aria-label="{% blocktranslate count count=tictactoe_invites_count %}{{ count }} offene Tic-Tac-Toe-Einladung{% plural %}{{ count }} offene Tic-Tac-Toe-Einladungen{% endblocktranslate %}">
+                                            {{ tictactoe_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+
+                                <a href="{% url 'battleship_home' %}" class="game-menu-card is-slate" data-game-card data-game-name="{% translate 'Schiffe versenken' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-anchor"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Schiffe versenken' %}</strong>
+                                        <small>{% translate 'Strategie' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ battleship_invites_count }}" data-notification-key="battleship_invites" data-label-singular="{% translate 'offene Schiffe-versenken-Einladung' %}" data-label-plural="{% translate 'offene Schiffe-versenken-Einladungen' %}" aria-label="{% blocktranslate count count=battleship_invites_count %}{{ count }} offene Schiffe-versenken-Einladung{% plural %}{{ count }} offene Schiffe-versenken-Einladungen{% endblocktranslate %}">
+                                            {{ battleship_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+
+                                <a href="{% url 'connectfour_home' %}" class="game-menu-card is-amber" data-game-card data-game-name="{% translate 'Vier gewinnt' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-grip"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Vier gewinnt' %}</strong>
+                                        <small>{% translate '1v1' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ connectfour_invites_count }}" data-notification-key="connectfour_invites" data-label-singular="{% translate 'offene Vier-gewinnt-Einladung' %}" data-label-plural="{% translate 'offene Vier-gewinnt-Einladungen' %}" aria-label="{% blocktranslate count count=connectfour_invites_count %}{{ count }} offene Vier-gewinnt-Einladung{% plural %}{{ count }} offene Vier-gewinnt-Einladungen{% endblocktranslate %}">
+                                            {{ connectfour_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+
+                                <a href="{% url 'stadtlandfluss_home' %}" class="game-menu-card is-green" data-game-card data-game-name="{% translate 'Stadt Land Fluss' %}" data-game-category="{% translate 'Mehrspieler Party Wörter Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-pen-to-square"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Stadt Land Fluss' %}</strong>
+                                        <small>{% translate 'Party' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ stadtlandfluss_invites_count }}" data-notification-key="stadtlandfluss_invites" data-label-singular="{% translate 'offene Stadt-Land-Fluss-Einladung' %}" data-label-plural="{% translate 'offene Stadt-Land-Fluss-Einladungen' %}" aria-label="{% blocktranslate count count=stadtlandfluss_invites_count %}{{ count }} offene Stadt-Land-Fluss-Einladung{% plural %}{{ count }} offene Stadt-Land-Fluss-Einladungen{% endblocktranslate %}">
+                                            {{ stadtlandfluss_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+
+                                <a href="{% url 'uno_home' %}" class="game-menu-card is-red" data-game-card data-game-name="{% translate 'Uno' %}" data-game-category="{% translate 'Mehrspieler Karten Party Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-layer-group"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Uno' %}</strong>
+                                        <small>{% translate 'Karten' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ uno_invites_count }}" data-notification-key="uno_invites" data-label-singular="{% translate 'offene Uno-Einladung' %}" data-label-plural="{% translate 'offene Uno-Einladungen' %}" aria-label="{% blocktranslate count count=uno_invites_count %}{{ count }} offene Uno-Einladung{% plural %}{{ count }} offene Uno-Einladungen{% endblocktranslate %}">
+                                            {{ uno_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+
+                                <a href="{% url 'kniffel_home' %}" class="game-menu-card is-orange" data-game-card data-game-name="{% translate 'Kniffel' %}" data-game-category="{% translate 'Mehrspieler Würfel Punkte Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-dice"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Kniffel' %}</strong>
+                                        <small>{% translate 'Würfel' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ kniffel_invites_count }}" data-notification-key="kniffel_invites" data-label-singular="{% translate 'offene Kniffel-Einladung' %}" data-label-plural="{% translate 'offene Kniffel-Einladungen' %}" aria-label="{% blocktranslate count count=kniffel_invites_count %}{{ count }} offene Kniffel-Einladung{% plural %}{{ count }} offene Kniffel-Einladungen{% endblocktranslate %}">
+                                            {{ kniffel_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+
+                                <a href="{% url 'hangman_home' %}" class="game-menu-card is-violet" data-game-card data-game-name="{% translate 'Hangman' %}" data-game-category="{% translate 'Mehrspieler Wörter Raten Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-user-secret"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Hangman' %}</strong>
+                                        <small>{% translate 'Wörter' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ hangman_invites_count }}" data-notification-key="hangman_invites" data-label-singular="{% translate 'offene Hangman-Einladung' %}" data-label-plural="{% translate 'offene Hangman-Einladungen' %}" aria-label="{% blocktranslate count count=hangman_invites_count %}{{ count }} offene Hangman-Einladung{% plural %}{{ count }} offene Hangman-Einladungen{% endblocktranslate %}">
+                                            {{ hangman_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+
+                                <a href="{% url 'skribble_home' %}" class="game-menu-card is-pink" data-game-card data-game-name="{% translate 'Skribble' %}" data-game-category="{% translate 'Mehrspieler Zeichnen Raten Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-pencil"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Skribble' %}</strong>
+                                        <small>{% translate 'Zeichnen' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ skribble_invites_count }}" data-notification-key="skribble_invites" data-label-singular="{% translate 'offene Skribble-Einladung' %}" data-label-plural="{% translate 'offene Skribble-Einladungen' %}" aria-label="{% blocktranslate count count=skribble_invites_count %}{{ count }} offene Skribble-Einladung{% plural %}{{ count }} offene Skribble-Einladungen{% endblocktranslate %}">
+                                            {{ skribble_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="games-menu-empty" data-game-empty hidden>
+                        <i class="fa-regular fa-face-meh"></i>
+                        {% translate 'Kein Spiel gefunden.' %}
+                    </div>
                 </div>
             </div>
 
@@ -170,61 +236,143 @@
                     <i class="fa-solid fa-chevron-down google-apps-menu-chevron"></i>
                 </button>
 
-                <div class="menu-dropdown" id="google-apps-menu-dropdown">
-                    <a href="https://google.com" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-brands fa-google"></i>
-                        {% translate 'Suche' %}
-                    </a>
+                <div class="menu-dropdown games-menu-panel google-library-panel" id="google-apps-menu-dropdown">
+                    <div class="games-menu-top">
+                        <div class="games-menu-title">
+                            <span class="games-menu-kicker">
+                                <i class="fa-brands fa-google"></i>
+                                {% translate 'Google Apps' %}
+                            </span>
+                            <strong>{% translate 'Schnellzugriff' %}</strong>
+                        </div>
+                    </div>
 
-                    <a href="https://www.google.com/maps/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-solid fa-map"></i>
-                        {% translate 'Maps' %}
-                    </a>
+                    <label class="games-menu-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input id="google-apps-menu-search" type="search" placeholder="{% translate 'Google-App suchen...' %}" autocomplete="off" data-menu-search>
+                    </label>
 
-                    <a href="https://www.youtube.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-brands fa-youtube"></i>
-                        {% translate 'Youtube' %}
-                    </a>
+                    <div class="games-menu-content">
+                        <section class="games-menu-section" data-menu-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-compass"></i>
+                                {% translate 'Suche & Medien' %}
+                            </div>
 
-                    <a href="https://play.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-brands fa-google-play"></i>
-                        {% translate 'Play' %}
-                    </a>
+                            <div class="games-menu-grid">
+                                <a href="https://google.com" class="game-menu-card is-blue" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Suche' %}" data-menu-category="{% translate 'Google Suche Web Recherche' %}">
+                                    <span class="game-menu-icon"><i class="fa-brands fa-google"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Suche' %}</strong>
+                                        <small>{% translate 'Web' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="https://mail.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-solid fa-envelope"></i>
-                        {% translate 'Gmail' %}
-                    </a>
+                                <a href="https://www.google.com/maps/" class="game-menu-card is-green" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Maps' %}" data-menu-category="{% translate 'Karten Navigation Orte Routen' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-map-location-dot"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Maps' %}</strong>
+                                        <small>{% translate 'Karten' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="https://drive.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-brands fa-google-drive"></i>
-                        {% translate 'Drive' %}
-                    </a>
+                                <a href="https://www.youtube.com/" class="game-menu-card is-red" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Youtube' %}" data-menu-category="{% translate 'Video Musik Medien' %}">
+                                    <span class="game-menu-icon"><i class="fa-brands fa-youtube"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Youtube' %}</strong>
+                                        <small>{% translate 'Videos' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="https://calendar.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-solid fa-calendar"></i>
-                        {% translate 'Kalender' %}
-                    </a>
+                                <a href="https://news.google.com/" class="game-menu-card is-slate" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'News' %}" data-menu-category="{% translate 'Nachrichten News Artikel' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-newspaper"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'News' %}</strong>
+                                        <small>{% translate 'Nachrichten' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="https://translate.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-solid fa-language"></i>
-                        {% translate 'Translator' %}
-                    </a>
+                                <a href="https://photos.google.com/" class="game-menu-card is-pink" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Fotos' %}" data-menu-category="{% translate 'Bilder Fotos Galerie' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-photo-film"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Fotos' %}</strong>
+                                        <small>{% translate 'Bilder' %}</small>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
 
-                    <a href="https://gemini.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <span class="gemini-icon"></span>
-                        {% translate 'Gemini' %}
-                    </a>
+                        <section class="games-menu-section" data-menu-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-briefcase"></i>
+                                {% translate 'Arbeiten' %}
+                            </div>
 
-                    <a href="https://news.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-solid fa-newspaper"></i>
-                        {% translate 'News' %}
-                    </a>
+                            <div class="games-menu-grid">
+                                <a href="https://mail.google.com/" class="game-menu-card is-red" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Gmail' %}" data-menu-category="{% translate 'Mail E-Mail Postfach' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-envelope"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Gmail' %}</strong>
+                                        <small>{% translate 'Mail' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="https://photos.google.com/" class="menu-item" target="_blank" rel="noopener noreferrer">
-                        <i class="fa-solid fa-photo-film"></i>
-                        {% translate 'Fotos' %}
-                    </a>
+                                <a href="https://drive.google.com/" class="game-menu-card is-amber" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Drive' %}" data-menu-category="{% translate 'Dateien Cloud Speicher' %}">
+                                    <span class="game-menu-icon"><i class="fa-brands fa-google-drive"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Drive' %}</strong>
+                                        <small>{% translate 'Dateien' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="https://calendar.google.com/" class="game-menu-card is-blue" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Kalender' %}" data-menu-category="{% translate 'Termine Kalender Events' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-calendar-days"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Kalender' %}</strong>
+                                        <small>{% translate 'Termine' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="https://translate.google.com/" class="game-menu-card is-cyan" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Translator' %}" data-menu-category="{% translate 'Übersetzen Sprache Translator' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-language"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Translator' %}</strong>
+                                        <small>{% translate 'Sprache' %}</small>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
+
+                        <section class="games-menu-section" data-menu-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                {% translate 'Weitere Apps' %}
+                            </div>
+
+                            <div class="games-menu-grid">
+                                <a href="https://play.google.com/" class="game-menu-card is-green" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Play' %}" data-menu-category="{% translate 'Store Apps Play' %}">
+                                    <span class="game-menu-icon"><i class="fa-brands fa-google-play"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Play' %}</strong>
+                                        <small>{% translate 'Store' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="https://gemini.google.com/" class="game-menu-card is-violet" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Gemini' %}" data-menu-category="{% translate 'KI AI Chat Gemini' %}">
+                                    <span class="game-menu-icon"><span class="gemini-icon"></span></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Gemini' %}</strong>
+                                        <small>{% translate 'KI' %}</small>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="games-menu-empty" data-menu-empty hidden>
+                        <i class="fa-regular fa-face-meh"></i>
+                        {% translate 'Keine App gefunden.' %}
+                    </div>
                 </div>
             </div>
 
@@ -233,71 +381,168 @@
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
 
-                <div class="menu-dropdown" id="menu-dropdown">
-                    <a href="{% url 'clock' %}" class="menu-item">
-                        <i class="fa-regular fa-clock"></i>
-                        {% translate 'Uhr' %}
-                    </a>
+                <div class="menu-dropdown games-menu-panel tools-library-panel" id="menu-dropdown">
+                    <div class="games-menu-top">
+                        <div class="games-menu-title">
+                            <span class="games-menu-kicker">
+                                <i class="fa-solid fa-table-cells-large"></i>
+                                {% translate 'Toolbox' %}
+                            </span>
+                            <strong>{% translate 'Weitere Seiten' %}</strong>
+                        </div>
+                    </div>
 
-                    <a href="{% url 'notes' %}" class="menu-item">
-                        <i class="fa-regular fa-note-sticky"></i>
-                        {% translate 'Notizen' %}
-                    </a>
+                    <label class="games-menu-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input id="tools-menu-search" type="search" placeholder="{% translate 'Tool suchen...' %}" autocomplete="off" data-menu-search>
+                    </label>
 
-                    <a href="{% url 'feedback' %}" class="menu-item">
-                        <i class="fa-solid fa-comment-dots"></i>
-                        {% translate 'Feedback' %}
-                    </a>
+                    <div class="games-menu-content">
+                        <section class="games-menu-section" data-menu-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-gauge-high"></i>
+                                {% translate 'Alltag' %}
+                            </div>
 
-                    <a href="{% url 'spritkostenrechner' %}" class="menu-item">
-                        <i class="fa-solid fa-gas-pump"></i>
-                        {% translate 'Spritkosten' %}
-                    </a>
+                            <div class="games-menu-grid">
+                                <a href="{% url 'clock' %}" class="game-menu-card is-blue" data-menu-card data-menu-name="{% translate 'Uhr' %}" data-menu-category="{% translate 'Timer Weltuhr Zeit Wecker' %}">
+                                    <span class="game-menu-icon"><i class="fa-regular fa-clock"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Uhr' %}</strong>
+                                        <small>{% translate 'Timer' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="{% url 'genius-search' %}" class="menu-item">
-                        <i class="fa-solid fa-music"></i>
-                        {% translate 'Genius Search' %}
-                    </a>
+                                <a href="{% url 'notes' %}" class="game-menu-card is-amber" data-menu-card data-menu-name="{% translate 'Notizen' %}" data-menu-category="{% translate 'Notizen Aufgaben Texte' %}">
+                                    <span class="game-menu-icon"><i class="fa-regular fa-note-sticky"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Notizen' %}</strong>
+                                        <small>{% translate 'Schreiben' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="{% url 'unit_converter' %}" class="menu-item">
-                        <i class="fa-solid fa-calculator"></i>
-                        {% translate 'Einheitenrechner' %}
-                    </a>
+                                <a href="{% url 'file_share' %}" class="game-menu-card is-green" data-menu-card data-menu-name="{% translate 'Datei-Share' %}" data-menu-category="{% translate 'Dateien Teilen Upload Share' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-share-nodes"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Datei-Share' %}</strong>
+                                        <small>{% translate 'Teilen' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="{% url 'image_tools' %}" class="menu-item">
-                        <i class="fa-regular fa-image"></i>
-                        {% translate 'Bild Tools' %}
-                    </a>
+                                <a href="{% url 'feedback' %}" class="game-menu-card is-cyan" data-menu-card data-menu-name="{% translate 'Feedback' %}" data-menu-category="{% translate 'Feedback Kontakt Ideen' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-comment-dots"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Feedback' %}</strong>
+                                        <small>{% translate 'Kontakt' %}</small>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
 
-                    <a href="{% url 'file_share' %}" class="menu-item">
-                        <i class="fa-solid fa-share-nodes"></i>
-                        {% translate 'Datei-Share' %}
-                    </a>
+                        <section class="games-menu-section" data-menu-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-screwdriver-wrench"></i>
+                                {% translate 'Rechner & Helfer' %}
+                            </div>
 
-                    <a href="{% url 'randomizer_tools' %}" class="menu-item">
-                        <i class="fa-solid fa-shuffle"></i>
-                        {% translate 'Randomizer' %}
-                    </a>
+                            <div class="games-menu-grid">
+                                <a href="{% url 'spritkostenrechner' %}" class="game-menu-card is-orange" data-menu-card data-menu-name="{% translate 'Spritkosten' %}" data-menu-category="{% translate 'Auto Sprit Benzin Kosten Rechner' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-gas-pump"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Spritkosten' %}</strong>
+                                        <small>{% translate 'Auto' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="{% url 'profile_card_designer' %}" class="menu-item">
-                        <i class="fa-solid fa-id-card-clip"></i>
-                        {% translate 'Profilkarten-Designer' %}
-                    </a>
+                                <a href="{% url 'unit_converter' %}" class="game-menu-card is-slate" data-menu-card data-menu-name="{% translate 'Einheitenrechner' %}" data-menu-category="{% translate 'Einheiten Rechner Umrechnen' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-calculator"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Einheitenrechner' %}</strong>
+                                        <small>{% translate 'Umrechnen' %}</small>
+                                    </span>
+                                </a>
 
-                    <a href="{% url 'avatar-wiki' %}" class="menu-item">
-                        <i class="fa-solid fa-wind"></i>
-                        {% translate 'Avatar Wiki' %}
-                    </a>
+                                <a href="{% url 'randomizer_tools' %}" class="game-menu-card is-violet" data-menu-card data-menu-name="{% translate 'Randomizer' %}" data-menu-category="{% translate 'Zufall Auslosen Entscheiden Randomizer' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-shuffle"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Randomizer' %}</strong>
+                                        <small>{% translate 'Zufall' %}</small>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
 
-                    <a href="{% url 'stream-deck' %}" class="menu-item">
-                        <i class="fa-solid fa-table-cells-large"></i>
-                        {% translate 'Stream Deck' %}
-                    </a>
+                        <section class="games-menu-section" data-menu-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-palette"></i>
+                                {% translate 'Medien & Design' %}
+                            </div>
 
-                    <a href="{% url 'obs-dashboard' %}" class="menu-item">
-                        <i class="fa-solid fa-display"></i>
-                        {% translate 'OBS Dashboard' %}
-                    </a>
+                            <div class="games-menu-grid">
+                                <a href="{% url 'genius-search' %}" class="game-menu-card is-pink" data-menu-card data-menu-name="{% translate 'Genius Search' %}" data-menu-category="{% translate 'Musik Lyrics Song Suche' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-music"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Genius Search' %}</strong>
+                                        <small>{% translate 'Musik' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="{% url 'image_tools' %}" class="game-menu-card is-green" data-menu-card data-menu-name="{% translate 'Bild Tools' %}" data-menu-category="{% translate 'Bilder Foto Medien Tools' %}">
+                                    <span class="game-menu-icon"><i class="fa-regular fa-image"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Bild Tools' %}</strong>
+                                        <small>{% translate 'Bilder' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="{% url 'profile_card_designer' %}" class="game-menu-card is-red" data-menu-card data-menu-name="{% translate 'Profilkarten-Designer' %}" data-menu-category="{% translate 'Profil Design Karte Designer' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-id-card-clip"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Profilkarten-Designer' %}</strong>
+                                        <small>{% translate 'Design' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="{% url 'avatar-wiki' %}" class="game-menu-card is-cyan" data-menu-card data-menu-name="{% translate 'Avatar Wiki' %}" data-menu-category="{% translate 'Avatar Wiki Figuren Übersicht' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-wind"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Avatar Wiki' %}</strong>
+                                        <small>{% translate 'Wiki' %}</small>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
+
+                        <section class="games-menu-section" data-menu-section>
+                            <div class="games-menu-section-title">
+                                <i class="fa-solid fa-display"></i>
+                                {% translate 'Streaming' %}
+                            </div>
+
+                            <div class="games-menu-grid">
+                                <a href="{% url 'stream-deck' %}" class="game-menu-card is-violet" data-menu-card data-menu-name="{% translate 'Stream Deck' %}" data-menu-category="{% translate 'Streaming Stream Deck Kontrolle' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-table-cells-large"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Stream Deck' %}</strong>
+                                        <small>{% translate 'Controls' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="{% url 'obs-dashboard' %}" class="game-menu-card is-slate" data-menu-card data-menu-name="{% translate 'OBS Dashboard' %}" data-menu-category="{% translate 'OBS Streaming Dashboard' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-display"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'OBS Dashboard' %}</strong>
+                                        <small>{% translate 'Streaming' %}</small>
+                                    </span>
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="games-menu-empty" data-menu-empty hidden>
+                        <i class="fa-regular fa-face-meh"></i>
+                        {% translate 'Kein Tool gefunden.' %}
+                    </div>
                 </div>
             </div>
         </div>

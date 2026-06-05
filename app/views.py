@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, Shortcut, \
+from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
     ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
 
 import json
@@ -477,6 +477,35 @@ def build_home_uno_widget_data(user):
     }
 
 
+def build_home_kniffel_widget_data(user):
+    active_games = (
+        KniffelGame.objects
+        .filter(
+            Q(owner=user) | Q(players__user=user),
+            status__in=[KniffelGame.STATUS_WAITING, KniffelGame.STATUS_PLAYING],
+        )
+        .distinct()
+        .order_by("-updated_at")[:3]
+    )
+
+    return {
+        "pending_invites_count": KniffelInvite.objects.filter(
+            to_user=user,
+            status=KniffelInvite.STATUS_PENDING,
+        ).count(),
+        "active_count": KniffelPlayer.objects.filter(
+            user=user,
+            game__status__in=[KniffelGame.STATUS_WAITING, KniffelGame.STATUS_PLAYING],
+        ).count(),
+        "pending_invites": (
+            KniffelInvite.objects
+            .filter(to_user=user, status=KniffelInvite.STATUS_PENDING)
+            .select_related("game", "from_user")[:3]
+        ),
+        "active_games": active_games,
+    }
+
+
 def build_home_widget_data(request, user):
     widgets = list(
         HomeWidget.objects
@@ -544,6 +573,9 @@ def build_home_widget_data(request, user):
 
         elif widget.widget_type == HomeWidget.WIDGET_UNO:
             data = build_home_uno_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_KNIFFEL:
+            data = build_home_kniffel_widget_data(user)
 
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {

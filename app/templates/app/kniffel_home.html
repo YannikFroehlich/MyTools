@@ -1,0 +1,144 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Kniffel' %} - MyTools{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/kniffel.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/kniffel.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="kniffel-page kniffel-home-page"
+      data-home-state-url="{% url 'kniffel_home_state_api' %}"
+      data-empty-invites-label="{% translate 'Du hast aktuell keine offenen Kniffel-Einladungen.' %}"
+      data-empty-games-label="{% translate 'Du hast noch keinen Kniffel-Raum.' %}"
+      data-from-label="{% translate 'von' %}"
+      data-accept-label="{% translate 'Annehmen' %}"
+      data-decline-label="{% translate 'Ablehnen' %}"
+      data-round-label="{% translate 'Runde' %}">
+    <section class="kniffel-hero">
+        <div>
+            <span class="kniffel-eyebrow"><i class="fa-solid fa-dice"></i> {% translate 'Würfelspiel' %}</span>
+            <h1>{% translate 'Kniffel' %}</h1>
+            <p>{% translate 'Erstelle einen Raum, lade Freunde ein und fülle gemeinsam die komplette Kniffel-Tabelle.' %}</p>
+        </div>
+        <div class="kniffel-hero-dice" aria-hidden="true">
+            <span>1</span>
+            <span>5</span>
+            <span>6</span>
+            <span>6</span>
+            <span>6</span>
+        </div>
+    </section>
+
+    <section class="kniffel-home-grid">
+        <article class="kniffel-panel">
+            <h2>{% translate 'Neuen Raum erstellen' %}</h2>
+            <form method="post" class="kniffel-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <label>
+                    <span>{% translate 'Raum-Name' %}</span>
+                    <input type="text" name="name" maxlength="80" value="{% translate 'Kniffel' %}">
+                </label>
+                <label>
+                    <span>{% translate 'Maximale Spieler' %}</span>
+                    <select name="max_players">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </label>
+                <button class="kniffel-primary" type="submit">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate 'Raum erstellen' %}
+                </button>
+            </form>
+        </article>
+
+        <article class="kniffel-panel">
+            <h2>{% translate 'Mit Code beitreten' %}</h2>
+            <form method="post" class="kniffel-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="join">
+                <label>
+                    <span>{% translate 'Raum-Code' %}</span>
+                    <input type="text" name="code" maxlength="16" placeholder="ABC123" autocomplete="off">
+                </label>
+                <button class="kniffel-secondary" type="submit">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    {% translate 'Beitreten' %}
+                </button>
+            </form>
+        </article>
+    </section>
+
+    <section class="kniffel-panel">
+        <div class="kniffel-section-heading">
+            <div>
+                <span class="kniffel-eyebrow"><i class="fa-solid fa-envelope-open-text"></i> {% translate 'Einladungen' %}</span>
+                <h2>{% translate 'Offene Einladungen' %}</h2>
+            </div>
+        </div>
+        <div id="kniffel-invites-live">
+        {% if invites %}
+            <div class="kniffel-invite-list" id="kniffel-invite-list">
+                {% for invite in invites %}
+                    <div class="kniffel-invite-row">
+                        <div>
+                            <strong>{{ invite.game.name }}</strong>
+                            <span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span>
+                        </div>
+                        <div class="kniffel-inline-actions">
+                            <form method="post" action="{% url 'kniffel_invite_response' invite.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="accept">
+                                <button class="kniffel-primary" type="submit">{% translate 'Annehmen' %}</button>
+                            </form>
+                            <form method="post" action="{% url 'kniffel_invite_response' invite.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="decline">
+                                <button class="kniffel-secondary" type="submit">{% translate 'Ablehnen' %}</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="kniffel-muted" id="kniffel-invites-empty">{% translate 'Du hast aktuell keine offenen Kniffel-Einladungen.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+
+    <section class="kniffel-panel">
+        <div class="kniffel-section-heading">
+            <div>
+                <span class="kniffel-eyebrow"><i class="fa-solid fa-clock-rotate-left"></i> {% translate 'Verlauf' %}</span>
+                <h2>{% translate 'Deine Räume' %}</h2>
+            </div>
+        </div>
+        <div id="kniffel-games-live">
+        {% if my_games %}
+            <div class="kniffel-room-grid" id="kniffel-room-grid">
+                {% for game in my_games %}
+                    <a class="kniffel-room-card" href="{% url 'kniffel_lobby' game.code %}">
+                        <span class="kniffel-code">{{ game.code }}</span>
+                        <strong>{{ game.name }}</strong>
+                        <span>{{ game.get_status_display }} - {% translate 'Runde' %} {{ game.round_number }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="kniffel-muted" id="kniffel-games-empty">{% translate 'Du hast noch keinen Kniffel-Raum.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}
