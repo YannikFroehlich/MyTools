@@ -1,0 +1,937 @@
+.kniffel-page {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    padding: clamp(1rem, 2vw, 1.6rem);
+    color: #172033;
+    text-align: left;
+}
+
+.kniffel-hero,
+.kniffel-lobby-top,
+.kniffel-panel,
+.kniffel-table-panel {
+    border: 1px solid rgba(120, 140, 180, 0.22);
+    background:
+        radial-gradient(circle at top left, rgba(22, 163, 74, 0.14), transparent 34%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.88));
+    box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.kniffel-hero {
+    min-height: 230px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.4rem;
+    padding: clamp(1.4rem, 4vw, 2.3rem);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.kniffel-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #15803d;
+    font-size: 0.78rem;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.kniffel-hero h1,
+.kniffel-lobby-top h1 {
+    margin: 0.45rem 0 0.4rem;
+    color: #0f172a;
+    font-size: clamp(2.2rem, 6vw, 4.4rem);
+    line-height: 0.95;
+    letter-spacing: 0;
+}
+
+.kniffel-hero p,
+.kniffel-lobby-top p {
+    max-width: 660px;
+    margin: 0;
+    color: #475569;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.kniffel-hero-dice {
+    width: min(300px, 36vw);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem;
+    transform: rotate(-4deg);
+}
+
+.kniffel-hero-dice span {
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    color: #0f172a;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.14);
+    font-size: clamp(1.45rem, 4vw, 2.3rem);
+    font-weight: 950;
+}
+
+.kniffel-hero-dice span:nth-child(2),
+.kniffel-hero-dice span:nth-child(4) {
+    transform: translateY(18px) rotate(7deg);
+    color: #b91c1c;
+}
+
+.kniffel-home-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.kniffel-panel,
+.kniffel-table-panel {
+    border-radius: 8px;
+    padding: 1.1rem;
+}
+
+.kniffel-panel {
+    margin-top: 1rem;
+}
+
+.kniffel-panel h2,
+.kniffel-table-panel h2,
+.kniffel-friends-box h3 {
+    margin: 0 0 0.85rem;
+    color: #0f172a;
+    font-size: 1.1rem;
+    line-height: 1.2;
+}
+
+.kniffel-form {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.kniffel-form label {
+    display: grid;
+    gap: 0.35rem;
+    color: #334155;
+    font-weight: 850;
+}
+
+.kniffel-form input,
+.kniffel-form select {
+    min-height: 42px;
+    width: 100%;
+    padding: 0 0.85rem;
+    border: 1px solid rgba(120, 140, 180, 0.32);
+    border-radius: 8px;
+    color: #172033;
+    background: rgba(255, 255, 255, 0.92);
+    outline: none;
+}
+
+.kniffel-form input:focus,
+.kniffel-form select:focus {
+    border-color: rgba(22, 163, 74, 0.58);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.kniffel-primary,
+.kniffel-secondary,
+.kniffel-danger,
+.kniffel-icon-button {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 0;
+    border-radius: 8px;
+    padding: 0 0.95rem;
+    font: inherit;
+    font-weight: 950;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        opacity 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.kniffel-primary {
+    color: #ffffff;
+    background: linear-gradient(135deg, #16a34a, #65a30d);
+    box-shadow: 0 12px 24px rgba(22, 163, 74, 0.18);
+}
+
+.kniffel-secondary {
+    color: #14532d;
+    background: rgba(22, 163, 74, 0.1);
+}
+
+.kniffel-sound-toggle.is-muted {
+    color: rgba(20, 83, 45, 0.62);
+    background: rgba(15, 23, 42, 0.08);
+}
+
+.kniffel-danger {
+    color: #ffffff;
+    background: linear-gradient(135deg, #dc2626, #f97316);
+}
+
+.kniffel-primary:hover:not(:disabled),
+.kniffel-secondary:hover:not(:disabled),
+.kniffel-danger:hover:not(:disabled),
+.kniffel-icon-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+}
+
+.kniffel-primary:disabled,
+.kniffel-secondary:disabled,
+.kniffel-danger:disabled,
+.kniffel-icon-button:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.kniffel-muted {
+    margin: 0;
+    color: #64748b;
+    font-weight: 750;
+}
+
+.kniffel-section-heading,
+.kniffel-score-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.kniffel-invite-list,
+.kniffel-room-grid {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.kniffel-invite-row,
+.kniffel-room-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(120, 140, 180, 0.18);
+    border-radius: 8px;
+    color: inherit;
+    background: rgba(255, 255, 255, 0.76);
+    text-decoration: none;
+}
+
+.kniffel-room-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.kniffel-invite-row strong,
+.kniffel-room-card strong {
+    display: block;
+    color: #0f172a;
+    font-weight: 950;
+}
+
+.kniffel-invite-row span,
+.kniffel-room-card span {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.kniffel-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    min-height: 28px;
+    padding: 0 0.55rem;
+    border-radius: 8px;
+    color: #14532d;
+    background: rgba(22, 163, 74, 0.12);
+    font-weight: 950;
+    letter-spacing: 0;
+}
+
+.kniffel-inline-actions,
+.kniffel-top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.kniffel-inline-actions form,
+.kniffel-top-actions form {
+    margin: 0;
+}
+
+.kniffel-lobby-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: start;
+    padding: 1.1rem;
+    border-radius: 8px;
+}
+
+.kniffel-lobby-top h1 {
+    font-size: clamp(1.8rem, 4vw, 3.4rem);
+}
+
+.kniffel-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.75rem;
+    color: #15803d;
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.kniffel-game-shell {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.6fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.kniffel-side-panel {
+    position: sticky;
+    top: calc(var(--nav-height) + 1rem);
+}
+
+.kniffel-player-list {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.kniffel-player-row {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem;
+    border: 1px solid rgba(120, 140, 180, 0.18);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.kniffel-player-row.is-current {
+    border-color: rgba(22, 163, 74, 0.42);
+    background: rgba(220, 252, 231, 0.7);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.08);
+}
+
+.kniffel-player-avatar {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #16a34a, #facc15);
+    font-weight: 950;
+    overflow: hidden;
+}
+
+.kniffel-player-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.kniffel-player-row strong,
+.kniffel-player-row small {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kniffel-player-row strong {
+    color: #0f172a;
+}
+
+.kniffel-player-row small {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.kniffel-player-row b {
+    min-width: 38px;
+    min-height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    color: #14532d;
+    background: rgba(22, 163, 74, 0.12);
+}
+
+.kniffel-status-card,
+.kniffel-turn-card {
+    margin-top: 0.9rem;
+    padding: 0.9rem;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.05);
+}
+
+.kniffel-status-card span,
+.kniffel-turn-card span,
+.kniffel-score-total span {
+    display: block;
+    color: #64748b;
+    font-size: 0.74rem;
+    font-weight: 950;
+    text-transform: uppercase;
+}
+
+.kniffel-status-card strong,
+.kniffel-turn-card strong,
+.kniffel-score-total strong {
+    display: block;
+    color: #0f172a;
+    font-size: 1.4rem;
+    font-weight: 950;
+}
+
+.kniffel-status-card p,
+.kniffel-turn-card small {
+    margin: 0.3rem 0 0;
+    color: #475569;
+    font-weight: 800;
+}
+
+.kniffel-log-panel {
+    margin-top: 0.9rem;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.kniffel-log-panel summary {
+    padding: 0.8rem;
+    cursor: pointer;
+    color: #0f172a;
+    font-weight: 950;
+}
+
+.kniffel-log {
+    display: grid;
+    gap: 0.45rem;
+    max-height: 170px;
+    overflow: auto;
+    padding: 0 0.8rem 0.8rem;
+}
+
+.kniffel-log span {
+    padding: 0.55rem;
+    border-radius: 8px;
+    color: #475569;
+    background: rgba(255, 255, 255, 0.72);
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.kniffel-friends-box {
+    margin-top: 0.9rem;
+}
+
+.kniffel-friend-list {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.kniffel-friend-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.kniffel-friend-row strong,
+.kniffel-friend-row span {
+    display: block;
+}
+
+.kniffel-friend-row span {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.kniffel-icon-button {
+    width: 40px;
+    padding: 0;
+    color: #14532d;
+    background: rgba(22, 163, 74, 0.12);
+}
+
+.kniffel-table-panel {
+    margin-top: 1rem;
+    padding: 0;
+    overflow: hidden;
+}
+
+.kniffel-dice-arena {
+    position: relative;
+    padding: clamp(1rem, 3vw, 1.4rem);
+    background:
+        radial-gradient(circle at 12% 12%, rgba(250, 204, 21, 0.24), transparent 34%),
+        linear-gradient(135deg, #14532d, #0f766e 58%, #0f172a);
+    color: #ffffff;
+}
+
+.kniffel-current-player {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.kniffel-current-player span,
+.kniffel-dice-actions span {
+    color: rgba(255, 255, 255, 0.74);
+    font-weight: 850;
+}
+
+.kniffel-current-player strong {
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    font-weight: 950;
+}
+
+.kniffel-dice-row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(76px, 1fr));
+    gap: 0.75rem;
+}
+
+.kniffel-die {
+    position: relative;
+    aspect-ratio: 1;
+    min-width: 0;
+    border: 0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.24),
+        inset 0 -6px 0 rgba(15, 23, 42, 0.08);
+    cursor: pointer;
+    transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease,
+        opacity 0.16s ease;
+}
+
+.kniffel-die:hover:not(:disabled) {
+    transform: translateY(-4px) rotate(2deg);
+}
+
+.kniffel-die:disabled {
+    cursor: default;
+}
+
+.kniffel-die.is-empty {
+    opacity: 0.62;
+}
+
+.kniffel-die.is-kept {
+    transform: translateY(-8px);
+    box-shadow:
+        0 0 0 3px rgba(250, 204, 21, 0.9),
+        0 18px 34px rgba(0, 0, 0, 0.24),
+        inset 0 -6px 0 rgba(15, 23, 42, 0.08);
+}
+
+.kniffel-pip-grid {
+    position: absolute;
+    inset: 18%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10%;
+}
+
+.kniffel-pip-grid span {
+    border-radius: 999px;
+}
+
+.kniffel-pip-grid span.is-active {
+    background: #0f172a;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.kniffel-die-label {
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+    color: rgba(15, 23, 42, 0.38);
+    font-size: 0.72rem;
+    font-weight: 950;
+}
+
+.kniffel-dice-row.is-rolling .kniffel-die:not(.is-kept) {
+    animation: kniffelRoll 0.62s cubic-bezier(0.18, 0.9, 0.24, 1.25);
+}
+
+.kniffel-dice-row.is-rolling .kniffel-die:nth-child(2) {
+    animation-delay: 0.04s;
+}
+
+.kniffel-dice-row.is-rolling .kniffel-die:nth-child(3) {
+    animation-delay: 0.08s;
+}
+
+.kniffel-dice-row.is-rolling .kniffel-die:nth-child(4) {
+    animation-delay: 0.12s;
+}
+
+.kniffel-dice-row.is-rolling .kniffel-die:nth-child(5) {
+    animation-delay: 0.16s;
+}
+
+.kniffel-dice-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.kniffel-score-wrap {
+    padding: 1.1rem;
+}
+
+.kniffel-score-total {
+    min-width: 112px;
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    text-align: right;
+    background: rgba(22, 163, 74, 0.1);
+}
+
+.kniffel-score-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid rgba(120, 140, 180, 0.18);
+    border-radius: 8px;
+}
+
+.kniffel-score-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.76);
+}
+
+.kniffel-score-table th,
+.kniffel-score-table td {
+    padding: 0.65rem;
+    border-bottom: 1px solid rgba(120, 140, 180, 0.14);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.kniffel-score-table th:first-child {
+    width: 230px;
+    text-align: left;
+}
+
+.kniffel-score-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    color: #0f172a;
+    background: #f8fafc;
+    font-size: 0.82rem;
+    font-weight: 950;
+}
+
+.kniffel-score-table tbody th strong,
+.kniffel-score-table tbody th small {
+    display: block;
+}
+
+.kniffel-score-table tbody th strong {
+    color: #0f172a;
+    font-size: 0.86rem;
+}
+
+.kniffel-score-table tbody th small {
+    margin-top: 0.12rem;
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 750;
+}
+
+.kniffel-score-section th {
+    color: #14532d;
+    background: rgba(22, 163, 74, 0.12);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+}
+
+.kniffel-score-button {
+    min-width: 52px;
+    min-height: 34px;
+    border: 0;
+    border-radius: 8px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #16a34a, #65a30d);
+    font: inherit;
+    font-weight: 950;
+    cursor: pointer;
+    animation: kniffelScorePulse 1.1s ease-in-out infinite;
+}
+
+.kniffel-score-button:hover {
+    transform: translateY(-1px);
+}
+
+.kniffel-score-table td.is-empty {
+    color: #94a3b8;
+}
+
+.kniffel-total-row th,
+.kniffel-total-row td {
+    background: rgba(15, 23, 42, 0.04);
+    font-weight: 950;
+}
+
+.kniffel-grand-row th,
+.kniffel-grand-row td {
+    color: #ffffff;
+    background: linear-gradient(135deg, #14532d, #16a34a);
+    font-weight: 950;
+}
+
+.kniffel-winner-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(8px);
+}
+
+.kniffel-winner-modal.hidden {
+    display: none;
+}
+
+.kniffel-winner-card {
+    width: min(360px, 100%);
+    padding: 1.4rem;
+    border-radius: 8px;
+    text-align: center;
+    color: #0f172a;
+    background: #ffffff;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+    animation: kniffelPop 0.25s ease both;
+}
+
+.kniffel-winner-card span {
+    color: #15803d;
+    font-weight: 950;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+}
+
+.kniffel-winner-card h2 {
+    margin: 0.35rem 0;
+    font-size: 2.2rem;
+}
+
+.kniffel-winner-card strong {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.kniffel-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.2rem;
+    z-index: 13000;
+    transform: translateX(-50%);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: #ffffff;
+    background: rgba(15, 23, 42, 0.94);
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.22);
+    font-weight: 900;
+}
+
+@keyframes kniffelRoll {
+    0% { transform: translateY(0) rotate(0deg) scale(1); }
+    28% { transform: translateY(-18px) rotate(140deg) scale(1.04); }
+    64% { transform: translateY(8px) rotate(310deg) scale(0.98); }
+    100% { transform: translateY(0) rotate(360deg) scale(1); }
+}
+
+@keyframes kniffelScorePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.26); }
+    50% { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+}
+
+@keyframes kniffelPop {
+    from { opacity: 0; transform: translateY(14px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+body.dark-mode .kniffel-page {
+    color: #f8fafc;
+}
+
+body.dark-mode .kniffel-hero,
+body.dark-mode .kniffel-lobby-top,
+body.dark-mode .kniffel-panel,
+body.dark-mode .kniffel-table-panel {
+    border-color: rgba(203, 213, 225, 0.13);
+    background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.16), transparent 34%),
+        linear-gradient(145deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.82));
+    box-shadow:
+        0 20px 48px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .kniffel-hero h1,
+body.dark-mode .kniffel-lobby-top h1,
+body.dark-mode .kniffel-panel h2,
+body.dark-mode .kniffel-table-panel h2,
+body.dark-mode .kniffel-friends-box h3,
+body.dark-mode .kniffel-player-row strong,
+body.dark-mode .kniffel-status-card strong,
+body.dark-mode .kniffel-turn-card strong,
+body.dark-mode .kniffel-score-total strong,
+body.dark-mode .kniffel-score-table tbody th strong,
+body.dark-mode .kniffel-log-panel summary {
+    color: #ffffff;
+}
+
+body.dark-mode .kniffel-hero p,
+body.dark-mode .kniffel-lobby-top p,
+body.dark-mode .kniffel-muted,
+body.dark-mode .kniffel-player-row small,
+body.dark-mode .kniffel-status-card p,
+body.dark-mode .kniffel-turn-card small,
+body.dark-mode .kniffel-score-table tbody th small,
+body.dark-mode .kniffel-form label,
+body.dark-mode .kniffel-invite-row span,
+body.dark-mode .kniffel-room-card span,
+body.dark-mode .kniffel-friend-row span {
+    color: #cbd5e1;
+}
+
+body.dark-mode .kniffel-form input,
+body.dark-mode .kniffel-form select,
+body.dark-mode .kniffel-invite-row,
+body.dark-mode .kniffel-room-card,
+body.dark-mode .kniffel-player-row,
+body.dark-mode .kniffel-friend-row,
+body.dark-mode .kniffel-log span,
+body.dark-mode .kniffel-score-table {
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.58);
+    border-color: rgba(203, 213, 225, 0.13);
+}
+
+body.dark-mode .kniffel-player-row.is-current {
+    background: rgba(22, 163, 74, 0.16);
+}
+
+body.dark-mode .kniffel-status-card,
+body.dark-mode .kniffel-turn-card,
+body.dark-mode .kniffel-log-panel,
+body.dark-mode .kniffel-score-total {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+body.dark-mode .kniffel-score-table thead th {
+    color: #ffffff;
+    background: #111827;
+}
+
+body.dark-mode .kniffel-score-section th {
+    color: #bbf7d0;
+    background: rgba(22, 163, 74, 0.18);
+}
+
+body.dark-mode .kniffel-winner-card {
+    color: #ffffff;
+    background: #111827;
+}
+
+@media (max-width: 920px) {
+    .kniffel-hero,
+    .kniffel-lobby-top,
+    .kniffel-game-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .kniffel-hero-dice {
+        width: min(340px, 100%);
+    }
+
+    .kniffel-side-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 700px) {
+    .kniffel-page {
+        padding: 0.7rem;
+    }
+
+    .kniffel-home-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .kniffel-dice-row {
+        grid-template-columns: repeat(5, minmax(48px, 1fr));
+        gap: 0.45rem;
+    }
+
+    .kniffel-dice-actions,
+    .kniffel-section-heading,
+    .kniffel-score-heading,
+    .kniffel-invite-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .kniffel-score-total {
+        text-align: left;
+    }
+
+    .kniffel-room-card {
+        grid-template-columns: 1fr;
+    }
+}

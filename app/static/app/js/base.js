@@ -864,7 +864,59 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.menu-button.active, .profile-menu-button.active, .notification-center-button.active').forEach((button) => {
             if (button !== exceptButton) {
                 button.classList.remove('active');
+                button.setAttribute('aria-expanded', 'false');
             }
+        });
+    }
+
+    function setupLibraryMenuFilters() {
+        const normalize = (value) => String(value || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+        document.querySelectorAll('.games-menu-panel').forEach((menu) => {
+            const searchInput = menu.querySelector('[data-menu-search], #games-menu-search');
+
+            if (!searchInput) {
+                return;
+            }
+
+            const cards = Array.from(menu.querySelectorAll('[data-menu-card], [data-game-card]'));
+            const sections = Array.from(menu.querySelectorAll('[data-menu-section], [data-game-section]'));
+            const emptyState = menu.querySelector('[data-menu-empty], [data-game-empty]');
+
+            function filterMenuCards() {
+                const query = normalize(searchInput.value);
+                let visibleCards = 0;
+
+                cards.forEach((card) => {
+                    const searchText = normalize([
+                        card.dataset.menuName,
+                        card.dataset.menuCategory,
+                        card.dataset.gameName,
+                        card.dataset.gameCategory,
+                        card.textContent,
+                    ].join(' '));
+                    const isVisible = !query || searchText.includes(query);
+
+                    card.hidden = !isVisible;
+
+                    if (isVisible) {
+                        visibleCards += 1;
+                    }
+                });
+
+                sections.forEach((section) => {
+                    section.hidden = !section.querySelector('[data-menu-card]:not([hidden]), [data-game-card]:not([hidden])');
+                });
+
+                if (emptyState) {
+                    emptyState.hidden = visibleCards > 0;
+                }
+            }
+
+            searchInput.addEventListener('input', filterMenuCards);
         });
     }
 
@@ -876,6 +928,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        button.setAttribute('aria-expanded', 'false');
+
         button.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -886,9 +940,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             dropdown.classList.toggle('open', shouldOpen);
             button.classList.toggle('active', shouldOpen);
+            button.setAttribute('aria-expanded', String(shouldOpen));
 
             if (shouldOpen && buttonId === 'notification-center-button') {
                 refreshNotificationCounts();
+            }
+
+            if (shouldOpen && dropdown.classList.contains('games-menu-panel') && window.matchMedia('(pointer: fine)').matches) {
+                window.setTimeout(() => {
+                    dropdown.querySelector('[data-menu-search], #games-menu-search')?.focus({ preventScroll: true });
+                }, 40);
             }
         });
 
@@ -909,6 +970,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    setupLibraryMenuFilters();
     setupDropdown('games-menu-button', 'games-menu-dropdown');
     setupDropdown('google-apps-menu-button', 'google-apps-menu-dropdown');
     setupDropdown('menu-button', 'menu-dropdown');

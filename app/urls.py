@@ -141,6 +141,20 @@ from .uno_views import (
     uno_start_api,
     uno_state_api,
 )
+from .kniffel_views import (
+    kniffel_delete,
+    kniffel_home,
+    kniffel_home_state_api,
+    kniffel_invite_friend,
+    kniffel_invite_response,
+    kniffel_leave,
+    kniffel_lobby,
+    kniffel_reset_api,
+    kniffel_roll_api,
+    kniffel_score_api,
+    kniffel_start_api,
+    kniffel_state_api,
+)
 from .chat_views import (
     chat_group_leave_view,
     chat_group_member_action_view,
@@ -322,6 +336,19 @@ urlpatterns = [
     path('api/uno/<slug:code>/call/', uno_call_api, name='uno_call_api'),
     path('api/uno/<slug:code>/catch/', uno_catch_api, name='uno_catch_api'),
     path('api/uno/<slug:code>/reset/', uno_reset_api, name='uno_reset_api'),
+
+    path('kniffel/', kniffel_home, name='kniffel_home'),
+    path('kniffel/<slug:code>/', kniffel_lobby, name='kniffel_lobby'),
+    path('kniffel/<slug:code>/invite/', kniffel_invite_friend, name='kniffel_invite_friend'),
+    path('kniffel/invite/<int:invite_id>/', kniffel_invite_response, name='kniffel_invite_response'),
+    path('kniffel/<slug:code>/leave/', kniffel_leave, name='kniffel_leave'),
+    path('kniffel/<slug:code>/delete/', kniffel_delete, name='kniffel_delete'),
+    path('api/kniffel/home-state/', kniffel_home_state_api, name='kniffel_home_state_api'),
+    path('api/kniffel/<slug:code>/state/', kniffel_state_api, name='kniffel_state_api'),
+    path('api/kniffel/<slug:code>/start/', kniffel_start_api, name='kniffel_start_api'),
+    path('api/kniffel/<slug:code>/roll/', kniffel_roll_api, name='kniffel_roll_api'),
+    path('api/kniffel/<slug:code>/score/', kniffel_score_api, name='kniffel_score_api'),
+    path('api/kniffel/<slug:code>/reset/', kniffel_reset_api, name='kniffel_reset_api'),
 
     path('skribble/', skribble_home, name='skribble_home'),
     path('skribble/<slug:code>/', skribble_lobby, name='skribble_lobby'),
