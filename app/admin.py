@@ -12,6 +12,7 @@ from .models import (
     ClockWorldCity,
     ConnectFourGame,
     ConnectFourInvite,
+    CookieClickerHighScore,
     DrawingGameGuess as SkribbleGuess,
     DrawingGameInvite as SkribbleInvite,
     DrawingGameLobby as SkribbleLobby,
@@ -145,6 +146,15 @@ class HumanBenchmarkHighScoreAdmin(admin.ModelAdmin):
     list_filter = ("game", "user")
     search_fields = ("user__username", "user__email", "display_score")
     readonly_fields = ("achieved_at",)
+
+
+@admin.register(CookieClickerHighScore)
+class CookieClickerHighScoreAdmin(admin.ModelAdmin):
+    list_display = ("user", "display_score", "cps", "stardust", "ascensions", "achieved_at")
+    list_filter = ("stardust", "ascensions")
+    search_fields = ("user__username", "user__email", "display_score")
+    readonly_fields = ("achieved_at",)
+
 
 @admin.register(ClockWorldCity)
 class ClockWorldCityAdmin(admin.ModelAdmin):

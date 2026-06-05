@@ -12,7 +12,7 @@ from django.utils.timesince import timesince
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import ChatRoom, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, ProfileGalleryImage, SkribbleStats, UserBlock, UserProfile, UserReport
+from .models import ChatRoom, CookieClickerHighScore, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, ProfileGalleryImage, SkribbleStats, UserBlock, UserProfile, UserReport
 from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
 from .image_optimization import (
     GALLERY_IMAGE_MAX_SIZE,
@@ -50,6 +50,17 @@ def get_profile_human_benchmark_highscores(user):
         }
         for game, label in HumanBenchmarkScore.GAME_CHOICES
     ]
+
+
+def get_profile_cookie_highscore(user):
+    return CookieClickerHighScore.objects.filter(user=user).first()
+
+
+def get_total_profile_highscores(user):
+    total = HumanBenchmarkHighScore.objects.filter(user=user).count()
+    if CookieClickerHighScore.objects.filter(user=user).exists():
+        total += 1
+    return total
 
 
 def get_friend_users(user):
@@ -133,7 +144,7 @@ def get_friend_activity(profile_user, viewer):
     recent_chat_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
     if recent_chat_count:
         activity.append({"icon": "fa-solid fa-comments", "label": _("Aktive Chats"), "value": recent_chat_count})
-    score_count = HumanBenchmarkHighScore.objects.filter(user=profile_user).count()
+    score_count = get_total_profile_highscores(profile_user)
     if score_count:
         activity.append({"icon": "fa-solid fa-trophy", "label": _("Highscores"), "value": score_count})
     return activity
@@ -353,12 +364,13 @@ def profile_view(request):
     )
     friends_count = Friendship.accepted_for_user(request.user).count()
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=request.user).distinct().count()
-    total_highscores_count = HumanBenchmarkHighScore.objects.filter(user=request.user).count()
+    total_highscores_count = get_total_profile_highscores(request.user)
 
     return render(request, "app/profile.html", {
         "form": form,
         "profile": profile,
         "benchmark_highscores": get_profile_human_benchmark_highscores(request.user),
+        "cookie_highscore": get_profile_cookie_highscore(request.user),
         "incoming_friend_requests": incoming_requests,
         "outgoing_friend_requests": outgoing_requests,
         "friends_preview": get_friend_profiles(request.user, limit=6),
@@ -441,12 +453,14 @@ def public_profile_view(request, user_id):
     viewer_blocked = UserBlock.objects.filter(blocker=profile_user, blocked=request.user).exists()
     friends_count = Friendship.accepted_for_user(profile_user).count()
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
-    total_highscores_count = HumanBenchmarkHighScore.objects.filter(user=profile_user).count()
+    total_highscores_count = get_total_profile_highscores(profile_user)
+    can_view_highscores = profile.privacy_show_highscores or can_view_private_profile_area(request.user, profile_user)
 
     return render(request, "app/public_profile.html", {
         "profile_user": profile_user,
         "profile": profile,
-        "benchmark_highscores": get_profile_human_benchmark_highscores(profile_user) if profile.privacy_show_highscores or can_view_private_profile_area(request.user, profile_user) else [],
+        "benchmark_highscores": get_profile_human_benchmark_highscores(profile_user) if can_view_highscores else [],
+        "cookie_highscore": get_profile_cookie_highscore(profile_user) if can_view_highscores else None,
         "friendship_state": get_friendship_state(request.user, profile_user),
         "friends_preview": get_friend_profiles(profile_user, limit=6) if profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user) else [],
         "can_view_friends": profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user),

@@ -641,6 +641,68 @@
     opacity: 0.72;
 }
 
+.public-profile-cookie-score {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: minmax(190px, 250px) minmax(0, 1fr);
+    gap: 14px;
+    align-items: stretch;
+}
+
+.public-profile-cookie-main,
+.public-profile-cookie-grid div {
+    min-width: 0;
+    padding: 14px;
+    border-radius: 20px;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(248, 250, 252, 0.58));
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.public-profile-cookie-main {
+    background: linear-gradient(135deg, rgba(250, 204, 21, 0.2), rgba(var(--theme-accent-rgb), 0.12));
+    border-color: rgba(250, 204, 21, 0.24);
+}
+
+.public-profile-cookie-main span,
+.public-profile-cookie-main small,
+.public-profile-cookie-grid span {
+    display: block;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.public-profile-cookie-main span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.public-profile-cookie-main strong {
+    display: block;
+    margin: 7px 0 5px;
+    color: var(--theme-text);
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    line-height: 1;
+}
+
+.public-profile-cookie-grid {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.public-profile-cookie-grid strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--theme-text);
+    font-size: 1.04rem;
+    line-height: 1.15;
+    word-break: break-word;
+}
+
 body.dark-mode .users-search,
 body.dark-mode .users-counter,
 body.dark-mode .user-card,
@@ -693,8 +755,17 @@ body.dark-mode .public-profile-benchmark-score {
     border-color: rgba(255, 255, 255, 0.08);
 }
 
+body.dark-mode .public-profile-cookie-main,
+body.dark-mode .public-profile-cookie-grid div {
+    background: rgba(255, 255, 255, 0.055);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
 body.dark-mode .public-profile-benchmark-score span,
-body.dark-mode .public-profile-benchmark-score small {
+body.dark-mode .public-profile-benchmark-score small,
+body.dark-mode .public-profile-cookie-main span,
+body.dark-mode .public-profile-cookie-main small,
+body.dark-mode .public-profile-cookie-grid span {
     color: #94a3b8;
 }
 
@@ -780,6 +851,11 @@ body.dark-mode .public-profile-benchmark-score small {
     }
 
     .public-profile-benchmark-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .public-profile-cookie-score,
+    .public-profile-cookie-grid {
         grid-template-columns: 1fr;
     }
 }

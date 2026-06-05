@@ -298,6 +298,38 @@
         </article>
         {% endif %}
 
+        {% if cookie_highscore %}
+        <article class="public-profile-card public-profile-cookie-card">
+            <div class="public-profile-section-header">
+                <div>
+                    <p class="users-kicker">Cookie Cosmos</p>
+                    <h2>{% translate "Highscore" %}</h2>
+                </div>
+
+                <a href="{% url 'cookie-clicker' %}" class="public-profile-benchmark-link">
+                    <i class="fa-solid fa-cookie-bite"></i>
+                    {% translate "Spielen" %}
+                </a>
+            </div>
+
+            <div class="public-profile-cookie-score">
+                <div class="public-profile-cookie-main">
+                    <span><i class="fa-solid fa-trophy"></i>{% translate "Bester Lauf" %}</span>
+                    <strong>{{ cookie_highscore.display_score }}</strong>
+                    <small>{{ cookie_highscore.achieved_at|date:"d.m.Y H:i" }}</small>
+                </div>
+                <div class="public-profile-cookie-grid">
+                    <div><span>CPS</span><strong>{{ cookie_highscore.cps|floatformat:1 }}</strong></div>
+                    <div><span>{% translate "Klickpower" %}</span><strong>{{ cookie_highscore.click_power|floatformat:1 }}</strong></div>
+                    <div><span>Stardust</span><strong>{{ cookie_highscore.stardust }}</strong></div>
+                    <div><span>{% translate "Transzendenzen" %}</span><strong>{{ cookie_highscore.ascensions }}</strong></div>
+                    <div><span>{% translate "Upgrades" %}</span><strong>{{ cookie_highscore.upgrades_count }}</strong></div>
+                    <div><span>{% translate "Anlagen" %}</span><strong>{{ cookie_highscore.buildings_count }}</strong></div>
+                </div>
+            </div>
+        </article>
+        {% endif %}
+
         {% if benchmark_highscores %}
         <article class="public-profile-card public-profile-benchmark-card">
             <div class="public-profile-section-header">

@@ -1,4 +1,5 @@
 import os
+import math
 from collections import defaultdict
 from urllib.parse import urlencode
 
@@ -12,7 +13,7 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
+from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
     ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
 
 import json
@@ -1873,6 +1874,109 @@ def unit_converter_view(request):
 
 def drift_circuit(request):
     return render(request, "app/drift_circuit.html")
+
+
+def format_cookie_score(value):
+    value = max(0, float(value or 0))
+    suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]
+
+    if value < 1000:
+        return str(int(value))
+
+    tier = 0
+    while value >= 1000 and tier < len(suffixes) - 1:
+        value /= 1000
+        tier += 1
+
+    digits = 0 if value >= 100 else 1 if value >= 10 else 2
+    return f"{value:.{digits}f}{suffixes[tier]}"
+
+
+def serialize_cookie_clicker_highscore(highscore):
+    if not highscore:
+        return None
+
+    return {
+        "score": highscore.score,
+        "display_score": highscore.display_score,
+        "cps": highscore.cps,
+        "click_power": highscore.click_power,
+        "stardust": highscore.stardust,
+        "ascensions": highscore.ascensions,
+        "achievements_count": highscore.achievements_count,
+        "upgrades_count": highscore.upgrades_count,
+        "buildings_count": highscore.buildings_count,
+        "achieved_at": date_format(highscore.achieved_at, "d.m.Y H:i"),
+    }
+
+
+@ensure_csrf_cookie
+def cookie_clicker(request):
+    return render(request, "app/cookie_clicker.html")
+
+
+@login_required
+@require_POST
+def cookie_clicker_score_api(request):
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return api_error_response(_("Ungueltige Anfrage."), status=400)
+
+    try:
+        score = float(payload.get("score") or 0)
+        cps = float(payload.get("cps") or 0)
+        click_power = float(payload.get("click_power") or 0)
+        stardust = int(payload.get("stardust") or 0)
+        ascensions = int(payload.get("ascensions") or 0)
+        achievements_count = int(payload.get("achievements_count") or 0)
+        upgrades_count = int(payload.get("upgrades_count") or 0)
+        buildings_count = int(payload.get("buildings_count") or 0)
+    except (TypeError, ValueError):
+        return api_error_response(_("Ungueltiger Cookie-Cosmos-Score."), status=400)
+
+    if not all(math.isfinite(value) for value in (score, cps, click_power)) or score < 0 or cps < 0 or click_power < 0:
+        return api_error_response(_("Ungueltiger Cookie-Cosmos-Score."), status=400)
+
+    details = payload.get("details") if isinstance(payload.get("details"), dict) else {}
+    display_score = str(payload.get("display_score") or format_cookie_score(score))[:80]
+
+    highscore, created = CookieClickerHighScore.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "score": score,
+            "display_score": display_score,
+            "cps": cps,
+            "click_power": click_power,
+            "stardust": max(0, stardust),
+            "ascensions": max(0, ascensions),
+            "achievements_count": max(0, min(achievements_count, 500)),
+            "upgrades_count": max(0, min(upgrades_count, 500)),
+            "buildings_count": max(0, buildings_count),
+            "details": details,
+        },
+    )
+
+    is_new_highscore = created or score > highscore.score
+
+    if is_new_highscore and not created:
+        highscore.score = score
+        highscore.display_score = display_score
+        highscore.cps = cps
+        highscore.click_power = click_power
+        highscore.stardust = max(0, stardust)
+        highscore.ascensions = max(0, ascensions)
+        highscore.achievements_count = max(0, min(achievements_count, 500))
+        highscore.upgrades_count = max(0, min(upgrades_count, 500))
+        highscore.buildings_count = max(0, buildings_count)
+        highscore.details = details
+        highscore.save()
+
+    return JsonResponse({
+        "status": "ok",
+        "new_highscore": is_new_highscore,
+        "highscore": serialize_cookie_clicker_highscore(highscore),
+    })
 
 
 def stream_deck(request):
