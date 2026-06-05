@@ -18,6 +18,7 @@ from app.models import (
     BattleshipGame,
     BattleshipInvite,
     ConnectFourGame,
+    CookieClickerHighScore,
     DrawingGameLobby,
     DrawingGamePlayer,
     FileShare,
@@ -54,6 +55,7 @@ class BaseTestCase(TestCase):
     user_scoped_models = (
         AvatarCharacter,
         HomeWidget,
+        CookieClickerHighScore,
         HumanBenchmarkHighScore,
         HumanBenchmarkScore,
         Note,
@@ -722,6 +724,119 @@ class ProfileViewTests(BaseTestCase):
 
         self.assertEqual(typing_row["highscore"].display_score, "82 WPM")
 
+    def test_cookie_clicker_score_api_creates_and_keeps_best_score(self):
+        response = self.client.post(
+            reverse("cookie-clicker-score-api"),
+            data=json.dumps({
+                "score": 12345,
+                "display_score": "12.3K",
+                "cps": 42.5,
+                "click_power": 7.25,
+                "stardust": 2,
+                "ascensions": 1,
+                "achievements_count": 5,
+                "upgrades_count": 9,
+                "buildings_count": 16,
+                "details": {"total_clicks": 88},
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["new_highscore"])
+
+        highscore = CookieClickerHighScore.objects.get(user=self.user)
+        self.assertEqual(highscore.score, 12345)
+        self.assertEqual(highscore.display_score, "12.3K")
+        self.assertEqual(highscore.cps, 42.5)
+        self.assertEqual(highscore.details["total_clicks"], 88)
+
+        lower_response = self.client.post(
+            reverse("cookie-clicker-score-api"),
+            data=json.dumps({
+                "score": 100,
+                "display_score": "100",
+                "cps": 1,
+                "click_power": 1,
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(lower_response.status_code, 200)
+        self.assertFalse(lower_response.json()["new_highscore"])
+        highscore.refresh_from_db()
+        self.assertEqual(highscore.score, 12345)
+        self.assertEqual(highscore.display_score, "12.3K")
+
+    def test_cookie_clicker_score_api_rejects_non_finite_score(self):
+        response = self.client.post(
+            reverse("cookie-clicker-score-api"),
+            data='{"score": NaN, "cps": 0, "click_power": 1}',
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(CookieClickerHighScore.objects.filter(user=self.user).exists())
+
+    def test_profile_page_shows_cookie_clicker_highscore(self):
+        CookieClickerHighScore.objects.create(
+            user=self.user,
+            score=987654,
+            display_score="987.7K",
+            cps=321.4,
+            click_power=12.5,
+            stardust=4,
+            ascensions=2,
+            achievements_count=11,
+            upgrades_count=18,
+            buildings_count=44,
+        )
+
+        response = self.client.get(reverse("profile"))
+
+        self.assertContains(response, "Cookie Cosmos")
+        self.assertContains(response, "987.7K")
+        self.assertEqual(response.context["cookie_highscore"].display_score, "987.7K")
+
+    def test_public_profile_shows_cookie_clicker_highscore_when_visible(self):
+        other_user = get_user_model().objects.create_user(
+            username="cookiepublic",
+            password="testpass-123",
+        )
+        CookieClickerHighScore.objects.create(
+            user=other_user,
+            score=45000000,
+            display_score="45M",
+            cps=1200,
+            click_power=32,
+            achievements_count=8,
+            upgrades_count=14,
+            buildings_count=30,
+        )
+
+        response = self.client.get(reverse("public_profile", args=[other_user.id]))
+
+        self.assertContains(response, "Cookie Cosmos")
+        self.assertContains(response, "45M")
+        self.assertEqual(response.context["cookie_highscore"].display_score, "45M")
+
+    def test_public_profile_hides_cookie_clicker_highscore_when_private(self):
+        other_user = get_user_model().objects.create_user(
+            username="cookieprivate",
+            password="testpass-123",
+        )
+        UserProfile.objects.create(user=other_user, privacy_show_highscores=False)
+        CookieClickerHighScore.objects.create(
+            user=other_user,
+            score=99000000,
+            display_score="99M",
+        )
+
+        response = self.client.get(reverse("public_profile", args=[other_user.id]))
+
+        self.assertIsNone(response.context["cookie_highscore"])
+        self.assertNotContains(response, "99M")
+
 
 class HomeViewTests(BaseTestCase):
     def test_home_page_loads(self):
@@ -1210,6 +1325,7 @@ class StaticPageTests(BaseTestCase):
             ("avatar-wiki", "app/avatar_wiki.html"),
             ("unit_converter", "app/unit_converter.html"),
             ("drift-circuit", "app/drift_circuit.html"),
+            ("cookie-clicker", "app/cookie_clicker.html"),
             ("stream-deck", "app/stream_deck.html"),
         ]
 

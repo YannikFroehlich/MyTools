@@ -1,0 +1,166 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Cookie Cosmos - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/cookie_clicker.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="cookie-page" data-save-key="mytools-cookie-cosmos-v1" data-score-url="{% url 'cookie-clicker-score-api' %}">
+    <div class="cookie-shell">
+        <header class="cookie-topbar">
+            <div class="cookie-brand">
+                <span class="cookie-brand-icon">
+                    <i class="fa-solid fa-cookie-bite"></i>
+                </span>
+                <div>
+                    <p>Incremental Bakery</p>
+                    <h1>Cookie Cosmos</h1>
+                </div>
+            </div>
+
+            <div class="cookie-actions">
+                <button type="button" class="icon-button" id="soundToggle" aria-label="Sound umschalten" title="Sound">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button type="button" class="icon-button" id="exportButton" aria-label="Spielstand exportieren" title="Export">
+                    <i class="fa-solid fa-file-export"></i>
+                </button>
+                <button type="button" class="icon-button danger" id="resetButton" aria-label="Spielstand zuruecksetzen" title="Reset">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="cookie-layout">
+            <section class="cookie-stage">
+                <div class="stage-hud">
+                    <article class="metric-tile primary">
+                        <span>Cookies</span>
+                        <strong id="cookieCount">0</strong>
+                    </article>
+                    <article class="metric-tile">
+                        <span>pro Sekunde</span>
+                        <strong id="cpsCount">0</strong>
+                    </article>
+                    <article class="metric-tile">
+                        <span>pro Klick</span>
+                        <strong id="clickPower">1</strong>
+                    </article>
+                    <article class="metric-tile">
+                        <span>Stardust</span>
+                        <strong id="stardustCount">0</strong>
+                    </article>
+                </div>
+
+                <div class="bakery-scene" id="bakeryScene">
+                    <canvas id="bakeryCanvas" class="bakery-canvas" width="960" height="560" aria-label="Animierte Cookie Cosmos Backstube"></canvas>
+
+                    <button type="button" class="mega-cookie" id="cookieButton" aria-label="Cookie backen">
+                        <span class="cookie-face">
+                            <span class="chip chip-one"></span>
+                            <span class="chip chip-two"></span>
+                            <span class="chip chip-three"></span>
+                            <span class="chip chip-four"></span>
+                            <span class="chip chip-five"></span>
+                            <span class="cookie-shine"></span>
+                        </span>
+                    </button>
+
+                    <button type="button" class="golden-cookie hidden" id="goldenCookie" aria-label="Golden Cookie">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+
+                    <div class="floating-layer" id="floatingLayer" aria-hidden="true"></div>
+                    <div class="event-banner" id="eventBanner" aria-live="polite"></div>
+                </div>
+
+                <div class="ability-row">
+                    <button type="button" class="ability-button" id="overdriveButton">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>
+                            <strong>Overdrive</strong>
+                            <small id="overdriveStatus">Bereit</small>
+                        </span>
+                    </button>
+                    <button type="button" class="ascend-button" id="ascendButton">
+                        <i class="fa-solid fa-meteor"></i>
+                        <span>
+                            <strong>Transzendieren</strong>
+                            <small id="ascendStatus">ab 50M Cookies</small>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="progress-strip">
+                    <div>
+                        <span>Combo</span>
+                        <strong id="comboLabel">x1.00</strong>
+                    </div>
+                    <div class="bar">
+                        <i id="comboBar"></i>
+                    </div>
+                    <div>
+                        <span>Naechster Stern</span>
+                        <strong id="nextStarLabel">50M</strong>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="bakery-panel">
+                <div class="panel-tabs" role="tablist" aria-label="Cookie Cosmos Bereiche">
+                    <button type="button" class="tab-button is-active" data-tab="buildings" role="tab" aria-selected="true">
+                        <i class="fa-solid fa-industry"></i>
+                        <span>Backstube</span>
+                    </button>
+                    <button type="button" class="tab-button" data-tab="upgrades" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Upgrades</span>
+                    </button>
+                    <button type="button" class="tab-button" data-tab="achievements" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Erfolge</span>
+                    </button>
+                </div>
+
+                <div class="shop-tools">
+                    <button type="button" class="mode-toggle is-active" data-buy-mode="one">1x</button>
+                    <button type="button" class="mode-toggle" data-buy-mode="max">Max</button>
+                    <span id="saveState">Gespeichert</span>
+                </div>
+
+                <div class="panel-section is-active" id="buildingsPanel" data-panel="buildings">
+                    <div class="section-heading">
+                        <h2>Produktionslinien</h2>
+                        <p id="ownedSummary">0 Anlagen aktiv</p>
+                    </div>
+                    <div class="building-list" id="buildingList"></div>
+                </div>
+
+                <div class="panel-section" id="upgradesPanel" data-panel="upgrades">
+                    <div class="section-heading">
+                        <h2>Forschung</h2>
+                        <p id="upgradeSummary">0 freigeschaltet</p>
+                    </div>
+                    <div class="upgrade-list" id="upgradeList"></div>
+                </div>
+
+                <div class="panel-section" id="achievementsPanel" data-panel="achievements">
+                    <div class="section-heading">
+                        <h2>Erfolge</h2>
+                        <p id="achievementSummary">0 erledigt</p>
+                    </div>
+                    <div class="achievement-grid" id="achievementList"></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/cookie_clicker.js' %}"></script>
+{% endblock %}

@@ -19,6 +19,7 @@ from django.views.decorators.http import require_POST
 
 from .models import (
     ConnectFourGame,
+    CookieClickerHighScore,
     FileShare,
     Friendship,
     HangmanLobby,
@@ -143,6 +144,22 @@ def leaderboard_view(request):
             "detail": _("Siege · %(score)s Punkte") % {"score": stats.total_score},
         })
     boards.append({"title": _("Skribble"), "icon": "fa-solid fa-pencil", "rows": skribble_rows})
+
+    cookie_rows = []
+    cookie_qs = (
+        CookieClickerHighScore.objects
+        .select_related("user")
+        .filter(user__profile__privacy_show_highscores=True)
+        .order_by("-score", "achieved_at")[:10]
+    )
+    for index, item in enumerate(cookie_qs, start=1):
+        cookie_rows.append({
+            "rank": index,
+            "name": _display_name(item.user),
+            "score": item.display_score,
+            "detail": _("Cookie Cosmos Â· %(upgrades)s Upgrades") % {"upgrades": item.upgrades_count},
+        })
+    boards.append({"title": _("Cookie Cosmos"), "icon": "fa-solid fa-cookie-bite", "rows": cookie_rows})
 
     stadt_rows = []
     stadt_qs = (
