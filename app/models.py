@@ -1083,6 +1083,35 @@ class HumanBenchmarkHighScore(models.Model):
         return f"{self.user} · {self.get_game_display()} · {self.display_score}"
 
 
+class CookieClickerHighScore(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="cookie_clicker_highscore",
+    )
+    score = models.FloatField(default=0)
+    display_score = models.CharField(max_length=80)
+    cps = models.FloatField(default=0)
+    click_power = models.FloatField(default=0)
+    stardust = models.PositiveIntegerField(default=0)
+    ascensions = models.PositiveIntegerField(default=0)
+    achievements_count = models.PositiveSmallIntegerField(default=0)
+    upgrades_count = models.PositiveSmallIntegerField(default=0)
+    buildings_count = models.PositiveIntegerField(default=0)
+    details = models.JSONField(default=dict, blank=True)
+    achieved_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["-score", "-achieved_at"]),
+        ]
+        verbose_name = "Cookie Cosmos Highscore"
+        verbose_name_plural = "Cookie Cosmos Highscores"
+
+    def __str__(self):
+        return f"{self.user} - Cookie Cosmos - {self.display_score}"
+
+
 class TicTacToeGame(models.Model):
     STATUS_WAITING = "waiting"
     STATUS_PLAYING = "playing"

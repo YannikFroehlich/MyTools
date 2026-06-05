@@ -6,6 +6,8 @@ from .views import (
     avatar_characters_api,
     avatar_wiki,
     clock_view,
+    cookie_clicker,
+    cookie_clicker_score_api,
     drift_circuit,
     genius_search,
     genius_search_api,
@@ -256,6 +258,8 @@ urlpatterns = [
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
     path('randomizer/', randomizer_tools_view, name='randomizer_tools'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
+    path('cookie-clicker/', cookie_clicker, name='cookie-clicker'),
+    path('api/cookie-clicker/score/', cookie_clicker_score_api, name='cookie-clicker-score-api'),
 
     path('tic-tac-toe/', tictactoe_home, name='tictactoe_home'),
     path('tic-tac-toe/<slug:code>/', tictactoe_lobby, name='tictactoe_lobby'),
