@@ -15,6 +15,7 @@ GAME_ACTIVITY_LABELS = {
     "battleship": _("spielt Schiffe versenken"),
     "stadtlandfluss": _("spielt Stadt Land Fluss"),
     "skribble": _("spielt Skribble"),
+    "kniffel": _("spielt Kniffel"),
     "hangman": _("spielt Hangman"),
 }
 
@@ -64,6 +65,7 @@ def _collect_game_activity_for_users(user_ids):
         ConnectFourGame,
         DrawingGameLobby,
         HangmanLobby,
+        KniffelPlayer,
         StadtLandFlussLobby,
         TicTacToeGame,
         UnoPlayer,
@@ -101,6 +103,12 @@ def _collect_game_activity_for_users(user_ids):
         game__status__in=ACTIVE_GAME_STATUSES,
     ).select_related("game").only("user_id", "game__status", "game__updated_at"):
         _set_activity(activity_by_user_id, player.user_id, GAME_ACTIVITY_LABELS["uno"], player.game.updated_at)
+
+    for player in KniffelPlayer.objects.filter(
+        user_id__in=user_ids,
+        game__status__in=ACTIVE_GAME_STATUSES,
+    ).select_related("game").only("user_id", "game__status", "game__updated_at"):
+        _set_activity(activity_by_user_id, player.user_id, GAME_ACTIVITY_LABELS["kniffel"], player.game.updated_at)
 
     for lobby in StadtLandFlussLobby.objects.filter(
         players__user_id__in=user_ids,

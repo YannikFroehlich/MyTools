@@ -1,0 +1,170 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ game.name }} - {% translate 'Kniffel' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/kniffel.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/kniffel.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="kniffel-page kniffel-lobby-page"
+      data-state-url="{% url 'kniffel_state_api' game.code %}"
+      data-start-url="{% url 'kniffel_start_api' game.code %}"
+      data-roll-url="{% url 'kniffel_roll_api' game.code %}"
+      data-score-url="{% url 'kniffel_score_api' game.code %}"
+      data-reset-url="{% url 'kniffel_reset_api' game.code %}">
+    <section class="kniffel-lobby-top">
+        <div>
+            <a class="kniffel-back" href="{% url 'kniffel_home' %}">
+                <i class="fa-solid fa-arrow-left"></i>
+                {% translate 'Zur Übersicht' %}
+            </a>
+            <span class="kniffel-eyebrow"><i class="fa-solid fa-dice"></i> {% translate 'Raum' %}</span>
+            <h1>{{ game.name }}</h1>
+            <p>{% translate 'Raum-Code' %}: <strong class="kniffel-code">{{ game.code }}</strong></p>
+        </div>
+
+        <div class="kniffel-top-actions">
+            <button class="kniffel-secondary" type="button" id="kniffel-copy-link">
+                <i class="fa-solid fa-link"></i>
+                {% translate 'Link' %}
+            </button>
+            <button class="kniffel-secondary kniffel-sound-toggle" type="button" id="kniffel-sound-toggle" aria-pressed="true">
+                <i class="fa-solid fa-volume-high"></i>
+                {% translate 'Sound' %}
+            </button>
+            <button class="kniffel-primary" type="button" id="kniffel-start">
+                <i class="fa-solid fa-play"></i>
+                {% translate 'Starten' %}
+            </button>
+            <button class="kniffel-primary" type="button" id="kniffel-reset">
+                <i class="fa-solid fa-rotate-right"></i>
+                {% translate 'Neu starten' %}
+            </button>
+            <form method="post" action="{% url 'kniffel_leave' game.code %}" data-confirm="{% translate 'Raum wirklich verlassen?' %}">
+                {% csrf_token %}
+                <button class="kniffel-secondary" type="submit">
+                    <i class="fa-solid fa-door-open"></i>
+                    {% translate 'Verlassen' %}
+                </button>
+            </form>
+            {% if game.owner_id == request.user.id %}
+                <form method="post" action="{% url 'kniffel_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">
+                    {% csrf_token %}
+                    <button class="kniffel-danger" type="submit">
+                        <i class="fa-solid fa-trash"></i>
+                        {% translate 'Löschen' %}
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="kniffel-game-shell">
+        <aside class="kniffel-panel kniffel-side-panel">
+            <h2>{% translate 'Spieler' %}</h2>
+            <div class="kniffel-player-list" id="kniffel-player-list"></div>
+
+            <div class="kniffel-status-card">
+                <span>{% translate 'Status' %}</span>
+                <strong id="kniffel-status">-</strong>
+                <p id="kniffel-message">-</p>
+            </div>
+
+            <div class="kniffel-turn-card">
+                <span>{% translate 'Runde' %}</span>
+                <strong id="kniffel-round">{{ game.round_number }}</strong>
+                <small><span id="kniffel-roll-count">0</span>/3 {% translate 'Würfe' %}</small>
+            </div>
+
+            <details class="kniffel-log-panel">
+                <summary>{% translate 'Spielverlauf' %}</summary>
+                <div class="kniffel-log" id="kniffel-log"></div>
+            </details>
+
+            <div class="kniffel-friends-box">
+                <h3>{% translate 'Freunde einladen' %}</h3>
+                {% if game.is_full %}
+                    <p class="kniffel-muted">{% translate 'Der Raum ist voll.' %}</p>
+                {% elif friend_invite_rows %}
+                    <div class="kniffel-friend-list">
+                        {% for row in friend_invite_rows %}
+                            <div class="kniffel-friend-row">
+                                <div>
+                                    <strong>{{ row.user.username }}</strong>
+                                    {% if row.is_invited %}
+                                        <span>{% translate 'Eingeladen' %}</span>
+                                    {% elif row.was_invited %}
+                                        <span>{% translate 'Schon einmal eingeladen' %}</span>
+                                    {% endif %}
+                                </div>
+                                <form method="post" action="{% url 'kniffel_invite_friend' game.code %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="friend_id" value="{{ row.user.id }}">
+                                    <button class="kniffel-icon-button" type="submit" aria-label="{% translate 'Einladen' %}" {% if row.is_invited %}disabled{% endif %}>
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="kniffel-muted">{% translate 'Keine weiteren Freunde zum Einladen gefunden.' %}</p>
+                {% endif %}
+            </div>
+        </aside>
+
+        <section class="kniffel-table-panel">
+            <div class="kniffel-dice-arena" id="kniffel-dice-arena">
+                <div class="kniffel-current-player">
+                    <span>{% translate 'Am Zug' %}</span>
+                    <strong id="kniffel-current-player">-</strong>
+                </div>
+
+                <div class="kniffel-dice-row" id="kniffel-dice-row" aria-label="{% translate 'Kniffel-Würfel' %}"></div>
+
+                <div class="kniffel-dice-actions">
+                    <button class="kniffel-primary" type="button" id="kniffel-roll">
+                        <i class="fa-solid fa-dice"></i>
+                        {% translate 'Würfeln' %}
+                    </button>
+                    <span id="kniffel-roll-hint">{% translate 'Nach dem Wurf kannst du Würfel halten.' %}</span>
+                </div>
+            </div>
+
+            <div class="kniffel-score-wrap">
+                <div class="kniffel-score-heading">
+                    <div>
+                        <span class="kniffel-eyebrow"><i class="fa-solid fa-table-list"></i> {% translate 'Scoreboard' %}</span>
+                        <h2>{% translate 'Wertung' %}</h2>
+                    </div>
+                    <div class="kniffel-score-total">
+                        <span>{% translate 'Deine Punkte' %}</span>
+                        <strong id="kniffel-own-total">0</strong>
+                    </div>
+                </div>
+                <div class="kniffel-score-table-scroll">
+                    <table class="kniffel-score-table" id="kniffel-score-table"></table>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <div class="kniffel-winner-modal hidden" id="kniffel-winner-modal" role="dialog" aria-modal="true" aria-labelledby="kniffel-winner-title">
+        <div class="kniffel-winner-card">
+            <span>{% translate 'Runde beendet' %}</span>
+            <h2 id="kniffel-winner-title">{% translate 'Kniffel!' %}</h2>
+            <strong id="kniffel-winner-name">-</strong>
+            <button class="kniffel-primary" type="button" id="kniffel-winner-close">
+                {% translate 'Schließen' %}
+            </button>
+        </div>
+    </div>
+</main>
+{% endblock %}

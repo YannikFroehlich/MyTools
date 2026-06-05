@@ -10,6 +10,7 @@ from .models import (
     DrawingGameInvite,
     Friendship,
     HangmanInvite,
+    KniffelInvite,
     NotificationDismissal,
     StadtLandFlussInvite,
     TicTacToeInvite,
@@ -26,6 +27,7 @@ COUNT_KEYS = (
     "battleship_invites",
     "stadtlandfluss_invites",
     "uno_invites",
+    "kniffel_invites",
     "hangman_invites",
 )
 
@@ -38,6 +40,7 @@ TYPE_COUNT_KEY = {
     "battleship": "battleship_invites",
     "stadtlandfluss": "stadtlandfluss_invites",
     "uno": "uno_invites",
+    "kniffel": "kniffel_invites",
     "hangman": "hangman_invites",
 }
 
@@ -205,6 +208,18 @@ def _collect_notification_items(user, *, limit=10, include_dismissed=False):
             title=_("Uno-Einladung"),
             text_template=_("%(user)s hat dich in %(name)s eingeladen"),
             url_name="uno_lobby",
+            object_attr="game",
+            dismissed_keys=dismissed_keys,
+            limit=limit,
+        )
+        _add_invite_items(
+            items,
+            KniffelInvite.objects.filter(to_user=user, status=KniffelInvite.STATUS_PENDING).select_related("game", "from_user").order_by("-created_at"),
+            item_type="kniffel",
+            icon="fa-solid fa-dice",
+            title=_("Kniffel-Einladung"),
+            text_template=_("%(user)s hat dich in %(name)s eingeladen"),
+            url_name="kniffel_lobby",
             object_attr="game",
             dismissed_keys=dismissed_keys,
             limit=limit,
