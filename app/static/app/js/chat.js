@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const layout = document.querySelector(".chat-layout");
     const messagesBox = document.getElementById("chat-messages");
+    const pinnedBox = document.getElementById("chat-pinned-message");
     const form = document.getElementById("chat-compose-form");
     const textarea = form?.querySelector("textarea[name='text']");
     const attachmentInput = form?.querySelector("input[name='attachment']");
@@ -100,6 +101,44 @@ document.addEventListener("DOMContentLoaded", () => {
         }).join("")}</div>`;
     }
 
+    function pinnedMessageTemplate(message) {
+        if (!message) return "";
+        const text = message.text || (message.attachments?.length ? "Anhang" : "Nachricht");
+        return `
+            <button type="button" class="chat-pinned-jump" data-pinned-jump="${escapeHtml(message.id)}">
+                <i class="fa-solid fa-thumbtack"></i>
+                <span>
+                    <strong>Angepinnt</strong>
+                    <small>${escapeHtml(message.sender?.display_name || message.sender?.username || "Chat")}: ${escapeHtml(text).slice(0, 92)}</small>
+                </span>
+            </button>
+        `;
+    }
+
+    function updatePinMenuLabels() {
+        messagesBox.querySelectorAll(".chat-message[data-message-id]").forEach((message) => {
+            const button = message.querySelector('[data-chat-action="pin"]');
+            const label = button?.querySelector("span");
+            if (!button || !label) return;
+            label.textContent = message.classList.contains("is-pinned")
+                ? (button.dataset.unpinLabel || "Losloesen")
+                : (button.dataset.pinLabel || "Anpinnen");
+        });
+    }
+
+    function renderPinnedMessage(message) {
+        if (!pinnedBox) return;
+        pinnedBox.innerHTML = pinnedMessageTemplate(message);
+        pinnedBox.classList.toggle("is-empty", !message);
+        messagesBox.querySelectorAll(".chat-message.is-pinned").forEach((item) => {
+            item.classList.remove("is-pinned");
+        });
+        if (message?.id) {
+            messagesBox.querySelector(`.chat-message[data-message-id="${CSS.escape(String(message.id))}"]`)?.classList.add("is-pinned");
+        }
+        updatePinMenuLabels();
+    }
+
     function messageTemplate(message) {
         const avatar = message.sender.avatar_url
             ? `<img src="${escapeHtml(message.sender.avatar_url)}" alt="Profilbild" loading="lazy" decoding="async">`
@@ -109,10 +148,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const deleteAction = isOwn
             ? `<button type="button" data-chat-action="delete"><i class="fa-solid fa-trash"></i>Löschen</button>`
             : "";
+        const pinLabel = message.is_pinned ? "Losloesen" : "Anpinnen";
 
         return `
-            <div class="chat-message ${isOwn ? "is-own" : ""}"
+            <div class="chat-message ${isOwn ? "is-own" : ""} ${message.is_pinned ? "is-pinned" : ""}"
                  data-message-id="${escapeHtml(message.id)}"
+                 data-pin-url="${escapeHtml(message.pin_url)}"
                  data-react-url="${escapeHtml(message.react_url)}"
                  ${isOwn ? `data-delete-url="${escapeHtml(message.delete_url)}"` : ""}>
                 <div class="chat-message-avatar">${avatar}</div>
@@ -122,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                     <div class="chat-message-menu">
                         <button type="button" data-chat-action="react"><i class="fa-regular fa-face-smile"></i>Reagieren</button>
+                        <button type="button" data-chat-action="pin" data-pin-label="Anpinnen" data-unpin-label="Losloesen"><i class="fa-solid fa-thumbtack"></i><span>${pinLabel}</span></button>
                         ${deleteAction}
                     </div>
                     ${emojiPickerTemplate()}
@@ -164,6 +206,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (oldStrip) oldStrip.outerHTML = reactionsTemplate(update.reactions || []);
         const readState = messageElement.querySelector(".chat-read-state");
         if (readState && update.read_label !== undefined) readState.textContent = update.read_label || "";
+        if (update.is_pinned !== undefined) {
+            messageElement.classList.toggle("is-pinned", Boolean(update.is_pinned));
+            updatePinMenuLabels();
+        }
     }
 
     function applyMessageUpdates(updates = []) {
@@ -182,6 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.ok) {
                 applyDeletedMessages(data.deleted_ids || []);
                 applyMessageUpdates(data.updates || []);
+                renderPinnedMessage(data.pinned_message || null);
                 appendMessages(data.messages || [], true);
             }
         } catch (error) {
@@ -236,6 +283,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (attachmentName) attachmentName.textContent = file ? file.name : "";
     });
 
+    pinnedBox?.addEventListener("click", (event) => {
+        const jumpButton = event.target.closest("[data-pinned-jump]");
+        if (!jumpButton) return;
+        const message = messagesBox.querySelector(`.chat-message[data-message-id="${CSS.escape(String(jumpButton.dataset.pinnedJump))}"]`);
+        if (!message) return;
+        message.scrollIntoView({block: "center", behavior: "smooth"});
+        message.classList.add("is-highlighted");
+        window.setTimeout(() => message.classList.remove("is-highlighted"), 1400);
+    });
+
     messagesBox.addEventListener("click", async (event) => {
         const menuButton = event.target.closest(".chat-message-menu-button");
         const actionButton = event.target.closest("[data-chat-action]");
@@ -256,6 +313,24 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
             const message = actionButton.closest(".chat-message");
             const action = actionButton.dataset.chatAction;
+            if (action === "pin") {
+                const pinUrl = message.dataset.pinUrl;
+                if (!pinUrl) return;
+                const formData = new FormData();
+                formData.append("csrfmiddlewaretoken", csrfToken);
+                formData.append("action", message.classList.contains("is-pinned") ? "unpin" : "pin");
+                try {
+                    const response = await fetch(pinUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}, body: formData});
+                    const data = await response.json();
+                    if (data.ok) {
+                        renderPinnedMessage(data.pinned_message || null);
+                        message.classList.remove("is-menu-open");
+                    }
+                } catch (error) {
+                    console.warn("Message pin failed", error);
+                }
+                return;
+            }
             if (action === "delete") {
                 const deleteUrl = message.dataset.deleteUrl;
                 if (!deleteUrl || !confirm("Diese Nachricht wirklich löschen?")) return;
@@ -312,6 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    updatePinMenuLabels();
     scrollToBottom();
     setInterval(pollMessages, 3500);
 });

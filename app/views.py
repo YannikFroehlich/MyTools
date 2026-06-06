@@ -1876,6 +1876,10 @@ def drift_circuit(request):
     return render(request, "app/drift_circuit.html")
 
 
+def snake_powerups(request):
+    return render(request, "app/snake_powerups.html")
+
+
 def format_cookie_score(value):
     value = max(0, float(value or 0))
     suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]

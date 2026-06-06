@@ -27,6 +27,7 @@ from .views import (
     tankstellen_api,
     unit_converter_view,
     randomizer_tools_view,
+    snake_powerups,
     weather,
 )
 from .profile_views import (
@@ -165,8 +166,10 @@ from .chat_views import (
     chat_view,
     create_group_chat,
     delete_chat_message,
+    pin_chat_message,
     react_chat_message,
     send_chat_message,
+    set_chat_theme,
     start_direct_chat,
 )
 from .notification_views import notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
@@ -226,7 +229,9 @@ urlpatterns = [
     path('chat/<int:room_id>/group/member/<int:user_id>/', chat_group_member_action_view, name='chat_group_member_action'),
     path('chat/<int:room_id>/send/', send_chat_message, name='chat_send'),
     path('chat/<int:room_id>/message/<int:message_id>/delete/', delete_chat_message, name='chat_message_delete'),
+    path('chat/<int:room_id>/message/<int:message_id>/pin/', pin_chat_message, name='chat_message_pin'),
     path('chat/<int:room_id>/message/<int:message_id>/react/', react_chat_message, name='chat_message_react'),
+    path('chat/<int:room_id>/theme/', set_chat_theme, name='chat_theme'),
     path('api/chat/<int:room_id>/messages/', chat_messages_api, name='chat_messages_api'),
     path('api/notifications/counts/', notification_counts_api, name='notification_counts_api'),
     path('api/notifications/center/', notification_center_api, name='notification_center_api'),
@@ -258,6 +263,7 @@ urlpatterns = [
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
     path('randomizer/', randomizer_tools_view, name='randomizer_tools'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
+    path('snake-powerups/', snake_powerups, name='snake-powerups'),
     path('cookie-clicker/', cookie_clicker, name='cookie-clicker'),
     path('api/cookie-clicker/score/', cookie_clicker_score_api, name='cookie-clicker-score-api'),
 

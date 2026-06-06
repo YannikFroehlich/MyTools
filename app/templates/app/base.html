@@ -86,7 +86,7 @@
                         <section class="games-menu-section" data-game-section>
                             <div class="games-menu-section-title">
                                 <i class="fa-solid fa-bolt"></i>
-                                {% translate 'Schnellstart' %}
+                                {% translate 'Einzelspieler' %}
                             </div>
 
                             <div class="games-menu-grid">
@@ -103,6 +103,14 @@
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Racing Game' %}</strong>
                                         <small>{% translate 'Racing' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="{% url 'snake-powerups' %}" class="game-menu-card is-green" data-game-card data-game-name="{% translate 'Snake Powerups' %}" data-game-category="{% translate 'Solo Arcade Snake Powerups Score' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-staff-snake"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Snake Powerups' %}</strong>
+                                        <small>{% translate 'Arcade' %}</small>
                                     </span>
                                 </a>
 

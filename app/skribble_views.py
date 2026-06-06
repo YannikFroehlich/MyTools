@@ -845,7 +845,8 @@ def skribble_draw_api(request, code):
                 drawing.append(stroke)
             lobby.current_drawing = drawing
         lobby.save(update_fields=["current_drawing", "updated_at"])
-    return JsonResponse({"ok": True})
+        drawing_revision = len(lobby.current_drawing or [])
+    return JsonResponse({"ok": True, "drawingRevision": drawing_revision})
 
 
 @login_required

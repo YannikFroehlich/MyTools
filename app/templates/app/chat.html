@@ -11,7 +11,7 @@
 
 {% block content %}
 <section class="chat-page">
-    <div class="chat-layout" data-browser-notifications="{{ request.user.profile.browser_notifications|yesno:'true,false' }}" data-sound-notifications="{{ request.user.profile.sound_notifications|yesno:'true,false' }}" {% if active_room %}data-room-id="{{ active_room.id }}" data-messages-url="{% url 'chat_messages_api' active_room.id %}" data-send-url="{% url 'chat_send' active_room.id %}"{% endif %}>
+    <div class="chat-layout {% if active_room %}chat-theme-{{ active_room.theme }}{% endif %}" data-browser-notifications="{{ request.user.profile.browser_notifications|yesno:'true,false' }}" data-sound-notifications="{{ request.user.profile.sound_notifications|yesno:'true,false' }}" {% if active_room %}data-room-id="{{ active_room.id }}" data-messages-url="{% url 'chat_messages_api' active_room.id %}" data-send-url="{% url 'chat_send' active_room.id %}"{% endif %}>
         <aside class="chat-sidebar">
             <div class="chat-sidebar-hero">
                 <p class="chat-kicker">{% translate "Nachrichten" %}</p>
@@ -167,6 +167,21 @@
                             {% if active_room.description %}<small class="chat-room-description">{{ active_room.description }}</small>{% endif %}
                         </div>
                     </div>
+                    <details class="chat-theme-menu">
+                        <summary><i class="fa-solid fa-palette"></i>{% translate "Theme" %}</summary>
+                        <form method="post" action="{% url 'chat_theme' active_room.id %}" class="chat-theme-panel">
+                            {% csrf_token %}
+                            {% for value, label in chat_theme_choices %}
+                                <label class="chat-theme-choice chat-theme-choice-{{ value }}">
+                                    <input type="radio" name="theme" value="{{ value }}" {% if active_room.theme == value %}checked{% endif %} onchange="this.form.submit()">
+                                    <span>
+                                        <i></i>
+                                        <b>{{ label }}</b>
+                                    </span>
+                                </label>
+                            {% endfor %}
+                        </form>
+                    </details>
                     {% if active_room.room_type == 'group' %}
                         <details class="chat-group-manage">
                             <summary><i class="fa-solid fa-sliders"></i>{% translate "Gruppe" %}</summary>
@@ -237,10 +252,23 @@
                     </div>
                 </header>
 
+                <div class="chat-pinned-message {% if not active_room.pinned_chat_message %}is-empty{% endif %}" id="chat-pinned-message">
+                    {% if active_room.pinned_chat_message %}
+                        <button type="button" class="chat-pinned-jump" data-pinned-jump="{{ active_room.pinned_chat_message.id }}">
+                            <i class="fa-solid fa-thumbtack"></i>
+                            <span>
+                                <strong>{% translate "Angepinnt" %}</strong>
+                                <small>{{ active_room.pinned_chat_message.sender.get_full_name|default:active_room.pinned_chat_message.sender.username }}: {% if active_room.pinned_chat_message.text %}{{ active_room.pinned_chat_message.text|truncatechars:92 }}{% else %}{% translate "Anhang" %}{% endif %}</small>
+                            </span>
+                        </button>
+                    {% endif %}
+                </div>
+
                 <div class="chat-messages" id="chat-messages">
                     {% for message in chat_messages %}
-                        <div class="chat-message {% if message.sender_id == request.user.id %}is-own{% endif %}"
+                        <div class="chat-message {% if message.sender_id == request.user.id %}is-own{% endif %} {% if message.id == active_room.pinned_message_id %}is-pinned{% endif %}"
                              data-message-id="{{ message.id }}"
+                             data-pin-url="{% url 'chat_message_pin' active_room.id message.id %}"
                              data-react-url="{% url 'chat_message_react' active_room.id message.id %}"
                              {% if message.sender_id == request.user.id %}data-delete-url="{% url 'chat_message_delete' active_room.id message.id %}"{% endif %}>
                             <div class="chat-message-avatar">
@@ -256,6 +284,10 @@
                                 </button>
                                 <div class="chat-message-menu">
                                     <button type="button" data-chat-action="react"><i class="fa-regular fa-face-smile"></i>{% translate "Reagieren" %}</button>
+                                    <button type="button" data-chat-action="pin" data-pin-label="{% translate 'Anpinnen' %}" data-unpin-label="{% translate 'Loslösen' %}">
+                                        <i class="fa-solid fa-thumbtack"></i>
+                                        <span>{% if message.id == active_room.pinned_message_id %}{% translate "Loslösen" %}{% else %}{% translate "Anpinnen" %}{% endif %}</span>
+                                    </button>
                                     {% if message.sender_id == request.user.id %}
                                         <button type="button" data-chat-action="delete"><i class="fa-solid fa-trash"></i>{% translate "Löschen" %}</button>
                                     {% endif %}

@@ -236,20 +236,7 @@
         </article>
         {% endif %}
 
-        {% if skribble_stats %}
-        <article class="public-profile-card public-profile-skribble-card">
-            <p class="users-kicker">{% translate "Skribble" %}</p>
-            <h2>{% translate "Statistiken" %}</h2>
-            <div class="friend-activity-grid">
-                <div class="friend-activity-item"><i class="fa-solid fa-gamepad"></i><span>{% translate "Spiele" %}</span><strong>{{ skribble_stats.games_played }}</strong></div>
-                <div class="friend-activity-item"><i class="fa-solid fa-crown"></i><span>{% translate "Siege" %}</span><strong>{{ skribble_stats.games_won }}</strong></div>
-                <div class="friend-activity-item"><i class="fa-solid fa-check"></i><span>{% translate "Erraten" %}</span><strong>{{ skribble_stats.correct_guesses }}</strong></div>
-                <div class="friend-activity-item"><i class="fa-solid fa-pencil"></i><span>{% translate "Gezeichnet" %}</span><strong>{{ skribble_stats.drawings_made }}</strong></div>
-                <div class="friend-activity-item"><i class="fa-solid fa-percent"></i><span>{% translate "Winrate" %}</span><strong>{{ skribble_stats.win_rate }}%</strong></div>
-                <div class="friend-activity-item"><i class="fa-solid fa-star"></i><span>{% translate "Punkte" %}</span><strong>{{ skribble_stats.total_score }}</strong></div>
-            </div>
-        </article>
-        {% endif %}
+        {% include "app/includes/profile_game_cards.html" with profile_game_cards=profile_game_cards card_shell_class="public-profile-card" %}
 
         {% if can_view_friends %}
         <article class="public-profile-card public-profile-friends-card">
@@ -295,83 +282,6 @@
                     <p>{% translate "Hier sind noch keine Freunde sichtbar." %}</p>
                 </div>
             {% endif %}
-        </article>
-        {% endif %}
-
-        {% if cookie_highscore %}
-        <article class="public-profile-card public-profile-cookie-card">
-            <div class="public-profile-section-header">
-                <div>
-                    <p class="users-kicker">Cookie Cosmos</p>
-                    <h2>{% translate "Highscore" %}</h2>
-                </div>
-
-                <a href="{% url 'cookie-clicker' %}" class="public-profile-benchmark-link">
-                    <i class="fa-solid fa-cookie-bite"></i>
-                    {% translate "Spielen" %}
-                </a>
-            </div>
-
-            <div class="public-profile-cookie-score">
-                <div class="public-profile-cookie-main">
-                    <span><i class="fa-solid fa-trophy"></i>{% translate "Bester Lauf" %}</span>
-                    <strong>{{ cookie_highscore.display_score }}</strong>
-                    <small>{{ cookie_highscore.achieved_at|date:"d.m.Y H:i" }}</small>
-                </div>
-                <div class="public-profile-cookie-grid">
-                    <div><span>CPS</span><strong>{{ cookie_highscore.cps|floatformat:1 }}</strong></div>
-                    <div><span>{% translate "Klickpower" %}</span><strong>{{ cookie_highscore.click_power|floatformat:1 }}</strong></div>
-                    <div><span>Stardust</span><strong>{{ cookie_highscore.stardust }}</strong></div>
-                    <div><span>{% translate "Transzendenzen" %}</span><strong>{{ cookie_highscore.ascensions }}</strong></div>
-                    <div><span>{% translate "Upgrades" %}</span><strong>{{ cookie_highscore.upgrades_count }}</strong></div>
-                    <div><span>{% translate "Anlagen" %}</span><strong>{{ cookie_highscore.buildings_count }}</strong></div>
-                </div>
-            </div>
-        </article>
-        {% endif %}
-
-        {% if benchmark_highscores %}
-        <article class="public-profile-card public-profile-benchmark-card">
-            <div class="public-profile-section-header">
-                <div>
-                    <p class="users-kicker">{% translate "Human Benchmark" %}</p>
-                    <h2>{% translate "Highscores" %}</h2>
-                </div>
-
-                <a href="{% url 'human-benchmark' %}" class="public-profile-benchmark-link">
-                    <i class="fa-solid fa-stopwatch"></i>
-                    {% translate "Spielen" %}
-                </a>
-            </div>
-
-            <div class="public-profile-benchmark-grid">
-                {% for item in benchmark_highscores %}
-                    <div class="public-profile-benchmark-score {% if not item.highscore %}is-empty{% endif %}">
-                        <div class="public-profile-benchmark-icon">
-                            {% if item.game == "reaction" %}
-                                <i class="fa-solid fa-bolt"></i>
-                            {% elif item.game == "aim" %}
-                                <i class="fa-solid fa-crosshairs"></i>
-                            {% elif item.game == "typing" %}
-                                <i class="fa-solid fa-keyboard"></i>
-                            {% else %}
-                                <i class="fa-solid fa-table-cells"></i>
-                            {% endif %}
-                        </div>
-
-                        <div>
-                            <span>{{ item.label }}</span>
-                            {% if item.highscore %}
-                                <strong>{{ item.highscore.display_score }}</strong>
-                                <small>{{ item.highscore.achieved_at|date:"d.m.Y H:i" }}</small>
-                            {% else %}
-                                <strong>--</strong>
-                                <small>{% translate "Noch kein Highscore" %}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
         </article>
         {% endif %}
 

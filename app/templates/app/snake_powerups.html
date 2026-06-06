@@ -1,0 +1,160 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Snake Powerups - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/snake_powerups.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="snake-page" data-best-key="mytools-snake-powerups-best-v1">
+    <div class="snake-shell">
+        <header class="snake-topbar">
+            <div class="snake-brand">
+                <span class="snake-brand-icon"><i class="fa-solid fa-staff-snake"></i></span>
+                <div>
+                    <p>Arcade Lab</p>
+                    <h1>Snake Powerups</h1>
+                </div>
+            </div>
+
+            <div class="snake-actions">
+                <button type="button" class="snake-icon-button" id="snakeSoundButton" aria-label="Sound umschalten" title="Sound">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button type="button" class="snake-icon-button" id="snakePauseButton" aria-label="Pause" title="Pause">
+                    <i class="fa-solid fa-pause"></i>
+                </button>
+                <button type="button" class="snake-icon-button danger" id="snakeResetButton" aria-label="Neustart" title="Neustart">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="snake-layout">
+            <section class="snake-stage">
+                <div class="snake-hud">
+                    <article class="snake-stat primary">
+                        <span>Score</span>
+                        <strong id="snakeScore">0</strong>
+                    </article>
+                    <article class="snake-stat">
+                        <span>Bestscore</span>
+                        <strong id="snakeBest">0</strong>
+                    </article>
+                    <article class="snake-stat">
+                        <span>Laenge</span>
+                        <strong id="snakeLength">3</strong>
+                    </article>
+                    <article class="snake-stat">
+                        <span>Combo</span>
+                        <strong id="snakeCombo">x1</strong>
+                    </article>
+                </div>
+
+                <canvas id="snakeCanvas" class="snake-canvas" width="720" height="720" aria-label="Snake Powerups Spielfeld"></canvas>
+
+                <div class="snake-toast" id="snakeToast" aria-live="polite"></div>
+
+                <div class="snake-overlay" id="snakeOverlay">
+                    <div class="snake-menu-panel">
+                        <span class="snake-menu-mark"><i class="fa-solid fa-bolt"></i></span>
+                        <p class="snake-eyebrow" id="snakeOverlayKicker">Bereit</p>
+                        <h2 id="snakeOverlayTitle">Snake Powerups</h2>
+                        <p id="snakeOverlayText">Sammle Energie, stapel Combos und nutze Powerups, bevor das Board zu eng wird.</p>
+                        <div class="snake-menu-actions">
+                            <button type="button" class="snake-primary-button" id="snakeStartButton">
+                                <i class="fa-solid fa-play"></i>
+                                Start
+                            </button>
+                            <button type="button" class="snake-secondary-button" id="snakeMenuResetButton">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="snake-touch-controls" aria-label="Touch-Steuerung">
+                    <button type="button" data-direction="up" aria-label="Nach oben"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button type="button" data-direction="left" aria-label="Nach links"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button type="button" data-direction="down" aria-label="Nach unten"><i class="fa-solid fa-chevron-down"></i></button>
+                    <button type="button" data-direction="right" aria-label="Nach rechts"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </section>
+
+            <aside class="snake-panel">
+                <div class="snake-panel-card">
+                    <div class="snake-section-title">
+                        <span><i class="fa-solid fa-sliders"></i></span>
+                        <div>
+                            <h2>Setup</h2>
+                            <p>Modus und Spielgefuehl</p>
+                        </div>
+                    </div>
+
+                    <div class="snake-option-grid">
+                        <label>
+                            <span>Modus</span>
+                            <select id="snakeModeSelect">
+                                <option value="neon">Neon Run</option>
+                                <option value="classic">Classic Walls</option>
+                                <option value="chaos">Power Chaos</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Tempo</span>
+                            <select id="snakeSpeedSelect">
+                                <option value="normal">Normal</option>
+                                <option value="fast">Schnell</option>
+                                <option value="wild">Wild</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="snake-panel-card">
+                    <div class="snake-section-title">
+                        <span><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                        <div>
+                            <h2>Powerups</h2>
+                            <p id="snakeActiveSummary">Kein Effekt aktiv</p>
+                        </div>
+                    </div>
+                    <div class="snake-power-grid" id="snakePowerGrid"></div>
+                </div>
+
+                <div class="snake-panel-card compact">
+                    <div class="snake-section-title">
+                        <span><i class="fa-solid fa-gauge-high"></i></span>
+                        <div>
+                            <h2>Run</h2>
+                            <p id="snakeRunState">Warte auf Start</p>
+                        </div>
+                    </div>
+                    <div class="snake-mini-stats">
+                        <div>
+                            <span>Aepfel</span>
+                            <strong id="snakeApples">0</strong>
+                        </div>
+                        <div>
+                            <span>Powerups</span>
+                            <strong id="snakePowerCount">0</strong>
+                        </div>
+                        <div>
+                            <span>Schilde</span>
+                            <strong id="snakeShieldCount">0</strong>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/snake_powerups.js' %}"></script>
+{% endblock %}
