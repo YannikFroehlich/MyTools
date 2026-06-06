@@ -82,6 +82,7 @@ def decorate_room(room, current_user):
 
 CHAT_REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"]
 MAX_CHAT_ATTACHMENT_SIZE = 8 * 1024 * 1024
+CHAT_THEME_VALUES = {choice[0] for choice in ChatRoom.THEME_CHOICES}
 
 
 def attachment_payload(attachment):
@@ -118,6 +119,19 @@ def decorate_message(message, current_user):
     message.can_delete = message.sender_id == current_user.id
     message.read_label = read_label_for_message(message, current_user)
     return message
+
+
+def pinned_message_for(room, current_user):
+    if not room or not room.pinned_message_id:
+        return None
+    message = (
+        ChatMessage.objects
+        .filter(id=room.pinned_message_id, room=room)
+        .select_related("sender", "sender__profile")
+        .prefetch_related("reactions", "attachments", "read_receipts")
+        .first()
+    )
+    return decorate_message(message, current_user) if message else None
 
 
 @login_required
@@ -168,6 +182,7 @@ def chat_view(request, room_id=None):
         active_membership = ChatRoomMember.objects.filter(room=active_room, user=request.user).first()
         active_room.current_user_is_admin = bool(active_membership and active_membership.is_admin)
         active_room.settings_form = ChatGroupSettingsForm(user=request.user, room=active_room, instance=active_room) if active_room.room_type == ChatRoom.ROOM_GROUP and active_room.current_user_is_admin else None
+        active_room.pinned_chat_message = pinned_message_for(active_room, request.user)
         ChatRoomMember.objects.filter(room=active_room, user=request.user).update(last_read_at=timezone.now())
         mark_room_messages_read(active_room, request.user)
 
@@ -180,6 +195,7 @@ def chat_view(request, room_id=None):
         "active_room_members": active_room_members,
         "friend_profiles": friend_profiles,
         "chat_query": request.GET.get("q", "").strip(),
+        "chat_theme_choices": ChatRoom.THEME_CHOICES,
     })
 
 
@@ -323,15 +339,19 @@ def read_label_for_message(message, current_user):
     return _("Gesendet")
 
 
-def message_payload(message, current_user):
+def message_payload(message, current_user, pinned_message_id=None):
     sender_profile, _ = UserProfile.objects.get_or_create(user=message.sender)
     is_own = message.sender_id == current_user.id
+    if pinned_message_id is None:
+        pinned_message_id = getattr(message.room, "pinned_message_id", None)
     return {
         "id": message.id,
         "text": message.text,
         "created_at": timezone.localtime(message.created_at).strftime("%d.%m.%Y %H:%M"),
         "is_own": is_own,
+        "is_pinned": message.id == pinned_message_id,
         "delete_url": reverse("chat_message_delete", args=[message.room_id, message.id]) if is_own else "",
+        "pin_url": reverse("chat_message_pin", args=[message.room_id, message.id]),
         "react_url": reverse("chat_message_react", args=[message.room_id, message.id]),
         "read_label": read_label_for_message(message, current_user) if is_own else "",
         "reactions": reaction_payload(message, current_user),
@@ -360,7 +380,7 @@ def chat_messages_api(request, room_id):
         qs = reversed(list(qs))
 
     qs = list(qs.prefetch_related("reactions", "attachments", "read_receipts")) if hasattr(qs, "prefetch_related") else list(qs)
-    payload = [message_payload(message, request.user) for message in qs]
+    payload = [message_payload(message, request.user, room.pinned_message_id) for message in qs]
 
     visible_ids = {
         int(message_id)
@@ -380,13 +400,25 @@ def chat_messages_api(request, room_id):
         deleted_ids = sorted(visible_ids - existing_ids)
 
     updates = [
-        {"id": message.id, "reactions": reaction_payload(message, request.user), "read_label": read_label_for_message(message, request.user)}
+        {
+            "id": message.id,
+            "reactions": reaction_payload(message, request.user),
+            "read_label": read_label_for_message(message, request.user),
+            "is_pinned": message.id == room.pinned_message_id,
+        }
         for message in existing_visible_messages
     ]
 
     ChatRoomMember.objects.filter(room=room, user=request.user).update(last_read_at=timezone.now())
     mark_room_messages_read(room, request.user)
-    return JsonResponse({"ok": True, "messages": payload, "deleted_ids": deleted_ids, "updates": updates})
+    pinned_message = pinned_message_for(room, request.user)
+    return JsonResponse({
+        "ok": True,
+        "messages": payload,
+        "deleted_ids": deleted_ids,
+        "updates": updates,
+        "pinned_message": message_payload(pinned_message, request.user, room.pinned_message_id) if pinned_message else None,
+    })
 
 
 @login_required
@@ -430,6 +462,47 @@ def react_chat_message(request, room_id, message_id):
 
     message = ChatMessage.objects.prefetch_related("reactions", "attachments", "read_receipts").get(id=message.id)
     return JsonResponse({"ok": True, "message_id": message.id, "reactions": reaction_payload(message, request.user)})
+
+
+@login_required
+@require_POST
+def pin_chat_message(request, room_id, message_id):
+    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    message = get_object_or_404(
+        ChatMessage.objects.select_related("sender", "sender__profile").prefetch_related("reactions", "attachments", "read_receipts"),
+        id=message_id,
+        room=room,
+    )
+    should_unpin = request.POST.get("action") == "unpin" or room.pinned_message_id == message.id
+    room.pinned_message = None if should_unpin else message
+    room.save(update_fields=["pinned_message", "updated_at"])
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        pinned_message = pinned_message_for(room, request.user)
+        return JsonResponse({
+            "ok": True,
+            "message_id": message.id,
+            "is_pinned": not should_unpin,
+            "pinned_message": message_payload(pinned_message, request.user, room.pinned_message_id) if pinned_message else None,
+        })
+
+    messages.success(request, _("Nachricht wurde angepinnt.") if not should_unpin else _("Angeheftete Nachricht wurde entfernt."))
+    return redirect("chat_room", room_id=room.id)
+
+
+@login_required
+@require_POST
+def set_chat_theme(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    theme = request.POST.get("theme", ChatRoom.THEME_DEFAULT).strip()
+    if theme not in CHAT_THEME_VALUES:
+        messages.error(request, _("Dieses Chat-Theme gibt es nicht."))
+        return redirect("chat_room", room_id=room.id)
+
+    room.theme = theme
+    room.save(update_fields=["theme", "updated_at"])
+    messages.success(request, _("Chat-Theme gespeichert."))
+    return redirect("chat_room", room_id=room.id)
 
 
 @login_required

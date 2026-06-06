@@ -17,6 +17,9 @@ from app.models import (
     AvatarCharacter,
     BattleshipGame,
     BattleshipInvite,
+    ChatMessage,
+    ChatRoom,
+    ChatRoomMember,
     ConnectFourGame,
     CookieClickerHighScore,
     DrawingGameLobby,
@@ -798,6 +801,47 @@ class ProfileViewTests(BaseTestCase):
         self.assertContains(response, "987.7K")
         self.assertEqual(response.context["cookie_highscore"].display_score, "987.7K")
 
+    def test_profile_game_card_settings_can_be_reordered_and_hidden(self):
+        response = self.client.post(reverse("profile"), {
+            "profile_action": "game_cards",
+            "game_card_order": ["skribble", "cookie_cosmos", "human_benchmark"],
+            "game_card_visible": ["skribble", "human_benchmark"],
+        })
+
+        self.assertRedirects(response, reverse("profile"))
+        profile = UserProfile.objects.get(user=self.user)
+
+        self.assertEqual(profile.profile_game_cards[0], {"key": "skribble", "visible": True})
+        self.assertEqual(profile.profile_game_cards[1], {"key": "cookie_cosmos", "visible": False})
+        self.assertEqual(profile.profile_game_cards[2], {"key": "human_benchmark", "visible": True})
+
+    def test_public_profile_uses_configured_game_card_order_and_visibility(self):
+        other_user = get_user_model().objects.create_user(
+            username="gamecards",
+            password="testpass-123",
+        )
+        UserProfile.objects.create(
+            user=other_user,
+            profile_game_cards=[
+                {"key": "skribble", "visible": True},
+                {"key": "cookie_cosmos", "visible": False},
+                {"key": "human_benchmark", "visible": True},
+            ],
+        )
+        HumanBenchmarkHighScore.objects.create(
+            user=other_user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=210,
+            display_score="210 ms",
+        )
+
+        response = self.client.get(reverse("public_profile", args=[other_user.id]))
+
+        card_keys = [card["key"] for card in response.context["profile_game_cards"]]
+        self.assertEqual(card_keys[:2], ["skribble", "human_benchmark"])
+        self.assertNotIn("cookie_cosmos", card_keys)
+        self.assertContains(response, "210 ms")
+
     def test_public_profile_shows_cookie_clicker_highscore_when_visible(self):
         other_user = get_user_model().objects.create_user(
             username="cookiepublic",
@@ -1325,6 +1369,7 @@ class StaticPageTests(BaseTestCase):
             ("avatar-wiki", "app/avatar_wiki.html"),
             ("unit_converter", "app/unit_converter.html"),
             ("drift-circuit", "app/drift_circuit.html"),
+            ("snake-powerups", "app/snake_powerups.html"),
             ("cookie-clicker", "app/cookie_clicker.html"),
             ("stream-deck", "app/stream_deck.html"),
         ]
@@ -1335,6 +1380,61 @@ class StaticPageTests(BaseTestCase):
 
                 self.assertEqual(response.status_code, 200)
                 self.assertTemplateUsed(response, template)
+
+
+class ChatEnhancementTests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.other_user = get_user_model().objects.create_user(username="chatfriend", password="testpass-123")
+        self.room = ChatRoom.objects.create(
+            room_type=ChatRoom.ROOM_DIRECT,
+            direct_key=ChatRoom.direct_key_for_users(self.user, self.other_user),
+            created_by=self.user,
+        )
+        ChatRoomMember.objects.create(room=self.room, user=self.user, is_admin=True)
+        ChatRoomMember.objects.create(room=self.room, user=self.other_user)
+        self.message = ChatMessage.objects.create(room=self.room, sender=self.other_user, text="Merken")
+
+    def test_set_chat_theme_updates_room(self):
+        response = self.client.post(reverse("chat_theme", args=[self.room.id]), {"theme": ChatRoom.THEME_FOREST})
+
+        self.assertRedirects(response, reverse("chat_room", args=[self.room.id]))
+        self.room.refresh_from_db()
+        self.assertEqual(self.room.theme, ChatRoom.THEME_FOREST)
+
+    def test_pin_chat_message_toggles_pinned_message(self):
+        response = self.client.post(
+            reverse("chat_message_pin", args=[self.room.id, self.message.id]),
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.room.refresh_from_db()
+        self.assertEqual(self.room.pinned_message, self.message)
+        self.assertEqual(response.json()["pinned_message"]["id"], self.message.id)
+
+        response = self.client.post(
+            reverse("chat_message_pin", args=[self.room.id, self.message.id]),
+            {"action": "unpin"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.room.refresh_from_db()
+        self.assertIsNone(self.room.pinned_message)
+        self.assertIsNone(response.json()["pinned_message"])
+
+    def test_chat_page_renders_theme_menu_and_pinned_message(self):
+        self.room.theme = ChatRoom.THEME_GRAPE
+        self.room.pinned_message = self.message
+        self.room.save(update_fields=["theme", "pinned_message"])
+
+        response = self.client.get(reverse("chat_room", args=[self.room.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "chat-theme-grape")
+        self.assertContains(response, "chat-pinned-message")
+        self.assertContains(response, "Merken")
 
 
 class WeatherViewTests(BaseTestCase):
@@ -2290,6 +2390,7 @@ class SkribbleLobbyTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["ok"])
+        self.assertEqual(response.json()["drawingRevision"], 2)
 
         lobby.refresh_from_db()
         self.assertEqual(len(lobby.current_drawing), 2)
@@ -2312,6 +2413,7 @@ class SkribbleLobbyTests(BaseTestCase):
             })
             self.assertEqual(response.status_code, 200)
             self.assertTrue(response.json()["ok"])
+            self.assertEqual(response.json()["drawingRevision"], 1)
 
         lobby.refresh_from_db()
         self.assertEqual(len(lobby.current_drawing), 1)

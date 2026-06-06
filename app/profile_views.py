@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
-from django.db.models import Q
+from django.db.models import Count, Max, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -12,7 +12,29 @@ from django.utils.timesince import timesince
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import ChatRoom, CookieClickerHighScore, Friendship, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, ProfileGalleryImage, SkribbleStats, UserBlock, UserProfile, UserReport
+from .models import (
+    BattleshipGame,
+    ChatRoom,
+    ConnectFourGame,
+    CookieClickerHighScore,
+    Friendship,
+    HangmanLobby,
+    HangmanPlayer,
+    HumanBenchmarkHighScore,
+    HumanBenchmarkScore,
+    InboxItem,
+    KniffelGame,
+    KniffelPlayer,
+    ProfileGalleryImage,
+    SkribbleStats,
+    StadtLandFlussPlayer,
+    TicTacToeGame,
+    UnoGame,
+    UnoPlayer,
+    UserBlock,
+    UserProfile,
+    UserReport,
+)
 from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
 from .image_optimization import (
     GALLERY_IMAGE_MAX_SIZE,
@@ -23,6 +45,21 @@ from .image_optimization import (
 from .presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
 
 User = get_user_model()
+
+PROFILE_GAME_CARD_DEFINITIONS = [
+    {"key": "cookie_cosmos", "label": "Cookie Cosmos", "icon": "fa-solid fa-cookie-bite", "url_name": "cookie-clicker"},
+    {"key": "human_benchmark", "label": "Human Benchmark", "icon": "fa-solid fa-stopwatch", "url_name": "human-benchmark"},
+    {"key": "skribble", "label": "Skribble", "icon": "fa-solid fa-pen-nib", "url_name": "skribble_home"},
+    {"key": "tictactoe", "label": "Tic Tac Toe", "icon": "fa-solid fa-xmark", "url_name": "tictactoe_home"},
+    {"key": "connectfour", "label": "Vier gewinnt", "icon": "fa-solid fa-table-cells-large", "url_name": "connectfour_home"},
+    {"key": "battleship", "label": "Schiffe versenken", "icon": "fa-solid fa-anchor", "url_name": "battleship_home"},
+    {"key": "stadtlandfluss", "label": "Stadt Land Fluss", "icon": "fa-solid fa-list-check", "url_name": "stadtlandfluss_home"},
+    {"key": "hangman", "label": "Hangman", "icon": "fa-solid fa-spell-check", "url_name": "hangman_home"},
+    {"key": "uno", "label": "Uno", "icon": "fa-solid fa-layer-group", "url_name": "uno_home"},
+    {"key": "kniffel", "label": "Kniffel", "icon": "fa-solid fa-dice", "url_name": "kniffel_home"},
+    {"key": "snake_powerups", "label": "Snake Powerups", "icon": "fa-solid fa-bolt", "url_name": "snake-powerups"},
+]
+PROFILE_GAME_CARD_DEFINITIONS_BY_KEY = {item["key"]: item for item in PROFILE_GAME_CARD_DEFINITIONS}
 
 
 def _is_hex_color(value):
@@ -61,6 +98,250 @@ def get_total_profile_highscores(user):
     if CookieClickerHighScore.objects.filter(user=user).exists():
         total += 1
     return total
+
+
+def _display_number(value, default="0"):
+    if value is None:
+        return default
+    return f"{value:,}".replace(",", ".")
+
+
+def get_profile_game_card_settings(profile):
+    raw_items = profile.profile_game_cards if isinstance(profile.profile_game_cards, list) else []
+    saved = {}
+
+    for index, item in enumerate(raw_items):
+        if isinstance(item, dict):
+            key = str(item.get("key", "")).strip()
+            visible = bool(item.get("visible", True))
+        else:
+            key = str(item).strip()
+            visible = True
+
+        if key in PROFILE_GAME_CARD_DEFINITIONS_BY_KEY and key not in saved:
+            saved[key] = {"order": index, "visible": visible}
+
+    settings = []
+    for index, definition in enumerate(PROFILE_GAME_CARD_DEFINITIONS):
+        saved_item = saved.get(definition["key"], {})
+        settings.append({
+            **definition,
+            "order": saved_item.get("order", index),
+            "visible": saved_item.get("visible", True),
+        })
+
+    return sorted(settings, key=lambda item: item["order"])
+
+
+def save_profile_game_card_settings(profile, post_data):
+    ordered_keys = []
+    for key in post_data.getlist("game_card_order"):
+        key = str(key).strip()
+        if key in PROFILE_GAME_CARD_DEFINITIONS_BY_KEY and key not in ordered_keys:
+            ordered_keys.append(key)
+
+    for definition in PROFILE_GAME_CARD_DEFINITIONS:
+        if definition["key"] not in ordered_keys:
+            ordered_keys.append(definition["key"])
+
+    visible_keys = set(post_data.getlist("game_card_visible"))
+    profile.profile_game_cards = [
+        {"key": key, "visible": key in visible_keys}
+        for key in ordered_keys
+    ]
+    profile.save(update_fields=["profile_game_cards", "updated_at"])
+
+
+def _base_game_card(definition):
+    return {
+        "key": definition["key"],
+        "label": definition["label"],
+        "kicker": definition["label"],
+        "title": _("Statistiken"),
+        "icon": definition["icon"],
+        "play_url": reverse(definition["url_name"]),
+        "main": None,
+        "metrics": [],
+        "is_empty": False,
+        "empty_text": _("Noch keine Statistik gespeichert."),
+    }
+
+
+def _cookie_game_card(user, definition):
+    card = _base_game_card(definition)
+    card["title"] = _("Highscore")
+    card["empty_text"] = _("Noch kein Cookie-Cosmos-Highscore gespeichert.")
+    highscore = get_profile_cookie_highscore(user)
+    if not highscore:
+        card["is_empty"] = True
+        return card
+
+    card["main"] = {
+        "icon": "fa-solid fa-trophy",
+        "label": _("Bester Lauf"),
+        "value": highscore.display_score,
+        "detail": highscore.achieved_at.strftime("%d.%m.%Y %H:%M"),
+    }
+    card["metrics"] = [
+        {"label": "CPS", "value": f"{highscore.cps:.1f}".replace(".", ",")},
+        {"label": _("Klickpower"), "value": f"{highscore.click_power:.1f}".replace(".", ",")},
+        {"label": "Stardust", "value": _display_number(highscore.stardust)},
+        {"label": _("Transzendenzen"), "value": _display_number(highscore.ascensions)},
+        {"label": _("Upgrades"), "value": _display_number(highscore.upgrades_count)},
+        {"label": _("Anlagen"), "value": _display_number(highscore.buildings_count)},
+    ]
+    return card
+
+
+def _human_benchmark_game_card(user, definition):
+    card = _base_game_card(definition)
+    card["title"] = _("Highscores")
+    benchmark_items = get_profile_human_benchmark_highscores(user)
+    has_highscore = any(item["highscore"] for item in benchmark_items)
+    card["is_empty"] = not has_highscore
+    card["empty_text"] = _("Noch kein Human-Benchmark-Highscore gespeichert.")
+    icons = {
+        HumanBenchmarkScore.GAME_REACTION: "fa-solid fa-bolt",
+        HumanBenchmarkScore.GAME_AIM: "fa-solid fa-crosshairs",
+        HumanBenchmarkScore.GAME_TYPING: "fa-solid fa-keyboard",
+        HumanBenchmarkScore.GAME_VISUAL: "fa-solid fa-table-cells",
+    }
+    card["metrics"] = [
+        {
+            "icon": icons.get(item["game"], "fa-solid fa-stopwatch"),
+            "label": item["label"],
+            "value": item["highscore"].display_score if item["highscore"] else "--",
+            "detail": item["highscore"].achieved_at.strftime("%d.%m.%Y %H:%M") if item["highscore"] else _("Noch kein Highscore"),
+            "is_empty": not item["highscore"],
+        }
+        for item in benchmark_items
+    ]
+    return card
+
+
+def _skribble_game_card(user, definition):
+    card = _base_game_card(definition)
+    stats = SkribbleStats.objects.filter(user=user).first()
+    if not stats:
+        card["is_empty"] = True
+        card["empty_text"] = _("Noch keine Skribble-Statistik gespeichert.")
+        return card
+
+    card["main"] = {"icon": "fa-solid fa-star", "label": _("Punkte"), "value": _display_number(stats.total_score), "detail": _("Gesamt")}
+    card["metrics"] = [
+        {"label": _("Spiele"), "value": _display_number(stats.games_played), "icon": "fa-solid fa-gamepad"},
+        {"label": _("Siege"), "value": _display_number(stats.games_won), "icon": "fa-solid fa-crown"},
+        {"label": _("Erraten"), "value": _display_number(stats.correct_guesses), "icon": "fa-solid fa-check"},
+        {"label": _("Gezeichnet"), "value": _display_number(stats.drawings_made), "icon": "fa-solid fa-pencil"},
+        {"label": _("Winrate"), "value": f"{stats.win_rate}%", "icon": "fa-solid fa-percent"},
+    ]
+    return card
+
+
+def _duel_game_card(user, definition, model, side_a_field, side_b_field, winner_field, side_a_value, side_b_value):
+    card = _base_game_card(definition)
+    games = model.objects.filter(
+        Q(**{side_a_field: user}) | Q(**{side_b_field: user}),
+        status=model.STATUS_FINISHED,
+    )
+    games_played = games.count()
+    wins = games.filter(
+        Q(**{side_a_field: user, winner_field: side_a_value}) | Q(**{side_b_field: user, winner_field: side_b_value})
+    ).count()
+    draws = games.filter(**{winner_field: ""}).count()
+
+    if not games_played:
+        card["is_empty"] = True
+        return card
+
+    card["main"] = {"icon": "fa-solid fa-crown", "label": _("Siege"), "value": _display_number(wins), "detail": _("Gewonnene Spiele")}
+    card["metrics"] = [
+        {"label": _("Spiele"), "value": _display_number(games_played), "icon": "fa-solid fa-gamepad"},
+        {"label": _("Remis"), "value": _display_number(draws), "icon": "fa-solid fa-handshake"},
+    ]
+    return card
+
+
+def _player_score_card(user, definition, player_model, winner_model=None, winner_filter=None):
+    card = _base_game_card(definition)
+    players = player_model.objects.filter(user=user)
+    aggregate = players.aggregate(games=Count("id"), best_score=Max("score"), total_score=Sum("score"))
+    games_played = aggregate["games"] or 0
+
+    if not games_played:
+        card["is_empty"] = True
+        return card
+
+    wins = winner_model.objects.filter(**winner_filter(user)).count() if winner_model and winner_filter else 0
+    card["main"] = {"icon": "fa-solid fa-star", "label": _("Bester Score"), "value": _display_number(aggregate["best_score"]), "detail": _("Persoenliche Bestleistung")}
+    card["metrics"] = [
+        {"label": _("Spiele"), "value": _display_number(games_played), "icon": "fa-solid fa-gamepad"},
+        {"label": _("Siege"), "value": _display_number(wins), "icon": "fa-solid fa-crown"},
+        {"label": _("Gesamtpunkte"), "value": _display_number(aggregate["total_score"]), "icon": "fa-solid fa-chart-line"},
+    ]
+    return card
+
+
+def _winner_game_card(user, definition, player_model, game_model):
+    card = _base_game_card(definition)
+    games_played = player_model.objects.filter(user=user).count()
+    wins = game_model.objects.filter(status=game_model.STATUS_FINISHED, winner_user_id=user.id).count()
+    if not games_played:
+        card["is_empty"] = True
+        return card
+
+    card["main"] = {"icon": "fa-solid fa-crown", "label": _("Siege"), "value": _display_number(wins), "detail": _("Gewonnene Spiele")}
+    card["metrics"] = [
+        {"label": _("Spiele"), "value": _display_number(games_played), "icon": "fa-solid fa-gamepad"},
+        {"label": _("Winrate"), "value": f"{round((wins / games_played) * 100) if games_played else 0}%", "icon": "fa-solid fa-percent"},
+    ]
+    return card
+
+
+def _snake_powerups_card(user, definition):
+    card = _base_game_card(definition)
+    card["title"] = _("Arcade")
+    card["is_empty"] = True
+    card["empty_text"] = _("Snake Powerups ist bereit fuer deinen ersten Lauf.")
+    return card
+
+
+def build_profile_game_card(definition, user):
+    key = definition["key"]
+    if key == "cookie_cosmos":
+        return _cookie_game_card(user, definition)
+    if key == "human_benchmark":
+        return _human_benchmark_game_card(user, definition)
+    if key == "skribble":
+        return _skribble_game_card(user, definition)
+    if key == "tictactoe":
+        return _duel_game_card(user, definition, TicTacToeGame, "player_x", "player_o", "winner_symbol", TicTacToeGame.SYMBOL_X, TicTacToeGame.SYMBOL_O)
+    if key == "connectfour":
+        return _duel_game_card(user, definition, ConnectFourGame, "player_red", "player_yellow", "winner_disc", ConnectFourGame.DISC_RED, ConnectFourGame.DISC_YELLOW)
+    if key == "battleship":
+        return _duel_game_card(user, definition, BattleshipGame, "player_a", "player_b", "winner_side", BattleshipGame.SIDE_A, BattleshipGame.SIDE_B)
+    if key == "stadtlandfluss":
+        return _player_score_card(user, definition, StadtLandFlussPlayer)
+    if key == "hangman":
+        return _player_score_card(user, definition, HangmanPlayer, HangmanLobby, lambda target: {"status": HangmanLobby.STATUS_FINISHED, "winner": target})
+    if key == "uno":
+        return _winner_game_card(user, definition, UnoPlayer, UnoGame)
+    if key == "kniffel":
+        return _winner_game_card(user, definition, KniffelPlayer, KniffelGame)
+    if key == "snake_powerups":
+        return _snake_powerups_card(user, definition)
+    return _base_game_card(definition)
+
+
+def get_profile_game_cards(user, profile, visible_only=True):
+    cards = []
+    for setting in get_profile_game_card_settings(profile):
+        if visible_only and not setting["visible"]:
+            continue
+        card = build_profile_game_card(setting, user)
+        card["visible"] = setting["visible"]
+        cards.append(card)
+    return cards
 
 
 def get_friend_users(user):
@@ -246,6 +527,11 @@ def profile_view(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
+        if request.POST.get("profile_action") == "game_cards":
+            save_profile_game_card_settings(profile, request.POST)
+            messages.success(request, _("Deine Profil-Spielkarten wurden gespeichert."))
+            return redirect("profile")
+
         form = ProfileForm(
             request.POST,
             request.FILES,
@@ -371,6 +657,8 @@ def profile_view(request):
         "profile": profile,
         "benchmark_highscores": get_profile_human_benchmark_highscores(request.user),
         "cookie_highscore": get_profile_cookie_highscore(request.user),
+        "profile_game_card_settings": get_profile_game_card_settings(profile),
+        "profile_game_cards": get_profile_game_cards(request.user, profile),
         "incoming_friend_requests": incoming_requests,
         "outgoing_friend_requests": outgoing_requests,
         "friends_preview": get_friend_profiles(request.user, limit=6),
@@ -461,6 +749,7 @@ def public_profile_view(request, user_id):
         "profile": profile,
         "benchmark_highscores": get_profile_human_benchmark_highscores(profile_user) if can_view_highscores else [],
         "cookie_highscore": get_profile_cookie_highscore(profile_user) if can_view_highscores else None,
+        "profile_game_cards": get_profile_game_cards(profile_user, profile) if can_view_highscores else [],
         "friendship_state": get_friendship_state(request.user, profile_user),
         "friends_preview": get_friend_profiles(profile_user, limit=6) if profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user) else [],
         "can_view_friends": profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user),

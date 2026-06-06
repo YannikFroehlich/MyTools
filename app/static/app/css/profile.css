@@ -313,6 +313,209 @@
     margin: 0;
 }
 
+.profile-game-settings-card,
+.profile-game-card {
+    margin-top: 24px;
+    padding: 28px;
+    overflow: hidden;
+}
+
+.profile-game-settings-form {
+    margin: 0;
+}
+
+.profile-game-settings-header,
+.profile-game-card-header,
+.profile-game-score {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.profile-game-settings-header h2,
+.profile-game-card-header h2 {
+    margin: 0;
+    color: var(--theme-text);
+    font-size: 1.45rem;
+    letter-spacing: -0.03em;
+}
+
+.profile-game-settings-list {
+    margin-top: 20px;
+    display: grid;
+    gap: 10px;
+}
+
+.profile-game-settings-row {
+    min-height: 58px;
+    padding: 10px 12px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(148, 163, 184, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.profile-game-card-toggle {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--theme-text);
+    font-weight: 900;
+}
+
+.profile-game-card-toggle span {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-game-card-toggle i {
+    width: 18px;
+    color: var(--theme-accent-start);
+    text-align: center;
+}
+
+.profile-game-order-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+}
+
+.profile-game-order-actions button {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    color: var(--theme-accent-start);
+    cursor: pointer;
+}
+
+.profile-game-order-actions button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.profile-game-card-stack {
+    display: grid;
+    gap: 24px;
+}
+
+.profile-game-play {
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    color: var(--theme-accent-start);
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.profile-game-score {
+    margin-top: 20px;
+    align-items: stretch;
+}
+
+.profile-game-score-main {
+    min-width: 220px;
+    padding: 18px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(250, 204, 21, 0.2), rgba(var(--theme-accent-rgb), 0.12));
+    border: 1px solid rgba(250, 204, 21, 0.22);
+}
+
+.profile-game-score-main span,
+.profile-game-score-main small,
+.profile-game-grid span,
+.profile-game-grid small {
+    display: block;
+    color: #64748b;
+    font-weight: 800;
+    font-size: 0.8rem;
+}
+
+.profile-game-score-main span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profile-game-score-main strong {
+    display: block;
+    margin: 8px 0 5px;
+    color: var(--theme-text);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    line-height: 1;
+}
+
+.profile-game-grid {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.profile-game-grid div,
+.profile-game-empty {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(148, 163, 184, 0.12);
+}
+
+.profile-game-grid div {
+    min-width: 0;
+}
+
+.profile-game-grid div > i {
+    margin-bottom: 8px;
+    color: var(--theme-accent-start);
+}
+
+.profile-game-grid strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--theme-text);
+    font-size: 1.05rem;
+    line-height: 1.15;
+    word-break: break-word;
+}
+
+.profile-game-grid .is-empty strong {
+    color: #94a3b8;
+}
+
+.profile-game-empty {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #64748b;
+    font-weight: 900;
+}
+
+.profile-game-empty i {
+    color: var(--theme-accent-start);
+}
+
+.profile-game-empty p {
+    margin: 0;
+}
+
 .profile-form-header,
 .profile-form-footer {
     display: flex;
@@ -598,7 +801,11 @@ body.dark-mode .profile-card {
 
 body.dark-mode .profile-cookie-score-main,
 body.dark-mode .profile-cookie-grid div,
-body.dark-mode .profile-cookie-empty {
+body.dark-mode .profile-cookie-empty,
+body.dark-mode .profile-game-score-main,
+body.dark-mode .profile-game-grid div,
+body.dark-mode .profile-game-empty,
+body.dark-mode .profile-game-settings-row {
     background: rgba(255, 255, 255, 0.07);
     border-color: rgba(255, 255, 255, 0.1);
 }
@@ -606,7 +813,12 @@ body.dark-mode .profile-cookie-empty {
 body.dark-mode .profile-cookie-score-main span,
 body.dark-mode .profile-cookie-score-main small,
 body.dark-mode .profile-cookie-grid span,
-body.dark-mode .profile-cookie-empty {
+body.dark-mode .profile-cookie-empty,
+body.dark-mode .profile-game-score-main span,
+body.dark-mode .profile-game-score-main small,
+body.dark-mode .profile-game-grid span,
+body.dark-mode .profile-game-grid small,
+body.dark-mode .profile-game-empty {
     color: #cbd5e1;
 }
 
@@ -1501,22 +1713,42 @@ body.dark-mode .profile-blocked-list > div { background: rgba(255,255,255,.07); 
 
 @media (max-width: 900px) {
     .profile-cookie-header,
-    .profile-cookie-score {
+    .profile-cookie-score,
+    .profile-game-settings-header,
+    .profile-game-card-header,
+    .profile-game-score {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .profile-cookie-play {
+    .profile-cookie-play,
+    .profile-game-play {
         width: 100%;
     }
 
-    .profile-cookie-grid {
+    .profile-cookie-grid,
+    .profile-game-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 560px) {
-    .profile-cookie-grid {
+    .profile-cookie-grid,
+    .profile-game-grid {
         grid-template-columns: 1fr;
+    }
+
+    .profile-game-settings-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .profile-game-order-actions {
+        width: 100%;
+    }
+
+    .profile-game-order-actions button {
+        flex: 1 1 0;
+        width: auto;
     }
 }

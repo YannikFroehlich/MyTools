@@ -68,7 +68,8 @@
                     </div>
                 {% endif %}
                 {% if board.rows %}
-                    <ol class="leaderboard-list">
+                    <div class="leaderboard-list-wrap" id="leaderboard-list-{{ forloop.counter }}" data-leaderboard-list>
+                        <ol class="leaderboard-list">
                         {% for row in board.rows %}
                             <li class="{% if forloop.counter <= 3 %}is-podium is-top-{{ forloop.counter }}{% endif %}">
                                 <span class="rank">
@@ -87,7 +88,12 @@
                                 <small>{{ row.detail }}</small>
                             </li>
                         {% endfor %}
-                    </ol>
+                        </ol>
+                    </div>
+                    <button class="leaderboard-toggle" type="button" aria-expanded="false" aria-controls="leaderboard-list-{{ forloop.counter }}" data-leaderboard-toggle>
+                        <span data-show-label><i class="fa-solid fa-list-ol"></i>{% translate "Top 10 anzeigen" %}</span>
+                        <span data-hide-label><i class="fa-solid fa-chevron-up"></i>{% translate "Top 10 ausblenden" %}</span>
+                    </button>
                 {% else %}
                     <div class="empty-state">
                         <i class="fa-regular fa-face-smile"></i>
@@ -98,4 +104,22 @@
         {% endfor %}
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll("[data-leaderboard-toggle]").forEach((button) => {
+        const list = document.getElementById(button.getAttribute("aria-controls"));
+        if (!list) {
+            return;
+        }
+
+        list.hidden = true;
+        button.addEventListener("click", () => {
+            const isExpanded = button.getAttribute("aria-expanded") === "true";
+            button.setAttribute("aria-expanded", String(!isExpanded));
+            list.hidden = isExpanded;
+        });
+    });
+</script>
 {% endblock %}

@@ -29,18 +29,27 @@ document.addEventListener("DOMContentLoaded", () => {
     let state = null;
     let isDrawing = false;
     let currentPoints = [];
+    let liveStroke = null;
+    let liveStrokeFlushTimer = null;
     let drawSendTimer = null;
     let drawSendInFlight = false;
     let drawSendPromise = Promise.resolve();
     let segmentSequence = 0;
     let pendingSegments = [];
+    let localCanvasSegments = [];
+    let localCanvasDirty = false;
     let lastDrawingSignature = "";
     let drawingRevision = 0;
+    let drawingSession = 0;
+    let currentTurnKey = "";
+    let stateRefreshTimer = null;
+    let stateRefreshInFlight = false;
+    let stateRequestSequence = 0;
+    let latestRenderedStateRequest = 0;
 
     initCanvas();
     bindEvents();
-    refreshState();
-    setInterval(refreshState, 100);
+    refreshState(true).finally(() => scheduleStateRefresh(80));
 
     function getCookie(name) {
         const value = `; ${document.cookie}`;
@@ -112,13 +121,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         clearBtn?.addEventListener("click", async () => {
             if (!canDraw()) return;
+            await drainSegmentQueue();
+            resetLocalDrawingState();
             clearCanvas();
-            currentPoints = [];
-            pendingSegments = [];
-            window.clearTimeout(drawSendTimer);
-            drawSendTimer = null;
             drawingRevision = 0;
-            await post(urls.draw, {action: "clear"});
+            const result = await post(urls.draw, {action: "clear"});
+            const revision = Number(result.drawingRevision);
+            if (Number.isFinite(revision)) {
+                drawingRevision = revision;
+            }
             await refreshState(true);
         });
 
@@ -139,7 +150,11 @@ document.addEventListener("DOMContentLoaded", () => {
             canvas.width = Math.round(rect.width * ratio);
             canvas.height = Math.round(rect.height * ratio);
             ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-            drawAll(state?.drawing || []);
+            if (canDraw() && localCanvasDirty) {
+                redrawLocalCanvas();
+            } else {
+                drawAll(state?.drawing || []);
+            }
         };
 
         scaleCanvas();
@@ -147,25 +162,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
         canvas.addEventListener("pointerdown", (event) => {
             if (!canDraw()) return;
+            event.preventDefault();
+            const point = pointFromEvent(event);
             isDrawing = true;
-            currentPoints = [pointFromEvent(event)];
+            liveStroke = {
+                id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
+                points: [point],
+                color: brushColor.value,
+                size: Number(brushSize.value),
+                lastSentIndex: 0,
+                chunkIndex: 0,
+            };
+            currentPoints = liveStroke.points;
+            localCanvasDirty = true;
             canvas.setPointerCapture(event.pointerId);
         });
 
         canvas.addEventListener("pointermove", (event) => {
             if (!isDrawing || !canDraw()) return;
-            const point = pointFromEvent(event);
-            const previous = currentPoints[currentPoints.length - 1];
-            currentPoints.push(point);
-            drawSegment(previous, point, brushColor.value, Number(brushSize.value));
-            queueSegment(previous, point);
+            event.preventDefault();
+            const events = typeof event.getCoalescedEvents === "function" ? event.getCoalescedEvents() : [event];
+            events.forEach((moveEvent) => appendLivePoint(pointFromEvent(moveEvent)));
+            scheduleLiveStrokeFlush();
+            if (liveStroke && liveStroke.points.length - liveStroke.lastSentIndex >= 6) {
+                flushLiveStroke(false);
+            }
         });
 
         canvas.addEventListener("pointerup", finishStroke);
         canvas.addEventListener("pointercancel", finishStroke);
+        canvas.addEventListener("lostpointercapture", finishStroke);
+        window.addEventListener("pointerup", finishStroke);
+        window.addEventListener("blur", () => {
+            if (isDrawing) finishStroke();
+        });
     }
 
-    function scheduleStrokeFlush(delay = 16) {
+    function scheduleLiveStrokeFlush(delay = 35) {
+        if (liveStrokeFlushTimer) return;
+        liveStrokeFlushTimer = window.setTimeout(() => {
+            liveStrokeFlushTimer = null;
+            flushLiveStroke(false);
+        }, delay);
+    }
+
+    function scheduleDrawUpload(delay = 10) {
         if (drawSendTimer) return;
         drawSendTimer = window.setTimeout(() => {
             drawSendTimer = null;
@@ -173,19 +214,45 @@ document.addEventListener("DOMContentLoaded", () => {
         }, delay);
     }
 
-    function queueSegment(from, to) {
-        pendingSegments.push({
-            id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
-            order: ++segmentSequence,
-            points: serializePoints([from, to]),
-            color: brushColor.value,
-            size: brushSize.value,
-        });
+    function appendLivePoint(point) {
+        if (!liveStroke) return;
+        const previous = liveStroke.points[liveStroke.points.length - 1];
+        if (!previous || distanceBetween(previous, point) < 0.25) return;
+        liveStroke.points.push(point);
+        currentPoints = liveStroke.points;
+        drawSegment(previous, point, liveStroke.color, liveStroke.size);
+    }
 
-        if (pendingSegments.length >= 6) {
+    function flushLiveStroke(force = false) {
+        if (!liveStroke) return;
+        if (force && liveStroke.points.length < 2) {
+            const dotPoint = liveStroke.points[0];
+            if (dotPoint) {
+                appendLivePoint({x: dotPoint.x + 0.6, y: dotPoint.y + 0.6});
+            }
+        }
+
+        const startIndex = Math.max(0, liveStroke.lastSentIndex - 1);
+        const points = liveStroke.points.slice(startIndex);
+        if (points.length < 2) return;
+
+        const chunk = {
+            id: `${liveStroke.id}-${String(liveStroke.chunkIndex).padStart(4, "0")}`,
+            order: ++segmentSequence,
+            points: serializePoints(points),
+            color: liveStroke.color,
+            size: liveStroke.size,
+        };
+        liveStroke.chunkIndex += 1;
+        liveStroke.lastSentIndex = liveStroke.points.length;
+        pendingSegments.push(chunk);
+        localCanvasSegments.push(chunk);
+        localCanvasDirty = true;
+
+        if (pendingSegments.length >= 8) {
             drainSegmentQueue();
         } else {
-            scheduleStrokeFlush();
+            scheduleDrawUpload();
         }
     }
 
@@ -195,21 +262,39 @@ document.addEventListener("DOMContentLoaded", () => {
         if (drawSendInFlight) return drawSendPromise;
 
         drawSendInFlight = true;
+        const session = drawingSession;
         drawSendPromise = (async () => {
             try {
                 while (pendingSegments.length > 0) {
                     const batch = pendingSegments.splice(0, 24);
-                    const result = await post(urls.draw, {
-                        action: "segments",
-                        segments: JSON.stringify(batch),
-                    });
+                    let result;
+                    try {
+                        result = await post(urls.draw, {
+                            action: "segments",
+                            segments: JSON.stringify(batch),
+                        });
+                    } catch (error) {
+                        console.warn("Skribble draw upload failed", error);
+                        pendingSegments = batch.concat(pendingSegments);
+                        break;
+                    }
+                    if (session !== drawingSession) {
+                        break;
+                    }
                     if (!result.ok) {
                         pendingSegments = batch.concat(pendingSegments);
                         break;
                     }
+                    const revision = Number(result.drawingRevision);
+                    if (Number.isFinite(revision)) {
+                        drawingRevision = Math.max(drawingRevision, revision);
+                    }
                 }
             } finally {
                 drawSendInFlight = false;
+                if (pendingSegments.length > 0 && canDraw()) {
+                    scheduleDrawUpload(session === drawingSession ? 120 : 0);
+                }
             }
         })();
         return drawSendPromise;
@@ -221,33 +306,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (canDraw() && event?.clientX != null) {
-            const releasePoint = pointFromEvent(event);
-            const previous = currentPoints[currentPoints.length - 1];
-            if (!previous || distanceBetween(previous, releasePoint) > 0.4) {
-                currentPoints.push(releasePoint);
-                if (previous) {
-                    drawSegment(previous, releasePoint, brushColor.value, Number(brushSize.value));
-                    queueSegment(previous, releasePoint);
-                }
-            }
+            appendLivePoint(pointFromEvent(event));
         }
 
-        if (currentPoints.length < 2) {
-            const dotPoint = currentPoints[0];
-            if (dotPoint) {
-                currentPoints = [dotPoint, {x: dotPoint.x + 0.6, y: dotPoint.y + 0.6}];
-                drawSegment(currentPoints[0], currentPoints[1], brushColor.value, Number(brushSize.value));
-                queueSegment(currentPoints[0], currentPoints[1]);
-            }
-        }
-
-        if (currentPoints.length < 2) {
+        if (!liveStroke || liveStroke.points.length < 1) {
             isDrawing = false;
             currentPoints = [];
+            liveStroke = null;
             return;
         }
 
         isDrawing = false;
+        window.clearTimeout(liveStrokeFlushTimer);
+        liveStrokeFlushTimer = null;
+        flushLiveStroke(true);
+        liveStroke = null;
         window.clearTimeout(drawSendTimer);
         drawSendTimer = null;
         currentPoints = [];
@@ -255,6 +328,21 @@ document.addEventListener("DOMContentLoaded", () => {
         // Drawer already has the stroke on canvas locally — no need for a full redraw.
         // Viewers will pick it up via the delta mechanism on their next poll.
         await refreshState(false);
+    }
+
+    function resetLocalDrawingState() {
+        drawingSession += 1;
+        isDrawing = false;
+        currentPoints = [];
+        liveStroke = null;
+        pendingSegments = [];
+        localCanvasSegments = [];
+        localCanvasDirty = false;
+        segmentSequence = 0;
+        window.clearTimeout(liveStrokeFlushTimer);
+        liveStrokeFlushTimer = null;
+        window.clearTimeout(drawSendTimer);
+        drawSendTimer = null;
     }
 
     function serializePoints(points) {
@@ -277,11 +365,38 @@ document.addEventListener("DOMContentLoaded", () => {
         return state?.me?.isDrawer && state?.lobby?.status === "playing" && Boolean(state?.lobby?.word);
     }
 
+    function currentDrawingTurnKey(nextState = state) {
+        const lobby = nextState?.lobby || {};
+        return [
+            lobby.round || 0,
+            lobby.currentDrawerId || "",
+            lobby.hasWord ? (lobby.word || lobby.maskedWord || "word") : "no-word",
+        ].join(":");
+    }
+
+    function statePollDelay() {
+        if (state?.lobby?.status !== "playing") return 500;
+        if (canDraw()) return localCanvasDirty || drawSendInFlight || pendingSegments.length > 0 ? 260 : 180;
+        return 120;
+    }
+
+    function scheduleStateRefresh(delay = statePollDelay()) {
+        window.clearTimeout(stateRefreshTimer);
+        stateRefreshTimer = window.setTimeout(async () => {
+            await refreshState(false);
+            scheduleStateRefresh();
+        }, delay);
+    }
+
     async function refreshState(forceDraw = false) {
+        if (stateRefreshInFlight && !forceDraw) return;
+        stateRefreshInFlight = true;
+        const requestId = ++stateRequestSequence;
         try {
             const after = forceDraw ? 0 : drawingRevision;
             const separator = urls.state.includes("?") ? "&" : "?";
             const response = await fetch(`${urls.state}${separator}after=${encodeURIComponent(after)}`, {
+                cache: "no-store",
                 headers: {"X-Requested-With": "XMLHttpRequest"},
             });
             const json = await response.json();
@@ -290,10 +405,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             if (!json.ok) return;
+            if (requestId < latestRenderedStateRequest) return;
+            latestRenderedStateRequest = requestId;
             state = json.state;
             renderState(forceDraw);
         } catch (error) {
             console.warn("Skribble state failed", error);
+        } finally {
+            stateRefreshInFlight = false;
         }
     }
 
@@ -317,16 +436,44 @@ document.addEventListener("DOMContentLoaded", () => {
         const drawing = state.drawing || [];
         const delta = state.drawingDelta || [];
         const nextRevision = Number(state.drawingRevision || 0);
+        const nextTurnKey = currentDrawingTurnKey(state);
+        if (nextTurnKey !== currentTurnKey) {
+            resetLocalDrawingState();
+            currentTurnKey = nextTurnKey;
+            drawingRevision = nextRevision;
+            drawAll(drawing);
+            segmentSequence = maxSegmentOrder(drawing);
+            if (canDraw()) {
+                localCanvasSegments = drawing.slice();
+                localCanvasDirty = false;
+            }
+            lastDrawingSignature = `${nextRevision}:turn`;
+            return;
+        }
+
+        if (canDraw() && localCanvasDirty && !forceDraw && nextRevision >= drawingRevision) {
+            drawingRevision = Math.max(drawingRevision, nextRevision);
+            return;
+        }
 
         if (!isDrawing) {
             if (forceDraw || nextRevision < drawingRevision || (drawing.length > 0 && drawingRevision === 0)) {
                 // Full redraw: forced, revision went backwards (clear), or initial load
                 drawAll(drawing);
+                segmentSequence = maxSegmentOrder(drawing);
+                if (canDraw()) {
+                    localCanvasSegments = drawing.slice();
+                    localCanvasDirty = false;
+                }
                 drawingRevision = nextRevision;
                 lastDrawingSignature = `${nextRevision}:full`;
             } else if (delta.length > 0 && nextRevision > drawingRevision) {
                 // Incremental: only paint new strokes
                 drawStrokes(delta);
+                if (canDraw()) {
+                    localCanvasSegments = localCanvasSegments.concat(delta);
+                    segmentSequence = Math.max(segmentSequence, maxSegmentOrder(delta));
+                }
                 drawingRevision = nextRevision;
                 lastDrawingSignature = `${nextRevision}:delta`;
             } else if (nextRevision !== drawingRevision) {
@@ -501,6 +648,24 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawAll(strokes) {
         clearCanvas();
         drawStrokes(strokes);
+    }
+
+    function redrawLocalCanvas() {
+        drawAll(localCanvasSegments);
+        if (liveStroke?.points?.length > 1) {
+            drawStrokes([{
+                points: serializePoints(liveStroke.points),
+                color: liveStroke.color,
+                size: liveStroke.size,
+            }]);
+        }
+    }
+
+    function maxSegmentOrder(strokes) {
+        return strokes.reduce((maxOrder, stroke) => {
+            const order = Number(stroke.order || 0);
+            return Number.isFinite(order) ? Math.max(maxOrder, order) : maxOrder;
+        }, 0);
     }
 
     function drawStrokes(strokes) {
