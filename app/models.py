@@ -195,6 +195,7 @@ class UserProfile(models.Model):
     profile_card_shine = models.BooleanField(default=True)
     profile_card_badge_icon = models.CharField(max_length=40, default="fa-solid fa-star")
     profile_card_badge_text = models.CharField(max_length=28, blank=True, default="MyTools")
+    profile_game_cards = models.JSONField(default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -360,16 +361,38 @@ class Friendship(models.Model):
 class ChatRoom(models.Model):
     ROOM_DIRECT = "direct"
     ROOM_GROUP = "group"
+    THEME_DEFAULT = "default"
+    THEME_OCEAN = "ocean"
+    THEME_FOREST = "forest"
+    THEME_SUNSET = "sunset"
+    THEME_GRAPE = "grape"
+    THEME_GRAPHITE = "graphite"
 
     ROOM_CHOICES = [
         (ROOM_DIRECT, _("Direktchat")),
         (ROOM_GROUP, _("Gruppe")),
+    ]
+    THEME_CHOICES = [
+        (THEME_DEFAULT, _("Standard")),
+        (THEME_OCEAN, _("Ocean")),
+        (THEME_FOREST, _("Forest")),
+        (THEME_SUNSET, _("Sunset")),
+        (THEME_GRAPE, _("Grape")),
+        (THEME_GRAPHITE, _("Graphite")),
     ]
 
     room_type = models.CharField(max_length=20, choices=ROOM_CHOICES, default=ROOM_DIRECT)
     name = models.CharField(max_length=80, blank=True)
     description = models.CharField(max_length=220, blank=True)
     avatar = models.ImageField(upload_to="chat_group_avatars/", null=True, blank=True)
+    theme = models.CharField(max_length=20, choices=THEME_CHOICES, default=THEME_DEFAULT)
+    pinned_message = models.ForeignKey(
+        "ChatMessage",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="pinned_in_rooms",
+    )
     direct_key = models.CharField(max_length=80, unique=True, null=True, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

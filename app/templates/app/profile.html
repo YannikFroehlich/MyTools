@@ -406,41 +406,48 @@
         </form>
     </div>
 
-    <article class="profile-card profile-cookie-card">
-        <div class="profile-cookie-header">
-            <div>
-                <p class="profile-kicker">Cookie Cosmos</p>
-                <h2>{% translate "Highscore" %}</h2>
-            </div>
-            <a href="{% url 'cookie-clicker' %}" class="profile-cookie-play">
-                <i class="fa-solid fa-cookie-bite"></i>
-                {% translate "Spielen" %}
-            </a>
-        </div>
+    <article class="profile-card profile-game-settings-card">
+        <form method="post" class="profile-game-settings-form" data-profile-game-cards-form>
+            {% csrf_token %}
+            <input type="hidden" name="profile_action" value="game_cards">
 
-        {% if cookie_highscore %}
-            <div class="profile-cookie-score">
-                <div class="profile-cookie-score-main">
-                    <span><i class="fa-solid fa-trophy"></i>{% translate "Bester Lauf" %}</span>
-                    <strong>{{ cookie_highscore.display_score }}</strong>
-                    <small>{{ cookie_highscore.achieved_at|date:"d.m.Y H:i" }}</small>
+            <div class="profile-game-settings-header">
+                <div>
+                    <p class="profile-kicker">{% translate "Profilkarten" %}</p>
+                    <h2>{% translate "Spielkarten anpassen" %}</h2>
                 </div>
-                <div class="profile-cookie-grid">
-                    <div><span>CPS</span><strong>{{ cookie_highscore.cps|floatformat:1 }}</strong></div>
-                    <div><span>{% translate "Klickpower" %}</span><strong>{{ cookie_highscore.click_power|floatformat:1 }}</strong></div>
-                    <div><span>Stardust</span><strong>{{ cookie_highscore.stardust }}</strong></div>
-                    <div><span>{% translate "Transzendenzen" %}</span><strong>{{ cookie_highscore.ascensions }}</strong></div>
-                    <div><span>{% translate "Upgrades" %}</span><strong>{{ cookie_highscore.upgrades_count }}</strong></div>
-                    <div><span>{% translate "Anlagen" %}</span><strong>{{ cookie_highscore.buildings_count }}</strong></div>
-                </div>
+                <button class="profile-save-button" type="submit">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {% translate "Speichern" %}
+                </button>
             </div>
-        {% else %}
-            <div class="profile-cookie-empty">
-                <i class="fa-solid fa-cookie"></i>
-                <p>{% translate "Noch kein Cookie-Cosmos-Highscore gespeichert." %}</p>
+
+            <div class="profile-game-settings-list" data-profile-game-cards-list>
+                {% for card_setting in profile_game_card_settings %}
+                    <div class="profile-game-settings-row" data-profile-game-card-row>
+                        <input type="hidden" name="game_card_order" value="{{ card_setting.key }}">
+                        <label class="profile-game-card-toggle">
+                            <input class="profile-checkbox" type="checkbox" name="game_card_visible" value="{{ card_setting.key }}" {% if card_setting.visible %}checked{% endif %}>
+                            <span>
+                                <i class="{{ card_setting.icon }}"></i>
+                                {{ card_setting.label }}
+                            </span>
+                        </label>
+                        <div class="profile-game-order-actions">
+                            <button type="button" data-profile-game-card-up title="{% translate 'Nach oben' %}">
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                            <button type="button" data-profile-game-card-down title="{% translate 'Nach unten' %}">
+                                <i class="fa-solid fa-arrow-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-        {% endif %}
+        </form>
     </article>
+
+    {% include "app/includes/profile_game_cards.html" with profile_game_cards=profile_game_cards card_shell_class="profile-card" %}
 
 
     {% if blocked_users %}
@@ -506,4 +513,5 @@
 
 {% block extra_js %}
     <script src="{% static 'app/js/profile_avatar_crop.js' %}"></script>
+    <script src="{% static 'app/js/profile_game_cards.js' %}"></script>
 {% endblock %}

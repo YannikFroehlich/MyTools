@@ -1,0 +1,55 @@
+{% load i18n %}
+
+{% if profile_game_cards %}
+    <div class="profile-game-card-stack">
+        {% for card in profile_game_cards %}
+            <article class="{{ card_shell_class|default:'profile-card' }} profile-game-card profile-game-card-{{ card.key }} {% if card.is_empty %}is-empty{% endif %}">
+                <div class="profile-game-card-header">
+                    <div>
+                        <p class="profile-kicker">{{ card.kicker }}</p>
+                        <h2>{{ card.title }}</h2>
+                    </div>
+                    <a href="{{ card.play_url }}" class="profile-game-play">
+                        <i class="{{ card.icon }}"></i>
+                        {% translate "Spielen" %}
+                    </a>
+                </div>
+
+                {% if card.main or card.metrics %}
+                    <div class="profile-game-score">
+                        {% if card.main %}
+                            <div class="profile-game-score-main">
+                                <span>
+                                    <i class="{{ card.main.icon }}"></i>
+                                    {{ card.main.label }}
+                                </span>
+                                <strong>{{ card.main.value }}</strong>
+                                <small>{{ card.main.detail }}</small>
+                            </div>
+                        {% endif %}
+
+                        {% if card.metrics %}
+                            <div class="profile-game-grid">
+                                {% for metric in card.metrics %}
+                                    <div class="{% if metric.is_empty %}is-empty{% endif %}">
+                                        {% if metric.icon %}<i class="{{ metric.icon }}"></i>{% endif %}
+                                        <span>{{ metric.label }}</span>
+                                        <strong>{{ metric.value }}</strong>
+                                        {% if metric.detail %}<small>{{ metric.detail }}</small>{% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if card.is_empty and not card.main %}
+                    <div class="profile-game-empty">
+                        <i class="{{ card.icon }}"></i>
+                        <p>{{ card.empty_text }}</p>
+                    </div>
+                {% endif %}
+            </article>
+        {% endfor %}
+    </div>
+{% endif %}
