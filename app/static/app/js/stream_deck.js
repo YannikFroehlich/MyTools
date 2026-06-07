@@ -93,11 +93,15 @@ const elements = {
     editSceneName: $("edit-scene-name"),
     editSourceScene: $("edit-source-scene"),
     editSourceName: $("edit-source-name"),
+    editAudioInput: $("edit-audio-input"),
+    editAudioAction: $("edit-audio-action"),
+    editAudioStep: $("edit-audio-step"),
     editSpotifyAction: $("edit-spotify-action"),
     editUrl: $("edit-url"),
     obsRequestFields: $("obs-request-fields"),
     obsSceneFields: $("obs-scene-fields"),
     obsSourceFields: $("obs-source-fields"),
+    obsAudioFields: $("obs-audio-fields"),
     spotifyFields: $("spotify-fields"),
     urlFields: $("url-fields"),
 
@@ -312,6 +316,9 @@ function openEditorModal(index) {
     elements.editSceneName.value = button.sceneName || "";
     elements.editSourceScene.value = button.sourceScene || "";
     elements.editSourceName.value = button.sourceName || "";
+    elements.editAudioInput.value = button.audioInputName || "";
+    elements.editAudioAction.value = button.audioAction || "toggle-mute";
+    elements.editAudioStep.value = button.audioStepDb ?? 5;
     elements.editSpotifyAction.value = button.spotifyAction || "toggle";
     elements.editUrl.value = button.url || "";
 
@@ -332,6 +339,7 @@ function updateDynamicEditorFields() {
     if (type === "obs-request") elements.obsRequestFields.classList.remove("hidden");
     if (type === "obs-scene") elements.obsSceneFields.classList.remove("hidden");
     if (type === "obs-source-toggle") elements.obsSourceFields.classList.remove("hidden");
+    if (type === "obs-audio") elements.obsAudioFields.classList.remove("hidden");
     if (type === "spotify") elements.spotifyFields.classList.remove("hidden");
     if (type === "open-url") elements.urlFields.classList.remove("hidden");
 }
@@ -340,6 +348,7 @@ function hideAllDynamicSections() {
     elements.obsRequestFields.classList.add("hidden");
     elements.obsSceneFields.classList.add("hidden");
     elements.obsSourceFields.classList.add("hidden");
+    elements.obsAudioFields.classList.add("hidden");
     elements.spotifyFields.classList.add("hidden");
     elements.urlFields.classList.add("hidden");
 }
@@ -362,6 +371,10 @@ function saveEditor() {
     } else if (actionType === "obs-source-toggle") {
         updated.sourceScene = elements.editSourceScene.value.trim();
         updated.sourceName = elements.editSourceName.value.trim();
+    } else if (actionType === "obs-audio") {
+        updated.audioInputName = elements.editAudioInput.value.trim();
+        updated.audioAction = elements.editAudioAction.value;
+        updated.audioStepDb = normalizeAudioStep(elements.editAudioStep.value);
     } else if (actionType === "spotify") {
         updated.spotifyAction = elements.editSpotifyAction.value;
     } else if (actionType === "open-url") {
@@ -505,6 +518,12 @@ async function executeButton(index) {
                 showToast(`Quelle getoggelt: ${button.sourceName}`);
                 break;
 
+            case "obs-audio":
+                await executeObsAudioAction(button.audioInputName, button.audioAction, button.audioStepDb);
+                addLog(`OBS Audio Aktion: ${button.audioInputName}`);
+                showToast(`Audio Aktion: ${button.title}`);
+                break;
+
             case "spotify":
                 await executeSpotifyAction(button.spotifyAction);
                 await refreshSpotifyState();
@@ -547,6 +566,53 @@ async function executeObsRequest(requestName) {
     requireObsConnection();
     if (!requestName) throw new Error("Kein OBS Request gewählt.");
     await obs.call(requestName);
+}
+
+function normalizeAudioStep(value) {
+    const parsed = Number.parseFloat(value);
+    if (!Number.isFinite(parsed) || parsed <= 0) return 5;
+    return Math.min(parsed, 30);
+}
+
+async function executeObsAudioAction(inputName, action, stepDb = 5) {
+    requireObsConnection();
+    if (!inputName) throw new Error("Kein Audiogerät eingetragen.");
+
+    if (action === "mute" || action === "unmute") {
+        await obs.call("SetInputMute", {
+            inputName,
+            inputMuted: action === "mute"
+        });
+        return;
+    }
+
+    if (action === "toggle-mute") {
+        const muteData = await obs.call("GetInputMute", { inputName });
+        await obs.call("SetInputMute", {
+            inputName,
+            inputMuted: !muteData.inputMuted
+        });
+        return;
+    }
+
+    if (action === "volume-up" || action === "volume-down") {
+        const volumeData = await obs.call("GetInputVolume", { inputName });
+        const currentDb = Number.isFinite(volumeData.inputVolumeDb) ? volumeData.inputVolumeDb : 0;
+        const direction = action === "volume-up" ? 1 : -1;
+        const nextDb = clamp(currentDb + (normalizeAudioStep(stepDb) * direction), -100, 26);
+
+        await obs.call("SetInputVolume", {
+            inputName,
+            inputVolumeDb: nextDb
+        });
+        return;
+    }
+
+    throw new Error("Unbekannte Audio Aktion.");
+}
+
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
 }
 
 async function changeObsScene(sceneName) {

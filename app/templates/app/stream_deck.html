@@ -220,7 +220,10 @@
                             <option value="fa-brands fa-discord">Discord</option>
                             <option value="fa-brands fa-twitch">Twitch</option>
                             <option value="fa-solid fa-microphone">{% translate "Mikrofon" %}</option>
+                            <option value="fa-solid fa-microphone-slash">{% translate "Mikrofon stumm" %}</option>
                             <option value="fa-solid fa-volume-high">{% translate "Lautstärke" %}</option>
+                            <option value="fa-solid fa-volume-low">{% translate "Leiser" %}</option>
+                            <option value="fa-solid fa-volume-xmark">{% translate "Stumm" %}</option>
                             <option value="fa-solid fa-crown">{% translate "Krone" %}</option>
                             <option value="fa-solid fa-pause">{% translate "Pause" %}</option>
                             <option value="fa-solid fa-stop">{% translate "Stopp" %}</option>
@@ -257,6 +260,7 @@
                             <option value="obs-request">{% translate "OBS-Anfrage" %}</option>
                             <option value="obs-scene">{% translate "OBS-Szene wechseln" %}</option>
                             <option value="obs-source-toggle">{% translate "OBS-Quelle umschalten" %}</option>
+                            <option value="obs-audio">{% translate "OBS-Audiogerät steuern" %}</option>
                             <option value="spotify">Spotify</option>
                             <option value="open-url">{% translate "URL öffnen" %}</option>
                         </select>
@@ -297,6 +301,30 @@
                     <div class="field">
                         <label for="edit-source-name">{% translate "Quelle" %}</label>
                         <input id="edit-source-name" type="text" placeholder="{% translate 'z. B. Webcam' %}" />
+                    </div>
+                </div>
+
+
+                <div id="obs-audio-fields" class="dynamic-section hidden">
+                    <div class="field">
+                        <label for="edit-audio-input">{% translate "Audiogerät / Audioquelle" %}</label>
+                        <input id="edit-audio-input" type="text" placeholder="{% translate 'z. B. Mic/Aux oder Desktop Audio' %}" />
+                    </div>
+
+                    <div class="field">
+                        <label for="edit-audio-action">{% translate "Audio-Aktion" %}</label>
+                        <select id="edit-audio-action">
+                            <option value="toggle-mute">{% translate "Stumm umschalten" %}</option>
+                            <option value="mute">{% translate "Stummschalten" %}</option>
+                            <option value="unmute">{% translate "Stummschaltung aufheben" %}</option>
+                            <option value="volume-up">{% translate "Lautstärke erhöhen" %}</option>
+                            <option value="volume-down">{% translate "Lautstärke verringern" %}</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="edit-audio-step">{% translate "Lautstärke-Schritt in dB" %}</label>
+                        <input id="edit-audio-step" type="number" min="0.5" max="30" step="0.5" value="5" />
                     </div>
                 </div>
 
