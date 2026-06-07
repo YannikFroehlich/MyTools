@@ -1,26 +1,41 @@
+from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from .models import (
     BattleshipInvite,
+    BattleshipGame,
     ChatMessage,
     ChatRoomMember,
+    ConnectFourGame,
     ConnectFourInvite,
     DrawingGameInvite,
+    DrawingGameLobby,
+    FileShare,
     Friendship,
     HangmanInvite,
+    KniffelGame,
     KniffelInvite,
+    Note,
     NotificationDismissal,
+    StadtLandFlussLobby,
     StadtLandFlussInvite,
+    StadtLandFlussPlayer,
+    StadtLandFlussRoundAnswer,
+    TicTacToeGame,
     TicTacToeInvite,
+    UnoGame,
     UnoInvite,
     UserProfile,
 )
 
 COUNT_KEYS = (
     "unread_chat_messages",
+    "note_reminders",
     "incoming_friend_requests",
+    "shared_files",
+    "game_turns",
     "skribble_invites",
     "tictactoe_invites",
     "connectfour_invites",
@@ -33,7 +48,10 @@ COUNT_KEYS = (
 
 TYPE_COUNT_KEY = {
     "chat": "unread_chat_messages",
+    "reminder": "note_reminders",
     "friend": "incoming_friend_requests",
+    "file_share": "shared_files",
+    "game_turn": "game_turns",
     "skribble": "skribble_invites",
     "tictactoe": "tictactoe_invites",
     "connectfour": "connectfour_invites",
@@ -84,6 +102,236 @@ def _add_invite_items(items, qs, *, item_type, icon, title, text_template, url_n
             break
 
 
+def _timestamp_key(value):
+    if not value:
+        return "new"
+    return str(int(value.timestamp()))
+
+
+def _add_game_turn_item(items, *, game, key_type, icon, title, text, url_name, dismissed_keys):
+    created_at = getattr(game, "last_move_at", None) or getattr(game, "updated_at", None) or getattr(game, "created_at", None)
+    key = f"game-turn:{key_type}:{game.pk}:{getattr(game, 'round_number', getattr(game, 'current_round_number', 1))}:{_timestamp_key(created_at)}"
+    if key in dismissed_keys:
+        return
+    items.append({
+        "key": key,
+        "type": "game_turn",
+        "icon": icon,
+        "title": title,
+        "text": text,
+        "url": reverse(url_name, args=[game.code]),
+        "action_label": _("Zum Spiel"),
+        "created_at": created_at,
+        "badge": 1,
+    })
+
+
+def _current_seated_player(players, current_index):
+    players = list(players)
+    if not players:
+        return None
+    return players[current_index % len(players)]
+
+
+def _collect_reminder_items(user, dismissed_keys, limit):
+    now = timezone.now()
+    items = []
+    notes = (
+        Note.objects
+        .filter(
+            Q(user=user) | Q(shared_with=user),
+            is_archived=False,
+            reminder_at__isnull=False,
+            reminder_at__lte=now,
+        )
+        .select_related("user")
+        .distinct()
+        .order_by("-reminder_at", "-updated_at")
+    )
+
+    for note in notes:
+        key = f"reminder:{note.pk}:{_timestamp_key(note.reminder_at)}"
+        if key in dismissed_keys:
+            continue
+        title = (note.title or _("Unbenannte Notiz"))[:80]
+        if note.user_id == user.id:
+            text = _("Deine Erinnerung ist fällig.")
+        else:
+            text = _("Geteilte Notiz von %(user)s ist fällig.") % {"user": note.user.username}
+        items.append({
+            "key": key,
+            "type": "reminder",
+            "icon": "fa-regular fa-bell",
+            "title": title,
+            "text": text,
+            "url": reverse("note_detail", args=[note.pk]),
+            "action_label": _("Öffnen"),
+            "created_at": note.reminder_at,
+            "badge": 1,
+        })
+        if len(items) >= limit:
+            break
+    return items
+
+
+def _collect_file_share_items(user, dismissed_keys, limit):
+    items = []
+    shares = (
+        FileShare.objects
+        .filter(recipients=user)
+        .exclude(owner=user)
+        .select_related("owner")
+        .order_by("-created_at")
+    )
+
+    for share in shares:
+        key = f"file-share:{share.pk}"
+        if key in dismissed_keys:
+            continue
+        items.append({
+            "key": key,
+            "type": "file_share",
+            "icon": share.icon_class,
+            "title": _("Neue Dateifreigabe"),
+            "text": _("%(user)s hat %(file)s mit dir geteilt") % {
+                "user": share.owner.username,
+                "file": share.original_name,
+            },
+            "url": reverse("file_share"),
+            "action_label": _("Ansehen"),
+            "created_at": share.created_at,
+            "badge": 1,
+        })
+        if len(items) >= limit:
+            break
+    return items
+
+
+def _collect_game_turn_items(user, dismissed_keys, limit):
+    items = []
+
+    for game in TicTacToeGame.objects.filter(status=TicTacToeGame.STATUS_PLAYING).filter(Q(player_x=user) | Q(player_o=user)):
+        if game.symbol_for_user(user) == game.current_symbol:
+            _add_game_turn_item(
+                items,
+                game=game,
+                key_type="tictactoe",
+                icon="fa-solid fa-table-cells",
+                title=_("Tic Tac Toe"),
+                text=_("Du bist am Zug in %(name)s.") % {"name": game.name},
+                url_name="tictactoe_lobby",
+                dismissed_keys=dismissed_keys,
+            )
+
+    for game in ConnectFourGame.objects.filter(status=ConnectFourGame.STATUS_PLAYING).filter(Q(player_red=user) | Q(player_yellow=user)):
+        if game.disc_for_user(user) == game.current_disc:
+            _add_game_turn_item(
+                items,
+                game=game,
+                key_type="connectfour",
+                icon="fa-solid fa-grip",
+                title=_("Vier gewinnt"),
+                text=_("Du bist am Zug in %(name)s.") % {"name": game.name},
+                url_name="connectfour_lobby",
+                dismissed_keys=dismissed_keys,
+            )
+
+    for game in BattleshipGame.objects.filter(status__in=[BattleshipGame.STATUS_SETUP, BattleshipGame.STATUS_PLAYING]).filter(Q(player_a=user) | Q(player_b=user)):
+        side = game.side_for_user(user)
+        if game.status == BattleshipGame.STATUS_SETUP:
+            is_ready = (side == BattleshipGame.SIDE_A and game.ready_a) or (side == BattleshipGame.SIDE_B and game.ready_b)
+            if not is_ready:
+                _add_game_turn_item(
+                    items,
+                    game=game,
+                    key_type="battleship-setup",
+                    icon="fa-solid fa-anchor",
+                    title=_("Schiffe versenken"),
+                    text=_("Platziere deine Flotte in %(name)s.") % {"name": game.name},
+                    url_name="battleship_lobby",
+                    dismissed_keys=dismissed_keys,
+                )
+        elif side == game.current_turn:
+            _add_game_turn_item(
+                items,
+                game=game,
+                key_type="battleship",
+                icon="fa-solid fa-anchor",
+                title=_("Schiffe versenken"),
+                text=_("Du bist am Zug in %(name)s.") % {"name": game.name},
+                url_name="battleship_lobby",
+                dismissed_keys=dismissed_keys,
+            )
+
+    for game in UnoGame.objects.filter(status=UnoGame.STATUS_PLAYING, players__user=user).distinct().prefetch_related("players__user"):
+        current = _current_seated_player(game.players.all(), game.current_player_index)
+        if current and current.user_id == user.id:
+            _add_game_turn_item(
+                items,
+                game=game,
+                key_type="uno",
+                icon="fa-solid fa-layer-group",
+                title=_("Uno"),
+                text=_("Du bist am Zug in %(name)s.") % {"name": game.name},
+                url_name="uno_lobby",
+                dismissed_keys=dismissed_keys,
+            )
+
+    for game in KniffelGame.objects.filter(status=KniffelGame.STATUS_PLAYING, players__user=user).distinct().prefetch_related("players__user"):
+        current = _current_seated_player(game.players.all(), game.current_player_index)
+        if current and current.user_id == user.id:
+            _add_game_turn_item(
+                items,
+                game=game,
+                key_type="kniffel",
+                icon="fa-solid fa-dice",
+                title=_("Kniffel"),
+                text=_("Du bist am Zug in %(name)s.") % {"name": game.name},
+                url_name="kniffel_lobby",
+                dismissed_keys=dismissed_keys,
+            )
+
+    for lobby in StadtLandFlussLobby.objects.filter(status=StadtLandFlussLobby.STATUS_PLAYING, players__user=user).distinct():
+        player = StadtLandFlussPlayer.objects.filter(lobby=lobby, user=user).first()
+        has_submitted = False
+        if player:
+            has_submitted = StadtLandFlussRoundAnswer.objects.filter(
+                lobby=lobby,
+                player=player,
+                round_number=lobby.current_round_number,
+                is_submitted=True,
+            ).exists()
+        if player and not has_submitted:
+            _add_game_turn_item(
+                items,
+                game=lobby,
+                key_type="stadtlandfluss",
+                icon="fa-solid fa-pen-to-square",
+                title=_("Stadt Land Fluss"),
+                text=_("Runde %(round)s wartet auf deine Antworten.") % {"round": lobby.current_round_number},
+                url_name="stadtlandfluss_lobby",
+                dismissed_keys=dismissed_keys,
+            )
+
+    for lobby in DrawingGameLobby.objects.filter(status=DrawingGameLobby.STATUS_PLAYING, players__user=user).distinct().prefetch_related("players__user"):
+        current_drawer = _current_seated_player(lobby.players.all(), lobby.current_turn_index)
+        if current_drawer and current_drawer.user_id == user.id:
+            action_text = _("Wähle ein Wort in %(name)s.") if not lobby.current_word else _("Du zeichnest gerade in %(name)s.")
+            _add_game_turn_item(
+                items,
+                game=lobby,
+                key_type="skribble",
+                icon="fa-solid fa-pencil",
+                title=_("Skribble"),
+                text=action_text % {"name": lobby.name},
+                url_name="skribble_lobby",
+                dismissed_keys=dismissed_keys,
+            )
+
+    items.sort(key=lambda item: item.get("created_at") or timezone.now(), reverse=True)
+    return items[:limit]
+
+
 def _collect_notification_items(user, *, limit=10, include_dismissed=False):
     if not getattr(user, "is_authenticated", False):
         return []
@@ -116,6 +364,11 @@ def _collect_notification_items(user, *, limit=10, include_dismissed=False):
                     "created_at": latest.created_at,
                     "badge": unread_count,
                 })
+
+    if not muted_by_dnd:
+        items.extend(_collect_reminder_items(user, dismissed_keys, limit))
+        items.extend(_collect_file_share_items(user, dismissed_keys, limit))
+        items.extend(_collect_game_turn_items(user, dismissed_keys, limit))
 
     if profile.notify_friend_requests and not muted_by_dnd:
         added = 0

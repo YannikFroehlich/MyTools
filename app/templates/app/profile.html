@@ -203,6 +203,10 @@
                 <div>
                     <p class="profile-kicker">{% translate "Einstellungen" %}</p>
                     <h2>{% translate "Profil bearbeiten" %}</h2>
+                    <div class="profile-form-badges">
+                        <span><i class="fa-solid fa-at"></i>{{ request.user.username }}</span>
+                        <span><i class="fa-solid fa-circle"></i>{{ profile.get_status_display }}</span>
+                    </div>
                 </div>
                 <button class="profile-save-button" type="submit">
                     <i class="fa-solid fa-floppy-disk"></i>
@@ -216,7 +220,17 @@
                 </div>
             {% endif %}
 
-            <div class="profile-form-grid">
+            <div class="profile-edit-sections">
+                <section class="profile-edit-section">
+                    <div class="profile-section-head">
+                        <span class="profile-section-icon"><i class="fa-solid fa-id-badge"></i></span>
+                        <div>
+                            <p class="profile-kicker">{% translate "Account" %}</p>
+                            <h3>{% translate "Basisdaten" %}</h3>
+                        </div>
+                    </div>
+
+                    <div class="profile-form-grid">
                 <div class="profile-field">
                     <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
                     {{ form.username }}
@@ -240,8 +254,21 @@
                     {{ form.last_name }}
                     {{ form.last_name.errors }}
                 </div>
+                    </div>
+                </section>
 
-                <div class="profile-field profile-field-full">
+                <section class="profile-edit-section">
+                    <div class="profile-section-head">
+                        <span class="profile-section-icon"><i class="fa-solid fa-image"></i></span>
+                        <div>
+                            <p class="profile-kicker">{% translate "Medien" %}</p>
+                            <h3>{% translate "Avatar & Banner" %}</h3>
+                        </div>
+                    </div>
+
+                    <div class="profile-media-grid">
+
+                <div class="profile-field">
                     <label for="id_avatar">{{ form.avatar.label }}</label>
 
                     <div class="profile-avatar-upload-card">
@@ -295,7 +322,7 @@
                     {{ form.avatar.errors }}
                 </div>
 
-                <div class="profile-field profile-field-full">
+                <div class="profile-field">
                     <label for="id_profile_banner">{{ form.profile_banner.label }}</label>
 
                     <div class="profile-avatar-upload-card profile-banner-upload-card">
@@ -343,6 +370,19 @@
 
                     {{ form.profile_banner.errors }}
                 </div>
+                    </div>
+                </section>
+
+                <section class="profile-edit-section">
+                    <div class="profile-section-head">
+                        <span class="profile-section-icon"><i class="fa-solid fa-signal"></i></span>
+                        <div>
+                            <p class="profile-kicker">{% translate "Auftritt" %}</p>
+                            <h3>{% translate "Bio & Status" %}</h3>
+                        </div>
+                    </div>
+
+                    <div class="profile-form-grid">
 
                 <div class="profile-field profile-field-full">
                     <label for="{{ form.bio.id_for_label }}">{{ form.bio.label }}</label>
@@ -361,8 +401,21 @@
                     {{ form.status_text }}
                     {{ form.status_text.errors }}
                 </div>
+                    </div>
+                </section>
 
-                <div class="profile-field profile-field-full">
+                <section class="profile-edit-section">
+                    <div class="profile-section-head">
+                        <span class="profile-section-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                        <div>
+                            <p class="profile-kicker">{% translate "Kontrolle" %}</p>
+                            <h3>{% translate "Sichtbarkeit & Mitteilungen" %}</h3>
+                        </div>
+                    </div>
+
+                    <div class="profile-toggle-grid">
+
+                <div class="profile-toggle-column">
                     <div class="profile-privacy-box">
                         <div>
                             <p class="profile-kicker">{% translate "Privatsphäre" %}</p>
@@ -375,7 +428,7 @@
                     </div>
                 </div>
 
-                <div class="profile-field profile-field-full">
+                <div class="profile-toggle-column">
                     <div class="profile-privacy-box profile-notification-box">
                         <div>
                             <p class="profile-kicker">{% translate "Benachrichtigungen" %}</p>
@@ -390,6 +443,8 @@
                         <small>{% translate "Browser-Benachrichtigungen funktionieren, sobald du sie im Browser erlaubst und MyTools geöffnet ist." %}</small>
                     </div>
                 </div>
+            </div>
+                </section>
             </div>
 
             <div class="profile-form-footer">

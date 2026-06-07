@@ -1147,6 +1147,7 @@ body.dark-mode .weather-error {
 
 .compact-save-current-form,
 .compact-location-open-form,
+.compact-location-default-form,
 .compact-location-delete-form {
     margin: 0;
     display: flex;
@@ -1154,6 +1155,7 @@ body.dark-mode .weather-error {
 
 .compact-save-current-button,
 .compact-location-button,
+.compact-location-default,
 .compact-location-delete {
     font-family: inherit;
     border: none;
@@ -1264,6 +1266,11 @@ body.dark-mode .weather-error {
         0 12px 28px rgba(var(--theme-accent-rgb), 0.13);
 }
 
+.compact-location-item.is-default {
+    border-color: rgba(var(--theme-accent-rgb), 0.46);
+    background: rgba(var(--theme-accent-rgb), 0.08);
+}
+
 .compact-location-button {
     max-width: 155px;
     min-height: 48px;
@@ -1306,6 +1313,40 @@ body.dark-mode .weather-error {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.compact-location-default,
+.compact-location-default-badge {
+    width: 38px;
+    min-height: 48px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-left: 1px solid rgba(120, 140, 180, 0.18);
+
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.compact-location-default {
+    background: rgba(15, 23, 42, 0.02);
+    cursor: pointer;
+
+    transition:
+        background-color 0.18s ease,
+        color 0.18s ease;
+}
+
+.compact-location-default:hover {
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    color: var(--theme-accent-start);
+}
+
+.compact-location-default-badge {
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    color: var(--theme-accent-start);
 }
 
 .compact-location-delete {
@@ -1354,6 +1395,11 @@ body.dark-mode .compact-location-item:hover {
     border-color: rgba(var(--theme-accent-end-rgb), 0.38);
 }
 
+body.dark-mode .compact-location-item.is-default {
+    background: rgba(var(--theme-accent-end-rgb), 0.12);
+    border-color: rgba(var(--theme-accent-end-rgb), 0.42);
+}
+
 body.dark-mode .compact-location-button {
     color: #ffffff;
 }
@@ -1364,6 +1410,26 @@ body.dark-mode .compact-location-button:hover {
 }
 
 body.dark-mode .compact-location-button i {
+    color: var(--theme-accent-end);
+}
+
+body.dark-mode .compact-location-default,
+body.dark-mode .compact-location-default-badge {
+    border-left-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .compact-location-default {
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.35);
+}
+
+body.dark-mode .compact-location-default:hover {
+    background: rgba(var(--theme-accent-end-rgb), 0.1);
+    color: var(--theme-accent-end);
+}
+
+body.dark-mode .compact-location-default-badge {
+    background: rgba(var(--theme-accent-end-rgb), 0.14);
     color: var(--theme-accent-end);
 }
 
@@ -1447,6 +1513,12 @@ body.dark-mode .compact-location-delete:hover {
 
     .compact-location-delete {
         width: 38px;
+        min-height: 44px;
+    }
+
+    .compact-location-default,
+    .compact-location-default-badge {
+        width: 36px;
         min-height: 44px;
     }
 }
