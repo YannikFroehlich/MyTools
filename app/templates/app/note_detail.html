@@ -1,0 +1,99 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}
+    {% if note.title %}{{ note.title }}{% else %}{% translate "Unbenannte Notiz" %}{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/notes.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="notes-page">
+    <section class="notes-detail-shell">
+        <div class="notes-form-header">
+            <a href="{% url 'notes' %}" class="notes-back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+                {% translate "Zurück zu den Notizen" %}
+            </a>
+
+            <div class="notes-header-content">
+                <div class="notes-header-icon">
+                    <i class="fa-regular fa-note-sticky"></i>
+                </div>
+
+                <div>
+                    <p class="notes-eyebrow">
+                        {% if can_edit_note %}
+                            {% translate "Meine Notiz" %}
+                        {% else %}
+                            {% blocktranslate with owner=note.user.username %}Geteilt von {{ owner }}{% endblocktranslate %}
+                        {% endif %}
+                    </p>
+                    <h1>
+                        {% if note.title %}
+                            {{ note.title }}
+                        {% else %}
+                            {% translate "Unbenannte Notiz" %}
+                        {% endif %}
+                    </h1>
+                    <p class="notes-subtitle">
+                        {% translate "Zuletzt aktualisiert" %}: {{ note.updated_at|date:"d.m.Y H:i" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <article class="notes-detail-card note-color-{{ note.color }}">
+            <div class="note-glow"></div>
+
+            <div class="notes-detail-meta">
+                {% if note.reminder_at %}
+                    <span class="{% if note.is_reminder_due %}is-due{% endif %}">
+                        <i class="fa-regular fa-bell"></i>
+                        {{ note.reminder_at|date:"d.m.Y H:i" }}
+                    </span>
+                {% endif %}
+
+                {% if note.tag_list %}
+                    {% for tag in note.tag_list %}
+                        <span><i class="fa-solid fa-hashtag"></i>{{ tag }}</span>
+                    {% endfor %}
+                {% endif %}
+
+                {% if note.shared_with.count and can_edit_note %}
+                    <span>
+                        <i class="fa-solid fa-user-group"></i>
+                        {% blocktranslate count counter=note.shared_with.count %}Mit {{ counter }} Freund geteilt{% plural %}Mit {{ counter }} Freunden geteilt{% endblocktranslate %}
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="notes-detail-content">
+                {% if note.content %}
+                    {{ note.content|safe }}
+                {% else %}
+                    <p class="note-muted">{% translate "Diese Notiz hat noch keinen Inhalt." %}</p>
+                {% endif %}
+            </div>
+
+            <footer class="notes-detail-actions">
+                {% if can_edit_note %}
+                    <a href="{% url 'note_edit' note.pk %}" class="notes-primary-btn">
+                        <i class="fa-solid fa-pen"></i>
+                        {% translate "Bearbeiten" %}
+                    </a>
+                {% endif %}
+                <a href="{% url 'notes' %}" class="notes-secondary-btn">
+                    {% translate "Zur Übersicht" %}
+                </a>
+            </footer>
+        </article>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'app/js/notes.js' %}"></script>
+{% endblock %}

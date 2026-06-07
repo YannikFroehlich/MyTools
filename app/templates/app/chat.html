@@ -11,7 +11,7 @@
 
 {% block content %}
 <section class="chat-page">
-    <div class="chat-layout {% if active_room %}chat-theme-{{ active_room.theme }}{% endif %}" data-browser-notifications="{{ request.user.profile.browser_notifications|yesno:'true,false' }}" data-sound-notifications="{{ request.user.profile.sound_notifications|yesno:'true,false' }}" {% if active_room %}data-room-id="{{ active_room.id }}" data-messages-url="{% url 'chat_messages_api' active_room.id %}" data-send-url="{% url 'chat_send' active_room.id %}"{% endif %}>
+    <div class="chat-layout {% if active_room %}chat-theme-{{ active_room.theme }}{% endif %}" data-browser-notifications="{{ request.user.profile.browser_notifications|yesno:'true,false' }}" data-sound-notifications="{{ request.user.profile.sound_notifications|yesno:'true,false' }}" {% if active_room %}data-room-id="{{ active_room.id }}" data-messages-url="{% url 'chat_messages_api' active_room.id %}" data-send-url="{% url 'chat_send' active_room.id %}" data-typing-url="{% url 'chat_typing_api' active_room.id %}"{% endif %}>
         <aside class="chat-sidebar">
             <div class="chat-sidebar-hero">
                 <p class="chat-kicker">{% translate "Nachrichten" %}</p>
@@ -266,11 +266,17 @@
 
                 <div class="chat-messages" id="chat-messages">
                     {% for message in chat_messages %}
+                        {% ifchanged message.day_key %}
+                            <div class="chat-date-separator" data-date-key="{{ message.day_key }}">
+                                <span>{{ message.day_label }}</span>
+                            </div>
+                        {% endifchanged %}
                         <div class="chat-message {% if message.sender_id == request.user.id %}is-own{% endif %} {% if message.id == active_room.pinned_message_id %}is-pinned{% endif %}"
                              data-message-id="{{ message.id }}"
+                             data-date-key="{{ message.day_key }}"
                              data-pin-url="{% url 'chat_message_pin' active_room.id message.id %}"
                              data-react-url="{% url 'chat_message_react' active_room.id message.id %}"
-                             {% if message.sender_id == request.user.id %}data-delete-url="{% url 'chat_message_delete' active_room.id message.id %}"{% endif %}>
+                             {% if message.sender_id == request.user.id %}data-delete-url="{% url 'chat_message_delete' active_room.id message.id %}" data-edit-url="{% url 'chat_message_edit' active_room.id message.id %}"{% endif %}>
                             <div class="chat-message-avatar">
                                 {% if message.sender.profile.avatar %}
                                     <img src="{{ message.sender.profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
@@ -289,6 +295,7 @@
                                         <span>{% if message.id == active_room.pinned_message_id %}{% translate "Loslösen" %}{% else %}{% translate "Anpinnen" %}{% endif %}</span>
                                     </button>
                                     {% if message.sender_id == request.user.id %}
+                                        <button type="button" data-chat-action="edit"><i class="fa-solid fa-pen"></i>{% translate "Bearbeiten" %}</button>
                                         <button type="button" data-chat-action="delete"><i class="fa-solid fa-trash"></i>{% translate "Löschen" %}</button>
                                     {% endif %}
                                 </div>
@@ -301,10 +308,40 @@
                                         <button type="button" data-emoji="🙏">🙏</button>
                                     </div>
                                 <div class="chat-message-meta">
-                                    <strong>{{ message.sender.get_full_name|default:message.sender.username }}</strong>
+                                    <span class="chat-sender-hover">
+                                        <strong>{{ message.sender.get_full_name|default:message.sender.username }}</strong>
+                                        <span class="chat-profile-card" role="tooltip">
+                                            <span class="chat-profile-card-avatar">
+                                                {% if message.sender.profile.avatar %}
+                                                    <img src="{{ message.sender.profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
+                                                {% else %}
+                                                    {{ message.sender.profile.initials }}
+                                                {% endif %}
+                                            </span>
+                                            <span class="chat-profile-card-copy">
+                                                <b>{{ message.sender.get_full_name|default:message.sender.username }}</b>
+                                                <small>@{{ message.sender.username }}</small>
+                                                {% if message.sender.profile.status_text %}
+                                                    <em>{{ message.sender.profile.status_text }}</em>
+                                                {% elif message.sender.profile.bio %}
+                                                    <em>{{ message.sender.profile.bio|truncatechars:90 }}</em>
+                                                {% else %}
+                                                    <em>{{ message.sender.profile.get_status_display }}</em>
+                                                {% endif %}
+                                            </span>
+                                            <a href="{% url 'public_profile' message.sender.id %}">{% translate "Profil" %}</a>
+                                        </span>
+                                    </span>
                                     <span>{{ message.created_at|date:"d.m.Y H:i" }}</span>
                                 </div>
-                                {% if message.text %}<p>{{ message.text|linebreaksbr }}</p>{% endif %}
+                                {% if message.text %}<p class="chat-message-text" data-raw-text="{{ message.text }}">{{ message.text|linebreaksbr }}</p>{% endif %}
+                                <form class="chat-edit-form" hidden>
+                                    <textarea maxlength="1200">{{ message.text }}</textarea>
+                                    <div>
+                                        <button type="submit"><i class="fa-solid fa-check"></i>{% translate "Speichern" %}</button>
+                                        <button type="button" data-chat-action="cancel-edit"><i class="fa-solid fa-xmark"></i>{% translate "Abbrechen" %}</button>
+                                    </div>
+                                </form>
                                 {% if message.attachments.all %}
                                     <div class="chat-attachments">
                                         {% for attachment in message.attachments.all %}
@@ -319,6 +356,7 @@
                                         {% endfor %}
                                     </div>
                                 {% endif %}
+                                <small class="chat-edit-state {% if not message.edited_at %}is-empty{% endif %}">{% if message.edited_at %}{% translate "Bearbeitet" %} {{ message.edited_at|date:"d.m.Y H:i" }}{% endif %}</small>
                                 {% if message.sender_id == request.user.id %}<small class="chat-read-state">{{ message.read_label }}</small>{% endif %}
                                 <div class="chat-reactions {% if not message.reaction_items %}is-empty{% endif %}">
                                     {% for reaction in message.reaction_items %}
@@ -341,10 +379,11 @@
                     <label class="chat-attach-button" for="chat-attachment-input" title="{% translate 'Anhang hinzufügen' %}">
                         <i class="fa-solid fa-paperclip"></i>
                     </label>
-                    <input type="file" name="attachment" id="chat-attachment-input" class="chat-attachment-input" accept="image/*,.pdf,.txt,.zip,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                    <input type="file" name="attachments" id="chat-attachment-input" class="chat-attachment-input" accept="image/*,.pdf,.txt,.zip,.doc,.docx,.xls,.xlsx,.ppt,.pptx" multiple>
                     <textarea name="text" rows="1" maxlength="1200" placeholder="{% translate 'Nachricht schreiben...' %}"></textarea>
                     <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
                     <small class="chat-attachment-name" id="chat-attachment-name"></small>
+                    <div class="chat-typing-indicator" id="chat-typing-indicator" aria-live="polite"></div>
                 </form>
             {% else %}
                 <div class="chat-start-panel">

@@ -4,19 +4,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const pinnedBox = document.getElementById("chat-pinned-message");
     const form = document.getElementById("chat-compose-form");
     const textarea = form?.querySelector("textarea[name='text']");
-    const attachmentInput = form?.querySelector("input[name='attachment']");
+    const attachmentInput = document.getElementById("chat-attachment-input");
     const attachmentName = document.getElementById("chat-attachment-name");
+    const typingIndicator = document.getElementById("chat-typing-indicator");
 
     if (!layout || !messagesBox || !form || !textarea) return;
 
     const messagesUrl = layout.dataset.messagesUrl;
     const sendUrl = layout.dataset.sendUrl;
+    const typingUrl = layout.dataset.typingUrl;
     const csrfInput = form.querySelector("input[name='csrfmiddlewaretoken']");
     const csrfToken = csrfInput?.value || "";
     const reactionEmojis = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
     const browserNotificationsEnabled = layout.dataset.browserNotifications === "true";
     const soundNotificationsEnabled = layout.dataset.soundNotifications === "true";
     let notificationAudio = null;
+    let typingSendTimer = null;
+    let typingIdleTimer = null;
+    let lastTypingSentAt = 0;
 
     if (browserNotificationsEnabled && "Notification" in window && Notification.permission === "default") {
         Notification.requestPermission().catch(() => {});
@@ -46,6 +51,41 @@ document.addEventListener("DOMContentLoaded", () => {
             .replaceAll(">", "&gt;")
             .replaceAll('"', "&quot;")
             .replaceAll("'", "&#039;");
+    }
+
+    function renderMessageText(text) {
+        const escaped = escapeHtml(text);
+        return escaped
+            .replace(/@([\w.@+-]{1,150})/g, '<span class="chat-mention">@$1</span>')
+            .replaceAll("\n", "<br>");
+    }
+
+    function editedLabel(message) {
+        if (!message?.is_edited) return "";
+        return `Bearbeitet ${escapeHtml(message.edited_at || "")}`.trim();
+    }
+
+    function profileCardTemplate(sender = {}) {
+        const avatar = sender.avatar_url
+            ? `<img src="${escapeHtml(sender.avatar_url)}" alt="Profilbild" loading="lazy" decoding="async">`
+            : escapeHtml(sender.initials || "MT");
+        const detail = sender.status_text || sender.bio || sender.status || "";
+        return `
+            <span class="chat-profile-card" role="tooltip">
+                <span class="chat-profile-card-avatar">${avatar}</span>
+                <span class="chat-profile-card-copy">
+                    <b>${escapeHtml(sender.display_name || sender.username || "Profil")}</b>
+                    <small>@${escapeHtml(sender.username || "")}</small>
+                    ${detail ? `<em>${escapeHtml(detail)}</em>` : ""}
+                </span>
+                ${sender.profile_url ? `<a href="${escapeHtml(sender.profile_url)}">Profil</a>` : ""}
+            </span>
+        `;
+    }
+
+    function dateSeparatorTemplate(message) {
+        if (!message?.day_key) return "";
+        return `<div class="chat-date-separator" data-date-key="${escapeHtml(message.day_key)}"><span>${escapeHtml(message.day_label || "")}</span></div>`;
     }
 
     function playNotificationSound() {
@@ -143,19 +183,23 @@ document.addEventListener("DOMContentLoaded", () => {
         const avatar = message.sender.avatar_url
             ? `<img src="${escapeHtml(message.sender.avatar_url)}" alt="Profilbild" loading="lazy" decoding="async">`
             : escapeHtml(message.sender.initials || "MT");
-        const text = escapeHtml(message.text).replaceAll("\n", "<br>");
+        const text = renderMessageText(message.text);
         const isOwn = Boolean(message.is_own);
         const deleteAction = isOwn
             ? `<button type="button" data-chat-action="delete"><i class="fa-solid fa-trash"></i>Löschen</button>`
+            : "";
+        const editAction = isOwn
+            ? `<button type="button" data-chat-action="edit"><i class="fa-solid fa-pen"></i>Bearbeiten</button>`
             : "";
         const pinLabel = message.is_pinned ? "Losloesen" : "Anpinnen";
 
         return `
             <div class="chat-message ${isOwn ? "is-own" : ""} ${message.is_pinned ? "is-pinned" : ""}"
                  data-message-id="${escapeHtml(message.id)}"
+                 data-date-key="${escapeHtml(message.day_key || "")}"
                  data-pin-url="${escapeHtml(message.pin_url)}"
                  data-react-url="${escapeHtml(message.react_url)}"
-                 ${isOwn ? `data-delete-url="${escapeHtml(message.delete_url)}"` : ""}>
+                 ${isOwn ? `data-delete-url="${escapeHtml(message.delete_url)}" data-edit-url="${escapeHtml(message.edit_url)}"` : ""}>
                 <div class="chat-message-avatar">${avatar}</div>
                 <div class="chat-bubble">
                     <button type="button" class="chat-message-menu-button" aria-label="Nachrichtoptionen">
@@ -164,15 +208,27 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="chat-message-menu">
                         <button type="button" data-chat-action="react"><i class="fa-regular fa-face-smile"></i>Reagieren</button>
                         <button type="button" data-chat-action="pin" data-pin-label="Anpinnen" data-unpin-label="Losloesen"><i class="fa-solid fa-thumbtack"></i><span>${pinLabel}</span></button>
+                        ${editAction}
                         ${deleteAction}
                     </div>
                     ${emojiPickerTemplate()}
                     <div class="chat-message-meta">
-                        <strong>${escapeHtml(message.sender.display_name)}</strong>
+                        <span class="chat-sender-hover">
+                            <strong>${escapeHtml(message.sender.display_name)}</strong>
+                            ${profileCardTemplate(message.sender)}
+                        </span>
                         <span>${escapeHtml(message.created_at)}</span>
                     </div>
-                    ${text ? `<p>${text}</p>` : ""}
+                    ${text ? `<p class="chat-message-text" data-raw-text="${escapeHtml(message.text)}">${text}</p>` : ""}
+                    <form class="chat-edit-form" hidden>
+                        <textarea maxlength="1200">${escapeHtml(message.text)}</textarea>
+                        <div>
+                            <button type="submit"><i class="fa-solid fa-check"></i>Speichern</button>
+                            <button type="button" data-chat-action="cancel-edit"><i class="fa-solid fa-xmark"></i>Abbrechen</button>
+                        </div>
+                    </form>
                     ${attachmentsTemplate(message.attachments || [])}
+                    <small class="chat-edit-state ${message.is_edited ? "" : "is-empty"}">${editedLabel(message)}</small>
                     ${isOwn ? `<small class="chat-read-state">${escapeHtml(message.read_label || "")}</small>` : ""}
                     ${reactionsTemplate(message.reactions || [])}
                 </div>
@@ -180,11 +236,26 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
+    function currentLastDateKey() {
+        const messages = messagesBox.querySelectorAll(".chat-message[data-date-key]");
+        const last = messages[messages.length - 1];
+        return last?.dataset.dateKey || "";
+    }
+
+    function messagesWithDateSeparators(messages = []) {
+        let lastDateKey = currentLastDateKey();
+        return messages.map((message) => {
+            const needsSeparator = message.day_key && message.day_key !== lastDateKey;
+            lastDateKey = message.day_key || lastDateKey;
+            return `${needsSeparator ? dateSeparatorTemplate(message) : ""}${messageTemplate(message)}`;
+        }).join("");
+    }
+
     function appendMessages(messages, fromPolling = false) {
         if (!messages.length) return;
         document.getElementById("chat-empty-state")?.remove();
         const shouldStick = messagesBox.scrollHeight - messagesBox.scrollTop - messagesBox.clientHeight < 140;
-        messagesBox.insertAdjacentHTML("beforeend", messages.map(messageTemplate).join(""));
+        messagesBox.insertAdjacentHTML("beforeend", messagesWithDateSeparators(messages));
         if (shouldStick) scrollToBottom();
         if (fromPolling) {
             const incoming = messages.filter((message) => !message.is_own);
@@ -202,6 +273,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateMessageState(messageElement, update) {
+        if (update.text !== undefined) {
+            const textElement = messageElement.querySelector(".chat-message-text");
+            const editForm = messageElement.querySelector(".chat-edit-form");
+            const editTextarea = editForm?.querySelector("textarea");
+            if (textElement) {
+                textElement.dataset.rawText = update.text || "";
+                textElement.innerHTML = renderMessageText(update.text || "");
+                textElement.hidden = !update.text;
+            }
+            if (editTextarea) editTextarea.value = update.text || "";
+        }
+        const editState = messageElement.querySelector(".chat-edit-state");
+        if (editState && update.is_edited !== undefined) {
+            editState.textContent = editedLabel(update);
+            editState.classList.toggle("is-empty", !update.is_edited);
+        }
         const oldStrip = messageElement.querySelector(".chat-reactions");
         if (oldStrip) oldStrip.outerHTML = reactionsTemplate(update.reactions || []);
         const readState = messageElement.querySelector(".chat-read-state");
@@ -219,6 +306,49 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function renderTypingUsers(users = []) {
+        if (!typingIndicator) return;
+        if (!users.length) {
+            typingIndicator.textContent = "";
+            typingIndicator.classList.remove("is-visible");
+            return;
+        }
+        const names = users.map((user) => user.display_name || user.username).filter(Boolean);
+        typingIndicator.textContent = names.length === 1
+            ? `${names[0]} tippt...`
+            : `${names.slice(0, 2).join(", ")} tippen...`;
+        typingIndicator.classList.add("is-visible");
+    }
+
+    async function sendTypingState(isTyping) {
+        if (!typingUrl) return;
+        const formData = new FormData();
+        formData.append("csrfmiddlewaretoken", csrfToken);
+        formData.append("is_typing", isTyping ? "true" : "false");
+        try {
+            await fetch(typingUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}, body: formData});
+        } catch (error) {
+            console.warn("Typing update failed", error);
+        }
+    }
+
+    function scheduleTypingState() {
+        if (!typingUrl) return;
+        const now = Date.now();
+        if (now - lastTypingSentAt > 1800) {
+            lastTypingSentAt = now;
+            sendTypingState(true);
+        } else {
+            window.clearTimeout(typingSendTimer);
+            typingSendTimer = window.setTimeout(() => {
+                lastTypingSentAt = Date.now();
+                sendTypingState(true);
+            }, 350);
+        }
+        window.clearTimeout(typingIdleTimer);
+        typingIdleTimer = window.setTimeout(() => sendTypingState(false), 2600);
+    }
+
     async function pollMessages() {
         try {
             const url = `${messagesUrl}?after=${encodeURIComponent(lastMessageId())}&visible=${encodeURIComponent(visibleMessageIds())}`;
@@ -229,6 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 applyDeletedMessages(data.deleted_ids || []);
                 applyMessageUpdates(data.updates || []);
                 renderPinnedMessage(data.pinned_message || null);
+                renderTypingUsers(data.typing_users || []);
                 appendMessages(data.messages || [], true);
             }
         } catch (error) {
@@ -245,11 +376,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const formData = new FormData();
         formData.append("text", text);
         formData.append("csrfmiddlewaretoken", csrfToken);
-        if (hasAttachment) formData.append("attachment", attachmentInput.files[0]);
+        if (hasAttachment) {
+            Array.from(attachmentInput.files).forEach((file) => {
+                formData.append("attachments", file);
+            });
+        }
         textarea.value = "";
         if (attachmentInput) attachmentInput.value = "";
         if (attachmentName) attachmentName.textContent = "";
         textarea.style.height = "auto";
+        sendTypingState(false);
 
         try {
             const response = await fetch(sendUrl, {
@@ -276,12 +412,32 @@ document.addEventListener("DOMContentLoaded", () => {
     textarea.addEventListener("input", () => {
         textarea.style.height = "auto";
         textarea.style.height = `${Math.min(textarea.scrollHeight, 140)}px`;
+        if (textarea.value.trim()) scheduleTypingState();
+        else sendTypingState(false);
     });
 
     attachmentInput?.addEventListener("change", () => {
-        const file = attachmentInput.files?.[0];
-        if (attachmentName) attachmentName.textContent = file ? file.name : "";
+        const files = Array.from(attachmentInput.files || []);
+        if (attachmentName) {
+            attachmentName.textContent = files.length
+                ? files.map((file) => file.name).join(", ")
+                : "";
+        }
     });
+
+    function setMessageEditing(message, isEditing) {
+        const editForm = message.querySelector(".chat-edit-form");
+        const textElement = message.querySelector(".chat-message-text");
+        if (!editForm) return;
+        editForm.hidden = !isEditing;
+        if (textElement) textElement.hidden = isEditing;
+        message.classList.toggle("is-editing", isEditing);
+        if (isEditing) {
+            const textarea = editForm.querySelector("textarea");
+            textarea?.focus();
+            textarea?.setSelectionRange(textarea.value.length, textarea.value.length);
+        }
+    }
 
     pinnedBox?.addEventListener("click", (event) => {
         const jumpButton = event.target.closest("[data-pinned-jump]");
@@ -345,6 +501,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 return;
             }
+            if (action === "edit") {
+                message.classList.remove("is-menu-open", "is-emoji-open");
+                setMessageEditing(message, true);
+                return;
+            }
+            if (action === "cancel-edit") {
+                const editForm = message.querySelector(".chat-edit-form");
+                const editTextarea = editForm?.querySelector("textarea");
+                const textElement = message.querySelector(".chat-message-text");
+                if (editTextarea && textElement) editTextarea.value = textElement.dataset.rawText || "";
+                setMessageEditing(message, false);
+                return;
+            }
             if (action === "react") {
                 message.classList.remove("is-menu-open");
                 message.classList.toggle("is-emoji-open");
@@ -380,6 +549,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    messagesBox.addEventListener("submit", async (event) => {
+        const editForm = event.target.closest(".chat-edit-form");
+        if (!editForm) return;
+        event.preventDefault();
+        const message = editForm.closest(".chat-message");
+        const editUrl = message?.dataset.editUrl;
+        const editTextarea = editForm.querySelector("textarea");
+        const text = editTextarea?.value.trim() || "";
+        if (!editUrl || !text) return;
+
+        const formData = new FormData();
+        formData.append("csrfmiddlewaretoken", csrfToken);
+        formData.append("text", text);
+        try {
+            const response = await fetch(editUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}, body: formData});
+            const data = await response.json();
+            if (data.ok && data.message) {
+                updateMessageState(message, data.message);
+                setMessageEditing(message, false);
+            }
+        } catch (error) {
+            console.warn("Message edit failed", error);
+        }
+    });
+
     document.addEventListener("click", (event) => {
         if (event.target.closest("#chat-messages")) return;
         messagesBox.querySelectorAll(".chat-message.is-menu-open, .chat-message.is-emoji-open").forEach((item) => {
@@ -387,6 +581,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    messagesBox.querySelectorAll(".chat-message-text").forEach((textElement) => {
+        const rawText = textElement.dataset.rawText || textElement.textContent || "";
+        textElement.dataset.rawText = rawText;
+        textElement.innerHTML = renderMessageText(rawText);
+    });
     updatePinMenuLabels();
     scrollToBottom();
     setInterval(pollMessages, 3500);

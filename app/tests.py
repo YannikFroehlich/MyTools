@@ -13,11 +13,13 @@ from django.urls import reverse
 from django.utils import timezone
 
 from app.forms import NoteForm
+from app.achievement_utils import get_achievement_summary
 from app.models import (
     AvatarCharacter,
     BattleshipGame,
     BattleshipInvite,
     ChatMessage,
+    ChatTypingStatus,
     ChatRoom,
     ChatRoomMember,
     ConnectFourGame,
@@ -32,6 +34,7 @@ from app.models import (
     HumanBenchmarkScore,
     HangmanLobby,
     HangmanPlayer,
+    InboxItem,
     KniffelGame,
     KniffelInvite,
     KniffelPlayer,
@@ -42,9 +45,14 @@ from app.models import (
     StadtLandFlussPlayer,
     TicTacToeGame,
     TicTacToeInvite,
+    ToolFeedback,
+    ModerationAuditLog,
     UnoGame,
     UnoPlayer,
+    UserBlock,
     UserProfile,
+    UserReport,
+    UserSuspension,
     WeatherLocation,
 )
 from app.notification_utils import get_notification_counts
@@ -464,6 +472,83 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "app/profile.html")
         self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
+        self.assertIn("achievement_summary", response.context)
+        self.assertContains(response, "Achievements")
+
+    def test_achievement_summary_unlocks_cross_app_badges(self):
+        friend = get_user_model().objects.create_user(
+            username="badgefreund",
+            password="testpass-123",
+        )
+        Friendship.objects.create(
+            from_user=self.user,
+            to_user=friend,
+            status=Friendship.STATUS_ACCEPTED,
+        )
+        note = Note.objects.create(
+            title="Badge Notiz",
+            reminder_at=timezone.now() + timezone.timedelta(days=1),
+        )
+        note.shared_with.add(friend)
+
+        room = ChatRoom.objects.create(
+            room_type=ChatRoom.ROOM_GROUP,
+            name="Badge Chat",
+            created_by=self.user,
+        )
+        ChatRoomMember.objects.create(room=room, user=self.user)
+        ChatMessage.objects.create(room=room, sender=self.user, text="Hallo")
+
+        FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("badge.txt", b"badge", content_type="text/plain"),
+            original_name="badge.txt",
+            size=5,
+            content_type="text/plain",
+            token="badge-share-token",
+            is_public_link=True,
+            download_count=10,
+        )
+        HumanBenchmarkScore.objects.create(
+            user=self.user,
+            game=HumanBenchmarkScore.GAME_REACTION,
+            score=220,
+            display_score="220 ms",
+        )
+        for game, score in [
+            (HumanBenchmarkScore.GAME_REACTION, 220),
+            (HumanBenchmarkScore.GAME_AIM, 40),
+            (HumanBenchmarkScore.GAME_TYPING, 80),
+        ]:
+            HumanBenchmarkHighScore.objects.create(
+                user=self.user,
+                game=game,
+                score=score,
+                display_score=str(score),
+            )
+        TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="BADGE1",
+            status=TicTacToeGame.STATUS_FINISHED,
+            winner_symbol=TicTacToeGame.SYMBOL_X,
+        )
+
+        summary = get_achievement_summary(self.user)
+        unlocked_keys = {achievement["key"] for achievement in summary["unlocked"]}
+
+        self.assertIn("first_note", unlocked_keys)
+        self.assertIn("reminder_ready", unlocked_keys)
+        self.assertIn("note_collab", unlocked_keys)
+        self.assertIn("first_message", unlocked_keys)
+        self.assertIn("first_upload", unlocked_keys)
+        self.assertIn("public_link", unlocked_keys)
+        self.assertIn("downloaded", unlocked_keys)
+        self.assertIn("first_game", unlocked_keys)
+        self.assertIn("score_hunter", unlocked_keys)
+        self.assertIn("first_win", unlocked_keys)
+        self.assertGreater(summary["total_xp"], 0)
+        self.assertGreaterEqual(summary["level"]["level"], 2)
 
     def test_profile_post_updates_profile_and_user_fields(self):
         response = self.client.post(reverse("profile"), {
@@ -609,6 +694,31 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(response.context["profile_user"], other_user)
         self.assertEqual(response.context["friendship_state"], "none")
         self.assertTrue(UserProfile.objects.filter(user=other_user).exists())
+        self.assertIn("achievement_summary", response.context)
+
+    def test_public_profile_hides_private_achievement_categories_from_strangers(self):
+        other_user = get_user_model().objects.create_user(
+            username="privatebadges",
+            password="testpass-123",
+        )
+        Note.objects.create(user=other_user, title="Private Notiz")
+        ChatRoom.objects.create(room_type=ChatRoom.ROOM_GROUP, name="Privat", created_by=other_user)
+        FileShare.objects.create(
+            owner=other_user,
+            file=SimpleUploadedFile("private.txt", b"private", content_type="text/plain"),
+            original_name="private.txt",
+            size=7,
+            content_type="text/plain",
+            token="private-badge-share-token",
+        )
+
+        response = self.client.get(reverse("public_profile", args=[other_user.id]))
+
+        category_keys = {category["key"] for category in response.context["achievement_summary"]["categories"]}
+        self.assertIn("profile", category_keys)
+        self.assertNotIn("notes", category_keys)
+        self.assertNotIn("chat", category_keys)
+        self.assertNotIn("uploads", category_keys)
 
     def test_send_friend_request_from_public_profile(self):
         other_user = get_user_model().objects.create_user(
@@ -1436,6 +1546,91 @@ class ChatEnhancementTests(BaseTestCase):
         self.assertContains(response, "chat-pinned-message")
         self.assertContains(response, "Merken")
 
+    def test_chat_page_renders_day_separators_and_profile_card(self):
+        old_message = ChatMessage.objects.create(room=self.room, sender=self.user, text="Gestern")
+        ChatMessage.objects.filter(id=old_message.id).update(
+            created_at=timezone.now() - timezone.timedelta(days=1)
+        )
+
+        response = self.client.get(reverse("chat_room", args=[self.room.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "chat-date-separator")
+        self.assertContains(response, "Heute")
+        self.assertContains(response, "Gestern")
+        self.assertContains(response, "chat-profile-card")
+        self.assertContains(response, reverse("public_profile", args=[self.other_user.id]))
+
+    def test_messages_api_includes_day_and_sender_profile_payload(self):
+        response = self.client.get(reverse("chat_messages_api", args=[self.room.id]))
+
+        self.assertEqual(response.status_code, 200)
+        message = response.json()["messages"][0]
+        self.assertIn("day_key", message)
+        self.assertIn("day_label", message)
+        self.assertEqual(message["sender"]["profile_url"], reverse("public_profile", args=[self.other_user.id]))
+
+    def test_user_can_edit_own_message(self):
+        own_message = ChatMessage.objects.create(room=self.room, sender=self.user, text="Alt")
+
+        response = self.client.post(
+            reverse("chat_message_edit", args=[self.room.id, own_message.id]),
+            {"text": "Neu @chatfriend"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        own_message.refresh_from_db()
+        self.assertEqual(own_message.text, "Neu @chatfriend")
+        self.assertIsNotNone(own_message.edited_at)
+        self.assertTrue(InboxItem.objects.filter(user=self.other_user, title__icontains="erwaehnt").exists())
+
+    def test_typing_api_marks_user_as_typing_and_messages_api_returns_it(self):
+        response = self.client.post(
+            reverse("chat_typing_api", args=[self.room.id]),
+            {"is_typing": "true"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(ChatTypingStatus.objects.filter(room=self.room, user=self.user, is_typing=True).exists())
+
+        self.client.force_login(self.other_user)
+        response = self.client.get(reverse("chat_messages_api", args=[self.room.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["typing_users"][0]["username"], self.user.username)
+
+
+class ModerationDashboardTests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
+        self.target = get_user_model().objects.create_user(username="moderated", password="testpass-123")
+
+    def test_staff_can_suspend_and_unsuspend_user_with_audit_log(self):
+        response = self.client.post(reverse("moderation_user_status", args=[self.target.id]), {
+            "action": "suspend",
+            "duration_hours": "24",
+            "reason": "Test",
+        })
+
+        self.assertRedirects(response, reverse("moderation"))
+        suspension = UserSuspension.objects.get(user=self.target)
+        self.assertTrue(suspension.is_current)
+        self.assertEqual(suspension.reason, "Test")
+        self.assertTrue(ModerationAuditLog.objects.filter(action=ModerationAuditLog.ACTION_USER_SUSPENDED, target_user=self.target).exists())
+
+        response = self.client.post(reverse("moderation_user_status", args=[self.target.id]), {
+            "action": "unsuspend",
+        })
+
+        self.assertRedirects(response, reverse("moderation"))
+        suspension.refresh_from_db()
+        self.assertFalse(suspension.is_active)
+        self.assertTrue(ModerationAuditLog.objects.filter(action=ModerationAuditLog.ACTION_USER_UNSUSPENDED, target_user=self.target).exists())
+
 
 class WeatherViewTests(BaseTestCase):
     def mocked_current_weather_response(self, status_code=200, json_data=None):
@@ -1715,6 +1910,18 @@ class NoteFormTests(BaseTestCase):
         self.assertIn("<strong>Wichtig</strong>", cleaned_content)
         self.assertNotIn("<script>", cleaned_content)
 
+    def test_note_form_keeps_checklist_markup(self):
+        form = NoteForm(data={
+            "title": "Aufgaben",
+            "content": '<ul class="note-checklist"><li data-checked="false">Backup</li></ul>',
+            "tags": "todo",
+            "color": "blue",
+        })
+
+        self.assertTrue(form.is_valid())
+        self.assertIn('class="note-checklist"', form.cleaned_data["content"])
+        self.assertIn('data-checked="false"', form.cleaned_data["content"])
+
 
 class NotesViewTests(BaseTestCase):
     def test_notes_page_loads_and_splits_pinned_and_normal_notes(self):
@@ -1774,6 +1981,41 @@ class NotesViewTests(BaseTestCase):
         self.assertIn(archived, list(response.context["normal_notes"]))
         self.assertTrue(response.context["show_archived"])
 
+    def test_notes_scope_can_show_shared_notes(self):
+        other_user = get_user_model().objects.create_user(
+            username="notizfreund",
+            password="testpass-123",
+        )
+        own_note = Note.objects.create(title="Eigene Notiz")
+        shared_note = Note.objects.create(user=other_user, title="Geteilte Notiz")
+        shared_note.shared_with.add(self.user)
+
+        response = self.client.get(reverse("notes"), {"scope": "shared"})
+
+        all_results = list(response.context["pinned_notes"]) + list(response.context["normal_notes"])
+        self.assertIn(shared_note, all_results)
+        self.assertNotIn(own_note, all_results)
+        self.assertEqual(response.context["shared_note_count"], 1)
+
+    def test_notes_scope_can_show_reminders_and_due_count(self):
+        due_note = Note.objects.create(
+            title="Faellige Erinnerung",
+            reminder_at=timezone.now() - timezone.timedelta(minutes=5),
+        )
+        future_note = Note.objects.create(
+            title="Spaeter",
+            reminder_at=timezone.now() + timezone.timedelta(days=1),
+        )
+        Note.objects.create(title="Ohne Erinnerung")
+
+        response = self.client.get(reverse("notes"), {"scope": "reminders"})
+
+        all_results = list(response.context["pinned_notes"]) + list(response.context["normal_notes"])
+        self.assertIn(due_note, all_results)
+        self.assertIn(future_note, all_results)
+        self.assertEqual(response.context["reminder_note_count"], 2)
+        self.assertEqual(response.context["due_reminder_count"], 1)
+
     def test_create_note(self):
         response = self.client.post(reverse("note_create"), {
             "title": "Neue Notiz",
@@ -1787,6 +2029,33 @@ class NotesViewTests(BaseTestCase):
         note = Note.objects.get(title="Neue Notiz")
 
         self.assertEqual(note.color, "green")
+
+    def test_create_note_can_set_reminder_and_share_with_friend(self):
+        friend = get_user_model().objects.create_user(
+            username="freund",
+            password="testpass-123",
+        )
+        Friendship.objects.create(
+            from_user=self.user,
+            to_user=friend,
+            status=Friendship.STATUS_ACCEPTED,
+        )
+        reminder_at = (timezone.now() + timezone.timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M")
+
+        response = self.client.post(reverse("note_create"), {
+            "title": "Geteilte Aufgabe",
+            "content": "<p>Bitte lesen</p>",
+            "tags": "team",
+            "color": "green",
+            "reminder_at": reminder_at,
+            "shared_with": [str(friend.id)],
+        })
+
+        self.assertRedirects(response, reverse("notes"))
+        note = Note.objects.get(title="Geteilte Aufgabe")
+        self.assertEqual(list(note.shared_with.all()), [friend])
+        self.assertIsNotNone(note.reminder_at)
+        self.assertTrue(InboxItem.objects.filter(user=friend, title="Notiz geteilt").exists())
 
     def test_edit_note(self):
         note = Note.objects.create(title="Alt", content="Alt")
@@ -1804,6 +2073,21 @@ class NotesViewTests(BaseTestCase):
 
         self.assertEqual(note.title, "Neu")
         self.assertEqual(note.color, "purple")
+
+    def test_shared_note_detail_is_readable_but_not_editable_by_recipient(self):
+        owner = get_user_model().objects.create_user(
+            username="besitzer",
+            password="testpass-123",
+        )
+        note = Note.objects.create(user=owner, title="Freigegeben", content="<p>Volltext</p>")
+        note.shared_with.add(self.user)
+
+        detail_response = self.client.get(reverse("note_detail", args=[note.id]))
+        edit_response = self.client.get(reverse("note_edit", args=[note.id]))
+
+        self.assertEqual(detail_response.status_code, 200)
+        self.assertContains(detail_response, "Volltext")
+        self.assertEqual(edit_response.status_code, 404)
 
     def test_delete_note_requires_post_and_deletes_note(self):
         note = Note.objects.create(title="Weg")
@@ -2468,6 +2752,126 @@ class FileShareTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("file_share"))
         self.assertEqual(FileShare.objects.filter(owner=self.user).count(), 2)
+
+
+class ModerationTests(BaseTestCase):
+    def make_staff(self):
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
+
+    def test_moderation_requires_staff_user(self):
+        response = self.client.get(reverse("moderation"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
+
+    def test_staff_dashboard_shows_moderation_sources(self):
+        self.make_staff()
+        other_user = get_user_model().objects.create_user(
+            username="reported-user",
+            password="testpass-123",
+            email="reported@example.com",
+        )
+        UserReport.objects.create(
+            reporter=self.user,
+            reported=other_user,
+            reason=UserReport.REASON_SPAM,
+            message="Spam im Profil",
+        )
+        ToolFeedback.objects.create(
+            user=other_user,
+            tool_key="chat",
+            feedback_type=ToolFeedback.TYPE_BUG,
+            title="Chat Fehler",
+            message="Nachrichten laden langsam.",
+        )
+        FileShare.objects.create(
+            owner=other_user,
+            file=SimpleUploadedFile("proof.txt", b"hi", content_type="text/plain"),
+            original_name="proof.txt",
+            size=2,
+            content_type="text/plain",
+            token="moderation-proof-token",
+            is_public_link=True,
+        )
+        UserBlock.objects.create(blocker=self.user, blocked=other_user)
+        InboxItem.objects.create(user=other_user, title="System Hinweis", message="Test")
+
+        response = self.client.get(reverse("moderation"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "reported-user")
+        self.assertContains(response, "Chat Fehler")
+        self.assertContains(response, "proof.txt")
+        self.assertContains(response, "System Hinweis")
+
+    def test_report_action_marks_report_resolved(self):
+        self.make_staff()
+        other_user = get_user_model().objects.create_user(
+            username="reported-user",
+            password="testpass-123",
+        )
+        report = UserReport.objects.create(
+            reporter=self.user,
+            reported=other_user,
+            reason=UserReport.REASON_OTHER,
+        )
+
+        response = self.client.post(reverse("moderation_report_action", args=[report.id]))
+
+        self.assertRedirects(response, reverse("moderation"))
+        report.refresh_from_db()
+        self.assertTrue(report.is_resolved)
+
+    def test_feedback_status_action_updates_feedback(self):
+        self.make_staff()
+        feedback = ToolFeedback.objects.create(
+            user=self.user,
+            tool_key="notes",
+            title="Mehr Farbe",
+            message="Bitte weitere Notizfarben.",
+        )
+
+        response = self.client.post(
+            reverse("moderation_feedback_status", args=[feedback.id]),
+            {"status": ToolFeedback.STATUS_PLANNED},
+        )
+
+        self.assertRedirects(response, reverse("moderation"))
+        feedback.refresh_from_db()
+        self.assertEqual(feedback.status, ToolFeedback.STATUS_PLANNED)
+
+    def test_file_share_delete_action_removes_share(self):
+        self.make_staff()
+        share = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("remove.txt", b"bye", content_type="text/plain"),
+            original_name="remove.txt",
+            size=3,
+            content_type="text/plain",
+            token="moderation-remove-token",
+        )
+
+        response = self.client.post(reverse("moderation_file_share_delete", args=[share.id]))
+
+        self.assertRedirects(response, reverse("moderation"))
+        self.assertFalse(FileShare.objects.filter(id=share.id).exists())
+
+    def test_user_status_action_deactivates_other_user(self):
+        self.make_staff()
+        other_user = get_user_model().objects.create_user(
+            username="quiet-user",
+            password="testpass-123",
+        )
+
+        response = self.client.post(
+            reverse("moderation_user_status", args=[other_user.id]),
+            {"action": "deactivate"},
+        )
+
+        self.assertRedirects(response, reverse("moderation"))
+        other_user.refresh_from_db()
+        self.assertFalse(other_user.is_active)
 
 
 class TicTacToeTests(BaseTestCase):

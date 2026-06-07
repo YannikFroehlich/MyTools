@@ -16,6 +16,7 @@ from .views import (
     human_benchmark_score_api,
     note_create_view,
     note_delete_view,
+    note_detail_view,
     note_edit_view,
     note_toggle_archive_view,
     note_toggle_pin_view,
@@ -163,9 +164,11 @@ from .chat_views import (
     chat_group_member_action_view,
     chat_group_settings_view,
     chat_messages_api,
+    chat_typing_api,
     chat_view,
     create_group_chat,
     delete_chat_message,
+    edit_chat_message,
     pin_chat_message,
     react_chat_message,
     send_chat_message,
@@ -189,6 +192,13 @@ from .platform_views import (
     inbox_mark_read_view,
     inbox_view,
 )
+from .moderation_views import (
+    moderation_dashboard_view,
+    moderation_feedback_status_view,
+    moderation_file_share_delete_view,
+    moderation_report_action_view,
+    moderation_user_status_view,
+)
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
@@ -200,6 +210,11 @@ urlpatterns = [
     path('inbox/', inbox_view, name='inbox'),
     path('inbox/read/', inbox_mark_read_view, name='inbox_mark_read'),
     path('feedback/', feedback_view, name='feedback'),
+    path('moderation/', moderation_dashboard_view, name='moderation'),
+    path('moderation/reports/<int:report_id>/', moderation_report_action_view, name='moderation_report_action'),
+    path('moderation/feedback/<int:feedback_id>/status/', moderation_feedback_status_view, name='moderation_feedback_status'),
+    path('moderation/file-shares/<int:share_id>/delete/', moderation_file_share_delete_view, name='moderation_file_share_delete'),
+    path('moderation/users/<int:user_id>/status/', moderation_user_status_view, name='moderation_user_status'),
 
     path('leaderboard/', leaderboard_view, name='leaderboard'),
     path('bild-tools/', image_tools_view, name='image_tools'),
@@ -229,10 +244,12 @@ urlpatterns = [
     path('chat/<int:room_id>/group/member/<int:user_id>/', chat_group_member_action_view, name='chat_group_member_action'),
     path('chat/<int:room_id>/send/', send_chat_message, name='chat_send'),
     path('chat/<int:room_id>/message/<int:message_id>/delete/', delete_chat_message, name='chat_message_delete'),
+    path('chat/<int:room_id>/message/<int:message_id>/edit/', edit_chat_message, name='chat_message_edit'),
     path('chat/<int:room_id>/message/<int:message_id>/pin/', pin_chat_message, name='chat_message_pin'),
     path('chat/<int:room_id>/message/<int:message_id>/react/', react_chat_message, name='chat_message_react'),
     path('chat/<int:room_id>/theme/', set_chat_theme, name='chat_theme'),
     path('api/chat/<int:room_id>/messages/', chat_messages_api, name='chat_messages_api'),
+    path('api/chat/<int:room_id>/typing/', chat_typing_api, name='chat_typing_api'),
     path('api/notifications/counts/', notification_counts_api, name='notification_counts_api'),
     path('api/notifications/center/', notification_center_api, name='notification_center_api'),
     path('api/notifications/dismiss/', notification_dismiss_api, name='notification_dismiss_api'),
@@ -255,6 +272,7 @@ urlpatterns = [
 
     path('notes/', notes_view, name='notes'),
     path('notes/new/', note_create_view, name='note_create'),
+    path('notes/<int:pk>/', note_detail_view, name='note_detail'),
     path('notes/<int:pk>/edit/', note_edit_view, name='note_edit'),
     path('notes/<int:pk>/delete/', note_delete_view, name='note_delete'),
     path('notes/<int:pk>/pin/', note_toggle_pin_view, name='note_toggle_pin'),

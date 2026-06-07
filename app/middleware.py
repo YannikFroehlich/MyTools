@@ -1,6 +1,7 @@
 from urllib.parse import urlencode
 
 from django.conf import settings
+from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.urls import reverse
 
@@ -15,6 +16,23 @@ class LoginRequiredMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated or self._is_exempt(request.path):
+            if request.user.is_authenticated and not self._is_suspension_exempt(request.path):
+                from .models import UserSuspension
+
+                suspension = UserSuspension.active_for_user(request.user)
+                if suspension and not request.user.is_staff:
+                    return HttpResponseForbidden(
+                        (
+                            "<!doctype html><html><head><meta charset='utf-8'>"
+                            "<title>Account gesperrt</title></head><body>"
+                            "<main style='font-family:system-ui;margin:10vh auto;max-width:640px;padding:24px'>"
+                            "<h1>Account gesperrt</h1>"
+                            f"<p>Dein Account ist bis {suspension.ends_at:%d.%m.%Y %H:%M} gesperrt.</p>"
+                            f"<p>{suspension.reason or 'Kein Grund angegeben.'}</p>"
+                            "<p>Du kannst dich ueber das Browser-Menue oder nach Ablauf der Sperre erneut anmelden.</p>"
+                            "</main></body></html>"
+                        )
+                    )
             response = self.get_response(request)
             if request.user.is_authenticated:
                 touch_user_presence(request.user)
@@ -34,6 +52,9 @@ class LoginRequiredMiddleware:
             settings.MEDIA_URL,
         )
         return any(path.startswith(prefix) for prefix in exempt_prefixes if prefix)
+
+    def _is_suspension_exempt(self, path):
+        return path.startswith("/accounts/logout/") or path.startswith("/admin/")
 
 
 class PermissionsPolicyMiddleware:

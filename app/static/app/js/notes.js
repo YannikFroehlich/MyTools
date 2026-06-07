@@ -36,7 +36,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const command = button.dataset.command;
 
             focusEditor();
-            document.execCommand(command, false, null);
+            if (command === "insertChecklist") {
+                document.execCommand(
+                    "insertHTML",
+                    false,
+                    '<ul class="note-checklist"><li data-checked="false">Aufgabe</li></ul>'
+                );
+            } else {
+                document.execCommand(command, false, null);
+            }
             syncEditorToInput();
         });
     });

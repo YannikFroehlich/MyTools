@@ -77,6 +77,10 @@
                             <i class="fa-solid fa-list-ol"></i>
                         </button>
 
+                        <button type="button" class="editor-btn" data-command="insertChecklist" title="{% translate 'Checkliste' %}">
+                            <i class="fa-solid fa-list-check"></i>
+                        </button>
+
                         <span class="editor-separator"></span>
 
                         <button type="button" class="editor-btn" data-command="justifyLeft" title="{% translate 'Linksbündig' %}">
@@ -138,6 +142,30 @@
                     <label for="{{ form.color.id_for_label }}">{% translate "Farbe" %}</label>
                     {{ form.color }}
                     {{ form.color.errors }}
+                </div>
+            </div>
+
+            <div class="notes-form-row notes-form-row-wide">
+                <div class="notes-form-group">
+                    <label for="{{ form.reminder_at.id_for_label }}">{% translate "Erinnerung" %}</label>
+                    {{ form.reminder_at }}
+                    <small>{% translate "Optional: Die Notiz erscheint dann im Erinnerungsfilter." %}</small>
+                    {{ form.reminder_at.errors }}
+                </div>
+
+                <div class="notes-form-group">
+                    <label>{% translate "Teilen" %}</label>
+                    <div class="notes-share-box">
+                        {% if form.shared_with.field.queryset %}
+                            <div class="notes-share-options">
+                                {{ form.shared_with }}
+                            </div>
+                        {% else %}
+                            <p>{% translate "Du hast noch keine Freunde, mit denen du Notizen teilen kannst." %}</p>
+                        {% endif %}
+                    </div>
+                    <small>{% translate "Geteilte Freunde können die Notiz lesen, aber nicht bearbeiten." %}</small>
+                    {{ form.shared_with.errors }}
                 </div>
             </div>
 

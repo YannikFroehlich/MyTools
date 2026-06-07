@@ -1,3 +1,5 @@
+import re
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -10,7 +12,19 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
 from .chat_forms import ChatGroupSettingsForm
-from .models import ChatAttachment, ChatMessage, ChatMessageReaction, ChatMessageRead, ChatRoom, ChatRoomMember, Friendship, InboxItem, UserBlock, UserProfile
+from .models import (
+    ChatAttachment,
+    ChatMessage,
+    ChatMessageReaction,
+    ChatMessageRead,
+    ChatRoom,
+    ChatRoomMember,
+    ChatTypingStatus,
+    Friendship,
+    InboxItem,
+    UserBlock,
+    UserProfile,
+)
 from .profile_views import ensure_profiles_for_users, get_friend_profiles
 from .presence_utils import decorate_users_with_presence
 
@@ -18,7 +32,7 @@ User = get_user_model()
 
 
 def user_payload(user):
-    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile, _created = UserProfile.objects.get_or_create(user=user)
     return {
         "id": user.id,
         "username": user.username,
@@ -83,6 +97,7 @@ def decorate_room(room, current_user):
 CHAT_REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"]
 MAX_CHAT_ATTACHMENT_SIZE = 8 * 1024 * 1024
 CHAT_THEME_VALUES = {choice[0] for choice in ChatRoom.THEME_CHOICES}
+MENTION_RE = re.compile(r"@([\w.@+-]{1,150})")
 
 
 def attachment_payload(attachment):
@@ -103,6 +118,30 @@ def media_thumbnail_url(file_field, spec):
     return reverse("media_thumbnail", kwargs={"spec": spec, "source": file_field.name})
 
 
+def chat_day_label(value):
+    local_day = timezone.localtime(value).date()
+    today = timezone.localdate()
+    if local_day == today:
+        return _("Heute")
+    if local_day == today - timezone.timedelta(days=1):
+        return _("Gestern")
+    return timezone.localtime(value).strftime("%d.%m.%Y")
+
+
+def sender_profile_payload(user):
+    profile, _created = UserProfile.objects.get_or_create(user=user)
+    return {
+        "id": user.id,
+        "username": user.username,
+        "display_name": user.get_full_name() or user.username,
+        "profile_url": reverse("public_profile", args=[user.id]),
+        "avatar_url": media_thumbnail_url(profile.avatar, "avatar-small"),
+        "initials": profile.initials,
+        "bio": profile.bio[:140],
+        "status": profile.get_status_display(),
+        "status_text": profile.status_text,
+    }
+
 
 def reaction_payload(message, current_user):
     grouped = {}
@@ -114,10 +153,63 @@ def reaction_payload(message, current_user):
     return list(grouped.values())
 
 
+def mentioned_users_for_text(text, room, sender):
+    usernames = {match.group(1).lower() for match in MENTION_RE.finditer(text or "")}
+    if not usernames:
+        return User.objects.none()
+    query = Q()
+    for username in usernames:
+        query |= Q(username__iexact=username)
+    return room.members.filter(query, is_active=True).exclude(id=sender.id)
+
+
+def notify_mentions(message):
+    mentioned_users = list(mentioned_users_for_text(message.text, message.room, message.sender))
+    if not mentioned_users:
+        return []
+
+    target_url = reverse("chat_room", args=[message.room_id])
+    for mentioned_user in mentioned_users:
+        profile, _created = UserProfile.objects.get_or_create(user=mentioned_user)
+        muted_by_dnd = profile.status == UserProfile.STATUS_DND and profile.dnd_silence_notifications
+        if profile.notify_chat and not muted_by_dnd:
+            InboxItem.objects.create(
+                user=mentioned_user,
+                item_type=InboxItem.TYPE_CHAT,
+                title=_("Du wurdest erwaehnt"),
+                message=_("%(user)s hat dich im Chat erwaehnt.") % {"user": message.sender.username},
+                target_url=target_url,
+                icon="fa-solid fa-at",
+            )
+    return mentioned_users
+
+
+def typing_payload(room, current_user):
+    cutoff = timezone.now() - timezone.timedelta(seconds=7)
+    typing_users = (
+        ChatTypingStatus.objects
+        .filter(room=room, is_typing=True, updated_at__gte=cutoff)
+        .exclude(user=current_user)
+        .select_related("user")
+        .order_by("-updated_at")[:4]
+    )
+    return [
+        {
+            "id": typing.user_id,
+            "username": typing.user.username,
+            "display_name": typing.user.get_full_name() or typing.user.username,
+        }
+        for typing in typing_users
+    ]
+
+
 def decorate_message(message, current_user):
     message.reaction_items = reaction_payload(message, current_user)
     message.can_delete = message.sender_id == current_user.id
     message.read_label = read_label_for_message(message, current_user)
+    message.day_key = timezone.localtime(message.created_at).strftime("%Y-%m-%d")
+    message.day_label = chat_day_label(message.created_at)
+    message.sender_profile_payload = sender_profile_payload(message.sender)
     return message
 
 
@@ -272,22 +364,23 @@ def create_group_chat(request):
 def send_chat_message(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
     text = request.POST.get("text", "").strip()
-    uploaded_file = request.FILES.get("attachment")
+    uploaded_files = request.FILES.getlist("attachments") or request.FILES.getlist("attachment")
 
-    if not text and not uploaded_file:
+    if not text and not uploaded_files:
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"ok": False, "error": _("Nachricht darf nicht leer sein.")}, status=400)
         messages.error(request, _("Nachricht darf nicht leer sein."))
         return redirect("chat_room", room_id=room.id)
 
-    if uploaded_file and uploaded_file.size > MAX_CHAT_ATTACHMENT_SIZE:
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            return JsonResponse({"ok": False, "error": _("Der Anhang darf maximal 8 MB groß sein.")}, status=400)
-        messages.error(request, _("Der Anhang darf maximal 8 MB groß sein."))
-        return redirect("chat_room", room_id=room.id)
+    for uploaded_file in uploaded_files:
+        if uploaded_file.size > MAX_CHAT_ATTACHMENT_SIZE:
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"ok": False, "error": _("Der Anhang darf maximal 8 MB gross sein.")}, status=400)
+            messages.error(request, _("Der Anhang darf maximal 8 MB gross sein."))
+            return redirect("chat_room", room_id=room.id)
 
     message = ChatMessage.objects.create(room=room, sender=request.user, text=text[:1200])
-    if uploaded_file:
+    for uploaded_file in uploaded_files:
         ChatAttachment.objects.create(
             message=message,
             file=uploaded_file,
@@ -297,9 +390,18 @@ def send_chat_message(request, room_id):
         )
 
     room.save(update_fields=["updated_at"])
+    ChatTypingStatus.objects.update_or_create(
+        room=room,
+        user=request.user,
+        defaults={"is_typing": False},
+    )
     ChatRoomMember.objects.filter(room=room, user=request.user).update(last_read_at=timezone.now())
+    mentioned_users = notify_mentions(message)
+    mentioned_user_ids = {user.id for user in mentioned_users}
     for member in room.members.select_related("profile").exclude(id=request.user.id):
-        member_profile, _ = UserProfile.objects.get_or_create(user=member)
+        if member.id in mentioned_user_ids:
+            continue
+        member_profile, _created = UserProfile.objects.get_or_create(user=member)
         muted_by_dnd = member_profile.status == UserProfile.STATUS_DND and member_profile.dnd_silence_notifications
         if member_profile.notify_chat and not muted_by_dnd:
             InboxItem.objects.create(
@@ -315,7 +417,6 @@ def send_chat_message(request, room_id):
         return JsonResponse({"ok": True, "message": message_payload(message, request.user)})
 
     return redirect("chat_room", room_id=room.id)
-
 
 def mark_room_messages_read(room, user):
     unread_messages = room.messages.exclude(sender=user).exclude(read_receipts__user=user)[:200]
@@ -340,7 +441,7 @@ def read_label_for_message(message, current_user):
 
 
 def message_payload(message, current_user, pinned_message_id=None):
-    sender_profile, _ = UserProfile.objects.get_or_create(user=message.sender)
+    sender_payload = sender_profile_payload(message.sender)
     is_own = message.sender_id == current_user.id
     if pinned_message_id is None:
         pinned_message_id = getattr(message.room, "pinned_message_id", None)
@@ -348,21 +449,20 @@ def message_payload(message, current_user, pinned_message_id=None):
         "id": message.id,
         "text": message.text,
         "created_at": timezone.localtime(message.created_at).strftime("%d.%m.%Y %H:%M"),
+        "day_key": timezone.localtime(message.created_at).strftime("%Y-%m-%d"),
+        "day_label": chat_day_label(message.created_at),
+        "edited_at": timezone.localtime(message.edited_at).strftime("%d.%m.%Y %H:%M") if message.edited_at else "",
+        "is_edited": bool(message.edited_at),
         "is_own": is_own,
         "is_pinned": message.id == pinned_message_id,
         "delete_url": reverse("chat_message_delete", args=[message.room_id, message.id]) if is_own else "",
+        "edit_url": reverse("chat_message_edit", args=[message.room_id, message.id]) if is_own else "",
         "pin_url": reverse("chat_message_pin", args=[message.room_id, message.id]),
         "react_url": reverse("chat_message_react", args=[message.room_id, message.id]),
         "read_label": read_label_for_message(message, current_user) if is_own else "",
         "reactions": reaction_payload(message, current_user),
         "attachments": [attachment_payload(attachment) for attachment in message.attachments.all()],
-        "sender": {
-            "id": message.sender_id,
-            "username": message.sender.username,
-            "display_name": message.sender.get_full_name() or message.sender.username,
-            "avatar_url": media_thumbnail_url(sender_profile.avatar, "avatar-small"),
-            "initials": sender_profile.initials,
-        },
+        "sender": sender_payload,
     }
 
 
@@ -402,6 +502,9 @@ def chat_messages_api(request, room_id):
     updates = [
         {
             "id": message.id,
+            "text": message.text,
+            "edited_at": timezone.localtime(message.edited_at).strftime("%d.%m.%Y %H:%M") if message.edited_at else "",
+            "is_edited": bool(message.edited_at),
             "reactions": reaction_payload(message, request.user),
             "read_label": read_label_for_message(message, request.user),
             "is_pinned": message.id == room.pinned_message_id,
@@ -418,6 +521,7 @@ def chat_messages_api(request, room_id):
         "deleted_ids": deleted_ids,
         "updates": updates,
         "pinned_message": message_payload(pinned_message, request.user, room.pinned_message_id) if pinned_message else None,
+        "typing_users": typing_payload(room, request.user),
     })
 
 
@@ -434,6 +538,47 @@ def delete_chat_message(request, room_id, message_id):
 
     messages.success(request, _("Nachricht wurde gelöscht."))
     return redirect("chat_room", room_id=room.id)
+
+
+@login_required
+@require_POST
+def edit_chat_message(request, room_id, message_id):
+    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    message = get_object_or_404(
+        ChatMessage.objects.select_related("sender").prefetch_related("reactions", "attachments", "read_receipts"),
+        id=message_id,
+        room=room,
+        sender=request.user,
+    )
+    text = request.POST.get("text", "").strip()[:1200]
+    if not text:
+        return JsonResponse({"ok": False, "error": _("Nachricht darf nicht leer sein.")}, status=400)
+
+    message.text = text
+    message.edited_at = timezone.now()
+    message.save(update_fields=["text", "edited_at"])
+    room.save(update_fields=["updated_at"])
+    notify_mentions(message)
+    message = (
+        ChatMessage.objects
+        .select_related("sender", "sender__profile")
+        .prefetch_related("reactions", "attachments", "read_receipts")
+        .get(id=message.id)
+    )
+    return JsonResponse({"ok": True, "message": message_payload(message, request.user, room.pinned_message_id)})
+
+
+@login_required
+@require_POST
+def chat_typing_api(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    is_typing = request.POST.get("is_typing", "true") == "true"
+    ChatTypingStatus.objects.update_or_create(
+        room=room,
+        user=request.user,
+        defaults={"is_typing": is_typing},
+    )
+    return JsonResponse({"ok": True, "typing_users": typing_payload(room, request.user)})
 
 
 @login_required
