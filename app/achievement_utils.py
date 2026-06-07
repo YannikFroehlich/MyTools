@@ -1,4 +1,5 @@
 from django.db.models import Q, Sum
+from django.db.models.functions import TruncDate
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -25,6 +26,7 @@ from .models import (
     UnoGame,
     UnoPlayer,
     UserProfile,
+    UserPresence,
 )
 
 
@@ -34,6 +36,7 @@ CATEGORY_META = {
     "chat": {"label": _("Chat"), "icon": "fa-solid fa-comments"},
     "profile": {"label": _("Profil"), "icon": "fa-solid fa-id-card-clip"},
     "uploads": {"label": _("Uploads"), "icon": "fa-solid fa-share-nodes"},
+    "daily": {"label": _("Aktive Tage"), "icon": "fa-regular fa-calendar-check"},
 }
 
 
@@ -78,6 +81,56 @@ def achievement_definitions():
             "metric": "gallery_count",
             "target": 1,
             "xp": 35,
+        },
+        {
+            "key": "profile_showcase",
+            "category": "profile",
+            "label": _("Showcase gebaut"),
+            "description": _("Profilkarte oder Spielkarten angepasst."),
+            "icon": "fa-solid fa-palette",
+            "metric": "profile_card_customized",
+            "target": 1,
+            "xp": 55,
+        },
+        {
+            "key": "profile_collector",
+            "category": "profile",
+            "label": _("Galerie-Sammlung"),
+            "description": _("Fünf Profilbilder in der Galerie."),
+            "icon": "fa-solid fa-images",
+            "metric": "gallery_count",
+            "target": 5,
+            "xp": 85,
+        },
+        {
+            "key": "daily_visit",
+            "category": "daily",
+            "label": _("Tagesbesuch"),
+            "description": _("An einem Tag Aktivität gesammelt."),
+            "icon": "fa-regular fa-calendar-check",
+            "metric": "active_days",
+            "target": 1,
+            "xp": 25,
+        },
+        {
+            "key": "weekly_regular",
+            "category": "daily",
+            "label": _("Wochenrhythmus"),
+            "description": _("An sieben verschiedenen Tagen aktiv."),
+            "icon": "fa-solid fa-calendar-week",
+            "metric": "active_days",
+            "target": 7,
+            "xp": 95,
+        },
+        {
+            "key": "daily_anchor",
+            "category": "daily",
+            "label": _("Fester Anker"),
+            "description": _("An dreißig verschiedenen Tagen aktiv."),
+            "icon": "fa-solid fa-calendar-days",
+            "metric": "active_days",
+            "target": 30,
+            "xp": 180,
         },
         {
             "key": "first_note",
@@ -160,6 +213,16 @@ def achievement_definitions():
             "xp": 140,
         },
         {
+            "key": "chat_marathon",
+            "category": "chat",
+            "label": _("Chat-Marathon"),
+            "description": _("500 Chatnachrichten gesendet."),
+            "icon": "fa-solid fa-comment-dots",
+            "metric": "chat_messages",
+            "target": 500,
+            "xp": 230,
+        },
+        {
             "key": "room_hopper",
             "category": "chat",
             "label": _("Raumreisender"),
@@ -168,6 +231,16 @@ def achievement_definitions():
             "metric": "chat_rooms",
             "target": 3,
             "xp": 65,
+        },
+        {
+            "key": "group_regular",
+            "category": "chat",
+            "label": _("Gruppenmensch"),
+            "description": _("In drei Gruppenchats aktiv."),
+            "icon": "fa-solid fa-people-group",
+            "metric": "group_chat_rooms",
+            "target": 3,
+            "xp": 90,
         },
         {
             "key": "first_upload",
@@ -230,6 +303,46 @@ def achievement_definitions():
             "xp": 80,
         },
         {
+            "key": "benchmark_regular",
+            "category": "games",
+            "label": _("Benchmark-Routine"),
+            "description": _("Zehn Human-Benchmark-Runs gespielt."),
+            "icon": "fa-solid fa-stopwatch",
+            "metric": "human_benchmark_runs",
+            "target": 10,
+            "xp": 95,
+        },
+        {
+            "key": "highscore_master",
+            "category": "games",
+            "label": _("Highscore-Meister"),
+            "description": _("Alle fünf Highscore-Slots gefüllt."),
+            "icon": "fa-solid fa-ranking-star",
+            "metric": "highscores_count",
+            "target": 5,
+            "xp": 150,
+        },
+        {
+            "key": "cookie_collector",
+            "category": "games",
+            "label": _("Cookie-Sammler"),
+            "description": _("25 Cookie-Cosmos-Achievements gesammelt."),
+            "icon": "fa-solid fa-cookie-bite",
+            "metric": "cookie_achievements",
+            "target": 25,
+            "xp": 120,
+        },
+        {
+            "key": "skribble_artist",
+            "category": "games",
+            "label": _("Zeichenhand"),
+            "description": _("Zehn Skribble-Zeichnungen gemacht."),
+            "icon": "fa-solid fa-pen-nib",
+            "metric": "skribble_drawings",
+            "target": 10,
+            "xp": 115,
+        },
+        {
             "key": "table_player",
             "category": "games",
             "label": _("Mitspieler"),
@@ -250,6 +363,16 @@ def achievement_definitions():
             "xp": 80,
         },
         {
+            "key": "winner_circle",
+            "category": "games",
+            "label": _("Siegesserie"),
+            "description": _("Fünf Spiele gewonnen."),
+            "icon": "fa-solid fa-medal",
+            "metric": "wins_count",
+            "target": 5,
+            "xp": 150,
+        },
+        {
             "key": "game_veteran",
             "category": "games",
             "label": _("Game Veteran"),
@@ -258,6 +381,16 @@ def achievement_definitions():
             "metric": "game_activity",
             "target": 25,
             "xp": 150,
+        },
+        {
+            "key": "multiplayer_veteran",
+            "category": "games",
+            "label": _("Lobby-Veteran"),
+            "description": _("50 Multiplayer-Teilnahmen gesammelt."),
+            "icon": "fa-solid fa-users",
+            "metric": "multiplayer_entries",
+            "target": 50,
+            "xp": 220,
         },
     ]
 
@@ -279,6 +412,85 @@ def _profile_field_count(user):
     ])
 
 
+def _profile_card_customized(user):
+    profile = UserProfile.objects.filter(user=user).first()
+    if not profile:
+        return 0
+
+    defaults = {
+        "profile_card_style": UserProfile.CARD_STYLE_GLASS,
+        "profile_card_primary": "#7c3aed",
+        "profile_card_secondary": "#06b6d4",
+        "profile_card_tertiary": "#c026d3",
+        "profile_card_pattern": UserProfile.CARD_PATTERN_ORBS,
+        "profile_card_radius": UserProfile.CARD_RADIUS_BOLD,
+        "profile_card_avatar_shape": UserProfile.CARD_AVATAR_ROUNDED,
+        "profile_card_badge_text": "MyTools",
+    }
+    changed_style = any(getattr(profile, field) != value for field, value in defaults.items())
+    changed_game_cards = bool(profile.profile_game_cards)
+    return int(changed_style or changed_game_cards)
+
+
+def _date_from_value(value):
+    if not value:
+        return None
+    if hasattr(value, "date"):
+        return value.date()
+    return value
+
+
+def _add_queryset_days(days, queryset, field_name):
+    null_filter = {f"{field_name}__isnull": False}
+    for active_day in (
+        queryset
+        .filter(**null_filter)
+        .annotate(active_day=TruncDate(field_name))
+        .values_list("active_day", flat=True)
+        .distinct()
+    ):
+        if active_day:
+            days.add(active_day)
+
+
+def _active_days_for_user(user, include_private=True, include_games=True):
+    days = set()
+    for value in [getattr(user, "date_joined", None), getattr(user, "last_login", None)]:
+        active_day = _date_from_value(value)
+        if active_day:
+            days.add(active_day)
+
+    presence = UserPresence.objects.filter(user=user).first()
+    active_day = _date_from_value(getattr(presence, "last_seen", None))
+    if active_day:
+        days.add(active_day)
+
+    if include_private:
+        _add_queryset_days(days, Note.objects.filter(user=user), "created_at")
+        _add_queryset_days(days, ChatMessage.objects.filter(sender=user), "created_at")
+        _add_queryset_days(days, FileShare.objects.filter(owner=user), "created_at")
+        _add_queryset_days(days, ProfileGalleryImage.objects.filter(user=user), "created_at")
+
+    if include_games:
+        _add_queryset_days(days, HumanBenchmarkScore.objects.filter(user=user), "created_at")
+        _add_queryset_days(days, HumanBenchmarkHighScore.objects.filter(user=user), "achieved_at")
+        _add_queryset_days(days, TicTacToeGame.objects.filter(Q(player_x=user) | Q(player_o=user)), "created_at")
+        _add_queryset_days(days, ConnectFourGame.objects.filter(Q(player_red=user) | Q(player_yellow=user)), "created_at")
+        _add_queryset_days(days, BattleshipGame.objects.filter(Q(player_a=user) | Q(player_b=user)), "created_at")
+        _add_queryset_days(days, UnoPlayer.objects.filter(user=user), "joined_at")
+        _add_queryset_days(days, KniffelPlayer.objects.filter(user=user), "joined_at")
+        _add_queryset_days(days, StadtLandFlussPlayer.objects.filter(user=user), "joined_at")
+        _add_queryset_days(days, HangmanPlayer.objects.filter(user=user), "joined_at")
+        _add_queryset_days(days, DrawingGamePlayer.objects.filter(user=user), "joined_at")
+
+        cookie_highscore = CookieClickerHighScore.objects.filter(user=user).first()
+        active_day = _date_from_value(getattr(cookie_highscore, "achieved_at", None))
+        if active_day:
+            days.add(active_day)
+
+    return len(days)
+
+
 def collect_achievement_metrics(user, include_private=True, include_games=True):
     friends_count = Friendship.accepted_for_user(user).count()
     gallery_items = ProfileGalleryImage.objects.filter(user=user)
@@ -290,11 +502,13 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
         "profile_fields": _profile_field_count(user),
         "friends_count": friends_count,
         "gallery_count": gallery_count,
+        "profile_card_customized": _profile_card_customized(user),
         "notes_count": 0,
         "note_reminders": 0,
         "notes_shared": 0,
         "chat_messages": 0,
         "chat_rooms": 0,
+        "group_chat_rooms": 0,
         "uploads_count": 0,
         "public_uploads": 0,
         "upload_downloads": 0,
@@ -302,6 +516,10 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
         "highscores_count": 0,
         "multiplayer_entries": 0,
         "wins_count": 0,
+        "human_benchmark_runs": 0,
+        "cookie_achievements": 0,
+        "skribble_drawings": 0,
+        "active_days": _active_days_for_user(user, include_private=include_private, include_games=include_games),
     }
 
     if include_private:
@@ -312,6 +530,7 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
             "notes_shared": _safe_count(user_notes.filter(shared_with__isnull=False).distinct()),
             "chat_messages": _safe_count(ChatMessage.objects.filter(sender=user)),
             "chat_rooms": _safe_count(ChatRoom.objects.filter(room_memberships__user=user).distinct()),
+            "group_chat_rooms": _safe_count(ChatRoom.objects.filter(room_type=ChatRoom.ROOM_GROUP, room_memberships__user=user).distinct()),
             "uploads_count": _safe_count(FileShare.objects.filter(owner=user)),
             "public_uploads": _safe_count(FileShare.objects.filter(owner=user, is_public_link=True)),
             "upload_downloads": FileShare.objects.filter(owner=user).aggregate(total=Sum("download_count"))["total"] or 0,
@@ -319,12 +538,14 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
 
     if include_games:
         highscore_count = _safe_count(HumanBenchmarkHighScore.objects.filter(user=user))
-        if CookieClickerHighScore.objects.filter(user=user).exists():
+        cookie_highscore = CookieClickerHighScore.objects.filter(user=user).first()
+        if cookie_highscore:
             highscore_count += 1
 
         skribble_stats = SkribbleStats.objects.filter(user=user).first()
         skribble_played = skribble_stats.games_played if skribble_stats else 0
         skribble_wins = skribble_stats.games_won if skribble_stats else 0
+        skribble_drawings = skribble_stats.drawings_made if skribble_stats else 0
 
         tictactoe_entries = _safe_count(TicTacToeGame.objects.filter(Q(player_x=user) | Q(player_o=user)).distinct())
         connectfour_entries = _safe_count(ConnectFourGame.objects.filter(Q(player_red=user) | Q(player_yellow=user)).distinct())
@@ -375,6 +596,9 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
             "highscores_count": highscore_count,
             "multiplayer_entries": multiplayer_entries,
             "wins_count": wins_count,
+            "human_benchmark_runs": _safe_count(HumanBenchmarkScore.objects.filter(user=user)),
+            "cookie_achievements": cookie_highscore.achievements_count if cookie_highscore else 0,
+            "skribble_drawings": skribble_drawings,
         })
 
     return metrics
@@ -413,7 +637,7 @@ def get_achievement_summary(user, include_private=True, include_games=True):
     if include_games:
         allowed_categories.add("games")
     if include_private:
-        allowed_categories.update({"notes", "chat", "uploads"})
+        allowed_categories.update({"notes", "chat", "uploads", "daily"})
 
     achievements = []
     for definition in achievement_definitions():
