@@ -25,12 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ───────────────── SERVER-SAVED LOCATIONS UX ───────────────── */
 
     const savedLocationsCard = document.querySelector(".saved-locations-card");
-    const savedLocationButtons = document.querySelectorAll(".saved-location-button");
-    const deleteLocationButtons = document.querySelectorAll(".saved-location-delete");
+    const savedLocationButtons = document.querySelectorAll(".saved-location-button, .compact-location-button");
+    const deleteLocationButtons = document.querySelectorAll(".saved-location-delete, .compact-location-delete");
+    const defaultLocationButtons = document.querySelectorAll(".compact-location-default");
     const addLocationForm = document.querySelector(".saved-location-add-form");
     const addLocationInput = document.querySelector(".saved-location-add-input");
-    const saveCurrentLocationForm = document.querySelector(".save-current-location-form");
-    const saveCurrentLocationButton = document.querySelector(".save-current-location-button");
+    const saveCurrentLocationForms = document.querySelectorAll(".save-current-location-form, .compact-save-current-form");
 
     /*
         Erwartete HTML-Struktur ungefähr:
@@ -151,14 +151,32 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (saveCurrentLocationForm && saveCurrentLocationButton) {
-        saveCurrentLocationForm.addEventListener("submit", () => {
-            saveCurrentLocationButton.disabled = true;
-            saveCurrentLocationButton.classList.add("is-loading");
-            saveCurrentLocationButton.innerHTML =
-                `<i class="fa-solid fa-spinner fa-spin"></i><span>Speichern...</span>`;
+    saveCurrentLocationForms.forEach((form) => {
+        form.addEventListener("submit", () => {
+            const button = form.querySelector("button[type='submit']");
+            if (!button) {
+                return;
+            }
+
+            button.disabled = true;
+            button.classList.add("is-loading");
+            button.innerHTML = button.classList.contains("compact-save-current-button")
+                ? `<i class="fa-solid fa-spinner fa-spin"></i>`
+                : `<i class="fa-solid fa-spinner fa-spin"></i><span>Speichern...</span>`;
         });
-    }
+    });
+
+    defaultLocationButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            button.disabled = true;
+            button.classList.add("is-loading");
+
+            const icon = button.querySelector("i");
+            if (icon) {
+                icon.className = "fa-solid fa-spinner fa-spin";
+            }
+        });
+    });
 
 
     /* ───────────────── TEMPERATUR-ZÄHLER-ANIMATION ───────────────── */

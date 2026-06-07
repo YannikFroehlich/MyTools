@@ -743,6 +743,7 @@ class WeatherLocation(models.Model):
         blank=True,
     )
     name = models.CharField(max_length=120)
+    is_default = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -752,6 +753,11 @@ class WeatherLocation(models.Model):
         verbose_name_plural = "Wetter-Orte"
         constraints = [
             models.UniqueConstraint(fields=["user", "name"], name="unique_weather_location_per_user"),
+            models.UniqueConstraint(
+                fields=["user"],
+                condition=models.Q(is_default=True),
+                name="unique_default_weather_location_per_user",
+            ),
         ]
 
     def __str__(self):

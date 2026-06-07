@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-07 14:05+0200\n"
+"POT-Creation-Date: 2026-06-07 20:52+0200\n"
 "PO-Revision-Date: 2026-05-30 18:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: .\app\achievement_utils.py:32 .\app\platform_utils.py:11
+#: .\app\achievement_utils.py:34 .\app\platform_utils.py:11
 #: .\app\platform_utils.py:12 .\app\platform_utils.py:13
 #: .\app\platform_utils.py:14 .\app\platform_utils.py:15
 #: .\app\platform_utils.py:16 .\app\platform_utils.py:17
@@ -29,8 +29,8 @@ msgstr ""
 msgid "Spiele"
 msgstr "Games"
 
-#: .\app\achievement_utils.py:33 .\app\models.py:924 .\app\platform_utils.py:9
-#: .\app\platform_utils.py:52 .\app\templates\app\about.html:158
+#: .\app\achievement_utils.py:35 .\app\models.py:930 .\app\platform_utils.py:9
+#: .\app\platform_utils.py:52 .\app\templates\app\about.html:112
 #: .\app\templates\app\base.html:432 .\app\templates\app\base.html:435
 #: .\app\templates\app\base.html:918 .\app\templates\app\home.html:562
 #: .\app\templates\app\home.html:628 .\app\templates\app\notes.html:4
@@ -38,203 +38,350 @@ msgstr "Games"
 msgid "Notizen"
 msgstr "Notes"
 
-#: .\app\achievement_utils.py:34 .\app\models.py:2470 .\app\platform_utils.py:7
-#: .\app\templates\app\about.html:238 .\app\templates\app\base.html:846
+#: .\app\achievement_utils.py:36 .\app\models.py:2476 .\app\platform_utils.py:7
+#: .\app\templates\app\about.html:192 .\app\templates\app\base.html:846
 #: .\app\templates\app\base.html:913 .\app\templates\app\chat.html:6
 #: .\app\templates\app\chat.html:18 .\app\templates\app\inbox.html:22
 #: .\app\templates\app\stream_deck.html:217 .\app\templates\app\users.html:51
 msgid "Chat"
 msgstr "Chat"
 
-#: .\app\achievement_utils.py:35 .\app\platform_utils.py:40
-#: .\app\templates\app\about.html:294 .\app\templates\app\chat.html:332
-#: .\app\templates\app\profile.html:6
+#: .\app\achievement_utils.py:37 .\app\platform_utils.py:40
+#: .\app\templates\app\chat.html:332 .\app\templates\app\profile.html:6
 #: .\app\templates\app\public_profile.html:48
 msgid "Profil"
 msgstr "Profile"
 
-#: .\app\achievement_utils.py:36 .\app\templates\app\moderation.html:51
+#: .\app\achievement_utils.py:38 .\app\templates\app\moderation.html:51
 msgid "Uploads"
 msgstr "Uploads"
 
-#: .\app\achievement_utils.py:45
+#: .\app\achievement_utils.py:39
+#, fuzzy
+#| msgid "Aktive"
+msgid "Aktive Tage"
+msgstr "Active"
+
+#: .\app\achievement_utils.py:48
 msgid "Profil gestartet"
 msgstr "Profile started"
 
-#: .\app\achievement_utils.py:46
+#: .\app\achievement_utils.py:49
 msgid "Profilinformationen gepflegt."
 msgstr "Profile information filled in."
 
-#: .\app\achievement_utils.py:55
+#: .\app\achievement_utils.py:58
 msgid "Profil komplett"
 msgstr "Profile complete"
 
-#: .\app\achievement_utils.py:56
+#: .\app\achievement_utils.py:59
 msgid "Avatar, Banner, Bio und Name sind gepflegt."
 msgstr "Avatar, banner, bio, and name are filled in."
 
-#: .\app\achievement_utils.py:65
+#: .\app\achievement_utils.py:68
 msgid "Erster Kontakt"
 msgstr "First contact"
 
-#: .\app\achievement_utils.py:66
+#: .\app\achievement_utils.py:69
 msgid "Mindestens ein Freund verbunden."
 msgstr "At least one friend connected."
 
-#: .\app\achievement_utils.py:75
+#: .\app\achievement_utils.py:78
 msgid "Galerie-Moment"
 msgstr "Gallery moment"
 
-#: .\app\achievement_utils.py:76
+#: .\app\achievement_utils.py:79
 msgid "Ein Profilbild in die Galerie geladen."
 msgstr "Uploaded a profile picture to the gallery."
 
-#: .\app\achievement_utils.py:85
+#: .\app\achievement_utils.py:88
+msgid "Showcase gebaut"
+msgstr ""
+
+#: .\app\achievement_utils.py:89
+#, fuzzy
+#| msgid "Design anpassen"
+msgid "Profilkarte oder Spielkarten angepasst."
+msgstr "Customize design"
+
+#: .\app\achievement_utils.py:98
+#, fuzzy
+#| msgid "Galerie-Moment"
+msgid "Galerie-Sammlung"
+msgstr "Gallery moment"
+
+#: .\app\achievement_utils.py:99
+#, fuzzy
+#| msgid "Ein Profilbild in die Galerie geladen."
+msgid "Fünf Profilbilder in der Galerie."
+msgstr "Uploaded a profile picture to the gallery."
+
+#: .\app\achievement_utils.py:108
+msgid "Tagesbesuch"
+msgstr ""
+
+#: .\app\achievement_utils.py:109
+#, fuzzy
+#| msgid "25 Spielaktivitäten gesammelt."
+msgid "An einem Tag Aktivität gesammelt."
+msgstr "Logged 25 game activities."
+
+#: .\app\achievement_utils.py:118
+msgid "Wochenrhythmus"
+msgstr ""
+
+#: .\app\achievement_utils.py:119
+msgid "An sieben verschiedenen Tagen aktiv."
+msgstr ""
+
+#: .\app\achievement_utils.py:128
+#, fuzzy
+#| msgid "Gestern"
+msgid "Fester Anker"
+msgstr "Yesterday"
+
+#: .\app\achievement_utils.py:129
+msgid "An dreißig verschiedenen Tagen aktiv."
+msgstr ""
+
+#: .\app\achievement_utils.py:138
 msgid "Erste Notiz"
 msgstr "First note"
 
-#: .\app\achievement_utils.py:86
+#: .\app\achievement_utils.py:139
 msgid "Eine Notiz erstellt."
 msgstr "Created a note."
 
-#: .\app\achievement_utils.py:95
+#: .\app\achievement_utils.py:148
 msgid "Notizsammler"
 msgstr "Note collector"
 
-#: .\app\achievement_utils.py:96
+#: .\app\achievement_utils.py:149
 msgid "Fünf Notizen erstellt."
 msgstr "Created five notes."
 
-#: .\app\achievement_utils.py:105
+#: .\app\achievement_utils.py:158
 msgid "Wissensarchitekt"
 msgstr "Knowledge architect"
 
-#: .\app\achievement_utils.py:106
+#: .\app\achievement_utils.py:159
 msgid "Zwanzig Notizen erstellt."
 msgstr "Created twenty notes."
 
-#: .\app\achievement_utils.py:115
+#: .\app\achievement_utils.py:168
 msgid "Dran gedacht"
 msgstr "Remembered it"
 
-#: .\app\achievement_utils.py:116
+#: .\app\achievement_utils.py:169
 msgid "Eine Notiz mit Erinnerung versehen."
 msgstr "Added a reminder to a note."
 
-#: .\app\achievement_utils.py:125
+#: .\app\achievement_utils.py:178
 msgid "Geteilte Idee"
 msgstr "Shared idea"
 
-#: .\app\achievement_utils.py:126
+#: .\app\achievement_utils.py:179
 msgid "Eine Notiz mit Freunden geteilt."
 msgstr "Shared a note with friends."
 
-#: .\app\achievement_utils.py:135
+#: .\app\achievement_utils.py:188
 msgid "Erste Nachricht"
 msgstr "First message"
 
-#: .\app\achievement_utils.py:136
+#: .\app\achievement_utils.py:189
 msgid "Eine Chatnachricht gesendet."
 msgstr "Sent a chat message."
 
-#: .\app\achievement_utils.py:145
+#: .\app\achievement_utils.py:198
 msgid "Gesprächig"
 msgstr "Talkative"
 
-#: .\app\achievement_utils.py:146
+#: .\app\achievement_utils.py:199
 msgid "25 Chatnachrichten gesendet."
 msgstr "Sent 25 chat messages."
 
-#: .\app\achievement_utils.py:155
+#: .\app\achievement_utils.py:208
 msgid "Stammtisch"
 msgstr "Regular table"
 
-#: .\app\achievement_utils.py:156
+#: .\app\achievement_utils.py:209
 msgid "100 Chatnachrichten gesendet."
 msgstr "Sent 100 chat messages."
 
-#: .\app\achievement_utils.py:165
+#: .\app\achievement_utils.py:218
+msgid "Chat-Marathon"
+msgstr ""
+
+#: .\app\achievement_utils.py:219
+#, fuzzy
+#| msgid "100 Chatnachrichten gesendet."
+msgid "500 Chatnachrichten gesendet."
+msgstr "Sent 100 chat messages."
+
+#: .\app\achievement_utils.py:228
 msgid "Raumreisender"
 msgstr "Room traveler"
 
-#: .\app\achievement_utils.py:166
+#: .\app\achievement_utils.py:229
 msgid "In drei Chaträumen aktiv."
 msgstr "Active in three chat rooms."
 
-#: .\app\achievement_utils.py:175
+#: .\app\achievement_utils.py:238
+#, fuzzy
+#| msgid "Gruppenname"
+msgid "Gruppenmensch"
+msgstr "Group name"
+
+#: .\app\achievement_utils.py:239
+#, fuzzy
+#| msgid "In drei Chaträumen aktiv."
+msgid "In drei Gruppenchats aktiv."
+msgstr "Active in three chat rooms."
+
+#: .\app\achievement_utils.py:248
 msgid "Erster Upload"
 msgstr "First upload"
 
-#: .\app\achievement_utils.py:176
+#: .\app\achievement_utils.py:249
 msgid "Eine Datei geteilt."
 msgstr "File shared."
 
-#: .\app\achievement_utils.py:185
+#: .\app\achievement_utils.py:258
 msgid "Datei-Verteiler"
 msgstr "File distributor"
 
-#: .\app\achievement_utils.py:186
+#: .\app\achievement_utils.py:259
 msgid "Fünf Dateien geteilt."
 msgstr "Shared five files."
 
-#: .\app\achievement_utils.py:195 .\app\templates\app\moderation.html:133
+#: .\app\achievement_utils.py:268 .\app\templates\app\moderation.html:133
 msgid "Privater Link"
 msgstr "Private link"
 
-#: .\app\achievement_utils.py:196
+#: .\app\achievement_utils.py:269
 msgid "Eine Datei per privatem Link freigegeben."
 msgstr "Shared a file via private link."
 
 # | msgid "Angepinnt"
-#: .\app\achievement_utils.py:205
+#: .\app\achievement_utils.py:278
 msgid "Angekommen"
 msgstr "Arrived"
 
-#: .\app\achievement_utils.py:206
+#: .\app\achievement_utils.py:279
 msgid "Zehn Downloads deiner Freigaben erreicht."
 msgstr "Reached ten downloads of your shares."
 
 # | msgid "Stream starten"
-#: .\app\achievement_utils.py:215
+#: .\app\achievement_utils.py:288
 msgid "Spiel gestartet"
 msgstr "Game started"
 
-#: .\app\achievement_utils.py:216
+#: .\app\achievement_utils.py:289
 msgid "Erste Spielaktivität gesammelt."
 msgstr "Logged your first game activity."
 
-#: .\app\achievement_utils.py:225
+#: .\app\achievement_utils.py:298
 msgid "Score-Jäger"
 msgstr "Score hunter"
 
-#: .\app\achievement_utils.py:226
+#: .\app\achievement_utils.py:299
 msgid "Drei Highscores erspielt."
 msgstr "Earned three high scores."
 
+#: .\app\achievement_utils.py:308
+#, fuzzy
+#| msgid "Benchmark Tests"
+msgid "Benchmark-Routine"
+msgstr "Benchmark tests"
+
+#: .\app\achievement_utils.py:309
+#, fuzzy
+#| msgid "Noch keine Runden gespeichert."
+msgid "Zehn Human-Benchmark-Runs gespielt."
+msgstr "No laps saved yet."
+
+#: .\app\achievement_utils.py:318
+#, fuzzy
+#| msgid "Highscores"
+msgid "Highscore-Meister"
+msgstr "Highscores"
+
+#: .\app\achievement_utils.py:319
+msgid "Alle fünf Highscore-Slots gefüllt."
+msgstr ""
+
+#: .\app\achievement_utils.py:328
+#, fuzzy
+#| msgid "Notizsammler"
+msgid "Cookie-Sammler"
+msgstr "Note collector"
+
+#: .\app\achievement_utils.py:329
+msgid "25 Cookie-Cosmos-Achievements gesammelt."
+msgstr ""
+
+# | msgid "Speicher"
+#: .\app\achievement_utils.py:338
+#, fuzzy
+#| msgid "Zeichner"
+msgid "Zeichenhand"
+msgstr "Drawer"
+
+#: .\app\achievement_utils.py:339
+#, fuzzy
+#| msgid "offene Skribble-Einladungen"
+msgid "Zehn Skribble-Zeichnungen gemacht."
+msgstr "pending Skribble invitations"
+
 # | msgid "Spiele"
-#: .\app\achievement_utils.py:235
+#: .\app\achievement_utils.py:348
 msgid "Mitspieler"
 msgstr "Teammate"
 
-#: .\app\achievement_utils.py:236
+#: .\app\achievement_utils.py:349
 msgid "Zehn Multiplayer-Teilnahmen gesammelt."
 msgstr "Joined ten multiplayer sessions."
 
-#: .\app\achievement_utils.py:245
+#: .\app\achievement_utils.py:358
 msgid "Erster Sieg"
 msgstr "First win"
 
-#: .\app\achievement_utils.py:246
+#: .\app\achievement_utils.py:359
 msgid "Ein Spiel gewonnen."
 msgstr "Won a game."
 
-#: .\app\achievement_utils.py:255
+#: .\app\achievement_utils.py:368
+#, fuzzy
+#| msgid "Siege"
+msgid "Siegesserie"
+msgstr "Wins"
+
+#: .\app\achievement_utils.py:369
+#, fuzzy
+#| msgid "Ein Spiel gewonnen."
+msgid "Fünf Spiele gewonnen."
+msgstr "Won a game."
+
+#: .\app\achievement_utils.py:378
 msgid "Game Veteran"
 msgstr "Game veteran"
 
-#: .\app\achievement_utils.py:256
+#: .\app\achievement_utils.py:379
 msgid "25 Spielaktivitäten gesammelt."
 msgstr "Logged 25 game activities."
+
+# | msgid "Account erstellen"
+#: .\app\achievement_utils.py:388
+#, fuzzy
+#| msgid "Lobby erstellen"
+msgid "Lobby-Veteran"
+msgstr "Create lobby"
+
+#: .\app\achievement_utils.py:389
+#, fuzzy
+#| msgid "Zehn Multiplayer-Teilnahmen gesammelt."
+msgid "50 Multiplayer-Teilnahmen gesammelt."
+msgstr "Joined ten multiplayer sessions."
 
 #: .\app\battleship_views.py:26
 msgid "Träger"
@@ -327,9 +474,9 @@ msgstr "Choose a square on the radar."
 msgid "Der Gegner ist am Zug."
 msgstr "Your opponent's turn."
 
-#: .\app\battleship_views.py:391 .\app\templates\app\about.html:270
-#: .\app\templates\app\base.html:147 .\app\templates\app\base.html:150
-#: .\app\templates\app\battleship_home.html:4
+#: .\app\battleship_views.py:391 .\app\notification_utils.py:249
+#: .\app\notification_utils.py:260 .\app\templates\app\base.html:147
+#: .\app\templates\app\base.html:150 .\app\templates\app\battleship_home.html:4
 #: .\app\templates\app\battleship_home.html:27
 #: .\app\templates\app\battleship_home.html:44
 #: .\app\templates\app\battleship_lobby.html:4
@@ -621,8 +768,8 @@ msgstr "Your turn."
 msgid "Warte auf den Zug deines Gegners."
 msgstr "Waiting for your opponent's move."
 
-#: .\app\connectfour_views.py:293 .\app\performance_tools_views.py:196
-#: .\app\templates\app\about.html:278 .\app\templates\app\base.html:160
+#: .\app\connectfour_views.py:293 .\app\notification_utils.py:233
+#: .\app\performance_tools_views.py:196 .\app\templates\app\base.html:160
 #: .\app\templates\app\base.html:163
 #: .\app\templates\app\connectfour_home.html:4
 #: .\app\templates\app\connectfour_home.html:27
@@ -679,32 +826,32 @@ msgid "Vier-gewinnt-Raum wurde gelöscht."
 msgstr "Connect Four room was deleted."
 
 #: .\app\forms.py:49 .\app\models.py:561 .\app\models.py:671
-#: .\app\models.py:992 .\app\templates\app\base.html:619
+#: .\app\models.py:998 .\app\templates\app\base.html:619
 #: .\app\templates\app\home.html:695 .\app\templates\app\home.html:908
 #: .\app\templates\app\uno_lobby.html:186 .\app\uno_views.py:25
 msgid "Blau"
 msgstr "Blue"
 
 #: .\app\forms.py:50 .\app\models.py:563 .\app\models.py:672
-#: .\app\models.py:994 .\app\templates\app\home.html:705
+#: .\app\models.py:1000 .\app\templates\app\home.html:705
 #: .\app\templates\app\home.html:918
 msgid "Lila"
 msgstr "Purple"
 
 #: .\app\forms.py:51 .\app\models.py:562 .\app\models.py:673
-#: .\app\models.py:993 .\app\templates\app\home.html:700
+#: .\app\models.py:999 .\app\templates\app\home.html:700
 #: .\app\templates\app\home.html:913 .\app\uno_views.py:24
 msgid "Grün"
 msgstr "Green"
 
 #: .\app\forms.py:52 .\app\models.py:564 .\app\models.py:674
-#: .\app\models.py:995 .\app\templates\app\home.html:710
+#: .\app\models.py:1001 .\app\templates\app\home.html:710
 #: .\app\templates\app\home.html:923
 msgid "Orange"
 msgstr "Orange"
 
 #: .\app\forms.py:53 .\app\models.py:565 .\app\models.py:675
-#: .\app\models.py:996 .\app\models.py:1311 .\app\templates\app\home.html:715
+#: .\app\models.py:1002 .\app\models.py:1317 .\app\templates\app\home.html:715
 #: .\app\templates\app\home.html:928 .\app\templates\app\uno_lobby.html:183
 #: .\app\uno_views.py:22
 msgid "Rot"
@@ -790,7 +937,7 @@ msgstr "Invite friends"
 
 #: .\app\forms.py:164 .\app\templates\app\note_form.html:142
 #: .\app\templates\app\skribble_lobby.html:215
-#: .\app\templates\app\stream_deck.html:249
+#: .\app\templates\app\stream_deck.html:252
 #: .\app\templates\app\uno_lobby.html:156
 msgid "Farbe"
 msgstr "Color"
@@ -1121,10 +1268,11 @@ msgstr ""
 msgid "Fünf Zahlen in Folge"
 msgstr ""
 
-#: .\app\kniffel_views.py:41 .\app\kniffel_views.py:493 .\app\models.py:934
-#: .\app\platform_utils.py:13 .\app\platform_utils.py:45
-#: .\app\templates\app\base.html:199 .\app\templates\app\base.html:202
-#: .\app\templates\app\home.html:636 .\app\templates\app\kniffel_home.html:4
+#: .\app\kniffel_views.py:41 .\app\kniffel_views.py:493 .\app\models.py:940
+#: .\app\notification_utils.py:288 .\app\platform_utils.py:13
+#: .\app\platform_utils.py:45 .\app\templates\app\base.html:199
+#: .\app\templates\app\base.html:202 .\app\templates\app\home.html:636
+#: .\app\templates\app\kniffel_home.html:4
 #: .\app\templates\app\kniffel_home.html:27
 #: .\app\templates\app\kniffel_home.html:47
 #: .\app\templates\app\kniffel_lobby.html:4
@@ -1342,11 +1490,11 @@ msgstr "Unlimited"
 msgid "Datei-Share Upload-Limit"
 msgstr "File share upload limit"
 
-#: .\app\models.py:107 .\app\models.py:945 .\app\models.py:973
+#: .\app\models.py:107 .\app\models.py:951 .\app\models.py:979
 msgid "Glass"
 msgstr "Glass"
 
-#: .\app\models.py:108 .\app\models.py:946
+#: .\app\models.py:108 .\app\models.py:952
 msgid "Neon"
 msgstr "Neon"
 
@@ -1360,7 +1508,7 @@ msgstr "Camera"
 msgid "Soft"
 msgstr ""
 
-#: .\app\models.py:111 .\app\models.py:944
+#: .\app\models.py:111 .\app\models.py:950
 msgid "Minimal"
 msgstr "Minimal"
 
@@ -1393,7 +1541,7 @@ msgid "Leicht rund"
 msgstr "Not connected"
 
 # | msgid "Runde"
-#: .\app\models.py:135 .\app\models.py:2097
+#: .\app\models.py:135 .\app\models.py:2103
 msgid "Rund"
 msgstr "Round"
 
@@ -1517,7 +1665,7 @@ msgstr ""
 msgid "Forest"
 msgstr ""
 
-#: .\app\models.py:380 .\app\models.py:975 .\app\templates\app\base.html:639
+#: .\app\models.py:380 .\app\models.py:981 .\app\templates\app\base.html:639
 msgid "Sunset"
 msgstr "Sunset"
 
@@ -1543,26 +1691,26 @@ msgstr "Attachments must not be larger than 8 MB."
 msgid "Geteilt mit"
 msgstr "Split"
 
-#: .\app\models.py:923 .\app\platform_utils.py:6 .\app\platform_utils.py:51
-#: .\app\templates\app\about.html:142 .\app\templates\app\base.html:49
+#: .\app\models.py:929 .\app\platform_utils.py:6 .\app\platform_utils.py:51
+#: .\app\templates\app\about.html:102 .\app\templates\app\base.html:49
 #: .\app\templates\app\base.html:903 .\app\templates\app\home.html:627
 #: .\app\templates\app\weather.html:5
 msgid "Wetter"
 msgstr "Weather"
 
-#: .\app\models.py:925 .\app\platform_utils.py:15 .\app\platform_utils.py:47
-#: .\app\templates\app\about.html:166 .\app\templates\app\base.html:93
+#: .\app\models.py:931 .\app\platform_utils.py:15 .\app\platform_utils.py:47
+#: .\app\templates\app\about.html:162 .\app\templates\app\base.html:93
 #: .\app\templates\app\base.html:96 .\app\templates\app\home.html:637
 #: .\app\templates\app\human_benchmark.html:5
 #: .\app\templates\app\human_benchmark.html:19
 msgid "Human Benchmark"
 msgstr "Human Benchmark"
 
-#: .\app\models.py:926 .\app\templates\app\home.html:638
+#: .\app\models.py:932 .\app\templates\app\home.html:638
 msgid "Schnellstatistiken"
 msgstr "Quick Stats"
 
-#: .\app\models.py:927 .\app\platform_utils.py:10 .\app\platform_utils.py:53
+#: .\app\models.py:933 .\app\platform_utils.py:10 .\app\platform_utils.py:53
 #: .\app\templates\app\base.html:424 .\app\templates\app\base.html:427
 #: .\app\templates\app\clock.html:5 .\app\templates\app\clock.html:19
 #: .\app\templates\app\home.html:629
@@ -1570,7 +1718,7 @@ msgid "Uhr"
 msgstr "Clock"
 
 # | msgid "Chat"
-#: .\app\models.py:928 .\app\platform_utils.py:42
+#: .\app\models.py:934 .\app\platform_utils.py:42
 #: .\app\templates\app\chat.html:25 .\app\templates\app\home.html:238
 #: .\app\templates\app\home.html:630 .\app\templates\app\profile.html:80
 #: .\app\templates\app\public_profile.html:74
@@ -1578,7 +1726,7 @@ msgid "Chats"
 msgstr "Chats"
 
 # | msgid "Runde"
-#: .\app\models.py:929 .\app\models.py:2471 .\app\templates\app\base.html:840
+#: .\app\models.py:935 .\app\models.py:2477 .\app\templates\app\base.html:840
 #: .\app\templates\app\friends.html:6 .\app\templates\app\friends.html:27
 #: .\app\templates\app\friends.html:44 .\app\templates\app\home.html:284
 #: .\app\templates\app\home.html:631 .\app\templates\app\inbox.html:23
@@ -1591,9 +1739,9 @@ msgstr "Chats"
 msgid "Freunde"
 msgstr "Friends"
 
-#: .\app\models.py:930 .\app\models.py:2472
+#: .\app\models.py:936 .\app\models.py:2478 .\app\notification_utils.py:325
 #: .\app\performance_tools_views.py:146 .\app\platform_utils.py:11
-#: .\app\platform_utils.py:43 .\app\templates\app\about.html:254
+#: .\app\platform_utils.py:43 .\app\templates\app\about.html:202
 #: .\app\templates\app\base.html:225 .\app\templates\app\base.html:228
 #: .\app\templates\app\home.html:632 .\app\templates\app\inbox.html:24
 #: .\app\templates\app\skribble_home.html:4
@@ -1603,8 +1751,8 @@ msgstr "Friends"
 msgid "Skribble"
 msgstr "Skribble"
 
-#: .\app\models.py:931 .\app\performance_tools_views.py:191
-#: .\app\templates\app\about.html:262 .\app\templates\app\base.html:134
+#: .\app\models.py:937 .\app\notification_utils.py:220
+#: .\app\performance_tools_views.py:191 .\app\templates\app\base.html:134
 #: .\app\templates\app\base.html:137 .\app\templates\app\home.html:633
 #: .\app\templates\app\tictactoe_home.html:4
 #: .\app\templates\app\tictactoe_home.html:27
@@ -1613,8 +1761,8 @@ msgstr "Skribble"
 msgid "Tic Tac Toe"
 msgstr "Tic Tac Toe"
 
-#: .\app\models.py:932 .\app\performance_tools_views.py:174
-#: .\app\stadtlandfluss_views.py:487 .\app\templates\app\about.html:286
+#: .\app\models.py:938 .\app\notification_utils.py:310
+#: .\app\performance_tools_views.py:174 .\app\stadtlandfluss_views.py:487
 #: .\app\templates\app\base.html:173 .\app\templates\app\base.html:176
 #: .\app\templates\app\home.html:634
 #: .\app\templates\app\stadtlandfluss_home.html:4
@@ -1624,7 +1772,8 @@ msgstr "Tic Tac Toe"
 msgid "Stadt Land Fluss"
 msgstr "Categories"
 
-#: .\app\models.py:933 .\app\platform_utils.py:12 .\app\platform_utils.py:44
+#: .\app\models.py:939 .\app\notification_utils.py:274
+#: .\app\platform_utils.py:12 .\app\platform_utils.py:44
 #: .\app\templates\app\base.html:186 .\app\templates\app\base.html:189
 #: .\app\templates\app\home.html:635 .\app\templates\app\uno_home.html:4
 #: .\app\templates\app\uno_home.html:27 .\app\templates\app\uno_home.html:46
@@ -1632,219 +1781,219 @@ msgstr "Categories"
 msgid "Uno"
 msgstr "Uno"
 
-#: .\app\models.py:947
+#: .\app\models.py:953
 msgid "Flip"
 msgstr "Flip"
 
-#: .\app\models.py:948
+#: .\app\models.py:954
 msgid "Terminal"
 msgstr "Terminal"
 
-#: .\app\models.py:958 .\app\models.py:985
+#: .\app\models.py:964 .\app\models.py:991
 msgid "Klassisch"
 msgstr "Classic"
 
-#: .\app\models.py:959 .\app\models.py:987
+#: .\app\models.py:965 .\app\models.py:993
 msgid "Kompakt"
 msgstr "Compact"
 
-#: .\app\models.py:960
+#: .\app\models.py:966
 msgid "Datum links"
 msgstr "Date on the left"
 
-#: .\app\models.py:961
+#: .\app\models.py:967
 msgid "Analog"
 msgstr "Analog"
 
-#: .\app\models.py:962
+#: .\app\models.py:968
 msgid "Analog + Digital"
 msgstr "Analog + Digital"
 
-#: .\app\models.py:972
+#: .\app\models.py:978
 msgid "Clean"
 msgstr "Clean"
 
-#: .\app\models.py:974
+#: .\app\models.py:980
 msgid "Aurora"
 msgstr "Aurora"
 
-#: .\app\models.py:976
+#: .\app\models.py:982
 msgid "Night"
 msgstr "Night"
 
-#: .\app\models.py:986 .\app\templates\app\note_form.html:116
+#: .\app\models.py:992 .\app\templates\app\note_form.html:116
 msgid "Groß"
 msgstr "Large"
 
-#: .\app\models.py:988 .\app\templates\app\notes.html:116
+#: .\app\models.py:994 .\app\templates\app\notes.html:116
 msgid "Geteilt"
 msgstr "Split"
 
-#: .\app\models.py:1168 .\app\models.py:1302 .\app\models.py:1438
-#: .\app\models.py:1575 .\app\models.py:1722 .\app\models.py:1859
-#: .\app\models.py:2029 .\app\models.py:2541
+#: .\app\models.py:1174 .\app\models.py:1308 .\app\models.py:1444
+#: .\app\models.py:1581 .\app\models.py:1728 .\app\models.py:1865
+#: .\app\models.py:2035 .\app\models.py:2547
 msgid "Wartet"
 msgstr "Waiting"
 
-#: .\app\models.py:1169 .\app\models.py:1303 .\app\models.py:1440
-#: .\app\models.py:1576 .\app\models.py:1723 .\app\models.py:1860
-#: .\app\models.py:2030 .\app\models.py:2542
+#: .\app\models.py:1175 .\app\models.py:1309 .\app\models.py:1446
+#: .\app\models.py:1582 .\app\models.py:1729 .\app\models.py:1866
+#: .\app\models.py:2036 .\app\models.py:2548
 msgid "Läuft"
 msgstr "Running"
 
-#: .\app\models.py:1170 .\app\models.py:1304 .\app\models.py:1441
-#: .\app\models.py:1577 .\app\models.py:1724 .\app\models.py:1862
-#: .\app\models.py:2032 .\app\models.py:2543
+#: .\app\models.py:1176 .\app\models.py:1310 .\app\models.py:1447
+#: .\app\models.py:1583 .\app\models.py:1730 .\app\models.py:1868
+#: .\app\models.py:2038 .\app\models.py:2549
 msgid "Beendet"
 msgstr "Finished"
 
-#: .\app\models.py:1255 .\app\models.py:1390 .\app\models.py:1528
-#: .\app\models.py:1675 .\app\models.py:1811 .\app\models.py:1981
-#: .\app\models.py:2147 .\app\models.py:2511 .\app\models.py:2645
+#: .\app\models.py:1261 .\app\models.py:1396 .\app\models.py:1534
+#: .\app\models.py:1681 .\app\models.py:1817 .\app\models.py:1987
+#: .\app\models.py:2153 .\app\models.py:2517 .\app\models.py:2651
 #: .\app\templates\app\users.html:101
 msgid "Offen"
 msgstr "Open"
 
 # | msgid "Angepinnt"
-#: .\app\models.py:1256 .\app\models.py:1391 .\app\models.py:1529
-#: .\app\models.py:1676 .\app\models.py:1812 .\app\models.py:1982
-#: .\app\models.py:2148 .\app\models.py:2646
+#: .\app\models.py:1262 .\app\models.py:1397 .\app\models.py:1535
+#: .\app\models.py:1682 .\app\models.py:1818 .\app\models.py:1988
+#: .\app\models.py:2154 .\app\models.py:2652
 msgid "Angenommen"
 msgstr "Accepted"
 
-#: .\app\models.py:1257 .\app\models.py:1392 .\app\models.py:1530
-#: .\app\models.py:1677 .\app\models.py:1813 .\app\models.py:1983
-#: .\app\models.py:2149 .\app\models.py:2647
+#: .\app\models.py:1263 .\app\models.py:1398 .\app\models.py:1536
+#: .\app\models.py:1683 .\app\models.py:1819 .\app\models.py:1989
+#: .\app\models.py:2155 .\app\models.py:2653
 msgid "Abgelehnt"
 msgstr "Declined"
 
-#: .\app\models.py:1312 .\app\templates\app\uno_lobby.html:184
+#: .\app\models.py:1318 .\app\templates\app\uno_lobby.html:184
 #: .\app\uno_views.py:23
 msgid "Gelb"
 msgstr "Yellow"
 
-#: .\app\models.py:1439
+#: .\app\models.py:1445
 msgid "Flottenaufbau"
 msgstr "Fleet setup"
 
-#: .\app\models.py:1861
+#: .\app\models.py:1867
 msgid "Rundenauswertung"
 msgstr "Round evaluation"
 
-#: .\app\models.py:2031
+#: .\app\models.py:2037
 msgid "Rundenübersicht"
 msgstr "Round summary"
 
-#: .\app\models.py:2098
+#: .\app\models.py:2104
 msgid "Eckig"
 msgstr "Square"
 
 # | msgid "Footer"
-#: .\app\models.py:2099
+#: .\app\models.py:2105
 msgid "Roboter"
 msgstr "Robot"
 
-#: .\app\models.py:2100
+#: .\app\models.py:2106
 msgid "Katze"
 msgstr "Cat"
 
-#: .\app\models.py:2101
+#: .\app\models.py:2107
 msgid "Geist"
 msgstr "Ghost"
 
-#: .\app\models.py:2102
+#: .\app\models.py:2108
 msgid "Ninja"
 msgstr "Ninja"
 
-#: .\app\models.py:2294
+#: .\app\models.py:2300
 msgid "Spam"
 msgstr "Spam"
 
-#: .\app\models.py:2295
+#: .\app\models.py:2301
 msgid "Belästigung"
 msgstr "Harassment"
 
-#: .\app\models.py:2296
+#: .\app\models.py:2302
 msgid "Unpassende Inhalte"
 msgstr "Inappropriate content"
 
-#: .\app\models.py:2297
+#: .\app\models.py:2303
 msgid "Sonstiges"
 msgstr "Other"
 
-#: .\app\models.py:2380
+#: .\app\models.py:2386
 #, fuzzy
 #| msgid "Meldung senden"
 msgid "Meldung erledigt"
 msgstr "Send report"
 
-#: .\app\models.py:2381
+#: .\app\models.py:2387
 #, fuzzy
 #| msgid "Meldung wurde gespeichert."
 msgid "Meldung wieder geoeffnet"
 msgstr "Report saved."
 
-#: .\app\models.py:2382
+#: .\app\models.py:2388
 #, fuzzy
 #| msgid "Feedback gespeichert"
 msgid "Feedback-Status geaendert"
 msgstr "Feedback saved"
 
-#: .\app\models.py:2383
+#: .\app\models.py:2389
 #, fuzzy
 #| msgid "Datei wurde gelöscht."
 msgid "Datei-Freigabe geloescht"
 msgstr "File deleted."
 
 # | msgid "Nach Nutzern suchen..."
-#: .\app\models.py:2384
+#: .\app\models.py:2390
 #, fuzzy
 #| msgid "Nutzer suchen"
 msgid "Nutzer gesperrt"
 msgstr "Search users"
 
 # | msgid "Nach Nutzern suchen..."
-#: .\app\models.py:2385
+#: .\app\models.py:2391
 #, fuzzy
 #| msgid "Nutzer suchen"
 msgid "Nutzersperre aufgehoben"
 msgstr "Search users"
 
-#: .\app\models.py:2386
+#: .\app\models.py:2392
 #, fuzzy
 #| msgid "Nutzer blockiert."
 msgid "Nutzer aktiviert"
 msgstr "User blocked."
 
-#: .\app\models.py:2387
+#: .\app\models.py:2393
 #, fuzzy
 #| msgid "Nutzer blockiert."
 msgid "Nutzer deaktiviert"
 msgstr "User blocked."
 
-#: .\app\models.py:2469 .\app\templates\app\stream_deck.html:147
+#: .\app\models.py:2475 .\app\templates\app\stream_deck.html:147
 msgid "System"
 msgstr "System"
 
-#: .\app\models.py:2473 .\app\models.py:2501 .\app\templates\app\base.html:448
+#: .\app\models.py:2479 .\app\models.py:2507 .\app\templates\app\base.html:448
 #: .\app\templates\app\base.html:451 .\app\templates\app\feedback.html:5
 #: .\app\templates\app\feedback.html:12 .\app\templates\app\moderation.html:92
 msgid "Feedback"
 msgstr "Feedback"
 
-#: .\app\models.py:2502
+#: .\app\models.py:2508
 msgid "Bug"
 msgstr "Bug"
 
-#: .\app\models.py:2503
+#: .\app\models.py:2509
 msgid "Feature-Idee"
 msgstr "Feature idea"
 
-#: .\app\models.py:2512
+#: .\app\models.py:2518
 msgid "Geplant"
 msgstr "Planned"
 
-#: .\app\models.py:2513
+#: .\app\models.py:2519
 msgid "Erledigt"
 msgstr "Done"
 
@@ -1922,7 +2071,7 @@ msgstr "User was activated."
 msgid "Nutzer wurde deaktiviert."
 msgstr "User was deactivated."
 
-#: .\app\notification_utils.py:78 .\app\templates\app\battleship_home.html:64
+#: .\app\notification_utils.py:96 .\app\templates\app\battleship_home.html:64
 #: .\app\templates\app\connectfour_home.html:64
 #: .\app\templates\app\hangman_home.html:39 .\app\templates\app\inbox.html:56
 #: .\app\templates\app\kniffel_home.html:77
@@ -1933,73 +2082,143 @@ msgstr "User was deactivated."
 msgid "Beitreten"
 msgstr "Join"
 
-#: .\app\notification_utils.py:113
+#: .\app\notification_utils.py:123
+#, fuzzy
+#| msgid "Spiele"
+msgid "Zum Spiel"
+msgstr "Games"
+
+#: .\app\notification_utils.py:156 .\app\templates\app\home.html:172
+#: .\app\templates\app\note_detail.html:5
+#: .\app\templates\app\note_detail.html:38
+#: .\app\templates\app\partials\note_card.html:38 .\app\views.py:1811
+msgid "Unbenannte Notiz"
+msgstr "Untitled Note"
+
+#: .\app\notification_utils.py:158
+msgid "Deine Erinnerung ist fällig."
+msgstr ""
+
+#: .\app\notification_utils.py:160
+#, python-format
+msgid "Geteilte Notiz von %(user)s ist fällig."
+msgstr ""
+
+#: .\app\notification_utils.py:168 .\app\templates\app\inbox.html:40
+#: .\app\templates\app\inbox.html:65
+msgid "Öffnen"
+msgstr "Open"
+
+#: .\app\notification_utils.py:195
+#, fuzzy
+#| msgid "Neue Datei teilen"
+msgid "Neue Dateifreigabe"
+msgstr "Share a new file"
+
+#: .\app\notification_utils.py:196
+#, fuzzy, python-format
+#| msgid "%(user)s hat eine Notiz mit dir geteilt: %(title)s"
+msgid "%(user)s hat %(file)s mit dir geteilt"
+msgstr "%(user)s shared a note with you: %(title)s"
+
+#: .\app\notification_utils.py:201 .\app\notification_utils.py:387
+#: .\app\templates\app\inbox.html:48 .\app\templates\app\notes.html:137
+msgid "Ansehen"
+msgstr "View"
+
+#: .\app\notification_utils.py:221 .\app\notification_utils.py:234
+#: .\app\notification_utils.py:261 .\app\notification_utils.py:275
+#: .\app\notification_utils.py:289
+#, fuzzy, python-format
+#| msgid "Du bist am Zug."
+msgid "Du bist am Zug in %(name)s."
+msgstr "Your turn."
+
+#: .\app\notification_utils.py:250
+#, fuzzy, python-format
+#| msgid "Platziere deine Flotte."
+msgid "Platziere deine Flotte in %(name)s."
+msgstr "Place your fleet."
+
+#: .\app\notification_utils.py:311
+#, python-format
+msgid "Runde %(round)s wartet auf deine Antworten."
+msgstr ""
+
+#: .\app\notification_utils.py:319
+#, fuzzy, python-format
+#| msgid "Wähle eine Farbe."
+msgid "Wähle ein Wort in %(name)s."
+msgstr "Choose a color."
+
+#: .\app\notification_utils.py:319
+#, fuzzy, python-format
+#| msgid "Du bist gerade nicht am Zeichnen."
+msgid "Du zeichnest gerade in %(name)s."
+msgstr "You are not drawing right now."
+
+#: .\app\notification_utils.py:361
 #, python-format
 msgid "%(count)s ungelesene Nachricht(en) von %(user)s"
 msgstr "%(count)s unread message(s) from %(user)s"
 
-#: .\app\notification_utils.py:115
+#: .\app\notification_utils.py:363
 msgid "Zum Chat"
 msgstr "To chat"
 
-#: .\app\notification_utils.py:131 .\app\templates\app\inbox.html:47
+#: .\app\notification_utils.py:384 .\app\templates\app\inbox.html:47
 msgid "Freundschaftsanfrage"
 msgstr "Friend request"
 
-#: .\app\notification_utils.py:132
+#: .\app\notification_utils.py:385
 #, python-format
 msgid "%(user)s möchte mit dir befreundet sein"
 msgstr "%(user)s wants to be friends with you"
 
-#: .\app\notification_utils.py:134 .\app\templates\app\inbox.html:48
-#: .\app\templates\app\notes.html:137
-msgid "Ansehen"
-msgstr "View"
-
 # | msgid "Einstellungen"
-#: .\app\notification_utils.py:148 .\app\templates\app\inbox.html:55
+#: .\app\notification_utils.py:401 .\app\templates\app\inbox.html:55
 msgid "Skribble-Einladung"
 msgstr "Skribble invitation"
 
-#: .\app\notification_utils.py:149 .\app\notification_utils.py:161
-#: .\app\notification_utils.py:173 .\app\notification_utils.py:185
-#: .\app\notification_utils.py:197 .\app\notification_utils.py:209
-#: .\app\notification_utils.py:221 .\app\notification_utils.py:233
+#: .\app\notification_utils.py:402 .\app\notification_utils.py:414
+#: .\app\notification_utils.py:426 .\app\notification_utils.py:438
+#: .\app\notification_utils.py:450 .\app\notification_utils.py:462
+#: .\app\notification_utils.py:474 .\app\notification_utils.py:486
 #, python-format
 msgid "%(user)s hat dich in %(name)s eingeladen"
 msgstr "%(user)s invited you to %(name)s"
 
 # | msgid "Einstellungen"
-#: .\app\notification_utils.py:160
+#: .\app\notification_utils.py:413
 msgid "Tic-Tac-Toe-Einladung"
 msgstr "Tic Tac Toe invitation"
 
-#: .\app\notification_utils.py:172
+#: .\app\notification_utils.py:425
 msgid "Vier-gewinnt-Einladung"
 msgstr "Connect Four invitation"
 
-#: .\app\notification_utils.py:184
+#: .\app\notification_utils.py:437
 msgid "Schiffe-versenken-Einladung"
 msgstr "Battleship invitation"
 
-#: .\app\notification_utils.py:196
+#: .\app\notification_utils.py:449
 msgid "Stadt-Land-Fluss-Einladung"
 msgstr "Categories invitation"
 
 # | msgid "Einstellungen"
-#: .\app\notification_utils.py:208
+#: .\app\notification_utils.py:461
 msgid "Uno-Einladung"
 msgstr "Uno invitation"
 
 # | msgid "Einstellungen"
-#: .\app\notification_utils.py:220
+#: .\app\notification_utils.py:473
 #, fuzzy
 #| msgid "Uno-Einladung"
 msgid "Kniffel-Einladung"
 msgstr "Uno invitation"
 
 # | msgid "Einstellungen"
-#: .\app\notification_utils.py:232
+#: .\app\notification_utils.py:485
 msgid "Hangman-Einladung"
 msgstr "Hangman invitation"
 
@@ -2010,24 +2229,24 @@ msgid "Siege"
 msgstr "Wins"
 
 #: .\app\performance_tools_views.py:127
-#: .\app\templates\app\human_benchmark.html:23 .\app\views.py:1257
+#: .\app\templates\app\human_benchmark.html:23 .\app\views.py:1306
 msgid "Reaktion"
 msgstr "Reaction"
 
 #: .\app\performance_tools_views.py:128
-#: .\app\templates\app\human_benchmark.html:24 .\app\views.py:1258
+#: .\app\templates\app\human_benchmark.html:24 .\app\views.py:1307
 msgid "Aim Trainer"
 msgstr "Aim Trainer"
 
 #: .\app\performance_tools_views.py:129
 #: .\app\templates\app\human_benchmark.html:25
-#: .\app\templates\app\human_benchmark.html:112 .\app\views.py:1259
+#: .\app\templates\app\human_benchmark.html:112 .\app\views.py:1308
 msgid "Typing Test"
 msgstr "Typing Test"
 
 #: .\app\performance_tools_views.py:130
 #: .\app\templates\app\human_benchmark.html:26
-#: .\app\templates\app\human_benchmark.html:96 .\app\views.py:1260
+#: .\app\templates\app\human_benchmark.html:96 .\app\views.py:1309
 msgid "Visual Memory"
 msgstr "Visual Memory"
 
@@ -2042,7 +2261,7 @@ msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
 msgstr ""
 
 #: .\app\performance_tools_views.py:162 .\app\platform_utils.py:19
-#: .\app\platform_utils.py:49 .\app\templates\app\about.html:222
+#: .\app\platform_utils.py:49 .\app\templates\app\about.html:167
 #: .\app\templates\app\base.html:117 .\app\templates\app\base.html:120
 msgid "Cookie Cosmos"
 msgstr ""
@@ -2134,7 +2353,7 @@ msgstr "Communication"
 #: .\app\templates\app\base.html:908 .\app\templates\app\leaderboard.html:36
 #: .\app\templates\app\moderation.html:150 .\app\templates\app\users.html:6
 #: .\app\templates\app\users.html:19 .\app\templates\app\users.html:59
-#: .\app\views.py:1357
+#: .\app\views.py:1406
 msgid "Nutzer"
 msgstr "Users"
 
@@ -2156,7 +2375,7 @@ msgid "Snake Powerups"
 msgstr ""
 
 #: .\app\platform_utils.py:20 .\app\platform_utils.py:54
-#: .\app\templates\app\about.html:198 .\app\templates\app\base.html:483
+#: .\app\templates\app\about.html:147 .\app\templates\app\base.html:483
 #: .\app\templates\app\base.html:486 .\app\templates\app\unit_converter.html:4
 #: .\app\templates\app\unit_converter.html:20
 msgid "Einheitenrechner"
@@ -2175,14 +2394,14 @@ msgid "Randomizer"
 msgstr ""
 
 #: .\app\platform_utils.py:22 .\app\platform_utils.py:57
-#: .\app\templates\app\about.html:190 .\app\templates\app\base.html:508
+#: .\app\templates\app\about.html:142 .\app\templates\app\base.html:508
 #: .\app\templates\app\base.html:511 .\app\templates\app\genius_search.html:5
 #: .\app\templates\app\genius_search.html:16
 msgid "Genius Search"
 msgstr "Genius Search"
 
 #: .\app\platform_utils.py:23 .\app\platform_utils.py:58
-#: .\app\templates\app\about.html:206 .\app\templates\app\avatar_wiki.html:5
+#: .\app\templates\app\avatar_wiki.html:5
 #: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:532
 #: .\app\templates\app\base.html:535
 msgid "Avatar Wiki"
@@ -2197,15 +2416,14 @@ msgid "Bild Tools"
 msgstr "Tools"
 
 #: .\app\platform_utils.py:25 .\app\platform_utils.py:60
-#: .\app\templates\app\about.html:246 .\app\templates\app\base.html:440
+#: .\app\templates\app\about.html:117 .\app\templates\app\base.html:440
 #: .\app\templates\app\base.html:443 .\app\templates\app\file_share.html:4
 #: .\app\templates\app\file_share.html:12
 msgid "Datei-Share"
 msgstr "File share"
 
 #: .\app\platform_utils.py:26 .\app\platform_utils.py:61
-#: .\app\templates\app\about.html:230 .\app\templates\app\base.html:549
-#: .\app\templates\app\base.html:552
+#: .\app\templates\app\base.html:549 .\app\templates\app\base.html:552
 msgid "Stream Deck"
 msgstr "Stream Deck"
 
@@ -2215,14 +2433,14 @@ msgid "Streaming"
 msgstr "Streaming"
 
 #: .\app\platform_utils.py:27 .\app\platform_utils.py:62
-#: .\app\templates\app\about.html:174 .\app\templates\app\base.html:557
+#: .\app\templates\app\about.html:132 .\app\templates\app\base.html:557
 #: .\app\templates\app\base.html:560 .\app\templates\app\obs-dashboard.html:5
 #: .\app\templates\app\obs-dashboard.html:21
 msgid "OBS Dashboard"
 msgstr "OBS Dashboard"
 
 #: .\app\platform_utils.py:28 .\app\platform_utils.py:56
-#: .\app\templates\app\about.html:182 .\app\templates\app\base.html:475
+#: .\app\templates\app\about.html:137 .\app\templates\app\base.html:475
 #: .\app\templates\app\base.html:478
 msgid "Spritkosten"
 msgstr "Fuel costs"
@@ -2751,328 +2969,273 @@ msgstr "Only the host can delete this lobby."
 msgid "Über"
 msgstr "About"
 
-#: .\app\templates\app\about.html:18
-msgid "Persönliches Dashboard"
-msgstr "Personal Dashboard"
+#: .\app\templates\app\about.html:17
+msgid "Persönliche Werkzeugzentrale"
+msgstr "Personal tool hub"
 
-#: .\app\templates\app\about.html:21
-msgid "Über MyTools"
-msgstr "About MyTools"
+#: .\app\templates\app\about.html:20
+msgid "MyTools bündelt Alltag, Spiele und kleine Helfer an einem Ort."
+msgstr "MyTools brings everyday tasks, games, and small helpers together in one place."
 
-# | msgid ""
-# | "MyTools ist eine persönliche Django-Toolbox für Alltag, Homelab, Medien, "
-# | "Streaming und kleine Web-Helfer. Die App bündelt Schnellzugriffe, "
-# | "Widgets, Wetter, Notizen, Timer, Rechner, Dashboards und Mini-Games in "
-# | "einer modernen Oberfläche."
-#: .\app\templates\app\about.html:24
+#: .\app\templates\app\about.html:23
 msgid ""
-"MyTools ist eine persönliche Django-Toolbox für Alltag, Homelab, Medien, "
-"Streaming, kleine Web-Helfer und gemeinsame Funktionen. Die App bündelt "
-"Schnellzugriffe, Widgets, Wetter, Notizen, Timer, Rechner, Dashboards, "
-"Profile, Freunde, Chats und Mini-Games in einer modernen Oberfläche."
+"MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, "
+"Wetter, Notizen, Dateien, Profile, Chats und Mini-Games. Statt viele kleine "
+"Seiten und Links zu verstreuen, sammelt die App alles in einer Oberfläche, "
+"die du Schritt für Schritt personalisieren kannst."
 msgstr ""
-"MyTools is a personal Django toolbox for everyday tasks, homelab, media, "
-"streaming, small web helpers, and shared features. The app brings together "
-"shortcuts, widgets, weather, notes, timers, calculators, dashboards, "
-"profiles, friends, chats, and mini-games in a modern interface."
+"MyTools is a private Django platform for shortcuts, widgets, weather, notes, "
+"files, profiles, chats, and mini-games. Instead of scattering many small "
+"pages and links, the app collects everything in one interface that you can "
+"personalize step by step."
 
-#: .\app\templates\app\about.html:33
-msgid "Zur Startseite"
-msgstr "Back to homepage"
+#: .\app\templates\app\about.html:29
+msgid "Wichtige Bereiche"
+msgstr "Important areas"
 
-#: .\app\templates\app\about.html:38
-msgid "Uhr öffnen"
-msgstr "Open clock"
+#: .\app\templates\app\about.html:32
+msgid "Dashboard öffnen"
+msgstr "Open dashboard"
 
-#: .\app\templates\app\about.html:48
-msgid "Alles an einem Ort"
-msgstr "Everything in one place"
+#: .\app\templates\app\about.html:37 .\app\templates\app\friends.html:123
+#: .\app\templates\app\users.html:153
+msgid "Profil ansehen"
+msgstr "View profile"
 
-# | msgid ""
-# | "Von lokalen Server-Links über personalisierte Startseiten-Widgets bis zu "
-# | "API-Tools: MyTools soll die wichtigsten kleinen Helfer zentral, schnell "
-# | "erreichbar und angenehm bedienbar machen."
-#: .\app\templates\app\about.html:51
-msgid ""
-"Von lokalen Server-Links über personalisierte Startseiten-Widgets bis zu "
-"Profilen, Freunden, Chats und API-Tools: MyTools soll die wichtigsten "
-"kleinen Helfer zentral, schnell erreichbar und angenehm bedienbar machen."
-msgstr ""
-"From local server links and personalized homepage widgets to profiles, "
-"friends, chats, and API tools: MyTools is designed to keep the most "
-"important small helpers centralized, quick to reach, and pleasant to use."
+#: .\app\templates\app\about.html:42
+msgid "Projektüberblick"
+msgstr "Project overview"
 
-#: .\app\templates\app\about.html:62 .\app\templates\app\home.html:6
-msgid "Startseite"
-msgstr "Homepage"
+#: .\app\templates\app\about.html:44
+msgid "Aktiver Ausbau"
+msgstr "Active development"
 
-#: .\app\templates\app\about.html:63
-msgid "Shortcuts, Bereiche, Favoriten, Widgets und Drag & Drop"
-msgstr "Shortcuts, sections, favorites, widgets, and drag & drop"
+#: .\app\templates\app\about.html:50 .\app\templates\app\about.html:87
+msgid "Module"
+msgstr "Modules"
+
+#: .\app\templates\app\about.html:54
+msgid "Fokus"
+msgstr "Focus"
+
+#: .\app\templates\app\about.html:55
+msgid "Produktiv + spielerisch"
+msgstr "Productive + playful"
+
+#: .\app\templates\app\about.html:58
+msgid "Stack"
+msgstr "Stack"
+
+#: .\app\templates\app\about.html:59
+msgid "Django, Redis, PostgreSQL"
+msgstr "Django, Redis, PostgreSQL"
+
+#: .\app\templates\app\about.html:65
+msgid "Grundideen"
+msgstr "Core ideas"
 
 #: .\app\templates\app\about.html:68
-msgid "Tools & APIs"
-msgstr "Tools & APIs"
+msgid "Alles griffbereit"
+msgstr "Everything within reach"
 
 #: .\app\templates\app\about.html:69
-msgid "OpenWeather, Tankerkönig, Genius, OBS und Spotify vorbereitet"
-msgstr "OpenWeather, Tankerkönig, Genius, OBS, and Spotify prepared"
+msgid ""
+"Shortcuts, Favoriten und Widgets bringen häufig genutzte Funktionen direkt "
+"auf die Startseite."
+msgstr ""
+"Shortcuts, favorites, and widgets bring frequently used functions directly "
+"to the homepage."
 
-#: .\app\templates\app\about.html:74 .\app\templates\app\base.html:528
-#: .\app\templates\app\base.html:602
-msgid "Design"
-msgstr "Design"
+#: .\app\templates\app\about.html:74
+msgid "Persönlich anpassbar"
+msgstr "Personally customizable"
 
 #: .\app\templates\app\about.html:75
-msgid "Dark Mode, Theme-Editor, moderne Widgets und responsive Layouts"
-msgstr "Dark Mode, theme editor, modern widgets, and responsive layouts"
+msgid ""
+"Profile, Designs, Widgets, Spielkarten und gespeicherte Orte lassen sich an "
+"deine Nutzung anpassen."
+msgstr ""
+"Profiles, themes, widgets, game cards, and saved locations can be adapted to "
+"the way you use the app."
 
 #: .\app\templates\app\about.html:80
-msgid "Community"
-msgstr "Community"
+msgid "Gemeinsam nutzbar"
+msgstr "Built for shared use"
 
 #: .\app\templates\app\about.html:81
-msgid "Profile, Freunde, Chats und gemeinsame Spiele-Lobbys"
-msgstr "Profiles, friends, chats, and shared game lobbies"
-
-#: .\app\templates\app\about.html:91
-msgid "Schnellzugriffe & Widgets"
-msgstr "Shortcuts & widgets"
-
-#: .\app\templates\app\about.html:94
 msgid ""
-"Eigene Links können mit Icons, Bildern, Favoriten und Kategorien gespeichert "
-"werden. Zusätzlich lassen sich Startseiten-Widgets wie Uhr, Wetter, Notizen "
-"oder Statistik-Karten hinzufügen und gestalten."
+"Freunde, Chats, Einladungen, geteilte Dateien und Multiplayer-Spiele machen "
+"die Toolbox sozial."
 msgstr ""
-"You can save custom links with icons, images, favorites, and categories. You "
-"can also add and customize homepage widgets such as clocks, weather, notes, "
-"or statistics cards."
+"Friends, chats, invitations, shared files, and multiplayer games make the "
+"toolbox social."
 
-#: .\app\templates\app\about.html:106
-msgid "Uhr, Timer & Weltuhr"
-msgstr "Clock, timer & world clock"
-
-#: .\app\templates\app\about.html:109
-msgid ""
-"Die Uhr-Seite bündelt lokale Uhrzeit, Weltuhr, Stoppuhr, gespeicherte Timer-"
-"Vorlagen und eigene Timer-Sounds. Der Hero-Bereich nutzt eine dezente "
-"Weltkarte als Hintergrund."
-msgstr ""
-"The clock page combines local time, world clock, stopwatch, saved timer "
-"presets, and custom timer sounds. The hero area uses a subtle world map as "
-"its background."
-
-#: .\app\templates\app\about.html:121
-msgid "Profile, Freunde & Chat"
-msgstr "Profiles, friends & chat"
-
-# | msgid ""
-# | "Nutzer können ein eigenes Profil mit Namen, Avatar und öffentlichen "
-# | "Profilinformationen pflegen. Die Nutzerübersicht erleichtert den "
-# | "Überblick über registrierte Accounts."
-#: .\app\templates\app\about.html:124
-msgid ""
-"Nutzer können ein eigenes Profil mit Namen, Avatar, Banner und öffentlichen "
-"Profilinformationen pflegen. Zusätzlich gibt es Freundschaftsanfragen, "
-"Freundeslisten, Direktchats, Gruppenchats, Emoji-Reaktionen und löschbare "
-"eigene Nachrichten."
-msgstr ""
-"Users can maintain their own profile with a name, avatar, banner, and public "
-"profile details. There are also friend requests, friend lists, direct chats, "
-"group chats, emoji reactions, and deletable own messages."
-
-#: .\app\templates\app\about.html:134
-msgid "Aktuelle Module"
-msgstr "Current Modules"
-
-#: .\app\templates\app\about.html:135
+#: .\app\templates\app\about.html:88
 msgid "Was aktuell eingebaut ist"
 msgstr "What is currently installed"
 
-#: .\app\templates\app\about.html:143
-msgid "Aktuelle Wetterdaten, Vorhersage und gespeicherte Orte."
-msgstr "Current weather data, forecasts, and saved locations."
+#: .\app\templates\app\about.html:89
+msgid ""
+"Die wichtigsten Bereiche sind nach Nutzung gruppiert, damit die About-Seite "
+"nicht nur lang, sondern auch scannbar bleibt."
+msgstr ""
+"The most important areas are grouped by use case, so the About page stays "
+"easy to scan instead of only becoming longer."
 
-#: .\app\templates\app\about.html:150
+#: .\app\templates\app\about.html:96
+msgid "Alltag & Produktivität"
+msgstr "Everyday & productivity"
+
+#: .\app\templates\app\about.html:103
+msgid "Aktuelle Daten, Vorhersage und gespeicherte Standardorte."
+msgstr "Current data, forecasts, and saved default locations."
+
+#: .\app\templates\app\about.html:107
 msgid "Uhr & Timer"
 msgstr "Clock & timer"
 
-#: .\app\templates\app\about.html:151
+#: .\app\templates\app\about.html:108
 msgid "Weltuhr, Stoppuhr, Timer-Vorlagen und eigene Sounds."
 msgstr "World clock, stopwatch, timer presets, and custom sounds."
 
-#: .\app\templates\app\about.html:159
-msgid "Notizen mit Pins, Archiv, Farben und Tags."
-msgstr "Notes with pins, an archive, colors, and tags."
+#: .\app\templates\app\about.html:113
+msgid "Pins, Archiv, Farben, Tags, Erinnerungen und Teilen mit Freunden."
+msgstr "Pins, archive, colors, tags, reminders, and sharing with friends."
 
-#: .\app\templates\app\about.html:167
-msgid ""
-"Mini-Games mit letzten Ergebnissen, Highscores und Bestenliste pro Nutzer."
-msgstr ""
-"Mini-games with recent results, highscores, and a leaderboard per user."
+#: .\app\templates\app\about.html:118
+msgid "Dateien per Freundesfreigabe oder privatem Link teilen."
+msgstr "Share files with friends or through a private link."
 
-#: .\app\templates\app\about.html:175
+#: .\app\templates\app\about.html:126
+msgid "Tools & Integrationen"
+msgstr "Tools & integrations"
+
+#: .\app\templates\app\about.html:133
 msgid "Szenen, Quellen, Audio, Stream und Aufnahme lokal steuern."
 msgstr "Control scenes, sources, audio, stream, and recording locally."
 
-#: .\app\templates\app\about.html:183
-msgid "Tankstellen- und Preisabfrage per Standortfreigabe oder Stadtsuche."
-msgstr ""
-"Find gas stations and check prices using location permission or city search."
+#: .\app\templates\app\about.html:138
+msgid "Tankstellen und Preise per Standort oder Stadtsuche prüfen."
+msgstr "Check gas stations and prices by location or city search."
 
-#: .\app\templates\app\about.html:191
-msgid "Song- und Künstler-Suche über die Genius API."
-msgstr "Search for songs and artists using the Genius API."
+#: .\app\templates\app\about.html:143
+msgid "Songs und Künstler über die Genius API finden."
+msgstr "Find songs and artists through the Genius API."
 
-#: .\app\templates\app\about.html:199
+#: .\app\templates\app\about.html:148
 msgid "Speicher, Zeit, Entfernung und Geld-Zeiträume umrechnen."
 msgstr "Convert units of measurement, time, distance, and currency."
 
-#: .\app\templates\app\about.html:207
-msgid "Charaktere verwalten, suchen und übersichtlich sammeln."
-msgstr "Manage, search, and neatly collect characters."
+#: .\app\templates\app\about.html:156
+msgid "Spiele & Highscores"
+msgstr "Games & highscores"
 
-#: .\app\templates\app\about.html:214
+#: .\app\templates\app\about.html:163
+msgid "Reaktion, Aim, Zahlen, Tippen, visuelles Gedächtnis und Highscores."
+msgstr "Reaction, aim, numbers, typing, visual memory, and highscores."
+
+#: .\app\templates\app\about.html:168
+msgid "Clicker mit Upgrades, Events, Offline-Fortschritt und Prestige."
+msgstr "A clicker with upgrades, events, offline progress, and prestige."
+
+#: .\app\templates\app\about.html:172
 msgid "Drift Circuit Pro"
 msgstr "Drift Circuit Pro"
 
-#: .\app\templates\app\about.html:215
-msgid "Canvas-Racing-Game mit großen Maps, Nitro und Drift-Score."
-msgstr "A canvas racing game with large maps, nitro, and a drift score."
+#: .\app\templates\app\about.html:173
+msgid "Canvas-Racing mit Maps, Nitro und Drift-Score."
+msgstr "Canvas racing with maps, nitro, and drift score."
+
+#: .\app\templates\app\about.html:177
+msgid "Bestenlisten"
+msgstr "Leaderboards"
+
+#: .\app\templates\app\about.html:178
+msgid "Highscores und Fortschritt über mehrere Spiele hinweg vergleichen."
+msgstr "Compare highscores and progress across multiple games."
+
+#: .\app\templates\app\about.html:186
+msgid "Community & Multiplayer"
+msgstr "Community & multiplayer"
+
+#: .\app\templates\app\about.html:193
+msgid ""
+"Direktchats, Gruppen, Reaktionen, Pins und löschbare eigene Nachrichten."
+msgstr "Direct chats, groups, reactions, pins, and deletable own messages."
+
+#: .\app\templates\app\about.html:197
+msgid "Nutzer & Freunde"
+msgstr "Users & friends"
+
+#: .\app\templates\app\about.html:198
+msgid "Öffentliche Profile, Freundschaftsanfragen, Blockieren und Meldungen."
+msgstr "Public profiles, friend requests, blocking, and reports."
+
+#: .\app\templates\app\about.html:203
+msgid "Zeichnen, raten, Freunde einladen und Punkte nach jeder Runde ansehen."
+msgstr "Draw, guess, invite friends, and view points after every round."
+
+#: .\app\templates\app\about.html:207
+msgid "Tic Tac Toe & mehr"
+msgstr "Tic Tac Toe & more"
+
+#: .\app\templates\app\about.html:208
+msgid ""
+"Auch Vier gewinnt, Schiffe versenken und Stadt Land Fluss sind integriert."
+msgstr "Connect Four, Battleship, and Stadt Land Fluss are integrated too."
+
+#: .\app\templates\app\about.html:218
+msgid "Technik"
+msgstr "Technology"
+
+#: .\app\templates\app\about.html:219
+msgid "Gebaut für lokale Kontrolle"
+msgstr "Built for local control"
 
 #: .\app\templates\app\about.html:223
 msgid ""
-"Incremental Clicker mit animierter Backstube, Upgrades, Events, Offline-"
-"Fortschritt und Prestige."
-msgstr ""
+"Django als Hauptanwendung mit klassischen Templates und fokussierten Views."
+msgstr "Django as the main application with classic templates and focused views."
 
-#: .\app\templates\app\about.html:231
-msgid "Button-Dashboard für Medien, Spotify und eigene Aktionen."
-msgstr "Button dashboard for media, Spotify, and custom actions."
+#: .\app\templates\app\about.html:224
+msgid ""
+"PostgreSQL, Redis, Gunicorn und Caddy sind für Docker-Deployment vorbereitet."
+msgstr "PostgreSQL, Redis, Gunicorn, and Caddy are prepared for Docker deployment."
+
+#: .\app\templates\app\about.html:225
+msgid ""
+"Externe APIs bleiben optional und werden über Umgebungsvariablen "
+"konfiguriert."
+msgstr "External APIs stay optional and are configured through environment variables."
+
+#: .\app\templates\app\about.html:226
+msgid ""
+"Mehrsprachigkeit läuft über Django-Übersetzungen für Deutsch und Englisch."
+msgstr "Multilingual support runs through Django translations for German and English."
+
+#: .\app\templates\app\about.html:232
+msgid "Ausblick"
+msgstr "Outlook"
+
+#: .\app\templates\app\about.html:233
+msgid "Was als Nächstes wachsen kann"
+msgstr "What can grow next"
 
 #: .\app\templates\app\about.html:239
-msgid ""
-"Direktchats, Gruppenchats, Emoji-Reaktionen und löschbare eigene Nachrichten."
-msgstr ""
-"Direct chats, group chats, emoji reactions, and deletable own messages."
+msgid "Benachrichtigungen weiter bündeln"
+msgstr "Bundle notifications further"
+
+#: .\app\templates\app\about.html:243
+msgid "Achievements und Profil-Showcases ausbauen"
+msgstr "Expand achievements and profile showcases"
 
 #: .\app\templates\app\about.html:247
-msgid ""
-"Dateien mit Freunden oder per privatem Link teilen, inklusive "
-"Mehrfachupload, Fortschritt und Nutzer-Limits im Admin."
-msgstr ""
-"Share files with friends or through a private link, including multi-file "
-"upload, progress, and per-user limits in the admin."
+msgid "Mehr Statistiken und Aktivitätsverlauf ergänzen"
+msgstr "Add more statistics and activity history"
 
-#: .\app\templates\app\about.html:255
-msgid ""
-"Zeichnen, Raten, Lobbys erstellen, Freunde einladen und Punkte nach jeder "
-"Runde ansehen."
-msgstr ""
-"Draw, guess, create lobbies, invite friends, and view points after every "
-"round."
-
-#: .\app\templates\app\about.html:263
-msgid ""
-"Schnelles 1v1-Spiel mit privaten Räumen, Einladungen und Host-gesteuertem "
-"Löschen."
-msgstr ""
-"Fast 1v1 game with private rooms, invitations, and host-controlled deletion."
-
-#: .\app\templates\app\about.html:271
-msgid ""
-"1v1-Gefecht mit manueller Flottenplatzierung, geprüften Regeln und Host-"
-"gesteuertem Löschen."
-msgstr ""
-"1v1 battle with manual fleet placement, validated rules, and host-controlled "
-"deletion."
-
-#: .\app\templates\app\about.html:279
-msgid ""
-"Animiertes 1v1-Spiel mit privaten Räumen, Live-Zügen und automatischer "
-"Rückleitung nach Löschung."
-msgstr ""
-"Animated 1v1 game with private rooms, live moves, and automatic redirect "
-"after deletion."
-
-#: .\app\templates\app\about.html:287
-msgid ""
-"Live-Runden mit Einladungen, Stopp-Regel, manueller Auswertung und Host-"
-"gesteuerten Lobbys."
-msgstr ""
-"Live rounds with invitations, stop rule, manual evaluation, and host-"
-"controlled lobbies."
-
-# | msgid "Profilseite mit Avatar, persönlichen Daten und öffentlicher Ansicht."
-#: .\app\templates\app\about.html:295
-msgid ""
-"Profilseite mit Avatar, Banner, persönlichen Daten, Freunden und "
-"öffentlicher Ansicht."
-msgstr ""
-"Profile page with avatar, banner, personal details, friends, and a public "
-"view."
-
-#: .\app\templates\app\about.html:302
-msgid "Projektstand"
-msgstr "Project Status"
-
-#: .\app\templates\app\about.html:308
-msgid "Personalisierbares Dashboard"
-msgstr "Customizable dashboard"
-
-#: .\app\templates\app\about.html:309
-msgid ""
-"Startseite, Shortcuts, Favoriten, Bereiche, Widgets und Design-Optionen sind "
-"eingebunden."
-msgstr ""
-"The homepage, shortcuts, favorites, sections, widgets, and design options "
-"are built in."
-
-#: .\app\templates\app\about.html:316
-msgid "Mehrere Tools produktiv nutzbar"
-msgstr "Several tools ready for daily use"
-
-# | msgid ""
-# | "Wetter, Uhr, Notizen, Profile, Human Benchmark, OBS Dashboard, Rechner "
-# | "und API-Tools sind bereits verfügbar."
-#: .\app\templates\app\about.html:317
-msgid ""
-"Wetter, Uhr, Notizen, Profile, Freunde, Chat, Skribble, Tic Tac Toe, Vier "
-"gewinnt, Schiffe versenken, Stadt Land Fluss, Human Benchmark, OBS "
-"Dashboard, Rechner und API-Tools sind bereits verfügbar."
-msgstr ""
-"Weather, clock, notes, profiles, friends, chat, Skribble, Tic Tac Toe, "
-"Connect Four, Battleship, Categories, Human Benchmark, OBS Dashboard, "
-"converter, and API tools are already available."
-
-#: .\app\templates\app\about.html:324
-msgid "Docker-Deployment vorbereitet"
-msgstr "Docker deployment prepared"
-
-#: .\app\templates\app\about.html:325
-msgid ""
-"Das Projekt läuft mit Django, Gunicorn, PostgreSQL, Redis und Caddy per "
-"Docker Compose."
-msgstr ""
-"The project runs on Django, Gunicorn, PostgreSQL, Redis, and Caddy using "
-"Docker Compose."
-
-#: .\app\templates\app\about.html:332
-msgid "Laufende Erweiterung"
-msgstr "Ongoing expansion"
-
-# | msgid ""
-# | "Neue Widgets, bessere Statistiken, zusätzliche Integrationen und mehr "
-# | "Personalisierung können Schritt für Schritt ergänzt werden."
-#: .\app\templates\app\about.html:333
-msgid ""
-"Neue Widgets, bessere Statistiken, zusätzliche Integrationen, Chat-"
-"Funktionen, Mini-Games und mehr Personalisierung können Schritt für Schritt "
-"ergänzt werden."
-msgstr ""
-"New widgets, better statistics, additional integrations, chat features, mini-"
-"games, and more personalization can be added step by step."
+#: .\app\templates\app\about.html:251
+msgid "Design-System und mobile Bedienung weiter verfeinern"
+msgstr "Further refine the design system and mobile usability"
 
 #: .\app\templates\app\auth\password_reset_complete.html:8
 #: .\app\templates\app\auth\password_reset_complete.html:38
@@ -3222,8 +3385,8 @@ msgid "Beschreibung (optional)"
 msgstr "Description optional"
 
 #: .\app\templates\app\avatar_wiki.html:49 .\app\templates\app\chat.html:342
-#: .\app\templates\app\note_form.html:197 .\app\templates\app\profile.html:504
-#: .\app\templates\app\stream_deck.html:331
+#: .\app\templates\app\note_form.html:197 .\app\templates\app\profile.html:559
+#: .\app\templates\app\stream_deck.html:359
 msgid "Abbrechen"
 msgstr "Cancel"
 
@@ -3231,17 +3394,17 @@ msgstr "Cancel"
 #: .\app\templates\app\base.html:711 .\app\templates\app\base.html:722
 #: .\app\templates\app\chat.html:204 .\app\templates\app\chat.html:341
 #: .\app\templates\app\home.html:869 .\app\templates\app\moderation.html:112
-#: .\app\templates\app\profile.html:209 .\app\templates\app\profile.html:403
-#: .\app\templates\app\profile.html:423
+#: .\app\templates\app\profile.html:213 .\app\templates\app\profile.html:458
+#: .\app\templates\app\profile.html:478
 #: .\app\templates\app\profile_card_designer.html:38
-#: .\app\templates\app\stream_deck.html:334
-#: .\app\templates\app\stream_deck.html:372
+#: .\app\templates\app\stream_deck.html:362
+#: .\app\templates\app\stream_deck.html:400
 msgid "Speichern"
 msgstr "Save"
 
 #: .\app\templates\app\avatar_wiki.html:57
 #: .\app\templates\app\kniffel_lobby.html:165
-#: .\app\templates\app\profile.html:486
+#: .\app\templates\app\profile.html:541
 msgid "Schließen"
 msgstr "Close"
 
@@ -3882,6 +4045,10 @@ msgstr "Profile card designer"
 msgid "Profil Design Karte Designer"
 msgstr "Edit profile"
 
+#: .\app\templates\app\base.html:528 .\app\templates\app\base.html:602
+msgid "Design"
+msgstr "Design"
+
 # | msgid "Timer wurde gespeichert."
 #: .\app\templates\app\base.html:532
 #, fuzzy
@@ -4043,7 +4210,7 @@ msgstr "Options"
 msgid "Hintergrund-Effekt"
 msgstr "Background effect"
 
-#: .\app\templates\app\base.html:746 .\app\templates\app\stream_deck.html:236
+#: .\app\templates\app\base.html:746 .\app\templates\app\stream_deck.html:239
 msgid "Zufällig"
 msgstr "Shuffle"
 
@@ -4066,7 +4233,7 @@ msgstr "Notification"
 
 # | msgid "Nachricht"
 #: .\app\templates\app\base.html:766 .\app\templates\app\base.html:772
-#: .\app\templates\app\profile.html:381
+#: .\app\templates\app\profile.html:434
 msgid "Benachrichtigungen"
 msgstr "Notifications"
 
@@ -4093,7 +4260,7 @@ msgstr "Open profile menu"
 #: .\app\templates\app\chat.html:316 .\app\templates\app\friends.html:58
 #: .\app\templates\app\home.html:297 .\app\templates\app\image_tools.html:63
 #: .\app\templates\app\profile.html:21 .\app\templates\app\profile.html:58
-#: .\app\templates\app\profile.html:115 .\app\templates\app\profile.html:482
+#: .\app\templates\app\profile.html:115 .\app\templates\app\profile.html:537
 #: .\app\templates\app\profile_card_designer.html:167
 #: .\app\templates\app\public_profile.html:40
 #: .\app\templates\app\public_profile.html:263
@@ -4415,7 +4582,7 @@ msgstr "Really delete this room?"
 #: .\app\templates\app\partials\note_card.html:105
 #: .\app\templates\app\stadtlandfluss_lobby.html:39
 #: .\app\templates\app\stadtlandfluss_lobby.html:42
-#: .\app\templates\app\stream_deck.html:327
+#: .\app\templates\app\stream_deck.html:355
 #: .\app\templates\app\tictactoe_lobby.html:51
 #: .\app\templates\app\tictactoe_lobby.html:57
 msgid "Löschen"
@@ -4622,7 +4789,7 @@ msgstr "Add friends"
 msgid "Zum Admin machen"
 msgstr "Make admin"
 
-#: .\app\templates\app\chat.html:219 .\app\templates\app\stream_deck.html:366
+#: .\app\templates\app\chat.html:219 .\app\templates\app\stream_deck.html:394
 msgid "Entfernen"
 msgstr "Remove"
 
@@ -4742,7 +4909,7 @@ msgstr "Time zone"
 msgid "Ort hinzufügen"
 msgstr "Add location"
 
-#: .\app\templates\app\clock.html:93 .\app\templates\app\weather.html:85
+#: .\app\templates\app\clock.html:93 .\app\templates\app\weather.html:108
 msgid "Ort löschen"
 msgstr "Delete location"
 
@@ -4767,15 +4934,15 @@ msgid "Bereit"
 msgstr "Ready"
 
 #: .\app\templates\app\clock.html:152
-#: .\app\templates\app\unit_converter.html:101 .\app\views.py:1940
+#: .\app\templates\app\unit_converter.html:101 .\app\views.py:1989
 msgid "Stunden"
 msgstr "Hours"
 
-#: .\app\templates\app\clock.html:156 .\app\views.py:1939
+#: .\app\templates\app\clock.html:156 .\app\views.py:1988
 msgid "Minuten"
 msgstr "Minutes"
 
-#: .\app\templates\app\clock.html:160 .\app\views.py:1938
+#: .\app\templates\app\clock.html:160 .\app\views.py:1987
 msgid "Sekunden"
 msgstr "Seconds"
 
@@ -4815,7 +4982,7 @@ msgstr "Test"
 msgid "Einstellungen schließen"
 msgstr "Close settings"
 
-#: .\app\templates\app\clock.html:267 .\app\templates\app\stream_deck.html:223
+#: .\app\templates\app\clock.html:267 .\app\templates\app\stream_deck.html:224
 msgid "Lautstärke"
 msgstr "Volume"
 
@@ -5103,10 +5270,6 @@ msgstr "Registered since"
 msgid "Befreundet seit"
 msgstr "Friends since"
 
-#: .\app\templates\app\friends.html:123 .\app\templates\app\users.html:153
-msgid "Profil ansehen"
-msgstr "View profile"
-
 # | msgid "Noch keine Ergebnisse."
 #: .\app\templates\app\friends.html:134
 msgid "Noch keine Freunde"
@@ -5133,7 +5296,7 @@ msgstr "Search for a song or artist to see Genius results."
 
 #: .\app\templates\app\genius_search.html:33
 #: .\app\templates\app\hangman_lobby.html:28
-#: .\app\templates\app\stream_deck.html:234
+#: .\app\templates\app\stream_deck.html:237
 msgid "Zurück"
 msgstr "Back"
 
@@ -5144,7 +5307,7 @@ msgstr "Page 1"
 #: .\app\templates\app\genius_search.html:35
 #: .\app\templates\app\skribble_lobby.html:153
 #: .\app\templates\app\stadtlandfluss_lobby.html:126
-#: .\app\templates\app\stream_deck.html:233
+#: .\app\templates\app\stream_deck.html:236
 msgid "Weiter"
 msgstr "Next"
 
@@ -5259,6 +5422,10 @@ msgstr "Letter keyboard"
 msgid "Runde beendet"
 msgstr "Round finished"
 
+#: .\app\templates\app\home.html:6
+msgid "Startseite"
+msgstr "Homepage"
+
 #: .\app\templates\app\home.html:23
 msgid "Bei Google suchen..."
 msgstr "Search on Google..."
@@ -5268,7 +5435,7 @@ msgid "Widget-Bereich verschieben"
 msgstr "Move widget area"
 
 #: .\app\templates\app\home.html:55 .\app\templates\app\home.html:721
-#: .\app\views.py:613
+#: .\app\views.py:617
 msgid "Widget hinzufügen"
 msgstr "Add widget"
 
@@ -5276,7 +5443,7 @@ msgstr "Add widget"
 msgid "Widget verschieben"
 msgstr "Move widget"
 
-#: .\app\templates\app\home.html:101 .\app\views.py:612
+#: .\app\templates\app\home.html:101 .\app\views.py:616
 msgid "Widget bearbeiten"
 msgstr "Edit widget"
 
@@ -5295,12 +5462,6 @@ msgstr "Open weather page"
 #: .\app\templates\app\home.html:164
 msgid "aktive Notizen"
 msgstr "active notes"
-
-#: .\app\templates\app\home.html:172 .\app\templates\app\note_detail.html:5
-#: .\app\templates\app\note_detail.html:38
-#: .\app\templates\app\partials\note_card.html:38 .\app\views.py:1762
-msgid "Unbenannte Notiz"
-msgstr "Untitled Note"
 
 #: .\app\templates\app\home.html:179
 msgid "Noch keine angepinnten Notizen."
@@ -5413,7 +5574,7 @@ msgstr "Add section"
 msgid "Erstelle einen neuen Bereich für weitere Verknüpfungen."
 msgstr "Create a new section for more shortcuts."
 
-#: .\app\templates\app\home.html:607 .\app\views.py:611
+#: .\app\templates\app\home.html:607 .\app\views.py:615
 msgid "Neues Widget"
 msgstr "New widget"
 
@@ -5461,7 +5622,7 @@ msgstr "Choose the layout here, for example digital or analog."
 msgid "Widget-Farbe"
 msgstr "Widget color"
 
-#: .\app\templates\app\home.html:732 .\app\views.py:602
+#: .\app\templates\app\home.html:732 .\app\views.py:606
 msgid "Neue Verknüpfung"
 msgstr "New shortcut"
 
@@ -5505,7 +5666,7 @@ msgstr "Custom image if you do not want to use an icon"
 msgid "Bild auswählen"
 msgstr "Choose image"
 
-#: .\app\templates\app\home.html:858 .\app\views.py:610
+#: .\app\templates\app\home.html:858 .\app\views.py:614
 msgid "Keine Datei ausgewählt"
 msgstr "No file selected"
 
@@ -5517,7 +5678,7 @@ msgstr "Remove current picture"
 msgid "Beispiele:"
 msgstr "Examples:"
 
-#: .\app\templates\app\home.html:885 .\app\views.py:606
+#: .\app\templates\app\home.html:885 .\app\views.py:610
 msgid "Neuer Bereich"
 msgstr "New section"
 
@@ -5529,7 +5690,7 @@ msgstr "Section name"
 msgid "Bereichsfarbe"
 msgstr "Section color"
 
-#: .\app\templates\app\home.html:934 .\app\views.py:607
+#: .\app\templates\app\home.html:934 .\app\views.py:611
 msgid "Bereich erstellen"
 msgstr "Create section"
 
@@ -5602,7 +5763,7 @@ msgstr "Click start to begin the test."
 msgid "Warte auf Start..."
 msgstr "Waiting to start..."
 
-#: .\app\templates\app\human_benchmark.html:79 .\app\views.py:1352
+#: .\app\templates\app\human_benchmark.html:79 .\app\views.py:1401
 msgid "Test starten"
 msgstr "Start test"
 
@@ -5645,7 +5806,7 @@ msgid "Letzte 10 Ergebnisse"
 msgstr "Last 10 results"
 
 #: .\app\templates\app\human_benchmark.html:137
-#: .\app\templates\app\human_benchmark.html:147 .\app\views.py:1355
+#: .\app\templates\app\human_benchmark.html:147 .\app\views.py:1404
 msgid "Noch keine Ergebnisse."
 msgstr "No results yet."
 
@@ -5877,10 +6038,6 @@ msgstr "All read"
 #: .\app\templates\app\inbox.html:34
 msgid "Aktuelle Hinweise"
 msgstr "Current notices"
-
-#: .\app\templates\app\inbox.html:40 .\app\templates\app\inbox.html:65
-msgid "Öffnen"
-msgstr "Open"
 
 #: .\app\templates\app\inbox.html:78
 msgid "Deine Inbox ist leer."
@@ -6387,7 +6544,7 @@ msgstr ""
 "Save ideas, tasks, code snippets, server commands, or anything else you want "
 "to find later."
 
-#: .\app\templates\app\notes.html:31 .\app\views.py:1859
+#: .\app\templates\app\notes.html:31 .\app\views.py:1908
 msgid "Neue Notiz"
 msgstr "New note"
 
@@ -6629,7 +6786,7 @@ msgstr "Collapsed"
 msgid "Bereich verschieben"
 msgstr "Move section"
 
-#: .\app\templates\app\partials\home_section_card.html:43 .\app\views.py:608
+#: .\app\templates\app\partials\home_section_card.html:43 .\app\views.py:612
 msgid "Bereich bearbeiten"
 msgstr "Edit section"
 
@@ -6753,55 +6910,77 @@ msgstr "Withdraw"
 msgid "Profil bearbeiten"
 msgstr "Edit profile"
 
-#: .\app\templates\app\profile.html:250
+#: .\app\templates\app\profile.html:228
+#, fuzzy
+#| msgid "Dein Account"
+msgid "Account"
+msgstr "Your account"
+
+#: .\app\templates\app\profile.html:229
+msgid "Basisdaten"
+msgstr ""
+
+#: .\app\templates\app\profile.html:264
+#, fuzzy
+#| msgid "Suchen"
+msgid "Medien"
+msgstr "Search"
+
+#: .\app\templates\app\profile.html:265
+#, fuzzy
+#| msgid "Avatar- & Profilkarten-Designer"
+msgid "Avatar & Banner"
+msgstr "Avatar & profile card designer"
+
+#: .\app\templates\app\profile.html:277
 msgid "Aktuelles Profilbild"
 msgstr "Current profile picture"
 
-#: .\app\templates\app\profile.html:259
+#: .\app\templates\app\profile.html:286
 msgid "Aktuelles Bild"
 msgstr "Current picture"
 
-#: .\app\templates\app\profile.html:267
+#: .\app\templates\app\profile.html:294
 msgid "Profilbild entfernen"
 msgstr "Remove profile picture"
 
-#: .\app\templates\app\profile.html:271
+#: .\app\templates\app\profile.html:298
 msgid "Noch kein Profilbild"
 msgstr "No profile picture yet"
 
-#: .\app\templates\app\profile.html:272
+#: .\app\templates\app\profile.html:299
 msgid "Wähle ein Bild aus, das in deinem Profil angezeigt wird."
 msgstr "Choose a picture to display on your profile."
 
-#: .\app\templates\app\profile.html:278
+#: .\app\templates\app\profile.html:305
 msgid "Neues Bild auswählen"
 msgstr "Choose new picture"
 
-#: .\app\templates\app\profile.html:290
+#: .\app\templates\app\profile.html:317
 msgid "Nach dem Auswählen kannst du den Bildausschnitt verschieben und zoomen."
 msgstr "After choosing a picture, you can move and zoom the crop area."
 
-#: .\app\templates\app\profile.html:304
+#: .\app\templates\app\profile.html:331
 msgid "Aktuelles Profilbanner"
 msgstr "Current profile banner"
 
-#: .\app\templates\app\profile.html:313
+#: .\app\templates\app\profile.html:340
 msgid "Aktuelles Banner"
 msgstr "Current banner"
 
-#: .\app\templates\app\profile.html:320
+#: .\app\templates\app\profile.html:347
 msgid "Noch kein Banner"
 msgstr "No banner yet"
 
-#: .\app\templates\app\profile.html:321
+#: .\app\templates\app\profile.html:348
 msgid "Wähle ein breites Bild aus, das oben in deinem Profil angezeigt wird."
 msgstr "Choose a wide image to display at the top of your profile."
 
-#: .\app\templates\app\profile.html:327
+#: .\app\templates\app\profile.html:354
 msgid "Banner auswählen"
 msgstr "Choose banner"
 
-#: .\app\templates\app\profile.html:339
+#: .\app\templates\app\profile.html:366
 msgid ""
 "Maximal 5 MB. Dein bestehendes Banner bleibt erhalten, solange du kein neues "
 "Bild hochlädst."
@@ -6809,19 +6988,42 @@ msgstr ""
 "Maximum 5 MB. Your existing banner stays in place unless you upload a new "
 "image."
 
-#: .\app\templates\app\profile.html:368
+#: .\app\templates\app\profile.html:380
+msgid "Auftritt"
+msgstr ""
+
+# | msgid "Spotify-Status"
+#: .\app\templates\app\profile.html:381
+#, fuzzy
+#| msgid "Status"
+msgid "Bio & Status"
+msgstr "Status"
+
+#: .\app\templates\app\profile.html:411
+#, fuzzy
+#| msgid "Live Controls"
+msgid "Kontrolle"
+msgstr "Live controls"
+
+#: .\app\templates\app\profile.html:412
+#, fuzzy
+#| msgid "Sichtbarkeit"
+msgid "Sichtbarkeit & Mitteilungen"
+msgstr "Visibility"
+
+#: .\app\templates\app\profile.html:421
 msgid "Privatsphäre"
 msgstr "Privacy"
 
-#: .\app\templates\app\profile.html:369
+#: .\app\templates\app\profile.html:422
 msgid "Sichtbarkeit"
 msgstr "Visibility"
 
-#: .\app\templates\app\profile.html:382
+#: .\app\templates\app\profile.html:435
 msgid "Mitteilungen & Sounds"
 msgstr "Notifications & sounds"
 
-#: .\app\templates\app\profile.html:390
+#: .\app\templates\app\profile.html:443
 msgid ""
 "Browser-Benachrichtigungen funktionieren, sobald du sie im Browser erlaubst "
 "und MyTools geöffnet ist."
@@ -6829,56 +7031,56 @@ msgstr ""
 "Browser notifications work as soon as you allow them in your browser and "
 "MyTools is open."
 
-#: .\app\templates\app\profile.html:398
+#: .\app\templates\app\profile.html:453
 msgid "Zurück zur Startseite"
 msgstr "Back to homepage"
 
-#: .\app\templates\app\profile.html:418
+#: .\app\templates\app\profile.html:473
 #, fuzzy
 #| msgid "Profil bearbeiten"
 msgid "Profilkarten"
 msgstr "Edit profile"
 
-#: .\app\templates\app\profile.html:419
+#: .\app\templates\app\profile.html:474
 #, fuzzy
 #| msgid "Design anpassen"
 msgid "Spielkarten anpassen"
 msgstr "Customize design"
 
-#: .\app\templates\app\profile.html:439
+#: .\app\templates\app\profile.html:494
 #, fuzzy
 #| msgid "Nach"
 msgid "Nach oben"
 msgstr "To"
 
 # | msgid "Nachricht"
-#: .\app\templates\app\profile.html:442
+#: .\app\templates\app\profile.html:497
 #, fuzzy
 #| msgid "Nachrichten"
 msgid "Nach unten"
 msgstr "Messages"
 
-#: .\app\templates\app\profile.html:457
+#: .\app\templates\app\profile.html:512
 msgid "Blockiert"
 msgstr "Blocked"
 
-#: .\app\templates\app\profile.html:458
+#: .\app\templates\app\profile.html:513
 msgid "Blockierte Nutzer"
 msgstr "Blocked users"
 
-#: .\app\templates\app\profile.html:466
+#: .\app\templates\app\profile.html:521
 msgid "Entblocken"
 msgstr "Unblock"
 
-#: .\app\templates\app\profile.html:483
+#: .\app\templates\app\profile.html:538
 msgid "Bild zuschneiden"
 msgstr "Crop picture"
 
-#: .\app\templates\app\profile.html:498
+#: .\app\templates\app\profile.html:553
 msgid "Zoom"
 msgstr "Zoom"
 
-#: .\app\templates\app\profile.html:509
+#: .\app\templates\app\profile.html:564
 msgid "Übernehmen"
 msgstr "Apply"
 
@@ -7666,213 +7868,283 @@ msgstr "Icon"
 msgid "Mikrofon"
 msgstr "Microphone"
 
-#: .\app\templates\app\stream_deck.html:224
+#: .\app\templates\app\stream_deck.html:223
+#, fuzzy
+#| msgid "Mikrofon"
+msgid "Mikrofon stumm"
+msgstr "Microphone"
+
+#: .\app\templates\app\stream_deck.html:225
+msgid "Leiser"
+msgstr ""
+
+#: .\app\templates\app\stream_deck.html:226
+msgid "Stumm"
+msgstr ""
+
+#: .\app\templates\app\stream_deck.html:227
 msgid "Krone"
 msgstr "Crown"
 
-#: .\app\templates\app\stream_deck.html:225
-#: .\app\templates\app\stream_deck.html:308
+#: .\app\templates\app\stream_deck.html:228
+#: .\app\templates\app\stream_deck.html:336
 msgid "Pause"
 msgstr "Pause"
 
-#: .\app\templates\app\stream_deck.html:226
+#: .\app\templates\app\stream_deck.html:229
 msgid "Stopp"
 msgstr "Stop"
 
-#: .\app\templates\app\stream_deck.html:227
+#: .\app\templates\app\stream_deck.html:230
 msgid "Überwachung"
 msgstr "Monitoring"
 
-#: .\app\templates\app\stream_deck.html:228
-#: .\app\templates\app\stream_deck.html:293
+#: .\app\templates\app\stream_deck.html:231
+#: .\app\templates\app\stream_deck.html:297
 msgid "Szene"
 msgstr "Scene"
 
-#: .\app\templates\app\stream_deck.html:229
+#: .\app\templates\app\stream_deck.html:232
 msgid "Studio"
 msgstr "Studio"
 
-#: .\app\templates\app\stream_deck.html:230
+#: .\app\templates\app\stream_deck.html:233
 msgid "Kamera"
 msgstr "Camera"
 
-#: .\app\templates\app\stream_deck.html:231
+#: .\app\templates\app\stream_deck.html:234
 msgid "Bildschirm"
 msgstr "Screen"
 
-#: .\app\templates\app\stream_deck.html:232
-#: .\app\templates\app\stream_deck.html:307
+#: .\app\templates\app\stream_deck.html:235
+#: .\app\templates\app\stream_deck.html:335
 msgid "Wiedergabe"
 msgstr "Playback"
 
-#: .\app\templates\app\stream_deck.html:235
+#: .\app\templates\app\stream_deck.html:238
 msgid "Herz"
 msgstr "Heart"
 
-#: .\app\templates\app\stream_deck.html:237
+#: .\app\templates\app\stream_deck.html:240
 msgid "Wiederholen"
 msgstr "Repeat"
 
-#: .\app\templates\app\stream_deck.html:238
+#: .\app\templates\app\stream_deck.html:241
 msgid "Follower"
 msgstr "Follower"
 
-#: .\app\templates\app\stream_deck.html:239
+#: .\app\templates\app\stream_deck.html:242
 msgid "Stern"
 msgstr "Star"
 
-#: .\app\templates\app\stream_deck.html:240
+#: .\app\templates\app\stream_deck.html:243
 msgid "Dollar"
 msgstr "Dollar"
 
-#: .\app\templates\app\stream_deck.html:241
+#: .\app\templates\app\stream_deck.html:244
 msgid "Nachricht"
 msgstr "Message"
 
-#: .\app\templates\app\stream_deck.html:242
+#: .\app\templates\app\stream_deck.html:245
 msgid "Zeitmesser"
 msgstr "Timer"
 
-#: .\app\templates\app\stream_deck.html:243
+#: .\app\templates\app\stream_deck.html:246
 msgid "Clip"
 msgstr "Clip"
 
-#: .\app\templates\app\stream_deck.html:244
+#: .\app\templates\app\stream_deck.html:247
 msgid "Plus"
 msgstr "Plus"
 
-#: .\app\templates\app\stream_deck.html:254
+#: .\app\templates\app\stream_deck.html:257
 msgid "Aktion"
 msgstr "Action"
 
-#: .\app\templates\app\stream_deck.html:256
+#: .\app\templates\app\stream_deck.html:259
 msgid "Keine Aktion"
 msgstr "No action"
 
-#: .\app\templates\app\stream_deck.html:257
-#: .\app\templates\app\stream_deck.html:268
+#: .\app\templates\app\stream_deck.html:260
+#: .\app\templates\app\stream_deck.html:272
 msgid "OBS-Anfrage"
 msgstr "OBS request"
 
-#: .\app\templates\app\stream_deck.html:258
+#: .\app\templates\app\stream_deck.html:261
 msgid "OBS-Szene wechseln"
 msgstr "Switch OBS scene"
 
-#: .\app\templates\app\stream_deck.html:259
+#: .\app\templates\app\stream_deck.html:262
 msgid "OBS-Quelle umschalten"
 msgstr "Toggle OBS source"
 
-#: .\app\templates\app\stream_deck.html:261
+#: .\app\templates\app\stream_deck.html:263
+msgid "OBS-Audiogerät steuern"
+msgstr ""
+
+#: .\app\templates\app\stream_deck.html:265
 msgid "URL öffnen"
 msgstr "Open URL"
 
-#: .\app\templates\app\stream_deck.html:270
+#: .\app\templates\app\stream_deck.html:274
 msgid "Stream starten"
 msgstr "Start stream"
 
-#: .\app\templates\app\stream_deck.html:271
+#: .\app\templates\app\stream_deck.html:275
 msgid "Stream stoppen"
 msgstr "Stop stream"
 
-#: .\app\templates\app\stream_deck.html:272
+#: .\app\templates\app\stream_deck.html:276
 msgid "Stream umschalten"
 msgstr "Toggle stream"
 
-#: .\app\templates\app\stream_deck.html:273
+#: .\app\templates\app\stream_deck.html:277
 msgid "Aufnahme starten"
 msgstr "Start recording"
 
-#: .\app\templates\app\stream_deck.html:274
+#: .\app\templates\app\stream_deck.html:278
 msgid "Aufnahme stoppen"
 msgstr "Stop recording"
 
-#: .\app\templates\app\stream_deck.html:275
+#: .\app\templates\app\stream_deck.html:279
 msgid "Aufnahme umschalten"
 msgstr "Toggle recording"
 
-#: .\app\templates\app\stream_deck.html:276
+#: .\app\templates\app\stream_deck.html:280
 msgid "Aufnahme pausieren"
 msgstr "Pause recording"
 
-#: .\app\templates\app\stream_deck.html:277
+#: .\app\templates\app\stream_deck.html:281
 msgid "Aufnahme fortsetzen"
 msgstr "Resume recording"
 
-#: .\app\templates\app\stream_deck.html:278
+#: .\app\templates\app\stream_deck.html:282
 msgid "Studio-Übergang auslösen"
 msgstr "Trigger studio transition"
 
-#: .\app\templates\app\stream_deck.html:279
+#: .\app\templates\app\stream_deck.html:283
 msgid "Studio-Modus umschalten"
 msgstr "Toggle studio mode"
 
-#: .\app\templates\app\stream_deck.html:286
+#: .\app\templates\app\stream_deck.html:290
 msgid "Szenenname"
 msgstr "Scene name"
 
-#: .\app\templates\app\stream_deck.html:287
-#: .\app\templates\app\stream_deck.html:294
+#: .\app\templates\app\stream_deck.html:291
+#: .\app\templates\app\stream_deck.html:298
 msgid "z. B. Gameplay"
 msgstr "e.g., Gameplay"
 
-#: .\app\templates\app\stream_deck.html:298
+#: .\app\templates\app\stream_deck.html:302
 msgid "Quelle"
 msgstr "Source"
 
-#: .\app\templates\app\stream_deck.html:299
+#: .\app\templates\app\stream_deck.html:303
 msgid "z. B. Webcam"
 msgstr "e.g., Webcam"
 
-#: .\app\templates\app\stream_deck.html:305
+#: .\app\templates\app\stream_deck.html:310
+#, fuzzy
+#| msgid "0 Audioquellen"
+msgid "Audiogerät / Audioquelle"
+msgstr "0 audio sources"
+
+#: .\app\templates\app\stream_deck.html:311
+msgid "z. B. Mic/Aux oder Desktop Audio"
+msgstr ""
+
+#: .\app\templates\app\stream_deck.html:315
+#, fuzzy
+#| msgid "Aktion"
+msgid "Audio-Aktion"
+msgstr "Action"
+
+#: .\app\templates\app\stream_deck.html:317
+#, fuzzy
+#| msgid "Stream umschalten"
+msgid "Stumm umschalten"
+msgstr "Toggle stream"
+
+#: .\app\templates\app\stream_deck.html:318
+#, fuzzy
+#| msgid "Stream umschalten"
+msgid "Stummschalten"
+msgstr "Toggle stream"
+
+#: .\app\templates\app\stream_deck.html:319
+#, fuzzy
+#| msgid "Blockierung aufheben"
+msgid "Stummschaltung aufheben"
+msgstr "Remove block"
+
+#: .\app\templates\app\stream_deck.html:320
+#, fuzzy
+#| msgid "Lautstärke"
+msgid "Lautstärke erhöhen"
+msgstr "Volume"
+
+#: .\app\templates\app\stream_deck.html:321
+#, fuzzy
+#| msgid "Lautstärke"
+msgid "Lautstärke verringern"
+msgstr "Volume"
+
+#: .\app\templates\app\stream_deck.html:326
+#, fuzzy
+#| msgid "Lautstärke"
+msgid "Lautstärke-Schritt in dB"
+msgstr "Volume"
+
+#: .\app\templates\app\stream_deck.html:333
 msgid "Spotify-Aktion"
 msgstr "Spotify action"
 
-#: .\app\templates\app\stream_deck.html:309
+#: .\app\templates\app\stream_deck.html:337
 msgid "Nächstes Lied"
 msgstr "Next song"
 
-#: .\app\templates\app\stream_deck.html:310
+#: .\app\templates\app\stream_deck.html:338
 msgid "Vorheriges Lied"
 msgstr "Previous song"
 
-#: .\app\templates\app\stream_deck.html:311
+#: .\app\templates\app\stream_deck.html:339
 msgid "Wiedergabe/Pause umschalten"
 msgstr "Toggle playback/pause"
 
-#: .\app\templates\app\stream_deck.html:318
+#: .\app\templates\app\stream_deck.html:346
 msgid "URL"
 msgstr "URL"
 
-#: .\app\templates\app\stream_deck.html:347
+#: .\app\templates\app\stream_deck.html:375
 msgid "Spotify-Zugriffstoken"
 msgstr "Spotify access token"
 
-#: .\app\templates\app\stream_deck.html:348
+#: .\app\templates\app\stream_deck.html:376
 msgid "Füge deinen Spotify-Zugriffstoken ein."
 msgstr "Enter your Spotify access token."
 
-#: .\app\templates\app\stream_deck.html:351
+#: .\app\templates\app\stream_deck.html:379
 msgid "Spotify-Fenster schließen"
 msgstr "Close Spotify window"
 
-#: .\app\templates\app\stream_deck.html:358
+#: .\app\templates\app\stream_deck.html:386
 msgid "Zugriffstoken"
 msgstr "Access token"
 
-#: .\app\templates\app\stream_deck.html:359
+#: .\app\templates\app\stream_deck.html:387
 msgid "Spotify-Zugriffstoken hier einfügen"
 msgstr "Paste your Spotify access token here"
 
-#: .\app\templates\app\stream_deck.html:385
+#: .\app\templates\app\stream_deck.html:413
 #: .\app\templates\app\uno_lobby.html:91
 msgid "Protokoll"
 msgstr "Log"
 
-#: .\app\templates\app\stream_deck.html:386
+#: .\app\templates\app\stream_deck.html:414
 msgid "Letzte Aktionen und Hinweise"
 msgstr "Recent actions and notes"
 
-#: .\app\templates\app\stream_deck.html:389
+#: .\app\templates\app\stream_deck.html:417
 msgid "Protokoll schließen"
 msgstr "Close log"
 
@@ -7936,7 +8208,7 @@ msgstr "Swap units"
 msgid "Nach"
 msgstr "To"
 
-#: .\app\templates\app\unit_converter.html:83 .\app\views.py:1957
+#: .\app\templates\app\unit_converter.html:83 .\app\views.py:2006
 msgid "Gib einen Wert ein, um die Umrechnung zu starten."
 msgstr "Enter a value to start the conversion."
 
@@ -7948,7 +8220,7 @@ msgstr "Quick Examples"
 msgid "Häufige Umrechnungen"
 msgstr "Common Conversions"
 
-#: .\app\templates\app\unit_converter.html:106 .\app\views.py:1948
+#: .\app\templates\app\unit_converter.html:106 .\app\views.py:1997
 msgid "Meilen"
 msgstr "Miles"
 
@@ -8086,43 +8358,54 @@ msgstr "Saved locations"
 msgid "Aktuellen Ort speichern"
 msgstr "Save current location"
 
-#: .\app\templates\app\weather.html:106
+# | msgid "Aktuelles Wetter"
+#: .\app\templates\app\weather.html:77 .\app\templates\app\weather.html:78
+#, fuzzy
+#| msgid "Aktuelles Wort"
+msgid "Aktueller Standardort"
+msgstr "Current word"
+
+#: .\app\templates\app\weather.html:91 .\app\templates\app\weather.html:92
+msgid "Als Standardort verwenden"
+msgstr ""
+
+#: .\app\templates\app\weather.html:129
 msgid "Aktuelles Wetter"
 msgstr "Current weather"
 
-#: .\app\templates\app\weather.html:136
+#: .\app\templates\app\weather.html:159
 msgid "Temperatur"
 msgstr "Temperature"
 
-#: .\app\templates\app\weather.html:144
+#: .\app\templates\app\weather.html:167
 msgid "Luftfeuchtigkeit"
 msgstr "Humidity"
 
-#: .\app\templates\app\weather.html:152
+#: .\app\templates\app\weather.html:175
 msgid "Wind"
 msgstr "Wind"
 
-#: .\app\templates\app\weather.html:160
+#: .\app\templates\app\weather.html:183
 msgid "Luftdruck"
 msgstr "Air pressure"
 
-#: .\app\templates\app\weather.html:171
+#: .\app\templates\app\weather.html:194
 msgid "Stündliche Vorhersage"
 msgstr "Hourly forecast"
 
-#: .\app\templates\app\weather.html:191
+#: .\app\templates\app\weather.html:214
 msgid "5-Tage-Vorhersage"
 msgstr "5-day forecast"
 
-#: .\app\templates\app\weather.html:213
+#: .\app\templates\app\weather.html:236
 msgid "Sonnenaufgang & -untergang"
 msgstr "Sunrise & sunset"
 
-#: .\app\templates\app\weather.html:219
+#: .\app\templates\app\weather.html:242
 msgid "Sonnenaufgang"
 msgstr "Sunrise"
 
-#: .\app\templates\app\weather.html:225
+#: .\app\templates\app\weather.html:248
 msgid "Sonnenuntergang"
 msgstr "Sunset"
 
@@ -8390,291 +8673,501 @@ msgstr "Custom ringtone was deleted."
 msgid "Dein Account wurde erstellt."
 msgstr "Your account has been created."
 
-#: .\app\views.py:265 .\app\views.py:288
+#: .\app\views.py:269 .\app\views.py:292
 msgid "Wetter konnte nicht geladen werden."
 msgstr "Weather could not be loaded."
 
-#: .\app\views.py:276
+#: .\app\views.py:280
 msgid "Keine Beschreibung"
 msgstr "No description"
 
-#: .\app\views.py:603
+#: .\app\views.py:607
 #, python-format
 msgid "für \"%(section)s\""
 msgstr "for \"%(section)s\""
 
-#: .\app\views.py:604
+#: .\app\views.py:608
 msgid "Verknüpfung bearbeiten"
 msgstr "Edit shortcut"
 
-#: .\app\views.py:605
+#: .\app\views.py:609
 #, python-format
 msgid "in \"%(section)s\""
 msgstr "in \"%(section)s\""
 
-#: .\app\views.py:609 .\app\views.py:1884
+#: .\app\views.py:613 .\app\views.py:1933
 msgid "Änderungen speichern"
 msgstr "Save changes"
 
-#: .\app\views.py:614
+#: .\app\views.py:618
 msgid "Widget speichern"
 msgstr "Save widget"
 
-#: .\app\views.py:633
+#: .\app\views.py:637
 msgid "Ungültiges JSON"
 msgstr "Invalid JSON"
 
-#: .\app\views.py:706
+#: .\app\views.py:710
 msgid "Unbekannte Aktion"
 msgstr "Unknown action"
 
-#: .\app\views.py:736 .\app\views.py:790
+#: .\app\views.py:740 .\app\views.py:794
 msgid "Widget"
 msgstr "Widget"
 
-#: .\app\views.py:1080 .\app\views.py:1094 .\app\views.py:1225
+#: .\app\views.py:1129 .\app\views.py:1143 .\app\views.py:1274
 msgid "Ungültige Antwort der OpenWeather API."
 msgstr "Invalid response from OpenWeather API."
 
-#: .\app\views.py:1103
+#: .\app\views.py:1152
 msgid "Wettervorhersage konnte nicht geladen werden."
 msgstr "Weather forecast could not be loaded."
 
-#: .\app\views.py:1193
+#: .\app\views.py:1242
 msgid "OpenWeather API-Key ist ungültig."
 msgstr "OpenWeather API-Key is invalid."
 
-#: .\app\views.py:1199 .\app\views.py:1211
+#: .\app\views.py:1248 .\app\views.py:1260
 msgid "Standort nicht gefunden."
 msgstr "Location not found."
 
-#: .\app\views.py:1205
+#: .\app\views.py:1254
 #, python-format
 msgid "OpenWeather Fehler: %(message)s"
 msgstr "OpenWeather Error: %(message)s"
 
-#: .\app\views.py:1218 .\app\views.py:1232
+#: .\app\views.py:1267 .\app\views.py:1281
 #, python-format
 msgid "Verbindungsfehler: %(error)s"
 msgstr "Connection error: %(error)s"
 
-#: .\app\views.py:1348
+#: .\app\views.py:1397
 msgid "Lade Text..."
 msgstr "Loading text..."
 
-#: .\app\views.py:1349
+#: .\app\views.py:1398
 msgid "Übersetze..."
 msgstr "Translating..."
 
-#: .\app\views.py:1350
+#: .\app\views.py:1399
 msgid "Nächster Test"
 msgstr "Next test"
 
-#: .\app\views.py:1351
+#: .\app\views.py:1400
 msgid "Lädt..."
 msgstr "Loading..."
 
-#: .\app\views.py:1353
+#: .\app\views.py:1402
 msgid "Neuer Highscore!"
 msgstr "New high score!"
 
-#: .\app\views.py:1354
+#: .\app\views.py:1403
 msgid "Ergebnis gespeichert."
 msgstr "Result saved."
 
-#: .\app\views.py:1356
+#: .\app\views.py:1405
 msgid "Platz"
 msgstr "Rank"
 
-#: .\app\views.py:1358
+#: .\app\views.py:1407
 msgid "Score"
 msgstr "Score"
 
-#: .\app\views.py:1359
+#: .\app\views.py:1408
 msgid "Datum"
 msgstr "Date"
 
-#: .\app\views.py:1373
+#: .\app\views.py:1422
 msgid "Ungültige Anfrage."
 msgstr "Invalid request."
 
-#: .\app\views.py:1378
+#: .\app\views.py:1427
 msgid "Unbekannter Spielmodus."
 msgstr "Unknown game mode."
 
-#: .\app\views.py:1383 .\app\views.py:1386
+#: .\app\views.py:1432 .\app\views.py:1435
 msgid "Ungültiger Score."
 msgstr "Invalid score."
 
-#: .\app\views.py:1462 .\app\views.py:1528
+#: .\app\views.py:1511 .\app\views.py:1577
 msgid ""
 "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
 msgstr "Database table missing. Please run migration: python manage.py migrate"
 
-#: .\app\views.py:1472
+#: .\app\views.py:1521
 msgid "Ungültiges JSON."
 msgstr "Invalid JSON"
 
-#: .\app\views.py:1485
+#: .\app\views.py:1534
 msgid "Unbekannte Aktion."
 msgstr "Unknown action"
 
-#: .\app\views.py:1499 .\app\views.py:1556
+#: .\app\views.py:1548 .\app\views.py:1605
 msgid "Name fehlt."
 msgstr "Name is missing."
 
-#: .\app\views.py:1505 .\app\views.py:1562
+#: .\app\views.py:1554 .\app\views.py:1611
 msgid "Ungültige Nation."
 msgstr "Invalid nation."
 
-#: .\app\views.py:1511
+#: .\app\views.py:1560
 msgid "Bild fehlt."
 msgstr "Picture is missing."
 
-#: .\app\views.py:1538 .\app\views.py:1585
+#: .\app\views.py:1587 .\app\views.py:1634
 msgid "Methode nicht erlaubt."
 msgstr "Method not allowed."
 
-#: .\app\views.py:1603
+#: .\app\views.py:1652
 msgid "Suchbegriff fehlt."
 msgstr "Search term is missing."
 
-#: .\app\views.py:1617
+#: .\app\views.py:1666
 msgid "Pagination-Parameter sind ungültig."
 msgstr "Pagination parameters are invalid."
 
-#: .\app\views.py:1638 .\app\views.py:1671
+#: .\app\views.py:1687 .\app\views.py:1720
 msgid "Ungültige Antwort der Genius API."
 msgstr "Invalid response from Genius API."
 
-#: .\app\views.py:1644
+#: .\app\views.py:1693
 msgid "Genius API Fehler."
 msgstr "Genius API error."
 
-#: .\app\views.py:1666
+#: .\app\views.py:1715
 msgid "Genius API konnte nicht erreicht werden."
 msgstr "Genius API could not be reached."
 
-#: .\app\views.py:1682
+#: .\app\views.py:1731
 msgid "Latitude und Longitude fehlen."
 msgstr "Latitude and longitude are missing."
 
-#: .\app\views.py:1691
+#: .\app\views.py:1740
 msgid "Latitude und Longitude müssen Zahlen sein."
 msgstr "Latitude and longitude must be numbers."
 
-#: .\app\views.py:1715 .\app\views.py:1732
+#: .\app\views.py:1764 .\app\views.py:1781
 msgid "Ungültige Antwort der Tankerkönig API."
 msgstr "Invalid response from Tankerkönig API."
 
-#: .\app\views.py:1719
+#: .\app\views.py:1768
 msgid "Tankerkönig API Fehler."
 msgstr "Tankerkönig API error."
 
-#: .\app\views.py:1727
+#: .\app\views.py:1776
 msgid "Tankerkönig API konnte nicht erreicht werden."
 msgstr "Tankerkönig API could not be reached."
 
-#: .\app\views.py:1770
+#: .\app\views.py:1819
 msgid "Notiz geteilt"
 msgstr "Note shared"
 
-#: .\app\views.py:1771
+#: .\app\views.py:1820
 #, python-format
 msgid "%(user)s hat eine Notiz mit dir geteilt: %(title)s"
 msgstr "%(user)s shared a note with you: %(title)s"
 
-#: .\app\views.py:1852
+#: .\app\views.py:1901
 msgid "Notiz wurde erstellt."
 msgstr "Note created."
 
-#: .\app\views.py:1860
+#: .\app\views.py:1909
 msgid "Notiz speichern"
 msgstr "Save note"
 
-#: .\app\views.py:1875
+#: .\app\views.py:1924
 msgid "Notiz wurde aktualisiert."
 msgstr "Note updated."
 
-#: .\app\views.py:1883
+#: .\app\views.py:1932
 msgid "Notiz bearbeiten"
 msgstr "Edit note"
 
-#: .\app\views.py:1902
+#: .\app\views.py:1951
 msgid "Notiz wurde gelöscht."
 msgstr "Note deleted."
 
-#: .\app\views.py:1922
+#: .\app\views.py:1971
 msgid "Notiz wurde archiviert."
 msgstr "Note archived."
 
-#: .\app\views.py:1924
+#: .\app\views.py:1973
 msgid "Notiz wurde wiederhergestellt."
 msgstr "Note restored."
 
-#: .\app\views.py:1932
+#: .\app\views.py:1981
 msgid "Kilobyte (KB)"
 msgstr "Kilobyte (KB)"
 
-#: .\app\views.py:1933
+#: .\app\views.py:1982
 msgid "Megabyte (MB)"
 msgstr "Megabyte (MB)"
 
-#: .\app\views.py:1934
+#: .\app\views.py:1983
 msgid "Gigabyte (GB)"
 msgstr "Gigabyte (GB)"
 
-#: .\app\views.py:1935
+#: .\app\views.py:1984
 msgid "Terabyte (TB)"
 msgstr "Terabyte (TB)"
 
-#: .\app\views.py:1941
+#: .\app\views.py:1990
 msgid "Tage"
 msgstr "Days"
 
-#: .\app\views.py:1944
+#: .\app\views.py:1993
 msgid "Millimeter"
 msgstr "Millimeter"
 
-#: .\app\views.py:1945
+#: .\app\views.py:1994
 msgid "Zentimeter"
 msgstr "Centimeters"
 
-#: .\app\views.py:1946
+#: .\app\views.py:1995
 msgid "Meter"
 msgstr "Meter"
 
-#: .\app\views.py:1947
+#: .\app\views.py:1996
 msgid "Kilometer"
 msgstr "Kilometer"
 
-#: .\app\views.py:1951
+#: .\app\views.py:2000
 msgid "Euro pro Tag"
 msgstr "Euros per day"
 
-#: .\app\views.py:1952
+#: .\app\views.py:2001
 msgid "Euro pro Woche"
 msgstr "Euros per week"
 
-#: .\app\views.py:1953
+#: .\app\views.py:2002
 msgid "Euro pro Monat"
 msgstr "Euros per month"
 
-#: .\app\views.py:1954
+#: .\app\views.py:2003
 msgid "Euro pro Jahr"
 msgstr "Euros per year"
 
-#: .\app\views.py:2019
+#: .\app\views.py:2068
 #, fuzzy
 #| msgid "Ungültige Anfrage."
 msgid "Ungueltige Anfrage."
 msgstr "Invalid request."
 
-#: .\app\views.py:2031 .\app\views.py:2034
+#: .\app\views.py:2080 .\app\views.py:2083
 #, fuzzy
 #| msgid "Ungültiger Score."
 msgid "Ungueltiger Cookie-Cosmos-Score."
 msgstr "Invalid score."
+
+#~ msgid "Über MyTools"
+#~ msgstr "About MyTools"
+
+# | msgid ""
+# | "MyTools ist eine persönliche Django-Toolbox für Alltag, Homelab, Medien, "
+# | "Streaming und kleine Web-Helfer. Die App bündelt Schnellzugriffe, "
+# | "Widgets, Wetter, Notizen, Timer, Rechner, Dashboards und Mini-Games in "
+# | "einer modernen Oberfläche."
+#~ msgid ""
+#~ "MyTools ist eine persönliche Django-Toolbox für Alltag, Homelab, Medien, "
+#~ "Streaming, kleine Web-Helfer und gemeinsame Funktionen. Die App bündelt "
+#~ "Schnellzugriffe, Widgets, Wetter, Notizen, Timer, Rechner, Dashboards, "
+#~ "Profile, Freunde, Chats und Mini-Games in einer modernen Oberfläche."
+#~ msgstr ""
+#~ "MyTools is a personal Django toolbox for everyday tasks, homelab, media, "
+#~ "streaming, small web helpers, and shared features. The app brings "
+#~ "together shortcuts, widgets, weather, notes, timers, calculators, "
+#~ "dashboards, profiles, friends, chats, and mini-games in a modern "
+#~ "interface."
+
+#~ msgid "Zur Startseite"
+#~ msgstr "Back to homepage"
+
+#~ msgid "Alles an einem Ort"
+#~ msgstr "Everything in one place"
+
+# | msgid ""
+# | "Von lokalen Server-Links über personalisierte Startseiten-Widgets bis zu "
+# | "API-Tools: MyTools soll die wichtigsten kleinen Helfer zentral, schnell "
+# | "erreichbar und angenehm bedienbar machen."
+#~ msgid ""
+#~ "Von lokalen Server-Links über personalisierte Startseiten-Widgets bis zu "
+#~ "Profilen, Freunden, Chats und API-Tools: MyTools soll die wichtigsten "
+#~ "kleinen Helfer zentral, schnell erreichbar und angenehm bedienbar machen."
+#~ msgstr ""
+#~ "From local server links and personalized homepage widgets to profiles, "
+#~ "friends, chats, and API tools: MyTools is designed to keep the most "
+#~ "important small helpers centralized, quick to reach, and pleasant to use."
+
+#~ msgid "Shortcuts, Bereiche, Favoriten, Widgets und Drag & Drop"
+#~ msgstr "Shortcuts, sections, favorites, widgets, and drag & drop"
+
+#~ msgid "Tools & APIs"
+#~ msgstr "Tools & APIs"
+
+#~ msgid "OpenWeather, Tankerkönig, Genius, OBS und Spotify vorbereitet"
+#~ msgstr "OpenWeather, Tankerkönig, Genius, OBS, and Spotify prepared"
+
+#~ msgid "Dark Mode, Theme-Editor, moderne Widgets und responsive Layouts"
+#~ msgstr "Dark Mode, theme editor, modern widgets, and responsive layouts"
+
+#~ msgid "Community"
+#~ msgstr "Community"
+
+#~ msgid "Profile, Freunde, Chats und gemeinsame Spiele-Lobbys"
+#~ msgstr "Profiles, friends, chats, and shared game lobbies"
+
+#~ msgid "Schnellzugriffe & Widgets"
+#~ msgstr "Shortcuts & widgets"
+
+#~ msgid ""
+#~ "Eigene Links können mit Icons, Bildern, Favoriten und Kategorien "
+#~ "gespeichert werden. Zusätzlich lassen sich Startseiten-Widgets wie Uhr, "
+#~ "Wetter, Notizen oder Statistik-Karten hinzufügen und gestalten."
+#~ msgstr ""
+#~ "You can save custom links with icons, images, favorites, and categories. "
+#~ "You can also add and customize homepage widgets such as clocks, weather, "
+#~ "notes, or statistics cards."
+
+#~ msgid "Uhr, Timer & Weltuhr"
+#~ msgstr "Clock, timer & world clock"
+
+#~ msgid ""
+#~ "Die Uhr-Seite bündelt lokale Uhrzeit, Weltuhr, Stoppuhr, gespeicherte "
+#~ "Timer-Vorlagen und eigene Timer-Sounds. Der Hero-Bereich nutzt eine "
+#~ "dezente Weltkarte als Hintergrund."
+#~ msgstr ""
+#~ "The clock page combines local time, world clock, stopwatch, saved timer "
+#~ "presets, and custom timer sounds. The hero area uses a subtle world map "
+#~ "as its background."
+
+#~ msgid "Profile, Freunde & Chat"
+#~ msgstr "Profiles, friends & chat"
+
+# | msgid ""
+# | "Nutzer können ein eigenes Profil mit Namen, Avatar und öffentlichen "
+# | "Profilinformationen pflegen. Die Nutzerübersicht erleichtert den "
+# | "Überblick über registrierte Accounts."
+#~ msgid ""
+#~ "Nutzer können ein eigenes Profil mit Namen, Avatar, Banner und "
+#~ "öffentlichen Profilinformationen pflegen. Zusätzlich gibt es "
+#~ "Freundschaftsanfragen, Freundeslisten, Direktchats, Gruppenchats, Emoji-"
+#~ "Reaktionen und löschbare eigene Nachrichten."
+#~ msgstr ""
+#~ "Users can maintain their own profile with a name, avatar, banner, and "
+#~ "public profile details. There are also friend requests, friend lists, "
+#~ "direct chats, group chats, emoji reactions, and deletable own messages."
+
+#~ msgid "Aktuelle Module"
+#~ msgstr "Current Modules"
+
+#~ msgid "Notizen mit Pins, Archiv, Farben und Tags."
+#~ msgstr "Notes with pins, an archive, colors, and tags."
+
+#~ msgid ""
+#~ "Mini-Games mit letzten Ergebnissen, Highscores und Bestenliste pro Nutzer."
+#~ msgstr ""
+#~ "Mini-games with recent results, highscores, and a leaderboard per user."
+
+#~ msgid "Charaktere verwalten, suchen und übersichtlich sammeln."
+#~ msgstr "Manage, search, and neatly collect characters."
+
+#~ msgid "Button-Dashboard für Medien, Spotify und eigene Aktionen."
+#~ msgstr "Button dashboard for media, Spotify, and custom actions."
+
+#~ msgid ""
+#~ "Dateien mit Freunden oder per privatem Link teilen, inklusive "
+#~ "Mehrfachupload, Fortschritt und Nutzer-Limits im Admin."
+#~ msgstr ""
+#~ "Share files with friends or through a private link, including multi-file "
+#~ "upload, progress, and per-user limits in the admin."
+
+#~ msgid ""
+#~ "Schnelles 1v1-Spiel mit privaten Räumen, Einladungen und Host-gesteuertem "
+#~ "Löschen."
+#~ msgstr ""
+#~ "Fast 1v1 game with private rooms, invitations, and host-controlled "
+#~ "deletion."
+
+#~ msgid ""
+#~ "1v1-Gefecht mit manueller Flottenplatzierung, geprüften Regeln und Host-"
+#~ "gesteuertem Löschen."
+#~ msgstr ""
+#~ "1v1 battle with manual fleet placement, validated rules, and host-"
+#~ "controlled deletion."
+
+#~ msgid ""
+#~ "Animiertes 1v1-Spiel mit privaten Räumen, Live-Zügen und automatischer "
+#~ "Rückleitung nach Löschung."
+#~ msgstr ""
+#~ "Animated 1v1 game with private rooms, live moves, and automatic redirect "
+#~ "after deletion."
+
+#~ msgid ""
+#~ "Live-Runden mit Einladungen, Stopp-Regel, manueller Auswertung und Host-"
+#~ "gesteuerten Lobbys."
+#~ msgstr ""
+#~ "Live rounds with invitations, stop rule, manual evaluation, and host-"
+#~ "controlled lobbies."
+
+# | msgid "Profilseite mit Avatar, persönlichen Daten und öffentlicher Ansicht."
+#~ msgid ""
+#~ "Profilseite mit Avatar, Banner, persönlichen Daten, Freunden und "
+#~ "öffentlicher Ansicht."
+#~ msgstr ""
+#~ "Profile page with avatar, banner, personal details, friends, and a public "
+#~ "view."
+
+#~ msgid "Projektstand"
+#~ msgstr "Project Status"
+
+#~ msgid "Personalisierbares Dashboard"
+#~ msgstr "Customizable dashboard"
+
+#~ msgid ""
+#~ "Startseite, Shortcuts, Favoriten, Bereiche, Widgets und Design-Optionen "
+#~ "sind eingebunden."
+#~ msgstr ""
+#~ "The homepage, shortcuts, favorites, sections, widgets, and design options "
+#~ "are built in."
+
+#~ msgid "Mehrere Tools produktiv nutzbar"
+#~ msgstr "Several tools ready for daily use"
+
+# | msgid ""
+# | "Wetter, Uhr, Notizen, Profile, Human Benchmark, OBS Dashboard, Rechner "
+# | "und API-Tools sind bereits verfügbar."
+#~ msgid ""
+#~ "Wetter, Uhr, Notizen, Profile, Freunde, Chat, Skribble, Tic Tac Toe, Vier "
+#~ "gewinnt, Schiffe versenken, Stadt Land Fluss, Human Benchmark, OBS "
+#~ "Dashboard, Rechner und API-Tools sind bereits verfügbar."
+#~ msgstr ""
+#~ "Weather, clock, notes, profiles, friends, chat, Skribble, Tic Tac Toe, "
+#~ "Connect Four, Battleship, Categories, Human Benchmark, OBS Dashboard, "
+#~ "converter, and API tools are already available."
+
+#~ msgid "Docker-Deployment vorbereitet"
+#~ msgstr "Docker deployment prepared"
+
+#~ msgid ""
+#~ "Das Projekt läuft mit Django, Gunicorn, PostgreSQL, Redis und Caddy per "
+#~ "Docker Compose."
+#~ msgstr ""
+#~ "The project runs on Django, Gunicorn, PostgreSQL, Redis, and Caddy using "
+#~ "Docker Compose."
+
+#~ msgid "Laufende Erweiterung"
+#~ msgstr "Ongoing expansion"
+
+# | msgid ""
+# | "Neue Widgets, bessere Statistiken, zusätzliche Integrationen und mehr "
+# | "Personalisierung können Schritt für Schritt ergänzt werden."
+#~ msgid ""
+#~ "Neue Widgets, bessere Statistiken, zusätzliche Integrationen, Chat-"
+#~ "Funktionen, Mini-Games und mehr Personalisierung können Schritt für "
+#~ "Schritt ergänzt werden."
+#~ msgstr ""
+#~ "New widgets, better statistics, additional integrations, chat features, "
+#~ "mini-games, and more personalization can be added step by step."
 
 #~ msgid "Karten, Hintergrund und Akzentfarbe"
 #~ msgstr "Cards, background, and accent color"

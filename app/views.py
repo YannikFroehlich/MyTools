@@ -232,7 +232,11 @@ def get_home_weather_data(request, user, widget):
     if units not in {"metric", "imperial"}:
         units = "metric"
 
-    location = widget.weather_location or WeatherLocation.objects.filter(user=user).first()
+    default_location = (
+        WeatherLocation.objects.filter(user=user, is_default=True).first()
+        or WeatherLocation.objects.filter(user=user).first()
+    )
+    location = widget.weather_location or default_location
     city = location.name if location else "Berlin"
     current_lang = translation.get_language()
     temperature_unit = "°F" if units == "imperial" else "°C"
@@ -999,10 +1003,20 @@ def weather(request):
     user = request.user
     lat = request.GET.get("lat")
     lon = request.GET.get("lon")
-    city = request.GET.get("city", "Berlin")
     units = request.GET.get("units") or request.POST.get("units") or "metric"
     if units not in {"metric", "imperial"}:
         units = "metric"
+
+    saved_locations = (
+        WeatherLocation.objects.filter(user=user)
+        if user.is_authenticated
+        else WeatherLocation.objects.none()
+    )
+    default_location = saved_locations.filter(is_default=True).first() or saved_locations.first()
+    city = (request.GET.get("city") or "").strip()
+    if not city and not (lat and lon):
+        city = default_location.name if default_location else "Berlin"
+    city = city or "Berlin"
 
     temperature_unit = "°F" if units == "imperial" else "°C"
     wind_unit = "mph" if units == "imperial" else "m/s"
@@ -1017,6 +1031,7 @@ def weather(request):
     def weather_context(**extra):
         context = {
             "city": city,
+            "default_location": default_location,
             "units": units,
             "temperature_unit": temperature_unit,
             "wind_unit": wind_unit,
@@ -1026,18 +1041,23 @@ def weather(request):
 
     # ───── Gespeicherte Wetter-Orte: Hinzufügen / Löschen ─────
     if request.method == "POST":
+        if not user.is_authenticated:
+            return redirect(request.path)
+
         action = request.POST.get("action")
 
         if action == "add_weather_location":
             location_name = request.POST.get("location_name", "").strip()
 
             if location_name:
+                has_locations = saved_locations.exists()
                 max_order = WeatherLocation.objects.filter(user=user).aggregate(Max("order"))["order__max"] or 0
 
                 WeatherLocation.objects.get_or_create(
                     user=user,
                     name=location_name,
                     defaults={
+                        "is_default": not has_locations,
                         "order": max_order + 1
                     }
                 )
@@ -1046,18 +1066,47 @@ def weather(request):
 
             return redirect(request.path)
 
+        if action == "set_default_weather_location":
+            location_id = request.POST.get("location_id")
+            current_city = request.POST.get("current_city", city).strip() or "Berlin"
+            location = WeatherLocation.objects.filter(id=location_id, user=user).first()
+
+            if location:
+                WeatherLocation.objects.filter(user=user, is_default=True).exclude(id=location.id).update(is_default=False)
+                if not location.is_default:
+                    location.is_default = True
+                    location.save(update_fields=["is_default"])
+                return redirect(weather_redirect_url(city=location.name))
+
+            return redirect(weather_redirect_url(city=current_city))
+
         if action == "delete_weather_location":
             location_id = request.POST.get("location_id")
             current_city = request.POST.get("current_city", city).strip() or "Berlin"
 
             if location_id:
-                WeatherLocation.objects.filter(id=location_id, user=user).delete()
+                location = WeatherLocation.objects.filter(id=location_id, user=user).first()
+                if location:
+                    deleted_name = location.name
+                    was_default = location.is_default
+                    location.delete()
+
+                    remaining_locations = WeatherLocation.objects.filter(user=user)
+                    replacement_location = (
+                        remaining_locations.filter(is_default=True).first()
+                        or remaining_locations.first()
+                    )
+
+                    if was_default and replacement_location and not replacement_location.is_default:
+                        replacement_location.is_default = True
+                        replacement_location.save(update_fields=["is_default"])
+
+                    if current_city == deleted_name:
+                        current_city = replacement_location.name if replacement_location else "Berlin"
 
             return redirect(weather_redirect_url(city=current_city))
 
         return redirect(request.path)
-
-    saved_locations = WeatherLocation.objects.filter(user=user)
 
     if not api_key:
         return render(request, 'app/weather.html', weather_context(

@@ -538,11 +538,102 @@
     text-align: left;
 }
 
+.profile-form-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.profile-form-badges span {
+    min-height: 30px;
+    padding: 0 11px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    color: var(--theme-accent-start);
+    font-size: 0.8rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.profile-form-badges i {
+    font-size: 0.68rem;
+}
+
+.profile-form-badges span:nth-child(2) i {
+    color: #22c55e;
+}
+
+.profile-edit-sections {
+    display: grid;
+    gap: 0;
+}
+
+.profile-edit-section {
+    min-width: 0;
+    padding: 0 0 24px;
+}
+
+.profile-edit-section + .profile-edit-section {
+    padding-top: 24px;
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.profile-edit-section:last-child {
+    padding-bottom: 0;
+}
+
+.profile-section-head {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.profile-section-head h3 {
+    margin: 0;
+    color: var(--theme-text);
+    font-size: 1.1rem;
+    letter-spacing: 0;
+}
+
+.profile-section-head .profile-kicker {
+    margin-bottom: 3px;
+}
+
+.profile-section-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 14px 28px rgba(var(--theme-accent-rgb), 0.18);
+}
+
 .profile-form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
     text-align: left;
+}
+
+.profile-media-grid,
+.profile-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+}
+
+.profile-media-grid .profile-field,
+.profile-toggle-column {
+    min-width: 0;
 }
 
 .profile-field {
@@ -844,6 +935,15 @@ body.dark-mode .profile-avatar-upload-card {
         rgba(255, 255, 255, 0.04);
 }
 
+body.dark-mode .profile-edit-section + .profile-edit-section {
+    border-top-color: rgba(203, 213, 225, 0.12);
+}
+
+body.dark-mode .profile-form-badges span {
+    color: color-mix(in srgb, var(--theme-accent-end) 72%, #ffffff);
+    background: rgba(255, 255, 255, 0.075);
+}
+
 body.dark-mode .profile-current-file span {
     color: #94a3b8;
 }
@@ -857,6 +957,11 @@ body.dark-mode .profile-current-file span {
 
     .profile-summary-card {
         position: static;
+    }
+
+    .profile-media-grid,
+    .profile-toggle-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -884,6 +989,23 @@ body.dark-mode .profile-current-file span {
 
     .profile-form-card {
         padding: 20px;
+    }
+
+    .profile-section-head {
+        grid-template-columns: 38px minmax(0, 1fr);
+    }
+
+    .profile-section-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 14px;
+    }
+
+    .profile-form-badges span {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .profile-form-header {
@@ -1400,11 +1522,27 @@ body.dark-mode .profile-quick-actions a:nth-child(2) {
     border: 1px solid rgba(148, 163, 184, .16);
     display: grid;
     gap: 10px;
+    height: 100%;
 }
 .profile-privacy-box h3 { margin: 0; }
-.profile-privacy-box label { display: flex; align-items: center; gap: 10px; font-weight: 850; color: var(--theme-text); }
+.profile-privacy-box label {
+    min-height: 42px;
+    padding: 9px 11px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.48);
+    color: var(--theme-text);
+    font-weight: 850;
+}
+.profile-privacy-box label span {
+    min-width: 0;
+    line-height: 1.25;
+}
 .profile-checkbox { width: 18px; height: 18px; accent-color: rgb(var(--theme-accent-rgb)); }
 body.dark-mode .profile-privacy-box { background: rgba(255,255,255,.07); border-color: rgba(203,213,225,.12); }
+body.dark-mode .profile-privacy-box label { background: rgba(255,255,255,.06); }
 
 /* ===== Notification settings / blocked users ===== */
 .profile-notification-box small {
@@ -1757,6 +1895,10 @@ body.dark-mode .profile-blocked-list > div { background: rgba(255,255,255,.07); 
     margin-top: 24px;
     padding: 28px;
     overflow: hidden;
+}
+
+.profile-media-grid .profile-avatar-upload-card {
+    height: 100%;
 }
 
 .achievement-head {

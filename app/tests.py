@@ -55,7 +55,7 @@ from app.models import (
     UserSuspension,
     WeatherLocation,
 )
-from app.notification_utils import get_notification_counts
+from app.notification_utils import get_notification_counts, get_notification_items
 
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
@@ -490,6 +490,9 @@ class ProfileViewTests(BaseTestCase):
             reminder_at=timezone.now() + timezone.timedelta(days=1),
         )
         note.shared_with.add(friend)
+        profile, _created = UserProfile.objects.get_or_create(user=self.user)
+        profile.profile_game_cards = [{"key": "human_benchmark", "visible": True}]
+        profile.save(update_fields=["profile_game_cards"])
 
         room = ChatRoom.objects.create(
             room_type=ChatRoom.ROOM_GROUP,
@@ -509,16 +512,24 @@ class ProfileViewTests(BaseTestCase):
             is_public_link=True,
             download_count=10,
         )
-        HumanBenchmarkScore.objects.create(
+        CookieClickerHighScore.objects.create(
             user=self.user,
-            game=HumanBenchmarkScore.GAME_REACTION,
-            score=220,
-            display_score="220 ms",
+            score=1000,
+            display_score="1.000",
+            achievements_count=25,
         )
+        for index in range(10):
+            HumanBenchmarkScore.objects.create(
+                user=self.user,
+                game=HumanBenchmarkScore.GAME_REACTION,
+                score=220 + index,
+                display_score=f"{220 + index} ms",
+            )
         for game, score in [
             (HumanBenchmarkScore.GAME_REACTION, 220),
             (HumanBenchmarkScore.GAME_AIM, 40),
             (HumanBenchmarkScore.GAME_TYPING, 80),
+            (HumanBenchmarkScore.GAME_VISUAL, 12),
         ]:
             HumanBenchmarkHighScore.objects.create(
                 user=self.user,
@@ -547,6 +558,11 @@ class ProfileViewTests(BaseTestCase):
         self.assertIn("first_game", unlocked_keys)
         self.assertIn("score_hunter", unlocked_keys)
         self.assertIn("first_win", unlocked_keys)
+        self.assertIn("profile_showcase", unlocked_keys)
+        self.assertIn("daily_visit", unlocked_keys)
+        self.assertIn("benchmark_regular", unlocked_keys)
+        self.assertIn("highscore_master", unlocked_keys)
+        self.assertIn("cookie_collector", unlocked_keys)
         self.assertGreater(summary["total_xp"], 0)
         self.assertGreaterEqual(summary["level"]["level"], 2)
 
@@ -1765,7 +1781,7 @@ class WeatherViewTests(BaseTestCase):
 
     @patch("app.views.get_env_value", return_value="test-weather-key")
     @patch("app.views.requests.get")
-    def test_weather_page_uses_default_city(self, mock_get, mock_get_env_value):
+    def test_weather_page_falls_back_to_berlin_without_saved_location(self, mock_get, mock_get_env_value):
         mock_get.side_effect = [
             self.mocked_current_weather_response(),
             self.mocked_forecast_response(),
@@ -1778,6 +1794,24 @@ class WeatherViewTests(BaseTestCase):
         first_called_url = mock_get.call_args_list[0][0][0]
 
         self.assertIn("q=Berlin", first_called_url)
+
+    @patch("app.views.get_env_value", return_value="test-weather-key")
+    @patch("app.views.requests.get")
+    def test_weather_page_uses_saved_default_city(self, mock_get, mock_get_env_value):
+        WeatherLocation.objects.create(name="Berlin", order=1)
+        WeatherLocation.objects.create(name="Hamburg", is_default=True, order=2)
+        mock_get.side_effect = [
+            self.mocked_current_weather_response(),
+            self.mocked_forecast_response(),
+        ]
+
+        response = self.client.get(reverse("weather"))
+
+        self.assertEqual(response.status_code, 200)
+
+        first_called_url = mock_get.call_args_list[0][0][0]
+
+        self.assertIn("q=Hamburg", first_called_url)
 
     @patch("app.views.get_env_value", return_value="test-weather-key")
     @patch("app.views.requests.get")
@@ -1872,7 +1906,8 @@ class WeatherViewTests(BaseTestCase):
             f"{reverse('weather')}?city=Osnabrück",
             fetch_redirect_response=False,
         )
-        self.assertTrue(WeatherLocation.objects.filter(name="Osnabrück").exists())
+        location = WeatherLocation.objects.get(name="Osnabrück")
+        self.assertTrue(location.is_default)
 
     def test_add_empty_weather_location_redirects_without_creating(self):
         response = self.client.post(reverse("weather"), {
@@ -1902,6 +1937,47 @@ class WeatherViewTests(BaseTestCase):
             fetch_redirect_response=False,
         )
         self.assertFalse(WeatherLocation.objects.filter(id=location.id).exists())
+
+    def test_set_default_weather_location(self):
+        old_location = WeatherLocation.objects.create(name="Berlin", is_default=True, order=1)
+        new_location = WeatherLocation.objects.create(name="Hamburg", order=2)
+
+        response = self.client.post(reverse("weather"), {
+            "action": "set_default_weather_location",
+            "location_id": new_location.id,
+            "current_city": "Berlin",
+        })
+
+        self.assertRedirects(
+            response,
+            f"{reverse('weather')}?city=Hamburg",
+            fetch_redirect_response=False,
+        )
+
+        old_location.refresh_from_db()
+        new_location.refresh_from_db()
+        self.assertFalse(old_location.is_default)
+        self.assertTrue(new_location.is_default)
+
+    def test_delete_default_weather_location_promotes_next_location(self):
+        default_location = WeatherLocation.objects.create(name="Berlin", is_default=True, order=1)
+        next_location = WeatherLocation.objects.create(name="Hamburg", order=2)
+
+        response = self.client.post(reverse("weather"), {
+            "action": "delete_weather_location",
+            "location_id": default_location.id,
+            "current_city": "Berlin",
+        })
+
+        self.assertRedirects(
+            response,
+            f"{reverse('weather')}?city=Hamburg",
+            fetch_redirect_response=False,
+        )
+
+        next_location.refresh_from_db()
+        self.assertFalse(WeatherLocation.objects.filter(id=default_location.id).exists())
+        self.assertTrue(next_location.is_default)
 
 
 class NoteFormTests(BaseTestCase):
@@ -3835,6 +3911,46 @@ class BattleshipTests(BaseTestCase):
 
         self.assertEqual(counts["battleship_invites"], 1)
         self.assertGreaterEqual(counts["total_notifications"], 1)
+
+    def test_notification_center_counts_reminders_file_shares_and_game_turns(self):
+        friend = get_user_model().objects.create_user(
+            username="sharefreund",
+            password="testpass-123",
+        )
+        Note.objects.create(
+            user=self.user,
+            title="Faellige Erinnerung",
+            reminder_at=timezone.now() - timezone.timedelta(minutes=5),
+        )
+        share = FileShare.objects.create(
+            owner=friend,
+            file=SimpleUploadedFile("shared.txt", b"shared", content_type="text/plain"),
+            original_name="shared.txt",
+            size=6,
+            content_type="text/plain",
+            token="notification-share-token",
+        )
+        share.recipients.add(self.user)
+        TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            player_o=friend,
+            code="NOTIFTTT",
+            status=TicTacToeGame.STATUS_PLAYING,
+            board=[""] * 9,
+            current_symbol=TicTacToeGame.SYMBOL_X,
+        )
+
+        counts = get_notification_counts(self.user)
+        items = get_notification_items(self.user, limit=20)
+        item_types = {item["type"] for item in items}
+
+        self.assertEqual(counts["note_reminders"], 1)
+        self.assertEqual(counts["shared_files"], 1)
+        self.assertEqual(counts["game_turns"], 1)
+        self.assertIn("reminder", item_types)
+        self.assertIn("file_share", item_types)
+        self.assertIn("game_turn", item_types)
 
 
 class TankstellenApiTests(BaseTestCase):

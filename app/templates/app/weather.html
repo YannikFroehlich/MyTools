@@ -60,7 +60,7 @@
             {% if saved_locations %}
                 <div class="compact-location-scroll">
                     {% for location in saved_locations %}
-                        <div class="compact-location-item">
+                        <div class="compact-location-item{% if default_location and location.id == default_location.id %} is-default{% endif %}">
                             <form method="GET" class="compact-location-open-form">
                                 <input type="hidden" name="city" value="{{ location.name }}">
                                 <input type="hidden" name="units" value="{{ units }}">
@@ -71,6 +71,29 @@
                                     <span>{{ location.name }}</span>
                                 </button>
                             </form>
+
+                            {% if default_location and location.id == default_location.id %}
+                                <span class="compact-location-default-badge"
+                                      title="{% translate 'Aktueller Standardort' %}"
+                                      aria-label="{% translate 'Aktueller Standardort' %}">
+                                    <i class="fa-solid fa-star"></i>
+                                </span>
+                            {% else %}
+                                <form method="POST" class="compact-location-default-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="set_default_weather_location">
+                                    <input type="hidden" name="location_id" value="{{ location.id }}">
+                                    <input type="hidden" name="current_city" value="{{ city }}">
+                                    <input type="hidden" name="units" value="{{ units }}">
+
+                                    <button type="submit"
+                                            class="compact-location-default"
+                                            title="{% translate 'Als Standardort verwenden' %}"
+                                            aria-label="{% translate 'Als Standardort verwenden' %}">
+                                        <i class="fa-regular fa-star"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
 
                             <form method="POST" class="compact-location-delete-form">
                                 {% csrf_token %}

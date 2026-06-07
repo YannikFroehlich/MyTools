@@ -9,333 +9,250 @@
 {% endblock %}
 
 {% block content %}
-    <section class="about-page">
-
-        <div class="about-hero">
-            <div class="about-hero-text">
-                <span class="about-badge">
+    <section class="about-page" aria-labelledby="about-title">
+        <header class="about-hero">
+            <div class="about-hero-copy">
+                <span class="about-kicker">
                     <i class="fa-solid fa-toolbox"></i>
-                    {% translate 'Persönliches Dashboard' %}
+                    {% translate 'Persönliche Werkzeugzentrale' %}
                 </span>
 
-                <h1>{% translate 'Über MyTools' %}</h1>
+                <h1 id="about-title">{% translate 'MyTools bündelt Alltag, Spiele und kleine Helfer an einem Ort.' %}</h1>
 
                 <p>
                     {% blocktranslate trimmed %}
-                        MyTools ist eine persönliche Django-Toolbox für Alltag, Homelab, Medien, Streaming, kleine Web-Helfer und gemeinsame Funktionen.
-                        Die App bündelt Schnellzugriffe, Widgets, Wetter, Notizen, Timer, Rechner, Dashboards, Profile, Freunde, Chats und Mini-Games in einer modernen Oberfläche.
+                        MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, Wetter, Notizen, Dateien, Profile, Chats und Mini-Games.
+                        Statt viele kleine Seiten und Links zu verstreuen, sammelt die App alles in einer Oberfläche, die du Schritt für Schritt personalisieren kannst.
                     {% endblocktranslate %}
                 </p>
 
-                <div class="about-actions">
-                    <a href="{% url 'home' %}" class="about-primary-button">
+                <div class="about-actions" aria-label="{% translate 'Wichtige Bereiche' %}">
+                    <a href="{% url 'home' %}" class="about-action about-action-primary">
                         <i class="fa-solid fa-house"></i>
-                        {% translate 'Zur Startseite' %}
+                        {% translate 'Dashboard öffnen' %}
                     </a>
 
-                    <a href="{% url 'clock' %}" class="about-secondary-button">
-                        <i class="fa-regular fa-clock"></i>
-                        {% translate 'Uhr öffnen' %}
+                    <a href="{% url 'profile' %}" class="about-action about-action-secondary">
+                        <i class="fa-solid fa-id-card"></i>
+                        {% translate 'Profil ansehen' %}
                     </a>
                 </div>
             </div>
 
-            <div class="about-hero-card">
-                <div class="hero-card-icon">
-                    <i class="fa-solid fa-layer-group"></i>
+            <div class="about-hero-panel" aria-label="{% translate 'Projektüberblick' %}">
+                <div class="about-panel-top">
+                    <span>{% translate 'Aktiver Ausbau' %}</span>
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </div>
 
-                <h2>{% translate 'Alles an einem Ort' %}</h2>
-
-                <p>
-                    {% blocktranslate trimmed %}
-                        Von lokalen Server-Links über personalisierte Startseiten-Widgets bis zu Profilen, Freunden, Chats und API-Tools:
-                        MyTools soll die wichtigsten kleinen Helfer zentral, schnell erreichbar und angenehm bedienbar machen.
-                    {% endblocktranslate %}
-                </p>
+                <dl class="about-metrics">
+                    <div>
+                        <dt>{% translate 'Module' %}</dt>
+                        <dd>30+</dd>
+                    </div>
+                    <div>
+                        <dt>{% translate 'Fokus' %}</dt>
+                        <dd>{% translate 'Produktiv + spielerisch' %}</dd>
+                    </div>
+                    <div>
+                        <dt>{% translate 'Stack' %}</dt>
+                        <dd>{% translate 'Django, Redis, PostgreSQL' %}</dd>
+                    </div>
+                </dl>
             </div>
+        </header>
+
+        <div class="about-principles" aria-label="{% translate 'Grundideen' %}">
+            <article class="about-principle">
+                <i class="fa-solid fa-layer-group"></i>
+                <h2>{% translate 'Alles griffbereit' %}</h2>
+                <p>{% translate 'Shortcuts, Favoriten und Widgets bringen häufig genutzte Funktionen direkt auf die Startseite.' %}</p>
+            </article>
+
+            <article class="about-principle">
+                <i class="fa-solid fa-user-gear"></i>
+                <h2>{% translate 'Persönlich anpassbar' %}</h2>
+                <p>{% translate 'Profile, Designs, Widgets, Spielkarten und gespeicherte Orte lassen sich an deine Nutzung anpassen.' %}</p>
+            </article>
+
+            <article class="about-principle">
+                <i class="fa-solid fa-people-group"></i>
+                <h2>{% translate 'Gemeinsam nutzbar' %}</h2>
+                <p>{% translate 'Freunde, Chats, Einladungen, geteilte Dateien und Multiplayer-Spiele machen die Toolbox sozial.' %}</p>
+            </article>
         </div>
 
-        <div class="about-stats">
-            <div class="about-stat-card">
-                <i class="fa-solid fa-border-all"></i>
-                <strong>{% translate 'Startseite' %}</strong>
-                <span>{% translate 'Shortcuts, Bereiche, Favoriten, Widgets und Drag & Drop' %}</span>
+        <section class="about-section" aria-labelledby="about-modules-title">
+            <div class="about-section-head">
+                <span>{% translate 'Module' %}</span>
+                <h2 id="about-modules-title">{% translate 'Was aktuell eingebaut ist' %}</h2>
+                <p>{% translate 'Die wichtigsten Bereiche sind nach Nutzung gruppiert, damit die About-Seite nicht nur lang, sondern auch scannbar bleibt.' %}</p>
             </div>
 
-            <div class="about-stat-card">
-                <i class="fa-solid fa-cloud-sun"></i>
-                <strong>{% translate 'Tools & APIs' %}</strong>
-                <span>{% translate 'OpenWeather, Tankerkönig, Genius, OBS und Spotify vorbereitet' %}</span>
-            </div>
+            <div class="about-module-layout">
+                <article class="about-module-group">
+                    <div class="about-module-heading">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <h3>{% translate 'Alltag & Produktivität' %}</h3>
+                    </div>
 
-            <div class="about-stat-card">
-                <i class="fa-solid fa-palette"></i>
-                <strong>{% translate 'Design' %}</strong>
-                <span>{% translate 'Dark Mode, Theme-Editor, moderne Widgets und responsive Layouts' %}</span>
-            </div>
+                    <div class="about-link-grid">
+                        <a href="{% url 'weather' %}" class="about-link-card">
+                            <i class="fa-solid fa-cloud-sun"></i>
+                            <strong>{% translate 'Wetter' %}</strong>
+                            <span>{% translate 'Aktuelle Daten, Vorhersage und gespeicherte Standardorte.' %}</span>
+                        </a>
+                        <a href="{% url 'clock' %}" class="about-link-card">
+                            <i class="fa-regular fa-clock"></i>
+                            <strong>{% translate 'Uhr & Timer' %}</strong>
+                            <span>{% translate 'Weltuhr, Stoppuhr, Timer-Vorlagen und eigene Sounds.' %}</span>
+                        </a>
+                        <a href="{% url 'notes' %}" class="about-link-card">
+                            <i class="fa-regular fa-note-sticky"></i>
+                            <strong>{% translate 'Notizen' %}</strong>
+                            <span>{% translate 'Pins, Archiv, Farben, Tags, Erinnerungen und Teilen mit Freunden.' %}</span>
+                        </a>
+                        <a href="{% url 'file_share' %}" class="about-link-card">
+                            <i class="fa-solid fa-share-nodes"></i>
+                            <strong>{% translate 'Datei-Share' %}</strong>
+                            <span>{% translate 'Dateien per Freundesfreigabe oder privatem Link teilen.' %}</span>
+                        </a>
+                    </div>
+                </article>
 
-            <div class="about-stat-card">
-                <i class="fa-solid fa-user-group"></i>
-                <strong>{% translate 'Community' %}</strong>
-                <span>{% translate 'Profile, Freunde, Chats und gemeinsame Spiele-Lobbys' %}</span>
-            </div>
-        </div>
+                <article class="about-module-group">
+                    <div class="about-module-heading">
+                        <i class="fa-solid fa-plug-circle-bolt"></i>
+                        <h3>{% translate 'Tools & Integrationen' %}</h3>
+                    </div>
 
-        <div class="about-grid">
-            <div class="about-card">
-                <div class="about-card-icon">
-                    <i class="fa-solid fa-link"></i>
+                    <div class="about-link-grid">
+                        <a href="{% url 'obs-dashboard' %}" class="about-link-card">
+                            <i class="fa-solid fa-display"></i>
+                            <strong>{% translate 'OBS Dashboard' %}</strong>
+                            <span>{% translate 'Szenen, Quellen, Audio, Stream und Aufnahme lokal steuern.' %}</span>
+                        </a>
+                        <a href="{% url 'spritkostenrechner' %}" class="about-link-card">
+                            <i class="fa-solid fa-gas-pump"></i>
+                            <strong>{% translate 'Spritkosten' %}</strong>
+                            <span>{% translate 'Tankstellen und Preise per Standort oder Stadtsuche prüfen.' %}</span>
+                        </a>
+                        <a href="{% url 'genius-search' %}" class="about-link-card">
+                            <i class="fa-solid fa-music"></i>
+                            <strong>{% translate 'Genius Search' %}</strong>
+                            <span>{% translate 'Songs und Künstler über die Genius API finden.' %}</span>
+                        </a>
+                        <a href="{% url 'unit_converter' %}" class="about-link-card">
+                            <i class="fa-solid fa-calculator"></i>
+                            <strong>{% translate 'Einheitenrechner' %}</strong>
+                            <span>{% translate 'Speicher, Zeit, Entfernung und Geld-Zeiträume umrechnen.' %}</span>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="about-module-group">
+                    <div class="about-module-heading">
+                        <i class="fa-solid fa-gamepad"></i>
+                        <h3>{% translate 'Spiele & Highscores' %}</h3>
+                    </div>
+
+                    <div class="about-link-grid">
+                        <a href="{% url 'human-benchmark' %}" class="about-link-card">
+                            <i class="fa-solid fa-bolt"></i>
+                            <strong>{% translate 'Human Benchmark' %}</strong>
+                            <span>{% translate 'Reaktion, Aim, Zahlen, Tippen, visuelles Gedächtnis und Highscores.' %}</span>
+                        </a>
+                        <a href="{% url 'cookie-clicker' %}" class="about-link-card">
+                            <i class="fa-solid fa-cookie-bite"></i>
+                            <strong>{% translate 'Cookie Cosmos' %}</strong>
+                            <span>{% translate 'Clicker mit Upgrades, Events, Offline-Fortschritt und Prestige.' %}</span>
+                        </a>
+                        <a href="{% url 'drift-circuit' %}" class="about-link-card">
+                            <i class="fa-solid fa-car-side"></i>
+                            <strong>{% translate 'Drift Circuit Pro' %}</strong>
+                            <span>{% translate 'Canvas-Racing mit Maps, Nitro und Drift-Score.' %}</span>
+                        </a>
+                        <a href="{% url 'leaderboard' %}" class="about-link-card">
+                            <i class="fa-solid fa-trophy"></i>
+                            <strong>{% translate 'Bestenlisten' %}</strong>
+                            <span>{% translate 'Highscores und Fortschritt über mehrere Spiele hinweg vergleichen.' %}</span>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="about-module-group">
+                    <div class="about-module-heading">
+                        <i class="fa-solid fa-users"></i>
+                        <h3>{% translate 'Community & Multiplayer' %}</h3>
+                    </div>
+
+                    <div class="about-link-grid">
+                        <a href="{% url 'chat' %}" class="about-link-card">
+                            <i class="fa-solid fa-comments"></i>
+                            <strong>{% translate 'Chat' %}</strong>
+                            <span>{% translate 'Direktchats, Gruppen, Reaktionen, Pins und löschbare eigene Nachrichten.' %}</span>
+                        </a>
+                        <a href="{% url 'users' %}" class="about-link-card">
+                            <i class="fa-solid fa-user-group"></i>
+                            <strong>{% translate 'Nutzer & Freunde' %}</strong>
+                            <span>{% translate 'Öffentliche Profile, Freundschaftsanfragen, Blockieren und Meldungen.' %}</span>
+                        </a>
+                        <a href="{% url 'skribble_home' %}" class="about-link-card">
+                            <i class="fa-solid fa-pen-nib"></i>
+                            <strong>{% translate 'Skribble' %}</strong>
+                            <span>{% translate 'Zeichnen, raten, Freunde einladen und Punkte nach jeder Runde ansehen.' %}</span>
+                        </a>
+                        <a href="{% url 'tictactoe_home' %}" class="about-link-card">
+                            <i class="fa-solid fa-table-cells"></i>
+                            <strong>{% translate 'Tic Tac Toe & mehr' %}</strong>
+                            <span>{% translate 'Auch Vier gewinnt, Schiffe versenken und Stadt Land Fluss sind integriert.' %}</span>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="about-split">
+            <article class="about-info-panel">
+                <div class="about-section-head about-section-head-compact">
+                    <span>{% translate 'Technik' %}</span>
+                    <h2>{% translate 'Gebaut für lokale Kontrolle' %}</h2>
                 </div>
 
-                <h2>{% translate 'Schnellzugriffe & Widgets' %}</h2>
+                <ul class="about-check-list">
+                    <li><i class="fa-solid fa-check"></i>{% translate 'Django als Hauptanwendung mit klassischen Templates und fokussierten Views.' %}</li>
+                    <li><i class="fa-solid fa-check"></i>{% translate 'PostgreSQL, Redis, Gunicorn und Caddy sind für Docker-Deployment vorbereitet.' %}</li>
+                    <li><i class="fa-solid fa-check"></i>{% translate 'Externe APIs bleiben optional und werden über Umgebungsvariablen konfiguriert.' %}</li>
+                    <li><i class="fa-solid fa-check"></i>{% translate 'Mehrsprachigkeit läuft über Django-Übersetzungen für Deutsch und Englisch.' %}</li>
+                </ul>
+            </article>
 
-                <p>
-                    {% blocktranslate trimmed %}
-                        Eigene Links können mit Icons, Bildern, Favoriten und Kategorien gespeichert werden.
-                        Zusätzlich lassen sich Startseiten-Widgets wie Uhr, Wetter, Notizen oder Statistik-Karten hinzufügen und gestalten.
-                    {% endblocktranslate %}
-                </p>
-            </div>
-
-            <div class="about-card">
-                <div class="about-card-icon">
-                    <i class="fa-regular fa-clock"></i>
+            <article class="about-info-panel">
+                <div class="about-section-head about-section-head-compact">
+                    <span>{% translate 'Ausblick' %}</span>
+                    <h2>{% translate 'Was als Nächstes wachsen kann' %}</h2>
                 </div>
 
-                <h2>{% translate 'Uhr, Timer & Weltuhr' %}</h2>
-
-                <p>
-                    {% blocktranslate trimmed %}
-                        Die Uhr-Seite bündelt lokale Uhrzeit, Weltuhr, Stoppuhr, gespeicherte Timer-Vorlagen und eigene Timer-Sounds.
-                        Der Hero-Bereich nutzt eine dezente Weltkarte als Hintergrund.
-                    {% endblocktranslate %}
-                </p>
-            </div>
-
-            <div class="about-card">
-                <div class="about-card-icon">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-
-                <h2>{% translate 'Profile, Freunde & Chat' %}</h2>
-
-                <p>
-                    {% blocktranslate trimmed %}
-                        Nutzer können ein eigenes Profil mit Namen, Avatar, Banner und öffentlichen Profilinformationen pflegen.
-                        Zusätzlich gibt es Freundschaftsanfragen, Freundeslisten, Direktchats, Gruppenchats, Emoji-Reaktionen und löschbare eigene Nachrichten.
-                    {% endblocktranslate %}
-                </p>
-            </div>
-        </div>
-
-        <div class="about-feature-section">
-            <div class="about-section-heading">
-                <span>{% translate 'Aktuelle Module' %}</span>
-                <h2>{% translate 'Was aktuell eingebaut ist' %}</h2>
-            </div>
-
-            <div class="about-feature-grid">
-                <a href="{% url 'weather' %}" class="about-feature-card">
-                    <i class="fa-solid fa-cloud-sun"></i>
+                <div class="about-roadmap">
                     <div>
-                        <strong>{% translate 'Wetter' %}</strong>
-                        <span>{% translate 'Aktuelle Wetterdaten, Vorhersage und gespeicherte Orte.' %}</span>
+                        <i class="fa-solid fa-bell"></i>
+                        <span>{% translate 'Benachrichtigungen weiter bündeln' %}</span>
                     </div>
-                </a>
-
-                <a href="{% url 'clock' %}" class="about-feature-card">
-                    <i class="fa-regular fa-clock"></i>
                     <div>
-                        <strong>{% translate 'Uhr & Timer' %}</strong>
-                        <span>{% translate 'Weltuhr, Stoppuhr, Timer-Vorlagen und eigene Sounds.' %}</span>
+                        <i class="fa-solid fa-medal"></i>
+                        <span>{% translate 'Achievements und Profil-Showcases ausbauen' %}</span>
                     </div>
-                </a>
-
-                <a href="{% url 'notes' %}" class="about-feature-card">
-                    <i class="fa-regular fa-note-sticky"></i>
                     <div>
-                        <strong>{% translate 'Notizen' %}</strong>
-                        <span>{% translate 'Notizen mit Pins, Archiv, Farben und Tags.' %}</span>
+                        <i class="fa-solid fa-chart-simple"></i>
+                        <span>{% translate 'Mehr Statistiken und Aktivitätsverlauf ergänzen' %}</span>
                     </div>
-                </a>
-
-                <a href="{% url 'human-benchmark' %}" class="about-feature-card">
-                    <i class="fa-solid fa-bolt"></i>
                     <div>
-                        <strong>{% translate 'Human Benchmark' %}</strong>
-                        <span>{% translate 'Mini-Games mit letzten Ergebnissen, Highscores und Bestenliste pro Nutzer.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'obs-dashboard' %}" class="about-feature-card">
-                    <i class="fa-solid fa-display"></i>
-                    <div>
-                        <strong>{% translate 'OBS Dashboard' %}</strong>
-                        <span>{% translate 'Szenen, Quellen, Audio, Stream und Aufnahme lokal steuern.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'spritkostenrechner' %}" class="about-feature-card">
-                    <i class="fa-solid fa-gas-pump"></i>
-                    <div>
-                        <strong>{% translate 'Spritkosten' %}</strong>
-                        <span>{% translate 'Tankstellen- und Preisabfrage per Standortfreigabe oder Stadtsuche.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'genius-search' %}" class="about-feature-card">
-                    <i class="fa-solid fa-music"></i>
-                    <div>
-                        <strong>{% translate 'Genius Search' %}</strong>
-                        <span>{% translate 'Song- und Künstler-Suche über die Genius API.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'unit_converter' %}" class="about-feature-card">
-                    <i class="fa-solid fa-calculator"></i>
-                    <div>
-                        <strong>{% translate 'Einheitenrechner' %}</strong>
-                        <span>{% translate 'Speicher, Zeit, Entfernung und Geld-Zeiträume umrechnen.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'avatar-wiki' %}" class="about-feature-card">
-                    <i class="fa-solid fa-book-open"></i>
-                    <div>
-                        <strong>{% translate 'Avatar Wiki' %}</strong>
-                        <span>{% translate 'Charaktere verwalten, suchen und übersichtlich sammeln.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'drift-circuit' %}" class="about-feature-card">
-                    <i class="fa-solid fa-car-side"></i>
-                    <div>
-                        <strong>{% translate 'Drift Circuit Pro' %}</strong>
-                        <span>{% translate 'Canvas-Racing-Game mit großen Maps, Nitro und Drift-Score.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'cookie-clicker' %}" class="about-feature-card">
-                    <i class="fa-solid fa-cookie-bite"></i>
-                    <div>
-                        <strong>{% translate 'Cookie Cosmos' %}</strong>
-                        <span>{% translate 'Incremental Clicker mit animierter Backstube, Upgrades, Events, Offline-Fortschritt und Prestige.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'stream-deck' %}" class="about-feature-card">
-                    <i class="fa-solid fa-table-cells-large"></i>
-                    <div>
-                        <strong>{% translate 'Stream Deck' %}</strong>
-                        <span>{% translate 'Button-Dashboard für Medien, Spotify und eigene Aktionen.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'chat' %}" class="about-feature-card">
-                    <i class="fa-solid fa-comments"></i>
-                    <div>
-                        <strong>{% translate 'Chat' %}</strong>
-                        <span>{% translate 'Direktchats, Gruppenchats, Emoji-Reaktionen und löschbare eigene Nachrichten.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'file_share' %}" class="about-feature-card">
-                    <i class="fa-solid fa-share-nodes"></i>
-                    <div>
-                        <strong>{% translate 'Datei-Share' %}</strong>
-                        <span>{% translate 'Dateien mit Freunden oder per privatem Link teilen, inklusive Mehrfachupload, Fortschritt und Nutzer-Limits im Admin.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'skribble_home' %}" class="about-feature-card">
-                    <i class="fa-solid fa-pen-nib"></i>
-                    <div>
-                        <strong>{% translate 'Skribble' %}</strong>
-                        <span>{% translate 'Zeichnen, Raten, Lobbys erstellen, Freunde einladen und Punkte nach jeder Runde ansehen.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'tictactoe_home' %}" class="about-feature-card">
-                    <i class="fa-solid fa-table-cells"></i>
-                    <div>
-                        <strong>{% translate 'Tic Tac Toe' %}</strong>
-                        <span>{% translate 'Schnelles 1v1-Spiel mit privaten Räumen, Einladungen und Host-gesteuertem Löschen.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'battleship_home' %}" class="about-feature-card">
-                    <i class="fa-solid fa-anchor"></i>
-                    <div>
-                        <strong>{% translate 'Schiffe versenken' %}</strong>
-                        <span>{% translate '1v1-Gefecht mit manueller Flottenplatzierung, geprüften Regeln und Host-gesteuertem Löschen.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'connectfour_home' %}" class="about-feature-card">
-                    <i class="fa-solid fa-circle-dot"></i>
-                    <div>
-                        <strong>{% translate 'Vier gewinnt' %}</strong>
-                        <span>{% translate 'Animiertes 1v1-Spiel mit privaten Räumen, Live-Zügen und automatischer Rückleitung nach Löschung.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'stadtlandfluss_home' %}" class="about-feature-card">
-                    <i class="fa-solid fa-list-check"></i>
-                    <div>
-                        <strong>{% translate 'Stadt Land Fluss' %}</strong>
-                        <span>{% translate 'Live-Runden mit Einladungen, Stopp-Regel, manueller Auswertung und Host-gesteuerten Lobbys.' %}</span>
-                    </div>
-                </a>
-
-                <a href="{% url 'profile' %}" class="about-feature-card">
-                    <i class="fa-solid fa-id-card"></i>
-                    <div>
-                        <strong>{% translate 'Profil' %}</strong>
-                        <span>{% translate 'Profilseite mit Avatar, Banner, persönlichen Daten, Freunden und öffentlicher Ansicht.' %}</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <div class="about-timeline">
-            <h2>{% translate 'Projektstand' %}</h2>
-
-            <div class="timeline-list">
-                <div class="timeline-item">
-                    <span></span>
-                    <div>
-                        <h3>{% translate 'Personalisierbares Dashboard' %}</h3>
-                        <p>{% translate 'Startseite, Shortcuts, Favoriten, Bereiche, Widgets und Design-Optionen sind eingebunden.' %}</p>
+                        <i class="fa-solid fa-palette"></i>
+                        <span>{% translate 'Design-System und mobile Bedienung weiter verfeinern' %}</span>
                     </div>
                 </div>
-
-                <div class="timeline-item">
-                    <span></span>
-                    <div>
-                        <h3>{% translate 'Mehrere Tools produktiv nutzbar' %}</h3>
-                        <p>{% translate 'Wetter, Uhr, Notizen, Profile, Freunde, Chat, Skribble, Tic Tac Toe, Vier gewinnt, Schiffe versenken, Stadt Land Fluss, Human Benchmark, OBS Dashboard, Rechner und API-Tools sind bereits verfügbar.' %}</p>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <span></span>
-                    <div>
-                        <h3>{% translate 'Docker-Deployment vorbereitet' %}</h3>
-                        <p>{% translate 'Das Projekt läuft mit Django, Gunicorn, PostgreSQL, Redis und Caddy per Docker Compose.' %}</p>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <span></span>
-                    <div>
-                        <h3>{% translate 'Laufende Erweiterung' %}</h3>
-                        <p>{% translate 'Neue Widgets, bessere Statistiken, zusätzliche Integrationen, Chat-Funktionen, Mini-Games und mehr Personalisierung können Schritt für Schritt ergänzt werden.' %}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+            </article>
+        </section>
     </section>
 {% endblock %}
 
