@@ -236,6 +236,8 @@
         </article>
         {% endif %}
 
+        {% include "app/includes/achievement_panel.html" with achievement_summary=achievement_summary card_shell_class="public-profile-card" %}
+
         {% include "app/includes/profile_game_cards.html" with profile_game_cards=profile_game_cards card_shell_class="public-profile-card" %}
 
         {% if can_view_friends %}

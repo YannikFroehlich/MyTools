@@ -12,6 +12,25 @@
                 </span>
             {% endif %}
 
+            {% if note.reminder_at %}
+                <span class="note-pin-badge note-reminder-badge {% if note.is_reminder_due %}is-due{% endif %}">
+                    <i class="fa-regular fa-bell"></i>
+                    {{ note.reminder_at|date:"d.m.Y H:i" }}
+                </span>
+            {% endif %}
+
+            {% if note.user_id != request.user.id %}
+                <span class="note-pin-badge note-share-badge">
+                    <i class="fa-solid fa-user-group"></i>
+                    {% blocktranslate with owner=note.user.username %}Geteilt von {{ owner }}{% endblocktranslate %}
+                </span>
+            {% elif note.shared_with.count %}
+                <span class="note-pin-badge note-share-badge">
+                    <i class="fa-solid fa-user-group"></i>
+                    {% blocktranslate count counter=note.shared_with.count %}Mit {{ counter }} Freund geteilt{% plural %}Mit {{ counter }} Freunden geteilt{% endblocktranslate %}
+                </span>
+            {% endif %}
+
             <h3>
                 {% if note.title %}
                     {{ note.title }}
@@ -26,16 +45,18 @@
             </span>
         </div>
 
-        <form method="post" action="{% url 'note_toggle_pin' note.pk %}">
-            {% csrf_token %}
-            <button
-                type="submit"
-                class="note-round-btn {% if note.is_pinned %}active{% endif %}"
-                title="{% if note.is_pinned %}{% translate 'Nicht mehr anpinnen' %}{% else %}{% translate 'Anpinnen' %}{% endif %}"
-            >
-                <i class="fa-solid fa-thumbtack"></i>
-            </button>
-        </form>
+        {% if note.user_id == request.user.id %}
+            <form method="post" action="{% url 'note_toggle_pin' note.pk %}">
+                {% csrf_token %}
+                <button
+                    type="submit"
+                    class="note-round-btn {% if note.is_pinned %}active{% endif %}"
+                    title="{% if note.is_pinned %}{% translate 'Nicht mehr anpinnen' %}{% else %}{% translate 'Anpinnen' %}{% endif %}"
+                >
+                    <i class="fa-solid fa-thumbtack"></i>
+                </button>
+            </form>
+        {% endif %}
     </header>
 
     <div class="note-card-body">
@@ -57,29 +78,47 @@
     {% endif %}
 
     <footer class="note-card-footer">
-        <a href="{% url 'note_edit' note.pk %}" class="note-action-btn main">
-            <i class="fa-solid fa-pen"></i>
-            {% translate "Bearbeiten" %}
-        </a>
+        {% if note.user_id == request.user.id %}
+            <a href="{% url 'note_edit' note.pk %}" class="note-action-btn main">
+                <i class="fa-solid fa-pen"></i>
+                {% translate "Bearbeiten" %}
+            </a>
 
-        <div class="note-mini-actions">
-            <form method="post" action="{% url 'note_toggle_archive' note.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="note-round-btn" title="{% if note.is_archived %}{% translate 'Wiederherstellen' %}{% else %}{% translate 'Archivieren' %}{% endif %}">
-                    {% if note.is_archived %}
-                        <i class="fa-solid fa-box-open"></i>
-                    {% else %}
-                        <i class="fa-solid fa-box-archive"></i>
-                    {% endif %}
-                </button>
-            </form>
+            <div class="note-mini-actions">
+                <a href="{% url 'note_detail' note.pk %}" class="note-round-btn" title="{% translate 'Lesen' %}">
+                    <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                </a>
 
-            <form method="post" action="{% url 'note_delete' note.pk %}" class="note-delete-form">
-                {% csrf_token %}
-                <button type="submit" class="note-round-btn danger" title="{% translate 'Löschen' %}">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </form>
-        </div>
+                <form method="post" action="{% url 'note_toggle_archive' note.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="note-round-btn" title="{% if note.is_archived %}{% translate 'Wiederherstellen' %}{% else %}{% translate 'Archivieren' %}{% endif %}">
+                        {% if note.is_archived %}
+                            <i class="fa-solid fa-box-open"></i>
+                        {% else %}
+                            <i class="fa-solid fa-box-archive"></i>
+                        {% endif %}
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'note_delete' note.pk %}" class="note-delete-form">
+                    {% csrf_token %}
+                    <button type="submit" class="note-round-btn danger" title="{% translate 'Löschen' %}">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <a href="{% url 'note_detail' note.pk %}" class="note-action-btn main">
+                <i class="fa-solid fa-book-open"></i>
+                {% translate "Lesen" %}
+            </a>
+
+            <div class="note-mini-actions">
+                <span class="note-readonly-pill">
+                    <i class="fa-solid fa-lock"></i>
+                    {% translate "Nur Lesen" %}
+                </span>
+            </div>
+        {% endif %}
     </footer>
 </article>

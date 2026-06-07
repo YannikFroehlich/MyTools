@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.core.validators import FileExtensionValidator
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import get_valid_filename
 
@@ -685,6 +686,17 @@ class Note(models.Model):
     title = models.CharField(max_length=120, blank=True)
     content = models.TextField(blank=True)
     tags = models.CharField(max_length=255, blank=True)
+    reminder_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Erinnerung"),
+    )
+    shared_with = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name="shared_notes",
+        verbose_name=_("Geteilt mit"),
+    )
 
     color = models.CharField(
         max_length=20,
@@ -700,6 +712,10 @@ class Note(models.Model):
 
     class Meta:
         ordering = ["-is_pinned", "-updated_at"]
+        indexes = [
+            models.Index(fields=["user", "is_archived", "-updated_at"]),
+            models.Index(fields=["reminder_at"]),
+        ]
         verbose_name = "Notiz"
         verbose_name_plural = "Notizen"
 
@@ -708,6 +724,14 @@ class Note(models.Model):
 
     def tag_list(self):
         return [tag.strip() for tag in self.tags.split(",") if tag.strip()]
+
+    @property
+    def has_reminder(self):
+        return self.reminder_at is not None
+
+    @property
+    def is_reminder_due(self):
+        return bool(self.reminder_at and self.reminder_at <= timezone.now())
 
 
 class WeatherLocation(models.Model):
@@ -2204,6 +2228,23 @@ class ChatMessageRead(models.Model):
         return f"{self.user} gelesen {self.message_id}"
 
 
+class ChatTypingStatus(models.Model):
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name="typing_statuses")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_typing_statuses")
+    is_typing = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        constraints = [models.UniqueConstraint(fields=["room", "user"], name="unique_chat_typing_status")]
+        indexes = [models.Index(fields=["room", "is_typing", "-updated_at"])]
+        verbose_name = "Chat-Tippstatus"
+        verbose_name_plural = "Chat-Tippstatus"
+
+    def __str__(self):
+        return f"{self.user} tippt in {self.room}"
+
+
 def profile_gallery_upload_path(instance, filename):
     return f"profile_gallery/user_{instance.user_id}/{filename}"
 
@@ -2270,6 +2311,112 @@ class UserReport(models.Model):
 
     def __str__(self):
         return f"Meldung: {self.reporter} → {self.reported}"
+
+
+class UserSuspension(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="suspensions")
+    moderator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="issued_suspensions",
+    )
+    reason = models.CharField(max_length=240, blank=True)
+    starts_at = models.DateTimeField(default=timezone.now)
+    ends_at = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    lifted_at = models.DateTimeField(null=True, blank=True)
+    lifted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="lifted_suspensions",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "is_active", "ends_at"]),
+            models.Index(fields=["ends_at"]),
+        ]
+        verbose_name = "Nutzersperre"
+        verbose_name_plural = "Nutzersperren"
+
+    def __str__(self):
+        return f"Sperre: {self.user} bis {self.ends_at:%Y-%m-%d %H:%M}"
+
+    @property
+    def is_current(self):
+        return self.is_active and self.starts_at <= timezone.now() < self.ends_at
+
+    @classmethod
+    def active_for_user(cls, user):
+        if not user or not getattr(user, "is_authenticated", False):
+            return None
+        now = timezone.now()
+        return (
+            cls.objects
+            .filter(user=user, is_active=True, starts_at__lte=now, ends_at__gt=now)
+            .select_related("moderator")
+            .order_by("-ends_at")
+            .first()
+        )
+
+
+class ModerationAuditLog(models.Model):
+    ACTION_REPORT_RESOLVED = "report_resolved"
+    ACTION_REPORT_REOPENED = "report_reopened"
+    ACTION_FEEDBACK_STATUS = "feedback_status"
+    ACTION_FILE_DELETED = "file_deleted"
+    ACTION_USER_SUSPENDED = "user_suspended"
+    ACTION_USER_UNSUSPENDED = "user_unsuspended"
+    ACTION_USER_ACTIVATED = "user_activated"
+    ACTION_USER_DEACTIVATED = "user_deactivated"
+
+    ACTION_CHOICES = [
+        (ACTION_REPORT_RESOLVED, _("Meldung erledigt")),
+        (ACTION_REPORT_REOPENED, _("Meldung wieder geoeffnet")),
+        (ACTION_FEEDBACK_STATUS, _("Feedback-Status geaendert")),
+        (ACTION_FILE_DELETED, _("Datei-Freigabe geloescht")),
+        (ACTION_USER_SUSPENDED, _("Nutzer gesperrt")),
+        (ACTION_USER_UNSUSPENDED, _("Nutzersperre aufgehoben")),
+        (ACTION_USER_ACTIVATED, _("Nutzer aktiviert")),
+        (ACTION_USER_DEACTIVATED, _("Nutzer deaktiviert")),
+    ]
+
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="moderation_audit_actions",
+    )
+    target_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="moderation_audit_entries",
+    )
+    action = models.CharField(max_length=40, choices=ACTION_CHOICES)
+    summary = models.CharField(max_length=240)
+    metadata = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["action", "-created_at"]),
+            models.Index(fields=["target_user", "-created_at"]),
+        ]
+        verbose_name = "Moderations-Audit-Log"
+        verbose_name_plural = "Moderations-Audit-Logs"
+
+    def __str__(self):
+        return self.summary
 
 
 class SkribbleStats(models.Model):

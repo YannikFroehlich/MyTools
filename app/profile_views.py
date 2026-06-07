@@ -35,6 +35,7 @@ from .models import (
     UserProfile,
     UserReport,
 )
+from .achievement_utils import get_achievement_summary
 from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
 from .image_optimization import (
     GALLERY_IMAGE_MAX_SIZE,
@@ -651,6 +652,7 @@ def profile_view(request):
     friends_count = Friendship.accepted_for_user(request.user).count()
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=request.user).distinct().count()
     total_highscores_count = get_total_profile_highscores(request.user)
+    achievement_summary = get_achievement_summary(request.user)
 
     return render(request, "app/profile.html", {
         "form": form,
@@ -665,6 +667,7 @@ def profile_view(request):
         "friends_count": friends_count,
         "chat_rooms_count": chat_rooms_count,
         "total_highscores_count": total_highscores_count,
+        "achievement_summary": achievement_summary,
         "gallery_form": ProfileGalleryImageForm(),
         "gallery_images": ProfileGalleryImage.objects.filter(user=request.user)[:12],
         "blocked_users": UserBlock.objects.select_related("blocked", "blocked__profile").filter(blocker=request.user)[:20],
@@ -743,6 +746,7 @@ def public_profile_view(request, user_id):
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
     total_highscores_count = get_total_profile_highscores(profile_user)
     can_view_highscores = profile.privacy_show_highscores or can_view_private_profile_area(request.user, profile_user)
+    can_view_private_achievements = can_view_private_profile_area(request.user, profile_user)
 
     return render(request, "app/public_profile.html", {
         "profile_user": profile_user,
@@ -755,6 +759,12 @@ def public_profile_view(request, user_id):
         "can_view_friends": profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user),
         "can_use_chat_button": profile.privacy_show_chat_button or can_view_private_profile_area(request.user, profile_user),
         "friend_activity": get_friend_activity(profile_user, request.user),
+        "achievement_summary": get_achievement_summary(
+            profile_user,
+            include_private=can_view_private_achievements,
+            include_games=can_view_highscores,
+        ),
+        "can_view_private_achievements": can_view_private_achievements,
         "friends_count": friends_count,
         "chat_rooms_count": chat_rooms_count,
         "total_highscores_count": total_highscores_count,

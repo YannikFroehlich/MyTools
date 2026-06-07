@@ -46,8 +46,14 @@
 
     <section class="notes-control-panel">
         <form method="get" class="notes-search-form">
+            {% if scope != "all" %}
+                <input type="hidden" name="scope" value="{{ scope }}">
+            {% endif %}
             {% if show_archived %}
                 <input type="hidden" name="archived" value="1">
+            {% endif %}
+            {% if tag_filter %}
+                <input type="hidden" name="tag" value="{{ tag_filter }}">
             {% endif %}
 
             <div class="notes-search-box">
@@ -93,6 +99,57 @@
             {% endif %}
         </div>
     </section>
+
+    <section class="notes-scope-panel" aria-label="{% translate 'Notizfilter' %}">
+        <a href="{% url 'notes' %}" class="{% if scope == 'all' and not show_archived %}is-active{% endif %}">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>{% translate "Alle" %}</span>
+            <strong>{{ owned_note_count|add:shared_note_count }}</strong>
+        </a>
+        <a href="{% url 'notes' %}?scope=mine" class="{% if scope == 'mine' %}is-active{% endif %}">
+            <i class="fa-regular fa-user"></i>
+            <span>{% translate "Meine" %}</span>
+            <strong>{{ owned_note_count }}</strong>
+        </a>
+        <a href="{% url 'notes' %}?scope=shared" class="{% if scope == 'shared' %}is-active{% endif %}">
+            <i class="fa-solid fa-user-group"></i>
+            <span>{% translate "Geteilt" %}</span>
+            <strong>{{ shared_note_count }}</strong>
+        </a>
+        <a href="{% url 'notes' %}?scope=reminders" class="{% if scope == 'reminders' %}is-active{% endif %}">
+            <i class="fa-regular fa-bell"></i>
+            <span>{% translate "Erinnerungen" %}</span>
+            <strong>{{ reminder_note_count }}</strong>
+        </a>
+        <a href="{% url 'notes' %}?archived=1" class="{% if show_archived %}is-active{% endif %}">
+            <i class="fa-solid fa-box-archive"></i>
+            <span>{% translate "Archiv" %}</span>
+            <strong>{{ archived_note_count }}</strong>
+        </a>
+    </section>
+
+    {% if due_reminder_count %}
+        <div class="notes-reminder-banner">
+            <i class="fa-solid fa-bell"></i>
+            <span>
+                {% blocktranslate count counter=due_reminder_count %}Eine Erinnerung ist fällig.{% plural %}{{ counter }} Erinnerungen sind fällig.{% endblocktranslate %}
+            </span>
+            <a href="{% url 'notes' %}?scope=reminders">{% translate "Ansehen" %}</a>
+        </div>
+    {% endif %}
+
+    {% if tag_options %}
+        <section class="notes-tag-filter" aria-label="{% translate 'Tags' %}">
+            {% for tag in tag_options %}
+                <a href="{% url 'notes' %}?tag={{ tag|urlencode }}" class="{% if tag == tag_filter %}is-active{% endif %}">
+                    {{ tag }}
+                </a>
+            {% endfor %}
+            {% if tag_filter %}
+                <a href="{% url 'notes' %}" class="is-clear">{% translate "Tag entfernen" %}</a>
+            {% endif %}
+        </section>
+    {% endif %}
 
     {% if pinned_notes %}
         <section class="notes-section">

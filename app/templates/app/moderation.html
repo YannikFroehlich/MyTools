@@ -1,0 +1,284 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Moderation" %} | MyTools{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/platform.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/moderation.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="platform-page moderation-page">
+    <div class="moderation-header">
+        <div>
+            <p class="platform-kicker">{% translate "Admin" %}</p>
+            <h1>{% translate "Moderation" %}</h1>
+        </div>
+
+        <form class="moderation-search" method="get">
+            <label>
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" name="q" value="{{ query }}" placeholder="{% translate 'Suchen...' %}" autocomplete="off">
+            </label>
+            <button type="submit" title="{% translate 'Suchen' %}"><i class="fa-solid fa-arrow-right"></i></button>
+            {% if query %}
+                <a href="{% url 'moderation' %}" title="{% translate 'Suche löschen' %}"><i class="fa-solid fa-xmark"></i></a>
+            {% endif %}
+            <a href="{% url 'admin:index' %}" title="{% translate 'Django Admin' %}"><i class="fa-solid fa-up-right-from-square"></i></a>
+        </form>
+    </div>
+
+    {% if messages %}
+        <div class="platform-messages moderation-messages">
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="moderation-stats">
+        {% for stat in stats %}
+            <article class="moderation-stat is-{{ stat.tone }}">
+                <span><i class="{{ stat.icon }}"></i></span>
+                <strong>{{ stat.value }}</strong>
+                <small>{{ stat.label }}</small>
+            </article>
+        {% endfor %}
+    </div>
+
+    <div class="moderation-meta">
+        <span><i class="fa-solid fa-hard-drive"></i>{{ total_share_size }} {% translate "Uploads" %}</span>
+        <span><i class="fa-solid fa-link"></i>{{ public_share_count }} {% translate "private Links" %}</span>
+        <span><i class="fa-solid fa-user-slash"></i>{{ inactive_user_count }} {% translate "inaktive Nutzer" %}</span>
+        <span><i class="fa-solid fa-ban"></i>{{ block_count }} {% translate "Blockierungen" %}</span>
+        <span><i class="fa-solid fa-user-lock"></i>{{ active_suspension_count }} {% translate "aktive Sperren" %}</span>
+    </div>
+
+    <div class="moderation-grid">
+        <section class="moderation-panel is-wide">
+            <div class="moderation-panel-head">
+                <h2>{% translate "Nutzermeldungen" %}</h2>
+                <span>{{ reports|length }}</span>
+            </div>
+
+            {% for report in reports %}
+                <article class="moderation-item report-item {% if report.is_resolved %}is-muted{% endif %}">
+                    <span class="moderation-icon is-danger"><i class="fa-solid fa-flag"></i></span>
+                    <div class="moderation-copy">
+                        <strong>{{ report.reported.username }}</strong>
+                        <small>{{ report.get_reason_display }} &middot; {{ report.reporter.username }} &middot; {{ report.created_at|date:"d.m.Y H:i" }}</small>
+                        {% if report.message %}<p>{{ report.message|truncatechars:180 }}</p>{% endif %}
+                    </div>
+                    <form method="post" action="{% url 'moderation_report_action' report.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        {% if report.is_resolved %}
+                            <input type="hidden" name="action" value="reopen">
+                            <button type="submit" title="{% translate 'Wieder öffnen' %}"><i class="fa-solid fa-rotate-left"></i></button>
+                        {% else %}
+                            <input type="hidden" name="action" value="resolve">
+                            <button type="submit" title="{% translate 'Erledigen' %}"><i class="fa-solid fa-check"></i></button>
+                        {% endif %}
+                    </form>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Keine Meldungen." %}</div>
+            {% endfor %}
+        </section>
+
+        <section class="moderation-panel">
+            <div class="moderation-panel-head">
+                <h2>{% translate "Feedback" %}</h2>
+                <span>{{ feedback_items|length }}</span>
+            </div>
+
+            {% for item in feedback_items %}
+                <article class="moderation-item feedback-row">
+                    <span class="moderation-icon is-info"><i class="fa-solid fa-comment-dots"></i></span>
+                    <div class="moderation-copy">
+                        <strong>{{ item.title }}</strong>
+                        <small>{{ item.get_feedback_type_display }} &middot; {{ item.tool_key|default:"general" }} &middot; {{ item.created_at|date:"d.m.Y" }}</small>
+                        <p>{{ item.message|truncatechars:130 }}</p>
+                    </div>
+                    <form class="moderation-status-form" method="post" action="{% url 'moderation_feedback_status' item.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <select name="status" aria-label="{% translate 'Status' %}">
+                            {% for status_value, status_label in feedback_status_choices %}
+                                <option value="{{ status_value }}" {% if status_value == item.status %}selected{% endif %}>{{ status_label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" title="{% translate 'Speichern' %}"><i class="fa-solid fa-check"></i></button>
+                    </form>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Kein Feedback." %}</div>
+            {% endfor %}
+        </section>
+
+        <section class="moderation-panel">
+            <div class="moderation-panel-head">
+                <h2>{% translate "Datei-Freigaben" %}</h2>
+                <span>{{ file_shares|length }}</span>
+            </div>
+
+            {% for share in file_shares %}
+                <article class="moderation-item">
+                    <span class="moderation-icon is-success"><i class="{{ share.icon_class }}"></i></span>
+                    <div class="moderation-copy">
+                        <strong>{{ share.original_name }}</strong>
+                        <small>{{ share.owner.username }} &middot; {{ share.human_size }} &middot; {{ share.created_at|date:"d.m.Y H:i" }}</small>
+                        <p>
+                            {% if share.is_public_link %}{% translate "Privater Link" %}{% else %}{{ share.recipients.count }} {% translate "Empfänger" %}{% endif %}
+                            &middot; {{ share.download_count }} {% translate "Downloads" %}
+                        </p>
+                    </div>
+                    <form method="post" action="{% url 'moderation_file_share_delete' share.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                        <button class="is-danger-action" type="submit" title="{% translate 'Löschen' %}"><i class="fa-solid fa-trash-can"></i></button>
+                    </form>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Keine Dateien." %}</div>
+            {% endfor %}
+        </section>
+
+        <section class="moderation-panel">
+            <div class="moderation-panel-head">
+                <h2>{% translate "Nutzer" %}</h2>
+                <span>{{ recent_users|length }}</span>
+            </div>
+
+            {% for user in recent_users %}
+                <article class="moderation-item user-row {% if not user.is_active %}is-muted{% endif %}">
+                    <span class="moderation-avatar">{{ user.username|first|upper }}</span>
+                    <div class="moderation-copy">
+                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        <small>@{{ user.username }} &middot; {{ user.date_joined|date:"d.m.Y" }}{% if user.is_staff %} &middot; Staff{% endif %}</small>
+                        {% if user.active_suspension %}
+                            <p>{% translate "Gesperrt bis" %} {{ user.active_suspension.ends_at|date:"d.m.Y H:i" }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="moderation-user-actions">
+                        <form method="post" action="{% url 'moderation_user_status' user.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            {% if user.is_active %}
+                                <input type="hidden" name="action" value="deactivate">
+                                <button class="is-danger-action" type="submit" title="{% translate 'Deaktivieren' %}"><i class="fa-solid fa-user-slash"></i></button>
+                            {% else %}
+                                <input type="hidden" name="action" value="activate">
+                                <button type="submit" title="{% translate 'Aktivieren' %}"><i class="fa-solid fa-user-check"></i></button>
+                            {% endif %}
+                        </form>
+                        {% if user.active_suspension %}
+                            <form method="post" action="{% url 'moderation_user_status' user.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <input type="hidden" name="action" value="unsuspend">
+                                <button type="submit" title="{% translate 'Sperre aufheben' %}"><i class="fa-solid fa-unlock"></i></button>
+                            </form>
+                        {% else %}
+                            <form class="moderation-suspend-form" method="post" action="{% url 'moderation_user_status' user.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <input type="hidden" name="action" value="suspend">
+                                <select name="duration_hours" aria-label="{% translate 'Sperrdauer' %}">
+                                    <option value="1">1h</option>
+                                    <option value="24" selected>24h</option>
+                                    <option value="168">7d</option>
+                                    <option value="720">30d</option>
+                                </select>
+                                <input type="text" name="reason" maxlength="240" placeholder="{% translate 'Grund' %}">
+                                <button class="is-danger-action" type="submit" title="{% translate 'Sperren' %}"><i class="fa-solid fa-user-lock"></i></button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Keine Nutzer." %}</div>
+            {% endfor %}
+        </section>
+
+        <section class="moderation-panel">
+            <div class="moderation-panel-head">
+                <h2>{% translate "Nutzersperren" %}</h2>
+                <span>{{ suspensions|length }}</span>
+            </div>
+
+            {% for suspension in suspensions %}
+                <article class="moderation-item {% if not suspension.is_current %}is-muted{% endif %}">
+                    <span class="moderation-icon is-danger"><i class="fa-solid fa-user-lock"></i></span>
+                    <div class="moderation-copy">
+                        <strong>{{ suspension.user.username }}</strong>
+                        <small>{{ suspension.starts_at|date:"d.m.Y H:i" }} &middot; {{ suspension.ends_at|date:"d.m.Y H:i" }}</small>
+                        {% if suspension.reason %}<p>{{ suspension.reason|truncatechars:130 }}</p>{% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Keine Sperren." %}</div>
+            {% endfor %}
+        </section>
+
+        <section class="moderation-panel">
+            <div class="moderation-panel-head">
+                <h2>{% translate "Blockierungen" %}</h2>
+                <span>{{ blocks|length }}</span>
+            </div>
+
+            {% for block in blocks %}
+                <article class="moderation-item">
+                    <span class="moderation-icon is-neutral"><i class="fa-solid fa-ban"></i></span>
+                    <div class="moderation-copy">
+                        <strong>{{ block.blocker.username }} &rarr; {{ block.blocked.username }}</strong>
+                        <small>{{ block.created_at|date:"d.m.Y H:i" }}</small>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Keine Blockierungen." %}</div>
+            {% endfor %}
+        </section>
+
+        <section class="moderation-panel">
+            <div class="moderation-panel-head">
+                <h2>{% translate "System-Log" %}</h2>
+                <span>{{ inbox_logs|length }}</span>
+            </div>
+
+            {% for item in inbox_logs %}
+                <article class="moderation-item log-row {% if item.is_read %}is-muted{% endif %}">
+                    <span class="moderation-icon is-neutral"><i class="{{ item.icon }}"></i></span>
+                    <div class="moderation-copy">
+                        <strong>{{ item.title }}</strong>
+                        <small>{{ item.get_item_type_display }} &middot; {{ item.user.username }} &middot; {{ item.created_at|date:"d.m.Y H:i" }}</small>
+                        {% if item.message %}<p>{{ item.message|truncatechars:120 }}</p>{% endif %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Keine Log-Einträge." %}</div>
+            {% endfor %}
+        </section>
+
+        <section class="moderation-panel is-wide">
+            <div class="moderation-panel-head">
+                <h2>{% translate "Audit-Log" %}</h2>
+                <span>{{ audit_logs|length }}</span>
+            </div>
+
+            {% for entry in audit_logs %}
+                <article class="moderation-item log-row">
+                    <span class="moderation-icon is-neutral"><i class="fa-solid fa-clipboard-list"></i></span>
+                    <div class="moderation-copy">
+                        <strong>{{ entry.summary }}</strong>
+                        <small>{{ entry.get_action_display }} &middot; {% if entry.actor %}{{ entry.actor.username }}{% else %}System{% endif %} &middot; {{ entry.created_at|date:"d.m.Y H:i" }}</small>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Keine Audit-EintrÃ¤ge." %}</div>
+            {% endfor %}
+        </section>
+    </div>
+</section>
+{% endblock %}
