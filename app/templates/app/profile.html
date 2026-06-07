@@ -406,6 +406,8 @@
         </form>
     </div>
 
+    {% include "app/includes/achievement_panel.html" with achievement_summary=achievement_summary card_shell_class="profile-card" %}
+
     <article class="profile-card profile-game-settings-card">
         <form method="post" class="profile-game-settings-form" data-profile-game-cards-form>
             {% csrf_token %}

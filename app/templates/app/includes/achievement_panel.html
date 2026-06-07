@@ -1,0 +1,70 @@
+{% load i18n %}
+
+{% if achievement_summary %}
+<article class="{{ card_shell_class|default:'profile-card' }} achievement-panel">
+    <div class="achievement-head">
+        <div>
+            <p class="profile-kicker">{% translate "Achievements" %}</p>
+            <h2>{% translate "Level" %} {{ achievement_summary.level.level }}</h2>
+            <p>
+                {% blocktranslate with unlocked=achievement_summary.unlocked_count total=achievement_summary.total_count xp=achievement_summary.total_xp %}
+                    {{ unlocked }} von {{ total }} Badges freigeschaltet · {{ xp }} XP
+                {% endblocktranslate %}
+            </p>
+        </div>
+        <span class="achievement-level-badge">
+            <i class="fa-solid fa-star"></i>
+            {{ achievement_summary.level.level }}
+        </span>
+    </div>
+
+    <div class="achievement-xp">
+        <div>
+            <span>{{ achievement_summary.level.current_xp }} XP</span>
+            <span>{{ achievement_summary.level.next_level_xp }} XP</span>
+        </div>
+        <div class="achievement-xp-track">
+            <span style="width: {{ achievement_summary.level.progress_percent }}%;"></span>
+        </div>
+    </div>
+
+    <div class="achievement-categories">
+        {% for category in achievement_summary.categories %}
+            <div class="achievement-category">
+                <i class="{{ category.icon }}"></i>
+                <span>
+                    <strong>{{ category.label }}</strong>
+                    <small>{{ category.unlocked_count }} / {{ category.total_count }}</small>
+                </span>
+                <em>{{ category.progress_percent }}%</em>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="achievement-grid">
+        {% for achievement in achievement_summary.achievements %}
+            <div class="achievement-badge {% if achievement.unlocked %}is-unlocked{% else %}is-locked{% endif %}">
+                <span class="achievement-badge-icon">
+                    <i class="{{ achievement.icon }}"></i>
+                </span>
+                <span class="achievement-badge-copy">
+                    <strong>{{ achievement.label }}</strong>
+                    <small>{{ achievement.description }}</small>
+                    <em>
+                        {{ achievement.value_label }} / {{ achievement.target }}
+                        · {{ achievement.xp }} XP
+                    </em>
+                </span>
+                {% if achievement.unlocked %}
+                    <b title="{% translate 'Freigeschaltet' %}"><i class="fa-solid fa-check"></i></b>
+                {% else %}
+                    <b title="{% translate 'Gesperrt' %}"><i class="fa-solid fa-lock"></i></b>
+                {% endif %}
+                <div class="achievement-progress">
+                    <span style="width: {{ achievement.progress_percent }}%;"></span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</article>
+{% endif %}

@@ -5,6 +5,7 @@ from .models import (
     ChatAttachment,
     ChatMessage,
     ChatMessageReaction,
+    ChatTypingStatus,
     ChatRoom,
     ChatRoomMember,
     ClockSettings,
@@ -25,6 +26,7 @@ from .models import (
     HangmanLobby,
     HangmanPlayer,
     InboxItem,
+    ModerationAuditLog,
     Note,
     Shortcut,
     ShortcutSection,
@@ -35,6 +37,7 @@ from .models import (
     ToolFavorite,
     ToolFeedback,
     UserProfile,
+    UserSuspension,
     WeatherLocation,
 )
 
@@ -79,6 +82,15 @@ class ChatMessageReactionAdmin(admin.ModelAdmin):
     list_filter = ("emoji", "created_at")
     search_fields = ("message__text", "user__username", "user__email")
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(ChatTypingStatus)
+class ChatTypingStatusAdmin(admin.ModelAdmin):
+    list_display = ("room", "user", "is_typing", "updated_at")
+    list_filter = ("is_typing", "updated_at")
+    search_fields = ("room__name", "user__username", "user__email")
+    readonly_fields = ("updated_at",)
+
 
 @admin.register(AvatarCharacter)
 class AvatarCharacterAdmin(admin.ModelAdmin):
@@ -299,6 +311,23 @@ class ToolFeedbackAdmin(admin.ModelAdmin):
     list_display = ("title", "tool_key", "feedback_type", "rating", "status", "user", "created_at")
     list_filter = ("feedback_type", "status", "tool_key")
     search_fields = ("title", "message", "user__username")
+
+
+@admin.register(UserSuspension)
+class UserSuspensionAdmin(admin.ModelAdmin):
+    list_display = ("user", "moderator", "is_active", "starts_at", "ends_at", "lifted_at")
+    list_filter = ("is_active", "starts_at", "ends_at")
+    search_fields = ("user__username", "moderator__username", "reason")
+    readonly_fields = ("created_at", "lifted_at")
+
+
+@admin.register(ModerationAuditLog)
+class ModerationAuditLogAdmin(admin.ModelAdmin):
+    list_display = ("action", "actor", "target_user", "summary", "created_at")
+    list_filter = ("action", "created_at")
+    search_fields = ("summary", "actor__username", "target_user__username")
+    readonly_fields = ("created_at",)
+
 
 # Platform/social Erweiterungen
 try:

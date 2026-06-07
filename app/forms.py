@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 import bleach
 from bleach.css_sanitizer import CSSSanitizer
 
-from .models import Note
+from .models import Friendship, Note
 
 
 ALLOWED_TAGS = [
@@ -31,6 +31,9 @@ ALLOWED_TAGS = [
 
 ALLOWED_ATTRIBUTES = {
     "a": ["href", "title", "target", "rel"],
+    "ul": ["class"],
+    "ol": ["class"],
+    "li": ["class", "data-checked"],
     "span": ["style"],
     "p": ["style"],
     "h2": ["style"],
@@ -102,6 +105,22 @@ class NoteForm(forms.ModelForm):
             "id": "id_content",
         })
     )
+    reminder_at = forms.DateTimeField(
+        required=False,
+        input_formats=["%Y-%m-%dT%H:%M"],
+        widget=forms.DateTimeInput(
+            attrs={
+                "class": "notes-input",
+                "type": "datetime-local",
+            },
+            format="%Y-%m-%dT%H:%M",
+        ),
+    )
+    shared_with = forms.ModelMultipleChoiceField(
+        required=False,
+        queryset=User.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+    )
 
     class Meta:
         model = Note
@@ -109,6 +128,8 @@ class NoteForm(forms.ModelForm):
             "title",
             "content",
             "tags",
+            "reminder_at",
+            "shared_with",
             "color",
             "is_pinned",
             "is_archived",
@@ -138,16 +159,27 @@ class NoteForm(forms.ModelForm):
             "title": _("Titel"),
             "content": _("Inhalt"),
             "tags": _("Tags"),
+            "reminder_at": _("Erinnerung"),
+            "shared_with": _("Mit Freunden teilen"),
             "color": _("Farbe"),
             "is_pinned": _("Anpinnen"),
             "is_archived": _("Archivieren"),
         }
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         self.fields["color"].choices = NOTE_COLOR_CHOICES
         self.fields["title"].widget.attrs["placeholder"] = _("Titel deiner Notiz...")
         self.fields["tags"].widget.attrs["placeholder"] = _("Tags, z. B. Schule, Server, Idee")
+        self.fields["reminder_at"].widget.attrs["placeholder"] = _("Datum und Uhrzeit")
+
+        if self.user and self.user.is_authenticated:
+            friend_ids = Friendship.friend_ids_for_user(self.user)
+            self.fields["shared_with"].queryset = User.objects.filter(
+                id__in=friend_ids,
+                is_active=True,
+            ).order_by("username")
 
     def clean_content(self):
         content = self.cleaned_data.get("content", "")

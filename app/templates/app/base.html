@@ -452,6 +452,16 @@
                                         <small>{% translate 'Kontakt' %}</small>
                                     </span>
                                 </a>
+
+                                {% if request.user.is_staff %}
+                                    <a href="{% url 'moderation' %}" class="game-menu-card is-red" data-menu-card data-menu-name="{% translate 'Moderation' %}" data-menu-category="{% translate 'Admin Meldungen Feedback Dateien Nutzer' %}">
+                                        <span class="game-menu-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                                        <span class="game-menu-copy">
+                                            <strong>{% translate 'Moderation' %}</strong>
+                                            <small>{% translate 'Admin' %}</small>
+                                        </span>
+                                    </a>
+                                {% endif %}
                             </div>
                         </section>
 
