@@ -34,6 +34,7 @@ const defaultButtons = [];
 let obs = null;
 let obsConnected = false;
 let editMode = false;
+let deckFullscreenActive = false;
 let currentEditIndex = null;
 let buttons = [];
 let logs = [];
@@ -56,6 +57,8 @@ const elements = {
     connectBtn: $("connect-btn"),
     disconnectBtn: $("disconnect-btn"),
     editToggleBtn: $("edit-toggle-btn"),
+    deckFullscreenBtn: $("deck-fullscreen-btn"),
+    exitDeckFullscreenBtn: $("exit-deck-fullscreen-btn"),
     buttonGrid: $("button-grid"),
     addButtonBtn: $("add-button-btn"),
     resetButtonsBtn: $("reset-buttons-btn"),
@@ -158,6 +161,8 @@ function bindEvents() {
     elements.connectBtn.addEventListener("click", connectOrDisconnectObs);
     elements.disconnectBtn.addEventListener("click", disconnectObs);
     elements.editToggleBtn.addEventListener("click", toggleEditMode);
+    elements.deckFullscreenBtn.addEventListener("click", enterDeckFullscreen);
+    elements.exitDeckFullscreenBtn.addEventListener("click", exitDeckFullscreen);
 
     elements.addButtonBtn.addEventListener("click", addButton);
     elements.resetButtonsBtn.addEventListener("click", resetButtons);
@@ -201,11 +206,17 @@ function bindEvents() {
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
+            if (deckFullscreenActive) {
+                exitDeckFullscreen();
+            }
+
             closeEditorModal();
             closeSpotifyModal();
             closeLogModal();
         }
     });
+
+    document.addEventListener("fullscreenchange", syncDeckFullscreenState);
 }
 
 function persistConnectionFields() {
@@ -266,13 +277,97 @@ function updateSidebarMeta() {
 
 function toggleEditMode() {
     editMode = !editMode;
-    elements.editToggleBtn.innerHTML = editMode
-        ? '<i class="fa-solid fa-check"></i><span>Fertig</span>'
-        : '<i class="fa-solid fa-pen"></i><span>Bearbeiten</span>';
+    updateEditModeUI();
 
     renderButtons();
     addLog(editMode ? "Bearbeiten-Modus aktiviert" : "Bearbeiten-Modus deaktiviert");
     showToast(editMode ? "Bearbeiten-Modus aktiviert." : "Bearbeiten-Modus deaktiviert.");
+}
+
+function updateEditModeUI() {
+    elements.editToggleBtn.innerHTML = editMode
+        ? '<i class="fa-solid fa-check"></i><span>Fertig</span>'
+        : '<i class="fa-solid fa-pen"></i><span>Bearbeiten</span>';
+
+    updateSidebarMeta();
+}
+
+async function enterDeckFullscreen() {
+    closeEditorModal();
+    closeSpotifyModal();
+    closeLogModal();
+
+    if (editMode) {
+        editMode = false;
+        updateEditModeUI();
+        renderButtons();
+    }
+
+    setDeckFullscreenState(true);
+
+    try {
+        if (streamDeckPage.requestFullscreen && document.fullscreenElement !== streamDeckPage) {
+            await streamDeckPage.requestFullscreen({ navigationUI: "hide" });
+        }
+    } catch (error) {
+        showToast("Browser-Vollbild nicht verfügbar. Deck-Ansicht aktiviert.");
+    }
+
+    lockLandscapeOrientation();
+}
+
+async function exitDeckFullscreen() {
+    setDeckFullscreenState(false);
+    unlockScreenOrientation();
+
+    try {
+        if (document.fullscreenElement === streamDeckPage && document.exitFullscreen) {
+            await document.exitFullscreen();
+        }
+    } catch (error) {
+        console.warn(error);
+    }
+}
+
+function setDeckFullscreenState(active) {
+    deckFullscreenActive = active;
+    streamDeckPage.classList.toggle("is-deck-fullscreen", active);
+    document.body.classList.toggle("stream-deck-fullscreen-active", active);
+
+    elements.deckFullscreenBtn.setAttribute("aria-pressed", String(active));
+    elements.exitDeckFullscreenBtn.hidden = !active;
+    elements.deckFullscreenBtn.innerHTML = active
+        ? '<i class="fa-solid fa-compress"></i><span>Vollbild</span>'
+        : '<i class="fa-solid fa-expand"></i><span>Vollbild</span>';
+}
+
+function syncDeckFullscreenState() {
+    const isBrowserFullscreen = document.fullscreenElement === streamDeckPage;
+
+    if (!isBrowserFullscreen && deckFullscreenActive) {
+        setDeckFullscreenState(false);
+        unlockScreenOrientation();
+    }
+}
+
+async function lockLandscapeOrientation() {
+    try {
+        if (screen.orientation?.lock) {
+            await screen.orientation.lock("landscape");
+        }
+    } catch {
+        // Some mobile browsers only allow orientation lock in installed apps.
+    }
+}
+
+function unlockScreenOrientation() {
+    try {
+        if (screen.orientation?.unlock) {
+            screen.orientation.unlock();
+        }
+    } catch {
+        // Ignore unsupported orientation APIs.
+    }
 }
 
 function addButton() {
