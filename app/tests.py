@@ -1519,6 +1519,13 @@ class StaticPageTests(BaseTestCase):
         self.assertContains(response, 'value="volume-up"')
         self.assertContains(response, 'value="volume-down"')
 
+    def test_stream_deck_contains_fullscreen_controls(self):
+        response = self.client.get(reverse("stream-deck"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="deck-fullscreen-btn"')
+        self.assertContains(response, 'id="exit-deck-fullscreen-btn"')
+
 
 class ChatEnhancementTests(BaseTestCase):
     def setUp(self):

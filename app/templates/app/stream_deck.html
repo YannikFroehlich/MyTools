@@ -47,6 +47,11 @@
             </div>
 
             <div class="topbar-actions">
+                <button id="deck-fullscreen-btn" class="outline-btn" type="button" aria-label="{% translate 'Deck-Vollbild öffnen' %}">
+                    <i class="fa-solid fa-expand"></i>
+                    <span>{% translate "Vollbild" %}</span>
+                </button>
+
                 <button id="edit-toggle-btn" class="outline-btn" type="button">
                     <i class="fa-solid fa-pen"></i>
                     <span>{% translate "Bearbeiten" %}</span>
@@ -426,6 +431,10 @@
     </div>
 
     <div id="toast" class="toast hidden"></div>
+
+    <button id="exit-deck-fullscreen-btn" class="deck-fullscreen-exit" type="button" aria-label="{% translate 'Vollbild beenden' %}" hidden>
+        <i class="fa-solid fa-compress"></i>
+    </button>
 </section>
 {% endblock %}
 
