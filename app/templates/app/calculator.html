@@ -1,0 +1,221 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Wissenschaftlicher Rechner" %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/calculator.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="calculator-page">
+    <section class="calculator-hero">
+        <div class="calculator-hero-copy">
+            <p class="calculator-eyebrow">MyTools fx</p>
+            <h1>{% translate "Wissenschaftlicher Rechner" %}</h1>
+            <p>
+                {% translate "Ein richtiger Taschenrechner für Grundrechenarten, Wurzeln, Potenzen, Logarithmen, Trigonometrie, Fakultät, Speicher und Verlauf." %}
+            </p>
+            <div class="calculator-hero-chips" aria-label="{% translate 'Rechner-Funktionen' %}">
+                <span><i class="fa-solid fa-square-root-variable"></i>{% translate "Wurzeln" %}</span>
+                <span><i class="fa-solid fa-superscript"></i>{% translate "Potenzen" %}</span>
+                <span><i class="fa-solid fa-wave-square"></i>{% translate "Trigonometrie" %}</span>
+                <span><i class="fa-solid fa-clock-rotate-left"></i>{% translate "Verlauf" %}</span>
+            </div>
+        </div>
+        <div class="calculator-hero-icon" aria-hidden="true">
+            <i class="fa-solid fa-square-root-variable"></i>
+        </div>
+    </section>
+
+    <section class="calculator-layout" aria-label="{% translate 'Wissenschaftlicher Rechner' %}">
+        <article class="calculator-shell">
+            <div class="calculator-topbar">
+                <div>
+                    <span class="calculator-brand">MyTools fx</span>
+                    <small>{% translate "Wissenschaftlich" %}</small>
+                </div>
+                <div class="calculator-mode-switch" role="group" aria-label="{% translate 'Winkelmodus' %}">
+                    <button type="button" class="calculator-mode active" data-angle-mode="deg">DEG</button>
+                    <button type="button" class="calculator-mode" data-angle-mode="rad">RAD</button>
+                </div>
+            </div>
+
+            <div class="calculator-screen">
+                <div class="calculator-screen-meta">
+                    <span id="calculator-angle-label">DEG</span>
+                    <span id="calculator-memory-label" class="is-hidden">M</span>
+                </div>
+                <textarea id="calculator-expression" class="calculator-expression" rows="2" spellcheck="false" autocomplete="off" aria-label="{% translate 'Rechenausdruck' %}" placeholder="0"></textarea>
+                <div class="calculator-preview" id="calculator-preview">{% translate "Bereit" %}</div>
+            </div>
+
+            <div class="calculator-keypad" aria-label="{% translate 'Tastenfeld' %}">
+                <button type="button" class="calc-key calc-key-soft" data-action="memory-clear">MC</button>
+                <button type="button" class="calc-key calc-key-soft" data-action="memory-recall">MR</button>
+                <button type="button" class="calc-key calc-key-soft" data-action="memory-add">M+</button>
+                <button type="button" class="calc-key calc-key-soft" data-action="memory-subtract">M−</button>
+                <button type="button" class="calc-key calc-key-danger" data-action="clear">AC</button>
+                <button type="button" class="calc-key calc-key-danger" data-action="backspace"><i class="fa-solid fa-delete-left"></i></button>
+
+                <button type="button" class="calc-key calc-key-function" data-insert="sin(">sin</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="cos(">cos</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="tan(">tan</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="log(">log</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="ln(">ln</button>
+                <button type="button" class="calc-key calc-key-operator" data-insert="^">xʸ</button>
+
+                <button type="button" class="calc-key calc-key-function" data-insert="asin(">sin⁻¹</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="acos(">cos⁻¹</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="atan(">tan⁻¹</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="sqrt(">√</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="cbrt(">³√</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="root(">ⁿ√</button>
+
+                <button type="button" class="calc-key calc-key-function" data-insert="pi">π</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="e">e</button>
+                <button type="button" class="calc-key calc-key-function" data-action="insert-answer">Ans</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="!">x!</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="%">%</button>
+                <button type="button" class="calc-key calc-key-operator" data-insert="/">÷</button>
+
+                <button type="button" class="calc-key" data-insert="7">7</button>
+                <button type="button" class="calc-key" data-insert="8">8</button>
+                <button type="button" class="calc-key" data-insert="9">9</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="(">(</button>
+                <button type="button" class="calc-key calc-key-function" data-insert=")">)</button>
+                <button type="button" class="calc-key calc-key-operator" data-insert="*">×</button>
+
+                <button type="button" class="calc-key" data-insert="4">4</button>
+                <button type="button" class="calc-key" data-insert="5">5</button>
+                <button type="button" class="calc-key" data-insert="6">6</button>
+                <button type="button" class="calc-key calc-key-function" data-action="square">x²</button>
+                <button type="button" class="calc-key calc-key-function" data-action="cube">x³</button>
+                <button type="button" class="calc-key calc-key-operator" data-insert="-">−</button>
+
+                <button type="button" class="calc-key" data-insert="1">1</button>
+                <button type="button" class="calc-key" data-insert="2">2</button>
+                <button type="button" class="calc-key" data-insert="3">3</button>
+                <button type="button" class="calc-key calc-key-function" data-action="reciprocal">1/x</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="abs(">|x|</button>
+                <button type="button" class="calc-key calc-key-operator" data-insert="+">+</button>
+
+                <button type="button" class="calc-key calc-key-wide" data-insert="0">0</button>
+                <button type="button" class="calc-key" data-insert=".">.</button>
+                <button type="button" class="calc-key" data-insert=",">,</button>
+                <button type="button" class="calc-key calc-key-function" data-insert="E">EXP</button>
+                <button type="button" class="calc-key calc-key-equals" data-action="calculate">=</button>
+            </div>
+        </article>
+
+        <aside class="calculator-side-panel">
+            <div class="calculator-info-card">
+                <div class="calculator-info-head">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <div>
+                        <strong>{% translate "Beispiele" %}</strong>
+                        <small>{% translate "Antippen zum Einfügen" %}</small>
+                    </div>
+                </div>
+                <div class="calculator-examples">
+                    <button type="button" data-example="sqrt(144)">√144</button>
+                    <button type="button" data-example="2^10">2¹⁰</button>
+                    <button type="button" data-example="sin(30)">sin(30)</button>
+                    <button type="button" data-example="log(1000)">log(1000)</button>
+                    <button type="button" data-example="root(27,3)">³√27</button>
+                    <button type="button" data-example="5!">5!</button>
+                </div>
+            </div>
+
+            <div class="calculator-info-card">
+                <div class="calculator-info-head">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <div>
+                        <strong>{% translate "Verlauf" %}</strong>
+                        <small>{% translate "Die letzten Rechnungen bleiben lokal im Browser." %}</small>
+                    </div>
+                </div>
+                <div class="calculator-history" id="calculator-history">
+                    <div class="calculator-empty-history">{% translate "Noch keine Rechnungen." %}</div>
+                </div>
+                <button type="button" class="calculator-side-action" id="calculator-clear-history">
+                    <i class="fa-solid fa-trash-can"></i>
+                    {% translate "Verlauf löschen" %}
+                </button>
+            </div>
+
+            <div class="calculator-info-card calculator-help-card">
+                <div class="calculator-info-head">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <strong>{% translate "Kurz-Hilfe" %}</strong>
+                        <small>{% translate "Die wichtigsten Eingaben auf einen Blick." %}</small>
+                    </div>
+                </div>
+                <ul class="calculator-help-list">
+                    <li><span aria-hidden="true">xʸ</span>{% translate "Potenzen: 2^8 oder Taste xʸ." %}</li>
+                    <li><span aria-hidden="true">√</span>{% translate "Wurzeln: sqrt(16), cbrt(27) oder root(27,3)." %}</li>
+                    <li><span aria-hidden="true">°</span>{% translate "Trigonometrie läuft je nach Schalter in DEG oder RAD." %}</li>
+                    <li><span aria-hidden="true">↵</span>{% translate "Tastatur: Enter berechnet, Escape löscht, Backspace entfernt Zeichen." %}</li>
+                </ul>
+            </div>
+        </aside>
+    </section>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    {% translate "Bereit" as calculator_ready %}
+    {% translate "Noch keine Rechnungen." as calculator_empty_history %}
+    {% translate "Gib zuerst eine Rechnung ein." as calculator_enter_expression %}
+    {% translate "Das Ergebnis ist nicht endlich." as calculator_non_finite %}
+    {% translate "Unerwartetes Zeichen." as calculator_unexpected_token %}
+    {% translate "Der Ausdruck konnte nicht vollständig gelesen werden." as calculator_parse_incomplete %}
+    {% translate "Hier fehlt eine Zahl oder Funktion." as calculator_missing_value %}
+    {% translate "Division durch 0 ist nicht möglich." as calculator_division_by_zero %}
+    {% translate "Wurzel aus negativer Zahl ist hier nicht möglich." as calculator_negative_root %}
+    {% translate "ln braucht eine Zahl größer 0." as calculator_ln_positive %}
+    {% translate "log braucht eine Zahl größer 0." as calculator_log_positive %}
+    {% translate "logbase braucht gültige Werte und Basis ungleich 1." as calculator_logbase_invalid %}
+    {% translate "Fakultät geht nur mit ganzen Zahlen ab 0." as calculator_factorial_integer %}
+    {% translate "Fakultät ist zu groß für diesen Rechner." as calculator_factorial_large %}
+    {% translate "Die Wurzelordnung darf nicht 0 sein." as calculator_root_zero %}
+    {% translate "Gerade Wurzeln aus negativen Zahlen sind nicht möglich." as calculator_even_negative_root %}
+    {% translate "Ungültige Rechnung." as calculator_invalid_calculation %}
+    {% translate "Eine Zahl enthält zwei Dezimalpunkte." as calculator_double_decimal %}
+    {% translate "EXP braucht eine Zahl als Exponent." as calculator_exp_needs_number %}
+    {% translate "Ungültige Zahl." as calculator_invalid_number %}
+    {% translate "Unbekanntes Zeichen: {value}" as calculator_unknown_character %}
+    {% translate "{name} erwartet {count} Wert(e)." as calculator_expected_values %}
+    {% translate "Unbekannte Funktion: {name}" as calculator_unknown_function %}
+    {% translate "Unbekannte Konstante: {name}" as calculator_unknown_constant %}
+    <script>
+        window.MyToolsCalculatorI18n = {
+            ready: "{{ calculator_ready|escapejs }}",
+            emptyHistory: "{{ calculator_empty_history|escapejs }}",
+            enterExpression: "{{ calculator_enter_expression|escapejs }}",
+            nonFinite: "{{ calculator_non_finite|escapejs }}",
+            unexpectedToken: "{{ calculator_unexpected_token|escapejs }}",
+            parseIncomplete: "{{ calculator_parse_incomplete|escapejs }}",
+            missingValue: "{{ calculator_missing_value|escapejs }}",
+            divisionByZero: "{{ calculator_division_by_zero|escapejs }}",
+            negativeRoot: "{{ calculator_negative_root|escapejs }}",
+            lnPositive: "{{ calculator_ln_positive|escapejs }}",
+            logPositive: "{{ calculator_log_positive|escapejs }}",
+            logbaseInvalid: "{{ calculator_logbase_invalid|escapejs }}",
+            factorialInteger: "{{ calculator_factorial_integer|escapejs }}",
+            factorialLarge: "{{ calculator_factorial_large|escapejs }}",
+            rootZero: "{{ calculator_root_zero|escapejs }}",
+            evenNegativeRoot: "{{ calculator_even_negative_root|escapejs }}",
+            invalidCalculation: "{{ calculator_invalid_calculation|escapejs }}",
+            doubleDecimal: "{{ calculator_double_decimal|escapejs }}",
+            expNeedsNumber: "{{ calculator_exp_needs_number|escapejs }}",
+            invalidNumber: "{{ calculator_invalid_number|escapejs }}",
+            unknownCharacter: "{{ calculator_unknown_character|escapejs }}",
+            expectedValues: "{{ calculator_expected_values|escapejs }}",
+            unknownFunction: "{{ calculator_unknown_function|escapejs }}",
+            unknownConstant: "{{ calculator_unknown_constant|escapejs }}"
+        };
+    </script>
+    <script src="{% static 'app/js/calculator.js' %}"></script>
+{% endblock %}
