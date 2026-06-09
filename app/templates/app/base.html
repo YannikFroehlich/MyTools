@@ -472,6 +472,14 @@
                             </div>
 
                             <div class="games-menu-grid">
+                                <a href="{% url 'calculator' %}" class="game-menu-card is-blue" data-menu-card data-menu-name="{% translate 'Rechner' %}" data-menu-category="{% translate 'Taschenrechner Wissenschaftlich Wurzel Potenzen Logarithmus Sinus Cosinus Casio' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-square-root-variable"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Rechner' %}</strong>
+                                        <small>{% translate 'Wissenschaftlich' %}</small>
+                                    </span>
+                                </a>
+
                                 <a href="{% url 'spritkostenrechner' %}" class="game-menu-card is-orange" data-menu-card data-menu-name="{% translate 'Spritkosten' %}" data-menu-category="{% translate 'Auto Sprit Benzin Kosten Rechner' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-gas-pump"></i></span>
                                     <span class="game-menu-copy">

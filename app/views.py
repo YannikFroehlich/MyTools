@@ -1975,6 +1975,10 @@ def note_toggle_archive_view(request, pk):
     return redirect("notes")
 
 
+def calculator_view(request):
+    return render(request, "app/calculator.html")
+
+
 def unit_converter_view(request):
     converter_labels = {
         "storage": {

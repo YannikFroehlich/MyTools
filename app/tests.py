@@ -1,10 +1,12 @@
 import json
 import shutil
 import tempfile
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import requests
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.signals import pre_save
@@ -1486,10 +1488,19 @@ class StaticPageTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "app/about.html")
 
+    def test_about_page_links_scientific_calculator(self):
+        response = self.client.get(reverse("about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("calculator"))
+        self.assertContains(response, "Wissenschaftlicher Rechner")
+        self.assertContains(response, "Wurzeln, Potenzen, Logarithmen, Trigonometrie")
+
     def test_simple_tool_pages_load(self):
         pages = [
             ("obs-dashboard", "app/obs-dashboard.html"),
             ("spritkostenrechner", "app/spritkostenrechner.html"),
+            ("calculator", "app/calculator.html"),
             ("human-benchmark", "app/human_benchmark.html"),
             ("genius-search", "app/genius_search.html"),
             ("avatar-wiki", "app/avatar_wiki.html"),
@@ -1506,6 +1517,44 @@ class StaticPageTests(BaseTestCase):
 
                 self.assertEqual(response.status_code, 200)
                 self.assertTemplateUsed(response, template)
+
+    def test_calculator_page_contains_scientific_controls(self):
+        response = self.client.get(reverse("calculator"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="calculator-expression"')
+        self.assertContains(response, 'data-insert="sqrt("')
+        self.assertContains(response, 'data-insert="cbrt("')
+        self.assertContains(response, 'data-insert="root("')
+        self.assertContains(response, 'data-insert="^"')
+        self.assertContains(response, 'data-action="memory-add"')
+        self.assertContains(response, 'data-action="memory-recall"')
+        self.assertContains(response, 'data-angle-mode="deg"')
+        self.assertContains(response, 'data-angle-mode="rad"')
+        self.assertContains(response, 'id="calculator-history"')
+        self.assertContains(response, 'calculator-help-list')
+        self.assertContains(response, 'window.MyToolsCalculatorI18n')
+        self.assertContains(response, 'app/js/calculator.js')
+
+    def test_calculator_static_assets_cover_core_features(self):
+        js = Path(settings.BASE_DIR) / "app" / "static" / "app" / "js" / "calculator.js"
+        css = Path(settings.BASE_DIR) / "app" / "static" / "app" / "css" / "calculator.css"
+
+        js_content = js.read_text(encoding="utf-8")
+        css_content = css.read_text(encoding="utf-8")
+
+        self.assertIn("class Parser", js_content)
+        self.assertIn('case "sqrt"', js_content)
+        self.assertIn('case "cbrt"', js_content)
+        self.assertIn('case "root"', js_content)
+        self.assertIn('case "sin"', js_content)
+        self.assertIn('case "log"', js_content)
+        self.assertIn('function factorial', js_content)
+        self.assertIn('memory-add', js_content)
+        self.assertIn('MyToolsCalculatorI18n', js_content)
+        self.assertIn('window.MyToolsCalculator', js_content)
+        self.assertIn('.calculator-help-list', css_content)
+        self.assertIn('text-align: left;', css_content)
 
 
     def test_stream_deck_contains_obs_audio_controls(self):
