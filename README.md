@@ -35,6 +35,7 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - OBS Dashboard für lokale OBS-WebSocket-Steuerung
 - Stream-Deck-Seite als Button-Dashboard für Medien, Spotify und eigene Aktionen
 - Spritkostenrechner mit Tankerkönig API
+- wissenschaftlicher Rechner mit Wurzeln, Potenzen, Trigonometrie, Logarithmen, Speicher und Verlauf
 - Genius Search mit Genius API
 - Einheitenrechner
 - Avatar Wiki mit Charakterverwaltung
@@ -125,6 +126,24 @@ Das lokale Weltkartenbild liegt hier:
 ```text
 app/static/app/img/worldmap.webp
 ```
+
+---
+
+## 🧮 Wissenschaftlicher Rechner
+
+Der Rechner ist als eigenes Tool unter `/rechner/` eingebaut und orientiert sich an einem klassischen wissenschaftlichen Taschenrechner.
+
+Funktionen:
+
+- Grundrechenarten mit Klammern und Live-Vorschau
+- Wurzelrechnung über `sqrt(16)`, `cbrt(27)` und `root(27,3)`
+- Hochrechnung über `^`, `x²` und `x³`
+- Trigonometrie mit umschaltbarem DEG/RAD-Modus
+- `log`, `ln`, `abs`, Fakultät, Prozent, `π`, `e` und `Ans`
+- Speicherfunktionen `MC`, `MR`, `M+` und `M-`
+- Verlauf der letzten Rechnungen lokal im Browser
+- Tastaturbedienung mit Enter, Escape und Backspace
+- eigene Styles unter `app/static/app/css/calculator.css` und Logik unter `app/static/app/js/calculator.js`
 
 ---
 

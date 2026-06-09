@@ -6,6 +6,7 @@ from .views import (
     avatar_characters_api,
     avatar_wiki,
     clock_view,
+    calculator_view,
     cookie_clicker,
     cookie_clicker_score_api,
     drift_circuit,
@@ -278,6 +279,7 @@ urlpatterns = [
     path('notes/<int:pk>/pin/', note_toggle_pin_view, name='note_toggle_pin'),
     path('notes/<int:pk>/archive/', note_toggle_archive_view, name='note_toggle_archive'),
 
+    path('rechner/', calculator_view, name='calculator'),
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
     path('randomizer/', randomizer_tools_view, name='randomizer_tools'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
