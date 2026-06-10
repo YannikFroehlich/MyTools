@@ -42,6 +42,8 @@ from app.models import (
     KniffelInvite,
     KniffelPlayer,
     Note,
+    PongGame,
+    PongInvite,
     Shortcut,
     ShortcutSection,
     SiteAccessSettings,
@@ -4364,3 +4366,85 @@ class Game2048Tests(BaseTestCase):
         self.assertIn("game_2048_regular", unlocked_keys)
         self.assertEqual(summary["metrics"]["game_2048_best_tile"], 2048)
         self.assertEqual(summary["metrics"]["game_2048_runs"], 10)
+
+
+class PongMultiplayerTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username="pong_a", password="pw")
+        self.friend = get_user_model().objects.create_user(username="pong_b", password="pw")
+        Friendship.objects.create(from_user=self.user, to_user=self.friend, status=Friendship.STATUS_ACCEPTED)
+        self.client.login(username="pong_a", password="pw")
+
+    def test_pong_home_creates_room_with_owner_as_left_player(self):
+        response = self.client.post(reverse("pong_home"), {"action": "create", "name": "Arcade Night", "target_score": "11"})
+
+        game = PongGame.objects.get(name="Arcade Night")
+        self.assertRedirects(response, reverse("pong_lobby", args=[game.code]))
+        self.assertEqual(game.owner, self.user)
+        self.assertEqual(game.player_left, self.user)
+        self.assertEqual(game.target_score, 11)
+        self.assertEqual(game.status, PongGame.STATUS_WAITING)
+
+    def test_second_player_joins_and_game_starts(self):
+        game = PongGame.objects.create(owner=self.user, player_left=self.user, name="Pong", code="PNG123")
+        self.client.logout()
+        self.client.login(username="pong_b", password="pw")
+
+        response = self.client.get(reverse("pong_lobby", args=[game.code]))
+
+        self.assertEqual(response.status_code, 200)
+        game.refresh_from_db()
+        self.assertEqual(game.player_right, self.friend)
+        self.assertEqual(game.status, PongGame.STATUS_PLAYING)
+
+    def test_pong_invite_counts_in_notifications(self):
+        game = PongGame.objects.create(owner=self.user, player_left=self.user, name="Pong", code="INV123")
+        PongInvite.objects.create(game=game, from_user=self.user, to_user=self.friend)
+
+        counts = get_notification_counts(self.friend)
+        items = get_notification_items(self.friend)
+
+        self.assertEqual(counts["pong_invites"], 1)
+        self.assertTrue(any(item["type"] == "pong" for item in items))
+
+    def test_pong_paddle_api_updates_own_paddle_and_presence(self):
+        game = PongGame.objects.create(
+            owner=self.user,
+            player_left=self.user,
+            player_right=self.friend,
+            name="Pong",
+            code="PAD123",
+            status=PongGame.STATUS_PLAYING,
+        )
+
+        response = self.client.post(reverse("pong_paddle_api", args=[game.code]), {"y": "82"})
+
+        self.assertEqual(response.status_code, 200)
+        game.refresh_from_db()
+        self.assertAlmostEqual(game.paddle_left_y, 82.0)
+        presence = UserPresence.objects.get(user=self.user)
+        self.assertEqual(presence.active_game, "pong")
+        self.assertEqual(presence.active_game_label, "spielt Pong")
+
+    def test_pong_finished_match_unlocks_achievements(self):
+        PongGame.objects.create(
+            owner=self.user,
+            player_left=self.user,
+            player_right=self.friend,
+            name="Finale",
+            code="WIN123",
+            status=PongGame.STATUS_FINISHED,
+            winner_side=PongGame.SIDE_LEFT,
+            score_left=7,
+            score_right=4,
+            best_rally=12,
+        )
+
+        summary = get_achievement_summary(self.user)
+        unlocked_keys = {achievement["key"] for achievement in summary["unlocked"]}
+
+        self.assertIn("pong_first_match", unlocked_keys)
+        self.assertIn("pong_rally", unlocked_keys)
+        self.assertEqual(summary["metrics"]["pong_matches"], 1)
+        self.assertEqual(summary["metrics"]["pong_wins"], 1)
+        self.assertEqual(summary["metrics"]["pong_best_rally"], 12)

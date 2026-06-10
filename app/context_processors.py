@@ -27,6 +27,7 @@ def current_profile(request):
             "uno_invites_count": 0,
             "kniffel_invites_count": 0,
             "hangman_invites_count": 0,
+            "pong_invites_count": 0,
             "total_notifications_count": 0,
         }
 
@@ -52,5 +53,6 @@ def current_profile(request):
         "uno_invites_count": counts["uno_invites"],
         "kniffel_invites_count": counts["kniffel_invites"],
         "hangman_invites_count": counts["hangman_invites"],
+        "pong_invites_count": counts["pong_invites"],
         "total_notifications_count": counts["total_notifications"],
     }

@@ -2857,3 +2857,123 @@ class FileShare(models.Model):
         if name.endswith((".xls", ".xlsx", ".csv")):
             return "fa-regular fa-file-excel"
         return "fa-regular fa-file"
+
+
+class PongGame(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_PLAYING = "playing"
+    STATUS_PAUSED = "paused"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_PLAYING, _("Läuft")),
+        (STATUS_PAUSED, _("Pausiert")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    SIDE_LEFT = "left"
+    SIDE_RIGHT = "right"
+
+    SIDE_CHOICES = [
+        (SIDE_LEFT, _("Links")),
+        (SIDE_RIGHT, _("Rechts")),
+    ]
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="owned_pong_games")
+    player_left = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="pong_games_left")
+    player_right = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="pong_games_right")
+    player_left_last_seen = models.DateTimeField(null=True, blank=True)
+    player_right_last_seen = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(max_length=80, default="Pong")
+    code = models.SlugField(max_length=16, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+    target_score = models.PositiveSmallIntegerField(default=7)
+    score_left = models.PositiveSmallIntegerField(default=0)
+    score_right = models.PositiveSmallIntegerField(default=0)
+    paddle_left_y = models.FloatField(default=50)
+    paddle_right_y = models.FloatField(default=50)
+    ball_x = models.FloatField(default=50)
+    ball_y = models.FloatField(default=50)
+    ball_vx = models.FloatField(default=38)
+    ball_vy = models.FloatField(default=18)
+    winner_side = models.CharField(max_length=10, choices=SIDE_CHOICES, blank=True)
+    last_hit_side = models.CharField(max_length=10, choices=SIDE_CHOICES, blank=True)
+    round_number = models.PositiveIntegerField(default=1)
+    rally_hits = models.PositiveIntegerField(default=0)
+    best_rally = models.PositiveIntegerField(default=0)
+    last_scored_at = models.DateTimeField(null=True, blank=True)
+    last_tick_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["owner", "status"]),
+            models.Index(fields=["player_left", "status"]),
+            models.Index(fields=["player_right", "status"]),
+        ]
+        verbose_name = "Pong Spiel"
+        verbose_name_plural = "Pong Spiele"
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    def side_for_user(self, user):
+        if self.player_left_id == user.id:
+            return self.SIDE_LEFT
+        if self.player_right_id == user.id:
+            return self.SIDE_RIGHT
+        return ""
+
+    def opponent_for_user(self, user):
+        if self.player_left_id == user.id:
+            return self.player_right
+        if self.player_right_id == user.id:
+            return self.player_left
+        return None
+
+    @property
+    def winner_user(self):
+        if self.winner_side == self.SIDE_LEFT:
+            return self.player_left
+        if self.winner_side == self.SIDE_RIGHT:
+            return self.player_right
+        return None
+
+
+class PongInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    game = models.ForeignKey(PongGame, on_delete=models.CASCADE, related_name="invites")
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_pong_invites")
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_pong_invites")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["game", "to_user"], name="unique_pong_invite_per_game_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="pong_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"]),
+            models.Index(fields=["game", "status"]),
+        ]
+        verbose_name = "Pong Einladung"
+        verbose_name_plural = "Pong Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user} - {self.game}"

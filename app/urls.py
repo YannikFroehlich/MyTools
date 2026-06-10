@@ -165,6 +165,18 @@ from .kniffel_views import (
     kniffel_start_api,
     kniffel_state_api,
 )
+from .pong_views import (
+    pong_delete,
+    pong_home,
+    pong_home_state_api,
+    pong_invite_friend,
+    pong_invite_response,
+    pong_leave,
+    pong_lobby,
+    pong_paddle_api,
+    pong_reset_api,
+    pong_state_api,
+)
 from .chat_views import (
     chat_group_leave_view,
     chat_group_member_action_view,
@@ -391,6 +403,17 @@ urlpatterns = [
     path('api/kniffel/<slug:code>/roll/', kniffel_roll_api, name='kniffel_roll_api'),
     path('api/kniffel/<slug:code>/score/', kniffel_score_api, name='kniffel_score_api'),
     path('api/kniffel/<slug:code>/reset/', kniffel_reset_api, name='kniffel_reset_api'),
+
+    path('pong/', pong_home, name='pong_home'),
+    path('pong/<slug:code>/', pong_lobby, name='pong_lobby'),
+    path('pong/<slug:code>/invite/', pong_invite_friend, name='pong_invite_friend'),
+    path('pong/invite/<int:invite_id>/', pong_invite_response, name='pong_invite_response'),
+    path('pong/<slug:code>/leave/', pong_leave, name='pong_leave'),
+    path('pong/<slug:code>/delete/', pong_delete, name='pong_delete'),
+    path('api/pong/home-state/', pong_home_state_api, name='pong_home_state_api'),
+    path('api/pong/<slug:code>/state/', pong_state_api, name='pong_state_api'),
+    path('api/pong/<slug:code>/paddle/', pong_paddle_api, name='pong_paddle_api'),
+    path('api/pong/<slug:code>/reset/', pong_reset_api, name='pong_reset_api'),
 
     path('skribble/', skribble_home, name='skribble_home'),
     path('skribble/<slug:code>/', skribble_lobby, name='skribble_lobby'),

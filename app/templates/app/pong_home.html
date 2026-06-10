@@ -1,0 +1,108 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Pong' %} · MyTools{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/pong.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/pong.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="pong-page pong-home-page"
+      data-home-state-url="{% url 'pong_home_state_api' %}"
+      data-empty-invites-label="{% translate 'Du hast aktuell keine offenen Pong-Einladungen.' %}"
+      data-empty-games-label="{% translate 'Du hast noch keinen Pong-Raum.' %}"
+      data-from-label="{% translate 'von' %}"
+      data-accept-label="{% translate 'Annehmen' %}"
+      data-decline-label="{% translate 'Ablehnen' %}"
+      data-round-label="{% translate 'Runde' %}">
+    <section class="pong-hero">
+        <div>
+            <span class="pong-eyebrow"><i class="fa-solid fa-table-tennis-paddle-ball"></i> {% translate 'Realtime Arcade' %}</span>
+            <h1>{% translate 'Pong Multiplayer' %}</h1>
+            <p>{% translate 'Erstelle einen Raum, lade einen Freund ein und spielt ein schnelles 1v1-Match mit Score, Rallies, Achievements und Profilkarte.' %}</p>
+        </div>
+        <div class="pong-hero-field" aria-hidden="true">
+            <span></span><i></i><strong></strong>
+        </div>
+    </section>
+
+    <section class="pong-home-grid">
+        <article class="pong-panel">
+            <h2>{% translate 'Neuen Raum erstellen' %}</h2>
+            <form method="post" class="pong-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <label>
+                    <span>{% translate 'Raum-Name' %}</span>
+                    <input type="text" name="name" maxlength="80" value="{% translate 'Pong' %}">
+                </label>
+                <label>
+                    <span>{% translate 'Zielscore' %}</span>
+                    <select name="target_score">
+                        <option value="5">5</option>
+                        <option value="7" selected>7</option>
+                        <option value="11">11</option>
+                        <option value="15">15</option>
+                    </select>
+                </label>
+                <button class="pong-primary" type="submit"><i class="fa-solid fa-plus"></i> {% translate 'Raum erstellen' %}</button>
+            </form>
+        </article>
+
+        <article class="pong-panel">
+            <h2>{% translate 'Mit Code beitreten' %}</h2>
+            <form method="post" class="pong-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="join">
+                <label>
+                    <span>{% translate 'Raum-Code' %}</span>
+                    <input type="text" name="code" maxlength="16" placeholder="ABC123" autocomplete="off">
+                </label>
+                <button class="pong-secondary" type="submit"><i class="fa-solid fa-right-to-bracket"></i> {% translate 'Beitreten' %}</button>
+            </form>
+        </article>
+    </section>
+
+    <section class="pong-panel">
+        <div class="pong-section-heading"><div><span class="pong-eyebrow"><i class="fa-solid fa-envelope-open-text"></i> {% translate 'Einladungen' %}</span><h2>{% translate 'Offene Einladungen' %}</h2></div></div>
+        <div id="pong-invites-live">
+        {% if invites %}
+            <div class="pong-invite-list" id="pong-invite-list">
+                {% for invite in invites %}
+                    <div class="pong-invite-row">
+                        <div><strong>{{ invite.game.name }}</strong><span>{% blocktranslate with user=invite.from_user.username %}von {{ user }}{% endblocktranslate %}</span></div>
+                        <div class="pong-inline-actions">
+                            <form method="post" action="{% url 'pong_invite_response' invite.id %}">{% csrf_token %}<input type="hidden" name="action" value="accept"><button class="pong-primary" type="submit">{% translate 'Annehmen' %}</button></form>
+                            <form method="post" action="{% url 'pong_invite_response' invite.id %}">{% csrf_token %}<input type="hidden" name="action" value="decline"><button class="pong-secondary" type="submit">{% translate 'Ablehnen' %}</button></form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="pong-muted" id="pong-invites-empty">{% translate 'Du hast aktuell keine offenen Pong-Einladungen.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+
+    <section class="pong-panel">
+        <div class="pong-section-heading"><div><span class="pong-eyebrow"><i class="fa-solid fa-clock-rotate-left"></i> {% translate 'Verlauf' %}</span><h2>{% translate 'Deine Räume' %}</h2></div></div>
+        <div id="pong-games-live">
+        {% if my_games %}
+            <div class="pong-room-grid" id="pong-room-grid">
+                {% for game in my_games %}
+                    <a class="pong-room-card" href="{% url 'pong_lobby' game.code %}"><span class="pong-code">{{ game.code }}</span><strong>{{ game.name }}</strong><span>{{ game.get_status_display }} · {% translate 'Runde' %} {{ game.round_number }}</span></a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="pong-muted" id="pong-games-empty">{% translate 'Du hast noch keinen Pong-Raum.' %}</p>
+        {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}

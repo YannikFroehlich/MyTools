@@ -1012,6 +1012,32 @@ body.dark-mode .menu-dropdown {
     font-weight: 800;
 }
 
+.game-menu-copy .game-menu-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+}
+
+.game-menu-beta-badge {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 17px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    color: #92400e;
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.96), rgba(253, 230, 138, 0.92));
+    border: 1px solid rgba(245, 158, 11, 0.45);
+    box-shadow: 0 5px 12px rgba(245, 158, 11, 0.14);
+    font-size: 0.62rem;
+    font-weight: 950;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
 .game-menu-card .menu-badge {
     align-self: start;
     min-width: 22px;
@@ -1070,6 +1096,13 @@ body.dark-mode .game-menu-copy small,
 body.dark-mode .games-menu-search i,
 body.dark-mode .games-menu-empty {
     color: #cbd5e1;
+}
+
+body.dark-mode .game-menu-beta-badge {
+    color: #fef3c7;
+    background: linear-gradient(135deg, rgba(180, 83, 9, 0.52), rgba(245, 158, 11, 0.24));
+    border-color: rgba(251, 191, 36, 0.34);
+    box-shadow: 0 6px 14px rgba(245, 158, 11, 0.16);
 }
 
 body.dark-mode .games-menu-leaderboard-link {

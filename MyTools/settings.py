@@ -84,6 +84,8 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -126,6 +128,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MyTools.wsgi.application'
+ASGI_APPLICATION = 'MyTools.asgi.application'
 
 
 # Password validation
@@ -182,6 +185,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer" if IS_TESTING or os.getenv("USE_LOCAL_CACHE", "False") == "True" else "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {} if IS_TESTING or os.getenv("USE_LOCAL_CACHE", "False") == "True" else {
+            "hosts": [os.getenv("REDIS_URL", "redis://redis:6379/0")],
+        },
+    }
+}
 
 if IS_TESTING or os.getenv("USE_LOCAL_CACHE", "False") == "True":
     CACHES = {
