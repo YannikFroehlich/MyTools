@@ -269,6 +269,9 @@ class UserPresence(models.Model):
         related_name="presence",
     )
     last_seen = models.DateTimeField(auto_now=True)
+    active_game = models.CharField(max_length=40, blank=True, default="")
+    active_game_label = models.CharField(max_length=80, blank=True, default="")
+    active_game_updated_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Online-Status"
@@ -1163,6 +1166,41 @@ class CookieClickerHighScore(models.Model):
 
     def __str__(self):
         return f"{self.user} - Cookie Cosmos - {self.display_score}"
+
+
+class Game2048HighScore(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="game_2048_highscore",
+    )
+    score = models.PositiveIntegerField(default=0)
+    best_tile = models.PositiveIntegerField(default=2)
+    moves = models.PositiveIntegerField(default=0)
+    duration_seconds = models.PositiveIntegerField(default=0)
+    won = models.BooleanField(default=False)
+    games_played = models.PositiveIntegerField(default=0)
+    details = models.JSONField(default=dict, blank=True)
+    achieved_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["-score", "-best_tile", "-achieved_at"]),
+        ]
+        verbose_name = "2048 Highscore"
+        verbose_name_plural = "2048 Highscores"
+
+    @property
+    def display_score(self):
+        return f"{self.score:,}".replace(",", ".")
+
+    @property
+    def duration_label(self):
+        minutes, seconds = divmod(int(self.duration_seconds or 0), 60)
+        return f"{minutes}:{seconds:02d}"
+
+    def __str__(self):
+        return f"{self.user} - 2048 - {self.display_score}"
 
 
 class TicTacToeGame(models.Model):

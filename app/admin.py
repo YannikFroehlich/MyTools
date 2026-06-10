@@ -18,6 +18,7 @@ from .models import (
     ConnectFourGame,
     ConnectFourInvite,
     CookieClickerHighScore,
+    Game2048HighScore,
     DrawingGameGuess as SkribbleGuess,
     DrawingGameInvite as SkribbleInvite,
     DrawingGameLobby as SkribbleLobby,
@@ -215,6 +216,14 @@ class FriendshipAdmin(admin.ModelAdmin):
     list_filter = ("status", "created_at")
     search_fields = ("from_user__username", "from_user__email", "to_user__username", "to_user__email")
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(Game2048HighScore)
+class Game2048HighScoreAdmin(admin.ModelAdmin):
+    list_display = ("user", "score", "best_tile", "moves", "won", "games_played", "achieved_at")
+    list_filter = ("won", "best_tile", "achieved_at")
+    search_fields = ("user__username", "user__email")
+    readonly_fields = ("achieved_at",)
 
 
 @admin.register(HumanBenchmarkScore)

@@ -26,6 +26,7 @@ from app.models import (
     ChatRoomMember,
     ConnectFourGame,
     CookieClickerHighScore,
+    Game2048HighScore,
     DrawingGameLobby,
     DrawingGamePlayer,
     FileShare,
@@ -53,6 +54,7 @@ from app.models import (
     UnoGame,
     UnoPlayer,
     UserBlock,
+    UserPresence,
     UserProfile,
     UserReport,
     UserSuspension,
@@ -4272,3 +4274,93 @@ class TankstellenApiTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 502)
         self.assertEqual(response.json()["message"], "Tankerkönig API konnte nicht erreicht werden.")
+
+
+
+class Game2048Tests(BaseTestCase):
+    def post_score(self, payload):
+        return self.client.post(
+            reverse("game-2048-score-api"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+    def test_2048_page_renders(self):
+        response = self.client.get(reverse("game-2048"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/game_2048.html")
+        self.assertContains(response, "2048")
+        self.assertContains(response, reverse("game-2048-score-api"))
+
+    def test_2048_score_api_creates_and_keeps_best_score(self):
+        response = self.post_score({
+            "score": 4096,
+            "best_tile": 512,
+            "moves": 120,
+            "duration_seconds": 180,
+            "won": False,
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["new_highscore"])
+        highscore = Game2048HighScore.objects.get(user=self.user)
+        self.assertEqual(highscore.score, 4096)
+        self.assertEqual(highscore.best_tile, 512)
+        self.assertEqual(highscore.games_played, 1)
+
+        lower_response = self.post_score({
+            "score": 2000,
+            "best_tile": 1024,
+            "moves": 80,
+            "duration_seconds": 90,
+            "won": True,
+        })
+
+        self.assertEqual(lower_response.status_code, 200)
+        self.assertFalse(lower_response.json()["new_highscore"])
+        highscore.refresh_from_db()
+        self.assertEqual(highscore.score, 4096)
+        self.assertEqual(highscore.best_tile, 512)
+        self.assertEqual(highscore.games_played, 2)
+        self.assertTrue(highscore.won)
+
+    def test_2048_score_api_rejects_invalid_score(self):
+        response = self.post_score({
+            "score": -1,
+            "best_tile": 2,
+            "moves": 0,
+            "duration_seconds": 0,
+        })
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Game2048HighScore.objects.filter(user=self.user).exists())
+
+    def test_2048_activity_api_sets_presence_status(self):
+        response = self.client.post(reverse("game-2048-activity-api"))
+
+        self.assertEqual(response.status_code, 200)
+        presence = UserPresence.objects.get(user=self.user)
+        self.assertEqual(presence.active_game, "2048")
+        self.assertEqual(presence.active_game_label, "spielt 2048")
+        self.assertIsNotNone(presence.active_game_updated_at)
+
+    def test_2048_highscore_counts_for_achievements(self):
+        Game2048HighScore.objects.create(
+            user=self.user,
+            score=22000,
+            best_tile=2048,
+            moves=360,
+            duration_seconds=420,
+            won=True,
+            games_played=10,
+        )
+
+        summary = get_achievement_summary(self.user)
+        unlocked_keys = {achievement["key"] for achievement in summary["unlocked"]}
+
+        self.assertIn("tile_1024", unlocked_keys)
+        self.assertIn("tile_2048", unlocked_keys)
+        self.assertIn("game_2048_regular", unlocked_keys)
+        self.assertEqual(summary["metrics"]["game_2048_best_tile"], 2048)
+        self.assertEqual(summary["metrics"]["game_2048_runs"], 10)

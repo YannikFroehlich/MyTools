@@ -13,8 +13,8 @@ from django.utils.translation import gettext as _
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
-    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
+from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
+    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserPresence, UserProfile, WeatherLocation
 
 import json
 
@@ -2034,6 +2034,114 @@ def drift_circuit(request):
 
 def snake_powerups(request):
     return render(request, "app/snake_powerups.html")
+
+
+def serialize_2048_highscore(highscore):
+    if not highscore:
+        return None
+
+    return {
+        "score": highscore.score,
+        "display_score": highscore.display_score,
+        "best_tile": highscore.best_tile,
+        "moves": highscore.moves,
+        "duration_seconds": highscore.duration_seconds,
+        "duration_label": highscore.duration_label,
+        "won": highscore.won,
+        "games_played": highscore.games_played,
+        "achieved_at": date_format(highscore.achieved_at, "d.m.Y H:i"),
+    }
+
+
+@ensure_csrf_cookie
+def game_2048(request):
+    return render(request, "app/game_2048.html", {
+        "highscore": serialize_2048_highscore(
+            Game2048HighScore.objects.filter(user=request.user).first() if request.user.is_authenticated else None
+        ),
+    })
+
+
+def _touch_2048_activity(user):
+    if not getattr(user, "is_authenticated", False):
+        return
+    now = django_timezone.now()
+    UserPresence.objects.update_or_create(
+        user=user,
+        defaults={
+            "last_seen": now,
+            "active_game": "2048",
+            "active_game_label": str(_("spielt 2048")),
+            "active_game_updated_at": now,
+        },
+    )
+
+
+@login_required
+@require_POST
+def game_2048_activity_api(request):
+    _touch_2048_activity(request.user)
+    return JsonResponse({"status": "ok"})
+
+
+@login_required
+@require_POST
+def game_2048_score_api(request):
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return api_error_response(_("Ungueltige Anfrage."), status=400)
+
+    try:
+        score = int(payload.get("score") or 0)
+        best_tile = int(payload.get("best_tile") or 2)
+        moves = int(payload.get("moves") or 0)
+        duration_seconds = int(payload.get("duration_seconds") or 0)
+    except (TypeError, ValueError):
+        return api_error_response(_("Ungueltiger 2048-Score."), status=400)
+
+    won = bool(payload.get("won"))
+    if score < 0 or best_tile < 2 or moves < 0 or duration_seconds < 0:
+        return api_error_response(_("Ungueltiger 2048-Score."), status=400)
+
+    best_tile = min(best_tile, 131072)
+    score = min(score, 999999999)
+    moves = min(moves, 999999)
+    duration_seconds = min(duration_seconds, 86400)
+    details = payload.get("details") if isinstance(payload.get("details"), dict) else {}
+
+    highscore, created = Game2048HighScore.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "score": score,
+            "best_tile": best_tile,
+            "moves": moves,
+            "duration_seconds": duration_seconds,
+            "won": won,
+            "games_played": 1,
+            "details": details,
+        },
+    )
+
+    is_new_highscore = created or score > highscore.score or (score == highscore.score and best_tile > highscore.best_tile)
+    if not created:
+        highscore.games_played += 1
+        if is_new_highscore:
+            highscore.score = score
+            highscore.best_tile = best_tile
+            highscore.moves = moves
+            highscore.duration_seconds = duration_seconds
+            highscore.details = details
+        highscore.won = highscore.won or won
+        highscore.save()
+
+    _touch_2048_activity(request.user)
+
+    return JsonResponse({
+        "status": "ok",
+        "new_highscore": is_new_highscore,
+        "highscore": serialize_2048_highscore(highscore),
+    })
 
 
 def format_cookie_score(value):
