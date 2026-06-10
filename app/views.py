@@ -31,7 +31,7 @@ from django.urls import reverse
 from django.utils import timezone as django_timezone
 from django.views.decorators.http import require_POST
 
-from .models import InboxItem, Note
+from .models import InboxItem, Note, SiteAccessSettings
 from .forms import NoteForm, SignUpForm
 
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -209,6 +209,16 @@ def signup(request):
     if request.user.is_authenticated:
         return redirect("home")
 
+    access_settings = SiteAccessSettings.get_solo()
+    if access_settings.login_registration_locked:
+        if request.method == "POST":
+            messages.error(request, _("Registrierungen sind aktuell gesperrt."))
+        return render(request, "registration/signup.html", {
+            "form": SignUpForm(),
+            "access_settings": access_settings,
+            "access_locked": True,
+        }, status=403 if request.method == "POST" else 200)
+
     if request.method == "POST":
         form = SignUpForm(request.POST)
 
@@ -222,6 +232,8 @@ def signup(request):
 
     return render(request, "registration/signup.html", {
         "form": form,
+        "access_settings": access_settings,
+        "access_locked": False,
     })
 
 

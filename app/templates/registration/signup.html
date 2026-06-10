@@ -54,6 +54,28 @@
                 </div>
             </div>
 
+            {% if access_locked %}
+                <div class="auth-lock-notice">
+                    <i class="fa-solid fa-lock"></i>
+                    <div>
+                        <strong>{% translate 'Registrierung vorübergehend gesperrt' %}</strong>
+                        <p>
+                            {% if access_settings.lock_message %}
+                                {{ access_settings.lock_message }}
+                            {% else %}
+                                {% translate 'Neue Accounts können aktuell nicht erstellt werden.' %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if messages %}
+                <div class="auth-error-list">
+                    {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
             {% if form.errors %}
                 <div class="auth-error-list">
                     {% for field in form %}
@@ -67,6 +89,7 @@
                 </div>
             {% endif %}
 
+            {% if not access_locked %}
             <form method="post" class="auth-form">
                 {% csrf_token %}
 
@@ -95,6 +118,7 @@
                     {% translate 'Account erstellen' %}
                 </button>
             </form>
+            {% endif %}
 
             <p class="auth-switch">
                 {% translate 'Schon einen Account?' %}

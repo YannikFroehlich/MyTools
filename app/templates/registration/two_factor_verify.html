@@ -1,0 +1,76 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'de' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{% translate 'Zwei-Faktor-Code' %} | MyTools</title>
+    <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/auth.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('auth-dark');
+        }
+    </script>
+</head>
+<body class="auth-page">
+    <button class="auth-theme-button dark-mode-btn" id="darkmode-button" type="button" aria-label="{% translate 'Dark Mode umschalten' %}">
+        <i class="fa-solid fa-moon icon-moon"></i>
+        <i class="fa-solid fa-sun icon-sun"></i>
+    </button>
+
+    <main class="auth-main">
+        <section class="auth-panel" aria-labelledby="two-factor-title">
+            <div class="auth-brand">
+                <span class="auth-logo" aria-hidden="true">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </span>
+                <div>
+                    <h1 id="two-factor-title">{% translate '2FA-Code eingeben' %}</h1>
+                    <p>{% translate 'Öffne deine Authenticator-App und gib den aktuellen 6-stelligen Code ein.' %}</p>
+                </div>
+            </div>
+
+            {% if messages %}
+                <div class="auth-error-list">
+                    {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            {% if form.errors %}
+                <div class="auth-error-list">
+                    {% for field in form %}
+                        {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                <label for="{{ form.token.id_for_label }}">
+                    <span>{% translate 'Authenticator-Code' %}</span>
+                    {{ form.token }}
+                </label>
+
+                <button type="submit">
+                    <i class="fa-solid fa-check"></i>
+                    {% translate 'Login bestätigen' %}
+                </button>
+            </form>
+
+            <p class="auth-switch">
+                <a href="{% url 'login' %}">{% translate 'Zurück zum Login' %}</a>
+            </p>
+        </section>
+    </main>
+
+    <script src="{% static 'app/js/base.js' %}"></script>
+    <script src="{% static 'app/js/auth.js' %}"></script>
+</body>
+</html>

@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.signals import pre_save
 from django.test import TestCase, override_settings
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.utils import timezone
 
 from app.forms import NoteForm
@@ -43,6 +43,7 @@ from app.models import (
     Note,
     Shortcut,
     ShortcutSection,
+    SiteAccessSettings,
     StadtLandFlussLobby,
     StadtLandFlussPlayer,
     TicTacToeGame,
@@ -55,9 +56,11 @@ from app.models import (
     UserProfile,
     UserReport,
     UserSuspension,
+    UserTwoFactorSettings,
     WeatherLocation,
 )
 from app.notification_utils import get_notification_counts, get_notification_items
+from app.totp_utils import current_totp
 
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
@@ -465,6 +468,140 @@ class AuthViewTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("home"))
         self.assertTrue(get_user_model().objects.filter(username="neueruser").exists())
+
+    def test_login_route_uses_access_aware_login_view(self):
+        from app.auth_views import AccessAwareLoginView
+
+        match = resolve("/accounts/login/")
+
+        self.assertEqual(match.func.view_class, AccessAwareLoginView)
+
+    def test_login_without_two_factor_logs_in_directly(self):
+        self.client.logout()
+
+        response = self.client.post(reverse("login"), {
+            "username": self.user.username,
+            "password": "testpass-123",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.id)
+
+    def test_two_factor_verify_without_pending_login_redirects_to_login(self):
+        self.client.logout()
+
+        response = self.client.get(reverse("two_factor_verify"))
+
+        self.assertRedirects(response, reverse("login"), fetch_redirect_response=False)
+
+
+    def test_two_factor_setup_can_be_enabled(self):
+        response = self.client.post(reverse("two_factor_settings"), {"action": "start_setup"})
+        self.assertRedirects(response, reverse("two_factor_settings"))
+
+        settings_obj = UserTwoFactorSettings.objects.get(user=self.user)
+        token = current_totp(settings_obj.secret_key)
+
+        response = self.client.post(reverse("two_factor_settings"), {
+            "action": "confirm_setup",
+            "token": token,
+        })
+
+        self.assertRedirects(response, reverse("two_factor_settings"))
+        settings_obj.refresh_from_db()
+        self.assertTrue(settings_obj.is_enabled)
+
+    def test_two_factor_login_requires_second_code(self):
+        self.client.logout()
+        two_factor_settings = UserTwoFactorSettings.objects.create(
+            user=self.user,
+            secret_key="JBSWY3DPEHPK3PXP",
+            is_enabled=True,
+        )
+
+        response = self.client.post(reverse("login"), {
+            "username": self.user.username,
+            "password": "testpass-123",
+        })
+
+        self.assertRedirects(response, reverse("two_factor_verify"), fetch_redirect_response=False)
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+        response = self.client.post(reverse("two_factor_verify"), {
+            "token": current_totp(two_factor_settings.secret_key),
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.id)
+
+    def test_two_factor_rejects_wrong_code(self):
+        self.client.logout()
+        UserTwoFactorSettings.objects.create(
+            user=self.user,
+            secret_key="JBSWY3DPEHPK3PXP",
+            is_enabled=True,
+        )
+        self.client.post(reverse("login"), {
+            "username": self.user.username,
+            "password": "testpass-123",
+        })
+
+        response = self.client.post(reverse("two_factor_verify"), {"token": "000000"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_access_lock_blocks_signup(self):
+        self.client.logout()
+        SiteAccessSettings.objects.update_or_create(
+            pk=1,
+            defaults={"login_registration_locked": True, "lock_message": "Wartung"},
+        )
+
+        response = self.client.post(reverse("signup"), {
+            "username": "blockeduser",
+            "email": "blocked@example.com",
+            "password1": "complex-test-pass-123",
+            "password2": "complex-test-pass-123",
+        })
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(get_user_model().objects.filter(username="blockeduser").exists())
+
+    def test_access_lock_blocks_normal_login_but_allows_staff(self):
+        self.client.logout()
+        SiteAccessSettings.objects.update_or_create(pk=1, defaults={"login_registration_locked": True})
+        normal_user = get_user_model().objects.create_user(username="normaluser", password="testpass-123")
+        staff_user = get_user_model().objects.create_user(username="staffuser", password="testpass-123", is_staff=True)
+
+        normal_response = self.client.post(reverse("login"), {
+            "username": normal_user.username,
+            "password": "testpass-123",
+        })
+        self.assertEqual(normal_response.status_code, 200)
+        self.assertNotEqual(int(self.client.session.get("_auth_user_id", 0) or 0), normal_user.id)
+
+        staff_response = self.client.post(reverse("login"), {
+            "username": staff_user.username,
+            "password": "testpass-123",
+        })
+        self.assertRedirects(staff_response, reverse("home"))
+        self.assertEqual(int(self.client.session["_auth_user_id"]), staff_user.id)
+
+    def test_staff_can_toggle_access_lock_from_moderation(self):
+        self.client.logout()
+        staff_user = get_user_model().objects.create_user(username="moderator", password="testpass-123", is_staff=True)
+        self.client.force_login(staff_user)
+
+        response = self.client.post(reverse("moderation_access_toggle"), {
+            "login_registration_locked": "1",
+            "lock_message": "Kurz Wartung",
+        })
+
+        self.assertRedirects(response, reverse("moderation"))
+        settings_obj = SiteAccessSettings.get_solo()
+        self.assertTrue(settings_obj.login_registration_locked)
+        self.assertEqual(settings_obj.lock_message, "Kurz Wartung")
 
 
 class ProfileViewTests(BaseTestCase):
