@@ -9,6 +9,7 @@ from .models import (
     ChatRoom,
     ConnectFourGame,
     CookieClickerHighScore,
+    Game2048HighScore,
     DrawingGamePlayer,
     FileShare,
     Friendship,
@@ -323,6 +324,36 @@ def achievement_definitions():
             "xp": 150,
         },
         {
+            "key": "tile_1024",
+            "category": "games",
+            "label": _("1024-Kachel"),
+            "description": _("In 2048 mindestens die 1024-Kachel erreicht."),
+            "icon": "fa-solid fa-table-cells-large",
+            "metric": "game_2048_best_tile",
+            "target": 1024,
+            "xp": 100,
+        },
+        {
+            "key": "tile_2048",
+            "category": "games",
+            "label": _("2048 geschafft"),
+            "description": _("In 2048 die 2048-Kachel erreicht."),
+            "icon": "fa-solid fa-crown",
+            "metric": "game_2048_best_tile",
+            "target": 2048,
+            "xp": 180,
+        },
+        {
+            "key": "game_2048_regular",
+            "category": "games",
+            "label": _("Kachel-Routine"),
+            "description": _("Zehn 2048-Runden gespielt."),
+            "icon": "fa-solid fa-repeat",
+            "metric": "game_2048_runs",
+            "target": 10,
+            "xp": 95,
+        },
+        {
             "key": "cookie_collector",
             "category": "games",
             "label": _("Cookie-Sammler"),
@@ -474,6 +505,7 @@ def _active_days_for_user(user, include_private=True, include_games=True):
     if include_games:
         _add_queryset_days(days, HumanBenchmarkScore.objects.filter(user=user), "created_at")
         _add_queryset_days(days, HumanBenchmarkHighScore.objects.filter(user=user), "achieved_at")
+        _add_queryset_days(days, Game2048HighScore.objects.filter(user=user), "achieved_at")
         _add_queryset_days(days, TicTacToeGame.objects.filter(Q(player_x=user) | Q(player_o=user)), "created_at")
         _add_queryset_days(days, ConnectFourGame.objects.filter(Q(player_red=user) | Q(player_yellow=user)), "created_at")
         _add_queryset_days(days, BattleshipGame.objects.filter(Q(player_a=user) | Q(player_b=user)), "created_at")
@@ -518,6 +550,8 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
         "wins_count": 0,
         "human_benchmark_runs": 0,
         "cookie_achievements": 0,
+        "game_2048_best_tile": 0,
+        "game_2048_runs": 0,
         "skribble_drawings": 0,
         "active_days": _active_days_for_user(user, include_private=include_private, include_games=include_games),
     }
@@ -540,6 +574,9 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
         highscore_count = _safe_count(HumanBenchmarkHighScore.objects.filter(user=user))
         cookie_highscore = CookieClickerHighScore.objects.filter(user=user).first()
         if cookie_highscore:
+            highscore_count += 1
+        game_2048_highscore = Game2048HighScore.objects.filter(user=user).first()
+        if game_2048_highscore:
             highscore_count += 1
 
         skribble_stats = SkribbleStats.objects.filter(user=user).first()
@@ -589,6 +626,7 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
             + highscore_count
             + multiplayer_entries
             + skribble_played
+            + (game_2048_highscore.games_played if game_2048_highscore else 0)
         )
 
         metrics.update({
@@ -598,6 +636,8 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
             "wins_count": wins_count,
             "human_benchmark_runs": _safe_count(HumanBenchmarkScore.objects.filter(user=user)),
             "cookie_achievements": cookie_highscore.achievements_count if cookie_highscore else 0,
+            "game_2048_best_tile": game_2048_highscore.best_tile if game_2048_highscore else 0,
+            "game_2048_runs": game_2048_highscore.games_played if game_2048_highscore else 0,
             "skribble_drawings": skribble_drawings,
         })
 
