@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.signals import pre_save
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse, resolve
 from django.utils import timezone
 
@@ -602,6 +602,43 @@ class AuthViewTests(BaseTestCase):
         settings_obj = SiteAccessSettings.get_solo()
         self.assertTrue(settings_obj.login_registration_locked)
         self.assertEqual(settings_obj.lock_message, "Kurz Wartung")
+
+    def test_user_admin_can_reset_two_factor_for_selected_users(self):
+        from django.contrib import admin
+
+        UserModel = get_user_model()
+        UserTwoFactorSettings.objects.create(
+            user=self.user,
+            secret_key="JBSWY3DPEHPK3PXP",
+            is_enabled=True,
+        )
+        request = RequestFactory().post("/admin/auth/user/")
+        request.user = UserModel.objects.create_superuser(
+            username="adminuser",
+            email="admin@example.com",
+            password="testpass-123",
+        )
+        request._messages = Mock()
+        user_admin = admin.site._registry[UserModel]
+
+        user_admin.reset_two_factor_for_users(request, UserModel.objects.filter(pk=self.user.pk))
+
+        self.assertFalse(UserTwoFactorSettings.objects.filter(user=self.user).exists())
+
+    def test_user_admin_shows_two_factor_status(self):
+        from django.contrib import admin
+
+        UserModel = get_user_model()
+        user_admin = admin.site._registry[UserModel]
+
+        self.assertFalse(user_admin.two_factor_status(self.user))
+        UserTwoFactorSettings.objects.create(
+            user=self.user,
+            secret_key="JBSWY3DPEHPK3PXP",
+            is_enabled=True,
+        )
+
+        self.assertTrue(user_admin.two_factor_status(self.user))
 
 
 class ProfileViewTests(BaseTestCase):
