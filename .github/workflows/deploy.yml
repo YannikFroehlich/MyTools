@@ -3,14 +3,16 @@ name: Test, Build and Deploy MyTools
 on:
   workflow_dispatch:
 
-  # Tests laufen bei normalen Pushes.
-  # Wenn zusätzlich ein Pull Request vom selben Branch geöffnet/aktualisiert wird,
-  # sorgt concurrency unten dafür, dass der doppelte ältere Lauf abgebrochen wird.
+  # Pushes sollen weiter den Workflow starten, damit Feature-Branches getestet
+  # und main nach einem Merge deployed werden kann.
+  # develop wird ignoriert, damit dort kein zusätzlicher Lauf entsteht.
   push:
     branches:
       - "**"
+      - "!develop"
 
-  # Pull-Request-Tests nur dann, wenn der Pull Request nach main geht.
+  # Pull-Request-Läufe nur für PRs nach main.
+  # Der Test-Job selbst überspringt PRs aus develop/main nochmal explizit.
   pull_request:
     branches:
       - main
@@ -111,6 +113,14 @@ jobs:
     runs-on: self-hosted
     needs: osv_scan
 
+    # Tests nur für Arbeits-/Feature-Branches.
+    # Nicht auf main und nicht auf develop, damit Merge- und Develop-Läufe
+    # nicht nochmal die komplette Testsuite starten.
+    if: |
+      (github.event_name == 'push' && github.ref_name != 'main' && github.ref_name != 'develop') ||
+      (github.event_name == 'pull_request' && github.head_ref != 'main' && github.head_ref != 'develop') ||
+      (github.event_name == 'workflow_dispatch' && github.ref_name != 'main' && github.ref_name != 'develop')
+
     env:
       USE_SQLITE: "True"
       USE_LOCAL_CACHE: "True"
@@ -156,12 +166,14 @@ jobs:
   build:
     name: Build Docker Image
     runs-on: self-hosted
-    needs: test
+    needs: osv_scan
 
-    # Build nur manuell oder nach Push auf main.
+    # Build nach Push/Merge auf main oder manuell.
+    # Der Build hängt nicht vom Test-Job ab, weil Tests auf main bewusst
+    # übersprungen werden.
     if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.ref == 'refs/heads/main' && github.event_name == 'push')
+      (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
+      github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Repository auschecken
