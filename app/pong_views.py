@@ -464,13 +464,23 @@ def pong_paddle_api(request, code):
         if not side:
             return JsonResponse({"ok": False, "error": _("Du bist in diesem Raum nur Zuschauer.")}, status=403)
         _tick_game(game)
+        now = timezone.now()
         if side == PongGame.SIDE_LEFT:
             game.paddle_left_y = y
-            game.player_left_last_seen = timezone.now()
+            game.player_left_last_seen = now
         else:
             game.paddle_right_y = y
-            game.player_right_last_seen = timezone.now()
+            game.player_right_last_seen = now
         game.save()
+        UserPresence.objects.update_or_create(
+            user=request.user,
+            defaults={
+                "active_game": "pong",
+                "active_game_label": str(_("spielt Pong")),
+                "active_game_updated_at": now,
+                "last_seen": now,
+            },
+        )
     return JsonResponse({"ok": True, "game": _serialize_game(game, request.user)})
 
 

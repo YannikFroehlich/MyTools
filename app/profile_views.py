@@ -27,6 +27,7 @@ from .models import (
     KniffelGame,
     KniffelPlayer,
     ProfileGalleryImage,
+    PongGame,
     SkribbleStats,
     StadtLandFlussPlayer,
     TicTacToeGame,
