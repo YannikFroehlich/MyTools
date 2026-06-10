@@ -366,3 +366,44 @@ html.auth-dark .auth-panel,
         font-size: 1.32rem;
     }
 }
+
+.auth-lock-notice {
+    margin: 16px 0;
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(220, 38, 38, .1);
+    border: 1px solid rgba(220, 38, 38, .24);
+    color: #991b1b;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    text-align: left;
+}
+
+.auth-lock-notice i {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #dc2626, #f97316);
+    color: #fff;
+    display: grid;
+    place-items: center;
+}
+
+.auth-lock-notice strong {
+    display: block;
+    font-weight: 900;
+}
+
+.auth-lock-notice p {
+    margin: 4px 0 0;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.auth-dark .auth-lock-notice {
+    background: rgba(248, 113, 113, .14);
+    border-color: rgba(248, 113, 113, .28);
+    color: #fecaca;
+}

@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 from django.views.static import serve as media_serve
 from django.contrib.staticfiles.views import serve as staticfiles_serve
 from app.media_views import media_thumbnail
+from app.auth_views import AccessAwareLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -61,6 +62,7 @@ urlpatterns = [
         name='password_reset_complete',
     ),
 
+    path('accounts/login/', AccessAwareLoginView.as_view(), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', include('app.urls')),
     path('i18n/setlang/', set_language, name='set_language'),

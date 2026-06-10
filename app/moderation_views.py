@@ -9,7 +9,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from .models import FileShare, InboxItem, ModerationAuditLog, ToolFeedback, UserBlock, UserReport, UserSuspension
+from .models import FileShare, InboxItem, ModerationAuditLog, SiteAccessSettings, ToolFeedback, UserBlock, UserReport, UserSuspension
 
 
 staff_required = user_passes_test(
@@ -116,6 +116,7 @@ def moderation_dashboard_view(request):
         starts_at__lte=timezone.now(),
         ends_at__gt=timezone.now(),
     ).count()
+    access_settings = SiteAccessSettings.get_solo()
 
     total_share_size = FileShare.objects.aggregate(total=Sum("size"))["total"] or 0
     stats = [
@@ -149,6 +150,12 @@ def moderation_dashboard_view(request):
             "icon": "fa-solid fa-user-lock",
             "tone": "danger",
         },
+        {
+            "label": _("Login-Sperre"),
+            "value": _("Aktiv") if access_settings.login_registration_locked else _("Aus"),
+            "icon": "fa-solid fa-door-closed" if access_settings.login_registration_locked else "fa-solid fa-door-open",
+            "tone": "danger" if access_settings.login_registration_locked else "success",
+        },
     ]
 
     context = {
@@ -168,8 +175,35 @@ def moderation_dashboard_view(request):
         "inactive_user_count": User.objects.filter(is_active=False).count(),
         "block_count": UserBlock.objects.count(),
         "active_suspension_count": active_suspension_count,
+        "access_settings": access_settings,
     }
     return render(request, "app/moderation.html", context)
+
+
+@staff_required
+@require_POST
+def moderation_access_toggle_view(request):
+    access_settings = SiteAccessSettings.get_solo()
+    lock_enabled = request.POST.get("login_registration_locked") == "1"
+    lock_message = request.POST.get("lock_message", "").strip()[:240]
+
+    access_settings.login_registration_locked = lock_enabled
+    access_settings.lock_message = lock_message
+    access_settings.updated_by = request.user
+    access_settings.save(update_fields=["login_registration_locked", "lock_message", "updated_by", "updated_at"])
+
+    _audit(
+        request,
+        ModerationAuditLog.ACTION_ACCESS_LOCKED if lock_enabled else ModerationAuditLog.ACTION_ACCESS_UNLOCKED,
+        "Login und Registrierung gesperrt" if lock_enabled else "Login und Registrierung entsperrt",
+        metadata={"lock_message": lock_message},
+    )
+
+    if lock_enabled:
+        messages.success(request, _("Login und Registrierung sind jetzt für normale Nutzer gesperrt."))
+    else:
+        messages.success(request, _("Login und Registrierung sind wieder freigegeben."))
+    return redirect(_safe_next(request))
 
 
 @staff_required

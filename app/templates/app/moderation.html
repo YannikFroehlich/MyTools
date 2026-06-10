@@ -55,6 +55,40 @@
         <span><i class="fa-solid fa-user-lock"></i>{{ active_suspension_count }} {% translate "aktive Sperren" %}</span>
     </div>
 
+    <section class="moderation-panel moderation-access-panel is-wide">
+        <div class="moderation-panel-head">
+            <h2>{% translate "Login & Registrierung" %}</h2>
+            <span class="{% if access_settings.login_registration_locked %}is-lock-active{% endif %}">
+                {% if access_settings.login_registration_locked %}{% translate "Gesperrt" %}{% else %}{% translate "Offen" %}{% endif %}
+            </span>
+        </div>
+        <form class="moderation-access-form" method="post" action="{% url 'moderation_access_toggle' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <label class="moderation-switch-row">
+                <input type="checkbox" name="login_registration_locked" value="1" {% if access_settings.login_registration_locked %}checked{% endif %}>
+                <span class="moderation-switch" aria-hidden="true"></span>
+                <span>
+                    <strong>{% translate "Login-Sperre aktivieren" %}</strong>
+                    <small>{% translate "Wenn aktiv, können sich nur Admins/Staff einloggen. Registrierung ist komplett gesperrt." %}</small>
+                </span>
+            </label>
+            <label class="moderation-access-message">
+                <span>{% translate "Hinweistext für Login/Registrierung" %}</span>
+                <input type="text" name="lock_message" maxlength="240" value="{{ access_settings.lock_message }}" placeholder="{% translate 'Optionaler Hinweis, z. B. Wartungsarbeiten' %}">
+            </label>
+            <button type="submit">
+                <i class="fa-solid fa-floppy-disk"></i>
+                {% translate "Speichern" %}
+            </button>
+        </form>
+        {% if access_settings.updated_by %}
+            <p class="moderation-access-updated">
+                {% translate "Zuletzt geändert von" %} {{ access_settings.updated_by.username }} · {{ access_settings.updated_at|date:"d.m.Y H:i" }}
+            </p>
+        {% endif %}
+    </section>
+
     <div class="moderation-grid">
         <section class="moderation-panel is-wide">
             <div class="moderation-panel-head">

@@ -1,0 +1,109 @@
+{% extends "app/base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% translate 'Zwei-Faktor-Authentifizierung' %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/security.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="security-page">
+    <div class="security-hero">
+        <div>
+            <span class="security-kicker"><i class="fa-solid fa-shield-halved"></i> {% translate 'Sicherheit' %}</span>
+            <h1>{% translate 'Zwei-Faktor-Authentifizierung' %}</h1>
+            <p>{% translate 'Schütze deinen Account zusätzlich mit einem Code aus einer Authenticator-App.' %}</p>
+        </div>
+        <span class="security-status{% if two_factor_settings.is_enabled %} is-enabled{% endif %}">
+            {% if two_factor_settings.is_enabled %}
+                <i class="fa-solid fa-circle-check"></i> {% translate 'Aktiv' %}
+            {% else %}
+                <i class="fa-solid fa-circle-xmark"></i> {% translate 'Inaktiv' %}
+            {% endif %}
+        </span>
+    </div>
+
+    {% if messages %}
+        <div class="security-messages">
+            {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="security-card-grid">
+        <article class="security-card">
+            <h2>{% translate 'So funktioniert es' %}</h2>
+            <ol class="security-steps">
+                <li>{% translate 'Installiere eine Authenticator-App, z. B. Google Authenticator, Microsoft Authenticator oder 1Password.' %}</li>
+                <li>{% translate 'Scanne den QR-Code oder gib den geheimen Schlüssel manuell ein.' %}</li>
+                <li>{% translate 'Bestätige die Einrichtung mit dem angezeigten 6-stelligen Code.' %}</li>
+            </ol>
+        </article>
+
+        <article class="security-card">
+            {% if two_factor_settings.is_enabled %}
+                <h2>{% translate '2FA deaktivieren' %}</h2>
+                <p>{% translate 'Gib einen aktuellen Code ein, um die Zwei-Faktor-Authentifizierung wieder auszuschalten.' %}</p>
+                <form method="post" class="security-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="disable">
+                    <label for="{{ disable_form.token.id_for_label }}">
+                        <span>{% translate 'Aktueller Code' %}</span>
+                        {{ disable_form.token }}
+                    </label>
+                    <button class="security-danger-button" type="submit">
+                        <i class="fa-solid fa-lock-open"></i>
+                        {% translate '2FA deaktivieren' %}
+                    </button>
+                </form>
+            {% elif two_factor_settings.secret_key %}
+                <h2>{% translate 'Einrichtung abschließen' %}</h2>
+                <p>{% translate 'Scanne diesen QR-Code mit deiner Authenticator-App und bestätige danach den Code.' %}</p>
+
+                <div class="security-qr-wrap">
+                    {% if qr_code_data_uri %}
+                        <img src="{{ qr_code_data_uri }}" alt="{% translate '2FA QR-Code' %}" width="220" height="220">
+                    {% else %}
+                        <div class="security-qr-fallback">
+                            <i class="fa-solid fa-qrcode"></i>
+                            <span>{% translate 'QR-Code nicht verfügbar. Nutze den manuellen Schlüssel.' %}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <label class="security-secret-label">
+                    <span>{% translate 'Manueller Schlüssel' %}</span>
+                    <input type="text" value="{{ two_factor_settings.secret_key }}" readonly>
+                </label>
+
+                <form method="post" class="security-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="confirm_setup">
+                    <label for="{{ setup_form.token.id_for_label }}">
+                        <span>{% translate '6-stelliger Code' %}</span>
+                        {{ setup_form.token }}
+                    </label>
+                    <button type="submit">
+                        <i class="fa-solid fa-shield-check"></i>
+                        {% translate '2FA aktivieren' %}
+                    </button>
+                </form>
+            {% else %}
+                <h2>{% translate '2FA aktivieren' %}</h2>
+                <p>{% translate 'Starte die Einrichtung, um einen neuen geheimen Schlüssel und QR-Code zu erzeugen.' %}</p>
+                <form method="post" class="security-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="start_setup">
+                    <button type="submit">
+                        <i class="fa-solid fa-qrcode"></i>
+                        {% translate 'Einrichtung starten' %}
+                    </button>
+                </form>
+            {% endif %}
+        </article>
+    </div>
+</section>
+{% endblock %}

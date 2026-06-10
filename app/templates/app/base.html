@@ -838,6 +838,11 @@
                             {% translate 'Profil öffnen' %}
                         </a>
 
+                        <a href="{% url 'two_factor_settings' %}" class="profile-menu-item">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            {% translate '2FA / Sicherheit' %}
+                        </a>
+
                         <a href="{% url 'users' %}" class="profile-menu-item">
                             <i class="fa-solid fa-users"></i>
                             {% translate 'Nutzer' %}
