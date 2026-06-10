@@ -130,13 +130,26 @@ def get_profile_game_card_settings(profile):
         if key in PROFILE_GAME_CARD_DEFINITIONS_BY_KEY and key not in saved:
             saved[key] = {"order": index, "visible": visible}
 
+    # Keep the user's explicitly configured card order at the front.
+    # Newly added game cards that are not present in an older saved profile config
+    # must be appended after the saved cards, otherwise adding a new default card
+    # at index 0 would unexpectedly jump ahead of the user's configured order.
+    fallback_order_start = len(raw_items)
+
     settings = []
     for index, definition in enumerate(PROFILE_GAME_CARD_DEFINITIONS):
-        saved_item = saved.get(definition["key"], {})
+        saved_item = saved.get(definition["key"])
+        if saved_item is not None:
+            order = saved_item["order"]
+            visible = saved_item["visible"]
+        else:
+            order = fallback_order_start + index
+            visible = True
+
         settings.append({
             **definition,
-            "order": saved_item.get("order", index),
-            "visible": saved_item.get("visible", True),
+            "order": order,
+            "visible": visible,
         })
 
     return sorted(settings, key=lambda item: item["order"])
