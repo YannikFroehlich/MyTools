@@ -27,6 +27,7 @@ from .models import (
     KniffelGame,
     KniffelPlayer,
     ProfileGalleryImage,
+    PongGame,
     SkribbleStats,
     StadtLandFlussPlayer,
     TicTacToeGame,
@@ -60,6 +61,7 @@ PROFILE_GAME_CARD_DEFINITIONS = [
     {"key": "hangman", "label": "Hangman", "icon": "fa-solid fa-spell-check", "url_name": "hangman_home"},
     {"key": "uno", "label": "Uno", "icon": "fa-solid fa-layer-group", "url_name": "uno_home"},
     {"key": "kniffel", "label": "Kniffel", "icon": "fa-solid fa-dice", "url_name": "kniffel_home"},
+    {"key": "pong", "label": "Pong", "icon": "fa-solid fa-table-tennis-paddle-ball", "url_name": "pong_home"},
     {"key": "snake_powerups", "label": "Snake Powerups", "icon": "fa-solid fa-bolt", "url_name": "snake-powerups"},
 ]
 PROFILE_GAME_CARD_DEFINITIONS_BY_KEY = {item["key"]: item for item in PROFILE_GAME_CARD_DEFINITIONS}
@@ -345,6 +347,27 @@ def _winner_game_card(user, definition, player_model, game_model):
     return card
 
 
+
+def _pong_game_card(user, definition):
+    card = _duel_game_card(user, definition, PongGame, "player_left", "player_right", "winner_side", PongGame.SIDE_LEFT, PongGame.SIDE_RIGHT)
+    games = PongGame.objects.filter(Q(player_left=user) | Q(player_right=user), status=PongGame.STATUS_FINISHED)
+    if not games.exists():
+        card["empty_text"] = _("Noch keine Pong-Statistik gespeichert.")
+        return card
+    best_rally = games.aggregate(best=Max("best_rally"))["best"] or 0
+    highest_score = 0
+    for game in games:
+        if game.player_left_id == user.id:
+            highest_score = max(highest_score, game.score_left)
+        if game.player_right_id == user.id:
+            highest_score = max(highest_score, game.score_right)
+    card["title"] = _("Arcade-Duell")
+    card["metrics"].extend([
+        {"label": _("Beste Rally"), "value": _display_number(best_rally), "icon": "fa-solid fa-arrows-left-right"},
+        {"label": _("Top-Score"), "value": _display_number(highest_score), "icon": "fa-solid fa-bullseye"},
+    ])
+    return card
+
 def _snake_powerups_card(user, definition):
     card = _base_game_card(definition)
     card["title"] = _("Arcade")
@@ -377,6 +400,8 @@ def build_profile_game_card(definition, user):
         return _winner_game_card(user, definition, UnoPlayer, UnoGame)
     if key == "kniffel":
         return _winner_game_card(user, definition, KniffelPlayer, KniffelGame)
+    if key == "pong":
+        return _pong_game_card(user, definition)
     if key == "snake_powerups":
         return _snake_powerups_card(user, definition)
     return _base_game_card(definition)

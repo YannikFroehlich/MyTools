@@ -33,6 +33,8 @@ from .models import (
     InboxItem,
     ModerationAuditLog,
     Note,
+    PongGame,
+    PongInvite,
     Shortcut,
     ShortcutSection,
     SiteAccessSettings,
@@ -312,6 +314,21 @@ class ConnectFourGameAdmin(admin.ModelAdmin):
 
 @admin.register(ConnectFourInvite)
 class ConnectFourInviteAdmin(admin.ModelAdmin):
+    list_display = ("game", "from_user", "to_user", "status", "created_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("game__code", "from_user__username", "to_user__username")
+
+
+@admin.register(PongGame)
+class PongGameAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "owner", "status", "player_left", "player_right", "score_left", "score_right", "target_score", "round_number", "updated_at")
+    list_filter = ("status", "owner", "created_at")
+    search_fields = ("name", "code", "owner__username", "player_left__username", "player_right__username")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(PongInvite)
+class PongInviteAdmin(admin.ModelAdmin):
     list_display = ("game", "from_user", "to_user", "status", "created_at")
     list_filter = ("status", "created_at")
     search_fields = ("game__code", "from_user__username", "to_user__username")

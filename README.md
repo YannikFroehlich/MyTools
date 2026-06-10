@@ -314,6 +314,26 @@ Funktionen:
 
 ---
 
+## 🏓 Pong Multiplayer
+
+Pong ist ein schnelles 1v1-Arcade-Spiel mit privaten Räumen, Freundeseinladungen und Profil-/Achievement-Anbindung.
+
+Funktionen:
+
+- Räume erstellen und per Code oder Link teilen
+- Freunde direkt aus der Lobby einladen
+- offene Einladungen und eigene Räume mit Live-Aktualisierung
+- maximal zwei Spieler pro Raum
+- Canvas-Spieloberfläche mit Maus-, Touch- und Tastatursteuerung
+- serverseitige Ballphysik, Punktewertung und Zielscore
+- Rally-Zähler, beste Rally und Gewinner-Overlay
+- nur der Host kann Räume löschen oder eine neue Runde starten
+- Spieler können Räume verlassen; leere Räume werden automatisch gelöscht
+- Header-Benachrichtigung für offene Pong-Einladungen
+- Pong-Statistiken in Profil-Spielkarten und eigene Achievements
+
+---
+
 ## 📝 Notizen
 
 Die Notizen-App speichert persönliche Notizen direkt in MyTools.

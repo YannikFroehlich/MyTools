@@ -17,6 +17,7 @@ GAME_ACTIVITY_LABELS = {
     "skribble": _("spielt Skribble"),
     "kniffel": _("spielt Kniffel"),
     "hangman": _("spielt Hangman"),
+    "pong": _("spielt Pong"),
     "2048": _("spielt 2048"),
 }
 
@@ -67,6 +68,7 @@ def _collect_game_activity_for_users(user_ids):
         DrawingGameLobby,
         HangmanLobby,
         KniffelPlayer,
+        PongGame,
         StadtLandFlussLobby,
         TicTacToeGame,
         UnoPlayer,
@@ -135,6 +137,13 @@ def _collect_game_activity_for_users(user_ids):
             if player.user_id in user_ids:
                 _set_activity(activity_by_user_id, player.user_id, GAME_ACTIVITY_LABELS["hangman"], lobby.updated_at)
 
+    for game in PongGame.objects.filter(
+        Q(player_left_id__in=user_ids) | Q(player_right_id__in=user_ids),
+        status__in=ACTIVE_GAME_STATUSES,
+    ).only("player_left_id", "player_right_id", "status", "updated_at"):
+        for user_id in (game.player_left_id, game.player_right_id):
+            if user_id in user_ids:
+                _set_activity(activity_by_user_id, user_id, GAME_ACTIVITY_LABELS["pong"], game.updated_at)
 
     recent_activity_cutoff = timezone.now() - timezone.timedelta(minutes=5)
     for presence in UserPresence.objects.filter(
