@@ -1,5 +1,7 @@
 from django.urls import path
 
+from .auth_views import two_factor_settings_view, two_factor_verify_view
+
 from .views import (
     about,
     avatar_character_detail_api,
@@ -194,6 +196,7 @@ from .platform_views import (
     inbox_view,
 )
 from .moderation_views import (
+    moderation_access_toggle_view,
     moderation_dashboard_view,
     moderation_feedback_status_view,
     moderation_file_share_delete_view,
@@ -203,6 +206,8 @@ from .moderation_views import (
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
+    path('accounts/2fa/', two_factor_verify_view, name='two_factor_verify'),
+    path('settings/security/2fa/', two_factor_settings_view, name='two_factor_settings'),
     path('', home, name='home'),
     path('home/', home, name='home'),
     path('about/', about, name='about'),
@@ -212,6 +217,7 @@ urlpatterns = [
     path('inbox/read/', inbox_mark_read_view, name='inbox_mark_read'),
     path('feedback/', feedback_view, name='feedback'),
     path('moderation/', moderation_dashboard_view, name='moderation'),
+    path('moderation/access/', moderation_access_toggle_view, name='moderation_access_toggle'),
     path('moderation/reports/<int:report_id>/', moderation_report_action_view, name='moderation_report_action'),
     path('moderation/feedback/<int:feedback_id>/status/', moderation_feedback_status_view, name='moderation_feedback_status'),
     path('moderation/file-shares/<int:share_id>/delete/', moderation_file_share_delete_view, name='moderation_file_share_delete'),

@@ -2372,6 +2372,70 @@ class UserSuspension(models.Model):
         )
 
 
+class SiteAccessSettings(models.Model):
+    login_registration_locked = models.BooleanField(default=False)
+    lock_message = models.CharField(max_length=240, blank=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="site_access_setting_updates",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Zugangs-Einstellung"
+        verbose_name_plural = "Zugangs-Einstellungen"
+
+    def __str__(self):
+        return "Login und Registrierung gesperrt" if self.login_registration_locked else "Login und Registrierung offen"
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    @classmethod
+    def is_locked(cls):
+        try:
+            return cls.get_solo().login_registration_locked
+        except Exception:
+            return False
+
+
+class UserTwoFactorSettings(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="two_factor_settings",
+    )
+    secret_key = models.CharField(max_length=64, blank=True)
+    is_enabled = models.BooleanField(default=False)
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Zwei-Faktor-Authentifizierung"
+        verbose_name_plural = "Zwei-Faktor-Authentifizierungen"
+
+    def __str__(self):
+        status = "aktiv" if self.is_enabled else "inaktiv"
+        return f"2FA {status}: {self.user}"
+
+    @classmethod
+    def enabled_for_user(cls, user):
+        if not user or not getattr(user, "is_authenticated", False):
+            return None
+        try:
+            settings_obj = user.two_factor_settings
+        except cls.DoesNotExist:
+            return None
+        if settings_obj.is_enabled and settings_obj.secret_key:
+            return settings_obj
+        return None
+
+
 class ModerationAuditLog(models.Model):
     ACTION_REPORT_RESOLVED = "report_resolved"
     ACTION_REPORT_REOPENED = "report_reopened"
@@ -2381,6 +2445,8 @@ class ModerationAuditLog(models.Model):
     ACTION_USER_UNSUSPENDED = "user_unsuspended"
     ACTION_USER_ACTIVATED = "user_activated"
     ACTION_USER_DEACTIVATED = "user_deactivated"
+    ACTION_ACCESS_LOCKED = "access_locked"
+    ACTION_ACCESS_UNLOCKED = "access_unlocked"
 
     ACTION_CHOICES = [
         (ACTION_REPORT_RESOLVED, _("Meldung erledigt")),
@@ -2391,6 +2457,8 @@ class ModerationAuditLog(models.Model):
         (ACTION_USER_UNSUSPENDED, _("Nutzersperre aufgehoben")),
         (ACTION_USER_ACTIVATED, _("Nutzer aktiviert")),
         (ACTION_USER_DEACTIVATED, _("Nutzer deaktiviert")),
+        (ACTION_ACCESS_LOCKED, _("Login und Registrierung gesperrt")),
+        (ACTION_ACCESS_UNLOCKED, _("Login und Registrierung entsperrt")),
     ]
 
     actor = models.ForeignKey(

@@ -30,6 +30,7 @@ from .models import (
     Note,
     Shortcut,
     ShortcutSection,
+    SiteAccessSettings,
     StadtLandFlussInvite,
     StadtLandFlussLobby,
     StadtLandFlussPlayer,
@@ -38,11 +39,26 @@ from .models import (
     ToolFeedback,
     UserProfile,
     UserSuspension,
+    UserTwoFactorSettings,
     WeatherLocation,
 )
 
 
 
+
+@admin.register(SiteAccessSettings)
+class SiteAccessSettingsAdmin(admin.ModelAdmin):
+    list_display = ("login_registration_locked", "updated_by", "updated_at")
+    readonly_fields = ("updated_at",)
+
+
+
+@admin.register(UserTwoFactorSettings)
+class UserTwoFactorSettingsAdmin(admin.ModelAdmin):
+    list_display = ("user", "is_enabled", "confirmed_at", "updated_at")
+    list_filter = ("is_enabled", "confirmed_at")
+    search_fields = ("user__username", "user__email")
+    readonly_fields = ("updated_at", "confirmed_at")
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):

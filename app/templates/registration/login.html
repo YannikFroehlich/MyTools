@@ -54,8 +54,35 @@
                 </div>
             </div>
 
+            {% if access_locked %}
+                <div class="auth-lock-notice">
+                    <i class="fa-solid fa-lock"></i>
+                    <div>
+                        <strong>{% translate 'Login vorübergehend gesperrt' %}</strong>
+                        <p>
+                            {% if access_settings.lock_message %}
+                                {{ access_settings.lock_message }}
+                            {% else %}
+                                {% translate 'Normale Nutzer können sich aktuell nicht einloggen. Admins können sich weiterhin anmelden.' %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if messages %}
+                <div class="auth-error-list">
+                    {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+                </div>
+            {% endif %}
+
             {% if form.errors %}
-                <p class="auth-error">{% translate 'Benutzername oder Passwort stimmt nicht.' %}</p>
+                <div class="auth-error-list">
+                    {% for field in form %}
+                        {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
             {% endif %}
 
             <form method="post" class="auth-form">
