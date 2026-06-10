@@ -1,0 +1,77 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ game.name }} · {% translate 'Pong' %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/pong.css' %}">
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script defer src="{% static 'app/js/pong.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<main class="pong-page pong-lobby-page"
+      data-state-url="{% url 'pong_state_api' game.code %}"
+      data-paddle-url="{% url 'pong_paddle_api' game.code %}"
+      data-reset-url="{% url 'pong_reset_api' game.code %}"
+      data-ws-url="/ws/pong/{{ game.code }}/">
+    <section class="pong-lobby-top">
+        <div>
+            <a class="pong-back" href="{% url 'pong_home' %}"><i class="fa-solid fa-arrow-left"></i> {% translate 'Zur Übersicht' %}</a>
+            <span class="pong-eyebrow"><i class="fa-solid fa-table-tennis-paddle-ball"></i> {% translate 'Raum' %}</span>
+            <h1>{{ game.name }}</h1>
+            <p>{% translate 'Raum-Code' %}: <strong class="pong-code">{{ game.code }}</strong></p>
+        </div>
+        <div class="pong-top-actions">
+            <button class="pong-secondary" type="button" id="pong-copy-link"><i class="fa-regular fa-copy"></i> {% translate 'Link kopieren' %}</button>
+            <button class="pong-primary" type="button" id="pong-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}><i class="fa-solid fa-rotate-right"></i> {% translate 'Neue Runde' %}</button>
+            <form method="post" action="{% url 'pong_leave' game.code %}">{% csrf_token %}<button class="pong-secondary" type="submit"><i class="fa-solid fa-right-from-bracket"></i> {% translate 'Verlassen' %}</button></form>
+            {% if game.owner_id == request.user.id %}
+                <form method="post" action="{% url 'pong_delete' game.code %}" data-confirm="{% translate 'Raum wirklich löschen?' %}">{% csrf_token %}<button class="pong-danger" type="submit"><i class="fa-solid fa-trash"></i> {% translate 'Löschen' %}</button></form>
+            {% else %}
+                <button class="pong-danger" type="button" disabled title="{% translate 'Nur der Host kann diesen Raum löschen.' %}"><i class="fa-solid fa-trash"></i> {% translate 'Löschen' %}</button>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="pong-game-shell">
+        <aside class="pong-panel pong-score-panel">
+            <h2>{% translate 'Match' %}</h2>
+            <div class="pong-player-row is-left"><span>L</span><strong id="pong-player-left">-</strong><em id="pong-score-left">0</em></div>
+            <div class="pong-player-row is-right"><span>R</span><strong id="pong-player-right">-</strong><em id="pong-score-right">0</em></div>
+            <div class="pong-status-card"><small>{% translate 'Status' %}</small><strong id="pong-status">-</strong><p id="pong-message">-</p></div>
+            <div class="pong-stats-grid"><div><small>{% translate 'Du spielst' %}</small><strong id="pong-side">-</strong></div><div><small>{% translate 'Rally' %}</small><strong id="pong-rally">0</strong></div><div><small>{% translate 'Beste Rally' %}</small><strong id="pong-best-rally">0</strong></div><div><small>{% translate 'Ziel' %}</small><strong id="pong-target">7</strong></div></div>
+
+            <div class="pong-friends-box">
+                <h2>{% translate 'Freunde einladen' %}</h2>
+                {% if game.player_right_id %}
+                    <p class="pong-muted">{% translate 'Der Raum ist voll. Es können keine weiteren Freunde eingeladen werden.' %}</p>
+                {% elif friend_invite_rows %}
+                    <div class="pong-friend-list">
+                        {% for row in friend_invite_rows %}
+                            <div class="pong-friend-row">
+                                <div class="pong-friend-mini"><span>{{ row.user.username|slice:":1"|upper }}</span><div><strong>{{ row.user.get_full_name|default:row.user.username }}</strong><small>{% if row.is_invited %}{% translate 'Einladung offen' %}{% elif row.was_invited %}{% translate 'War schon eingeladen' %}{% else %}{% translate 'Freund' %}{% endif %}</small></div></div>
+                                <form method="post" action="{% url 'pong_invite_friend' game.code %}">{% csrf_token %}<input type="hidden" name="friend_id" value="{{ row.user.id }}"><button class="pong-invite-button" type="submit" aria-label="{% translate 'Einladen' %}" {% if row.is_invited %}disabled{% endif %}>{% if row.is_invited %}<i class="fa-solid fa-check"></i>{% else %}<i class="fa-solid fa-plus"></i>{% endif %}</button></form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="pong-muted">{% translate 'Keine weiteren Freunde zum Einladen gefunden.' %}</p>
+                {% endif %}
+            </div>
+        </aside>
+
+        <section class="pong-board-panel">
+            <div class="pong-board-meta"><span>{% translate 'Runde' %} <strong id="pong-round">{{ game.round_number }}</strong></span><span>{% translate 'Steuerung' %}: <strong>W/S · ↑/↓ · Maus · Touch</strong></span></div>
+            <div class="pong-court-wrap" id="pong-court-wrap">
+                <canvas id="pong-canvas" width="960" height="540" aria-label="{% translate 'Pong-Spielfeld' %}"></canvas>
+                <div class="pong-countdown" id="pong-countdown" hidden>3</div>
+                <div class="pong-result-overlay hidden" id="pong-result-overlay" aria-live="polite"><div class="pong-result-card"><span class="pong-result-kicker" id="pong-result-kicker">{% translate 'Spiel beendet' %}</span><h2 id="pong-result-title">-</h2><p id="pong-result-text">-</p><button class="pong-primary" type="button" id="pong-result-reset" {% if game.owner_id != request.user.id %}disabled title="{% translate 'Nur der Host kann eine neue Runde starten.' %}"{% endif %}><i class="fa-solid fa-rotate-right"></i> {% translate 'Neue Runde' %}</button></div></div>
+            </div>
+        </section>
+    </section>
+</main>
+{% endblock %}

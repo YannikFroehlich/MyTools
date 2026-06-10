@@ -1,4 +1,4 @@
-from django.db.models import Q, Sum
+from django.db.models import Max, Q, Sum
 from django.db.models.functions import TruncDate
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -20,6 +20,7 @@ from .models import (
     KniffelGame,
     KniffelPlayer,
     Note,
+    PongGame,
     ProfileGalleryImage,
     SkribbleStats,
     StadtLandFlussPlayer,
@@ -374,6 +375,36 @@ def achievement_definitions():
             "xp": 115,
         },
         {
+            "key": "pong_first_match",
+            "category": "games",
+            "label": _("Pong-Duell"),
+            "description": _("Ein Pong-Match beendet."),
+            "icon": "fa-solid fa-table-tennis-paddle-ball",
+            "metric": "pong_matches",
+            "target": 1,
+            "xp": 55,
+        },
+        {
+            "key": "pong_rally",
+            "category": "games",
+            "label": _("Rally-Kontrolle"),
+            "description": _("In Pong eine Rally mit zehn Ballkontakten erreicht."),
+            "icon": "fa-solid fa-arrows-left-right",
+            "metric": "pong_best_rally",
+            "target": 10,
+            "xp": 90,
+        },
+        {
+            "key": "pong_champion",
+            "category": "games",
+            "label": _("Pong-Champion"),
+            "description": _("Drei Pong-Matches gewonnen."),
+            "icon": "fa-solid fa-crown",
+            "metric": "pong_wins",
+            "target": 3,
+            "xp": 125,
+        },
+        {
             "key": "table_player",
             "category": "games",
             "label": _("Mitspieler"),
@@ -553,6 +584,9 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
         "game_2048_best_tile": 0,
         "game_2048_runs": 0,
         "skribble_drawings": 0,
+        "pong_matches": 0,
+        "pong_wins": 0,
+        "pong_best_rally": 0,
         "active_days": _active_days_for_user(user, include_private=include_private, include_games=include_games),
     }
 
@@ -592,6 +626,7 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
         stadt_entries = _safe_count(StadtLandFlussPlayer.objects.filter(user=user))
         hangman_entries = _safe_count(HangmanPlayer.objects.filter(user=user))
         drawing_entries = _safe_count(DrawingGamePlayer.objects.filter(user=user))
+        pong_entries = _safe_count(PongGame.objects.filter(Q(player_left=user) | Q(player_right=user)).distinct())
 
         multiplayer_entries = sum([
             tictactoe_entries,
@@ -602,6 +637,7 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
             stadt_entries,
             hangman_entries,
             drawing_entries,
+            pong_entries,
         ])
 
         wins_count = skribble_wins
@@ -620,6 +656,13 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
         wins_count += _safe_count(UnoGame.objects.filter(winner_user_id=user.id))
         wins_count += _safe_count(KniffelGame.objects.filter(winner_user_id=user.id))
         wins_count += _safe_count(HangmanLobby.objects.filter(winner=user))
+        pong_finished = PongGame.objects.filter(Q(player_left=user) | Q(player_right=user), status=PongGame.STATUS_FINISHED).distinct()
+        pong_wins = _safe_count(PongGame.objects.filter(
+            Q(player_left=user, winner_side=PongGame.SIDE_LEFT)
+            | Q(player_right=user, winner_side=PongGame.SIDE_RIGHT)
+        ))
+        pong_best_rally = pong_finished.aggregate(best=Max("best_rally"))["best"] or 0
+        wins_count += pong_wins
 
         game_activity = (
             _safe_count(HumanBenchmarkScore.objects.filter(user=user))
@@ -639,6 +682,9 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
             "game_2048_best_tile": game_2048_highscore.best_tile if game_2048_highscore else 0,
             "game_2048_runs": game_2048_highscore.games_played if game_2048_highscore else 0,
             "skribble_drawings": skribble_drawings,
+            "pong_matches": _safe_count(pong_finished),
+            "pong_wins": pong_wins,
+            "pong_best_rally": pong_best_rally,
         })
 
     return metrics

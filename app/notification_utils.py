@@ -18,6 +18,8 @@ from .models import (
     KniffelGame,
     KniffelInvite,
     Note,
+    PongGame,
+    PongInvite,
     NotificationDismissal,
     StadtLandFlussLobby,
     StadtLandFlussInvite,
@@ -44,6 +46,7 @@ COUNT_KEYS = (
     "uno_invites",
     "kniffel_invites",
     "hangman_invites",
+    "pong_invites",
 )
 
 TYPE_COUNT_KEY = {
@@ -60,6 +63,7 @@ TYPE_COUNT_KEY = {
     "uno": "uno_invites",
     "kniffel": "kniffel_invites",
     "hangman": "hangman_invites",
+    "pong": "pong_invites",
 }
 
 
@@ -486,6 +490,18 @@ def _collect_notification_items(user, *, limit=10, include_dismissed=False):
             text_template=_("%(user)s hat dich in %(name)s eingeladen"),
             url_name="hangman_lobby",
             object_attr="lobby",
+            dismissed_keys=dismissed_keys,
+            limit=limit,
+        )
+        _add_invite_items(
+            items,
+            PongInvite.objects.filter(to_user=user, status=PongInvite.STATUS_PENDING).select_related("game", "from_user").order_by("-created_at"),
+            item_type="pong",
+            icon="fa-solid fa-table-tennis-paddle-ball",
+            title=_("Pong-Einladung"),
+            text_template=_("%(user)s hat dich in %(name)s eingeladen"),
+            url_name="pong_lobby",
+            object_attr="game",
             dismissed_keys=dismissed_keys,
             limit=limit,
         )
