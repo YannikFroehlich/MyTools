@@ -17,6 +17,7 @@ GAME_ACTIVITY_LABELS = {
     "skribble": _("spielt Skribble"),
     "kniffel": _("spielt Kniffel"),
     "hangman": _("spielt Hangman"),
+    "2048": _("spielt 2048"),
 }
 
 
@@ -133,6 +134,17 @@ def _collect_game_activity_for_users(user_ids):
         for player in lobby.players.all():
             if player.user_id in user_ids:
                 _set_activity(activity_by_user_id, player.user_id, GAME_ACTIVITY_LABELS["hangman"], lobby.updated_at)
+
+
+    recent_activity_cutoff = timezone.now() - timezone.timedelta(minutes=5)
+    for presence in UserPresence.objects.filter(
+        user_id__in=user_ids,
+        active_game__isnull=False,
+        active_game_updated_at__gte=recent_activity_cutoff,
+    ).exclude(active_game="").only("user_id", "active_game", "active_game_label", "active_game_updated_at"):
+        label = presence.active_game_label or GAME_ACTIVITY_LABELS.get(presence.active_game, "")
+        if label:
+            _set_activity(activity_by_user_id, presence.user_id, label, presence.active_game_updated_at)
 
     return activity_by_user_id
 

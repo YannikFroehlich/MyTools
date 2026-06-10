@@ -1,0 +1,91 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}2048 - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/game_2048.css' %}?v=2048-slide-v5">
+{% endblock %}
+
+{% block content %}
+<section class="game2048-page" data-score-url="{% url 'game-2048-score-api' %}" data-activity-url="{% url 'game-2048-activity-api' %}">
+    <div class="game2048-hero">
+        <div class="game2048-title-block">
+            <p class="game2048-kicker"><i class="fa-solid fa-table-cells-large"></i> {% translate 'Singleplayer' %}</p>
+            <h1>2048</h1>
+            <p>{% translate 'Kombiniere gleiche Kacheln, sammle Punkte und knacke die 2048-Kachel.' %}</p>
+        </div>
+
+        <div class="game2048-score-row" aria-label="{% translate '2048 Punktestand' %}">
+            <article class="game2048-score-card">
+                <span>{% translate 'Score' %}</span>
+                <strong id="score2048">0</strong>
+            </article>
+            <article class="game2048-score-card is-best">
+                <span>{% translate 'Highscore' %}</span>
+                <strong id="best2048">{% if highscore %}{{ highscore.display_score }}{% else %}0{% endif %}</strong>
+            </article>
+        </div>
+    </div>
+
+    <div class="game2048-layout">
+        <section class="game2048-board-card">
+            <div class="game2048-toolbar">
+                <div>
+                    <h2>{% translate 'Spielfeld' %}</h2>
+                    <p id="game2048Status">{% translate 'Nutze Pfeiltasten, WASD oder Wischgesten.' %}</p>
+                </div>
+                <button type="button" class="game2048-btn" id="restart2048">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    {% translate 'Neustart' %}
+                </button>
+            </div>
+
+            <div class="game2048-board-wrap">
+                <div class="game2048-board" id="board2048" role="application" aria-label="2048"></div>
+                <div class="game2048-overlay is-hidden" id="overlay2048" aria-live="polite">
+                    <div>
+                        <strong id="overlay2048Title">2048</strong>
+                        <p id="overlay2048Text"></p>
+                        <div class="game2048-overlay-actions">
+                            <button type="button" class="game2048-btn" id="continue2048">{% translate 'Weiterspielen' %}</button>
+                            <button type="button" class="game2048-btn is-primary" id="again2048">{% translate 'Nochmal' %}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="game2048-side-card">
+            <div class="game2048-side-section">
+                <p class="game2048-kicker"><i class="fa-solid fa-trophy"></i> {% translate 'Dein Highscore' %}</p>
+                {% if highscore %}
+                    <strong class="game2048-main-score">{{ highscore.display_score }}</strong>
+                    <div class="game2048-mini-grid">
+                        <span><small>{% translate 'Beste Kachel' %}</small><b>{{ highscore.best_tile }}</b></span>
+                        <span><small>{% translate 'Züge' %}</small><b>{{ highscore.moves }}</b></span>
+                        <span><small>{% translate 'Zeit' %}</small><b>{{ highscore.duration_label }}</b></span>
+                        <span><small>{% translate 'Runden' %}</small><b>{{ highscore.games_played }}</b></span>
+                    </div>
+                {% else %}
+                    <p>{% translate 'Noch kein Highscore gespeichert. Spiele deine erste Runde, um dein Profil zu füllen.' %}</p>
+                {% endif %}
+            </div>
+
+            <div class="game2048-side-section">
+                <p class="game2048-kicker"><i class="fa-solid fa-circle-info"></i> {% translate 'Steuerung' %}</p>
+                <ul class="game2048-help-list">
+                    <li>{% translate 'Desktop: Pfeiltasten oder WASD.' %}</li>
+                    <li>{% translate 'Handy/Tablet: Auf dem Spielfeld wischen.' %}</li>
+                    <li>{% translate 'Gleiche Zahlen verschmelzen zu einer größeren Kachel.' %}</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/game_2048.js' %}?v=2048-slide-v5" defer></script>
+{% endblock %}

@@ -17,6 +17,7 @@ from .models import (
     ChatRoom,
     ConnectFourGame,
     CookieClickerHighScore,
+    Game2048HighScore,
     Friendship,
     HangmanLobby,
     HangmanPlayer,
@@ -48,6 +49,7 @@ from .presence_utils import decorate_profiles_with_presence, decorate_users_with
 User = get_user_model()
 
 PROFILE_GAME_CARD_DEFINITIONS = [
+    {"key": "game_2048", "label": "2048", "icon": "fa-solid fa-table-cells-large", "url_name": "game-2048"},
     {"key": "cookie_cosmos", "label": "Cookie Cosmos", "icon": "fa-solid fa-cookie-bite", "url_name": "cookie-clicker"},
     {"key": "human_benchmark", "label": "Human Benchmark", "icon": "fa-solid fa-stopwatch", "url_name": "human-benchmark"},
     {"key": "skribble", "label": "Skribble", "icon": "fa-solid fa-pen-nib", "url_name": "skribble_home"},
@@ -94,9 +96,15 @@ def get_profile_cookie_highscore(user):
     return CookieClickerHighScore.objects.filter(user=user).first()
 
 
+def get_profile_2048_highscore(user):
+    return Game2048HighScore.objects.filter(user=user).first()
+
+
 def get_total_profile_highscores(user):
     total = HumanBenchmarkHighScore.objects.filter(user=user).count()
     if CookieClickerHighScore.objects.filter(user=user).exists():
+        total += 1
+    if Game2048HighScore.objects.filter(user=user).exists():
         total += 1
     return total
 
@@ -122,13 +130,26 @@ def get_profile_game_card_settings(profile):
         if key in PROFILE_GAME_CARD_DEFINITIONS_BY_KEY and key not in saved:
             saved[key] = {"order": index, "visible": visible}
 
+    # Keep the user's explicitly configured card order at the front.
+    # Newly added game cards that are not present in an older saved profile config
+    # must be appended after the saved cards, otherwise adding a new default card
+    # at index 0 would unexpectedly jump ahead of the user's configured order.
+    fallback_order_start = len(raw_items)
+
     settings = []
     for index, definition in enumerate(PROFILE_GAME_CARD_DEFINITIONS):
-        saved_item = saved.get(definition["key"], {})
+        saved_item = saved.get(definition["key"])
+        if saved_item is not None:
+            order = saved_item["order"]
+            visible = saved_item["visible"]
+        else:
+            order = fallback_order_start + index
+            visible = True
+
         settings.append({
             **definition,
-            "order": saved_item.get("order", index),
-            "visible": saved_item.get("visible", True),
+            "order": order,
+            "visible": visible,
         })
 
     return sorted(settings, key=lambda item: item["order"])
@@ -166,6 +187,31 @@ def _base_game_card(definition):
         "is_empty": False,
         "empty_text": _("Noch keine Statistik gespeichert."),
     }
+
+
+
+def _game_2048_card(user, definition):
+    card = _base_game_card(definition)
+    card["title"] = _("Highscore")
+    card["empty_text"] = _("Noch kein 2048-Highscore gespeichert.")
+    highscore = get_profile_2048_highscore(user)
+    if not highscore:
+        card["is_empty"] = True
+        return card
+
+    card["main"] = {
+        "icon": "fa-solid fa-trophy",
+        "label": _("Bester Score"),
+        "value": highscore.display_score,
+        "detail": highscore.achieved_at.strftime("%d.%m.%Y %H:%M"),
+    }
+    card["metrics"] = [
+        {"label": _("Beste Kachel"), "value": _display_number(highscore.best_tile), "icon": "fa-solid fa-table-cells-large"},
+        {"label": _("Zuege"), "value": _display_number(highscore.moves), "icon": "fa-solid fa-shuffle"},
+        {"label": _("Zeit"), "value": highscore.duration_label, "icon": "fa-regular fa-clock"},
+        {"label": _("Spiele"), "value": _display_number(highscore.games_played), "icon": "fa-solid fa-gamepad"},
+    ]
+    return card
 
 
 def _cookie_game_card(user, definition):
@@ -309,6 +355,8 @@ def _snake_powerups_card(user, definition):
 
 def build_profile_game_card(definition, user):
     key = definition["key"]
+    if key == "game_2048":
+        return _game_2048_card(user, definition)
     if key == "cookie_cosmos":
         return _cookie_game_card(user, definition)
     if key == "human_benchmark":
@@ -659,6 +707,7 @@ def profile_view(request):
         "profile": profile,
         "benchmark_highscores": get_profile_human_benchmark_highscores(request.user),
         "cookie_highscore": get_profile_cookie_highscore(request.user),
+        "game_2048_highscore": get_profile_2048_highscore(request.user),
         "profile_game_card_settings": get_profile_game_card_settings(profile),
         "profile_game_cards": get_profile_game_cards(request.user, profile),
         "incoming_friend_requests": incoming_requests,
@@ -753,6 +802,7 @@ def public_profile_view(request, user_id):
         "profile": profile,
         "benchmark_highscores": get_profile_human_benchmark_highscores(profile_user) if can_view_highscores else [],
         "cookie_highscore": get_profile_cookie_highscore(profile_user) if can_view_highscores else None,
+        "game_2048_highscore": get_profile_2048_highscore(profile_user) if can_view_highscores else None,
         "profile_game_cards": get_profile_game_cards(profile_user, profile) if can_view_highscores else [],
         "friendship_state": get_friendship_state(request.user, profile_user),
         "friends_preview": get_friend_profiles(profile_user, limit=6) if profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user) else [],
