@@ -1,4 +1,8 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.contrib.admin.sites import NotRegistered
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.utils.translation import gettext_lazy as _
 
 from .models import (
     AvatarCharacter,
@@ -53,12 +57,65 @@ class SiteAccessSettingsAdmin(admin.ModelAdmin):
 
 
 
+class UserTwoFactorSettingsInline(admin.StackedInline):
+    model = UserTwoFactorSettings
+    can_delete = True
+    extra = 0
+    max_num = 1
+    fields = ("is_enabled", "confirmed_at", "updated_at", "secret_key")
+    readonly_fields = ("confirmed_at", "updated_at", "secret_key")
+    verbose_name = _("Zwei-Faktor-Authentifizierung")
+    verbose_name_plural = _("Zwei-Faktor-Authentifizierung")
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
+UserModel = get_user_model()
+
+
+try:
+    admin.site.unregister(UserModel)
+except NotRegistered:
+    pass
+
+
+@admin.register(UserModel)
+class UserAdmin(DjangoUserAdmin):
+    inlines = tuple(getattr(DjangoUserAdmin, "inlines", ())) + (UserTwoFactorSettingsInline,)
+    list_display = tuple(getattr(DjangoUserAdmin, "list_display", ())) + ("two_factor_status",)
+    actions = list(getattr(DjangoUserAdmin, "actions", []) or []) + ["reset_two_factor_for_users"]
+
+    @admin.display(boolean=True, description=_("2FA aktiv"))
+    def two_factor_status(self, obj):
+        return bool(UserTwoFactorSettings.enabled_for_user(obj))
+
+    @admin.action(description=_("2FA für ausgewählte Nutzer zurücksetzen"))
+    def reset_two_factor_for_users(self, request, queryset):
+        deleted_count, _deleted_per_model = UserTwoFactorSettings.objects.filter(user__in=queryset).delete()
+        self.message_user(
+            request,
+            _("2FA wurde für %(count)s Nutzer zurückgesetzt.") % {"count": deleted_count},
+            messages.SUCCESS,
+        )
+
+
 @admin.register(UserTwoFactorSettings)
 class UserTwoFactorSettingsAdmin(admin.ModelAdmin):
     list_display = ("user", "is_enabled", "confirmed_at", "updated_at")
     list_filter = ("is_enabled", "confirmed_at")
     search_fields = ("user__username", "user__email")
     readonly_fields = ("updated_at", "confirmed_at")
+    actions = ("reset_selected_two_factor_settings",)
+
+    @admin.action(description=_("Ausgewählte 2FA-Einstellungen löschen/zurücksetzen"))
+    def reset_selected_two_factor_settings(self, request, queryset):
+        deleted_count, _deleted_per_model = queryset.delete()
+        self.message_user(
+            request,
+            _("%(count)s 2FA-Einstellung wurde zurückgesetzt.") % {"count": deleted_count},
+            messages.SUCCESS,
+        )
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):
