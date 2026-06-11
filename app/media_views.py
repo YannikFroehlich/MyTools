@@ -41,11 +41,9 @@ def _resolve_media_path(source):
 
 def _thumbnail_path(source, spec, original_path):
     source_path = Path(source)
-    suffix = original_path.suffix.lower()
-    if suffix not in {".jpg", ".jpeg", ".png", ".webp"}:
-        suffix = ".webp"
-
-    thumb_name = f"{source_path.stem}-{spec}{suffix}"
+    # Thumbnails are always delivered as WebP. That keeps transparent avatars intact,
+    # but avoids repeatedly serving larger PNG/JPEG previews in cards and menus.
+    thumb_name = f"{source_path.stem}-{spec}.webp"
     return Path(settings.MEDIA_ROOT) / "_thumbs" / spec / source_path.parent / thumb_name
 
 
@@ -83,15 +81,11 @@ def _generate_thumbnail(original_path, thumb_path, spec):
         else:
             image.thumbnail((width, height), Image.Resampling.LANCZOS)
 
-        save_kwargs = {"optimize": True}
-        if image.mode in {"RGBA", "LA"}:
-            save_format = "PNG" if thumb_path.suffix.lower() == ".png" else "WEBP"
-        else:
+        save_kwargs = {"optimize": True, "quality": 82, "method": 6}
+        if image.mode not in {"RGBA", "LA"}:
             image = image.convert("RGB")
-            save_format = "JPEG" if thumb_path.suffix.lower() in {".jpg", ".jpeg"} else "WEBP"
-            save_kwargs["quality"] = 82
 
-        image.save(thumb_path, save_format, **save_kwargs)
+        image.save(thumb_path, "WEBP", **save_kwargs)
 
 
 @require_GET
