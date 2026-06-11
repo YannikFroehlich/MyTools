@@ -3,9 +3,12 @@ import math
 import hashlib
 from collections import defaultdict
 from urllib.parse import urlencode
+from io import BytesIO
+import re
 
 from django.shortcuts import render, redirect, get_object_or_404
 import requests
+from PIL import Image, UnidentifiedImageError
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import translation
@@ -22,7 +25,7 @@ import json
 
 from django.db.models import Max, Prefetch
 from django.db.utils import OperationalError, ProgrammingError
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.contrib import messages
 from django.contrib.messages import get_messages
@@ -59,6 +62,54 @@ def api_error_response(message, status=400):
 
 OPENWEATHER_CURRENT_CACHE_SECONDS = 300
 OPENWEATHER_FORECAST_CACHE_SECONDS = 900
+
+
+OPENWEATHER_ICON_CACHE_SECONDS = 60 * 60 * 24 * 30
+OPENWEATHER_ICON_RE = re.compile(r"^[0-9]{2}[dn]$")
+OPENWEATHER_ICON_SIZES = {"2x", "4x"}
+
+
+def weather_icon_url(icon_code, size="2x"):
+    icon_code = str(icon_code or "").strip()
+    size = str(size or "2x").strip().lower()
+
+    if not OPENWEATHER_ICON_RE.match(icon_code) or size not in OPENWEATHER_ICON_SIZES:
+        return ""
+
+    return reverse("weather_icon", args=[icon_code, size])
+
+
+def weather_icon_view(request, icon_code, size="2x"):
+    icon_code = str(icon_code or "").strip()
+    size = str(size or "2x").strip().lower()
+
+    if not OPENWEATHER_ICON_RE.match(icon_code) or size not in OPENWEATHER_ICON_SIZES:
+        return HttpResponse(status=404)
+
+    cache_key = f"openweather-icon:webp:{icon_code}:{size}:v1"
+    cached = cache.get(cache_key)
+
+    if cached is None:
+        try:
+            response = requests.get(
+                f"https://openweathermap.org/img/wn/{icon_code}@{size}.png",
+                timeout=5,
+            )
+            response.raise_for_status()
+
+            with Image.open(BytesIO(response.content)) as image:
+                output = BytesIO()
+                image.convert("RGBA").save(output, format="WEBP", quality=82, method=6)
+                cached = output.getvalue()
+
+            cache.set(cache_key, cached, OPENWEATHER_ICON_CACHE_SECONDS)
+        except (requests.RequestException, UnidentifiedImageError, OSError, ValueError):
+            return HttpResponse(status=404)
+
+    response = HttpResponse(cached, content_type="image/webp")
+    response["Cache-Control"] = "public, max-age=2592000, immutable"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response
 
 
 def _openweather_cache_key(endpoint, params):
@@ -326,6 +377,7 @@ def get_home_weather_data(request, user, widget):
             "feels_like": round(main_info.get("feels_like", 0)),
             "description": weather_info.get("description", _("Keine Beschreibung")),
             "icon": weather_info.get("icon"),
+            "icon_url": weather_icon_url(weather_info.get("icon"), "2x"),
             "humidity": main_info.get("humidity"),
             "wind": round(wind_info.get("speed", 0), 1),
             "temperature_unit": temperature_unit,
@@ -1241,7 +1293,8 @@ def weather(request):
                     'temp_min': round(min(temps), 1),
                     'description': midday_item['weather'][0]['description'],
                     'icon': midday_item['weather'][0]['icon'],
-                    'rain': round(midday_item.get('pop', 0) * 100)
+                    'rain': round(midday_item.get('pop', 0) * 100),
+                    'icon_url': weather_icon_url(midday_item['weather'][0]['icon'], '2x'),
                 })
 
             # ───── Stündliche Vorhersage ─────
@@ -1255,7 +1308,8 @@ def weather(request):
                     'time': dt_obj.strftime("%H:%M"),
                     'temp': round(item['main']['temp']),
                     'icon': item['weather'][0]['icon'],
-                    'rain': round(item.get('pop', 0) * 100)
+                    'rain': round(item.get('pop', 0) * 100),
+                    'icon_url': weather_icon_url(item['weather'][0]['icon'], '2x'),
                 })
 
             # ───── Sonnenaufgang / Untergang ─────
@@ -1279,6 +1333,7 @@ def weather(request):
                 'temperature_unit': temperature_unit,
                 'description': curr_data['weather'][0]['description'],
                 'icon': curr_data['weather'][0]['icon'],
+                'icon_url': weather_icon_url(curr_data['weather'][0]['icon'], '4x'),
                 'wind_speed': round(curr_data['wind']['speed'], 1),
                 'wind_unit': wind_unit,
                 'humidity': curr_data['main']['humidity'],

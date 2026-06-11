@@ -1980,6 +1980,7 @@ class StaticPageTests(BaseTestCase):
         self.assertIn("__myToolsLiveStatusState", js_content)
         self.assertIn("hydrateDeferredImages", js_content)
         self.assertIn("js-obfuscated-email", js_content)
+        self.assertIn("liveStatusUrl ? 15000 : 7000", js_content)
 
     def test_calculator_static_assets_cover_core_features(self):
         js = Path(settings.BASE_DIR) / "app" / "static" / "app" / "js" / "calculator.js"
@@ -2019,6 +2020,17 @@ class StaticPageTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'id="deck-fullscreen-btn"')
         self.assertContains(response, 'id="exit-deck-fullscreen-btn"')
+
+    def test_stream_deck_lazy_loads_obs_websocket_module(self):
+        js = Path(settings.BASE_DIR) / "app" / "static" / "app" / "js" / "stream_deck.js"
+        js_content = js.read_text(encoding="utf-8")
+
+        self.assertIn('OBS_WEBSOCKET_MODULE_URL = "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm"', js_content)
+        self.assertIn("function loadObsWebSocketClass()", js_content)
+        self.assertIn("import(OBS_WEBSOCKET_MODULE_URL)", js_content)
+        self.assertIn("warmObsWebSocketModule", js_content)
+        self.assertIn('elements.connectBtn.addEventListener("pointerenter", warmObsWebSocketModule', js_content)
+        self.assertNotIn('import OBSWebSocket from "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm"', js_content)
 
 
 class ChatEnhancementTests(BaseTestCase):
@@ -2322,6 +2334,35 @@ class WeatherViewTests(BaseTestCase):
         self.assertEqual(response.context["sunset"], "22:00")
         self.assertEqual(len(response.context["forecast"]), 5)
         self.assertEqual(len(response.context["hourly_forecast"]), 6)
+        self.assertContains(response, reverse("weather_icon", args=["01d", "4x"]))
+        self.assertContains(response, reverse("weather_icon", args=["02d", "2x"]))
+        self.assertNotContains(response, "openweathermap.org/img/wn")
+
+    @patch("app.views.requests.get")
+    def test_weather_icon_view_converts_and_caches_openweather_icon_as_webp(self, mock_get):
+        icon_file = self.get_test_image("icon.png")
+        upstream_response = Mock(status_code=200, content=icon_file.read())
+        upstream_response.raise_for_status = Mock()
+        mock_get.return_value = upstream_response
+
+        response = self.client.get(reverse("weather_icon", args=["03d", "2x"]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "image/webp")
+        self.assertIn("immutable", response["Cache-Control"])
+        self.assertGreater(len(response.content), 0)
+
+        cached_response = self.client.get(reverse("weather_icon", args=["03d", "2x"]))
+
+        self.assertEqual(cached_response.status_code, 200)
+        self.assertEqual(mock_get.call_count, 1)
+
+    @patch("app.views.requests.get")
+    def test_weather_icon_view_rejects_invalid_icon_codes(self, mock_get):
+        response = self.client.get(reverse("weather_icon", args=["../secret", "2x"]))
+
+        self.assertEqual(response.status_code, 404)
+        mock_get.assert_not_called()
 
     @patch("app.views.get_env_value", return_value="")
     @patch("app.views.requests.get")

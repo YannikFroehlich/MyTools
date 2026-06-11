@@ -1,4 +1,21 @@
-import OBSWebSocket from "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm";
+const OBS_WEBSOCKET_MODULE_URL = "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm";
+let obsWebSocketClassPromise = null;
+
+function loadObsWebSocketClass() {
+    if (!obsWebSocketClassPromise) {
+        obsWebSocketClassPromise = import(OBS_WEBSOCKET_MODULE_URL)
+            .then((module) => module.default || module.OBSWebSocket || module);
+    }
+
+    return obsWebSocketClassPromise;
+}
+
+function warmObsWebSocketModule() {
+    loadObsWebSocketClass().catch((error) => {
+        console.warn("OBS WebSocket Modul konnte nicht vorgeladen werden.", error);
+        obsWebSocketClassPromise = null;
+    });
+}
 
 const streamDeckPage = document.querySelector(".stream-deck-page");
 const USER_STORAGE_SUFFIX = streamDeckPage?.dataset.userId ? `_user_${streamDeckPage.dataset.userId}` : "";
@@ -159,6 +176,8 @@ function loadState() {
 function bindEvents() {
     elements.togglePasswordBtn.addEventListener("click", togglePasswordVisibility);
     elements.connectBtn.addEventListener("click", connectOrDisconnectObs);
+    elements.connectBtn.addEventListener("pointerenter", warmObsWebSocketModule, { once: true });
+    elements.connectBtn.addEventListener("focus", warmObsWebSocketModule, { once: true });
     elements.disconnectBtn.addEventListener("click", disconnectObs);
     elements.editToggleBtn.addEventListener("click", toggleEditMode);
     elements.deckFullscreenBtn.addEventListener("click", enterDeckFullscreen);
@@ -518,7 +537,12 @@ async function connectObs() {
 
     persistConnectionFields();
 
+    const previousConnectButtonHtml = elements.connectBtn.innerHTML;
+    elements.connectBtn.disabled = true;
+    elements.connectBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Verbinden...</span>';
+
     try {
+        const OBSWebSocket = await loadObsWebSocketClass();
         obs = new OBSWebSocket();
 
         obs.on("ConnectionClosed", () => {
@@ -545,10 +569,18 @@ async function connectObs() {
     } catch (error) {
         obsConnected = false;
         obs = null;
+        obsWebSocketClassPromise = null;
         updateObsUI();
         addLog("OBS Verbindung fehlgeschlagen");
         showToast("OBS Verbindung fehlgeschlagen.");
         console.error(error);
+    } finally {
+        elements.connectBtn.disabled = false;
+        if (obsConnected) {
+            updateObsUI();
+        } else {
+            elements.connectBtn.innerHTML = previousConnectButtonHtml;
+        }
     }
 }
 
