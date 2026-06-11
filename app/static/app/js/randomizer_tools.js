@@ -26,7 +26,11 @@
     const wheel = document.getElementById('decision-wheel');
     const wheelOptions = document.getElementById('wheel-options');
     const wheelResult = document.getElementById('wheel-result');
+    const wheelSpinButton = document.getElementById('wheel-spin');
     let wheelRotation = 0;
+    let wheelSpinTimer = null;
+    let isWheelSpinning = false;
+    const wheelPointerAngle = 0;
     const wheelColors = ['#7c3aed', '#06b6d4', '#f97316', '#22c55e', '#e11d48', '#facc15', '#3b82f6', '#ec4899', '#14b8a6', '#f43f5e'];
 
     function paintWheel() {
@@ -40,18 +44,17 @@
         const step = 360 / options.length;
 
         const sectors = options.map((option, index) => {
-            const startAngle = index * step - 90;
-            const endAngle = (index + 1) * step - 90;
-            const midAngle = startAngle + step / 2;
-            const largeArc = step > 180 ? 1 : 0;
-            const startPoint = polarToCartesian(center, center, radius, endAngle);
-            const endPoint = polarToCartesian(center, center, radius, startAngle);
-            const labelPoint = polarToCartesian(center, center, labelRadius, midAngle);
+            const startAngle = index * step - step / 2;
+            const endAngle = startAngle + step;
+            const labelPoint = polarToCartesian(center, center, labelRadius, index * step);
             const color = wheelColors[index % wheelColors.length];
             const shortOption = shortenWheelText(option, options.length);
+            const sectorShape = options.length === 1
+                ? `<circle class="wheel-sector" cx="${center}" cy="${center}" r="${radius}" fill="${color}"></circle>`
+                : `<path class="wheel-sector" d="${describeWheelSector(center, center, radius, startAngle, endAngle)}" fill="${color}"></path>`;
 
             return `
-                <path class="wheel-sector" d="M ${center} ${center} L ${startPoint.x} ${startPoint.y} A ${radius} ${radius} 0 ${largeArc} 0 ${endPoint.x} ${endPoint.y} Z" fill="${color}"></path>
+                ${sectorShape}
                 <text class="wheel-sector-label" x="${labelPoint.x}" y="${labelPoint.y}" title="${escapeHtml(option)}">${escapeHtml(shortOption)}</text>
             `;
         }).join('');
@@ -78,50 +81,78 @@
         `;
     }
 
-    document.getElementById('wheel-spin')?.addEventListener('click', () => {
+    wheelSpinButton?.addEventListener('click', () => {
         const options = lines(wheelOptions?.value);
         if (!options.length) {
             wheelResult.textContent = 'Bitte erst Optionen eintragen.';
             return;
         }
+        if (!wheel || isWheelSpinning) return;
 
-        const winnerIndex = randomInt(0, options.length - 1);
         const step = 360 / options.length;
-
-        /*
-         * Wichtig:
-         * Das SVG-Rad wird ab -90° gezeichnet. Der Pointer steht oben.
-         * Sektor 0 liegt deshalb im ungedrehten Zustand bereits oben/rechts.
-         * Damit der Gewinner exakt unter dem Pointer steht, setzen wir die absolute
-         * Endrotation direkt auf: -Mitte des Gewinner-Sektors.
-         */
-        const winnerCenter = winnerIndex * step + step / 2;
-        const currentNormalized = ((wheelRotation % 360) + 360) % 360;
-        const targetNormalized = ((-winnerCenter % 360) + 360) % 360;
-        const deltaToTarget = ((targetNormalized - currentNormalized + 360) % 360);
-        const fullSpins = 1440 + randomInt(0, 2) * 360;
+        const targetIndex = randomInt(0, options.length - 1);
+        const edgePadding = Math.min(8, step * 0.18);
+        const maxOffset = Math.max(0, step / 2 - edgePadding);
+        const targetLocalAngle = targetIndex * step + randomFloat(-maxOffset, maxOffset);
+        const targetRotation = normalizeAngle(wheelPointerAngle - targetLocalAngle);
+        const currentRotation = normalizeAngle(wheelRotation);
+        const deltaToTarget = normalizeAngle(targetRotation - currentRotation);
+        const fullSpins = randomInt(4, 9) * 360;
+        const spinDuration = randomInt(2800, 5200);
+        const spinEasings = [
+            'cubic-bezier(.10,.82,.14,1)',
+            'cubic-bezier(.12,.74,.18,1)',
+            'cubic-bezier(.16,.88,.20,1)',
+            'cubic-bezier(.08,.68,.12,1)',
+        ];
+        const spinEasing = spinEasings[randomInt(0, spinEasings.length - 1)];
 
         wheelRotation += fullSpins + deltaToTarget;
 
+        isWheelSpinning = true;
+        wheelSpinButton.disabled = true;
         wheel.classList.add('is-spinning');
+        wheel.style.transition = `transform ${spinDuration}ms ${spinEasing}`;
         wheel.style.transform = `rotate(${wheelRotation}deg)`;
         wheelResult.classList.remove('result-pop');
         wheelResult.textContent = 'Dreht...';
 
-        window.setTimeout(() => {
+        const finishSpin = () => {
+            if (!isWheelSpinning) return;
+
+            const winnerIndex = getWheelWinnerIndex(wheelRotation, options.length);
+            isWheelSpinning = false;
+            wheelSpinButton.disabled = false;
             wheel.classList.remove('is-spinning');
             wheelResult.textContent = `Gewinner: ${options[winnerIndex]}`;
             wheelResult.classList.add('result-pop');
-        }, 3300);
+            window.clearTimeout(wheelSpinTimer);
+            wheelSpinTimer = null;
+        };
+
+        window.clearTimeout(wheelSpinTimer);
+        wheelSpinTimer = window.setTimeout(finishSpin, spinDuration + 350);
+        wheel.addEventListener('transitionend', finishSpin, { once: true });
     });
     wheelOptions?.addEventListener('input', () => {
         wheelRotation = 0;
+        isWheelSpinning = false;
+        window.clearTimeout(wheelSpinTimer);
+        wheelSpinTimer = null;
+        if (wheelSpinButton) {
+            wheelSpinButton.disabled = false;
+        }
         if (wheel) {
+            wheel.classList.remove('is-spinning');
+            wheel.style.transition = 'none';
             wheel.style.transform = 'rotate(0deg)';
+            // Force the reset to apply immediately, then let the next spin set a fresh random transition.
+            wheel.offsetHeight;
+            wheel.style.transition = '';
         }
         paintWheel();
         if (wheelResult) {
-            wheelResult.textContent = '';
+            wheelResult.textContent = 'Bereit zum Drehen';
         }
     });
     paintWheel();
@@ -236,6 +267,30 @@
 
     function createPips(value) {
         return Array.from({ length: value }, () => '<i class="pip"></i>').join('');
+    }
+
+    function randomFloat(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    function normalizeAngle(angle) {
+        return ((angle % 360) + 360) % 360;
+    }
+
+    function getWheelWinnerIndex(rotation, optionCount) {
+        if (!optionCount) return 0;
+
+        const step = 360 / optionCount;
+        const pointerLocalAngle = normalizeAngle(wheelPointerAngle - normalizeAngle(rotation));
+        return Math.floor(normalizeAngle(pointerLocalAngle + step / 2) / step) % optionCount;
+    }
+
+    function describeWheelSector(cx, cy, r, startAngle, endAngle) {
+        const startPoint = polarToCartesian(cx, cy, r, startAngle);
+        const endPoint = polarToCartesian(cx, cy, r, endAngle);
+        const largeArc = Math.abs(endAngle - startAngle) > 180 ? 1 : 0;
+
+        return `M ${cx} ${cy} L ${startPoint.x} ${startPoint.y} A ${r} ${r} 0 ${largeArc} 1 ${endPoint.x} ${endPoint.y} Z`;
     }
 
     function polarToCartesian(cx, cy, r, angleInDegrees) {
