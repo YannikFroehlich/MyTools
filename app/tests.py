@@ -590,6 +590,15 @@ class MediaThumbnailTests(BaseTestCase):
 
         self.assertEqual(second_response.status_code, 304)
 
+
+    def test_media_thumbnail_cache_path_uses_webp_for_png_sources(self):
+        from app.media_views import _thumbnail_path
+
+        thumb_path = _thumbnail_path("profile_pictures/avatar.png", "avatar-small", Path("avatar.png"))
+
+        self.assertEqual(thumb_path.suffix, ".webp")
+        self.assertIn("avatar-small", str(thumb_path))
+
     def test_media_thumbnail_rejects_path_traversal(self):
         self.client.logout()
 
@@ -1925,6 +1934,42 @@ class StaticPageTests(BaseTestCase):
         self.assertContains(response, 'calculator-help-list')
         self.assertContains(response, 'window.MyToolsCalculatorI18n')
         self.assertContains(response, 'app/js/calculator.js')
+
+
+    @override_settings(FONTAWESOME_KIT_KEY="test-kit", USE_FONTAWESOME_KIT=False)
+    def test_base_template_uses_core_css_and_optimized_fontawesome_loader(self):
+        response = self.client.get(reverse("profile_card_designer"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "app/css/core.css")
+        self.assertNotContains(response, "app/css/profile_menu.css")
+        self.assertNotContains(response, "app/css/contrast.css")
+        self.assertContains(response, "cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
+        self.assertNotContains(response, "kit.fontawesome.com")
+
+    def test_profile_menu_defers_large_avatar_and_obfuscates_email(self):
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("menu-avatar.png", self.get_test_image("menu-avatar.png"), save=True)
+        self.user.email = "menu@example.com"
+        self.user.save(update_fields=["email"])
+
+        response = self.client.get(reverse("profile_card_designer"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "js-deferred-image")
+        self.assertContains(response, "data-src=", html=False)
+        self.assertContains(response, 'data-email-local="menu"')
+        self.assertContains(response, 'data-email-domain="example.com"')
+        self.assertNotContains(response, "menu@example.com")
+
+    def test_base_js_contains_live_status_singleton_and_deferred_image_hydration(self):
+        js = Path(settings.BASE_DIR) / "app" / "static" / "app" / "js" / "base.js"
+        js_content = js.read_text(encoding="utf-8")
+
+        self.assertIn("__myToolsBaseInitialized", js_content)
+        self.assertIn("__myToolsLiveStatusState", js_content)
+        self.assertIn("hydrateDeferredImages", js_content)
+        self.assertIn("js-obfuscated-email", js_content)
 
     def test_calculator_static_assets_cover_core_features(self):
         js = Path(settings.BASE_DIR) / "app" / "static" / "app" / "js" / "calculator.js"

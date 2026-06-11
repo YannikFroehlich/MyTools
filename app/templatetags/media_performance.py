@@ -50,3 +50,14 @@ def media_srcset(file_field, specs):
         entries.append(f"{url} {descriptor}".strip())
 
     return ", ".join(entries)
+
+@register.filter
+def email_local(value):
+    text = str(value or "")
+    return text.split("@", 1)[0] if "@" in text else text
+
+
+@register.filter
+def email_domain(value):
+    text = str(value or "")
+    return text.split("@", 1)[1] if "@" in text else ""

@@ -7,6 +7,7 @@ from .notification_utils import get_notification_counts
 def fontawesome_kit(request):
     return {
         "fontawesome_kit_key": settings.FONTAWESOME_KIT_KEY,
+        "use_fontawesome_kit": getattr(settings, "USE_FONTAWESOME_KIT", False),
     }
 
 

@@ -9,28 +9,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'app/css/icons/custom_icons.css' %}">
-    {% if fontawesome_kit_key %}
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}">
+    {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
     {% else %}
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" crossorigin onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin></noscript>
     {% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
-    <link rel="stylesheet" href="{% static 'app/css/profile_menu.css' %}">
 
     {% block favicon %}
         <link rel="icon" type="image/x-icon" href="{% static 'app/icons/cloud-solid.png' %}">
     {% endblock %}
 
     {% block extra_css %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'app/css/contrast.css' %}">
     {% block scripts %}
         <script src="{% static 'app/js/base.js' %}" defer></script>
     {% endblock %}
@@ -847,7 +844,7 @@
                         <div class="profile-menu-header">
                             <span class="profile-menu-avatar profile-menu-avatar-large">
                                 {% if current_profile and current_profile.avatar %}
-                                    <img src="{{ current_profile.avatar|media_thumb:'avatar' }}" srcset="{{ current_profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="96px" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192'%3E%3C/svg%3E" data-src="{{ current_profile.avatar|media_thumb:'avatar-small' }}" data-srcset="{{ current_profile.avatar|media_srcset:'avatar-small 96w, avatar 192w' }}" sizes="96px" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async" class="js-deferred-image">
                                 {% elif current_profile %}
                                     {{ current_profile.initials }}
                                 {% else %}
@@ -863,7 +860,11 @@
                                         {{ request.user.username }}
                                     {% endif %}
                                 </strong>
-                                <small>{{ request.user.email|default:request.user.username }}</small>
+                                {% if request.user.email %}
+                                    <small class="js-obfuscated-email" data-email-local="{{ request.user.email|email_local }}" data-email-domain="{{ request.user.email|email_domain }}">{{ request.user.username }}</small>
+                                {% else %}
+                                    <small>{{ request.user.username }}</small>
+                                {% endif %}
                             </div>
                         </div>
 

@@ -60,6 +60,7 @@ if DOMAIN and DOMAIN not in {"localhost", "127.0.0.1"}:
         CSRF_TRUSTED_ORIGINS.append(origin)
 
 FONTAWESOME_KIT_KEY = os.getenv("FONTAWESOME_KIT_KEY", "")
+USE_FONTAWESOME_KIT = os.getenv("USE_FONTAWESOME_KIT", "False").lower() in {"1", "true", "yes", "on"}
 
 if IS_TESTING or os.getenv("USE_SQLITE", "False") == "True":
     DATABASES = {
