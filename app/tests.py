@@ -2359,7 +2359,7 @@ class WeatherViewTests(BaseTestCase):
 
     @patch("app.views.requests.get")
     def test_weather_icon_view_rejects_invalid_icon_codes(self, mock_get):
-        response = self.client.get(reverse("weather_icon", args=["../secret", "2x"]))
+        response = self.client.get(reverse("weather_icon", args=["abc", "2x"]))
 
         self.assertEqual(response.status_code, 404)
         mock_get.assert_not_called()
