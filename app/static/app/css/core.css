@@ -2478,8 +2478,8 @@ body.dark-mode:not(.custom-theme) {
 
     background-color: currentColor;
 
-    -webkit-mask-image: url("../../icons/icons8-gemini-ai.svg");
-    mask-image: url("../../icons/icons8-gemini-ai.svg");
+    -webkit-mask-image: url("../icons/icons8-gemini-ai.svg");
+    mask-image: url("../icons/icons8-gemini-ai.svg");
 
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;

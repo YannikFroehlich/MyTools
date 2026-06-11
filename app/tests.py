@@ -1,6 +1,7 @@
 import json
 import shutil
 import tempfile
+from io import BytesIO
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -121,17 +122,9 @@ class BaseTestCase(TestCase):
             pre_save.disconnect(self._assign_test_user, sender=model)
 
     def get_test_image(self, name="test.png"):
-        return SimpleUploadedFile(
-            name,
-            (
-                b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
-                b"\x00\x00\x00\x01\x00\x00\x00\x01"
-                b"\x08\x02\x00\x00\x00\x90wS\xde"
-                b"\x00\x00\x00\x0cIDATx\x9cc``\x00\x00\x00\x04\x00\x01"
-                b"\xf6\x178U\x00\x00\x00\x00IEND\xaeB`\x82"
-            ),
-            content_type="image/png",
-        )
+        buffer = BytesIO()
+        Image.new("RGB", (16, 16), (120, 120, 120)).save(buffer, format="PNG")
+        return SimpleUploadedFile(name, buffer.getvalue(), content_type="image/png")
 
     def get_large_test_image(self, name="large.bmp"):
         width = 2000
@@ -554,6 +547,16 @@ class MediaThumbnailTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("max-age=31536000", response["Cache-Control"])
         self.assertTrue(response.streaming)
+
+    def test_media_thumbnail_response_uses_webp_content_type(self):
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("avatar.png", self.get_test_image("avatar.png"), save=True)
+        self.client.logout()
+
+        response = self.client.get(reverse("media_thumbnail", args=["avatar-small", profile.avatar.name]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "image/webp")
 
     def test_media_filters_return_empty_for_missing_files(self):
         from app.templatetags.media_performance import media_srcset, media_thumb
@@ -1946,6 +1949,13 @@ class StaticPageTests(BaseTestCase):
         self.assertNotContains(response, "app/css/contrast.css")
         self.assertContains(response, "cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
         self.assertNotContains(response, "kit.fontawesome.com")
+
+    def test_core_css_uses_correct_relative_icon_paths(self):
+        css = Path(settings.BASE_DIR) / "app" / "static" / "app" / "css" / "core.css"
+        css_content = css.read_text(encoding="utf-8")
+
+        self.assertIn('../icons/icons8-gemini-ai.svg', css_content)
+        self.assertNotIn('../../icons/icons8-gemini-ai.svg', css_content)
 
     def test_profile_menu_defers_large_avatar_and_obfuscates_email(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
