@@ -555,6 +555,16 @@ class MediaThumbnailTests(BaseTestCase):
         self.assertIn("max-age=31536000", response["Cache-Control"])
         self.assertTrue(response.streaming)
 
+    def test_media_thumbnail_response_uses_webp_content_type(self):
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("avatar.png", self.get_test_image("avatar.png"), save=True)
+        self.client.logout()
+
+        response = self.client.get(reverse("media_thumbnail", args=["avatar-small", profile.avatar.name]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "image/webp")
+
     def test_media_filters_return_empty_for_missing_files(self):
         from app.templatetags.media_performance import media_srcset, media_thumb
 
@@ -1946,6 +1956,13 @@ class StaticPageTests(BaseTestCase):
         self.assertNotContains(response, "app/css/contrast.css")
         self.assertContains(response, "cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
         self.assertNotContains(response, "kit.fontawesome.com")
+
+    def test_core_css_uses_correct_relative_icon_paths(self):
+        css = Path(settings.BASE_DIR) / "app" / "static" / "app" / "css" / "core.css"
+        css_content = css.read_text(encoding="utf-8")
+
+        self.assertIn('../icons/icons8-gemini-ai.svg', css_content)
+        self.assertNotIn('../../icons/icons8-gemini-ai.svg', css_content)
 
     def test_profile_menu_defers_large_avatar_and_obfuscates_email(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
