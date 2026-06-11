@@ -661,7 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ── LIVE BENACHRICHTIGUNGS-ZÄHLER ── */
     const liveStatusUrl = body.dataset.liveStatusUrl;
     const notificationCountsUrl = body.dataset.notificationCountsUrl;
-    const notificationPollMs = liveStatusUrl ? 5000 : 3000;
+    const notificationPollMs = liveStatusUrl ? 15000 : 7000;
     const liveStatusState = window.__myToolsLiveStatusState || {
         inFlight: false,
         lastFetchAt: 0,

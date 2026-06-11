@@ -130,7 +130,7 @@
                                                             </div>
 
                                                             {% if data.icon %}
-                                                                <img src="https://openweathermap.org/img/wn/{{ data.icon }}@2x.png" alt="{{ data.description }}" loading="lazy" decoding="async">
+                                                                <img src="{{ data.icon_url }}" alt="{{ data.description }}" loading="lazy" decoding="async" fetchpriority="low">
                                                             {% else %}
                                                                 <i class="fa-solid fa-cloud-sun weather-fallback-icon"></i>
                                                             {% endif %}
