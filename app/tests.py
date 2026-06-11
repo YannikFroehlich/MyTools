@@ -1,6 +1,7 @@
 import json
 import shutil
 import tempfile
+from io import BytesIO
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -121,17 +122,9 @@ class BaseTestCase(TestCase):
             pre_save.disconnect(self._assign_test_user, sender=model)
 
     def get_test_image(self, name="test.png"):
-        return SimpleUploadedFile(
-            name,
-            (
-                b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
-                b"\x00\x00\x00\x01\x00\x00\x00\x01"
-                b"\x08\x02\x00\x00\x00\x90wS\xde"
-                b"\x00\x00\x00\x0cIDATx\x9cc``\x00\x00\x00\x04\x00\x01"
-                b"\xf6\x178U\x00\x00\x00\x00IEND\xaeB`\x82"
-            ),
-            content_type="image/png",
-        )
+        buffer = BytesIO()
+        Image.new("RGB", (16, 16), (120, 120, 120)).save(buffer, format="PNG")
+        return SimpleUploadedFile(name, buffer.getvalue(), content_type="image/png")
 
     def get_large_test_image(self, name="large.bmp"):
         width = 2000
