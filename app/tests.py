@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.signals import pre_save
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse, resolve
 from django.utils import timezone
 
@@ -22,6 +22,7 @@ from app.models import (
     AvatarCharacter,
     BattleshipGame,
     BattleshipInvite,
+    ChatAttachment,
     ChatMessage,
     ChatTypingStatus,
     ChatRoom,
@@ -472,6 +473,61 @@ class LiveStatusPerformanceTests(BaseTestCase):
         self.assertEqual(get_notification_counts(friend)["pong_invites"], 0)
 
 
+    def test_live_status_ignores_invalid_ids_and_limits_presence_profiles(self):
+        created_users = [
+            get_user_model().objects.create_user(username=f"presence_user_{index}", password="testpass-123")
+            for index in range(55)
+        ]
+        for created_user in created_users:
+            UserProfile.objects.get_or_create(user=created_user)
+            UserPresence.objects.create(user=created_user, last_seen=timezone.now())
+
+        raw_ids = "abc,," + ",".join(str(created_user.id) for created_user in created_users) + f",{created_users[0].id}"
+        response = self.client.get(reverse("live_status_api"), {"ids": raw_ids})
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(len(payload["profiles"]), 50)
+        self.assertEqual(payload["profiles"][0]["userId"], created_users[0].id)
+        self.assertEqual(payload["profiles"][-1]["userId"], created_users[49].id)
+
+    def test_live_status_respects_private_presence_for_non_friends(self):
+        private_user = get_user_model().objects.create_user(username="private_presence", password="testpass-123")
+        profile, _ = UserProfile.objects.get_or_create(user=private_user)
+        profile.privacy_show_online = False
+        profile.save(update_fields=["privacy_show_online"])
+        UserPresence.objects.create(
+            user=private_user,
+            last_seen=timezone.now(),
+            active_game="2048",
+            active_game_label="spielt 2048",
+            active_game_updated_at=timezone.now(),
+        )
+
+        response = self.client.get(reverse("live_status_api"), {"ids": str(private_user.id)})
+
+        self.assertEqual(response.status_code, 200)
+        profile_payload = response.json()["profiles"][0]
+        self.assertFalse(profile_payload["isOnline"])
+        self.assertEqual(profile_payload["activityStatus"], "")
+
+    def test_live_status_presence_payload_is_short_cached(self):
+        friend = get_user_model().objects.create_user(username="presence_cache_friend", password="testpass-123")
+        UserProfile.objects.get_or_create(user=friend)
+        UserPresence.objects.create(user=friend, last_seen=timezone.now())
+
+        first_response = self.client.get(reverse("live_status_api"), {"ids": str(friend.id)})
+        self.assertTrue(first_response.json()["profiles"][0]["isOnline"])
+
+        UserPresence.objects.filter(user=friend).update(last_seen=timezone.now() - timezone.timedelta(days=1))
+        cached_response = self.client.get(reverse("live_status_api"), {"ids": str(friend.id)})
+        self.assertTrue(cached_response.json()["profiles"][0]["isOnline"])
+
+        cache.clear()
+        fresh_response = self.client.get(reverse("live_status_api"), {"ids": str(friend.id)})
+        self.assertFalse(fresh_response.json()["profiles"][0]["isOnline"])
+
+
 class MediaThumbnailTests(BaseTestCase):
     def test_media_srcset_filter_builds_responsive_thumbnail_urls(self):
         from app.templatetags.media_performance import media_srcset
@@ -496,6 +552,48 @@ class MediaThumbnailTests(BaseTestCase):
         self.assertIn("max-age=31536000", response["Cache-Control"])
         self.assertTrue(response.streaming)
 
+    def test_media_filters_return_empty_for_missing_files(self):
+        from app.templatetags.media_performance import media_srcset, media_thumb
+
+        self.assertEqual(media_thumb(None, "avatar-small"), "")
+        self.assertEqual(media_srcset(None, "avatar-small 96w"), "")
+
+    def test_media_srcset_skips_empty_entries_and_keeps_descriptor_order(self):
+        from app.templatetags.media_performance import media_srcset
+
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("avatar.png", self.get_test_image("avatar.png"), save=True)
+
+        srcset = media_srcset(profile.avatar, " , avatar-tiny 48w, avatar-small 96w, ")
+
+        self.assertIn("avatar-tiny", srcset)
+        self.assertIn("48w", srcset)
+        self.assertIn("avatar-small", srcset)
+        self.assertIn("96w", srcset)
+        self.assertNotIn("unknown", srcset)
+
+    def test_media_thumbnail_returns_not_modified_for_matching_header(self):
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("avatar.bmp", self.get_large_test_image("avatar.bmp"), save=True)
+        self.client.logout()
+
+        first_response = self.client.get(reverse("media_thumbnail", args=["avatar-small", profile.avatar.name]))
+        self.assertEqual(first_response.status_code, 200)
+
+        second_response = self.client.get(
+            reverse("media_thumbnail", args=["avatar-small", profile.avatar.name]),
+            HTTP_IF_MODIFIED_SINCE=first_response["Last-Modified"],
+        )
+
+        self.assertEqual(second_response.status_code, 304)
+
+    def test_media_thumbnail_rejects_path_traversal(self):
+        self.client.logout()
+
+        response = self.client.get("/media-thumb/avatar-small/../secret.png")
+
+        self.assertEqual(response.status_code, 404)
+
     def test_media_thumbnail_rejects_unknown_spec(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
         profile.avatar.save("avatar.bmp", self.get_large_test_image("avatar.bmp"), save=True)
@@ -503,6 +601,63 @@ class MediaThumbnailTests(BaseTestCase):
         response = self.client.get(reverse("media_thumbnail", args=["unknown", profile.avatar.name]))
 
         self.assertEqual(response.status_code, 404)
+
+
+class RealtimeInfrastructureTests(SimpleTestCase):
+    def test_broadcast_group_returns_false_without_channel_layer(self):
+        from app.realtime import broadcast_group
+
+        with patch("app.realtime.get_channel_layer", return_value=None):
+            self.assertFalse(broadcast_group("chat_1", {"type": "chat.typing"}))
+
+    def test_broadcast_chat_event_sends_channels_group_event(self):
+        from app.realtime import broadcast_chat_event
+
+        layer = Mock()
+        send_callable = Mock()
+        with patch("app.realtime.get_channel_layer", return_value=layer), patch("app.realtime.async_to_sync", return_value=send_callable):
+            did_send = broadcast_chat_event(42, "message_created", message_id=7)
+
+        self.assertTrue(did_send)
+        send_callable.assert_called_once_with("chat_42", {"type": "chat.message_created", "message_id": 7})
+
+    def test_websocket_routes_include_chat_and_pong(self):
+        from app.routing import websocket_urlpatterns
+
+        routes = {getattr(pattern.pattern, "_route", str(pattern.pattern)) for pattern in websocket_urlpatterns}
+
+        self.assertIn("ws/chat/<int:room_id>/", routes)
+        self.assertIn("ws/pong/<str:code>/", routes)
+
+
+class PerformanceIndexTests(SimpleTestCase):
+    def index_names(self, model):
+        return {index.name for index in model._meta.indexes if index.name}
+
+    def test_chat_indexes_cover_realtime_message_and_read_queries(self):
+        self.assertIn("chatroom_updated_idx", self.index_names(ChatRoom))
+        self.assertIn("chatmember_user_read_idx", self.index_names(ChatRoomMember))
+        self.assertIn("chatmsg_room_new_idx", self.index_names(ChatMessage))
+        self.assertIn("chatattach_msg_created_idx", self.index_names(ChatAttachment))
+
+    def test_dashboard_and_media_indexes_are_declared_on_models(self):
+        self.assertIn("weather_user_default_idx", self.index_names(WeatherLocation))
+        self.assertIn("homewidget_enabled_order_idx", self.index_names(HomeWidget))
+        self.assertIn("gallery_user_public_idx", self.index_names(ProfileGalleryImage))
+        self.assertIn("fileshare_type_created_idx", self.index_names(FileShare))
+        self.assertIn("upres_game_updated_idx", self.index_names(UserPresence))
+
+
+class CaddyPerformanceConfigTests(SimpleTestCase):
+    def test_caddyfile_has_static_media_compression_and_cache_headers(self):
+        caddyfile = (settings.BASE_DIR / "Caddyfile").read_text(encoding="utf-8")
+
+        self.assertIn("encode gzip zstd", caddyfile)
+        self.assertIn("handle_path /static/*", caddyfile)
+        self.assertIn("handle_path /media/*", caddyfile)
+        self.assertIn('Cache-Control "public, max-age=604800', caddyfile)
+        self.assertIn('Cache-Control "public, max-age=86400', caddyfile)
+        self.assertIn('X-Content-Type-Options "nosniff"', caddyfile)
 
 
 class AuthViewTests(BaseTestCase):
@@ -1918,6 +2073,56 @@ class ChatEnhancementTests(BaseTestCase):
         self.assertEqual(response.json()["typing_users"][0]["username"], self.user.username)
 
 
+    @patch("app.chat_views.broadcast_chat_event")
+    def test_chat_write_actions_broadcast_realtime_events(self, mock_broadcast):
+        send_response = self.client.post(
+            reverse("chat_send", args=[self.room.id]),
+            {"text": "Hallo live"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(send_response.status_code, 200)
+        own_message_id = send_response.json()["message"]["id"]
+        mock_broadcast.assert_any_call(self.room.id, "message_created", message_id=own_message_id)
+
+        edit_response = self.client.post(
+            reverse("chat_message_edit", args=[self.room.id, own_message_id]),
+            {"text": "Hallo live bearbeitet"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(edit_response.status_code, 200)
+        mock_broadcast.assert_any_call(self.room.id, "message_updated", message_id=own_message_id)
+
+        reaction_response = self.client.post(
+            reverse("chat_message_react", args=[self.room.id, self.message.id]),
+            {"emoji": "👍"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(reaction_response.status_code, 200)
+        mock_broadcast.assert_any_call(self.room.id, "reaction_updated", message_id=self.message.id)
+
+        pin_response = self.client.post(
+            reverse("chat_message_pin", args=[self.room.id, self.message.id]),
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(pin_response.status_code, 200)
+        mock_broadcast.assert_any_call(self.room.id, "pinned_updated")
+
+        typing_response = self.client.post(
+            reverse("chat_typing_api", args=[self.room.id]),
+            {"is_typing": "true"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(typing_response.status_code, 200)
+        mock_broadcast.assert_any_call(self.room.id, "typing")
+
+        delete_response = self.client.post(
+            reverse("chat_message_delete", args=[self.room.id, own_message_id]),
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(delete_response.status_code, 200)
+        mock_broadcast.assert_any_call(self.room.id, "message_deleted", message_id=own_message_id)
+
+
 class ModerationDashboardTests(BaseTestCase):
     def setUp(self):
         super().setUp()
@@ -1949,6 +2154,10 @@ class ModerationDashboardTests(BaseTestCase):
 
 
 class WeatherViewTests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        cache.clear()
+
     def mocked_current_weather_response(self, status_code=200, json_data=None):
         response = Mock()
         response.status_code = status_code
@@ -2079,9 +2288,9 @@ class WeatherViewTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        first_called_url = mock_get.call_args_list[0][0][0]
+        first_call_params = mock_get.call_args_list[0].kwargs["params"]
 
-        self.assertIn("q=Berlin", first_called_url)
+        self.assertEqual(first_call_params["q"], "Berlin")
 
     @patch("app.views.get_env_value", return_value="test-weather-key")
     @patch("app.views.requests.get")
@@ -2097,9 +2306,9 @@ class WeatherViewTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        first_called_url = mock_get.call_args_list[0][0][0]
+        first_call_params = mock_get.call_args_list[0].kwargs["params"]
 
-        self.assertIn("q=Hamburg", first_called_url)
+        self.assertEqual(first_call_params["q"], "Hamburg")
 
     @patch("app.views.get_env_value", return_value="test-weather-key")
     @patch("app.views.requests.get")
@@ -2116,10 +2325,10 @@ class WeatherViewTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        first_called_url = mock_get.call_args_list[0][0][0]
+        first_call_params = mock_get.call_args_list[0].kwargs["params"]
 
-        self.assertIn("lat=52.52", first_called_url)
-        self.assertIn("lon=13.405", first_called_url)
+        self.assertEqual(first_call_params["lat"], "52.52")
+        self.assertEqual(first_call_params["lon"], "13.405")
 
     @patch("app.views.get_env_value", return_value="test-weather-key")
     @patch("app.views.requests.get")
@@ -2266,6 +2475,56 @@ class WeatherViewTests(BaseTestCase):
         next_location.refresh_from_db()
         self.assertFalse(WeatherLocation.objects.filter(id=default_location.id).exists())
         self.assertTrue(next_location.is_default)
+
+
+    @patch("app.views.requests.get")
+    def test_cached_openweather_json_reuses_successful_response_without_api_key_in_cache_key(self, mock_get):
+        from app.views import cached_openweather_json
+
+        mock_get.return_value = self.mocked_current_weather_response()
+        first_status, first_data = cached_openweather_json(
+            "weather",
+            {"appid": "first-key", "q": "Berlin", "units": "metric", "lang": "de"},
+        )
+        second_status, second_data = cached_openweather_json(
+            "weather",
+            {"appid": "second-key", "q": "Berlin", "units": "metric", "lang": "de"},
+        )
+
+        self.assertEqual(first_status, 200)
+        self.assertEqual(second_status, 200)
+        self.assertEqual(first_data["name"], "Berlin")
+        self.assertEqual(second_data["name"], "Berlin")
+        self.assertEqual(mock_get.call_count, 1)
+
+    @patch("app.views.requests.get")
+    def test_cached_openweather_json_does_not_cache_failed_responses(self, mock_get):
+        from app.views import cached_openweather_json
+
+        mock_get.return_value = self.mocked_current_weather_response(
+            status_code=500,
+            json_data={"message": "temporär nicht erreichbar"},
+        )
+
+        cached_openweather_json("weather", {"appid": "key", "q": "Berlin"})
+        cached_openweather_json("weather", {"appid": "key", "q": "Berlin"})
+
+        self.assertEqual(mock_get.call_count, 2)
+
+    @patch("app.views.get_env_value", return_value="test-weather-key")
+    @patch("app.views.requests.get")
+    def test_weather_page_reuses_cached_current_and_forecast_data(self, mock_get, mock_get_env_value):
+        mock_get.side_effect = [
+            self.mocked_current_weather_response(),
+            self.mocked_forecast_response(),
+        ]
+
+        first_response = self.client.get(reverse("weather"), {"city": "Berlin"})
+        second_response = self.client.get(reverse("weather"), {"city": "Berlin"})
+
+        self.assertEqual(first_response.status_code, 200)
+        self.assertEqual(second_response.status_code, 200)
+        self.assertEqual(mock_get.call_count, 2)
 
 
 class NoteFormTests(BaseTestCase):
