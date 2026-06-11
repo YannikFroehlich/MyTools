@@ -278,6 +278,7 @@ class UserPresence(models.Model):
         verbose_name_plural = "Online-Status"
         indexes = [
             models.Index(fields=["last_seen"]),
+            models.Index(fields=["active_game", "-active_game_updated_at"], name="upres_game_updated_idx"),
         ]
 
     def __str__(self):
@@ -418,6 +419,8 @@ class ChatRoom(models.Model):
         indexes = [
             models.Index(fields=["room_type", "updated_at"]),
             models.Index(fields=["direct_key"]),
+            models.Index(fields=["created_by", "-updated_at"], name="chatroom_creator_upd_idx"),
+            models.Index(fields=["-updated_at"], name="chatroom_updated_idx"),
         ]
         verbose_name = "Chatraum"
         verbose_name_plural = "Chaträume"
@@ -460,6 +463,8 @@ class ChatRoomMember(models.Model):
         ]
         indexes = [
             models.Index(fields=["user", "room"]),
+            models.Index(fields=["room", "last_read_at"], name="chatmember_room_read_idx"),
+            models.Index(fields=["user", "last_read_at"], name="chatmember_user_read_idx"),
         ]
         verbose_name = "Chatmitglied"
         verbose_name_plural = "Chatmitglieder"
@@ -480,6 +485,8 @@ class ChatMessage(models.Model):
         indexes = [
             models.Index(fields=["room", "created_at"]),
             models.Index(fields=["sender", "created_at"]),
+            models.Index(fields=["room", "id"], name="chatmsg_room_id_idx"),
+            models.Index(fields=["room", "-created_at"], name="chatmsg_room_new_idx"),
         ]
         verbose_name = "Chatnachricht"
         verbose_name_plural = "Chatnachrichten"
@@ -512,6 +519,9 @@ class ChatAttachment(models.Model):
 
     class Meta:
         ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["message", "created_at"], name="chatattach_msg_created_idx"),
+        ]
         verbose_name = "Chat-Anhang"
         verbose_name_plural = "Chat-Anhänge"
 
@@ -752,6 +762,10 @@ class WeatherLocation(models.Model):
 
     class Meta:
         ordering = ["order", "created_at"]
+        indexes = [
+            models.Index(fields=["user", "is_default"], name="weather_user_default_idx"),
+            models.Index(fields=["user", "order", "created_at"], name="weather_user_order_idx"),
+        ]
         verbose_name = "Wetter-Ort"
         verbose_name_plural = "Wetter-Orte"
         constraints = [
@@ -1048,6 +1062,7 @@ class HomeWidget(models.Model):
         ordering = ["order", "created_at"]
         indexes = [
             models.Index(fields=["user", "order", "created_at"]),
+            models.Index(fields=["user", "is_enabled", "order", "created_at"], name="homewidget_enabled_order_idx"),
         ]
         verbose_name = "Home-Widget"
         verbose_name_plural = "Home-Widgets"
@@ -1264,6 +1279,7 @@ class TicTacToeGame(models.Model):
             models.Index(fields=["owner", "status"]),
             models.Index(fields=["player_x", "status"]),
             models.Index(fields=["player_o", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="ttt_status_updated_idx"),
         ]
 
     def __str__(self):
@@ -1399,6 +1415,7 @@ class ConnectFourGame(models.Model):
             models.Index(fields=["owner", "status"]),
             models.Index(fields=["player_red", "status"]),
             models.Index(fields=["player_yellow", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="c4_status_updated_idx"),
         ]
 
     def __str__(self):
@@ -1539,6 +1556,7 @@ class BattleshipGame(models.Model):
             models.Index(fields=["owner", "status"]),
             models.Index(fields=["player_a", "status"]),
             models.Index(fields=["player_b", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="bs_status_updated_idx"),
         ]
 
     def __str__(self):
@@ -1659,6 +1677,7 @@ class UnoGame(models.Model):
         indexes = [
             models.Index(fields=["code"]),
             models.Index(fields=["owner", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="uno_status_updated_idx"),
         ]
 
     def __str__(self):
@@ -1796,6 +1815,7 @@ class KniffelGame(models.Model):
         indexes = [
             models.Index(fields=["code"]),
             models.Index(fields=["owner", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="kniffel_status_updated_idx"),
         ]
 
     def __str__(self):
@@ -1933,6 +1953,7 @@ class StadtLandFlussLobby(models.Model):
         indexes = [
             models.Index(fields=["code"]),
             models.Index(fields=["owner", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="slf_status_updated_idx"),
         ]
 
     def __str__(self):
@@ -1965,6 +1986,10 @@ class StadtLandFlussPlayer(models.Model):
         ordering = ["joined_at"]
         constraints = [
             models.UniqueConstraint(fields=["lobby", "user"], name="unique_stadtlandfluss_player_per_lobby"),
+        ]
+        indexes = [
+            models.Index(fields=["lobby", "last_seen"], name="slfplayer_lobby_seen_idx"),
+            models.Index(fields=["user", "last_seen"], name="slfplayer_user_seen_idx"),
         ]
         verbose_name = "Stadt Land Fluss Spieler"
         verbose_name_plural = "Stadt Land Fluss Spieler"
@@ -2110,6 +2135,7 @@ class DrawingGameLobby(models.Model):
         indexes = [
             models.Index(fields=["code"]),
             models.Index(fields=["owner", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="draw_status_updated_idx"),
         ]
 
     def __str__(self):
@@ -2171,6 +2197,10 @@ class DrawingGamePlayer(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["lobby", "user"], name="unique_drawing_player_per_lobby"),
         ]
+        indexes = [
+            models.Index(fields=["lobby", "last_seen"], name="drawplayer_lobby_seen_idx"),
+            models.Index(fields=["user", "last_seen"], name="drawplayer_user_seen_idx"),
+        ]
         verbose_name = "Skribble-Spieler"
         verbose_name_plural = "Skribble-Spieler"
 
@@ -2217,6 +2247,10 @@ class DrawingGameInvite(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["lobby", "to_user"], name="unique_drawing_invite_per_lobby_user"),
             models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="drawing_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"], name="drawinvite_to_status_idx"),
+            models.Index(fields=["lobby", "status"], name="drawinvite_lobby_status_idx"),
         ]
         verbose_name = "Skribble-Einladung"
         verbose_name_plural = "Skribble-Einladungen"
@@ -2281,7 +2315,10 @@ class ChatTypingStatus(models.Model):
     class Meta:
         ordering = ["-updated_at"]
         constraints = [models.UniqueConstraint(fields=["room", "user"], name="unique_chat_typing_status")]
-        indexes = [models.Index(fields=["room", "is_typing", "-updated_at"])]
+        indexes = [
+            models.Index(fields=["room", "is_typing", "-updated_at"]),
+            models.Index(fields=["room", "user", "-updated_at"], name="typing_room_user_idx"),
+        ]
         verbose_name = "Chat-Tippstatus"
         verbose_name_plural = "Chat-Tippstatus"
 
@@ -2302,7 +2339,10 @@ class ProfileGalleryImage(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        indexes = [models.Index(fields=["user", "-created_at"])]
+        indexes = [
+            models.Index(fields=["user", "-created_at"]),
+            models.Index(fields=["user", "is_public", "-created_at"], name="gallery_user_public_idx"),
+        ]
         verbose_name = "Profil-Galeriebild"
         verbose_name_plural = "Profil-Galeriebilder"
 
@@ -2692,6 +2732,7 @@ class HangmanLobby(models.Model):
         indexes = [
             models.Index(fields=["code"]),
             models.Index(fields=["owner", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="hang_status_updated_idx"),
         ]
 
     def __str__(self):
@@ -2829,6 +2870,7 @@ class FileShare(models.Model):
             models.Index(fields=["owner", "-created_at"]),
             models.Index(fields=["token"]),
             models.Index(fields=["is_public_link", "-created_at"]),
+            models.Index(fields=["content_type", "-created_at"], name="fileshare_type_created_idx"),
         ]
         verbose_name = "Dateifreigabe"
         verbose_name_plural = "Dateifreigaben"
@@ -2916,6 +2958,7 @@ class PongGame(models.Model):
             models.Index(fields=["owner", "status"]),
             models.Index(fields=["player_left", "status"]),
             models.Index(fields=["player_right", "status"]),
+            models.Index(fields=["status", "-updated_at"], name="pong_status_updated_idx"),
         ]
         verbose_name = "Pong Spiel"
         verbose_name_plural = "Pong Spiele"

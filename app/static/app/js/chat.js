@@ -22,6 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let typingSendTimer = null;
     let typingIdleTimer = null;
     let lastTypingSentAt = 0;
+    const roomId = layout.dataset.roomId || "";
+    let chatSocket = null;
+    let socketReady = false;
+    let socketReconnectTimer = null;
+    let pollingTimer = null;
 
     if (browserNotificationsEnabled && "Notification" in window && Notification.permission === "default") {
         Notification.requestPermission().catch(() => {});
@@ -38,6 +43,11 @@ document.addEventListener("DOMContentLoaded", () => {
             .map((message) => message.dataset.messageId)
             .filter(Boolean)
             .join(",");
+    }
+
+    function hasMessage(messageId) {
+        if (!messageId) return false;
+        return Boolean(messagesBox.querySelector(`.chat-message[data-message-id="${CSS.escape(String(messageId))}"]`));
     }
 
     function scrollToBottom() {
@@ -252,13 +262,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function appendMessages(messages, fromPolling = false) {
-        if (!messages.length) return;
+        const newMessages = (messages || []).filter((message) => !hasMessage(message.id));
+        if (!newMessages.length) return;
         document.getElementById("chat-empty-state")?.remove();
         const shouldStick = messagesBox.scrollHeight - messagesBox.scrollTop - messagesBox.clientHeight < 140;
-        messagesBox.insertAdjacentHTML("beforeend", messagesWithDateSeparators(messages));
+        messagesBox.insertAdjacentHTML("beforeend", messagesWithDateSeparators(newMessages));
         if (shouldStick) scrollToBottom();
         if (fromPolling) {
-            const incoming = messages.filter((message) => !message.is_own);
+            const incoming = newMessages.filter((message) => !message.is_own);
             if (incoming.length) {
                 playNotificationSound();
                 showBrowserNotification(incoming[incoming.length - 1]);
@@ -321,6 +332,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function sendTypingState(isTyping) {
+        if (socketReady && chatSocket) {
+            try {
+                chatSocket.send(JSON.stringify({action: "typing", isTyping: Boolean(isTyping)}));
+                return;
+            } catch (error) {
+                console.warn("Typing websocket update failed", error);
+            }
+        }
+
         if (!typingUrl) return;
         const formData = new FormData();
         formData.append("csrfmiddlewaretoken", csrfToken);
@@ -350,6 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function pollMessages() {
+        if (socketReady) return;
         try {
             const url = `${messagesUrl}?after=${encodeURIComponent(lastMessageId())}&visible=${encodeURIComponent(visibleMessageIds())}`;
             const response = await fetch(url, {headers: {"X-Requested-With": "XMLHttpRequest"}});
@@ -365,6 +386,88 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             console.warn("Chat polling failed", error);
         }
+    }
+
+    function websocketUrl() {
+        if (!roomId) return "";
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        return `${protocol}://${window.location.host}/ws/chat/${encodeURIComponent(roomId)}/`;
+    }
+
+    function handleSocketEvent(data) {
+        if (!data || !data.type) return;
+        if (data.type === "message_created" && data.message) {
+            appendMessages([data.message], true);
+            return;
+        }
+        if (data.type === "message_updated" && data.message) {
+            applyMessageUpdates([data.message]);
+            return;
+        }
+        if (data.type === "message_deleted") {
+            applyDeletedMessages(data.deletedIds || data.deleted_ids || []);
+            return;
+        }
+        if (data.type === "pinned_updated") {
+            renderPinnedMessage(data.pinnedMessage || data.pinned_message || null);
+            return;
+        }
+        if (data.type === "typing") {
+            renderTypingUsers(data.typingUsers || data.typing_users || []);
+        }
+    }
+
+    function startPollingFallback() {
+        if (pollingTimer) return;
+        pollingTimer = window.setInterval(pollMessages, 3500);
+    }
+
+    function stopPollingFallback() {
+        if (!pollingTimer) return;
+        window.clearInterval(pollingTimer);
+        pollingTimer = null;
+    }
+
+    function connectChatSocket() {
+        const url = websocketUrl();
+        if (!url || !("WebSocket" in window)) {
+            startPollingFallback();
+            return;
+        }
+
+        try {
+            chatSocket = new WebSocket(url);
+        } catch (error) {
+            console.warn("Chat websocket unavailable", error);
+            startPollingFallback();
+            return;
+        }
+
+        chatSocket.addEventListener("open", () => {
+            socketReady = true;
+            stopPollingFallback();
+        });
+
+        chatSocket.addEventListener("message", (event) => {
+            try {
+                handleSocketEvent(JSON.parse(event.data));
+            } catch (error) {
+                console.warn("Chat websocket message failed", error);
+            }
+        });
+
+        chatSocket.addEventListener("close", () => {
+            socketReady = false;
+            chatSocket = null;
+            startPollingFallback();
+            window.clearTimeout(socketReconnectTimer);
+            socketReconnectTimer = window.setTimeout(connectChatSocket, 2500);
+        });
+
+        chatSocket.addEventListener("error", () => {
+            socketReady = false;
+            startPollingFallback();
+        });
     }
 
     form.addEventListener("submit", async (event) => {
@@ -588,5 +691,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     updatePinMenuLabels();
     scrollToBottom();
-    setInterval(pollMessages, 3500);
+    connectChatSocket();
+    startPollingFallback();
 });

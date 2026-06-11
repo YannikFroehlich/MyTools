@@ -26,7 +26,9 @@ from .models import (
     UserProfile,
 )
 from .profile_views import ensure_profiles_for_users, get_friend_profiles
+from .notification_utils import invalidate_notification_cache
 from .presence_utils import decorate_users_with_presence
+from .realtime import broadcast_chat_event
 
 User = get_user_model()
 
@@ -398,7 +400,10 @@ def send_chat_message(request, room_id):
     ChatRoomMember.objects.filter(room=room, user=request.user).update(last_read_at=timezone.now())
     mentioned_users = notify_mentions(message)
     mentioned_user_ids = {user.id for user in mentioned_users}
-    for member in room.members.select_related("profile").exclude(id=request.user.id):
+    room_members = list(room.members.select_related("profile"))
+    for member in room_members:
+        if member.id == request.user.id:
+            continue
         if member.id in mentioned_user_ids:
             continue
         member_profile, _created = UserProfile.objects.get_or_create(user=member)
@@ -413,17 +418,30 @@ def send_chat_message(request, room_id):
                 icon="fa-solid fa-comments",
             )
 
+    for member in room_members:
+        invalidate_notification_cache(member)
+    broadcast_chat_event(room.id, "message_created", message_id=message.id)
+
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({"ok": True, "message": message_payload(message, request.user)})
+        message = (
+            ChatMessage.objects
+            .select_related("room", "sender", "sender__profile")
+            .prefetch_related("reactions", "attachments", "read_receipts")
+            .get(id=message.id)
+        )
+        return JsonResponse({"ok": True, "message": message_payload(message, request.user, room.pinned_message_id)})
 
     return redirect("chat_room", room_id=room.id)
 
 def mark_room_messages_read(room, user):
-    unread_messages = room.messages.exclude(sender=user).exclude(read_receipts__user=user)[:200]
+    unread_messages = list(room.messages.exclude(sender=user).exclude(read_receipts__user=user)[:200])
+    if not unread_messages:
+        return False
     ChatMessageRead.objects.bulk_create(
         [ChatMessageRead(message=message, user=user) for message in unread_messages],
         ignore_conflicts=True,
     )
+    return True
 
 
 def read_label_for_message(message, current_user):
@@ -513,7 +531,8 @@ def chat_messages_api(request, room_id):
     ]
 
     ChatRoomMember.objects.filter(room=room, user=request.user).update(last_read_at=timezone.now())
-    mark_room_messages_read(room, request.user)
+    if mark_room_messages_read(room, request.user):
+        invalidate_notification_cache(request.user)
     pinned_message = pinned_message_for(room, request.user)
     return JsonResponse({
         "ok": True,
@@ -532,6 +551,9 @@ def delete_chat_message(request, room_id, message_id):
     message = get_object_or_404(ChatMessage, id=message_id, room=room, sender=request.user)
     message.delete()
     room.save(update_fields=["updated_at"])
+    for member in room.members.all():
+        invalidate_notification_cache(member)
+    broadcast_chat_event(room.id, "message_deleted", message_id=message_id)
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return JsonResponse({"ok": True, "deleted_id": message_id})
@@ -561,10 +583,13 @@ def edit_chat_message(request, room_id, message_id):
     notify_mentions(message)
     message = (
         ChatMessage.objects
-        .select_related("sender", "sender__profile")
+        .select_related("room", "sender", "sender__profile")
         .prefetch_related("reactions", "attachments", "read_receipts")
         .get(id=message.id)
     )
+    for member in room.members.all():
+        invalidate_notification_cache(member)
+    broadcast_chat_event(room.id, "message_updated", message_id=message.id)
     return JsonResponse({"ok": True, "message": message_payload(message, request.user, room.pinned_message_id)})
 
 
@@ -578,6 +603,7 @@ def chat_typing_api(request, room_id):
         user=request.user,
         defaults={"is_typing": is_typing},
     )
+    broadcast_chat_event(room.id, "typing")
     return JsonResponse({"ok": True, "typing_users": typing_payload(room, request.user)})
 
 
@@ -606,6 +632,7 @@ def react_chat_message(request, room_id, message_id):
         ChatMessageReaction.objects.create(message=message, user=request.user, emoji=emoji)
 
     message = ChatMessage.objects.prefetch_related("reactions", "attachments", "read_receipts").get(id=message.id)
+    broadcast_chat_event(room.id, "reaction_updated", message_id=message.id)
     return JsonResponse({"ok": True, "message_id": message.id, "reactions": reaction_payload(message, request.user)})
 
 
@@ -621,6 +648,7 @@ def pin_chat_message(request, room_id, message_id):
     should_unpin = request.POST.get("action") == "unpin" or room.pinned_message_id == message.id
     room.pinned_message = None if should_unpin else message
     room.save(update_fields=["pinned_message", "updated_at"])
+    broadcast_chat_event(room.id, "pinned_updated")
 
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         pinned_message = pinned_message_for(room, request.user)
