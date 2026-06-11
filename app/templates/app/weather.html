@@ -6,7 +6,6 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/weather.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 {% endblock %}
 
 {% block content %}
@@ -137,7 +136,7 @@
 
                 <div class="current-main">
                     <img src="https://openweathermap.org/img/wn/{{ icon }}@4x.png"
-                         alt="{{ description|capfirst }}">
+                         alt="{{ description|capfirst }}" loading="lazy" decoding="async">
 
                     <div>
                         <div class="temperature">
@@ -198,7 +197,7 @@
                     <div class="hourly-item">
                         <div class="hour-time">{{ hour.time }}</div>
                         <img src="https://openweathermap.org/img/wn/{{ hour.icon }}@2x.png"
-                             alt="">
+                             alt="" loading="lazy" decoding="async">
                         <div class="hour-temp">{{ hour.temp }}{{ temperature_unit }}</div>
                         <div class="hour-rain">
                             <i class="fa-solid fa-droplet"></i>
@@ -219,7 +218,7 @@
                         <div class="forecast-day">{{ day.day }}</div>
                         <div class="forecast-date">{{ day.date }}</div>
                         <img src="https://openweathermap.org/img/wn/{{ day.icon }}@2x.png"
-                             alt="{{ day.description|capfirst }}">
+                             alt="{{ day.description|capfirst }}" loading="lazy" decoding="async">
                         <div class="forecast-temp">{{ day.temp_max }}{{ temperature_unit }}</div>
                         <div class="forecast-min">{{ day.temp_min }}{{ temperature_unit }}</div>
                         <div class="forecast-rain">
@@ -257,5 +256,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/weather.js' %}"></script>
+    <script src="{% static 'app/js/weather.js' %}" defer></script>
 {% endblock %}

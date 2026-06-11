@@ -10,7 +10,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from .models import PongGame
+from .models import ChatMessage, ChatRoom, ChatRoomMember, ChatTypingStatus, PongGame
+from .chat_views import mark_room_messages_read, message_payload, pinned_message_for, typing_payload
+from .notification_utils import invalidate_notification_cache
 from .pong_views import (
     FIELD_H,
     PADDLE_H,
@@ -28,6 +30,159 @@ _room_tasks = {}
 _room_connections = {}
 _room_lock = asyncio.Lock()
 
+
+
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    """Realtime chat room channel with HTTP fallback.
+
+    Messages are still created/edited/deleted through the existing HTTP views so
+    file uploads, CSRF checks and validation stay unchanged. This socket only
+    fans out events and typing state to reduce polling.
+    """
+
+    async def connect(self):
+        self.room_id = int(self.scope["url_route"]["kwargs"]["room_id"])
+        self.group_name = f"chat_{self.room_id}"
+        self.user = self.scope.get("user")
+
+        if not self.user or not self.user.is_authenticated:
+            await self.close(code=4401)
+            return
+
+        if not await self._can_join_room():
+            await self.close(code=4403)
+            return
+
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        await self.accept()
+        await self.send_json({"type": "connected", "roomId": self.room_id})
+
+    async def disconnect(self, close_code):
+        with suppress(Exception):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+    async def receive(self, text_data=None, bytes_data=None):
+        if not text_data:
+            return
+        try:
+            payload = json.loads(text_data)
+        except json.JSONDecodeError:
+            return
+
+        action = payload.get("action")
+        if action == "typing":
+            is_typing = bool(payload.get("isTyping"))
+            await self._set_typing(is_typing)
+            await self.channel_layer.group_send(self.group_name, {"type": "chat.typing"})
+        elif action == "ping":
+            await self.send_json({"type": "pong"})
+
+    async def chat_message_created(self, event):
+        payload = await self._message_payload(event.get("message_id"))
+        if not payload:
+            return
+        if not payload.get("is_own"):
+            await self._mark_room_read()
+        await self.send_json({"type": "message_created", "message": payload})
+
+    async def chat_message_updated(self, event):
+        payload = await self._message_payload(event.get("message_id"))
+        if payload:
+            await self.send_json({"type": "message_updated", "message": payload})
+
+    async def chat_message_deleted(self, event):
+        await self.send_json({"type": "message_deleted", "deletedIds": [event.get("message_id")]})
+
+    async def chat_reaction_updated(self, event):
+        update = await self._reaction_update(event.get("message_id"))
+        if update:
+            await self.send_json({"type": "message_updated", "message": update})
+
+    async def chat_pinned_updated(self, event):
+        payload = await self._pinned_payload()
+        await self.send_json({"type": "pinned_updated", "pinnedMessage": payload})
+
+    async def chat_typing(self, event):
+        await self.send_json({"type": "typing", "typingUsers": await self._typing_payload()})
+
+    async def send_json(self, payload):
+        await self.send(text_data=json.dumps(payload))
+
+    @database_sync_to_async
+    def _can_join_room(self):
+        return ChatRoomMember.objects.filter(room_id=self.room_id, user=self.user).exists()
+
+    @database_sync_to_async
+    def _set_typing(self, is_typing):
+        ChatTypingStatus.objects.update_or_create(
+            room_id=self.room_id,
+            user=self.user,
+            defaults={"is_typing": is_typing},
+        )
+
+    @database_sync_to_async
+    def _message_payload(self, message_id):
+        if not message_id:
+            return None
+        message = (
+            ChatMessage.objects
+            .filter(id=message_id, room_id=self.room_id)
+            .select_related("room", "sender", "sender__profile")
+            .prefetch_related("reactions", "attachments", "read_receipts")
+            .first()
+        )
+        if not message:
+            return None
+        return message_payload(message, self.user, message.room.pinned_message_id)
+
+    @database_sync_to_async
+    def _reaction_update(self, message_id):
+        if not message_id:
+            return None
+        message = (
+            ChatMessage.objects
+            .filter(id=message_id, room_id=self.room_id)
+            .select_related("room", "sender", "sender__profile")
+            .prefetch_related("reactions", "attachments", "read_receipts")
+            .first()
+        )
+        if not message:
+            return None
+        payload = message_payload(message, self.user, message.room.pinned_message_id)
+        return {
+            "id": payload["id"],
+            "text": payload["text"],
+            "edited_at": payload["edited_at"],
+            "is_edited": payload["is_edited"],
+            "reactions": payload["reactions"],
+            "read_label": payload["read_label"],
+            "is_pinned": payload["is_pinned"],
+        }
+
+    @database_sync_to_async
+    def _pinned_payload(self):
+        room = ChatRoom.objects.filter(id=self.room_id).first()
+        if not room:
+            return None
+        pinned_message = pinned_message_for(room, self.user)
+        return message_payload(pinned_message, self.user, room.pinned_message_id) if pinned_message else None
+
+    @database_sync_to_async
+    def _typing_payload(self):
+        room = ChatRoom.objects.filter(id=self.room_id).first()
+        return typing_payload(room, self.user) if room else []
+
+    @database_sync_to_async
+    def _mark_room_read(self):
+        room = ChatRoom.objects.filter(id=self.room_id).first()
+        if not room:
+            return False
+        did_mark = mark_room_messages_read(room, self.user)
+        if did_mark:
+            ChatRoomMember.objects.filter(room=room, user=self.user).update(last_read_at=timezone.now())
+            invalidate_notification_cache(self.user)
+        return did_mark
 
 class PongConsumer(AsyncWebsocketConsumer):
     """Realtime Pong channel.

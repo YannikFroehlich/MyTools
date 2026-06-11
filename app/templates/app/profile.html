@@ -18,7 +18,7 @@
         <div class="profile-hero-content">
             <div class="profile-avatar-preview">
                 {% if profile.avatar %}
-                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
+                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" srcset="{{ profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="(max-width: 700px) 120px, 192px" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
                 {% else %}
                     <span>{{ profile.initials }}</span>
                 {% endif %}
@@ -55,7 +55,7 @@
         <aside class="profile-card profile-summary-card">
             <div class="profile-summary-avatar">
                 {% if profile.avatar %}
-                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" srcset="{{ profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="(max-width: 700px) 120px, 192px" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                 {% else %}
                     <span>{{ profile.initials }}</span>
                 {% endif %}
@@ -112,7 +112,7 @@
                 <div class="profile-showcase-card-top">
                     <span class="profile-showcase-card-avatar">
                         {% if profile.avatar %}
-                            <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                            <img src="{{ profile.avatar|media_thumb:'avatar' }}" srcset="{{ profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="(max-width: 700px) 120px, 192px" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                         {% else %}
                             {{ profile.initials }}
                         {% endif %}
@@ -274,7 +274,7 @@
                     <div class="profile-avatar-upload-card">
                         <div class="profile-avatar-upload-preview" id="profile-avatar-live-preview">
                             {% if profile.avatar %}
-                                <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Aktuelles Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                                <img src="{{ profile.avatar|media_thumb:'avatar' }}" srcset="{{ profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="(max-width: 700px) 120px, 192px" alt="{% translate 'Aktuelles Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                             {% else %}
                                 <i class="fa-solid fa-user"></i>
                             {% endif %}
@@ -328,7 +328,7 @@
                     <div class="profile-avatar-upload-card profile-banner-upload-card">
                         <div class="profile-banner-upload-preview">
                             {% if profile.profile_banner %}
-                                <img src="{{ profile.profile_banner|media_thumb:'banner' }}" alt="{% translate 'Aktuelles Profilbanner' %}" loading="lazy" decoding="async">
+                                <img src="{{ profile.profile_banner|media_thumb:'banner' }}" srcset="{{ profile.profile_banner|media_srcset:'banner-small 720w, banner 1280w, banner-large 1920w' }}" sizes="(max-width: 800px) 96vw, 1280px" alt="{% translate 'Aktuelles Profilbanner' %}" loading="lazy" decoding="async">
                             {% else %}
                                 <i class="fa-solid fa-image"></i>
                             {% endif %}
@@ -569,6 +569,6 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/profile_avatar_crop.js' %}"></script>
-    <script src="{% static 'app/js/profile_game_cards.js' %}"></script>
+    <script src="{% static 'app/js/profile_avatar_crop.js' %}" defer></script>
+    <script src="{% static 'app/js/profile_game_cards.js' %}" defer></script>
 {% endblock %}

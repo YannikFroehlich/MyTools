@@ -164,7 +164,7 @@
                 <div class="profile-showcase-card-top">
                     <span class="profile-showcase-card-avatar">
                         {% if profile.avatar %}
-                            <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
+                            <img src="{{ profile.avatar|media_thumb:'avatar' }}" srcset="{{ profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="192px" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
                         {% else %}
                             {{ profile.initials }}
                         {% endif %}
