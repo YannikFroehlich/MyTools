@@ -89,6 +89,29 @@
         {% endif %}
     </section>
 
+    <section class="moderation-panel moderation-media-panel is-wide">
+        <div class="moderation-panel-head">
+            <h2>{% translate "Medien komprimieren" %}</h2>
+            <span><i class="fa-solid fa-gauge-high"></i></span>
+        </div>
+        <div class="moderation-media-actions">
+            <div class="moderation-copy">
+                <strong>{% translate "Bereits hochgeladene Bilder zu WebP optimieren" %}</strong>
+                <p>
+                    {% translate "Konvertiert Profilbilder, Banner, Profil-Galerie, Shortcut-Icons, Gruppenbilder, Avatar-Wiki-Bilder und Bild-Dateifreigaben. Zusätzlich werden statische Seitenbilder wie Avatar-Wiki-Hintergrund, Skribble-Grafiken und die Weltkarte der Uhr komprimiert. Originaldateien im Media-Speicher werden nach erfolgreicher Umwandlung gelöscht, damit Speicherplatz frei wird und Seiten schneller laden." %}
+                </p>
+            </div>
+            <form method="post" action="{% url 'moderation_media_optimize' %}" onsubmit="return confirm('{% translate 'Alle vorhandenen Bilder jetzt komprimieren? Je nach Anzahl kann das kurz dauern.' %}');">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {% translate "Bilder jetzt komprimieren" %}
+                </button>
+            </form>
+        </div>
+    </section>
+
     <div class="moderation-grid">
         <section class="moderation-panel is-wide">
             <div class="moderation-panel-head">

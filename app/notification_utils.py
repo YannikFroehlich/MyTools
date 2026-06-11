@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
@@ -65,6 +66,26 @@ TYPE_COUNT_KEY = {
     "hangman": "hangman_invites",
     "pong": "pong_invites",
 }
+
+NOTIFICATION_CACHE_VERSION = 2
+NOTIFICATION_COUNT_CACHE_SECONDS = 6
+NOTIFICATION_ITEM_CACHE_SECONDS = 5
+
+
+def _notification_cache_key(user, suffix):
+    return f"notifications:v{NOTIFICATION_CACHE_VERSION}:u{getattr(user, 'pk', 'anonymous')}:{suffix}"
+
+
+def invalidate_notification_cache(user):
+    if not getattr(user, "is_authenticated", False):
+        return
+
+    cache.delete_many([
+        _notification_cache_key(user, "counts"),
+        _notification_cache_key(user, "items:10"),
+        _notification_cache_key(user, "items:12"),
+        _notification_cache_key(user, "items:1000"),
+    ])
 
 
 def empty_notification_counts():
@@ -510,8 +531,7 @@ def _collect_notification_items(user, *, limit=10, include_dismissed=False):
     return items
 
 
-def get_notification_counts(user):
-    """Return all small header notification counters for the current user."""
+def _build_notification_counts(user):
     counts = empty_notification_counts()
 
     for item in _collect_notification_items(user, limit=1000):
@@ -523,5 +543,40 @@ def get_notification_counts(user):
     return counts
 
 
-def get_notification_items(user, limit=10):
-    return _collect_notification_items(user, limit=limit)[:limit]
+def get_notification_counts(user, *, use_cache=True):
+    """Return all small header notification counters for the current user.
+
+    These counters are shown on nearly every page. A very short cache keeps
+    header rendering and live polling cheap while staying responsive enough
+    for chat/game notifications.
+    """
+    if not getattr(user, "is_authenticated", False):
+        return empty_notification_counts()
+
+    cache_key = _notification_cache_key(user, "counts")
+
+    if use_cache:
+        cached_counts = cache.get(cache_key)
+        if cached_counts is not None:
+            return cached_counts
+
+    counts = _build_notification_counts(user)
+    cache.set(cache_key, counts, NOTIFICATION_COUNT_CACHE_SECONDS)
+    return counts
+
+
+def get_notification_items(user, limit=10, *, use_cache=True):
+    if not getattr(user, "is_authenticated", False):
+        return []
+
+    normalized_limit = max(1, min(int(limit or 10), 1000))
+    cache_key = _notification_cache_key(user, f"items:{normalized_limit}")
+
+    if use_cache:
+        cached_items = cache.get(cache_key)
+        if cached_items is not None:
+            return cached_items
+
+    items = _collect_notification_items(user, limit=normalized_limit)[:normalized_limit]
+    cache.set(cache_key, items, NOTIFICATION_ITEM_CACHE_SECONDS)
+    return items

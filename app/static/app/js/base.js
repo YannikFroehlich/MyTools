@@ -625,8 +625,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* ── LIVE BENACHRICHTIGUNGS-ZÄHLER ── */
+    const liveStatusUrl = body.dataset.liveStatusUrl;
     const notificationCountsUrl = body.dataset.notificationCountsUrl;
-    const notificationPollMs = 3000;
+    const notificationPollMs = liveStatusUrl ? 5000 : 3000;
 
     function setNotificationBadgeValue(badge, value) {
         const normalizedValue = Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -680,6 +681,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         updateProfileNotificationDot(counts);
+    }
+
+
+    function collectPresenceUserIds() {
+        return Array.from(new Set(
+            Array.from(document.querySelectorAll('[data-presence-user-id]'))
+                .map((element) => Number.parseInt(element.dataset.presenceUserId || '', 10))
+                .filter(Number.isFinite)
+        )).slice(0, 50);
+    }
+
+    function applyPresenceProfile(profile) {
+        const userId = Number(profile.userId);
+        if (!Number.isFinite(userId)) {
+            return;
+        }
+
+        const isOnline = Boolean(profile.isOnline);
+        const activityStatus = profile.activityStatus || '';
+        const statusLine = profile.statusLine || '';
+
+        document.querySelectorAll(`[data-presence-user-id="${userId}"]`).forEach((element) => {
+            const target = element.dataset.presenceTarget;
+
+            if (target === 'dot') {
+                element.hidden = !isOnline;
+                return;
+            }
+
+            if (target === 'activity-detail') {
+                element.textContent = activityStatus;
+                element.hidden = !activityStatus;
+                return;
+            }
+
+            if (target === 'status') {
+                element.textContent = statusLine;
+                element.classList.toggle('is-online', isOnline);
+            }
+        });
+    }
+
+    function updatePresenceProfiles(profiles) {
+        if (!Array.isArray(profiles)) {
+            return;
+        }
+
+        profiles.forEach(applyPresenceProfile);
     }
 
 
@@ -812,18 +861,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function refreshNotificationCounts() {
-        if (!notificationCountsUrl || document.hidden) {
+    async function refreshNotificationCounts(options = {}) {
+        if ((!liveStatusUrl && !notificationCountsUrl) || document.hidden) {
             return;
         }
 
+        const includeItems = Boolean(options.includeItems);
+
         try {
-            const response = await fetch(notificationCenterUrl || notificationCountsUrl, {
+            let url = null;
+
+            if (liveStatusUrl) {
+                url = new URL(liveStatusUrl, window.location.origin);
+                const presenceIds = collectPresenceUserIds();
+
+                if (presenceIds.length) {
+                    url.searchParams.set('ids', presenceIds.join(','));
+                }
+
+                if (includeItems) {
+                    url.searchParams.set('items', '1');
+                }
+            } else {
+                url = new URL((includeItems && notificationCenterUrl) ? notificationCenterUrl : notificationCountsUrl, window.location.origin);
+            }
+
+            url.searchParams.set('_', String(Date.now()));
+
+            const response = await fetch(url.toString(), {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json',
                 },
                 cache: 'no-store',
+                credentials: 'same-origin',
             });
 
             if (!response.ok) {
@@ -835,19 +906,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.ok) {
                 updateNotificationBadges(data.counts);
                 updateNotificationCenter(data.counts, data.items);
+                updatePresenceProfiles(data.profiles);
             }
         } catch (error) {
             // Wenn der Server kurz nicht erreichbar ist, probieren wir es beim nächsten Intervall erneut.
         }
     }
 
-    if (notificationCountsUrl) {
-        refreshNotificationCounts();
-        window.setInterval(refreshNotificationCounts, notificationPollMs);
-        window.addEventListener('focus', refreshNotificationCounts);
+    if (liveStatusUrl || notificationCountsUrl) {
+        refreshNotificationCounts({ includeItems: false });
+        window.setInterval(() => refreshNotificationCounts({
+            includeItems: document.getElementById('notification-center-dropdown')?.classList.contains('open'),
+        }), notificationPollMs);
+        window.addEventListener('focus', () => refreshNotificationCounts({ includeItems: false }));
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
-                refreshNotificationCounts();
+                refreshNotificationCounts({ includeItems: false });
             }
         });
     }
@@ -943,7 +1017,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.setAttribute('aria-expanded', String(shouldOpen));
 
             if (shouldOpen && buttonId === 'notification-center-button') {
-                refreshNotificationCounts();
+                refreshNotificationCounts({ includeItems: true });
             }
 
             if (shouldOpen && dropdown.classList.contains('games-menu-panel') && window.matchMedia('(pointer: fine)').matches) {

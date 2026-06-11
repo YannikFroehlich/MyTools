@@ -193,7 +193,7 @@ from .chat_views import (
     set_chat_theme,
     start_direct_chat,
 )
-from .notification_views import notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
+from .notification_views import live_status_api, notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
 
 from .performance_tools_views import (
     file_share_delete_view,
@@ -215,6 +215,7 @@ from .moderation_views import (
     moderation_dashboard_view,
     moderation_feedback_status_view,
     moderation_file_share_delete_view,
+    moderation_media_optimize_view,
     moderation_report_action_view,
     moderation_user_status_view,
 )
@@ -236,6 +237,7 @@ urlpatterns = [
     path('moderation/reports/<int:report_id>/', moderation_report_action_view, name='moderation_report_action'),
     path('moderation/feedback/<int:feedback_id>/status/', moderation_feedback_status_view, name='moderation_feedback_status'),
     path('moderation/file-shares/<int:share_id>/delete/', moderation_file_share_delete_view, name='moderation_file_share_delete'),
+    path('moderation/media/optimize/', moderation_media_optimize_view, name='moderation_media_optimize'),
     path('moderation/users/<int:user_id>/status/', moderation_user_status_view, name='moderation_user_status'),
 
     path('leaderboard/', leaderboard_view, name='leaderboard'),
@@ -272,6 +274,7 @@ urlpatterns = [
     path('chat/<int:room_id>/theme/', set_chat_theme, name='chat_theme'),
     path('api/chat/<int:room_id>/messages/', chat_messages_api, name='chat_messages_api'),
     path('api/chat/<int:room_id>/typing/', chat_typing_api, name='chat_typing_api'),
+    path('api/live-status/', live_status_api, name='live_status_api'),
     path('api/notifications/counts/', notification_counts_api, name='notification_counts_api'),
     path('api/notifications/center/', notification_center_api, name='notification_center_api'),
     path('api/notifications/dismiss/', notification_dismiss_api, name='notification_dismiss_api'),

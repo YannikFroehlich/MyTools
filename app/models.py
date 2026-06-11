@@ -2485,6 +2485,7 @@ class ModerationAuditLog(models.Model):
     ACTION_USER_DEACTIVATED = "user_deactivated"
     ACTION_ACCESS_LOCKED = "access_locked"
     ACTION_ACCESS_UNLOCKED = "access_unlocked"
+    ACTION_MEDIA_OPTIMIZED = "media_optimized"
 
     ACTION_CHOICES = [
         (ACTION_REPORT_RESOLVED, _("Meldung erledigt")),
@@ -2497,6 +2498,7 @@ class ModerationAuditLog(models.Model):
         (ACTION_USER_DEACTIVATED, _("Nutzer deaktiviert")),
         (ACTION_ACCESS_LOCKED, _("Login und Registrierung gesperrt")),
         (ACTION_ACCESS_UNLOCKED, _("Login und Registrierung entsperrt")),
+        (ACTION_MEDIA_OPTIMIZED, _("Medien komprimiert")),
     ]
 
     actor = models.ForeignKey(

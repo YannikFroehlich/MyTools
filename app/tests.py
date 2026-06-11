@@ -5,9 +5,11 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 import requests
+from PIL import Image
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.signals import pre_save
 from django.test import RequestFactory, TestCase, override_settings
@@ -44,6 +46,7 @@ from app.models import (
     Note,
     PongGame,
     PongInvite,
+    ProfileGalleryImage,
     Shortcut,
     ShortcutSection,
     SiteAccessSettings,
@@ -63,7 +66,7 @@ from app.models import (
     UserTwoFactorSettings,
     WeatherLocation,
 )
-from app.notification_utils import get_notification_counts, get_notification_items
+from app.notification_utils import get_notification_counts, get_notification_items, invalidate_notification_cache
 from app.totp_utils import current_totp
 
 
@@ -430,7 +433,58 @@ class HangmanManualModeTests(BaseTestCase):
         self.assertFalse(lobby.players.filter(user=third).exists())
 
 
+
+
+class LiveStatusPerformanceTests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        cache.clear()
+
+    def test_live_status_api_returns_notifications_and_presence_in_one_request(self):
+        friend = get_user_model().objects.create_user(username="statusfriend", password="testpass-123")
+        UserProfile.objects.get_or_create(user=friend)
+        UserPresence.objects.create(user=friend, last_seen=timezone.now())
+        game = PongGame.objects.create(owner=friend, player_left=friend, name="Pong", code="LIV123")
+        PongInvite.objects.create(game=game, from_user=friend, to_user=self.user)
+
+        response = self.client.get(reverse("live_status_api"), {"ids": str(friend.id), "items": "1"})
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["counts"]["pong_invites"], 1)
+        self.assertTrue(any(item["type"] == "pong" for item in payload["items"]))
+        self.assertEqual(payload["profiles"][0]["userId"], friend.id)
+        self.assertTrue(payload["profiles"][0]["isOnline"])
+
+    def test_notification_counts_use_short_cache_and_can_be_invalidated(self):
+        friend = get_user_model().objects.create_user(username="cachefriend", password="testpass-123")
+        game = PongGame.objects.create(owner=self.user, player_left=self.user, name="Pong", code="CAC123")
+        invite = PongInvite.objects.create(game=game, from_user=self.user, to_user=friend)
+
+        self.assertEqual(get_notification_counts(friend)["pong_invites"], 1)
+
+        invite.delete()
+        self.assertEqual(get_notification_counts(friend)["pong_invites"], 1)
+        self.assertEqual(get_notification_counts(friend, use_cache=False)["pong_invites"], 0)
+
+        invalidate_notification_cache(friend)
+        self.assertEqual(get_notification_counts(friend)["pong_invites"], 0)
+
+
 class MediaThumbnailTests(BaseTestCase):
+    def test_media_srcset_filter_builds_responsive_thumbnail_urls(self):
+        from app.templatetags.media_performance import media_srcset
+
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("avatar.bmp", self.get_large_test_image("avatar.bmp"), save=True)
+
+        srcset = media_srcset(profile.avatar, "avatar-small 96w, avatar 192w")
+
+        self.assertIn("avatar-small", srcset)
+        self.assertIn("avatar 192w", srcset)
+        self.assertIn("96w", srcset)
+
     def test_media_thumbnail_creates_cached_preview_without_login(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
         profile.avatar.save("avatar.bmp", self.get_large_test_image("avatar.bmp"), save=True)
@@ -3179,21 +3233,68 @@ class ModerationTests(BaseTestCase):
         self.assertRedirects(response, reverse("moderation"))
         self.assertFalse(FileShare.objects.filter(id=share.id).exists())
 
-    def test_user_status_action_deactivates_other_user(self):
+    def test_media_optimize_action_converts_existing_profile_images_to_webp(self):
         self.make_staff()
-        other_user = get_user_model().objects.create_user(
-            username="quiet-user",
-            password="testpass-123",
-        )
+        profile, _ = UserProfile.objects.get_or_create(user=self.user)
+        profile.avatar.save("avatar.bmp", self.get_large_test_image("avatar.bmp"), save=True)
+        old_name = profile.avatar.name
+        old_size = profile.avatar.size
 
-        response = self.client.post(
-            reverse("moderation_user_status", args=[other_user.id]),
-            {"action": "deactivate"},
-        )
+        response = self.client.post(reverse("moderation_media_optimize"))
 
         self.assertRedirects(response, reverse("moderation"))
-        other_user.refresh_from_db()
-        self.assertFalse(other_user.is_active)
+        profile.refresh_from_db()
+        self.assertTrue(profile.avatar.name.endswith(".webp"))
+        self.assertNotEqual(profile.avatar.name, old_name)
+        self.assertLess(profile.avatar.size, old_size)
+        self.assertFalse(profile.avatar.storage.exists(old_name))
+        self.assertTrue(ModerationAuditLog.objects.filter(action="media_optimized").exists())
+
+
+    def test_media_optimize_action_compresses_static_page_images(self):
+        self.make_staff()
+        with tempfile.TemporaryDirectory() as tempdir:
+            relative_path = "app/img/test-static-background.webp"
+            static_file = Path(tempdir) / relative_path
+            static_file.parent.mkdir(parents=True, exist_ok=True)
+            Image.new("RGB", (1800, 1200), "white").save(static_file, "WEBP", quality=95)
+            old_size = static_file.stat().st_size
+
+            static_targets = (
+                {
+                    "path": relative_path,
+                    "label": "Test-Hintergrund",
+                    "max_size": (300, 200),
+                    "quality": 60,
+                },
+            )
+            with override_settings(STATIC_ROOT=tempdir), patch("app.moderation_views.STATIC_IMAGE_TARGETS", static_targets):
+                response = self.client.post(reverse("moderation_media_optimize"))
+
+            self.assertRedirects(response, reverse("moderation"))
+            self.assertTrue(static_file.exists())
+            self.assertLess(static_file.stat().st_size, old_size)
+            audit_log = ModerationAuditLog.objects.filter(action="media_optimized").latest("created_at")
+            self.assertGreaterEqual(audit_log.metadata["converted"], 1)
+
+    def test_media_optimize_action_converts_image_file_shares(self):
+        self.make_staff()
+        share = FileShare.objects.create(
+            owner=self.user,
+            file=self.get_large_test_image("shared.bmp"),
+            original_name="shared.bmp",
+            size=1,
+            content_type="image/bmp",
+            token="image-share-token",
+        )
+
+        response = self.client.post(reverse("moderation_media_optimize"))
+
+        self.assertRedirects(response, reverse("moderation"))
+        share.refresh_from_db()
+        self.assertTrue(share.file.name.endswith(".webp"))
+        self.assertEqual(share.content_type, "image/webp")
+        self.assertEqual(share.size, share.file.size)
 
 
 class TicTacToeTests(BaseTestCase):

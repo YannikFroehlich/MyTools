@@ -9,11 +9,19 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 
 
 THUMBNAIL_SPECS = {
+    "avatar-tiny": (48, 48, "cover"),
     "avatar-small": (96, 96, "cover"),
     "avatar": (192, 192, "cover"),
+    "avatar-large": (384, 384, "cover"),
+    "banner-small": (720, 236, "cover"),
     "banner": (1280, 420, "cover"),
+    "banner-large": (1920, 630, "cover"),
+    "gallery-small": (320, 320, "cover"),
     "gallery": (640, 640, "cover"),
+    "gallery-large": (960, 960, "cover"),
+    "preview-small": (480, 360, "contain"),
     "preview": (960, 720, "contain"),
+    "shortcut-small": (64, 64, "contain"),
     "shortcut": (128, 128, "contain"),
 }
 

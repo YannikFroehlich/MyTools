@@ -151,7 +151,7 @@
                     <a href="{{ shortcut.url }}" target="_blank" rel="noopener noreferrer">
                         <div class="shortcut-icon {% if shortcut.image %}shortcut-image-icon{% endif %}">
                             {% if shortcut.image %}
-                                <img src="{{ shortcut.image|media_thumb:'shortcut' }}" alt="{{ shortcut.name }}" width="128" height="128" loading="lazy" decoding="async">
+                                <img src="{{ shortcut.image|media_thumb:'shortcut' }}" srcset="{{ shortcut.image|media_srcset:'shortcut-small 64w, shortcut 128w' }}" sizes="64px" alt="{{ shortcut.name }}" width="128" height="128" loading="lazy" decoding="async">
                             {% else %}
                                 <i class="{{ shortcut.icon }}"></i>
                             {% endif %}

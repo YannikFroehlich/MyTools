@@ -118,5 +118,5 @@
 
 {% block extra_js %}
     {{ converter_labels|json_script:"converter-labels" }}
-    <script src="{% static 'app/js/unit_converter.js' %}"></script>
+    <script src="{% static 'app/js/unit_converter.js' %}" defer></script>
 {% endblock %}
