@@ -94,6 +94,7 @@ class BaseTestCase(TestCase):
         shutil.rmtree(TEST_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self):
+        cache.clear()
         self.user = get_user_model().objects.create_user(
             username="testuser",
             password="testpass-123",
@@ -103,6 +104,7 @@ class BaseTestCase(TestCase):
 
     def tearDown(self):
         self._disconnect_user_signal()
+        cache.clear()
         super().tearDown()
 
     def _connect_user_signal(self):
@@ -537,9 +539,10 @@ class MediaThumbnailTests(BaseTestCase):
 
         srcset = media_srcset(profile.avatar, "avatar-small 96w, avatar 192w")
 
-        self.assertIn("avatar-small", srcset)
-        self.assertIn("avatar 192w", srcset)
+        self.assertIn("/media-thumb/avatar-small/", srcset)
+        self.assertIn("/media-thumb/avatar/", srcset)
         self.assertIn("96w", srcset)
+        self.assertIn("192w", srcset)
 
     def test_media_thumbnail_creates_cached_preview_without_login(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
@@ -592,7 +595,7 @@ class MediaThumbnailTests(BaseTestCase):
 
         response = self.client.get("/media-thumb/avatar-small/../secret.png")
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     def test_media_thumbnail_rejects_unknown_spec(self):
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
