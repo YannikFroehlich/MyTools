@@ -36,6 +36,7 @@ from .views import (
     randomizer_tools_view,
     snake_powerups,
     weather,
+    weather_icon_view,
 )
 from .profile_views import (
     block_user_view,
@@ -282,6 +283,7 @@ urlpatterns = [
     path('api/users/presence/', user_presence_api, name='user_presence_api'),
 
     path('weather/', weather, name='weather'),
+    path('weather-icon/<str:icon_code>/<str:size>/', weather_icon_view, name='weather_icon'),
     path('obs-dashboard/', obs_dashboard, name='obs-dashboard'),
     path('spritkostenrechner/', spritkostenrechner, name='spritkostenrechner'),
 
