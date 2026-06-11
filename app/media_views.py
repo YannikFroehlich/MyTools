@@ -107,7 +107,7 @@ def media_thumbnail(request, spec, source):
     if request.headers.get("If-Modified-Since") == last_modified:
         return HttpResponseNotModified()
 
-    response = FileResponse(thumb_path.open("rb"))
+    response = FileResponse(thumb_path.open("rb"), content_type="image/webp")
     response["Cache-Control"] = "public, max-age=31536000, immutable"
     response["Last-Modified"] = last_modified
     return response
