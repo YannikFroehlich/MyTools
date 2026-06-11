@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    if (window.__myToolsBaseInitialized) {
+        return;
+    }
+    window.__myToolsBaseInitialized = true;
+
     const body = document.body;
     /* ── FIXED HEADER ABSTAND ──
        Der Header ist fixed, damit er beim Scrollen immer sichtbar bleibt.
@@ -25,6 +30,35 @@ document.addEventListener('DOMContentLoaded', () => {
             new ResizeObserver(syncFixedHeaderOffset).observe(nav);
         }
     }
+
+    function hydrateDeferredImages(root = document) {
+        root.querySelectorAll('img.js-deferred-image[data-src]').forEach((image) => {
+            const source = image.dataset.src;
+            const sourceSet = image.dataset.srcset;
+
+            if (!source) {
+                return;
+            }
+
+            if (sourceSet) {
+                image.srcset = sourceSet;
+                image.removeAttribute('data-srcset');
+            }
+
+            image.src = source;
+            image.removeAttribute('data-src');
+            image.classList.remove('js-deferred-image');
+        });
+    }
+
+    document.querySelectorAll('.js-obfuscated-email[data-email-local][data-email-domain]').forEach((element) => {
+        const local = element.dataset.emailLocal || '';
+        const domain = element.dataset.emailDomain || '';
+
+        if (local && domain) {
+            element.textContent = `${local}@${domain}`;
+        }
+    });
 
     const themeStorageKey = 'customTheme';
     const themePresetStorageKey = 'customThemePreset';
@@ -628,6 +662,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const liveStatusUrl = body.dataset.liveStatusUrl;
     const notificationCountsUrl = body.dataset.notificationCountsUrl;
     const notificationPollMs = liveStatusUrl ? 5000 : 3000;
+    const liveStatusState = window.__myToolsLiveStatusState || {
+        inFlight: false,
+        lastFetchAt: 0,
+        intervalId: null,
+    };
+    window.__myToolsLiveStatusState = liveStatusState;
 
     function setNotificationBadgeValue(badge, value) {
         const normalizedValue = Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -867,6 +907,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const includeItems = Boolean(options.includeItems);
+        const force = Boolean(options.force);
+        const now = Date.now();
+
+        if (liveStatusState.inFlight) {
+            return;
+        }
+
+        if (!force && now - liveStatusState.lastFetchAt < 1200) {
+            return;
+        }
+
+        liveStatusState.inFlight = true;
+        liveStatusState.lastFetchAt = now;
 
         try {
             let url = null;
@@ -910,18 +963,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             // Wenn der Server kurz nicht erreichbar ist, probieren wir es beim nächsten Intervall erneut.
+        } finally {
+            liveStatusState.inFlight = false;
         }
     }
 
-    if (liveStatusUrl || notificationCountsUrl) {
-        refreshNotificationCounts({ includeItems: false });
-        window.setInterval(() => refreshNotificationCounts({
+    if ((liveStatusUrl || notificationCountsUrl) && !liveStatusState.intervalId) {
+        refreshNotificationCounts({ includeItems: false, force: true });
+        liveStatusState.intervalId = window.setInterval(() => refreshNotificationCounts({
             includeItems: document.getElementById('notification-center-dropdown')?.classList.contains('open'),
         }), notificationPollMs);
-        window.addEventListener('focus', () => refreshNotificationCounts({ includeItems: false }));
+        window.addEventListener('focus', () => refreshNotificationCounts({ includeItems: false, force: true }));
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
-                refreshNotificationCounts({ includeItems: false });
+                refreshNotificationCounts({ includeItems: false, force: true });
             }
         });
     }
@@ -1015,6 +1070,10 @@ document.addEventListener('DOMContentLoaded', () => {
             dropdown.classList.toggle('open', shouldOpen);
             button.classList.toggle('active', shouldOpen);
             button.setAttribute('aria-expanded', String(shouldOpen));
+
+            if (shouldOpen) {
+                hydrateDeferredImages(dropdown);
+            }
 
             if (shouldOpen && buttonId === 'notification-center-button') {
                 refreshNotificationCounts({ includeItems: true });
