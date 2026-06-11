@@ -37,7 +37,7 @@
         <div class="public-profile-header">
             <div class="public-profile-avatar">
                 {% if profile.avatar %}
-                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
+                    <img src="{{ profile.avatar|media_thumb:'avatar' }}" srcset="{{ profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="(max-width: 700px) 120px, 192px" alt="{% translate 'Profilbild' %}" width="192" height="192" decoding="async">
                 {% else %}
                     <span>{{ profile.initials }}</span>
                 {% endif %}
@@ -228,7 +228,7 @@
             <div class="public-gallery-grid">
                 {% for image in gallery_images %}
                     <a href="{{ image.image.url }}" target="_blank" rel="noopener" class="public-gallery-item">
-                        <img src="{{ image.image|media_thumb:'gallery' }}" alt="{{ image.caption|default:'Galeriebild' }}" width="640" height="640" loading="lazy" decoding="async">
+                        <img src="{{ image.image|media_thumb:'gallery' }}" srcset="{{ image.image|media_srcset:'gallery-small 320w, gallery 640w, gallery-large 960w' }}" sizes="(max-width: 700px) 92vw, 320px" alt="{{ image.caption|default:'Galeriebild' }}" width="640" height="640" loading="lazy" decoding="async">
                         {% if image.caption %}<span>{{ image.caption }}</span>{% endif %}
                     </a>
                 {% endfor %}
@@ -260,7 +260,7 @@
                         <a href="{% url 'public_profile' friend_profile.user.id %}" class="friend-preview-card">
                             <span class="friend-preview-avatar">
                                 {% if friend_profile.avatar %}
-                                    <img src="{{ friend_profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                                    <img src="{{ friend_profile.avatar|media_thumb:'avatar' }}" srcset="{{ friend_profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="72px" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                                 {% else %}
                                     {{ friend_profile.initials }}
                                 {% endif %}

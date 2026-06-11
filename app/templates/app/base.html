@@ -11,14 +11,18 @@
 
     <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'app/css/icons/custom_icons.css' %}">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     {% if fontawesome_kit_key %}
+        <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
+    {% else %}
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
     {% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="{% static 'app/css/profile_menu.css' %}">
 
     {% block favicon %}
@@ -31,7 +35,7 @@
         <script src="{% static 'app/js/base.js' %}" defer></script>
     {% endblock %}
 </head>
-<body{% if request.user.is_authenticated %} data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}"{% endif %}>
+<body{% if request.user.is_authenticated %} data-live-status-url="{% url 'live_status_api' %}" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}"{% endif %}>
     <nav>
         <div class="logo">
             <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
@@ -828,7 +832,7 @@
                     <button class="profile-menu-button" id="profile-menu-button" type="button" aria-label="{% translate 'Profilmenü öffnen' %}">
                         <span class="profile-menu-avatar">
                             {% if current_profile and current_profile.avatar %}
-                                <img src="{{ current_profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" decoding="async">
+                                <img src="{{ current_profile.avatar|media_thumb:'avatar-small' }}" srcset="{{ current_profile.avatar|media_srcset:'avatar-tiny 48w, avatar-small 96w, avatar 192w' }}" sizes="48px" alt="{% translate 'Profilbild' %}" width="96" height="96" decoding="async">
                             {% elif current_profile %}
                                 {{ current_profile.initials }}
                             {% else %}
@@ -843,7 +847,7 @@
                         <div class="profile-menu-header">
                             <span class="profile-menu-avatar profile-menu-avatar-large">
                                 {% if current_profile and current_profile.avatar %}
-                                    <img src="{{ current_profile.avatar|media_thumb:'avatar' }}" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
+                                    <img src="{{ current_profile.avatar|media_thumb:'avatar' }}" srcset="{{ current_profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="96px" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
                                 {% elif current_profile %}
                                     {{ current_profile.initials }}
                                 {% else %}

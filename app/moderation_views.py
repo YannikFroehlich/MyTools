@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
@@ -8,8 +11,34 @@ from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
+from django.contrib.staticfiles import finders
 
-from .models import FileShare, InboxItem, ModerationAuditLog, SiteAccessSettings, ToolFeedback, UserBlock, UserReport, UserSuspension
+from .image_optimization import (
+    CHAT_AVATAR_MAX_SIZE,
+    FILE_SHARE_IMAGE_MAX_SIZE,
+    GALLERY_IMAGE_MAX_SIZE,
+    PROFILE_AVATAR_MAX_SIZE,
+    PROFILE_BANNER_MAX_SIZE,
+    SHORTCUT_ICON_MAX_SIZE,
+    WIKI_IMAGE_MAX_SIZE,
+    optimize_existing_image_field,
+    optimize_static_image_path,
+)
+from .models import (
+    AvatarCharacter,
+    ChatRoom,
+    FileShare,
+    InboxItem,
+    ModerationAuditLog,
+    ProfileGalleryImage,
+    Shortcut,
+    SiteAccessSettings,
+    ToolFeedback,
+    UserBlock,
+    UserProfile,
+    UserReport,
+    UserSuspension,
+)
 
 
 staff_required = user_passes_test(
@@ -25,6 +54,202 @@ def _human_size(size):
             return f"{size:.1f} {unit}" if unit != "B" else f"{int(size)} B"
         size /= 1024
 
+
+
+
+
+STATIC_IMAGE_TARGETS = (
+    {"path": "app/img/Airtemple-island.webp", "label": "Avatar-Wiki-Hintergrund", "max_size": (1920, 1080), "quality": 74},
+    {"path": "app/img/worldmap.webp", "label": "Uhr-Weltkarte", "max_size": (1800, 900), "quality": 76},
+    {"path": "app/img/Skribble-background.webp", "label": "Skribble-Hintergrund", "max_size": (1920, 1080), "quality": 76},
+    {"path": "app/img/Skribble-logo.webp", "label": "Skribble-Logo", "max_size": (1000, 500), "quality": 80},
+)
+
+
+def _static_candidate_paths(relative_path):
+    candidates = []
+
+    static_root = getattr(settings, "STATIC_ROOT", None)
+    if static_root:
+        candidates.append(os.path.join(static_root, relative_path))
+
+    found_paths = finders.find(relative_path, all=True) or []
+    if isinstance(found_paths, str):
+        found_paths = [found_paths]
+    candidates.extend(found_paths)
+
+    seen = set()
+    for candidate in candidates:
+        normalized = os.path.abspath(candidate)
+        if normalized not in seen:
+            seen.add(normalized)
+            yield normalized
+
+
+def _add_optimization_result_to_stats(stats, result, label):
+    stats["bytes_before"] += result.old_size
+    stats["bytes_after"] += result.new_size
+    stats["bytes_saved"] += result.bytes_saved
+
+    if result.converted:
+        stats["converted"] += 1
+    elif result.missing:
+        stats["missing"] += 1
+    else:
+        stats["skipped"] += 1
+
+    if result.reason and result.reason not in {"empty", "already_optimized"}:
+        stats["details"].append(f"{label}: {result.reason}")
+
+def _optimization_summary(stats):
+    return {
+        "checked": stats["checked"],
+        "converted": stats["converted"],
+        "skipped": stats["skipped"],
+        "missing": stats["missing"],
+        "failed": stats["failed"],
+        "bytes_before": stats["bytes_before"],
+        "bytes_after": stats["bytes_after"],
+        "bytes_saved": stats["bytes_saved"],
+        "human_before": _human_size(stats["bytes_before"]),
+        "human_after": _human_size(stats["bytes_after"]),
+        "human_saved": _human_size(stats["bytes_saved"]),
+    }
+
+
+def _optimize_model_image_fields(queryset, field_name, *, max_size, quality, stats, label, extra_update_fields=None):
+    for instance in queryset.iterator():
+        stats["checked"] += 1
+        try:
+            result = optimize_existing_image_field(
+                instance,
+                field_name,
+                max_size=max_size,
+                quality=quality,
+                extra_update_fields=extra_update_fields(instance) if extra_update_fields else None,
+            )
+        except Exception as exc:  # pragma: no cover - defensive guard for unexpected storage errors
+            stats["failed"] += 1
+            stats["details"].append(f"{label} #{instance.pk}: {exc}")
+            continue
+
+        _add_optimization_result_to_stats(stats, result, label)
+
+
+
+def _optimize_static_image_files(stats):
+    for target in STATIC_IMAGE_TARGETS:
+        paths = list(_static_candidate_paths(target["path"]))
+        if not paths:
+            stats["checked"] += 1
+            stats["missing"] += 1
+            stats["details"].append(f"{target['label']}: missing")
+            continue
+
+        for path in paths:
+            stats["checked"] += 1
+            try:
+                result = optimize_static_image_path(
+                    path,
+                    max_size=target["max_size"],
+                    quality=target["quality"],
+                )
+            except Exception as exc:  # pragma: no cover - defensive guard for unexpected filesystem errors
+                stats["failed"] += 1
+                stats["details"].append(f"{target['label']}: {exc}")
+                continue
+
+            _add_optimization_result_to_stats(stats, result, target["label"])
+
+def _optimize_existing_media_files():
+    stats = {
+        "checked": 0,
+        "converted": 0,
+        "skipped": 0,
+        "missing": 0,
+        "failed": 0,
+        "bytes_before": 0,
+        "bytes_after": 0,
+        "bytes_saved": 0,
+        "details": [],
+    }
+
+    _optimize_model_image_fields(
+        UserProfile.objects.exclude(avatar=""),
+        "avatar",
+        max_size=PROFILE_AVATAR_MAX_SIZE,
+        quality=82,
+        stats=stats,
+        label="Profilbild",
+    )
+    _optimize_model_image_fields(
+        UserProfile.objects.exclude(profile_banner=""),
+        "profile_banner",
+        max_size=PROFILE_BANNER_MAX_SIZE,
+        quality=82,
+        stats=stats,
+        label="Profilbanner",
+    )
+    _optimize_model_image_fields(
+        ProfileGalleryImage.objects.exclude(image=""),
+        "image",
+        max_size=GALLERY_IMAGE_MAX_SIZE,
+        quality=82,
+        stats=stats,
+        label="Profil-Galerie",
+    )
+    _optimize_model_image_fields(
+        Shortcut.objects.exclude(image=""),
+        "image",
+        max_size=SHORTCUT_ICON_MAX_SIZE,
+        quality=82,
+        stats=stats,
+        label="Shortcut-Icon",
+    )
+    _optimize_model_image_fields(
+        ChatRoom.objects.exclude(avatar=""),
+        "avatar",
+        max_size=CHAT_AVATAR_MAX_SIZE,
+        quality=82,
+        stats=stats,
+        label="Chat-Gruppenbild",
+    )
+    _optimize_model_image_fields(
+        AvatarCharacter.objects.exclude(image=""),
+        "image",
+        max_size=WIKI_IMAGE_MAX_SIZE,
+        quality=82,
+        stats=stats,
+        label="Avatar-Wiki-Bild",
+    )
+    _optimize_model_image_fields(
+        FileShare.objects.filter(content_type__startswith="image/").exclude(file=""),
+        "file",
+        max_size=FILE_SHARE_IMAGE_MAX_SIZE,
+        quality=82,
+        stats=stats,
+        label="Datei-Freigabe",
+        extra_update_fields=lambda instance: {
+            "content_type": "image/webp",
+            "original_name": f"{instance.original_name.rsplit('.', 1)[0]}.webp" if instance.original_name else "image.webp",
+            "size": 0,  # replaced below after save by a second lightweight update
+        },
+    )
+
+    # Keep FileShare.size exact after conversion. This is intentionally separate
+    # because the final storage name is only known after save().
+    for share in FileShare.objects.filter(content_type="image/webp").exclude(file=""):
+        try:
+            actual_size = share.file.storage.size(share.file.name)
+        except OSError:
+            continue
+        if share.size != actual_size:
+            share.size = actual_size
+            share.save(update_fields=["size"])
+
+    _optimize_static_image_files(stats)
+
+    return stats
 
 def _safe_next(request):
     next_url = request.POST.get("next") or request.META.get("HTTP_REFERER")
@@ -137,6 +362,20 @@ def moderation_dashboard_view(request):
             "value": FileShare.objects.count(),
             "icon": "fa-solid fa-share-nodes",
             "tone": "success",
+        },
+        {
+            "label": _("Bild-Medien"),
+            "value": (
+                UserProfile.objects.exclude(avatar="").count()
+                + UserProfile.objects.exclude(profile_banner="").count()
+                + ProfileGalleryImage.objects.exclude(image="").count()
+                + Shortcut.objects.exclude(image="").count()
+                + ChatRoom.objects.exclude(avatar="").count()
+                + AvatarCharacter.objects.exclude(image="").count()
+                + FileShare.objects.filter(content_type__startswith="image/").exclude(file="").count()
+            ),
+            "icon": "fa-solid fa-image",
+            "tone": "info",
         },
         {
             "label": _("Aktive Nutzer"),
@@ -266,6 +505,42 @@ def moderation_file_share_delete_view(request, share_id):
         metadata={"share_id": share_id, "original_name": original_name},
     )
     messages.success(request, _("Datei-Freigabe wurde gelöscht."))
+    return redirect(_safe_next(request))
+
+
+@staff_required
+@require_POST
+def moderation_media_optimize_view(request):
+    stats = _optimize_existing_media_files()
+    summary = _optimization_summary(stats)
+
+    _audit(
+        request,
+        ModerationAuditLog.ACTION_MEDIA_OPTIMIZED,
+        f"Medien komprimiert: {summary['converted']} Dateien, {summary['human_saved']} gespart",
+        metadata=summary,
+    )
+
+    if stats["converted"]:
+        messages.success(
+            request,
+            _("%(count)s Bilder wurden zu WebP komprimiert. Gespart: %(saved)s.") % {
+                "count": stats["converted"],
+                "saved": summary["human_saved"],
+            },
+        )
+    else:
+        messages.info(request, _("Keine weiteren Bilder mussten komprimiert werden."))
+
+    if stats["missing"] or stats["failed"]:
+        messages.warning(
+            request,
+            _("Hinweis: %(missing)s Dateien fehlen im Speicher, %(failed)s konnten nicht verarbeitet werden.") % {
+                "missing": stats["missing"],
+                "failed": stats["failed"],
+            },
+        )
+
     return redirect(_safe_next(request))
 
 

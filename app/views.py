@@ -1,11 +1,13 @@
 import os
 import math
+import hashlib
 from collections import defaultdict
 from urllib.parse import urlencode
 
 from django.shortcuts import render, redirect, get_object_or_404
 import requests
 from django.conf import settings
+from django.core.cache import cache
 from django.utils import translation
 from django.utils.formats import date_format
 from datetime import datetime, timezone
@@ -53,6 +55,39 @@ def api_error_response(message, status=400):
         "status": "error",
         "message": message,
     }, status=status)
+
+
+OPENWEATHER_CURRENT_CACHE_SECONDS = 300
+OPENWEATHER_FORECAST_CACHE_SECONDS = 900
+
+
+def _openweather_cache_key(endpoint, params):
+    safe_params = {key: value for key, value in params.items() if key != "appid"}
+    raw = json.dumps({"endpoint": endpoint, "params": safe_params}, sort_keys=True, default=str)
+    digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
+    return f"openweather:{endpoint}:{digest}"
+
+
+def cached_openweather_json(endpoint, params, *, timeout=10, cache_seconds=OPENWEATHER_CURRENT_CACHE_SECONDS):
+    """Return OpenWeather JSON with a short Redis/Django cache.
+
+    This keeps dashboard/weather page reloads from hitting the external API every
+    time, but still refreshes quickly enough for normal weather usage.
+    """
+    cache_key = _openweather_cache_key(endpoint, params)
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached["status_code"], cached["data"]
+
+    response = requests.get(
+        f"https://api.openweathermap.org/data/2.5/{endpoint}",
+        params=params,
+        timeout=timeout,
+    )
+    data = response.json()
+    if response.status_code == 200 and isinstance(data, dict):
+        cache.set(cache_key, {"status_code": response.status_code, "data": data}, cache_seconds)
+    return response.status_code, data
 
 
 CLOCK_TIMEZONE_CHOICES = [
@@ -267,14 +302,14 @@ def get_home_weather_data(request, user, widget):
             "units": units,
             "lang": current_lang,
         }
-        response = requests.get(
-            "http://api.openweathermap.org/data/2.5/weather",
-            params=params,
+        status_code, data = cached_openweather_json(
+            "weather",
+            params,
             timeout=6,
+            cache_seconds=OPENWEATHER_CURRENT_CACHE_SECONDS,
         )
-        data = response.json()
 
-        if response.status_code != 200:
+        if status_code != 200:
             return {
                 "city": city,
                 "temperature_unit": temperature_unit,
@@ -1126,13 +1161,23 @@ def weather(request):
             error=missing_env_message("OPENWEATHER_API_KEY"),
         ))
 
-    params = f"&appid={api_key}&units={units}&lang={current_lang}"
-    location_query = f"lat={lat}&lon={lon}" if lat and lon else f"q={city}"
+    params = {
+        "appid": api_key,
+        "units": units,
+        "lang": current_lang,
+    }
+    if lat and lon:
+        params.update({"lat": lat, "lon": lon})
+    else:
+        params["q"] = city
 
     try:
-        curr_url = f"http://api.openweathermap.org/data/2.5/weather?{location_query}{params}"
-        curr_response = requests.get(curr_url, timeout=10)
-        curr_data = curr_response.json()
+        curr_status_code, curr_data = cached_openweather_json(
+            "weather",
+            params,
+            timeout=10,
+            cache_seconds=OPENWEATHER_CURRENT_CACHE_SECONDS,
+        )
 
         if not isinstance(curr_data, dict):
             context = {
@@ -1143,10 +1188,13 @@ def weather(request):
             context.update(weather_context())
             return render(request, 'app/weather.html', context)
 
-        if curr_response.status_code == 200:
-            fore_url = f"http://api.openweathermap.org/data/2.5/forecast?{location_query}{params}"
-            fore_response = requests.get(fore_url, timeout=10)
-            fore_data = fore_response.json()
+        if curr_status_code == 200:
+            fore_status_code, fore_data = cached_openweather_json(
+                "forecast",
+                params,
+                timeout=10,
+                cache_seconds=OPENWEATHER_FORECAST_CACHE_SECONDS,
+            )
 
             if not isinstance(fore_data, dict):
                 context = {
@@ -1157,7 +1205,7 @@ def weather(request):
                 context.update(weather_context())
                 return render(request, 'app/weather.html', context)
 
-            if fore_response.status_code != 200:
+            if fore_status_code != 200:
                 context = {
                     'city': city,
                     'saved_locations': saved_locations,
@@ -1247,13 +1295,13 @@ def weather(request):
         else:
             api_message = curr_data.get("message")
 
-            if curr_response.status_code == 401:
+            if curr_status_code == 401:
                 context = {
                     'city': city,
                     'saved_locations': saved_locations,
                     'error': _("OpenWeather API-Key ist ungültig.")
                 }
-            elif curr_response.status_code == 404:
+            elif curr_status_code == 404:
                 context = {
                     'city': city,
                     'saved_locations': saved_locations,

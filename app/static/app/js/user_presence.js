@@ -1,4 +1,8 @@
 (() => {
+    if (document.body?.dataset.liveStatusUrl) {
+        return;
+    }
+
     const root = document.querySelector('[data-presence-api-url]');
     const presenceElements = Array.from(document.querySelectorAll('[data-presence-user-id]'));
 

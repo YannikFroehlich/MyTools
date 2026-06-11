@@ -294,7 +294,7 @@
                                                             {% for friend in data.recent_friends %}
                                                                 <a href="{% url 'public_profile' friend.user.id %}" title="{{ friend.user.username }}">
                                                                     {% if friend.profile.avatar %}
-                                                                        <img src="{{ friend.profile.avatar|media_thumb:'avatar-small' }}" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
+                                                                        <img src="{{ friend.profile.avatar|media_thumb:'avatar-small' }}" srcset="{{ friend.profile.avatar|media_srcset:'avatar-tiny 48w, avatar-small 96w, avatar 192w' }}" sizes="44px" alt="{% translate 'Profilbild' %}" width="96" height="96" loading="lazy" decoding="async">
                                                                     {% else %}
                                                                         {{ friend.profile.initials }}
                                                                     {% endif %}
@@ -940,5 +940,5 @@
 
 {% block extra_js %}
     {{ home_labels|json_script:"home-labels" }}
-    <script src="{% static 'app/js/home.js' %}"></script>
+    <script src="{% static 'app/js/home.js' %}" defer></script>
 {% endblock %}

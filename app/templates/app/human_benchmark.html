@@ -155,5 +155,5 @@
 {% block extra_js %}
     {{ benchmark_labels|json_script:"benchmark-labels" }}
     {{ score_data|json_script:"benchmark-score-data" }}
-    <script src="{% static 'app/js/human_benchmark.js' %}"></script>
+    <script src="{% static 'app/js/human_benchmark.js' %}" defer></script>
 {% endblock %}
