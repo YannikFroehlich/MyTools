@@ -48,6 +48,9 @@ class LoginRequiredMiddleware:
             "/i18n/",
             "/admin/",
             "/media-thumb/",
+            "/manifest.webmanifest",
+            "/service-worker.js",
+            "/offline/",
             settings.STATIC_URL,
             settings.MEDIA_URL,
         )

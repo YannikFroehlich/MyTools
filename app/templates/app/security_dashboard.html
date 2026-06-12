@@ -1,0 +1,171 @@
+{% extends "app/base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% translate 'Sicherheits-Dashboard' %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/security_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="security-dashboard-page">
+    <header class="security-dashboard-hero">
+        <div>
+            <span class="security-dashboard-kicker"><i class="fa-solid fa-user-shield"></i> {% translate 'Account-Sicherheit' %}</span>
+            <h1>{% translate 'Sicherheits-Dashboard' %}</h1>
+            <p>{% translate 'Prüfe deine 2FA, aktive Sitzungen und die letzten sicherheitsrelevanten Ereignisse.' %}</p>
+        </div>
+        <a href="{% url 'two_factor_settings' %}" class="security-dashboard-primary-action">
+            <i class="fa-solid fa-shield-halved"></i>
+            {% translate '2FA verwalten' %}
+        </a>
+    </header>
+
+    {% if messages %}
+        <div class="security-dashboard-messages">
+            {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="security-dashboard-grid">
+        <article class="security-dashboard-card security-dashboard-status-card">
+            <span class="security-dashboard-card-icon is-blue"><i class="fa-solid fa-fingerprint"></i></span>
+            <div>
+                <span>{% translate '2FA-Status' %}</span>
+                <strong class="{% if two_factor_enabled %}is-success{% else %}is-warning{% endif %}">
+                    {% if two_factor_enabled %}{% translate 'Aktiv' %}{% else %}{% translate 'Inaktiv' %}{% endif %}
+                </strong>
+                <small>
+                    {% if two_factor_enabled %}
+                        {% translate 'Dein Login ist zusätzlich mit einem Authenticator-Code geschützt.' %}
+                    {% else %}
+                        {% translate 'Aktiviere 2FA, damit ein Passwort allein nicht reicht.' %}
+                    {% endif %}
+                </small>
+            </div>
+        </article>
+
+        <article class="security-dashboard-card">
+            <span class="security-dashboard-card-icon is-green"><i class="fa-solid fa-display"></i></span>
+            <div>
+                <span>{% translate 'Aktive Sitzungen' %}</span>
+                <strong>{{ active_sessions|length }}</strong>
+                <small>{% translate 'Geräte/Sessions, die aktuell mit deinem Account angemeldet sind.' %}</small>
+            </div>
+        </article>
+
+        <article class="security-dashboard-card">
+            <span class="security-dashboard-card-icon is-purple"><i class="fa-solid fa-right-to-bracket"></i></span>
+            <div>
+                <span>{% translate 'Erfolgreiche Logins' %}</span>
+                <strong>{{ login_success_count }}</strong>
+                <small>{% translate 'Wird ab diesem Update automatisch mitgezählt.' %}</small>
+            </div>
+        </article>
+
+        <article class="security-dashboard-card">
+            <span class="security-dashboard-card-icon is-red"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <div>
+                <span>{% translate 'Fehlgeschlagene Logins' %}</span>
+                <strong>{{ login_failed_count }}</strong>
+                <small>{% translate 'Hilft dir, verdächtige Login-Versuche zu erkennen.' %}</small>
+            </div>
+        </article>
+    </div>
+
+    <div class="security-dashboard-layout">
+        <section class="security-dashboard-panel">
+            <div class="security-dashboard-panel-head">
+                <div>
+                    <span>{% translate 'Geräteverwaltung' %}</span>
+                    <h2>{% translate 'Aktive Sitzungen' %}</h2>
+                </div>
+                {% if active_sessions|length > 1 %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="revoke_other_sessions">
+                        <button type="submit" class="security-dashboard-danger-soft">
+                            <i class="fa-solid fa-power-off"></i>
+                            {% translate 'Andere beenden' %}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <div class="security-session-list">
+                {% for session in active_sessions %}
+                    <article class="security-session-card{% if session.is_current %} is-current{% endif %}">
+                        <div class="security-session-main">
+                            <span class="security-session-icon"><i class="fa-solid fa-laptop"></i></span>
+                            <div>
+                                <strong>
+                                    {% if session.is_current %}{% translate 'Aktuelle Sitzung' %}{% else %}{% translate 'Andere Sitzung' %}{% endif %}
+                                </strong>
+                                <small>
+                                    {% if session.user_agent %}{{ session.user_agent|truncatechars:90 }}{% else %}{% translate 'Browser unbekannt' %}{% endif %}
+                                </small>
+                                <span class="security-session-meta">
+                                    {% if session.ip_address %}IP: {{ session.ip_address }} · {% endif %}
+                                    {% translate 'Läuft ab' %}: {{ session.expire_date|date:"d.m.Y H:i" }}
+                                </span>
+                            </div>
+                        </div>
+                        {% if not session.is_current %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="revoke_session">
+                                <input type="hidden" name="session_key" value="{{ session.key }}">
+                                <button type="submit" class="security-dashboard-danger-button">
+                                    <i class="fa-solid fa-xmark"></i>
+                                    {% translate 'Beenden' %}
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="security-current-badge">{% translate 'Dieses Gerät' %}</span>
+                        {% endif %}
+                    </article>
+                {% empty %}
+                    <div class="security-dashboard-empty">
+                        <i class="fa-regular fa-circle-question"></i>
+                        <p>{% translate 'Keine aktive Sitzung gefunden. Lade die Seite nach dem erneuten Login nochmal.' %}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="security-dashboard-panel">
+            <div class="security-dashboard-panel-head">
+                <div>
+                    <span>{% translate 'Protokoll' %}</span>
+                    <h2>{% translate 'Letzte Sicherheitsereignisse' %}</h2>
+                </div>
+            </div>
+
+            <div class="security-event-timeline">
+                {% for event in security_events %}
+                    <article class="security-event-item is-{{ event.severity }}">
+                        <span class="security-event-dot"></span>
+                        <div>
+                            <strong>{{ event.get_event_type_display }}</strong>
+                            <small>{{ event.created_at|date:"d.m.Y H:i" }}</small>
+                            {% if event.note %}<p>{{ event.note }}</p>{% endif %}
+                            <span class="security-event-meta">
+                                {% if event.ip_address %}IP: {{ event.ip_address }}{% endif %}
+                                {% if event.short_user_agent != '-' %} · {{ event.short_user_agent }}{% endif %}
+                            </span>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="security-dashboard-empty">
+                        <i class="fa-solid fa-shield-heart"></i>
+                        <p>{% translate 'Noch keine Sicherheitsereignisse vorhanden. Ab jetzt werden Logins und wichtige Aktionen protokolliert.' %}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

@@ -38,6 +38,9 @@ from .views import (
     snake_powerups,
     weather,
     weather_icon_view,
+    pwa_manifest_view,
+    pwa_service_worker_view,
+    offline_view,
 )
 from .profile_views import (
     block_user_view,
@@ -216,6 +219,8 @@ from .platform_views import (
     inbox_mark_read_view,
     inbox_view,
 )
+from .security_views import qr_code_tool_view, security_dashboard_view
+from .community_views import achievement_center_view, roadmap_view, server_status_view
 from .moderation_views import (
     moderation_access_toggle_view,
     moderation_dashboard_view,
@@ -227,10 +232,14 @@ from .moderation_views import (
 )
 
 urlpatterns = [
+    path('manifest.webmanifest', pwa_manifest_view, name='pwa_manifest'),
+    path('service-worker.js', pwa_service_worker_view, name='pwa_service_worker'),
+    path('offline/', offline_view, name='offline'),
     path('color-palette/', color_palette_tool_view, name='color_palette_tool'),
     path('signup/', signup, name='signup'),
     path('accounts/2fa/', two_factor_verify_view, name='two_factor_verify'),
     path('settings/security/2fa/', two_factor_settings_view, name='two_factor_settings'),
+    path('security/', security_dashboard_view, name='security_dashboard'),
     path('', home, name='home'),
     path('home/', home, name='home'),
     path('about/', about, name='about'),
@@ -239,6 +248,9 @@ urlpatterns = [
     path('inbox/', inbox_view, name='inbox'),
     path('inbox/read/', inbox_mark_read_view, name='inbox_mark_read'),
     path('feedback/', feedback_view, name='feedback'),
+    path('roadmap/', roadmap_view, name='roadmap'),
+    path('achievements/', achievement_center_view, name='achievement_center'),
+    path('server-status/', server_status_view, name='server_status'),
     path('moderation/', moderation_dashboard_view, name='moderation'),
     path('moderation/access/', moderation_access_toggle_view, name='moderation_access_toggle'),
     path('moderation/reports/<int:report_id>/', moderation_report_action_view, name='moderation_report_action'),
@@ -316,6 +328,7 @@ urlpatterns = [
     path('rechner/', calculator_view, name='calculator'),
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
     path('randomizer/', randomizer_tools_view, name='randomizer_tools'),
+    path('qr-code/', qr_code_tool_view, name='qr_code_tool'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
     path('snake-powerups/', snake_powerups, name='snake-powerups'),
     path('cookie-clicker/', cookie_clicker, name='cookie-clicker'),

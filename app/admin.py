@@ -26,6 +26,9 @@ from .models import (
     DrawingGameInvite as SkribbleInvite,
     DrawingGameLobby as SkribbleLobby,
     DrawingGamePlayer as SkribblePlayer,
+    FeatureComment,
+    FeatureIdea,
+    FeatureVote,
     FileShare,
     Friendship,
     HumanBenchmarkHighScore,
@@ -38,6 +41,7 @@ from .models import (
     Note,
     PongGame,
     PongInvite,
+    SecurityEvent,
     Shortcut,
     ShortcutSection,
     SiteAccessSettings,
@@ -147,6 +151,64 @@ class UserTwoFactorSettingsAdmin(admin.ModelAdmin):
             _("%(count)s 2FA-Einstellung wurde zurückgesetzt.") % {"count": deleted_count},
             messages.SUCCESS,
         )
+
+
+
+class FeatureCommentInline(admin.TabularInline):
+    model = FeatureComment
+    extra = 0
+    readonly_fields = ("created_at",)
+    fields = ("user", "text", "created_at")
+
+
+class FeatureVoteInline(admin.TabularInline):
+    model = FeatureVote
+    extra = 0
+    readonly_fields = ("created_at",)
+    fields = ("user", "created_at")
+
+
+@admin.register(FeatureIdea)
+class FeatureIdeaAdmin(admin.ModelAdmin):
+    list_display = ("title", "author", "category", "priority", "status", "vote_count", "created_at")
+    list_filter = ("status", "category", "priority", "created_at")
+    search_fields = ("title", "description", "admin_note", "author__username", "author__email")
+    readonly_fields = ("created_at", "updated_at")
+    date_hierarchy = "created_at"
+    inlines = (FeatureVoteInline, FeatureCommentInline)
+
+    @admin.display(description=_("Votes"))
+    def vote_count(self, obj):
+        return obj.votes.count()
+
+
+@admin.register(FeatureVote)
+class FeatureVoteAdmin(admin.ModelAdmin):
+    list_display = ("idea", "user", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("idea__title", "user__username", "user__email")
+    readonly_fields = ("created_at",)
+
+
+@admin.register(FeatureComment)
+class FeatureCommentAdmin(admin.ModelAdmin):
+    list_display = ("idea", "user", "short_text", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("idea__title", "user__username", "user__email", "text")
+    readonly_fields = ("created_at",)
+
+    def short_text(self, obj):
+        return obj.text[:70]
+
+
+@admin.register(SecurityEvent)
+class SecurityEventAdmin(admin.ModelAdmin):
+    list_display = ("created_at", "user", "event_type", "severity", "ip_address", "short_user_agent")
+    list_filter = ("event_type", "severity", "created_at")
+    search_fields = ("user__username", "user__email", "ip_address", "user_agent", "note")
+    readonly_fields = ("created_at",)
+    date_hierarchy = "created_at"
+
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):

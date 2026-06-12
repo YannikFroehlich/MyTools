@@ -29,6 +29,9 @@ TOOL_CATALOG = [
     {"key": "obs_dashboard", "label": _("OBS Dashboard"), "icon": "fa-solid fa-display", "url_name": "obs-dashboard", "category": _("Streaming")},
     {"key": "spritkosten", "label": _("Spritkosten"), "icon": "fa-solid fa-gas-pump", "url_name": "spritkostenrechner", "category": _("Alltag")},
     {"key": "budget_tracker", "label": _("Budget-Tracker"), "icon": "fa-solid fa-wallet", "url_name": "budget_tracker", "category": _("Alltag")},
+    {"key": "qr_code_tool", "label": _("QR-Code Tool"), "icon": "fa-solid fa-qrcode", "url_name": "qr_code_tool", "category": _("Tools")},
+    {"key": "roadmap", "label": _("Roadmap"), "icon": "fa-solid fa-route", "url_name": "roadmap", "category": _("Kommunikation")},
+    {"key": "achievement_center", "label": _("Achievement-Center"), "icon": "fa-solid fa-trophy", "url_name": "achievement_center", "category": _("Profil")},
 ]
 
 # Extra Einträge nur für das Feedback-Formular.
@@ -60,6 +63,10 @@ FEEDBACK_TOOL_CHOICES = [
     ("randomizer_tools", _("Randomizer")),
     ("spritkosten", _("Spritkosten")),
     ("budget_tracker", _("Budget-Tracker")),
+    ("qr_code_tool", _("QR-Code Tool")),
+    ("roadmap", _("Roadmap / Feature Voting")),
+    ("achievement_center", _("Achievement-Center")),
+    ("server_status", _("Serverstatus")),
     ("genius_search", _("Genius Search")),
     ("avatar_wiki", _("Avatar Wiki")),
     ("image_tools", _("Bild Tools")),
