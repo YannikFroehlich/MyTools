@@ -22,9 +22,9 @@
         </a>
     </header>
 
-    {% if messages %}
+    {% if security_messages %}
         <div class="security-dashboard-messages">
-            {% for message in messages %}
+            {% for message in security_messages %}
                 <p class="{{ message.tags }}">{{ message }}</p>
             {% endfor %}
         </div>

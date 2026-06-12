@@ -9,6 +9,9 @@ import requests
 from PIL import Image
 
 from django.conf import settings
+from django.contrib.messages import constants as message_constants
+from django.contrib.messages.storage.base import Message
+from django.contrib.messages.storage.cookie import MessageEncoder
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -2056,6 +2059,15 @@ class StaticPageTests(BaseTestCase):
         self.assertContains(response, 'data-measurement-id="G-TEST123456"')
         self.assertContains(response, "Analyse-Cookies erlauben?")
 
+    @override_settings(GOOGLE_ANALYTICS_ENABLED=True, GOOGLE_ANALYTICS_ID="G-TEST123456")
+    def test_google_analytics_loader_renders_on_login_page_when_enabled(self):
+        response = self.client.get(reverse("login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="mytools-ga-script"')
+        self.assertContains(response, "app/js/google_analytics.js")
+        self.assertContains(response, 'data-measurement-id="G-TEST123456"')
+
     def test_google_analytics_js_uses_consent_mode_before_loading_tag(self):
         js = Path(settings.BASE_DIR) / "app" / "static" / "app" / "js" / "google_analytics.js"
         js_content = js.read_text(encoding="utf-8")
@@ -2159,6 +2171,28 @@ class SecurityDashboardAndQrToolTests(BaseTestCase):
         self.assertContains(response, "Sicherheits-Dashboard")
         self.assertContains(response, "Aktive Sitzungen")
         self.assertContains(response, reverse("two_factor_settings"))
+
+    def test_security_dashboard_does_not_show_profile_messages(self):
+        session = self.client.session
+        session["_messages"] = MessageEncoder().encode([
+            Message(message_constants.SUCCESS, "Dein Profil wurde gespeichert."),
+        ])
+        session.save()
+
+        response = self.client.get(reverse("security_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Dein Profil wurde gespeichert.")
+
+    def test_security_dashboard_still_shows_security_messages(self):
+        response = self.client.post(
+            reverse("security_dashboard"),
+            {"action": "revoke_session"},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Es wurde keine Sitzung")
 
     def test_security_event_is_created_for_two_factor_enable(self):
         response = self.client.post(reverse("two_factor_settings"), {"action": "start_setup"})
