@@ -3,6 +3,7 @@ import re
 from io import BytesIO
 
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.models import Session
@@ -91,10 +92,10 @@ def security_dashboard_view(request):
         if action == "revoke_session":
             session_key = (request.POST.get("session_key") or "").strip()
             if not session_key:
-                messages.error(request, _("Es wurde keine Sitzung ausgewählt."))
+                messages.error(request, _("Es wurde keine Sitzung ausgewählt."), extra_tags="security")
                 return redirect("security_dashboard")
             if session_key == current_session_key:
-                messages.error(request, _("Die aktuelle Sitzung kann nicht hier beendet werden."))
+                messages.error(request, _("Die aktuelle Sitzung kann nicht hier beendet werden."), extra_tags="security")
                 return redirect("security_dashboard")
 
             session = Session.objects.filter(session_key=session_key, expire_date__gte=timezone.now()).first()
@@ -108,9 +109,9 @@ def security_dashboard_view(request):
                     note=_("Eine andere Sitzung wurde beendet."),
                     session_key=session_key,
                 )
-                messages.success(request, _("Die ausgewählte Sitzung wurde beendet."))
+                messages.success(request, _("Die ausgewählte Sitzung wurde beendet."), extra_tags="security")
             else:
-                messages.error(request, _("Diese Sitzung konnte nicht gefunden werden."))
+                messages.error(request, _("Diese Sitzung konnte nicht gefunden werden."), extra_tags="security")
             return redirect("security_dashboard")
 
         if action == "revoke_other_sessions":
@@ -132,8 +133,14 @@ def security_dashboard_view(request):
             messages.success(
                 request,
                 _("%(count)s andere Sitzung(en) wurden beendet.") % {"count": deleted_count},
+                extra_tags="security",
             )
             return redirect("security_dashboard")
+
+    security_messages = [
+        message for message in get_messages(request)
+        if "security" in message.tags.split()
+    ]
 
     two_factor_settings = UserTwoFactorSettings.objects.filter(user=request.user).first()
     two_factor_enabled = bool(two_factor_settings and two_factor_settings.is_enabled and two_factor_settings.secret_key)
@@ -146,6 +153,7 @@ def security_dashboard_view(request):
         "active_sessions": active_sessions,
         "current_session_key": current_session_key,
         "security_events": events,
+        "security_messages": security_messages,
         "login_success_count": SecurityEvent.objects.filter(user=request.user, event_type=SecurityEvent.EVENT_LOGIN_SUCCESS).count(),
         "login_failed_count": SecurityEvent.objects.filter(user=request.user, event_type=SecurityEvent.EVENT_LOGIN_FAILED).count(),
     }
