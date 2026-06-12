@@ -11,6 +11,15 @@ def fontawesome_kit(request):
     }
 
 
+
+
+def analytics_settings(request):
+    return {
+        "google_analytics_enabled": getattr(settings, "GOOGLE_ANALYTICS_ENABLED", False),
+        "google_analytics_id": getattr(settings, "GOOGLE_ANALYTICS_ID", ""),
+    }
+
+
 def current_profile(request):
     if not request.user.is_authenticated:
         return {

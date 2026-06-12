@@ -15,12 +15,37 @@ from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 from .models import SiteAccessSettings, UserTwoFactorSettings
 from .totp_utils import generate_totp_secret, provisioning_uri, verify_totp
 
 
 class AccessLockedAuthenticationForm(AuthenticationForm):
+    captcha = ReCaptchaField(
+        label="",
+        error_messages={
+            "required": _("Bitte bestätige, dass du kein Roboter bist."),
+        },
+        widget=ReCaptchaV2Checkbox(
+            attrs={
+                "data-size": "normal",
+            }
+        ),
+    )
+
+    def __init__(self, request=None, *args, **kwargs):
+        super().__init__(request, *args, **kwargs)
+        self.fields["username"].widget.attrs.update({
+            "autocomplete": "username",
+            "placeholder": _("Benutzername"),
+        })
+        self.fields["password"].widget.attrs.update({
+            "autocomplete": "current-password",
+            "placeholder": _("Passwort"),
+        })
+
     def confirm_login_allowed(self, user):
         super().confirm_login_allowed(user)
         settings_obj = SiteAccessSettings.get_solo()

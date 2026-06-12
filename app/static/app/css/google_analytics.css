@@ -1,0 +1,121 @@
+.ga-consent-banner {
+    position: fixed;
+    right: max(18px, env(safe-area-inset-right));
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 10000;
+    width: min(420px, calc(100vw - 36px));
+    padding: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(18px);
+    color: #182235;
+    text-align: left;
+}
+
+.ga-consent-banner[hidden] {
+    display: none;
+}
+
+.ga-consent-banner__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0f766e;
+}
+
+.ga-consent-banner__title {
+    margin: 0 0 8px;
+    font-size: 1.08rem;
+    font-weight: 900;
+    color: #111827;
+}
+
+.ga-consent-banner__message {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.55;
+    color: #5f6f8a;
+}
+
+.ga-consent-banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.ga-consent-banner__button {
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    padding: 11px 16px;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.ga-consent-banner__button:hover {
+    transform: translateY(-1px);
+}
+
+.ga-consent-banner__button:focus-visible {
+    outline: 3px solid rgba(20, 184, 166, 0.35);
+    outline-offset: 2px;
+}
+
+.ga-consent-banner__button--accept {
+    color: #ffffff;
+    background: linear-gradient(135deg, #0f766e, #4f46e5);
+    box-shadow: 0 12px 28px rgba(20, 184, 166, 0.28);
+}
+
+.ga-consent-banner__button--decline {
+    color: #334155;
+    background: rgba(226, 232, 240, 0.86);
+}
+
+.dark-mode .ga-consent-banner {
+    border-color: rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45);
+    color: #e5e7eb;
+}
+
+.dark-mode .ga-consent-banner__title {
+    color: #f8fafc;
+}
+
+.dark-mode .ga-consent-banner__message {
+    color: #cbd5e1;
+}
+
+.dark-mode .ga-consent-banner__button--decline {
+    color: #e5e7eb;
+    background: rgba(51, 65, 85, 0.92);
+}
+
+@media (max-width: 560px) {
+    .ga-consent-banner {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(12px, env(safe-area-inset-bottom));
+        width: min(100vw - 24px, 420px);
+        padding: 16px;
+        border-radius: 20px;
+    }
+
+    .ga-consent-banner__actions {
+        flex-direction: column;
+    }
+
+    .ga-consent-banner__button {
+        width: 100%;
+    }
+}

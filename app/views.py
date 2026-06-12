@@ -2358,5 +2358,9 @@ def stream_deck(request):
 
 
 @login_required
+@login_required
+def color_palette_tool_view(request):
+    return render(request, "app/color_palette_tool.html")
+
 def randomizer_tools_view(request):
     return render(request, "app/randomizer_tools.html")

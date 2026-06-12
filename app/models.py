@@ -2838,6 +2838,124 @@ class HangmanInvite(models.Model):
         return f"{self.from_user} -> {self.to_user} - {self.lobby}"
 
 
+class BudgetCategory(models.Model):
+    KIND_INCOME = "income"
+    KIND_EXPENSE = "expense"
+
+    KIND_CHOICES = [
+        (KIND_INCOME, _("Einnahme")),
+        (KIND_EXPENSE, _("Ausgabe")),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="budget_categories",
+    )
+    name = models.CharField(max_length=80)
+    kind = models.CharField(max_length=20, choices=KIND_CHOICES, default=KIND_EXPENSE)
+    icon = models.CharField(max_length=80, default="fa-solid fa-wallet")
+    color = models.CharField(max_length=20, default="#2563eb")
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["kind", "name"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "kind", "name"], name="unique_budget_category_per_user_kind"),
+        ]
+        indexes = [
+            models.Index(fields=["user", "kind", "name"]),
+        ]
+        verbose_name = "Budget-Kategorie"
+        verbose_name_plural = "Budget-Kategorien"
+
+    def __str__(self):
+        return f"{self.name} · {self.get_kind_display()}"
+
+
+class BudgetMonth(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="budget_months",
+    )
+    year = models.PositiveSmallIntegerField()
+    month = models.PositiveSmallIntegerField()
+    planned_income = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    expense_limit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    savings_goal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-year", "-month"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "year", "month"], name="unique_budget_month_per_user"),
+        ]
+        indexes = [
+            models.Index(fields=["user", "year", "month"]),
+        ]
+        verbose_name = "Monatsbudget"
+        verbose_name_plural = "Monatsbudgets"
+
+    def __str__(self):
+        return f"{self.user} · {self.month:02d}/{self.year}"
+
+
+class BudgetEntry(models.Model):
+    TYPE_INCOME = "income"
+    TYPE_EXPENSE = "expense"
+
+    TYPE_CHOICES = [
+        (TYPE_INCOME, _("Einnahme")),
+        (TYPE_EXPENSE, _("Ausgabe")),
+    ]
+
+    RECURRENCE_NONE = "none"
+    RECURRENCE_MONTHLY = "monthly"
+
+    RECURRENCE_CHOICES = [
+        (RECURRENCE_NONE, _("Einmalig")),
+        (RECURRENCE_MONTHLY, _("Monatlich")),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="budget_entries",
+    )
+    category = models.ForeignKey(
+        BudgetCategory,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="entries",
+    )
+    title = models.CharField(max_length=120)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    entry_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=TYPE_EXPENSE)
+    date = models.DateField(default=timezone.localdate)
+    note = models.TextField(blank=True)
+    is_fixed = models.BooleanField(default=False)
+    recurrence = models.CharField(max_length=20, choices=RECURRENCE_CHOICES, default=RECURRENCE_NONE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-date", "-created_at"]
+        indexes = [
+            models.Index(fields=["user", "date"]),
+            models.Index(fields=["user", "entry_type", "date"]),
+            models.Index(fields=["user", "is_fixed", "recurrence"]),
+        ]
+        verbose_name = "Budget-Buchung"
+        verbose_name_plural = "Budget-Buchungen"
+
+    def __str__(self):
+        return f"{self.title} · {self.amount} €"
+
 def file_share_upload_path(instance, filename):
     safe_name = get_valid_filename(filename.rsplit("/", 1)[-1])[:180] or "datei"
     return f"file_shares/user_{instance.owner_id}/{instance.token}_{safe_name}"
