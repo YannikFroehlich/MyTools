@@ -664,6 +664,55 @@ class PerformanceIndexTests(SimpleTestCase):
         self.assertIn("upres_game_updated_idx", self.index_names(UserPresence))
 
 
+
+
+class PwaTests(BaseTestCase):
+    def test_manifest_is_public_and_installable(self):
+        self.client.logout()
+        response = self.client.get(reverse("pwa_manifest"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/manifest+json", response["Content-Type"])
+        self.assertEqual(response.json()["display"], "standalone")
+        self.assertEqual(response.json()["scope"], "/")
+        self.assertTrue(any(icon["sizes"] == "512x512" for icon in response.json()["icons"]))
+        self.assertTrue(any(icon["purpose"] == "maskable" for icon in response.json()["icons"]))
+
+    def test_service_worker_is_public_and_allowed_for_root_scope(self):
+        self.client.logout()
+        response = self.client.get(reverse("pwa_service_worker"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/javascript", response["Content-Type"])
+        self.assertEqual(response["Service-Worker-Allowed"], "/")
+        self.assertContains(response, "navigationFallback")
+        self.assertContains(response, reverse("offline"))
+        self.assertContains(response, "/static/app/css/core.css")
+
+    def test_offline_page_is_public(self):
+        self.client.logout()
+        response = self.client.get(reverse("offline"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Du bist offline")
+        self.assertContains(response, "Erneut versuchen")
+
+    def test_base_template_links_manifest_and_pwa_assets(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("pwa_manifest"))
+        self.assertContains(response, "pwa-install-button")
+        self.assertContains(response, "/static/app/js/base.js")
+
+    def test_base_js_registers_service_worker(self):
+        base_js = settings.BASE_DIR / "app" / "static" / "app" / "js" / "base.js"
+        content = base_js.read_text(encoding="utf-8")
+
+        self.assertIn("navigator.serviceWorker.register('/service-worker.js')", content)
+        self.assertIn("beforeinstallprompt", content)
+
+
 class CaddyPerformanceConfigTests(SimpleTestCase):
     def test_caddyfile_has_static_media_compression_and_cache_headers(self):
         caddyfile = (settings.BASE_DIR / "Caddyfile").read_text(encoding="utf-8")

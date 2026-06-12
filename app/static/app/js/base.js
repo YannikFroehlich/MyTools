@@ -1119,4 +1119,57 @@ document.addEventListener('DOMContentLoaded', () => {
             closeAllDropdowns();
         }
     });
+
+    function setupPwaInstallPrompt() {
+        const installButton = document.getElementById('pwa-install-button');
+        let deferredInstallPrompt = null;
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js').catch(() => {
+                    // Service Worker funktioniert nur unter HTTPS oder localhost.
+                });
+            });
+        }
+
+        if (!installButton) {
+            return;
+        }
+
+        window.addEventListener('beforeinstallprompt', (event) => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+            installButton.hidden = false;
+            installButton.classList.add('is-visible');
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredInstallPrompt) {
+                return;
+            }
+
+            installButton.disabled = true;
+            deferredInstallPrompt.prompt();
+
+            try {
+                const choice = await deferredInstallPrompt.userChoice;
+                if (choice && choice.outcome === 'accepted') {
+                    installButton.hidden = true;
+                    installButton.classList.remove('is-visible');
+                }
+            } finally {
+                deferredInstallPrompt = null;
+                installButton.disabled = false;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            installButton.hidden = true;
+            installButton.classList.remove('is-visible');
+        });
+    }
+
+    setupPwaInstallPrompt();
+
 });

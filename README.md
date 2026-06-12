@@ -576,6 +576,35 @@ REDIS_URL=redis://redis:6379/1
 
 Secrets gehören nicht ins Git-Repository. Dafür sollte eine `.env.example` ohne echte Zugangsdaten gepflegt werden.
 
+
+---
+
+## 📱 PWA / installierbare App
+
+MyTools ist als Progressive Web App vorbereitet:
+
+- `manifest.webmanifest` liefert App-Name, Start-URL, Theme-Farbe, Icons und Shortcuts.
+- `service-worker.js` wird am Origin-Root ausgeliefert und darf dadurch die komplette App-Scope `/` kontrollieren.
+- Die Offline-Seite unter `/offline/` wird vorab gecacht.
+- Statische Dateien unter `/static/` werden beim ersten Laden gecacht und danach schneller wiederverwendet.
+- Private HTML-Seiten und API-Antworten werden bewusst nicht vorab gecacht.
+
+Nach dem Deployment einmal ausführen:
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+Dann im Browser prüfen:
+
+```text
+https://deine-domain.de/manifest.webmanifest
+https://deine-domain.de/service-worker.js
+https://deine-domain.de/offline/
+```
+
+Für die Installation muss die Seite über HTTPS laufen. Lokal funktioniert der Service Worker auch auf `localhost`.
+
 ---
 
 ## 🧪 Tests

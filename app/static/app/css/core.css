@@ -455,6 +455,46 @@ body.dark-mode .theme-editor-actions button {
     color: var(--theme-accent-end);
 }
 
+/* ── PWA INSTALL BUTTON ── */
+
+
+.pwa-install-btn {
+    width: 38px;
+    height: 33px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 22, 64, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 9px;
+    cursor: pointer;
+    color: #fff;
+    transition: background 0.15s, transform 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.pwa-install-btn[hidden] {
+    display: none !important;
+}
+
+.pwa-install-btn:hover {
+    background: rgba(10, 22, 64, 0.55);
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+}
+
+.pwa-install-btn:active {
+    transform: scale(0.97);
+}
+
+.pwa-install-btn:disabled {
+    opacity: 0.62;
+    cursor: wait;
+}
+
+.pwa-install-btn i {
+    font-size: 0.95rem;
+}
+
 /* ── DARK MODE BUTTON ── */
 
 .dark-mode-btn {
@@ -1493,6 +1533,7 @@ body.dark-mode .footer-links a:hover {
 
     .theme-editor-btn,
     .dark-mode-btn,
+    .pwa-install-btn,
     .logout-btn {
         width: 40px;
         height: 38px;

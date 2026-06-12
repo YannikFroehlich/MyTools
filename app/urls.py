@@ -38,6 +38,9 @@ from .views import (
     snake_powerups,
     weather,
     weather_icon_view,
+    pwa_manifest_view,
+    pwa_service_worker_view,
+    offline_view,
 )
 from .profile_views import (
     block_user_view,
@@ -227,6 +230,9 @@ from .moderation_views import (
 )
 
 urlpatterns = [
+    path('manifest.webmanifest', pwa_manifest_view, name='pwa_manifest'),
+    path('service-worker.js', pwa_service_worker_view, name='pwa_service_worker'),
+    path('offline/', offline_view, name='offline'),
     path('color-palette/', color_palette_tool_view, name='color_palette_tool'),
     path('signup/', signup, name='signup'),
     path('accounts/2fa/', two_factor_verify_view, name='two_factor_verify'),

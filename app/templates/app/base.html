@@ -7,6 +7,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#1a56d6">
+    <meta name="application-name" content="MyTools">
+    <meta name="apple-mobile-web-app-title" content="MyTools">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="{% url 'pwa_manifest' %}">
+    <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
     <link rel="stylesheet" href="{% static 'app/css/core.css' %}">
@@ -804,6 +811,11 @@
                     <div class="theme-save-hint" id="theme-save-hint" aria-live="polite">{% translate 'Automatisch gespeichert' %}</div>
                 </div>
             </div>
+
+
+            <button class="pwa-install-btn" id="pwa-install-button" type="button" hidden aria-label="{% translate 'MyTools als App installieren' %}" title="{% translate 'App installieren' %}">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+            </button>
 
             <button class="dark-mode-btn" id="darkmode-button" aria-label="{% translate 'Dark Mode umschalten' %}">
                 <i class="fa-solid fa-moon icon-moon"></i>
