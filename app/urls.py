@@ -9,6 +9,7 @@ from .views import (
     avatar_wiki,
     clock_view,
     calculator_view,
+    color_palette_tool_view,
     cookie_clicker,
     cookie_clicker_score_api,
     game_2048,
@@ -222,6 +223,7 @@ from .moderation_views import (
 )
 
 urlpatterns = [
+    path('color-palette/', color_palette_tool_view, name='color_palette_tool'),
     path('signup/', signup, name='signup'),
     path('accounts/2fa/', two_factor_verify_view, name='two_factor_verify'),
     path('settings/security/2fa/', two_factor_settings_view, name='two_factor_settings'),

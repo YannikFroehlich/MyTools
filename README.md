@@ -639,3 +639,13 @@ MyTools soll eine persönliche, erweiterbare Web-Toolbox bleiben:
 - optisch modern
 - einfach per Docker deploybar
 - Schritt für Schritt um neue Tools erweiterbar
+
+
+### Color Palette Tool
+
+- Farbauswahl per Standard-Farbpicker
+- Bildschirm-Farbaufnahme über die Browser EyeDropper API, wenn unterstützt
+- Bild hochladen und Pixel-Farbe direkt im Canvas anklicken
+- HEX, RGB und HSL kopieren
+- Lokale Palette per `localStorage`
+- Kontrastprüfung für weißen und dunklen Text

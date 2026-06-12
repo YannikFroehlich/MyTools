@@ -4907,3 +4907,20 @@ class PongMultiplayerTests(TestCase):
         self.assertEqual(summary["metrics"]["pong_matches"], 1)
         self.assertEqual(summary["metrics"]["pong_wins"], 1)
         self.assertEqual(summary["metrics"]["pong_best_rally"], 12)
+
+
+class ColorPaletteToolTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="coloruser", password="testpass123")
+
+    def test_color_palette_requires_login(self):
+        response = self.client.get(reverse("color_palette_tool"))
+        self.assertEqual(response.status_code, 302)
+
+    def test_color_palette_page_loads_for_logged_in_user(self):
+        self.client.login(username="coloruser", password="testpass123")
+        response = self.client.get(reverse("color_palette_tool"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Color Palette Tool")
+        self.assertContains(response, "color_palette_tool.css")
+        self.assertContains(response, "color_palette_tool.js")

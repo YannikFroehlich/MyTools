@@ -28,6 +28,7 @@ TOOL_CATALOG = [
     {"key": "stream_deck", "label": _("Stream Deck"), "icon": "fa-solid fa-table-cells-large", "url_name": "stream-deck", "category": _("Streaming")},
     {"key": "obs_dashboard", "label": _("OBS Dashboard"), "icon": "fa-solid fa-display", "url_name": "obs-dashboard", "category": _("Streaming")},
     {"key": "spritkosten", "label": _("Spritkosten"), "icon": "fa-solid fa-gas-pump", "url_name": "spritkostenrechner", "category": _("Alltag")},
+    {"key": "budget_tracker", "label": _("Budget-Tracker"), "icon": "fa-solid fa-wallet", "url_name": "budget_tracker", "category": _("Alltag")},
 ]
 
 # Extra Einträge nur für das Feedback-Formular.
@@ -58,6 +59,7 @@ FEEDBACK_TOOL_CHOICES = [
     ("unit_converter", _("Einheitenrechner")),
     ("randomizer_tools", _("Randomizer")),
     ("spritkosten", _("Spritkosten")),
+    ("budget_tracker", _("Budget-Tracker")),
     ("genius_search", _("Genius Search")),
     ("avatar_wiki", _("Avatar Wiki")),
     ("image_tools", _("Bild Tools")),
