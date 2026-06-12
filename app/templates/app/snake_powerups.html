@@ -15,19 +15,19 @@
             <div class="snake-brand">
                 <span class="snake-brand-icon"><i class="fa-solid fa-staff-snake"></i></span>
                 <div>
-                    <p>Arcade Lab</p>
+                    <p>{% translate "Arcade Lab" %}</p>
                     <h1>Snake Powerups</h1>
                 </div>
             </div>
 
             <div class="snake-actions">
-                <button type="button" class="snake-icon-button" id="snakeSoundButton" aria-label="Sound umschalten" title="Sound">
+                <button type="button" class="snake-icon-button" id="snakeSoundButton" aria-label="{% translate 'Sound umschalten' %}" title="{% translate 'Sound' %}">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
-                <button type="button" class="snake-icon-button" id="snakePauseButton" aria-label="Pause" title="Pause">
+                <button type="button" class="snake-icon-button" id="snakePauseButton" aria-label="{% translate 'Pause' %}" title="{% translate 'Pause' %}">
                     <i class="fa-solid fa-pause"></i>
                 </button>
-                <button type="button" class="snake-icon-button danger" id="snakeResetButton" aria-label="Neustart" title="Neustart">
+                <button type="button" class="snake-icon-button danger" id="snakeResetButton" aria-label="{% translate 'Neustart' %}" title="{% translate 'Neustart' %}">
                     <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -37,51 +37,51 @@
             <section class="snake-stage">
                 <div class="snake-hud">
                     <article class="snake-stat primary">
-                        <span>Score</span>
+                        <span>{% translate "Score" %}</span>
                         <strong id="snakeScore">0</strong>
                     </article>
                     <article class="snake-stat">
-                        <span>Bestscore</span>
+                        <span>{% translate "Bestscore" %}</span>
                         <strong id="snakeBest">0</strong>
                     </article>
                     <article class="snake-stat">
-                        <span>Laenge</span>
+                        <span>{% translate "Laenge" %}</span>
                         <strong id="snakeLength">3</strong>
                     </article>
                     <article class="snake-stat">
-                        <span>Combo</span>
+                        <span>{% translate "Combo" %}</span>
                         <strong id="snakeCombo">x1</strong>
                     </article>
                 </div>
 
-                <canvas id="snakeCanvas" class="snake-canvas" width="720" height="720" aria-label="Snake Powerups Spielfeld"></canvas>
+                <canvas id="snakeCanvas" class="snake-canvas" width="720" height="720" aria-label="{% translate 'Snake Powerups Spielfeld' %}"></canvas>
 
                 <div class="snake-toast" id="snakeToast" aria-live="polite"></div>
 
                 <div class="snake-overlay" id="snakeOverlay">
                     <div class="snake-menu-panel">
                         <span class="snake-menu-mark"><i class="fa-solid fa-bolt"></i></span>
-                        <p class="snake-eyebrow" id="snakeOverlayKicker">Bereit</p>
+                        <p class="snake-eyebrow" id="snakeOverlayKicker">{% translate "Bereit" %}</p>
                         <h2 id="snakeOverlayTitle">Snake Powerups</h2>
-                        <p id="snakeOverlayText">Sammle Energie, stapel Combos und nutze Powerups, bevor das Board zu eng wird.</p>
+                        <p id="snakeOverlayText">{% translate "Sammle Energie, stapel Combos und nutze Powerups, bevor das Board zu eng wird." %}</p>
                         <div class="snake-menu-actions">
                             <button type="button" class="snake-primary-button" id="snakeStartButton">
                                 <i class="fa-solid fa-play"></i>
-                                Start
+                                {% translate "Start" %}
                             </button>
                             <button type="button" class="snake-secondary-button" id="snakeMenuResetButton">
                                 <i class="fa-solid fa-rotate-left"></i>
-                                Reset
+                                {% translate "Reset" %}
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="snake-touch-controls" aria-label="Touch-Steuerung">
-                    <button type="button" data-direction="up" aria-label="Nach oben"><i class="fa-solid fa-chevron-up"></i></button>
-                    <button type="button" data-direction="left" aria-label="Nach links"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button type="button" data-direction="down" aria-label="Nach unten"><i class="fa-solid fa-chevron-down"></i></button>
-                    <button type="button" data-direction="right" aria-label="Nach rechts"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="snake-touch-controls" aria-label="{% translate 'Touch-Steuerung' %}">
+                    <button type="button" data-direction="up" aria-label="{% translate 'Nach oben' %}"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button type="button" data-direction="left" aria-label="{% translate 'Nach links' %}"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button type="button" data-direction="down" aria-label="{% translate 'Nach unten' %}"><i class="fa-solid fa-chevron-down"></i></button>
+                    <button type="button" data-direction="right" aria-label="{% translate 'Nach rechts' %}"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </section>
 
@@ -90,26 +90,26 @@
                     <div class="snake-section-title">
                         <span><i class="fa-solid fa-sliders"></i></span>
                         <div>
-                            <h2>Setup</h2>
-                            <p>Modus und Spielgefuehl</p>
+                            <h2>{% translate "Setup" %}</h2>
+                            <p>{% translate "Modus und Spielgefuehl" %}</p>
                         </div>
                     </div>
 
                     <div class="snake-option-grid">
                         <label>
-                            <span>Modus</span>
+                            <span>{% translate "Modus" %}</span>
                             <select id="snakeModeSelect">
-                                <option value="neon">Neon Run</option>
-                                <option value="classic">Classic Walls</option>
-                                <option value="chaos">Power Chaos</option>
+                                <option value="neon">{% translate "Neon Run" %}</option>
+                                <option value="classic">{% translate "Classic Walls" %}</option>
+                                <option value="chaos">{% translate "Power Chaos" %}</option>
                             </select>
                         </label>
                         <label>
-                            <span>Tempo</span>
+                            <span>{% translate "Tempo" %}</span>
                             <select id="snakeSpeedSelect">
-                                <option value="normal">Normal</option>
-                                <option value="fast">Schnell</option>
-                                <option value="wild">Wild</option>
+                                <option value="normal">{% translate "Normal" %}</option>
+                                <option value="fast">{% translate "Schnell" %}</option>
+                                <option value="wild">{% translate "Wild" %}</option>
                             </select>
                         </label>
                     </div>
@@ -119,8 +119,8 @@
                     <div class="snake-section-title">
                         <span><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                         <div>
-                            <h2>Powerups</h2>
-                            <p id="snakeActiveSummary">Kein Effekt aktiv</p>
+                            <h2>{% translate "Powerups" %}</h2>
+                            <p id="snakeActiveSummary">{% translate "Kein Effekt aktiv" %}</p>
                         </div>
                     </div>
                     <div class="snake-power-grid" id="snakePowerGrid"></div>
@@ -130,21 +130,21 @@
                     <div class="snake-section-title">
                         <span><i class="fa-solid fa-gauge-high"></i></span>
                         <div>
-                            <h2>Run</h2>
-                            <p id="snakeRunState">Warte auf Start</p>
+                            <h2>{% translate "Run" %}</h2>
+                            <p id="snakeRunState">{% translate "Warte auf Start" %}</p>
                         </div>
                     </div>
                     <div class="snake-mini-stats">
                         <div>
-                            <span>Aepfel</span>
+                            <span>{% translate "Aepfel" %}</span>
                             <strong id="snakeApples">0</strong>
                         </div>
                         <div>
-                            <span>Powerups</span>
+                            <span>{% translate "Powerups" %}</span>
                             <strong id="snakePowerCount">0</strong>
                         </div>
                         <div>
-                            <span>Schilde</span>
+                            <span>{% translate "Schilde" %}</span>
                             <strong id="snakeShieldCount">0</strong>
                         </div>
                     </div>
