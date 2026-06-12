@@ -27,6 +27,10 @@
         <link rel="icon" type="image/x-icon" href="{% static 'app/icons/cloud-solid.png' %}">
     {% endblock %}
 
+    {% if google_analytics_enabled and google_analytics_id %}
+        {% include "app/includes/google_analytics.html" %}
+    {% endif %}
+
     {% block extra_css %}{% endblock %}
     {% block scripts %}
         <script src="{% static 'app/js/base.js' %}" defer></script>

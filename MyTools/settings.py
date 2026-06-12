@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_recaptcha',
     'app',
 ]
 
@@ -122,6 +123,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processors.fontawesome_kit',
+                'app.context_processors.analytics_settings',
                 'app.context_processors.current_profile',
             ],
         },
@@ -186,6 +188,30 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
+
+# ------------------------------------------------------------
+# Google reCAPTCHA
+# ------------------------------------------------------------
+
+RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY", "")
+RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", "")
+
+# ------------------------------------------------------------
+# Google Analytics 4
+# ------------------------------------------------------------
+
+GOOGLE_ANALYTICS_ID = os.getenv("GOOGLE_ANALYTICS_ID", "").strip()
+GOOGLE_ANALYTICS_ENABLED = bool(GOOGLE_ANALYTICS_ID) and not IS_TESTING
+
+if GOOGLE_ANALYTICS_ID and not GOOGLE_ANALYTICS_ID.startswith("G-"):
+    raise ValueError("GOOGLE_ANALYTICS_ID muss eine GA4 Measurement ID sein, z. B. G-XXXXXXXXXX.")
+
+if IS_TESTING and (not RECAPTCHA_PUBLIC_KEY or not RECAPTCHA_PRIVATE_KEY):
+    # Google's official reCAPTCHA v2 test keys always validate successfully.
+    # They are only used while running Django tests.
+    RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+    RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
+    SILENCED_SYSTEM_CHECKS = ["django_recaptcha.recaptcha_test_key_error"]
 
 
 CHANNEL_LAYERS = {

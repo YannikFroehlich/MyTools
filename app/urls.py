@@ -197,6 +197,10 @@ from .chat_views import (
 )
 from .notification_views import live_status_api, notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
 
+from .budget_views import (
+    budget_tracker_export_csv,
+    budget_tracker_view,
+)
 from .performance_tools_views import (
     file_share_delete_view,
     file_share_download_view,
@@ -288,6 +292,8 @@ urlpatterns = [
     path('weather-icon/<str:icon_code>/<str:size>/', weather_icon_view, name='weather_icon'),
     path('obs-dashboard/', obs_dashboard, name='obs-dashboard'),
     path('spritkostenrechner/', spritkostenrechner, name='spritkostenrechner'),
+    path('budget/', budget_tracker_view, name='budget_tracker'),
+    path('budget/export/', budget_tracker_export_csv, name='budget_tracker_export'),
 
     path('human-benchmark/', human_benchmark, name='human-benchmark'),
     path('api/human-benchmark/scores/', human_benchmark_score_api, name='human-benchmark-score-api'),
