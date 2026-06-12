@@ -34,6 +34,9 @@ from app.models import (
     Game2048HighScore,
     DrawingGameLobby,
     DrawingGamePlayer,
+    FeatureComment,
+    FeatureIdea,
+    FeatureVote,
     FileShare,
     Friendship,
     HomeLayoutPreference,
@@ -49,6 +52,7 @@ from app.models import (
     Note,
     PongGame,
     PongInvite,
+    SecurityEvent,
     ProfileGalleryImage,
     Shortcut,
     ShortcutSection,
@@ -662,6 +666,55 @@ class PerformanceIndexTests(SimpleTestCase):
         self.assertIn("gallery_user_public_idx", self.index_names(ProfileGalleryImage))
         self.assertIn("fileshare_type_created_idx", self.index_names(FileShare))
         self.assertIn("upres_game_updated_idx", self.index_names(UserPresence))
+
+
+
+
+class PwaTests(BaseTestCase):
+    def test_manifest_is_public_and_installable(self):
+        self.client.logout()
+        response = self.client.get(reverse("pwa_manifest"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/manifest+json", response["Content-Type"])
+        self.assertEqual(response.json()["display"], "standalone")
+        self.assertEqual(response.json()["scope"], "/")
+        self.assertTrue(any(icon["sizes"] == "512x512" for icon in response.json()["icons"]))
+        self.assertTrue(any(icon["purpose"] == "maskable" for icon in response.json()["icons"]))
+
+    def test_service_worker_is_public_and_allowed_for_root_scope(self):
+        self.client.logout()
+        response = self.client.get(reverse("pwa_service_worker"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/javascript", response["Content-Type"])
+        self.assertEqual(response["Service-Worker-Allowed"], "/")
+        self.assertContains(response, "navigationFallback")
+        self.assertContains(response, reverse("offline"))
+        self.assertContains(response, "/static/app/css/core.css")
+
+    def test_offline_page_is_public(self):
+        self.client.logout()
+        response = self.client.get(reverse("offline"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Du bist offline")
+        self.assertContains(response, "Erneut versuchen")
+
+    def test_base_template_links_manifest_and_pwa_assets(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("pwa_manifest"))
+        self.assertContains(response, "pwa-install-button")
+        self.assertContains(response, "/static/app/js/base.js")
+
+    def test_base_js_registers_service_worker(self):
+        base_js = settings.BASE_DIR / "app" / "static" / "app" / "js" / "base.js"
+        content = base_js.read_text(encoding="utf-8")
+
+        self.assertIn("navigator.serviceWorker.register('/service-worker.js')", content)
+        self.assertIn("beforeinstallprompt", content)
 
 
 class CaddyPerformanceConfigTests(SimpleTestCase):
@@ -2095,6 +2148,84 @@ class StaticPageTests(BaseTestCase):
         self.assertIn("warmObsWebSocketModule", js_content)
         self.assertIn('elements.connectBtn.addEventListener("pointerenter", warmObsWebSocketModule', js_content)
         self.assertNotIn('import OBSWebSocket from "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm"', js_content)
+
+
+class SecurityDashboardAndQrToolTests(BaseTestCase):
+    def test_security_dashboard_loads_and_shows_account_status(self):
+        response = self.client.get(reverse("security_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/security_dashboard.html")
+        self.assertContains(response, "Sicherheits-Dashboard")
+        self.assertContains(response, "Aktive Sitzungen")
+        self.assertContains(response, reverse("two_factor_settings"))
+
+    def test_security_event_is_created_for_two_factor_enable(self):
+        response = self.client.post(reverse("two_factor_settings"), {"action": "start_setup"})
+        self.assertRedirects(response, reverse("two_factor_settings"))
+
+        settings_obj = UserTwoFactorSettings.objects.get(user=self.user)
+        token = current_totp(settings_obj.secret_key)
+        response = self.client.post(reverse("two_factor_settings"), {
+            "action": "confirm_setup",
+            "token": token,
+        })
+
+        self.assertRedirects(response, reverse("two_factor_settings"))
+        self.assertTrue(SecurityEvent.objects.filter(
+            user=self.user,
+            event_type=SecurityEvent.EVENT_TWO_FACTOR_ENABLED,
+        ).exists())
+
+    def test_security_dashboard_can_revoke_other_session(self):
+        other_client = self.client_class()
+        other_client.force_login(self.user)
+        other_session_key = other_client.session.session_key
+
+        response = self.client.post(reverse("security_dashboard"), {
+            "action": "revoke_session",
+            "session_key": other_session_key,
+        })
+
+        self.assertRedirects(response, reverse("security_dashboard"))
+        from django.contrib.sessions.models import Session
+        self.assertFalse(Session.objects.filter(session_key=other_session_key).exists())
+        self.assertTrue(SecurityEvent.objects.filter(
+            user=self.user,
+            event_type=SecurityEvent.EVENT_SESSION_REVOKED,
+        ).exists())
+
+    def test_qr_code_tool_loads(self):
+        response = self.client.get(reverse("qr_code_tool"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/qr_code_tool.html")
+        self.assertContains(response, "QR-Code Tool")
+        self.assertContains(response, "app/js/qr_code_tool.js")
+
+    def test_qr_code_tool_generates_text_qr_code(self):
+        response = self.client.post(reverse("qr_code_tool"), {
+            "qr_type": "text",
+            "text": "Mein Test QR",
+            "foreground": "#111827",
+            "background": "#ffffff",
+            "error_level": "M",
+            "box_size": "8",
+            "border": "4",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data:image/png;base64,")
+        self.assertContains(response, "Mein Test QR")
+        self.assertContains(response, "PNG herunterladen")
+
+    def test_base_template_links_security_dashboard_and_qr_tool(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("security_dashboard"))
+        self.assertContains(response, reverse("qr_code_tool"))
+
 
 
 class ChatEnhancementTests(BaseTestCase):
@@ -4988,3 +5119,96 @@ class ColorPaletteToolTests(TestCase):
         self.assertContains(response, "Color Palette Tool")
         self.assertContains(response, "color_palette_tool.css")
         self.assertContains(response, "color_palette_tool.js")
+
+class RoadmapAchievementAndServerStatusTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.user = get_user_model().objects.create_user(username="roadmap_user", password="testpass123")
+        self.staff = get_user_model().objects.create_user(username="roadmap_admin", password="testpass123", is_staff=True)
+
+    def test_roadmap_requires_login(self):
+        response = self.client.get(reverse("roadmap"))
+        self.assertEqual(response.status_code, 302)
+
+    def test_roadmap_creates_idea_and_toggles_vote(self):
+        self.client.login(username="roadmap_user", password="testpass123")
+        response = self.client.post(reverse("roadmap"), {
+            "action": "create",
+            "title": "Push Benachrichtigungen",
+            "description": "PWA Push für Spiel-Einladungen und Chat.",
+            "category": FeatureIdea.CATEGORY_TOOL,
+            "priority": FeatureIdea.PRIORITY_HIGH,
+        })
+
+        self.assertRedirects(response, reverse("roadmap"))
+        idea = FeatureIdea.objects.get(title="Push Benachrichtigungen")
+        self.assertEqual(idea.author, self.user)
+        self.assertEqual(idea.status, FeatureIdea.STATUS_SUGGESTED)
+
+        vote_response = self.client.post(reverse("roadmap"), {"action": "vote", "idea_id": idea.id})
+        self.assertRedirects(vote_response, reverse("roadmap"))
+        self.assertTrue(FeatureVote.objects.filter(idea=idea, user=self.user).exists())
+
+        unvote_response = self.client.post(reverse("roadmap"), {"action": "vote", "idea_id": idea.id})
+        self.assertRedirects(unvote_response, reverse("roadmap"))
+        self.assertFalse(FeatureVote.objects.filter(idea=idea, user=self.user).exists())
+
+    def test_roadmap_comments_and_staff_status_update(self):
+        idea = FeatureIdea.objects.create(author=self.user, title="Serverstatus", description="Admin Monitor")
+        self.client.login(username="roadmap_user", password="testpass123")
+
+        comment_response = self.client.post(reverse("roadmap"), {
+            "action": "comment",
+            "idea_id": idea.id,
+            "text": "Wäre sehr nützlich.",
+        })
+
+        self.assertRedirects(comment_response, reverse("roadmap"))
+        self.assertTrue(FeatureComment.objects.filter(idea=idea, user=self.user, text="Wäre sehr nützlich.").exists())
+
+        self.client.logout()
+        self.client.login(username="roadmap_admin", password="testpass123")
+        status_response = self.client.post(reverse("roadmap"), {
+            "action": "update_status",
+            "idea_id": idea.id,
+            "status": FeatureIdea.STATUS_IN_PROGRESS,
+            "admin_note": "Wird umgesetzt.",
+        })
+
+        self.assertRedirects(status_response, reverse("roadmap"))
+        idea.refresh_from_db()
+        self.assertEqual(idea.status, FeatureIdea.STATUS_IN_PROGRESS)
+        self.assertEqual(idea.admin_note, "Wird umgesetzt.")
+
+    def test_achievement_center_renders_with_user_progress(self):
+        self.client.login(username="roadmap_user", password="testpass123")
+        Game2048HighScore.objects.create(
+            user=self.user,
+            score=5000,
+            best_tile=1024,
+            moves=120,
+            duration_seconds=180,
+            games_played=3,
+        )
+
+        response = self.client.get(reverse("achievement_center"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Achievement-Center")
+        self.assertContains(response, "1024-Kachel")
+        self.assertContains(response, "XP-Ranking")
+
+    def test_server_status_requires_staff(self):
+        self.client.login(username="roadmap_user", password="testpass123")
+        response = self.client.get(reverse("server_status"))
+        self.assertEqual(response.status_code, 302)
+
+    def test_server_status_renders_for_staff(self):
+        self.client.login(username="roadmap_admin", password="testpass123")
+        response = self.client.get(reverse("server_status"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Serverstatus")
+        self.assertContains(response, "Datenbank")
+        self.assertContains(response, "Speicherplatz")
+

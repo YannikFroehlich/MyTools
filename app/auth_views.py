@@ -18,7 +18,8 @@ from django.views.decorators.http import require_http_methods
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
-from .models import SiteAccessSettings, UserTwoFactorSettings
+from .models import SecurityEvent, SiteAccessSettings, UserTwoFactorSettings
+from .security_views import create_security_event
 from .totp_utils import generate_totp_secret, provisioning_uri, verify_totp
 
 
@@ -101,7 +102,31 @@ class AccessAwareLoginView(LoginView):
             self.request.session.set_expiry(300)
             return redirect("two_factor_verify")
 
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        create_security_event(
+            self.request,
+            user,
+            SecurityEvent.EVENT_LOGIN_SUCCESS,
+            SecurityEvent.SEVERITY_SUCCESS,
+            note=_("Login ohne 2FA abgeschlossen."),
+        )
+        return response
+
+    def form_invalid(self, form):
+        username = (self.request.POST.get("username") or "").strip()
+        if username:
+            from django.contrib.auth import get_user_model
+
+            user = get_user_model().objects.filter(username__iexact=username).first()
+            if user:
+                create_security_event(
+                    self.request,
+                    user,
+                    SecurityEvent.EVENT_LOGIN_FAILED,
+                    SecurityEvent.SEVERITY_DANGER,
+                    note=_("Login-Versuch wurde abgelehnt."),
+                )
+        return super().form_invalid(form)
 
 
 @require_http_methods(["GET", "POST"])
@@ -127,6 +152,13 @@ def two_factor_verify_view(request):
             next_url = request.session.get("two_factor_next") or reverse("home")
             request.session.flush()
             auth_login(request, user, backend=backend)
+            create_security_event(
+                request,
+                user,
+                SecurityEvent.EVENT_LOGIN_SUCCESS,
+                SecurityEvent.SEVERITY_SUCCESS,
+                note=_("Login mit 2FA bestätigt."),
+            )
             if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
                 next_url = reverse("home")
             return HttpResponseRedirect(next_url)
@@ -170,6 +202,13 @@ def two_factor_settings_view(request):
                 settings_obj.is_enabled = True
                 settings_obj.confirmed_at = timezone.now()
                 settings_obj.save(update_fields=["is_enabled", "confirmed_at", "updated_at"])
+                create_security_event(
+                    request,
+                    request.user,
+                    SecurityEvent.EVENT_TWO_FACTOR_ENABLED,
+                    SecurityEvent.SEVERITY_SUCCESS,
+                    note=_("2FA wurde für den Account aktiviert."),
+                )
                 messages.success(request, _("Zwei-Faktor-Authentifizierung wurde aktiviert."))
                 return redirect("two_factor_settings")
             messages.error(request, _("Der Code konnte nicht bestätigt werden."))
@@ -181,6 +220,13 @@ def two_factor_settings_view(request):
                 settings_obj.secret_key = ""
                 settings_obj.confirmed_at = None
                 settings_obj.save(update_fields=["is_enabled", "secret_key", "confirmed_at", "updated_at"])
+                create_security_event(
+                    request,
+                    request.user,
+                    SecurityEvent.EVENT_TWO_FACTOR_DISABLED,
+                    SecurityEvent.SEVERITY_WARNING,
+                    note=_("2FA wurde für den Account deaktiviert."),
+                )
                 messages.success(request, _("Zwei-Faktor-Authentifizierung wurde deaktiviert."))
                 return redirect("two_factor_settings")
             messages.error(request, _("Der Code ist ungültig. 2FA wurde nicht deaktiviert."))

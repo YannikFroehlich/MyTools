@@ -1,0 +1,134 @@
+{% extends "app/base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="feature-page achievement-page">
+    <div class="feature-hero achievement-hero">
+        <div class="feature-hero-copy">
+            <span class="feature-kicker"><i class="fa-solid fa-trophy"></i> {% translate "Achievement-Center" %}</span>
+            <h1>{% translate "Level, XP und Fortschritt" %}</h1>
+            <p>{% translate "Sieh deine freigeschalteten Achievements, deine nächsten Ziele und deinen Platz im MyTools-Ranking." %}</p>
+        </div>
+        <div class="level-orb">
+            <span>{% translate "Level" %}</span>
+            <strong>{{ achievement_summary.level.level }}</strong>
+        </div>
+    </div>
+
+    <div class="achievement-summary-grid">
+        <div class="feature-card achievement-meter-card">
+            <div class="meter-head">
+                <div>
+                    <span>{% translate "XP Fortschritt" %}</span>
+                    <strong>{{ achievement_summary.total_xp }} XP</strong>
+                </div>
+                <small>{{ achievement_summary.level.current_xp }} / {{ achievement_summary.level.next_level_xp }} XP</small>
+            </div>
+            <div class="progress-track"><span style="width: {{ achievement_summary.level.progress_percent }}%;"></span></div>
+        </div>
+        <div class="feature-card mini-stat"><i class="fa-solid fa-medal"></i><strong>{{ achievement_summary.unlocked_count }}/{{ achievement_summary.total_count }}</strong><span>{% translate "Achievements" %}</span></div>
+        <div class="feature-card mini-stat"><i class="fa-solid fa-ranking-star"></i><strong>#{{ user_rank|default:"-" }}</strong><span>{% translate "Dein Rang" %}</span></div>
+        <div class="feature-card mini-stat"><i class="fa-solid fa-star"></i><strong>{{ achievement_summary.total_available_xp }}</strong><span>{% translate "mögliche XP" %}</span></div>
+    </div>
+
+    <div class="feature-layout two-columns achievement-columns">
+        <div>
+            <div class="section-heading-row">
+                <h2>{% translate "Kategorien" %}</h2>
+                <a href="{% url 'profile' %}" class="subtle-link">{% translate "Profil öffnen" %}</a>
+            </div>
+            <div class="category-progress-grid">
+                {% for category in achievement_summary.categories %}
+                    <article class="feature-card category-progress-card">
+                        <div class="category-title"><i class="{{ category.icon }}"></i><strong>{{ category.label }}</strong><span>{{ category.unlocked_count }}/{{ category.total_count }}</span></div>
+                        <div class="progress-track"><span style="width: {{ category.progress_percent }}%;"></span></div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <div class="section-heading-row top-gap">
+                <h2>{% translate "Alle Achievements" %}</h2>
+            </div>
+            <div class="achievement-grid">
+                {% for achievement in achievement_summary.achievements %}
+                    <article class="feature-card achievement-card {% if achievement.unlocked %}unlocked{% endif %}">
+                        <span class="achievement-icon"><i class="{{ achievement.icon }}"></i></span>
+                        <div>
+                            <div class="achievement-title-row">
+                                <strong>{{ achievement.label }}</strong>
+                                <span>{{ achievement.xp }} XP</span>
+                            </div>
+                            <p>{{ achievement.description }}</p>
+                            <div class="progress-track"><span style="width: {{ achievement.progress_percent }}%;"></span></div>
+                            <small>{{ achievement.value_label }} / {{ achievement.target }}</small>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+
+        <aside class="achievement-side">
+            <article class="feature-card next-achievements-card">
+                <div class="feature-card-heading">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <div>
+                        <h2>{% translate "Nächste Ziele" %}</h2>
+                        <p>{% translate "Diese Achievements sind am nächsten dran." %}</p>
+                    </div>
+                </div>
+                {% for achievement in achievement_summary.next_achievements %}
+                    <div class="next-achievement-item">
+                        <i class="{{ achievement.icon }}"></i>
+                        <div>
+                            <strong>{{ achievement.label }}</strong>
+                            <span>{{ achievement.value_label }} / {{ achievement.target }} · {{ achievement.xp }} XP</span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="empty-small">{% translate "Du hast aktuell alles freigeschaltet." %}</p>
+                {% endfor %}
+            </article>
+
+            <article class="feature-card leaderboard-card">
+                <div class="feature-card-heading">
+                    <i class="fa-solid fa-ranking-star"></i>
+                    <div>
+                        <h2>{% translate "XP-Ranking" %}</h2>
+                        <p>{% translate "Top Nutzer nach freigeschalteter Achievement-XP." %}</p>
+                    </div>
+                </div>
+                <div class="leaderboard-list">
+                    {% for entry in leaderboard_entries %}
+                        <div class="leaderboard-row {% if entry.user.id == request.user.id %}is-current{% endif %}">
+                            <span class="rank">#{{ forloop.counter }}</span>
+                            <div>
+                                <strong>{{ entry.user.username }}</strong>
+                                <small>{% translate "Level" %} {{ entry.level }} · {{ entry.unlocked_count }} {% translate "Achievements" %}</small>
+                            </div>
+                            <b>{{ entry.xp }} XP</b>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="feature-card recent-card">
+                <div class="feature-card-heading">
+                    <i class="fa-solid fa-star"></i>
+                    <div>
+                        <h2>{% translate "Zuletzt freigeschaltet" %}</h2>
+                    </div>
+                </div>
+                {% for achievement in recent_unlocked %}
+                    <div class="next-achievement-item compact"><i class="{{ achievement.icon }}"></i><strong>{{ achievement.label }}</strong></div>
+                {% empty %}
+                    <p class="empty-small">{% translate "Noch keine Achievements freigeschaltet." %}</p>
+                {% endfor %}
+            </article>
+        </aside>
+    </div>
+</section>
+{% endblock %}

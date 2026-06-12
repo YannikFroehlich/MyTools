@@ -1,0 +1,215 @@
+{% extends "app/base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% translate 'QR-Code Tool' %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/qr_code_tool.css' %}">
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'app/js/qr_code_tool.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<section class="qr-tool-page">
+    <header class="qr-tool-hero">
+        <div>
+            <span class="qr-tool-kicker"><i class="fa-solid fa-qrcode"></i> {% translate 'Generator' %}</span>
+            <h1>{% translate 'QR-Code Tool' %}</h1>
+            <p>{% translate 'Erstelle QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte. Farben und Qualität kannst du direkt anpassen.' %}</p>
+        </div>
+        <div class="qr-tool-hero-badge">
+            <i class="fa-solid fa-download"></i>
+            <span>{% translate 'PNG-Download' %}</span>
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="qr-tool-messages">
+            {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="qr-tool-layout">
+        <form method="post" class="qr-tool-card qr-tool-form" id="qr-code-form">
+            {% csrf_token %}
+
+            <div class="qr-tool-section-head">
+                <span>{% translate 'Inhalt' %}</span>
+                <h2>{% translate 'Was soll im QR-Code stehen?' %}</h2>
+            </div>
+
+            <div class="qr-type-grid" role="tablist" aria-label="{% translate 'QR-Code Typ' %}">
+                <label class="qr-type-option">
+                    <input type="radio" name="qr_type" value="text" {% if form_data.qr_type == 'text' %}checked{% endif %}>
+                    <span><i class="fa-solid fa-align-left"></i>{% translate 'Text' %}</span>
+                </label>
+                <label class="qr-type-option">
+                    <input type="radio" name="qr_type" value="url" {% if form_data.qr_type == 'url' %}checked{% endif %}>
+                    <span><i class="fa-solid fa-link"></i>{% translate 'URL' %}</span>
+                </label>
+                <label class="qr-type-option">
+                    <input type="radio" name="qr_type" value="wifi" {% if form_data.qr_type == 'wifi' %}checked{% endif %}>
+                    <span><i class="fa-solid fa-wifi"></i>{% translate 'WLAN' %}</span>
+                </label>
+                <label class="qr-type-option">
+                    <input type="radio" name="qr_type" value="contact" {% if form_data.qr_type == 'contact' %}checked{% endif %}>
+                    <span><i class="fa-solid fa-address-card"></i>{% translate 'Kontakt' %}</span>
+                </label>
+            </div>
+
+            <div class="qr-fields" data-qr-panel="text">
+                <label>
+                    <span>{% translate 'Text' %}</span>
+                    <textarea name="text" rows="5" placeholder="{% translate 'Text eingeben...' %}">{{ form_data.text }}</textarea>
+                </label>
+            </div>
+
+            <div class="qr-fields" data-qr-panel="url">
+                <label>
+                    <span>{% translate 'URL' %}</span>
+                    <input type="text" name="url" value="{{ form_data.url }}" placeholder="example.com">
+                </label>
+            </div>
+
+            <div class="qr-fields qr-two-column" data-qr-panel="wifi">
+                <label>
+                    <span>{% translate 'WLAN-Name / SSID' %}</span>
+                    <input type="text" name="wifi_ssid" value="{{ form_data.wifi_ssid }}" placeholder="MyWiFi">
+                </label>
+                <label>
+                    <span>{% translate 'Passwort' %}</span>
+                    <input type="text" name="wifi_password" value="{{ form_data.wifi_password }}" placeholder="optional">
+                </label>
+                <label>
+                    <span>{% translate 'Verschlüsselung' %}</span>
+                    <select name="wifi_encryption">
+                        <option value="WPA" {% if form_data.wifi_encryption == 'WPA' %}selected{% endif %}>WPA/WPA2/WPA3</option>
+                        <option value="WEP" {% if form_data.wifi_encryption == 'WEP' %}selected{% endif %}>WEP</option>
+                        <option value="nopass" {% if form_data.wifi_encryption == 'nopass' %}selected{% endif %}>{% translate 'Ohne Passwort' %}</option>
+                    </select>
+                </label>
+                <label class="qr-checkbox-label">
+                    <input type="checkbox" name="wifi_hidden" value="1" {% if form_data.wifi_hidden %}checked{% endif %}>
+                    <span>{% translate 'Verstecktes WLAN' %}</span>
+                </label>
+            </div>
+
+            <div class="qr-fields qr-two-column" data-qr-panel="contact">
+                <label>
+                    <span>{% translate 'Name' %}</span>
+                    <input type="text" name="contact_name" value="{{ form_data.contact_name }}" placeholder="Max Mustermann">
+                </label>
+                <label>
+                    <span>{% translate 'Telefon' %}</span>
+                    <input type="text" name="contact_phone" value="{{ form_data.contact_phone }}" placeholder="+49 ...">
+                </label>
+                <label>
+                    <span>{% translate 'E-Mail' %}</span>
+                    <input type="email" name="contact_email" value="{{ form_data.contact_email }}" placeholder="max@example.com">
+                </label>
+                <label>
+                    <span>{% translate 'Organisation' %}</span>
+                    <input type="text" name="contact_org" value="{{ form_data.contact_org }}" placeholder="Firma / Schule">
+                </label>
+                <label class="qr-full-width">
+                    <span>{% translate 'Website' %}</span>
+                    <input type="text" name="contact_url" value="{{ form_data.contact_url }}" placeholder="example.com">
+                </label>
+            </div>
+
+            <div class="qr-tool-section-head is-settings">
+                <span>{% translate 'Design' %}</span>
+                <h2>{% translate 'Aussehen anpassen' %}</h2>
+            </div>
+
+            <div class="qr-settings-grid">
+                <label>
+                    <span>{% translate 'Vordergrund' %}</span>
+                    <input type="color" name="foreground" value="{{ form_data.foreground }}">
+                </label>
+                <label>
+                    <span>{% translate 'Hintergrund' %}</span>
+                    <input type="color" name="background" value="{{ form_data.background }}">
+                </label>
+                <label>
+                    <span>{% translate 'Fehlerkorrektur' %}</span>
+                    <select name="error_level">
+                        <option value="L" {% if form_data.error_level == 'L' %}selected{% endif %}>L - {% translate 'klein' %}</option>
+                        <option value="M" {% if form_data.error_level == 'M' %}selected{% endif %}>M - {% translate 'normal' %}</option>
+                        <option value="Q" {% if form_data.error_level == 'Q' %}selected{% endif %}>Q - {% translate 'hoch' %}</option>
+                        <option value="H" {% if form_data.error_level == 'H' %}selected{% endif %}>H - {% translate 'maximal' %}</option>
+                    </select>
+                </label>
+                <label>
+                    <span>{% translate 'Größe' %}</span>
+                    <input type="number" name="box_size" min="4" max="16" value="{{ form_data.box_size }}">
+                </label>
+                <label>
+                    <span>{% translate 'Rand' %}</span>
+                    <input type="number" name="border" min="1" max="8" value="{{ form_data.border }}">
+                </label>
+            </div>
+
+            <button type="submit" class="qr-submit-button">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                {% translate 'QR-Code erstellen' %}
+            </button>
+        </form>
+
+        <aside class="qr-tool-card qr-preview-card">
+            <div class="qr-tool-section-head">
+                <span>{% translate 'Vorschau' %}</span>
+                <h2>{% translate 'Dein QR-Code' %}</h2>
+            </div>
+
+            {% if qr_data_uri %}
+                <div class="qr-preview-box">
+                    <img src="{{ qr_data_uri }}" alt="{% translate 'Generierter QR-Code' %}" width="320" height="320">
+                </div>
+                <div class="qr-preview-actions">
+                    <a href="{{ qr_data_uri }}" download="{{ qr_download_name }}" class="qr-download-button">
+                        <i class="fa-solid fa-download"></i>
+                        {% translate 'PNG herunterladen' %}
+                    </a>
+                    <button type="button" class="qr-secondary-button" id="copy-qr-payload" data-payload="{{ qr_payload|escape }}">
+                        <i class="fa-solid fa-copy"></i>
+                        {% translate 'Inhalt kopieren' %}
+                    </button>
+                </div>
+                <dl class="qr-meta-list">
+                    <div>
+                        <dt>{% translate 'Typ' %}</dt>
+                        <dd>{{ selected_type|upper }}</dd>
+                    </div>
+                    {% if qr_size %}
+                        <div>
+                            <dt>{% translate 'Bildgröße' %}</dt>
+                            <dd>{{ qr_size.0 }}×{{ qr_size.1 }} px</dd>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <dt>{% translate 'Zeichen' %}</dt>
+                        <dd>{{ qr_payload|length }}</dd>
+                    </div>
+                </dl>
+                <label class="qr-payload-preview">
+                    <span>{% translate 'QR-Inhalt' %}</span>
+                    <textarea readonly rows="5">{{ qr_payload }}</textarea>
+                </label>
+            {% else %}
+                <div class="qr-empty-preview">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <h3>{% translate 'Noch kein QR-Code' %}</h3>
+                    <p>{% translate 'Wähle links einen Typ aus und klicke auf „QR-Code erstellen“.' %}</p>
+                </div>
+            {% endif %}
+        </aside>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "app/base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="feature-page server-status-page">
+    <div class="feature-hero server-hero">
+        <div class="feature-hero-copy">
+            <span class="feature-kicker"><i class="fa-solid fa-server"></i> {% translate "Serverstatus" %}</span>
+            <h1>{% translate "System-Monitor" %}</h1>
+            <p>{% translate "Schneller Überblick über App, Datenbank, Cache, Speicher und Laufzeitdaten." %}</p>
+        </div>
+        <div class="status-big-pill {% if all_services_ok %}ok{% else %}warning{% endif %}">
+            <i class="fa-solid {% if all_services_ok %}fa-circle-check{% else %}fa-triangle-exclamation{% endif %}"></i>
+            {% if all_services_ok %}{% translate "Alle Dienste online" %}{% else %}{% translate "Prüfung nötig" %}{% endif %}
+        </div>
+    </div>
+
+    <div class="service-grid">
+        {% for service in services %}
+            <article class="feature-card service-card service-{{ service.status }}">
+                <span class="service-icon"><i class="{{ service.icon }}"></i></span>
+                <div>
+                    <strong>{{ service.name }}</strong>
+                    <span>{{ service.label }}</span>
+                    <small>{{ service.detail }}</small>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+
+    <div class="server-grid">
+        <article class="feature-card disk-card">
+            <div class="feature-card-heading">
+                <i class="fa-solid fa-hard-drive"></i>
+                <div>
+                    <h2>{% translate "Speicherplatz" %}</h2>
+                    <p>{% translate "Belegung des Projekt-Laufwerks." %}</p>
+                </div>
+            </div>
+            {% if disk_usage %}
+                <div class="disk-meter"><span style="width: {{ disk_usage.used_percent }}%;"></span></div>
+                <div class="disk-row"><span>{% translate "Belegt" %}</span><strong>{{ disk_usage.used_label }} / {{ disk_usage.total_label }}</strong></div>
+                <div class="disk-row"><span>{% translate "Frei" %}</span><strong>{{ disk_usage.free_label }}</strong></div>
+            {% else %}
+                <p>{% translate "Speicherplatz konnte nicht gelesen werden." %}</p>
+            {% endif %}
+        </article>
+
+        <article class="feature-card metrics-card">
+            <div class="feature-card-heading">
+                <i class="fa-solid fa-gauge-high"></i>
+                <div>
+                    <h2>{% translate "Laufzeitdaten" %}</h2>
+                    <p>{% translate "Technische Werte der aktuellen Web-App-Instanz." %}</p>
+                </div>
+            </div>
+            <div class="metric-grid">
+                {% for metric in metrics %}
+                    <div class="metric-item"><i class="{{ metric.icon }}"></i><span>{{ metric.label }}</span><strong>{{ metric.value }}</strong></div>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="feature-card counters-card">
+            <div class="feature-card-heading">
+                <i class="fa-solid fa-chart-simple"></i>
+                <div>
+                    <h2>{% translate "App-Zähler" %}</h2>
+                    <p>{% translate "Sicherheits- und Roadmap-Werte auf einen Blick." %}</p>
+                </div>
+            </div>
+            <div class="counter-grid">
+                <div><strong>{{ status_counts.security_events_today }}</strong><span>{% translate "Security Events heute" %}</span></div>
+                <div><strong>{{ status_counts.failed_logins_today }}</strong><span>{% translate "Fehlgeschlagene Logins heute" %}</span></div>
+                <div><strong>{{ status_counts.feature_ideas_open }}</strong><span>{% translate "Offene Ideen" %}</span></div>
+                <div><strong>{{ status_counts.feature_votes }}</strong><span>{% translate "Feature Votes" %}</span></div>
+            </div>
+        </article>
+
+        <article class="feature-card paths-card">
+            <div class="feature-card-heading">
+                <i class="fa-solid fa-folder-tree"></i>
+                <div>
+                    <h2>{% translate "Pfade" %}</h2>
+                    <p>{% translate "Nur für Admins sichtbar." %}</p>
+                </div>
+            </div>
+            {% for path in paths %}
+                <div class="path-row"><span>{{ path.label }}</span><code>{{ path.value }}</code></div>
+            {% endfor %}
+        </article>
+    </div>
+</section>
+{% endblock %}

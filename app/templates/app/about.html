@@ -36,6 +36,10 @@
                         <i class="fa-solid fa-id-card"></i>
                         {% translate 'Profil ansehen' %}
                     </a>
+                    <a href="{% url 'security_dashboard' %}" class="about-action about-action-secondary">
+                        <i class="fa-solid fa-user-shield"></i>
+                        {% translate 'Sicherheit öffnen' %}
+                    </a>
                 </div>
             </div>
 
@@ -157,6 +161,11 @@
                             <strong>{% translate 'Einheitenrechner' %}</strong>
                             <span>{% translate 'Speicher, Zeit, Entfernung und Geld-Zeiträume umrechnen.' %}</span>
                         </a>
+                        <a href="{% url 'qr_code_tool' %}" class="about-link-card">
+                            <i class="fa-solid fa-qrcode"></i>
+                            <strong>{% translate 'QR-Code Tool' %}</strong>
+                            <span>{% translate 'QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte als PNG erzeugen.' %}</span>
+                        </a>
                     </div>
                 </article>
 
@@ -207,6 +216,16 @@
                             <strong>{% translate 'Nutzer & Freunde' %}</strong>
                             <span>{% translate 'Öffentliche Profile, Freundschaftsanfragen, Blockieren und Meldungen.' %}</span>
                         </a>
+                        <a href="{% url 'roadmap' %}" class="about-link-card">
+                            <i class="fa-solid fa-route"></i>
+                            <strong>{% translate 'Roadmap & Voting' %}</strong>
+                            <span>{% translate 'Feature-Ideen einreichen, voten, kommentieren und den Umsetzungsstatus verfolgen.' %}</span>
+                        </a>
+                        <a href="{% url 'achievement_center' %}" class="about-link-card">
+                            <i class="fa-solid fa-trophy"></i>
+                            <strong>{% translate 'Achievement-Center' %}</strong>
+                            <span>{% translate 'Level, XP, Fortschritt und Ranking über MyTools-Aktivitäten anzeigen.' %}</span>
+                        </a>
                         <a href="{% url 'skribble_home' %}" class="about-link-card">
                             <i class="fa-solid fa-pen-nib"></i>
                             <strong>{% translate 'Skribble' %}</strong>
@@ -234,6 +253,7 @@
                     <li><i class="fa-solid fa-check"></i>{% translate 'PostgreSQL, Redis, Gunicorn und Caddy sind für Docker-Deployment vorbereitet.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'Externe APIs bleiben optional und werden über Umgebungsvariablen konfiguriert.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'Mehrsprachigkeit läuft über Django-Übersetzungen für Deutsch und Englisch.' %}</li>
+                    <li><i class="fa-solid fa-check"></i>{% translate 'PWA-Unterstützung mit Manifest, Service Worker, App-Icons und Offline-Fallback ist vorbereitet.' %}</li>
                 </ul>
             </article>
 

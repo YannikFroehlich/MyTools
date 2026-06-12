@@ -1,0 +1,122 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#1a56d6">
+    <title>{% translate 'Offline · MyTools' %}</title>
+    <link rel="icon" type="image/png" href="{% static 'app/icons/pwa-icon-192.png' %}">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        html { min-height: 100%; background: #dce5f5; }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 1.25rem;
+            color: #172033;
+            font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 18% 10%, rgba(90, 173, 238, 0.36), transparent 32rem),
+                radial-gradient(circle at 86% 18%, rgba(26, 86, 214, 0.22), transparent 28rem),
+                linear-gradient(135deg, #dce5f5, #f5f8ff);
+        }
+        main {
+            width: min(560px, 100%);
+            text-align: left;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid rgba(26, 86, 214, 0.14);
+            border-radius: 28px;
+            box-shadow: 0 24px 70px rgba(26, 86, 214, 0.16);
+            padding: clamp(1.3rem, 5vw, 2.1rem);
+            backdrop-filter: blur(18px);
+        }
+        .offline-icon {
+            width: 68px;
+            height: 68px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.1rem;
+            color: #ffffff;
+            font-size: 2rem;
+            background: linear-gradient(135deg, #1a56d6, #5aadee);
+            border-radius: 22px;
+            box-shadow: 0 16px 36px rgba(26, 86, 214, 0.24);
+        }
+        h1 {
+            margin: 0 0 0.55rem;
+            font-size: clamp(1.75rem, 6vw, 2.35rem);
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+        }
+        p {
+            margin: 0;
+            color: #4b5872;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .offline-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-top: 1.45rem;
+        }
+        a, button {
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.65rem 0.95rem;
+            color: #ffffff;
+            font: inherit;
+            font-weight: 700;
+            text-decoration: none;
+            background: linear-gradient(135deg, #1a56d6, #5aadee);
+            border: 0;
+            border-radius: 999px;
+            box-shadow: 0 12px 24px rgba(26, 86, 214, 0.20);
+            cursor: pointer;
+        }
+        button.secondary {
+            color: #1a56d6;
+            background: rgba(26, 86, 214, 0.09);
+            box-shadow: none;
+        }
+        @media (prefers-color-scheme: dark) {
+            html { background: #12151f; }
+            body {
+                color: #e2e8f0;
+                background:
+                    radial-gradient(circle at 18% 10%, rgba(90, 173, 238, 0.20), transparent 32rem),
+                    radial-gradient(circle at 86% 18%, rgba(26, 86, 214, 0.16), transparent 28rem),
+                    linear-gradient(135deg, #12151f, #192133);
+            }
+            main {
+                background: rgba(25, 31, 48, 0.86);
+                border-color: rgba(255, 255, 255, 0.09);
+                box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+            }
+            p { color: #a9b5c8; }
+            button.secondary {
+                color: #dbeafe;
+                background: rgba(255, 255, 255, 0.08);
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="offline-icon" aria-hidden="true">☁️</div>
+        <h1>{% translate 'Du bist offline.' %}</h1>
+        <p>{% translate 'MyTools ist als App vorbereitet, aber diese Seite braucht gerade eine Internetverbindung. Sobald du wieder online bist, kannst du normal weiterarbeiten.' %}</p>
+        <div class="offline-actions">
+            <a href="{% url 'home' %}">{% translate 'Erneut versuchen' %}</a>
+            <button type="button" class="secondary" onclick="window.location.reload()">{% translate 'Neu laden' %}</button>
+        </div>
+    </main>
+</body>
+</html>

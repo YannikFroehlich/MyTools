@@ -576,6 +576,35 @@ REDIS_URL=redis://redis:6379/1
 
 Secrets gehören nicht ins Git-Repository. Dafür sollte eine `.env.example` ohne echte Zugangsdaten gepflegt werden.
 
+
+---
+
+## 📱 PWA / installierbare App
+
+MyTools ist als Progressive Web App vorbereitet:
+
+- `manifest.webmanifest` liefert App-Name, Start-URL, Theme-Farbe, Icons und Shortcuts.
+- `service-worker.js` wird am Origin-Root ausgeliefert und darf dadurch die komplette App-Scope `/` kontrollieren.
+- Die Offline-Seite unter `/offline/` wird vorab gecacht.
+- Statische Dateien unter `/static/` werden beim ersten Laden gecacht und danach schneller wiederverwendet.
+- Private HTML-Seiten und API-Antworten werden bewusst nicht vorab gecacht.
+
+Nach dem Deployment einmal ausführen:
+
+```bash
+python manage.py collectstatic --noinput
+```
+
+Dann im Browser prüfen:
+
+```text
+https://deine-domain.de/manifest.webmanifest
+https://deine-domain.de/service-worker.js
+https://deine-domain.de/offline/
+```
+
+Für die Installation muss die Seite über HTTPS laufen. Lokal funktioniert der Service Worker auch auf `localhost`.
+
 ---
 
 ## 🧪 Tests
@@ -649,3 +678,31 @@ MyTools soll eine persönliche, erweiterbare Web-Toolbox bleiben:
 - HEX, RGB und HSL kopieren
 - Lokale Palette per `localStorage`
 - Kontrastprüfung für weißen und dunklen Text
+
+
+## Sicherheits-Dashboard und QR-Code Tool
+
+- `/security/`: zeigt 2FA-Status, aktive Sessions, erfolgreiche/fehlgeschlagene Login-Ereignisse und erlaubt das Beenden anderer Sitzungen.
+- `/qr-code/`: erstellt QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte mit PNG-Download und anpassbaren Farben.
+
+Nach dem Einspielen ausführen:
+
+```bash
+python manage.py migrate
+python manage.py test app.tests.SecurityDashboardAndQrToolTests
+```
+
+## Roadmap, Achievement-Center und Serverstatus
+
+Neue Bereiche:
+
+- `/roadmap/`: Feature-Ideen einreichen, nach Status/Kategorie filtern, voten, kommentieren und als Admin den Status plus Admin-Notiz pflegen.
+- `/achievements/`: persönliches Achievement-Center mit Level, XP-Fortschritt, Kategorien, nächsten Zielen und Top-10-XP-Ranking.
+- `/server-status/`: staff-only System-Monitor mit App-/Datenbank-/Cache-Status, Speicherplatz, Laufzeitdaten und App-Zählern.
+
+Nach dem Einspielen ausführen:
+
+```bash
+python manage.py migrate
+python manage.py test app.tests.RoadmapAchievementAndServerStatusTests
+```
