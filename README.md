@@ -691,3 +691,18 @@ Nach dem Einspielen ausführen:
 python manage.py migrate
 python manage.py test app.tests.SecurityDashboardAndQrToolTests
 ```
+
+## Roadmap, Achievement-Center und Serverstatus
+
+Neue Bereiche:
+
+- `/roadmap/`: Feature-Ideen einreichen, nach Status/Kategorie filtern, voten, kommentieren und als Admin den Status plus Admin-Notiz pflegen.
+- `/achievements/`: persönliches Achievement-Center mit Level, XP-Fortschritt, Kategorien, nächsten Zielen und Top-10-XP-Ranking.
+- `/server-status/`: staff-only System-Monitor mit App-/Datenbank-/Cache-Status, Speicherplatz, Laufzeitdaten und App-Zählern.
+
+Nach dem Einspielen ausführen:
+
+```bash
+python manage.py migrate
+python manage.py test app.tests.RoadmapAchievementAndServerStatusTests
+```

@@ -34,6 +34,9 @@ from app.models import (
     Game2048HighScore,
     DrawingGameLobby,
     DrawingGamePlayer,
+    FeatureComment,
+    FeatureIdea,
+    FeatureVote,
     FileShare,
     Friendship,
     HomeLayoutPreference,
@@ -5116,3 +5119,96 @@ class ColorPaletteToolTests(TestCase):
         self.assertContains(response, "Color Palette Tool")
         self.assertContains(response, "color_palette_tool.css")
         self.assertContains(response, "color_palette_tool.js")
+
+class RoadmapAchievementAndServerStatusTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.user = get_user_model().objects.create_user(username="roadmap_user", password="testpass123")
+        self.staff = get_user_model().objects.create_user(username="roadmap_admin", password="testpass123", is_staff=True)
+
+    def test_roadmap_requires_login(self):
+        response = self.client.get(reverse("roadmap"))
+        self.assertEqual(response.status_code, 302)
+
+    def test_roadmap_creates_idea_and_toggles_vote(self):
+        self.client.login(username="roadmap_user", password="testpass123")
+        response = self.client.post(reverse("roadmap"), {
+            "action": "create",
+            "title": "Push Benachrichtigungen",
+            "description": "PWA Push für Spiel-Einladungen und Chat.",
+            "category": FeatureIdea.CATEGORY_TOOL,
+            "priority": FeatureIdea.PRIORITY_HIGH,
+        })
+
+        self.assertRedirects(response, reverse("roadmap"))
+        idea = FeatureIdea.objects.get(title="Push Benachrichtigungen")
+        self.assertEqual(idea.author, self.user)
+        self.assertEqual(idea.status, FeatureIdea.STATUS_SUGGESTED)
+
+        vote_response = self.client.post(reverse("roadmap"), {"action": "vote", "idea_id": idea.id})
+        self.assertRedirects(vote_response, reverse("roadmap"))
+        self.assertTrue(FeatureVote.objects.filter(idea=idea, user=self.user).exists())
+
+        unvote_response = self.client.post(reverse("roadmap"), {"action": "vote", "idea_id": idea.id})
+        self.assertRedirects(unvote_response, reverse("roadmap"))
+        self.assertFalse(FeatureVote.objects.filter(idea=idea, user=self.user).exists())
+
+    def test_roadmap_comments_and_staff_status_update(self):
+        idea = FeatureIdea.objects.create(author=self.user, title="Serverstatus", description="Admin Monitor")
+        self.client.login(username="roadmap_user", password="testpass123")
+
+        comment_response = self.client.post(reverse("roadmap"), {
+            "action": "comment",
+            "idea_id": idea.id,
+            "text": "Wäre sehr nützlich.",
+        })
+
+        self.assertRedirects(comment_response, reverse("roadmap"))
+        self.assertTrue(FeatureComment.objects.filter(idea=idea, user=self.user, text="Wäre sehr nützlich.").exists())
+
+        self.client.logout()
+        self.client.login(username="roadmap_admin", password="testpass123")
+        status_response = self.client.post(reverse("roadmap"), {
+            "action": "update_status",
+            "idea_id": idea.id,
+            "status": FeatureIdea.STATUS_IN_PROGRESS,
+            "admin_note": "Wird umgesetzt.",
+        })
+
+        self.assertRedirects(status_response, reverse("roadmap"))
+        idea.refresh_from_db()
+        self.assertEqual(idea.status, FeatureIdea.STATUS_IN_PROGRESS)
+        self.assertEqual(idea.admin_note, "Wird umgesetzt.")
+
+    def test_achievement_center_renders_with_user_progress(self):
+        self.client.login(username="roadmap_user", password="testpass123")
+        Game2048HighScore.objects.create(
+            user=self.user,
+            score=5000,
+            best_tile=1024,
+            moves=120,
+            duration_seconds=180,
+            games_played=3,
+        )
+
+        response = self.client.get(reverse("achievement_center"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Achievement-Center")
+        self.assertContains(response, "1024-Kachel")
+        self.assertContains(response, "XP-Ranking")
+
+    def test_server_status_requires_staff(self):
+        self.client.login(username="roadmap_user", password="testpass123")
+        response = self.client.get(reverse("server_status"))
+        self.assertEqual(response.status_code, 302)
+
+    def test_server_status_renders_for_staff(self):
+        self.client.login(username="roadmap_admin", password="testpass123")
+        response = self.client.get(reverse("server_status"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Serverstatus")
+        self.assertContains(response, "Datenbank")
+        self.assertContains(response, "Speicherplatz")
+

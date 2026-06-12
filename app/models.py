@@ -2753,6 +2753,121 @@ class ToolFeedback(models.Model):
     def __str__(self):
         return self.title
 
+
+
+class FeatureIdea(models.Model):
+    STATUS_SUGGESTED = "suggested"
+    STATUS_PLANNED = "planned"
+    STATUS_IN_PROGRESS = "in_progress"
+    STATUS_DONE = "done"
+    STATUS_REJECTED = "rejected"
+
+    STATUS_CHOICES = [
+        (STATUS_SUGGESTED, _("Vorgeschlagen")),
+        (STATUS_PLANNED, _("Geplant")),
+        (STATUS_IN_PROGRESS, _("In Arbeit")),
+        (STATUS_DONE, _("Fertig")),
+        (STATUS_REJECTED, _("Abgelehnt")),
+    ]
+
+    CATEGORY_TOOL = "tool"
+    CATEGORY_GAME = "game"
+    CATEGORY_DESIGN = "design"
+    CATEGORY_SECURITY = "security"
+    CATEGORY_PERFORMANCE = "performance"
+    CATEGORY_OTHER = "other"
+
+    CATEGORY_CHOICES = [
+        (CATEGORY_TOOL, _("Tool")),
+        (CATEGORY_GAME, _("Spiel")),
+        (CATEGORY_DESIGN, _("Design / UI")),
+        (CATEGORY_SECURITY, _("Sicherheit")),
+        (CATEGORY_PERFORMANCE, _("Performance")),
+        (CATEGORY_OTHER, _("Sonstiges")),
+    ]
+
+    PRIORITY_LOW = "low"
+    PRIORITY_NORMAL = "normal"
+    PRIORITY_HIGH = "high"
+
+    PRIORITY_CHOICES = [
+        (PRIORITY_LOW, _("Niedrig")),
+        (PRIORITY_NORMAL, _("Normal")),
+        (PRIORITY_HIGH, _("Hoch")),
+    ]
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="feature_ideas",
+    )
+    title = models.CharField(max_length=120)
+    description = models.TextField(max_length=1800)
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default=CATEGORY_TOOL)
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default=PRIORITY_NORMAL)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=STATUS_SUGGESTED)
+    admin_note = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status", "-created_at"]),
+            models.Index(fields=["category", "status", "-created_at"]),
+            models.Index(fields=["author", "-created_at"]),
+        ]
+        verbose_name = "Feature-Idee"
+        verbose_name_plural = "Feature-Ideen"
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def vote_count(self):
+        return self.votes.count()
+
+
+class FeatureVote(models.Model):
+    idea = models.ForeignKey(FeatureIdea, on_delete=models.CASCADE, related_name="votes")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="feature_votes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [models.UniqueConstraint(fields=["idea", "user"], name="unique_feature_vote_per_user")]
+        indexes = [
+            models.Index(fields=["idea", "created_at"]),
+            models.Index(fields=["user", "created_at"]),
+        ]
+        verbose_name = "Feature-Vote"
+        verbose_name_plural = "Feature-Votes"
+
+    def __str__(self):
+        return f"{self.user} -> {self.idea}"
+
+
+class FeatureComment(models.Model):
+    idea = models.ForeignKey(FeatureIdea, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="feature_comments")
+    text = models.TextField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["idea", "created_at"]),
+            models.Index(fields=["user", "created_at"]),
+        ]
+        verbose_name = "Feature-Kommentar"
+        verbose_name_plural = "Feature-Kommentare"
+
+    def __str__(self):
+        return f"{self.user}: {self.text[:40]}"
+
+
 class HangmanLobby(models.Model):
     STATUS_WAITING = "waiting"
     STATUS_PLAYING = "playing"

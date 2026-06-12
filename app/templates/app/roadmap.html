@@ -1,0 +1,209 @@
+{% extends "app/base.html" %}
+{% load i18n static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="feature-page roadmap-page">
+    <div class="feature-hero">
+        <div class="feature-hero-copy">
+            <span class="feature-kicker"><i class="fa-solid fa-route"></i> {% translate "Roadmap" %}</span>
+            <h1>{% translate "Feature Voting" %}</h1>
+            <p>{% translate "Sammle Ideen, vote für Vorschläge und sieh direkt, was geplant, in Arbeit oder schon fertig ist." %}</p>
+        </div>
+        <div class="feature-hero-stats">
+            <div><strong>{{ total_ideas }}</strong><span>{% translate "Ideen" %}</span></div>
+            <div><strong>{{ total_votes }}</strong><span>{% translate "Votes" %}</span></div>
+            <div><strong>{{ in_progress_count }}</strong><span>{% translate "In Arbeit" %}</span></div>
+            <div><strong>{{ done_count }}</strong><span>{% translate "Fertig" %}</span></div>
+        </div>
+    </div>
+
+    {% if messages %}
+        <div class="feature-messages">
+            {% for message in messages %}
+                <div class="feature-message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="feature-layout two-columns">
+        <aside class="feature-card idea-form-card">
+            <div class="feature-card-heading">
+                <i class="fa-regular fa-lightbulb"></i>
+                <div>
+                    <h2>{% translate "Neue Idee" %}</h2>
+                    <p>{% translate "Beschreibe kurz, was in MyTools noch fehlen würde." %}</p>
+                </div>
+            </div>
+
+            <form method="post" class="stacked-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+
+                <label>
+                    <span>{% translate "Titel" %}</span>
+                    <input type="text" name="title" maxlength="120" placeholder="{% translate 'z. B. Push-Benachrichtigungen' %}" required>
+                </label>
+
+                <label>
+                    <span>{% translate "Beschreibung" %}</span>
+                    <textarea name="description" rows="5" maxlength="1800" placeholder="{% translate 'Was soll das Feature können?' %}" required></textarea>
+                </label>
+
+                <div class="form-grid-2">
+                    <label>
+                        <span>{% translate "Kategorie" %}</span>
+                        <select name="category">
+                            {% for value, label in category_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label>
+                        <span>{% translate "Priorität" %}</span>
+                        <select name="priority">
+                            {% for value, label in priority_choices %}
+                                <option value="{{ value }}" {% if value == "normal" %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+
+                <button type="submit" class="feature-primary-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate "Idee einreichen" %}
+                </button>
+            </form>
+        </aside>
+
+        <div class="roadmap-main">
+            <div class="roadmap-tabs" aria-label="{% translate 'Roadmap Statusfilter' %}">
+                {% for tab in status_tabs %}
+                    <a class="roadmap-tab {{ tab.class }} {% if selected_status == tab.key %}active{% endif %}" href="?status={{ tab.key }}&category={{ selected_category }}&order={{ selected_order }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+                        <i class="{{ tab.icon }}"></i>
+                        <span>{{ tab.label }}</span>
+                        <strong>{{ tab.count }}</strong>
+                    </a>
+                {% endfor %}
+            </div>
+
+            <form method="get" class="roadmap-filter-card">
+                <input type="hidden" name="status" value="{{ selected_status }}">
+                <label>
+                    <span>{% translate "Suche" %}</span>
+                    <input type="search" name="q" value="{{ query }}" placeholder="{% translate 'Ideen durchsuchen...' %}">
+                </label>
+                <label>
+                    <span>{% translate "Kategorie" %}</span>
+                    <select name="category">
+                        <option value="all" {% if selected_category == "all" %}selected{% endif %}>{% translate "Alle" %}</option>
+                        {% for value, label in category_choices %}
+                            <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>{% translate "Sortierung" %}</span>
+                    <select name="order">
+                        <option value="popular" {% if selected_order == "popular" %}selected{% endif %}>{% translate "Beliebt" %}</option>
+                        <option value="newest" {% if selected_order == "newest" %}selected{% endif %}>{% translate "Neueste" %}</option>
+                        <option value="active" {% if selected_order == "active" %}selected{% endif %}>{% translate "Aktualisiert" %}</option>
+                    </select>
+                </label>
+                <button type="submit"><i class="fa-solid fa-filter"></i> {% translate "Filtern" %}</button>
+            </form>
+
+            <div class="idea-list">
+                {% for idea in ideas %}
+                    <article class="feature-card idea-card status-{{ idea.status }}">
+                        <div class="idea-card-top">
+                            <form method="post" class="vote-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="vote">
+                                <input type="hidden" name="idea_id" value="{{ idea.id }}">
+                                <button type="submit" class="vote-button {% if idea.id in voted_idea_ids %}voted{% endif %}" title="{% translate 'Vote umschalten' %}">
+                                    <i class="fa-solid fa-chevron-up"></i>
+                                    <strong>{{ idea.vote_total }}</strong>
+                                </button>
+                            </form>
+
+                            <div class="idea-copy">
+                                <div class="idea-meta-row">
+                                    <span class="status-pill status-{{ idea.status }}">{{ idea.get_status_display }}</span>
+                                    <span class="category-pill">{{ idea.get_category_display }}</span>
+                                    <span class="priority-pill priority-{{ idea.priority }}">{{ idea.get_priority_display }}</span>
+                                </div>
+                                <h2>{{ idea.title }}</h2>
+                                <p>{{ idea.description|linebreaksbr }}</p>
+                                <small>
+                                    {% if idea.author %}
+                                        {% blocktranslate with user=idea.author.username date=idea.created_at|date:"d.m.Y H:i" %}von {{ user }} · {{ date }}{% endblocktranslate %}
+                                    {% else %}
+                                        {% blocktranslate with date=idea.created_at|date:"d.m.Y H:i" %}gelöschter Nutzer · {{ date }}{% endblocktranslate %}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+
+                        {% if idea.admin_note %}
+                            <div class="admin-note"><i class="fa-solid fa-thumbtack"></i> {{ idea.admin_note }}</div>
+                        {% endif %}
+
+                        {% if request.user.is_staff %}
+                            <form method="post" class="staff-status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update_status">
+                                <input type="hidden" name="idea_id" value="{{ idea.id }}">
+                                <select name="status">
+                                    {% for value, label in status_choices %}
+                                        <option value="{{ value }}" {% if idea.status == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="text" name="admin_note" value="{{ idea.admin_note }}" placeholder="{% translate 'Admin-Notiz' %}" maxlength="255">
+                                <button type="submit">{% translate "Speichern" %}</button>
+                            </form>
+                        {% endif %}
+
+                        <details class="idea-comments" {% if idea.comment_total %}open{% endif %}>
+                            <summary>
+                                <i class="fa-regular fa-comments"></i>
+                                {% blocktranslate count count=idea.comment_total %}{{ count }} Kommentar{% plural %}{{ count }} Kommentare{% endblocktranslate %}
+                            </summary>
+
+                            <div class="comment-list">
+                                {% for comment in idea.comments.all %}
+                                    <div class="comment-item">
+                                        <strong>{{ comment.user.username }}</strong>
+                                        <span>{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                                        <p>{{ comment.text|linebreaksbr }}</p>
+                                    </div>
+                                {% empty %}
+                                    <p class="empty-small">{% translate "Noch keine Kommentare." %}</p>
+                                {% endfor %}
+                            </div>
+
+                            <form method="post" class="comment-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="comment">
+                                <input type="hidden" name="idea_id" value="{{ idea.id }}">
+                                <input type="text" name="text" maxlength="1000" placeholder="{% translate 'Kommentar schreiben...' %}" required>
+                                <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+                            </form>
+                        </details>
+                    </article>
+                {% empty %}
+                    <div class="feature-card empty-state-card">
+                        <i class="fa-regular fa-lightbulb"></i>
+                        <h2>{% translate "Noch keine Ideen gefunden" %}</h2>
+                        <p>{% translate "Erstelle links deine erste Feature-Idee oder ändere die Filter." %}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

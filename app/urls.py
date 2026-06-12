@@ -220,6 +220,7 @@ from .platform_views import (
     inbox_view,
 )
 from .security_views import qr_code_tool_view, security_dashboard_view
+from .community_views import achievement_center_view, roadmap_view, server_status_view
 from .moderation_views import (
     moderation_access_toggle_view,
     moderation_dashboard_view,
@@ -247,6 +248,9 @@ urlpatterns = [
     path('inbox/', inbox_view, name='inbox'),
     path('inbox/read/', inbox_mark_read_view, name='inbox_mark_read'),
     path('feedback/', feedback_view, name='feedback'),
+    path('roadmap/', roadmap_view, name='roadmap'),
+    path('achievements/', achievement_center_view, name='achievement_center'),
+    path('server-status/', server_status_view, name='server_status'),
     path('moderation/', moderation_dashboard_view, name='moderation'),
     path('moderation/access/', moderation_access_toggle_view, name='moderation_access_toggle'),
     path('moderation/reports/<int:report_id>/', moderation_report_action_view, name='moderation_report_action'),
