@@ -262,6 +262,27 @@ html.auth-dark .auth-panel,
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--auth-input-focus) 20%, transparent);
 }
 
+
+.auth-captcha {
+    --captcha-scale: 1;
+    --captcha-height: 78px;
+
+    width: 100%;
+    min-height: var(--captcha-height);
+    display: block;
+    overflow: hidden;
+    padding: 0.1rem 0 0;
+}
+
+.auth-captcha > div {
+    transform: scale(var(--captcha-scale));
+    transform-origin: left top;
+}
+
+.auth-captcha iframe {
+    max-width: none;
+}
+
 .auth-form button {
     min-height: 46px;
     display: inline-flex;

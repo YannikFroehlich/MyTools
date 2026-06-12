@@ -6,6 +6,9 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import (
     AvatarCharacter,
+    BudgetCategory,
+    BudgetEntry,
+    BudgetMonth,
     ChatAttachment,
     ChatMessage,
     ChatMessageReaction,
@@ -51,6 +54,31 @@ from .models import (
 )
 
 
+
+
+@admin.register(BudgetCategory)
+class BudgetCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "kind", "user", "is_default", "created_at")
+    list_filter = ("kind", "is_default", "created_at")
+    search_fields = ("name", "user__username", "user__email")
+    readonly_fields = ("created_at",)
+
+
+@admin.register(BudgetMonth)
+class BudgetMonthAdmin(admin.ModelAdmin):
+    list_display = ("user", "month", "year", "planned_income", "expense_limit", "savings_goal", "updated_at")
+    list_filter = ("year", "month", "updated_at")
+    search_fields = ("user__username", "user__email", "notes")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(BudgetEntry)
+class BudgetEntryAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "entry_type", "amount", "category", "date", "is_fixed", "recurrence")
+    list_filter = ("entry_type", "is_fixed", "recurrence", "date", "category")
+    search_fields = ("title", "note", "user__username", "user__email", "category__name")
+    date_hierarchy = "date"
+    readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(SiteAccessSettings)

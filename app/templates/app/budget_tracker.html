@@ -1,0 +1,354 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Budget-Tracker" %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/budget_tracker.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="budget-page" data-current-month="{{ month_value }}">
+    <section class="budget-hero">
+        <div class="budget-hero-copy">
+            <p class="budget-eyebrow">MyTools Money</p>
+            <h1>{% translate "Budget-Tracker" %}</h1>
+            <p>
+                {% translate "Plane dein Monatsbudget, tracke Einnahmen und Ausgaben, erkenne Fixkosten und exportiere deine Buchungen als CSV." %}
+            </p>
+            <div class="budget-hero-actions">
+                <a class="budget-month-button" href="?month={{ previous_month_value }}" aria-label="{% translate 'Vorheriger Monat' %}">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+                <form method="get" class="budget-month-picker">
+                    <input type="month" name="month" value="{{ month_value }}" aria-label="{% translate 'Monat auswählen' %}">
+                    <button type="submit" class="budget-button budget-button-soft">{% translate "Öffnen" %}</button>
+                </form>
+                <a class="budget-month-button" href="?month={{ next_month_value }}" aria-label="{% translate 'Nächster Monat' %}">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="budget-hero-panel">
+            <span>{% translate "Aktueller Monat" %}</span>
+            <strong>{{ month_label }}</strong>
+            <small>{% translate "Alles ist nur für deinen Account sichtbar." %}</small>
+        </div>
+    </section>
+
+    <section class="budget-stat-grid" aria-label="{% translate 'Budget-Zusammenfassung' %}">
+        <article class="budget-stat-card is-income">
+            <span class="budget-stat-icon"><i class="fa-solid fa-arrow-trend-up"></i></span>
+            <div>
+                <small>{% translate "Einnahmen" %}</small>
+                <strong>{{ total_income|floatformat:2 }} €</strong>
+            </div>
+            <div class="budget-progress"><span style="width: {{ income_progress_percent }}%"></span></div>
+        </article>
+        <article class="budget-stat-card is-expense">
+            <span class="budget-stat-icon"><i class="fa-solid fa-arrow-trend-down"></i></span>
+            <div>
+                <small>{% translate "Ausgaben" %}</small>
+                <strong>{{ total_expenses|floatformat:2 }} €</strong>
+            </div>
+            <div class="budget-progress"><span style="width: {{ expense_usage_percent }}%"></span></div>
+        </article>
+        <article class="budget-stat-card {% if balance < 0 %}is-danger{% else %}is-balance{% endif %}">
+            <span class="budget-stat-icon"><i class="fa-solid fa-scale-balanced"></i></span>
+            <div>
+                <small>{% translate "Übrig" %}</small>
+                <strong>{{ balance|floatformat:2 }} €</strong>
+            </div>
+            <p>{% translate "Pro Resttag" %}: {{ daily_remaining|floatformat:2 }} €</p>
+        </article>
+        <article class="budget-stat-card is-fixed">
+            <span class="budget-stat-icon"><i class="fa-solid fa-repeat"></i></span>
+            <div>
+                <small>{% translate "Fixkosten" %}</small>
+                <strong>{{ total_fixed_expenses|floatformat:2 }} €</strong>
+            </div>
+            <p>{% translate "Limit Rest" %}: {{ limit_remaining|floatformat:2 }} €</p>
+        </article>
+    </section>
+
+    <section class="budget-layout">
+        <div class="budget-main-column">
+            <article class="budget-card budget-form-card">
+                <div class="budget-card-header">
+                    <div>
+                        <p class="budget-kicker">{% translate "Neue Buchung" %}</p>
+                        <h2>{% translate "Einnahme oder Ausgabe eintragen" %}</h2>
+                    </div>
+                    <i class="fa-solid fa-circle-plus"></i>
+                </div>
+
+                <form method="post" class="budget-entry-form" id="budget-entry-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_entry">
+                    <div class="budget-type-toggle" role="group" aria-label="{% translate 'Buchungstyp' %}">
+                        <label>
+                            <input type="radio" name="entry_type" value="expense" checked>
+                            <span><i class="fa-solid fa-minus"></i>{% translate "Ausgabe" %}</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="entry_type" value="income">
+                            <span><i class="fa-solid fa-plus"></i>{% translate "Einnahme" %}</span>
+                        </label>
+                    </div>
+
+                    <div class="budget-form-grid">
+                        <label>
+                            <span>{% translate "Titel" %}</span>
+                            <input type="text" name="title" maxlength="120" placeholder="{% translate 'z. B. Arbeit Essen, Gehalt, Einkauf' %}" required>
+                        </label>
+                        <label>
+                            <span>{% translate "Betrag" %}</span>
+                            <input type="number" name="amount" min="0.01" step="0.01" placeholder="0,00" required>
+                        </label>
+                        <label>
+                            <span>{% translate "Datum" %}</span>
+                            <input type="date" name="date" value="{{ default_entry_date_iso }}" min="{{ month_start_iso }}" max="{{ month_end_iso }}" required>
+                        </label>
+                        <label>
+                            <span>{% translate "Kategorie" %}</span>
+                            <select name="category" id="budget-category-select">
+                                {% for category in expense_categories %}
+                                    <option value="{{ category.id }}" data-kind="expense">{{ category.name }}</option>
+                                {% endfor %}
+                                {% for category in income_categories %}
+                                    <option value="{{ category.id }}" data-kind="income">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+                    </div>
+
+                    <label class="budget-note-field">
+                        <span>{% translate "Notiz" %}</span>
+                        <textarea name="note" rows="2" placeholder="{% translate 'Optional, z. B. wofür die Ausgabe genau war' %}"></textarea>
+                    </label>
+
+                    <div class="budget-inline-options">
+                        <label class="budget-checkbox">
+                            <input type="checkbox" name="is_fixed" value="1">
+                            <span>{% translate "Fixkosten" %}</span>
+                        </label>
+                        <label class="budget-checkbox">
+                            <input type="checkbox" name="recurrence" value="monthly">
+                            <span>{% translate "monatlich wiederkehrend" %}</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="budget-button budget-button-primary">
+                        <i class="fa-solid fa-plus"></i>
+                        {% translate "Buchung speichern" %}
+                    </button>
+                </form>
+            </article>
+
+            <article class="budget-card">
+                <div class="budget-card-header budget-card-header-split">
+                    <div>
+                        <p class="budget-kicker">{% translate "Buchungen" %}</p>
+                        <h2>{% translate "Monatsliste" %}</h2>
+                    </div>
+                    <div class="budget-card-actions">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="import_recurring">
+                            <button type="submit" class="budget-button budget-button-soft">
+                                <i class="fa-solid fa-copy"></i>
+                                {% translate "Fixkosten übernehmen" %}
+                            </button>
+                        </form>
+                        <a href="{% url 'budget_tracker_export' %}?month={{ month_value }}" class="budget-button budget-button-soft">
+                            <i class="fa-solid fa-file-csv"></i>
+                            CSV
+                        </a>
+                    </div>
+                </div>
+
+                <form method="get" class="budget-filter-bar">
+                    <input type="hidden" name="month" value="{{ month_value }}">
+                    <select name="type" aria-label="{% translate 'Typ filtern' %}">
+                        <option value="all" {% if filter_type == 'all' %}selected{% endif %}>{% translate "Alle Typen" %}</option>
+                        <option value="expense" {% if filter_type == 'expense' %}selected{% endif %}>{% translate "Ausgaben" %}</option>
+                        <option value="income" {% if filter_type == 'income' %}selected{% endif %}>{% translate "Einnahmen" %}</option>
+                    </select>
+                    <select name="category" aria-label="{% translate 'Kategorie filtern' %}">
+                        <option value="">{% translate "Alle Kategorien" %}</option>
+                        {% for category in all_categories %}
+                            <option value="{{ category.id }}" {% if filter_category|stringformat:'s' == category.id|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="search" name="q" value="{{ search_query }}" placeholder="{% translate 'Suchen...' %}">
+                    <button type="submit" class="budget-button budget-button-soft">{% translate "Filtern" %}</button>
+                </form>
+
+                <div class="budget-entry-list">
+                    {% for entry in entries %}
+                        <article class="budget-entry-row {% if entry.entry_type == 'income' %}is-income{% else %}is-expense{% endif %}">
+                            <span class="budget-entry-icon" style="--entry-color: {{ entry.category.color|default:'#64748b' }}">
+                                <i class="{{ entry.category.icon|default:'fa-solid fa-wallet' }}"></i>
+                            </span>
+                            <div class="budget-entry-main">
+                                <div class="budget-entry-title-line">
+                                    <strong>{{ entry.title }}</strong>
+                                    <span>{{ entry.date|date:"d.m.Y" }}</span>
+                                </div>
+                                <p>
+                                    {% if entry.category %}{{ entry.category.name }}{% else %}{% translate "Ohne Kategorie" %}{% endif %}
+                                    {% if entry.is_fixed %} · {% translate "Fixkosten" %}{% endif %}
+                                    {% if entry.recurrence == 'monthly' %} · {% translate "monatlich" %}{% endif %}
+                                    {% if entry.note %} · {{ entry.note }}{% endif %}
+                                </p>
+                            </div>
+                            <strong class="budget-entry-amount">
+                                {% if entry.entry_type == 'income' %}+{% else %}-{% endif %}{{ entry.amount|floatformat:2 }} €
+                            </strong>
+                            <form method="post" class="budget-delete-form" data-confirm="{% translate 'Buchung wirklich löschen?' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete_entry">
+                                <input type="hidden" name="entry_id" value="{{ entry.id }}">
+                                <button type="submit" aria-label="{% translate 'Buchung löschen' %}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </article>
+                    {% empty %}
+                        <div class="budget-empty-state">
+                            <i class="fa-solid fa-receipt"></i>
+                            <strong>{% translate "Noch keine Buchungen gefunden." %}</strong>
+                            <span>{% translate "Füge oben deine erste Einnahme oder Ausgabe hinzu." %}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+
+        <aside class="budget-side-column">
+            <article class="budget-card">
+                <div class="budget-card-header">
+                    <div>
+                        <p class="budget-kicker">{% translate "Plan" %}</p>
+                        <h2>{% translate "Monatsbudget" %}</h2>
+                    </div>
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+                <form method="post" class="budget-plan-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="save_plan">
+                    <label>
+                        <span>{% translate "Geplante Einnahmen" %}</span>
+                        <input type="number" name="planned_income" min="0" step="0.01" value="{{ planned_income_value }}">
+                    </label>
+                    <label>
+                        <span>{% translate "Ausgabenlimit" %}</span>
+                        <input type="number" name="expense_limit" min="0" step="0.01" value="{{ expense_limit_value }}">
+                    </label>
+                    <label>
+                        <span>{% translate "Sparziel" %}</span>
+                        <input type="number" name="savings_goal" min="0" step="0.01" value="{{ savings_goal_value }}">
+                    </label>
+                    <label>
+                        <span>{% translate "Notiz zum Monat" %}</span>
+                        <textarea name="notes" rows="3">{{ budget_month.notes }}</textarea>
+                    </label>
+                    <div class="budget-goal-list">
+                        <div>
+                            <span>{% translate "Einnahmen-Ziel" %}</span>
+                            <div class="budget-progress"><span style="width: {{ income_progress_percent }}%"></span></div>
+                        </div>
+                        <div>
+                            <span>{% translate "Ausgabenlimit" %}</span>
+                            <div class="budget-progress"><span style="width: {{ expense_usage_percent }}%"></span></div>
+                        </div>
+                        <div>
+                            <span>{% translate "Sparziel" %}</span>
+                            <div class="budget-progress"><span style="width: {{ savings_progress_percent }}%"></span></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="budget-button budget-button-primary">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        {% translate "Plan speichern" %}
+                    </button>
+                </form>
+            </article>
+
+            <article class="budget-card">
+                <div class="budget-card-header">
+                    <div>
+                        <p class="budget-kicker">{% translate "Analyse" %}</p>
+                        <h2>{% translate "Ausgaben nach Kategorie" %}</h2>
+                    </div>
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div class="budget-category-breakdown">
+                    {% for item in category_totals %}
+                        <div class="budget-category-bar">
+                            <div>
+                                <span style="--category-color: {{ item.color }}"><i class="{{ item.icon }}"></i></span>
+                                <strong>{{ item.name }}</strong>
+                                <em>{{ item.total|floatformat:2 }} €</em>
+                            </div>
+                            <div class="budget-progress"><span style="width: {{ item.percent }}%; background: {{ item.color }}"></span></div>
+                        </div>
+                    {% empty %}
+                        <p class="budget-muted">{% translate "Noch keine Ausgaben für diesen Monat." %}</p>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="budget-card">
+                <div class="budget-card-header">
+                    <div>
+                        <p class="budget-kicker">{% translate "Verlauf" %}</p>
+                        <h2>{% translate "Letzte 6 Monate" %}</h2>
+                    </div>
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+                <div class="budget-chart" id="budget-trend-chart"></div>
+                <script id="budget-trend-data" type="application/json">{{ trend_json|safe }}</script>
+            </article>
+
+            <article class="budget-card">
+                <div class="budget-card-header">
+                    <div>
+                        <p class="budget-kicker">{% translate "Kategorien" %}</p>
+                        <h2>{% translate "Eigene Kategorien" %}</h2>
+                    </div>
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+                <form method="post" class="budget-category-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_category">
+                    <input type="text" name="name" placeholder="{% translate 'Name' %}" required>
+                    <select name="kind">
+                        <option value="expense">{% translate "Ausgabe" %}</option>
+                        <option value="income">{% translate "Einnahme" %}</option>
+                    </select>
+                    <input type="color" name="color" value="#2563eb" aria-label="{% translate 'Farbe' %}">
+                    <input type="text" name="icon" value="fa-solid fa-wallet" placeholder="fa-solid fa-wallet">
+                    <button type="submit" class="budget-button budget-button-soft">{% translate "Kategorie speichern" %}</button>
+                </form>
+                <div class="budget-category-chip-list">
+                    {% for category in all_categories %}
+                        <form method="post" class="budget-category-chip budget-delete-form" data-confirm="{% translate 'Kategorie wirklich löschen? Buchungen bleiben ohne Kategorie erhalten.' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_category">
+                            <input type="hidden" name="category_id" value="{{ category.id }}">
+                            <span style="--category-color: {{ category.color }}"><i class="{{ category.icon }}"></i></span>
+                            <strong>{{ category.name }}</strong>
+                            <small>{{ category.get_kind_display }}</small>
+                            <button type="submit" aria-label="{% translate 'Kategorie löschen' %}"><i class="fa-solid fa-xmark"></i></button>
+                        </form>
+                    {% endfor %}
+                </div>
+            </article>
+        </aside>
+    </section>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/budget_tracker.js' %}" defer></script>
+{% endblock %}

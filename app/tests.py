@@ -16,6 +16,7 @@ from django.db.models.signals import pre_save
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse, resolve
 from django.utils import timezone
+from django_recaptcha.client import RecaptchaResponse
 
 from app.forms import NoteForm
 from app.achievement_utils import get_achievement_summary
@@ -676,6 +677,16 @@ class CaddyPerformanceConfigTests(SimpleTestCase):
 
 
 class AuthViewTests(BaseTestCase):
+    def _mock_recaptcha_success(self, mocked_submit):
+        mocked_submit.return_value = RecaptchaResponse(is_valid=True)
+
+    def _login_payload(self, username, password):
+        return {
+            "username": username,
+            "password": password,
+            "g-recaptcha-response": "PASSED",
+        }
+
     def test_signup_page_loads_without_login(self):
         self.client.logout()
 
@@ -704,13 +715,22 @@ class AuthViewTests(BaseTestCase):
 
         self.assertEqual(match.func.view_class, AccessAwareLoginView)
 
-    def test_login_without_two_factor_logs_in_directly(self):
+    def test_login_page_contains_recaptcha(self):
         self.client.logout()
 
-        response = self.client.post(reverse("login"), {
-            "username": self.user.username,
-            "password": "testpass-123",
-        })
+        response = self.client.get(reverse("login"))
+
+        self.assertContains(response, "g-recaptcha")
+
+    @patch("django_recaptcha.fields.client.submit")
+    def test_login_without_two_factor_logs_in_directly(self, mocked_submit):
+        self._mock_recaptcha_success(mocked_submit)
+        self.client.logout()
+
+        response = self.client.post(
+            reverse("login"),
+            self._login_payload(self.user.username, "testpass-123"),
+        )
 
         self.assertRedirects(response, reverse("home"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.id)
@@ -739,7 +759,9 @@ class AuthViewTests(BaseTestCase):
         settings_obj.refresh_from_db()
         self.assertTrue(settings_obj.is_enabled)
 
-    def test_two_factor_login_requires_second_code(self):
+    @patch("django_recaptcha.fields.client.submit")
+    def test_two_factor_login_requires_second_code(self, mocked_submit):
+        self._mock_recaptcha_success(mocked_submit)
         self.client.logout()
         two_factor_settings = UserTwoFactorSettings.objects.create(
             user=self.user,
@@ -747,10 +769,10 @@ class AuthViewTests(BaseTestCase):
             is_enabled=True,
         )
 
-        response = self.client.post(reverse("login"), {
-            "username": self.user.username,
-            "password": "testpass-123",
-        })
+        response = self.client.post(
+            reverse("login"),
+            self._login_payload(self.user.username, "testpass-123"),
+        )
 
         self.assertRedirects(response, reverse("two_factor_verify"), fetch_redirect_response=False)
         self.assertNotIn("_auth_user_id", self.client.session)
@@ -762,17 +784,19 @@ class AuthViewTests(BaseTestCase):
         self.assertRedirects(response, reverse("home"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), self.user.id)
 
-    def test_two_factor_rejects_wrong_code(self):
+    @patch("django_recaptcha.fields.client.submit")
+    def test_two_factor_rejects_wrong_code(self, mocked_submit):
+        self._mock_recaptcha_success(mocked_submit)
         self.client.logout()
         UserTwoFactorSettings.objects.create(
             user=self.user,
             secret_key="JBSWY3DPEHPK3PXP",
             is_enabled=True,
         )
-        self.client.post(reverse("login"), {
-            "username": self.user.username,
-            "password": "testpass-123",
-        })
+        self.client.post(
+            reverse("login"),
+            self._login_payload(self.user.username, "testpass-123"),
+        )
 
         response = self.client.post(reverse("two_factor_verify"), {"token": "000000"})
 
@@ -796,23 +820,25 @@ class AuthViewTests(BaseTestCase):
         self.assertEqual(response.status_code, 403)
         self.assertFalse(get_user_model().objects.filter(username="blockeduser").exists())
 
-    def test_access_lock_blocks_normal_login_but_allows_staff(self):
+    @patch("django_recaptcha.fields.client.submit")
+    def test_access_lock_blocks_normal_login_but_allows_staff(self, mocked_submit):
+        self._mock_recaptcha_success(mocked_submit)
         self.client.logout()
         SiteAccessSettings.objects.update_or_create(pk=1, defaults={"login_registration_locked": True})
         normal_user = get_user_model().objects.create_user(username="normaluser", password="testpass-123")
         staff_user = get_user_model().objects.create_user(username="staffuser", password="testpass-123", is_staff=True)
 
-        normal_response = self.client.post(reverse("login"), {
-            "username": normal_user.username,
-            "password": "testpass-123",
-        })
+        normal_response = self.client.post(
+            reverse("login"),
+            self._login_payload(normal_user.username, "testpass-123"),
+        )
         self.assertEqual(normal_response.status_code, 200)
         self.assertNotEqual(int(self.client.session.get("_auth_user_id", 0) or 0), normal_user.id)
 
-        staff_response = self.client.post(reverse("login"), {
-            "username": staff_user.username,
-            "password": "testpass-123",
-        })
+        staff_response = self.client.post(
+            reverse("login"),
+            self._login_payload(staff_user.username, "testpass-123"),
+        )
         self.assertRedirects(staff_response, reverse("home"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), staff_user.id)
 
@@ -1898,10 +1924,19 @@ class StaticPageTests(BaseTestCase):
         self.assertContains(response, "Wissenschaftlicher Rechner")
         self.assertContains(response, "Wurzeln, Potenzen, Logarithmen, Trigonometrie")
 
+    def test_about_page_links_budget_tracker(self):
+        response = self.client.get(reverse("about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("budget_tracker"))
+        self.assertContains(response, "Budget-Tracker")
+        self.assertContains(response, "Monatsbudget, Einnahmen, Ausgaben, Fixkosten")
+
     def test_simple_tool_pages_load(self):
         pages = [
             ("obs-dashboard", "app/obs-dashboard.html"),
             ("spritkostenrechner", "app/spritkostenrechner.html"),
+            ("budget_tracker", "app/budget_tracker.html"),
             ("calculator", "app/calculator.html"),
             ("human-benchmark", "app/human_benchmark.html"),
             ("genius-search", "app/genius_search.html"),
@@ -1949,6 +1984,35 @@ class StaticPageTests(BaseTestCase):
         self.assertNotContains(response, "app/css/contrast.css")
         self.assertContains(response, "cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
         self.assertNotContains(response, "kit.fontawesome.com")
+
+    def test_google_analytics_is_disabled_in_tests_by_default(self):
+        response = self.client.get(reverse("about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'id="mytools-ga-script"')
+        self.assertNotContains(response, "app/js/google_analytics.js")
+
+    @override_settings(GOOGLE_ANALYTICS_ENABLED=True, GOOGLE_ANALYTICS_ID="G-TEST123456")
+    def test_google_analytics_loader_renders_when_enabled(self):
+        response = self.client.get(reverse("about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="mytools-ga-script"')
+        self.assertContains(response, "app/css/google_analytics.css")
+        self.assertContains(response, "app/js/google_analytics.js")
+        self.assertContains(response, 'data-measurement-id="G-TEST123456"')
+        self.assertContains(response, "Analyse-Cookies erlauben?")
+
+    def test_google_analytics_js_uses_consent_mode_before_loading_tag(self):
+        js = Path(settings.BASE_DIR) / "app" / "static" / "app" / "js" / "google_analytics.js"
+        js_content = js.read_text(encoding="utf-8")
+
+        self.assertIn("window.gtag('consent', 'default'", js_content)
+        self.assertIn("analytics_storage: 'denied'", js_content)
+        self.assertIn("ad_storage: 'denied'", js_content)
+        self.assertIn("mytools_google_analytics_consent_v1", js_content)
+        self.assertIn("https://www.googletagmanager.com/gtag/js?id=", js_content)
+        self.assertIn("window.gtag('consent', 'update'", js_content)
 
     def test_core_css_uses_correct_relative_icon_paths(self):
         css = Path(settings.BASE_DIR) / "app" / "static" / "app" / "css" / "core.css"
@@ -4907,3 +4971,20 @@ class PongMultiplayerTests(TestCase):
         self.assertEqual(summary["metrics"]["pong_matches"], 1)
         self.assertEqual(summary["metrics"]["pong_wins"], 1)
         self.assertEqual(summary["metrics"]["pong_best_rally"], 12)
+
+
+class ColorPaletteToolTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(username="coloruser", password="testpass123")
+
+    def test_color_palette_requires_login(self):
+        response = self.client.get(reverse("color_palette_tool"))
+        self.assertEqual(response.status_code, 302)
+
+    def test_color_palette_page_loads_for_logged_in_user(self):
+        self.client.login(username="coloruser", password="testpass123")
+        response = self.client.get(reverse("color_palette_tool"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Color Palette Tool")
+        self.assertContains(response, "color_palette_tool.css")
+        self.assertContains(response, "color_palette_tool.js")

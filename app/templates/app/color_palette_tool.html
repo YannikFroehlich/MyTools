@@ -1,0 +1,188 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Color Palette Tool" %} - MyTools{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'app/css/color_palette_tool.css' %}">
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'app/js/color_palette_tool.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<main class="color-tool-page">
+    <section class="color-hero">
+        <div class="color-hero-copy">
+            <p class="color-kicker">
+                <i class="fa-solid fa-palette"></i>
+                {% translate "Design Tool" %}
+            </p>
+            <h1>{% translate "Color Palette Tool" %}</h1>
+            <p>
+                {% translate "Erfasse Farben per Farbwähler, Browser-Eyedropper oder direkt aus einem hochgeladenen Bild. Kopiere HEX, RGB und HSL und prüfe sofort den Kontrast." %}
+            </p>
+            <div class="color-hero-actions">
+                <button type="button" class="color-btn color-btn-primary" id="screen-picker-button">
+                    <i class="fa-solid fa-eye-dropper"></i>
+                    {% translate "Farbe vom Bildschirm erfassen" %}
+                </button>
+                <label class="color-btn color-btn-soft" for="image-upload">
+                    <i class="fa-regular fa-image"></i>
+                    {% translate "Bild hochladen" %}
+                </label>
+                <input type="file" id="image-upload" accept="image/*" hidden>
+            </div>
+            <p class="color-support-note" id="eyedropper-support-note"></p>
+        </div>
+
+        <div class="color-preview-card">
+            <div class="color-preview-swatch" id="main-swatch"></div>
+            <div class="color-preview-info">
+                <span>{% translate "Aktuelle Farbe" %}</span>
+                <strong id="current-hex">#7C3AED</strong>
+                <small id="current-rgb">rgb(124, 58, 237)</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="color-grid">
+        <article class="color-card">
+            <div class="color-card-header">
+                <div>
+                    <p class="color-kicker">{% translate "Picker" %}</p>
+                    <h2>{% translate "Farbe auswählen" %}</h2>
+                </div>
+                <i class="fa-solid fa-fill-drip"></i>
+            </div>
+
+            <div class="native-picker-wrap">
+                <input type="color" id="native-color-picker" value="#7c3aed" aria-label="{% translate 'Farbe auswählen' %}">
+                <div>
+                    <strong>{% translate "Normaler Farbwähler" %}</strong>
+                    <p>{% translate "Funktioniert in jedem modernen Browser und ist der sichere Fallback." %}</p>
+                </div>
+            </div>
+
+            <div class="color-values">
+                <label>
+                    <span>HEX</span>
+                    <div class="copy-field">
+                        <input type="text" id="hex-value" value="#7C3AED" maxlength="7">
+                        <button type="button" data-copy-target="hex-value" aria-label="{% translate 'HEX kopieren' %}">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </label>
+                <label>
+                    <span>RGB</span>
+                    <div class="copy-field">
+                        <input type="text" id="rgb-value" readonly>
+                        <button type="button" data-copy-target="rgb-value" aria-label="{% translate 'RGB kopieren' %}">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </label>
+                <label>
+                    <span>HSL</span>
+                    <div class="copy-field">
+                        <input type="text" id="hsl-value" readonly>
+                        <button type="button" data-copy-target="hsl-value" aria-label="{% translate 'HSL kopieren' %}">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </label>
+            </div>
+
+            <div class="color-actions-row">
+                <button type="button" class="color-btn color-btn-primary" id="save-color-button">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate "Zur Palette hinzufügen" %}
+                </button>
+                <button type="button" class="color-btn color-btn-soft" id="random-color-button">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {% translate "Zufallsfarbe" %}
+                </button>
+            </div>
+        </article>
+
+        <article class="color-card">
+            <div class="color-card-header">
+                <div>
+                    <p class="color-kicker">{% translate "Bild" %}</p>
+                    <h2>{% translate "Farbe aus Bild anklicken" %}</h2>
+                </div>
+                <i class="fa-solid fa-crosshairs"></i>
+            </div>
+
+            <div class="image-picker-area" id="image-picker-area">
+                <canvas id="image-canvas"></canvas>
+                <div class="image-empty-state" id="image-empty-state">
+                    <i class="fa-regular fa-image"></i>
+                    <strong>{% translate "Noch kein Bild geladen" %}</strong>
+                    <span>{% translate "Lade ein Bild hoch und klicke danach direkt auf eine Stelle im Bild." %}</span>
+                </div>
+            </div>
+            <p class="color-muted">{% translate "Tipp: Im Browser darf eine Webseite nicht ohne Erlaubnis deinen gesamten Bildschirm lesen. Nutze dafür den Eyedropper-Button oder lade einen Screenshot hoch." %}</p>
+        </article>
+    </section>
+
+    <section class="color-grid color-grid-bottom">
+        <article class="color-card">
+            <div class="color-card-header">
+                <div>
+                    <p class="color-kicker">{% translate "Palette" %}</p>
+                    <h2>{% translate "Gespeicherte Farben" %}</h2>
+                </div>
+                <button type="button" class="color-btn color-btn-danger" id="clear-palette-button">
+                    <i class="fa-solid fa-trash"></i>
+                    {% translate "Leeren" %}
+                </button>
+            </div>
+            <div class="palette-list" id="palette-list"></div>
+        </article>
+
+        <article class="color-card">
+            <div class="color-card-header">
+                <div>
+                    <p class="color-kicker">{% translate "Kontrast" %}</p>
+                    <h2>{% translate "Lesbarkeit prüfen" %}</h2>
+                </div>
+                <i class="fa-solid fa-circle-half-stroke"></i>
+            </div>
+
+            <div class="contrast-preview" id="contrast-preview">
+                <strong>{% translate "Beispieltext auf deiner Farbe" %}</strong>
+                <span>{% translate "So würde Text auf diesem Hintergrund aussehen." %}</span>
+            </div>
+
+            <div class="contrast-results">
+                <div>
+                    <span>{% translate "Weißer Text" %}</span>
+                    <strong id="contrast-white">–</strong>
+                </div>
+                <div>
+                    <span>{% translate "Schwarzer Text" %}</span>
+                    <strong id="contrast-black">–</strong>
+                </div>
+                <div>
+                    <span>{% translate "Empfehlung" %}</span>
+                    <strong id="contrast-recommendation">–</strong>
+                </div>
+            </div>
+
+            <div class="gradient-box">
+                <div class="gradient-preview" id="gradient-preview"></div>
+                <button type="button" class="color-btn color-btn-soft" id="copy-gradient-button">
+                    <i class="fa-regular fa-copy"></i>
+                    {% translate "CSS-Gradient kopieren" %}
+                </button>
+            </div>
+        </article>
+    </section>
+</main>
+{% endblock %}
