@@ -686,9 +686,8 @@
     z-index: 5;
 
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
+    align-items: center;
+    justify-content: center;
 
     margin-bottom: 1rem;
     padding-top: 0.2rem;
@@ -698,12 +697,28 @@
 }
 
 .shortcut-modal-header h3 {
+    flex: 1;
     margin: 0;
+    padding: 0 2.75rem;
     color: #111827;
+    text-align: center;
+    line-height: 1.25;
 }
 
 .shortcut-modal-header button {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
     border: none;
+    border-radius: 12px;
     background: transparent;
 
     cursor: pointer;
@@ -721,11 +736,13 @@
 }
 
 #shortcut-modal-section-name {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     margin-top: 0.25rem;
 
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: #64748b;
     font-weight: 500;
 }

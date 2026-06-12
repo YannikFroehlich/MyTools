@@ -17,19 +17,19 @@
                     <i class="fa-solid fa-cookie-bite"></i>
                 </span>
                 <div>
-                    <p>Incremental Bakery</p>
+                    <p>{% translate "Incremental Bakery" %}</p>
                     <h1>Cookie Cosmos</h1>
                 </div>
             </div>
 
             <div class="cookie-actions">
-                <button type="button" class="icon-button" id="soundToggle" aria-label="Sound umschalten" title="Sound">
+                <button type="button" class="icon-button" id="soundToggle" aria-label="{% translate 'Sound umschalten' %}" title="{% translate 'Sound' %}">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
-                <button type="button" class="icon-button" id="exportButton" aria-label="Spielstand exportieren" title="Export">
+                <button type="button" class="icon-button" id="exportButton" aria-label="{% translate 'Spielstand exportieren' %}" title="{% translate 'Export' %}">
                     <i class="fa-solid fa-file-export"></i>
                 </button>
-                <button type="button" class="icon-button danger" id="resetButton" aria-label="Spielstand zuruecksetzen" title="Reset">
+                <button type="button" class="icon-button danger" id="resetButton" aria-label="{% translate 'Spielstand zuruecksetzen' %}" title="{% translate 'Reset' %}">
                     <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -39,27 +39,27 @@
             <section class="cookie-stage">
                 <div class="stage-hud">
                     <article class="metric-tile primary">
-                        <span>Cookies</span>
+                        <span>{% translate "Cookies" %}</span>
                         <strong id="cookieCount">0</strong>
                     </article>
                     <article class="metric-tile">
-                        <span>pro Sekunde</span>
+                        <span>{% translate "pro Sekunde" %}</span>
                         <strong id="cpsCount">0</strong>
                     </article>
                     <article class="metric-tile">
-                        <span>pro Klick</span>
+                        <span>{% translate "pro Klick" %}</span>
                         <strong id="clickPower">1</strong>
                     </article>
                     <article class="metric-tile">
-                        <span>Stardust</span>
+                        <span>{% translate "Stardust" %}</span>
                         <strong id="stardustCount">0</strong>
                     </article>
                 </div>
 
                 <div class="bakery-scene" id="bakeryScene">
-                    <canvas id="bakeryCanvas" class="bakery-canvas" width="960" height="560" aria-label="Animierte Cookie Cosmos Backstube"></canvas>
+                    <canvas id="bakeryCanvas" class="bakery-canvas" width="960" height="560" aria-label="{% translate 'Animierte Cookie Cosmos Backstube' %}"></canvas>
 
-                    <button type="button" class="mega-cookie" id="cookieButton" aria-label="Cookie backen">
+                    <button type="button" class="mega-cookie" id="cookieButton" aria-label="{% translate 'Cookie backen' %}">
                         <span class="cookie-face">
                             <span class="chip chip-one"></span>
                             <span class="chip chip-two"></span>
@@ -70,7 +70,7 @@
                         </span>
                     </button>
 
-                    <button type="button" class="golden-cookie hidden" id="goldenCookie" aria-label="Golden Cookie">
+                    <button type="button" class="golden-cookie hidden" id="goldenCookie" aria-label="{% translate 'Golden Cookie' %}">
                         <i class="fa-solid fa-star"></i>
                     </button>
 
@@ -82,76 +82,76 @@
                     <button type="button" class="ability-button" id="overdriveButton">
                         <i class="fa-solid fa-bolt"></i>
                         <span>
-                            <strong>Overdrive</strong>
-                            <small id="overdriveStatus">Bereit</small>
+                            <strong>{% translate "Overdrive" %}</strong>
+                            <small id="overdriveStatus">{% translate "Bereit" %}</small>
                         </span>
                     </button>
                     <button type="button" class="ascend-button" id="ascendButton">
                         <i class="fa-solid fa-meteor"></i>
                         <span>
-                            <strong>Transzendieren</strong>
-                            <small id="ascendStatus">ab 50M Cookies</small>
+                            <strong>{% translate "Transzendieren" %}</strong>
+                            <small id="ascendStatus">{% translate "ab 50M Cookies" %}</small>
                         </span>
                     </button>
                 </div>
 
                 <div class="progress-strip">
                     <div>
-                        <span>Combo</span>
+                        <span>{% translate "Combo" %}</span>
                         <strong id="comboLabel">x1.00</strong>
                     </div>
                     <div class="bar">
                         <i id="comboBar"></i>
                     </div>
                     <div>
-                        <span>Naechster Stern</span>
+                        <span>{% translate "Naechster Stern" %}</span>
                         <strong id="nextStarLabel">50M</strong>
                     </div>
                 </div>
             </section>
 
             <aside class="bakery-panel">
-                <div class="panel-tabs" role="tablist" aria-label="Cookie Cosmos Bereiche">
+                <div class="panel-tabs" role="tablist" aria-label="{% translate 'Cookie Cosmos Bereiche' %}">
                     <button type="button" class="tab-button is-active" data-tab="buildings" role="tab" aria-selected="true">
                         <i class="fa-solid fa-industry"></i>
-                        <span>Backstube</span>
+                        <span>{% translate "Backstube" %}</span>
                     </button>
                     <button type="button" class="tab-button" data-tab="upgrades" role="tab" aria-selected="false">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>Upgrades</span>
+                        <span>{% translate "Upgrades" %}</span>
                     </button>
                     <button type="button" class="tab-button" data-tab="achievements" role="tab" aria-selected="false">
                         <i class="fa-solid fa-trophy"></i>
-                        <span>Erfolge</span>
+                        <span>{% translate "Erfolge" %}</span>
                     </button>
                 </div>
 
                 <div class="shop-tools">
                     <button type="button" class="mode-toggle is-active" data-buy-mode="one">1x</button>
                     <button type="button" class="mode-toggle" data-buy-mode="max">Max</button>
-                    <span id="saveState">Gespeichert</span>
+                    <span id="saveState">{% translate "Gespeichert" %}</span>
                 </div>
 
                 <div class="panel-section is-active" id="buildingsPanel" data-panel="buildings">
                     <div class="section-heading">
-                        <h2>Produktionslinien</h2>
-                        <p id="ownedSummary">0 Anlagen aktiv</p>
+                        <h2>{% translate "Produktionslinien" %}</h2>
+                        <p id="ownedSummary">{% translate "0 Anlagen aktiv" %}</p>
                     </div>
                     <div class="building-list" id="buildingList"></div>
                 </div>
 
                 <div class="panel-section" id="upgradesPanel" data-panel="upgrades">
                     <div class="section-heading">
-                        <h2>Forschung</h2>
-                        <p id="upgradeSummary">0 freigeschaltet</p>
+                        <h2>{% translate "Forschung" %}</h2>
+                        <p id="upgradeSummary">{% translate "0 freigeschaltet" %}</p>
                     </div>
                     <div class="upgrade-list" id="upgradeList"></div>
                 </div>
 
                 <div class="panel-section" id="achievementsPanel" data-panel="achievements">
                     <div class="section-heading">
-                        <h2>Erfolge</h2>
-                        <p id="achievementSummary">0 erledigt</p>
+                        <h2>{% translate "Erfolge" %}</h2>
+                        <p id="achievementSummary">{% translate "0 erledigt" %}</p>
                     </div>
                     <div class="achievement-grid" id="achievementList"></div>
                 </div>
