@@ -152,6 +152,8 @@
                         <div class="shortcut-icon {% if shortcut.image %}shortcut-image-icon{% endif %}">
                             {% if shortcut.image %}
                                 <img src="{{ shortcut.image|media_thumb:'shortcut' }}" srcset="{{ shortcut.image|media_srcset:'shortcut-small 64w, shortcut 128w' }}" sizes="64px" alt="{{ shortcut.name }}" width="128" height="128" loading="lazy" decoding="async">
+                            {% elif shortcut.icon == 'fa-brands fa-openai' %}
+                                <i class="fa-solid fa-robot"></i>
                             {% else %}
                                 <i class="{{ shortcut.icon }}"></i>
                             {% endif %}
