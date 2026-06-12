@@ -49,6 +49,7 @@ from app.models import (
     Note,
     PongGame,
     PongInvite,
+    SecurityEvent,
     ProfileGalleryImage,
     Shortcut,
     ShortcutSection,
@@ -2144,6 +2145,84 @@ class StaticPageTests(BaseTestCase):
         self.assertIn("warmObsWebSocketModule", js_content)
         self.assertIn('elements.connectBtn.addEventListener("pointerenter", warmObsWebSocketModule', js_content)
         self.assertNotIn('import OBSWebSocket from "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm"', js_content)
+
+
+class SecurityDashboardAndQrToolTests(BaseTestCase):
+    def test_security_dashboard_loads_and_shows_account_status(self):
+        response = self.client.get(reverse("security_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/security_dashboard.html")
+        self.assertContains(response, "Sicherheits-Dashboard")
+        self.assertContains(response, "Aktive Sitzungen")
+        self.assertContains(response, reverse("two_factor_settings"))
+
+    def test_security_event_is_created_for_two_factor_enable(self):
+        response = self.client.post(reverse("two_factor_settings"), {"action": "start_setup"})
+        self.assertRedirects(response, reverse("two_factor_settings"))
+
+        settings_obj = UserTwoFactorSettings.objects.get(user=self.user)
+        token = current_totp(settings_obj.secret_key)
+        response = self.client.post(reverse("two_factor_settings"), {
+            "action": "confirm_setup",
+            "token": token,
+        })
+
+        self.assertRedirects(response, reverse("two_factor_settings"))
+        self.assertTrue(SecurityEvent.objects.filter(
+            user=self.user,
+            event_type=SecurityEvent.EVENT_TWO_FACTOR_ENABLED,
+        ).exists())
+
+    def test_security_dashboard_can_revoke_other_session(self):
+        other_client = self.client_class()
+        other_client.force_login(self.user)
+        other_session_key = other_client.session.session_key
+
+        response = self.client.post(reverse("security_dashboard"), {
+            "action": "revoke_session",
+            "session_key": other_session_key,
+        })
+
+        self.assertRedirects(response, reverse("security_dashboard"))
+        from django.contrib.sessions.models import Session
+        self.assertFalse(Session.objects.filter(session_key=other_session_key).exists())
+        self.assertTrue(SecurityEvent.objects.filter(
+            user=self.user,
+            event_type=SecurityEvent.EVENT_SESSION_REVOKED,
+        ).exists())
+
+    def test_qr_code_tool_loads(self):
+        response = self.client.get(reverse("qr_code_tool"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/qr_code_tool.html")
+        self.assertContains(response, "QR-Code Tool")
+        self.assertContains(response, "app/js/qr_code_tool.js")
+
+    def test_qr_code_tool_generates_text_qr_code(self):
+        response = self.client.post(reverse("qr_code_tool"), {
+            "qr_type": "text",
+            "text": "Mein Test QR",
+            "foreground": "#111827",
+            "background": "#ffffff",
+            "error_level": "M",
+            "box_size": "8",
+            "border": "4",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "data:image/png;base64,")
+        self.assertContains(response, "Mein Test QR")
+        self.assertContains(response, "PNG herunterladen")
+
+    def test_base_template_links_security_dashboard_and_qr_tool(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("security_dashboard"))
+        self.assertContains(response, reverse("qr_code_tool"))
+
 
 
 class ChatEnhancementTests(BaseTestCase):

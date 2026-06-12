@@ -545,6 +545,14 @@
                                         <small>{% translate 'Zufall' %}</small>
                                     </span>
                                 </a>
+
+                                <a href="{% url 'qr_code_tool' %}" class="game-menu-card is-green" data-menu-card data-menu-name="{% translate 'QR-Code Tool' %}" data-menu-category="{% translate 'QR Code Generator WLAN Kontakt URL Text Download' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-qrcode"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'QR-Code Tool' %}</strong>
+                                        <small>{% translate 'Generator' %}</small>
+                                    </span>
+                                </a>
                             </div>
                         </section>
 
@@ -900,6 +908,11 @@
                         <a href="{% url 'two_factor_settings' %}" class="profile-menu-item">
                             <i class="fa-solid fa-shield-halved"></i>
                             {% translate '2FA / Sicherheit' %}
+                        </a>
+
+                        <a href="{% url 'security_dashboard' %}" class="profile-menu-item">
+                            <i class="fa-solid fa-user-shield"></i>
+                            {% translate 'Sicherheits-Dashboard' %}
                         </a>
 
                         <a href="{% url 'users' %}" class="profile-menu-item">

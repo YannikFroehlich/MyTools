@@ -219,6 +219,7 @@ from .platform_views import (
     inbox_mark_read_view,
     inbox_view,
 )
+from .security_views import qr_code_tool_view, security_dashboard_view
 from .moderation_views import (
     moderation_access_toggle_view,
     moderation_dashboard_view,
@@ -237,6 +238,7 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
     path('accounts/2fa/', two_factor_verify_view, name='two_factor_verify'),
     path('settings/security/2fa/', two_factor_settings_view, name='two_factor_settings'),
+    path('security/', security_dashboard_view, name='security_dashboard'),
     path('', home, name='home'),
     path('home/', home, name='home'),
     path('about/', about, name='about'),
@@ -322,6 +324,7 @@ urlpatterns = [
     path('rechner/', calculator_view, name='calculator'),
     path('einheitenrechner/', unit_converter_view, name='unit_converter'),
     path('randomizer/', randomizer_tools_view, name='randomizer_tools'),
+    path('qr-code/', qr_code_tool_view, name='qr_code_tool'),
     path('drift-circuit/', drift_circuit, name='drift-circuit'),
     path('snake-powerups/', snake_powerups, name='snake-powerups'),
     path('cookie-clicker/', cookie_clicker, name='cookie-clicker'),

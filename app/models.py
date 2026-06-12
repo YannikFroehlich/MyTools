@@ -2514,6 +2514,73 @@ class UserTwoFactorSettings(models.Model):
         return None
 
 
+class SecurityEvent(models.Model):
+    EVENT_LOGIN_SUCCESS = "login_success"
+    EVENT_LOGIN_FAILED = "login_failed"
+    EVENT_LOGOUT = "logout"
+    EVENT_TWO_FACTOR_ENABLED = "two_factor_enabled"
+    EVENT_TWO_FACTOR_DISABLED = "two_factor_disabled"
+    EVENT_SESSION_REVOKED = "session_revoked"
+    EVENT_SESSIONS_REVOKED = "sessions_revoked"
+
+    EVENT_CHOICES = [
+        (EVENT_LOGIN_SUCCESS, _("Login erfolgreich")),
+        (EVENT_LOGIN_FAILED, _("Login fehlgeschlagen")),
+        (EVENT_LOGOUT, _("Logout")),
+        (EVENT_TWO_FACTOR_ENABLED, _("2FA aktiviert")),
+        (EVENT_TWO_FACTOR_DISABLED, _("2FA deaktiviert")),
+        (EVENT_SESSION_REVOKED, _("Sitzung beendet")),
+        (EVENT_SESSIONS_REVOKED, _("Andere Sitzungen beendet")),
+    ]
+
+    SEVERITY_INFO = "info"
+    SEVERITY_SUCCESS = "success"
+    SEVERITY_WARNING = "warning"
+    SEVERITY_DANGER = "danger"
+
+    SEVERITY_CHOICES = [
+        (SEVERITY_INFO, _("Info")),
+        (SEVERITY_SUCCESS, _("Erfolg")),
+        (SEVERITY_WARNING, _("Warnung")),
+        (SEVERITY_DANGER, _("Gefahr")),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="security_events",
+        null=True,
+        blank=True,
+    )
+    event_type = models.CharField(max_length=40, choices=EVENT_CHOICES)
+    severity = models.CharField(max_length=20, choices=SEVERITY_CHOICES, default=SEVERITY_INFO)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=255, blank=True)
+    session_key = models.CharField(max_length=64, blank=True)
+    note = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["user", "-created_at"]),
+            models.Index(fields=["event_type", "-created_at"]),
+            models.Index(fields=["session_key"]),
+        ]
+        ordering = ["-created_at"]
+        verbose_name = _("Sicherheitsereignis")
+        verbose_name_plural = _("Sicherheitsereignisse")
+
+    def __str__(self):
+        user_label = self.user.username if self.user else _("unbekannter Nutzer")
+        return f"{self.get_event_type_display()} · {user_label}"
+
+    @property
+    def short_user_agent(self):
+        if not self.user_agent:
+            return "-"
+        return self.user_agent[:80]
+
+
 class ModerationAuditLog(models.Model):
     ACTION_REPORT_RESOLVED = "report_resolved"
     ACTION_REPORT_REOPENED = "report_reopened"

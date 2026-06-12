@@ -678,3 +678,16 @@ MyTools soll eine persönliche, erweiterbare Web-Toolbox bleiben:
 - HEX, RGB und HSL kopieren
 - Lokale Palette per `localStorage`
 - Kontrastprüfung für weißen und dunklen Text
+
+
+## Sicherheits-Dashboard und QR-Code Tool
+
+- `/security/`: zeigt 2FA-Status, aktive Sessions, erfolgreiche/fehlgeschlagene Login-Ereignisse und erlaubt das Beenden anderer Sitzungen.
+- `/qr-code/`: erstellt QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte mit PNG-Download und anpassbaren Farben.
+
+Nach dem Einspielen ausführen:
+
+```bash
+python manage.py migrate
+python manage.py test app.tests.SecurityDashboardAndQrToolTests
+```

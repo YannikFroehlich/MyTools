@@ -36,6 +36,10 @@
                         <i class="fa-solid fa-id-card"></i>
                         {% translate 'Profil ansehen' %}
                     </a>
+                    <a href="{% url 'security_dashboard' %}" class="about-action about-action-secondary">
+                        <i class="fa-solid fa-user-shield"></i>
+                        {% translate 'Sicherheit öffnen' %}
+                    </a>
                 </div>
             </div>
 
@@ -156,6 +160,11 @@
                             <i class="fa-solid fa-calculator"></i>
                             <strong>{% translate 'Einheitenrechner' %}</strong>
                             <span>{% translate 'Speicher, Zeit, Entfernung und Geld-Zeiträume umrechnen.' %}</span>
+                        </a>
+                        <a href="{% url 'qr_code_tool' %}" class="about-link-card">
+                            <i class="fa-solid fa-qrcode"></i>
+                            <strong>{% translate 'QR-Code Tool' %}</strong>
+                            <span>{% translate 'QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte als PNG erzeugen.' %}</span>
                         </a>
                     </div>
                 </article>

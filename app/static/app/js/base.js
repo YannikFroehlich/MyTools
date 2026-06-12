@@ -1124,7 +1124,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const installButton = document.getElementById('pwa-install-button');
         let deferredInstallPrompt = null;
 
-        if ('serviceWorker' in navigator) {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+        const canRegisterServiceWorker = 'serviceWorker' in navigator && (window.isSecureContext || isLocalhost);
+
+        if (canRegisterServiceWorker) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js').catch(() => {
                     // Service Worker funktioniert nur unter HTTPS oder localhost.
@@ -1136,15 +1140,34 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (isStandalone) {
+            installButton.hidden = true;
+            installButton.classList.remove('is-visible');
+            return;
+        }
+
+        const showInstallButton = () => {
+            installButton.hidden = false;
+            installButton.classList.add('is-visible');
+        };
+
+        if (canRegisterServiceWorker) {
+            showInstallButton();
+        }
+
         window.addEventListener('beforeinstallprompt', (event) => {
             event.preventDefault();
             deferredInstallPrompt = event;
-            installButton.hidden = false;
-            installButton.classList.add('is-visible');
+            showInstallButton();
         });
 
         installButton.addEventListener('click', async () => {
             if (!deferredInstallPrompt) {
+                const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+                const message = isIos
+                    ? 'iPhone/iPad: Öffne diese Seite in Safari, tippe auf Teilen und dann auf „Zum Home-Bildschirm“.'
+                    : 'Chrome/Edge: Nutze das Installieren-Symbol in der Adressleiste oder das Browser-Menü „App installieren“. Lokal funktioniert das über localhost, auf dem Server über HTTPS.';
+                window.alert(message);
                 return;
             }
 

@@ -38,6 +38,7 @@ from .models import (
     Note,
     PongGame,
     PongInvite,
+    SecurityEvent,
     Shortcut,
     ShortcutSection,
     SiteAccessSettings,
@@ -147,6 +148,15 @@ class UserTwoFactorSettingsAdmin(admin.ModelAdmin):
             _("%(count)s 2FA-Einstellung wurde zurückgesetzt.") % {"count": deleted_count},
             messages.SUCCESS,
         )
+
+@admin.register(SecurityEvent)
+class SecurityEventAdmin(admin.ModelAdmin):
+    list_display = ("created_at", "user", "event_type", "severity", "ip_address", "short_user_agent")
+    list_filter = ("event_type", "severity", "created_at")
+    search_fields = ("user__username", "user__email", "ip_address", "user_agent", "note")
+    readonly_fields = ("created_at",)
+    date_hierarchy = "created_at"
+
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):

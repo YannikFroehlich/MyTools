@@ -1,0 +1,326 @@
+.security-dashboard-page {
+    width: min(1180px, calc(100% - 28px));
+    margin: 34px auto 60px;
+    display: grid;
+    gap: 22px;
+    text-align: left;
+}
+
+.security-dashboard-hero,
+.security-dashboard-card,
+.security-dashboard-panel {
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    background: rgba(255, 255, 255, 0.84);
+    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(16px);
+}
+
+.dark-mode .security-dashboard-hero,
+.dark-mode .security-dashboard-card,
+.dark-mode .security-dashboard-panel {
+    background: rgba(15, 23, 42, 0.84);
+    border-color: rgba(148, 163, 184, 0.18);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+}
+
+.security-dashboard-hero {
+    border-radius: 30px;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+}
+
+.security-dashboard-kicker,
+.security-dashboard-panel-head > div > span,
+.security-dashboard-card > div > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #2563eb;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+}
+
+.security-dashboard-hero h1,
+.security-dashboard-panel h2 {
+    margin: 8px 0;
+    color: #0f172a;
+}
+
+.dark-mode .security-dashboard-hero h1,
+.dark-mode .security-dashboard-panel h2 {
+    color: #f8fafc;
+}
+
+.security-dashboard-hero p,
+.security-dashboard-card small,
+.security-session-card small,
+.security-session-meta,
+.security-event-item small,
+.security-event-meta,
+.security-event-item p,
+.security-dashboard-empty p {
+    color: #64748b;
+}
+
+.dark-mode .security-dashboard-hero p,
+.dark-mode .security-dashboard-card small,
+.dark-mode .security-session-card small,
+.dark-mode .security-session-meta,
+.dark-mode .security-event-item small,
+.dark-mode .security-event-meta,
+.dark-mode .security-event-item p,
+.dark-mode .security-dashboard-empty p {
+    color: #cbd5e1;
+}
+
+.security-dashboard-primary-action,
+.security-dashboard-danger-soft,
+.security-dashboard-danger-button {
+    border: 0;
+    border-radius: 16px;
+    padding: 12px 16px;
+    font-weight: 900;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.security-dashboard-primary-action {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+}
+
+.security-dashboard-danger-soft {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+}
+
+.security-dashboard-danger-button {
+    background: linear-gradient(135deg, #dc2626, #f97316);
+    color: white;
+}
+
+.security-dashboard-messages {
+    display: grid;
+    gap: 10px;
+}
+
+.security-dashboard-messages p {
+    margin: 0;
+    padding: 13px 15px;
+    border-radius: 16px;
+    background: rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
+    font-weight: 800;
+}
+
+.security-dashboard-messages p.success {
+    background: rgba(34, 197, 94, 0.14);
+    color: #15803d;
+}
+
+.security-dashboard-messages p.error {
+    background: rgba(239, 68, 68, 0.14);
+    color: #dc2626;
+}
+
+.security-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.security-dashboard-card {
+    border-radius: 24px;
+    padding: 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.security-dashboard-card strong {
+    display: block;
+    margin: 4px 0;
+    font-size: 2rem;
+    color: #0f172a;
+}
+
+.dark-mode .security-dashboard-card strong {
+    color: #f8fafc;
+}
+
+.security-dashboard-card strong.is-success { color: #16a34a; }
+.security-dashboard-card strong.is-warning { color: #f97316; }
+
+.security-dashboard-card-icon,
+.security-session-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: inline-grid;
+    place-items: center;
+    color: white;
+    flex: 0 0 auto;
+    line-height: 1;
+}
+
+.security-dashboard-card-icon i,
+.security-session-icon i {
+    display: block;
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    margin: 0;
+}
+
+.security-dashboard-card-icon.is-blue { background: linear-gradient(135deg, #2563eb, #38bdf8); }
+.security-dashboard-card-icon.is-green { background: linear-gradient(135deg, #059669, #34d399); }
+.security-dashboard-card-icon.is-purple { background: linear-gradient(135deg, #7c3aed, #c084fc); }
+.security-dashboard-card-icon.is-red { background: linear-gradient(135deg, #dc2626, #fb7185); }
+.security-session-icon { background: linear-gradient(135deg, #334155, #64748b); }
+
+.security-dashboard-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 18px;
+}
+
+.security-dashboard-panel {
+    border-radius: 28px;
+    padding: 24px;
+    min-width: 0;
+}
+
+.security-dashboard-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.security-session-list,
+.security-event-timeline {
+    display: grid;
+    gap: 12px;
+}
+
+.security-session-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 20px;
+    background: rgba(248, 250, 252, 0.86);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.dark-mode .security-session-card {
+    background: rgba(15, 23, 42, 0.72);
+}
+
+.security-session-card.is-current {
+    border-color: rgba(37, 99, 235, 0.42);
+}
+
+.security-session-main {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+}
+
+.security-session-card strong,
+.security-event-item strong {
+    color: #0f172a;
+}
+
+.dark-mode .security-session-card strong,
+.dark-mode .security-event-item strong {
+    color: #f8fafc;
+}
+
+.security-session-card small,
+.security-session-meta {
+    display: block;
+    word-break: break-word;
+}
+
+.security-current-badge {
+    padding: 8px 12px;
+    border-radius: 999px;
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.12);
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.security-event-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(248, 250, 252, 0.86);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.dark-mode .security-event-item {
+    background: rgba(15, 23, 42, 0.72);
+}
+
+.security-event-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    margin-top: 5px;
+    background: #2563eb;
+}
+
+.security-event-item.is-success .security-event-dot { background: #16a34a; }
+.security-event-item.is-warning .security-event-dot { background: #f97316; }
+.security-event-item.is-danger .security-event-dot { background: #dc2626; }
+
+.security-event-item p {
+    margin: 4px 0;
+}
+
+.security-dashboard-empty {
+    padding: 28px;
+    border-radius: 22px;
+    border: 1px dashed rgba(148, 163, 184, 0.4);
+    text-align: left;
+}
+
+.security-dashboard-empty i {
+    font-size: 2rem;
+    color: #2563eb;
+}
+
+@media (max-width: 1050px) {
+    .security-dashboard-grid,
+    .security-dashboard-layout {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .security-dashboard-hero,
+    .security-dashboard-panel-head,
+    .security-session-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .security-dashboard-grid,
+    .security-dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+}
