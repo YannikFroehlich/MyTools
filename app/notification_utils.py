@@ -32,6 +32,7 @@ from .models import (
     UnoInvite,
     UserProfile,
 )
+from .realtime import broadcast_live_status_event
 
 COUNT_KEYS = (
     "unread_chat_messages",
@@ -80,12 +81,20 @@ def invalidate_notification_cache(user):
     if not getattr(user, "is_authenticated", False):
         return
 
+    invalidate_notification_cache_for_user_id(user.pk)
+
+
+def invalidate_notification_cache_for_user_id(user_id):
+    if not user_id:
+        return
+
     cache.delete_many([
-        _notification_cache_key(user, "counts"),
-        _notification_cache_key(user, "items:10"),
-        _notification_cache_key(user, "items:12"),
-        _notification_cache_key(user, "items:1000"),
+        f"notifications:v{NOTIFICATION_CACHE_VERSION}:u{user_id}:counts",
+        f"notifications:v{NOTIFICATION_CACHE_VERSION}:u{user_id}:items:10",
+        f"notifications:v{NOTIFICATION_CACHE_VERSION}:u{user_id}:items:12",
+        f"notifications:v{NOTIFICATION_CACHE_VERSION}:u{user_id}:items:1000",
     ])
+    broadcast_live_status_event(user_id, reason="notifications")
 
 
 def empty_notification_counts():

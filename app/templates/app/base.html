@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260614-ui-updates">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260614-mobile-header-toggle">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -40,11 +40,11 @@
 
     {% block extra_css %}{% endblock %}
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}?v=20260614-ui-updates" defer></script>
+        <script src="{% static 'app/js/base.js' %}?v=20260614-mobile-header-toggle" defer></script>
     {% endblock %}
 </head>
-<body{% if request.user.is_authenticated %} data-live-status-url="{% url 'live_status_api' %}" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}"{% endif %}>
-    <nav>
+<body{% if request.user.is_authenticated %} class="has-mobile-bottom-nav" data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}"{% endif %}>
+    <nav id="site-header">
         <div class="logo">
             <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
             <span>MyTools</span>
@@ -1040,6 +1040,19 @@
             <a href="{% url 'home' %}"><i class="fa-solid fa-house"></i><span>{% translate 'Start' %}</span></a>
             <button type="button" data-open-global-search><i class="fa-solid fa-magnifying-glass"></i><span>{% translate 'Suche' %}</span></button>
             <button type="button" data-open-tools-menu><i class="fa-solid fa-table-cells-large"></i><span>{% translate 'Tools' %}</span></button>
+            <button
+                type="button"
+                data-toggle-mobile-header
+                data-mobile-header-show-label="{% translate 'Header einblenden' %}"
+                data-mobile-header-hide-label="{% translate 'Header ausblenden' %}"
+                aria-pressed="false"
+                aria-controls="site-header"
+                aria-label="{% translate 'Header einblenden' %}"
+                title="{% translate 'Header einblenden' %}"
+            >
+                <i class="fa-solid fa-bars-staggered"></i>
+                <span>{% translate 'Header' %}</span>
+            </button>
             <a href="{% url 'chat' %}"><i class="fa-solid fa-comments"></i><span>{% translate 'Chat' %}</span></a>
             <a href="{% url 'profile' %}"><i class="fa-solid fa-user"></i><span>{% translate 'Profil' %}</span></a>
         </nav>

@@ -26,6 +26,21 @@ STARTED_AT = timezone.now()
 
 CHANGELOG_ENTRIES = [
     {
+        "version": "2026.08",
+        "date": "14.06.2026",
+        "title": _("Mobile Bedienung, Realtime und Qualität"),
+        "summary": _("Die mobile Navigation ist flexibler, Benachrichtigungen aktualisieren sich direkter und die Codebasis ist besser für weitere Updates vorbereitet."),
+        "type": _("Update"),
+        "icon": "fa-solid fa-mobile-screen-button",
+        "items": [
+            _("Mobile Ansicht blendet den oberen Header standardmäßig aus und bietet einen Button zum Ein- und Ausblenden."),
+            _("Google-Suche auf der Startseite wurde auf kleinen Displays optisch nachjustiert."),
+            _("Live-Status und Benachrichtigungszähler nutzen WebSocket-Updates mit HTTP-Fallback."),
+            _("Notes- und PWA-Views wurden aus der großen View-Datei herausgelöst."),
+            _("Neuer Qualitätslauf bündelt Systemcheck, Migration-Check, Tests, collectstatic-Dry-Run und JavaScript-Syntaxprüfung."),
+        ],
+    },
+    {
         "version": "2026.07",
         "date": "14.06.2026",
         "title": _("Suche, Mobile, Datei-Share und Profile"),

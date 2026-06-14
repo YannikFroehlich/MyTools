@@ -27,3 +27,21 @@ def broadcast_chat_event(room_id, event_name, **payload):
     """Broadcast a chat event to all open tabs in a room."""
     event = {"type": f"chat.{event_name}", **payload}
     return broadcast_group(chat_group_name(room_id), event)
+
+
+def live_status_group_name(user_id):
+    return f"live_status_user_{int(user_id)}"
+
+
+def live_presence_group_name():
+    return "live_presence_watchers"
+
+
+def broadcast_live_status_event(user_or_id, event_name="changed", **payload):
+    """Tell one user's open tabs to refresh their global live status payload."""
+    user_id = getattr(user_or_id, "pk", user_or_id)
+    if not user_id:
+        return False
+
+    event = {"type": f"live.status_{event_name}", **payload}
+    return broadcast_group(live_status_group_name(user_id), event)

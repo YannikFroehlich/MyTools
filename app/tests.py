@@ -463,18 +463,15 @@ class LiveStatusPerformanceTests(BaseTestCase):
         self.assertEqual(payload["profiles"][0]["userId"], friend.id)
         self.assertTrue(payload["profiles"][0]["isOnline"])
 
-    def test_notification_counts_use_short_cache_and_can_be_invalidated(self):
+    def test_notification_counts_are_invalidated_when_invite_changes(self):
         friend = get_user_model().objects.create_user(username="cachefriend", password="testpass-123")
         game = PongGame.objects.create(owner=self.user, player_left=self.user, name="Pong", code="CAC123")
         invite = PongInvite.objects.create(game=game, from_user=self.user, to_user=friend)
 
         self.assertEqual(get_notification_counts(friend)["pong_invites"], 1)
 
-        invite.delete()
-        self.assertEqual(get_notification_counts(friend)["pong_invites"], 1)
-        self.assertEqual(get_notification_counts(friend, use_cache=False)["pong_invites"], 0)
-
-        invalidate_notification_cache(friend)
+        with self.captureOnCommitCallbacks(execute=True):
+            invite.delete()
         self.assertEqual(get_notification_counts(friend)["pong_invites"], 0)
 
 
@@ -646,11 +643,34 @@ class RealtimeInfrastructureTests(SimpleTestCase):
         self.assertTrue(did_send)
         send_callable.assert_called_once_with("chat_42", {"type": "chat.message_created", "message_id": 7})
 
-    def test_websocket_routes_include_chat_and_pong(self):
+    def test_broadcast_live_status_event_sends_user_group_event(self):
+        from app.realtime import broadcast_live_status_event
+
+        layer = Mock()
+        send_callable = Mock()
+        with patch("app.realtime.get_channel_layer", return_value=layer), patch("app.realtime.async_to_sync", return_value=send_callable):
+            did_send = broadcast_live_status_event(23, reason="notifications")
+
+        self.assertTrue(did_send)
+        send_callable.assert_called_once_with(
+            "live_status_user_23",
+            {"type": "live.status_changed", "reason": "notifications"},
+        )
+
+    def test_invalidate_notification_cache_broadcasts_live_status(self):
+        from app.notification_utils import invalidate_notification_cache_for_user_id
+
+        with patch("app.notification_utils.broadcast_live_status_event") as mock_broadcast:
+            invalidate_notification_cache_for_user_id(23)
+
+        mock_broadcast.assert_called_once_with(23, reason="notifications")
+
+    def test_websocket_routes_include_chat_pong_and_live_status(self):
         from app.routing import websocket_urlpatterns
 
         routes = {getattr(pattern.pattern, "_route", str(pattern.pattern)) for pattern in websocket_urlpatterns}
 
+        self.assertIn("ws/live-status/", routes)
         self.assertIn("ws/chat/<int:room_id>/", routes)
         self.assertIn("ws/pong/<str:code>/", routes)
 

@@ -44,7 +44,7 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Theme-Editor mit Farbvorgaben, eigener Farbwahl, Kompaktmodus, großer Schrift, Kontrastmodus und reduzierten Animationen
 - Dark Mode
 - globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen
-- mobile Bottom-Navigation für schnelle Bedienung auf Smartphone und Tablet
+- mobile Bottom-Navigation mit optional einblendbarem Header für schnelle Bedienung auf Smartphone und Tablet
 - Benachrichtigungseinstellungen pro Bereich, Browser-Benachrichtigungen, Sounds und Nicht-stören-Verhalten
 - Changelog-Seite unter `/changelog/`
 - Deutsch/Englisch über Django i18n
@@ -58,10 +58,12 @@ Die letzten Updates verbinden bestehende Bereiche stärker miteinander und verbe
 
 - **Globale Suche / Tool-Launcher**: per Suchbutton oder `Ctrl + K` Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen finden.
 - **Startseiten-Quick-Actions**: direkte Buttons für MyTools-Suche, Widgets, Favoriten, Design und Changelog.
-- **Mobile Bottom-Navigation**: schnelle Navigation zu Start, Suche, Tools, Chat und Profil auf kleinen Displays.
+- **Mobile Bedienung**: Bottom-Navigation für Start, Suche, Tools, Header, Chat und Profil; der obere Header lässt sich auf kleinen Displays ein- und ausblenden.
+- **Realtime-Status**: Benachrichtigungszähler, Profil-Präsenz und relevante Änderungen werden per WebSocket aktualisiert, mit HTTP-Fallback.
 - **Design-Optionen**: Kompaktmodus, größere Schrift, hoher Kontrast, weniger Bewegung und Hintergrundeffekt werden im Browser gespeichert.
 - **Datei-Share-Sicherheit**: private Links können Passwort, Ablaufdatum und Download-Limit bekommen; Bilder und PDFs lassen sich als Vorschau öffnen.
 - **Profile & Benachrichtigungen**: Spotlight-Statistiken, Profilkarte und detaillierte Benachrichtigungsoptionen pro Bereich.
+- **Projektqualität**: `scripts/verify.py` bündelt Systemcheck, Migration-Check, Tests, collectstatic-Dry-Run und JavaScript-Syntaxprüfung; Notes- und PWA-Views sind ausgelagert.
 - **Admin-Komfort**: Serverstatus zeigt zusätzlich Mediengröße, Datenbankgröße, aktive Nutzer, App-Aktivität und letzte Security-Events.
 - **Changelog**: `/changelog/` fasst sichtbare Änderungen als Timeline zusammen.
 
@@ -85,7 +87,8 @@ Funktionen:
 - Suchleiste mit Vorschlägen
 - globale MyTools-Suche über Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen
 - Quick-Actions für Suche, Widgets, Favoriten, Design und Changelog
-- mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil
+- mobile Bottom-Navigation für Start, Suche, Tools, Header, Chat und Profil
+- mobiler Header lässt sich bei Bedarf ein- und ausblenden
 - Startseiten-Widgets hinzufügen, bearbeiten und löschen
 - Widget-Farbstile und Layouts
 - Dark Mode, Theme-Anpassung und gespeicherte Bedienoptionen
@@ -538,7 +541,7 @@ Design-Funktionen:
 - globale Design-Modi: Kompakt, große Schrift, hoher Kontrast und weniger Bewegung
 - Hintergrundeffekt über den Theme-Editor schaltbar
 - responsive Darstellung für Desktop, Tablet und Smartphone
-- mobile Bottom-Navigation
+- mobile Bottom-Navigation mit Header-Toggle
 - sticky Header
 - überarbeiteter Footer
 - Widget-Farbstile und Widget-Layouts
@@ -643,6 +646,15 @@ Für die Installation muss die Seite über HTTPS laufen. Lokal funktioniert der 
 
 ## 🧪 Tests
 
+Kompletter lokaler Qualitätslauf:
+
+```bash
+python scripts/verify.py
+```
+
+Das prüft Django-Systemchecks, fehlende Migrationen, die Testsuite, `collectstatic` als Dry-Run und JavaScript-Syntax, falls Node.js verfügbar ist.
+Der gleiche Qualitätslauf ist zusätzlich als GitHub-Actions-Workflow vorbereitet.
+
 Tests lokal starten:
 
 ```bash
@@ -675,6 +687,8 @@ MyTools/
 │   ├── migrations/
 │   ├── models.py
 │   ├── views.py
+│   ├── notes_views.py
+│   ├── pwa_views.py
 │   ├── profile_views.py
 │   ├── chat_views.py
 │   ├── skribble_views.py
