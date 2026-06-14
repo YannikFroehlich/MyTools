@@ -14,17 +14,17 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 
 - personalisierbare Startseite mit Shortcut-Bereichen
 - eigene Verknüpfungen mit FontAwesome-Icons oder hochgeladenen Bildern
-- Favoriten, Drag & Drop Sortierung und einklappbare Bereiche
-- Startseiten-Widgets, z. B. Uhr, Wetter, Notizen und Statistik-Karten
-- Widget-Designs, Farbstile und Layout-Optionen
+- Favoriten, Drag & Drop Sortierung, einklappbare Bereiche und Startseiten-Quick-Actions
+- Startseiten-Widgets, z. B. Uhr, Wetter, Notizen, Dateien, Budget und Statistik-Karten
+- Widget-Designs, Farbstile, Layout-Optionen und globale Design-Modi
 - Wetterseite mit OpenWeather API und gespeicherten Orten
 - Uhr-Seite mit lokaler Uhrzeit, Weltuhr, Stoppuhr, gespeicherten Timern und eigenen Timer-Sounds
 - dezenter Weltkarten-Hintergrund auf der Uhr-Seite über `app/static/app/img/worldmap.webp`
-- Profilseite mit Avatar, Banner, Namen und öffentlicher Profilansicht
+- Profilseite mit Avatar, Banner, Namen, Spotlight-Statistiken und öffentlicher Profilansicht
 - Nutzerübersicht mit öffentlichen Profilen
 - Freundschaftssystem mit Anfragen, Freundesliste und befreundet-seit Anzeige
 - Chat-System mit Direktchats, Gruppenchats, Emoji-Reaktionen und Löschen eigener Nachrichten
-- Datei-Share mit Freunden, privaten Links, Mehrfachupload, Fortschrittsanzeige und Admin-Limits pro Nutzer
+- Datei-Share mit Freunden, privaten Links, Passwortschutz, Ablaufdatum, Download-Limit, Vorschau, Mehrfachupload, Fortschrittsanzeige und Admin-Limits pro Nutzer
 - Skribble-Zeichenspiel mit Lobby, Einladungen, Zeichnen, Raten, Punktestand und Rundenübersicht
 - Tic Tac Toe mit privaten Räumen, Freunde-Einladungen, Live-Übersicht und Host-/Löschlogik
 - Vier gewinnt mit animiertem Spielfeld, privaten Räumen, Einladungen, Live-Zügen und Gewinn-Popup
@@ -41,10 +41,29 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Avatar Wiki mit Charakterverwaltung
 - Drift Circuit Pro als browserbasiertes Racing-Game
 - Google-Apps-Menü mit externen Links
-- Theme-Editor mit Farbvorgaben und eigener Farbwahl
+- Theme-Editor mit Farbvorgaben, eigener Farbwahl, Kompaktmodus, großer Schrift, Kontrastmodus und reduzierten Animationen
 - Dark Mode
+- globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen
+- mobile Bottom-Navigation für schnelle Bedienung auf Smartphone und Tablet
+- Benachrichtigungseinstellungen pro Bereich, Browser-Benachrichtigungen, Sounds und Nicht-stören-Verhalten
+- Changelog-Seite unter `/changelog/`
 - Deutsch/Englisch über Django i18n
 - Docker-Setup für produktiven Betrieb
+
+---
+
+## 🆕 Neueste Verbesserungen
+
+Die letzten Updates verbinden bestehende Bereiche stärker miteinander und verbessern die Bedienung auf Desktop und Mobile:
+
+- **Globale Suche / Tool-Launcher**: per Suchbutton oder `Ctrl + K` Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen finden.
+- **Startseiten-Quick-Actions**: direkte Buttons für MyTools-Suche, Widgets, Favoriten, Design und Changelog.
+- **Mobile Bottom-Navigation**: schnelle Navigation zu Start, Suche, Tools, Chat und Profil auf kleinen Displays.
+- **Design-Optionen**: Kompaktmodus, größere Schrift, hoher Kontrast, weniger Bewegung und Hintergrundeffekt werden im Browser gespeichert.
+- **Datei-Share-Sicherheit**: private Links können Passwort, Ablaufdatum und Download-Limit bekommen; Bilder und PDFs lassen sich als Vorschau öffnen.
+- **Profile & Benachrichtigungen**: Spotlight-Statistiken, Profilkarte und detaillierte Benachrichtigungsoptionen pro Bereich.
+- **Admin-Komfort**: Serverstatus zeigt zusätzlich Mediengröße, Datenbankgröße, aktive Nutzer, App-Aktivität und letzte Security-Events.
+- **Changelog**: `/changelog/` fasst sichtbare Änderungen als Timeline zusammen.
 
 ---
 
@@ -64,9 +83,12 @@ Funktionen:
 - Drag & Drop Sortierung für Shortcuts
 - Drag & Drop Sortierung für Bereiche
 - Suchleiste mit Vorschlägen
+- globale MyTools-Suche über Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen
+- Quick-Actions für Suche, Widgets, Favoriten, Design und Changelog
+- mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil
 - Startseiten-Widgets hinzufügen, bearbeiten und löschen
 - Widget-Farbstile und Layouts
-- Dark Mode und Theme-Anpassung
+- Dark Mode, Theme-Anpassung und gespeicherte Bedienoptionen
 
 Beispiele für typische Shortcuts:
 
@@ -163,8 +185,10 @@ Funktionen:
 - Freundesliste mit Anzeige, seit wann man befreundet ist
 - Schnellzugriff auf Freunde und Freundschaftsanfragen im Profilmenü
 - Account-Informationen wie Mitglied seit und letzte Aktivität
-- Profil-Statistiken, z. B. Freunde, Chats und Highscores
+- Profil-Statistiken und Spotlight-Karten, z. B. Freunde, Chats, Highscores, Uploads und Achievements
 - Datei-Share Upload-Limit pro Nutzer im Admin einstellbar: 50 MB, 100 MB, 500 MB oder unbegrenzt
+- Benachrichtigungseinstellungen für Chat, Freunde, Spiele, Dateien, Notizen, Roadmap und Achievements
+- Browser-Benachrichtigungen, Sounds und Nicht-stören-Stummschaltung konfigurierbar
 
 ---
 
@@ -195,6 +219,12 @@ Funktionen:
 
 - Dateien mit Freunden teilen
 - privaten Link für einzelne Freigaben erstellen
+- private Links optional mit Passwort schützen
+- Ablaufdatum für 1, 7 oder 30 Tage setzen
+- Download-Limit pro Freigabe festlegen
+- Bilder als Thumbnail und Vorschau anzeigen
+- PDFs direkt als Vorschau öffnen
+- Download-Zähler und letzte Verfügbarkeit pro Freigabe anzeigen
 - mehrere Dateien auf einmal auswählen oder per Drag & Drop ablegen
 - ausgewählte Dateien mit Name, Typ und Größe anzeigen
 - Upload-Fortschritt mit Prozentanzeige
@@ -505,10 +535,14 @@ Design-Funktionen:
 - Theme-Editor
 - eigene Accent-Farbe
 - moderne Kartenlayouts
+- globale Design-Modi: Kompakt, große Schrift, hoher Kontrast und weniger Bewegung
+- Hintergrundeffekt über den Theme-Editor schaltbar
 - responsive Darstellung für Desktop, Tablet und Smartphone
+- mobile Bottom-Navigation
 - sticky Header
 - überarbeiteter Footer
 - Widget-Farbstile und Widget-Layouts
+- Startseiten-Quick-Actions für häufige Bereiche
 
 ---
 
@@ -692,13 +726,14 @@ python manage.py migrate
 python manage.py test app.tests.SecurityDashboardAndQrToolTests
 ```
 
-## Roadmap, Achievement-Center und Serverstatus
+## Roadmap, Achievement-Center, Serverstatus und Changelog
 
 Neue Bereiche:
 
 - `/roadmap/`: Feature-Ideen einreichen, nach Status/Kategorie filtern, voten, kommentieren und als Admin den Status plus Admin-Notiz pflegen.
 - `/achievements/`: persönliches Achievement-Center mit Level, XP-Fortschritt, Kategorien, nächsten Zielen und Top-10-XP-Ranking.
-- `/server-status/`: staff-only System-Monitor mit App-/Datenbank-/Cache-Status, Speicherplatz, Laufzeitdaten und App-Zählern.
+- `/changelog/`: Timeline für sichtbare Neuerungen, Bedienkomfort-Updates und größere Plattform-Verbesserungen.
+- `/server-status/`: staff-only System-Monitor mit App-/Datenbank-/Cache-Status, Speicherplatz, Laufzeitdaten, Mediengröße, Datenbankgröße, App-Aktivität, aktiven Nutzern und letzten Security-Events.
 
 Nach dem Einspielen ausführen:
 

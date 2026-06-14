@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
 from .models import ProfileGalleryImage, UserProfile, UserReport
 
@@ -9,25 +10,25 @@ MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
 
 class ProfileForm(forms.ModelForm):
     first_name = forms.CharField(
-        label="Vorname",
+        label=_("Vorname"),
         max_length=150,
         required=False,
         widget=forms.TextInput(attrs={
             "class": "profile-input",
-            "placeholder": "Dein Vorname",
+            "placeholder": _("Dein Vorname"),
         }),
     )
     last_name = forms.CharField(
-        label="Nachname",
+        label=_("Nachname"),
         max_length=150,
         required=False,
         widget=forms.TextInput(attrs={
             "class": "profile-input",
-            "placeholder": "Dein Nachname",
+            "placeholder": _("Dein Nachname"),
         }),
     )
     email = forms.EmailField(
-        label="E-Mail",
+        label=_("E-Mail"),
         required=False,
         widget=forms.EmailInput(attrs={
             "class": "profile-input",
@@ -35,12 +36,12 @@ class ProfileForm(forms.ModelForm):
         }),
     )
     username = forms.CharField(
-        label="Benutzername",
+        label=_("Benutzername"),
         max_length=150,
         required=True,
         widget=forms.TextInput(attrs={
             "class": "profile-input",
-            "placeholder": "Benutzername",
+            "placeholder": _("Benutzername"),
         }),
     )
 
@@ -48,27 +49,27 @@ class ProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ["avatar", "profile_banner", "bio", "status", "status_text", "privacy_show_online", "privacy_show_friends", "privacy_show_highscores", "privacy_show_chat_button", "notify_chat", "notify_friend_requests", "notify_skribble", "notify_game_invites", "notify_game_turns", "notify_file_shares", "notify_note_reminders", "notify_roadmap", "notify_achievements", "browser_notifications", "sound_notifications", "dnd_silence_notifications"]
         labels = {
-            "avatar": "Profilbild",
-            "profile_banner": "Profilbanner",
-            "bio": "Über mich",
-            "status": "Status",
-            "status_text": "Statustext",
-            "privacy_show_online": "Online-Status öffentlich anzeigen",
-            "privacy_show_friends": "Freundesliste öffentlich anzeigen",
-            "privacy_show_highscores": "Highscores öffentlich anzeigen",
-            "privacy_show_chat_button": "Chat-Button im Profil anzeigen",
-            "notify_chat": "Chat-Benachrichtigungen",
-            "notify_friend_requests": "Freundschaftsanfragen",
-            "notify_skribble": "Skribble-Einladungen",
-            "notify_game_invites": "Spiel-Einladungen",
-            "notify_game_turns": "Spielzüge",
-            "notify_file_shares": "Dateifreigaben",
-            "notify_note_reminders": "Notiz-Erinnerungen",
-            "notify_roadmap": "Roadmap-Updates",
-            "notify_achievements": "Achievements",
-            "browser_notifications": "Browser-Benachrichtigungen",
-            "sound_notifications": "Sounds abspielen",
-            "dnd_silence_notifications": "Bei Nicht stören stummschalten",
+            "avatar": _("Profilbild"),
+            "profile_banner": _("Profilbanner"),
+            "bio": _("Über mich"),
+            "status": _("Status"),
+            "status_text": _("Statustext"),
+            "privacy_show_online": _("Online-Status öffentlich anzeigen"),
+            "privacy_show_friends": _("Freundesliste öffentlich anzeigen"),
+            "privacy_show_highscores": _("Highscores öffentlich anzeigen"),
+            "privacy_show_chat_button": _("Chat-Button im Profil anzeigen"),
+            "notify_chat": _("Chat-Benachrichtigungen"),
+            "notify_friend_requests": _("Freundschaftsanfragen"),
+            "notify_skribble": _("Skribble-Einladungen"),
+            "notify_game_invites": _("Spiel-Einladungen"),
+            "notify_game_turns": _("Spielzüge"),
+            "notify_file_shares": _("Dateifreigaben"),
+            "notify_note_reminders": _("Notiz-Erinnerungen"),
+            "notify_roadmap": _("Roadmap-Updates"),
+            "notify_achievements": _("Achievements"),
+            "browser_notifications": _("Browser-Benachrichtigungen"),
+            "sound_notifications": _("Sounds abspielen"),
+            "dnd_silence_notifications": _("Bei Nicht stören stummschalten"),
         }
         widgets = {
             "avatar": forms.ClearableFileInput(attrs={
@@ -82,12 +83,12 @@ class ProfileForm(forms.ModelForm):
             "bio": forms.Textarea(attrs={
                 "class": "profile-textarea",
                 "rows": 5,
-                "placeholder": "Schreibe kurz etwas über dich...",
+                "placeholder": _("Schreibe kurz etwas über dich..."),
             }),
             "status": forms.Select(attrs={"class": "profile-input"}),
             "status_text": forms.TextInput(attrs={
                 "class": "profile-input",
-                "placeholder": "z. B. Bin gerade am Zocken",
+                "placeholder": _("z. B. Bin gerade am Zocken"),
             }),
             "privacy_show_online": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "privacy_show_friends": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
@@ -121,7 +122,7 @@ class ProfileForm(forms.ModelForm):
         username = self.cleaned_data["username"].strip()
 
         if User.objects.exclude(pk=self.user.pk).filter(username=username).exists():
-            raise forms.ValidationError("Dieser Benutzername ist bereits vergeben.")
+            raise forms.ValidationError(_("Dieser Benutzername ist bereits vergeben."))
 
         return username
 
@@ -129,7 +130,7 @@ class ProfileForm(forms.ModelForm):
         email = self.cleaned_data.get("email", "").strip()
 
         if email and User.objects.exclude(pk=self.user.pk).filter(email=email).exists():
-            raise forms.ValidationError("Diese E-Mail-Adresse wird bereits verwendet.")
+            raise forms.ValidationError(_("Diese E-Mail-Adresse wird bereits verwendet."))
 
         return email
 
@@ -137,10 +138,10 @@ class ProfileForm(forms.ModelForm):
         return self.cleaned_data.get("status") or getattr(self.instance, "status", "") or UserProfile.STATUS_ONLINE
 
     def clean_avatar(self):
-        return self.clean_profile_image("avatar", "Das Profilbild")
+        return self.clean_profile_image("avatar", _("Das Profilbild"))
 
     def clean_profile_banner(self):
-        return self.clean_profile_image("profile_banner", "Das Profilbanner")
+        return self.clean_profile_image("profile_banner", _("Das Profilbanner"))
 
     def clean_profile_image(self, field_name, label):
         image = self.cleaned_data.get(field_name)
@@ -149,12 +150,12 @@ class ProfileForm(forms.ModelForm):
             return image
 
         if getattr(image, "size", 0) > MAX_PROFILE_IMAGE_SIZE:
-            raise forms.ValidationError(f"{label} darf maximal 5 MB groß sein.")
+            raise forms.ValidationError(_("%(label)s darf maximal 5 MB groß sein.") % {"label": label})
 
         content_type = getattr(image, "content_type", "")
 
         if content_type and not content_type.startswith("image/"):
-            raise forms.ValidationError(f"{label} muss eine Bilddatei sein.")
+            raise forms.ValidationError(_("%(label)s muss eine Bilddatei sein.") % {"label": label})
 
         return image
 
@@ -178,22 +179,22 @@ class ProfileGalleryImageForm(forms.ModelForm):
         model = ProfileGalleryImage
         fields = ["image", "caption", "is_public"]
         labels = {
-            "image": "Bild",
-            "caption": "Beschreibung",
-            "is_public": "Öffentlich sichtbar",
+            "image": _("Bild"),
+            "caption": _("Beschreibung"),
+            "is_public": _("Öffentlich sichtbar"),
         }
         widgets = {
             "image": forms.ClearableFileInput(attrs={"class": "profile-file-input", "accept": "image/*"}),
-            "caption": forms.TextInput(attrs={"class": "profile-input", "placeholder": "Kurzer Bildtitel"}),
+            "caption": forms.TextInput(attrs={"class": "profile-input", "placeholder": _("Kurzer Bildtitel")}),
             "is_public": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
         }
 
     def clean_image(self):
         image = self.cleaned_data.get("image")
         if image and getattr(image, "size", 0) > MAX_PROFILE_IMAGE_SIZE:
-            raise forms.ValidationError("Galeriebilder dürfen maximal 5 MB groß sein.")
+            raise forms.ValidationError(_("Galeriebilder dürfen maximal 5 MB groß sein."))
         if image and getattr(image, "content_type", "") and not image.content_type.startswith("image/"):
-            raise forms.ValidationError("Bitte lade eine Bilddatei hoch.")
+            raise forms.ValidationError(_("Bitte lade eine Bilddatei hoch."))
         return image
 
 
@@ -201,8 +202,8 @@ class UserReportForm(forms.ModelForm):
     class Meta:
         model = UserReport
         fields = ["reason", "message"]
-        labels = {"reason": "Grund", "message": "Nachricht"}
+        labels = {"reason": _("Grund"), "message": _("Nachricht")}
         widgets = {
             "reason": forms.Select(attrs={"class": "profile-input"}),
-            "message": forms.Textarea(attrs={"class": "profile-textarea", "rows": 4, "placeholder": "Beschreibe kurz, was passiert ist..."}),
+            "message": forms.Textarea(attrs={"class": "profile-textarea", "rows": 4, "placeholder": _("Beschreibe kurz, was passiert ist...")}),
         }

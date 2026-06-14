@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 18:49+0200\n"
+"POT-Creation-Date: 2026-06-14 02:31+0200\n"
 "PO-Revision-Date: 2026-05-30 18:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -11429,3 +11429,561 @@ msgstr "Invalid Cookie Cosmos score."
 
 #~ msgid "Speicherung über Django-Models und einfache Verwaltung über die App."
 #~ msgstr "Storage via Django models and simple management through the app."
+
+# Manuell ergänzt für Update 2026.07
+
+#: app/manual-update-2026-07
+msgid "Changelog öffnen"
+msgstr "Open changelog"
+
+#: app/manual-update-2026-07
+msgid "Shortcuts, Favoriten, Quick Actions und Widgets bringen häufig genutzte Funktionen direkt auf die Startseite."
+msgstr "Shortcuts, favorites, quick actions and widgets bring frequently used features directly to the home page."
+
+#: app/manual-update-2026-07
+msgid "Profile, Designs, Widgets, Spielkarten, Benachrichtigungen und gespeicherte Orte lassen sich an deine Nutzung anpassen."
+msgstr "Profiles, designs, widgets, game cards, notifications and saved locations can be adapted to how you use the app."
+
+#: app/manual-update-2026-07
+msgid "Freunde, Chats, Einladungen, geteilte Dateien, private Links und Multiplayer-Spiele machen die Toolbox sozial."
+msgstr "Friends, chats, invites, shared files, private links and multiplayer games make the toolbox social."
+
+#: app/manual-update-2026-07
+msgid "Dateien mit Freunden teilen, private Links schützen und Bilder oder PDFs direkt ansehen."
+msgstr "Share files with friends, protect private links and preview images or PDFs directly."
+
+#: app/manual-update-2026-07
+msgid "Plattform & Bedienung"
+msgstr "Platform & usability"
+
+#: app/manual-update-2026-07
+msgid "Globale Suche"
+msgstr "Global search"
+
+#: app/manual-update-2026-07
+msgid "Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen per MyTools-Suche oder Ctrl+K finden."
+msgstr "Find tools, notes, files, users and roadmap ideas with MyTools Search or Ctrl+K."
+
+#: app/manual-update-2026-07
+msgid "Design-Einstellungen"
+msgstr "Design settings"
+
+#: app/manual-update-2026-07
+msgid "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und Hintergrundeffekte im Browser speichern."
+msgstr "Save compact mode, large text, high contrast, reduced motion and background effects in the browser."
+
+#: app/manual-update-2026-07
+msgid "Was ist neu?"
+msgstr "What's new?"
+
+#: app/manual-update-2026-07
+msgid "Changelog mit den letzten Update-Paketen, sichtbaren Änderungen und Plattform-Verbesserungen."
+msgstr "Changelog with the latest update bundles, visible changes and platform improvements."
+
+#: app/manual-update-2026-07
+msgid "Chat, Spiele, Dateien, Notizen, Roadmap und Achievements getrennt ein- oder ausschalten."
+msgstr "Enable or disable chat, games, files, notes, roadmap and achievements separately."
+
+#: app/manual-update-2026-07
+msgid "Admin-Status"
+msgstr "Admin status"
+
+#: app/manual-update-2026-07
+msgid "Speicher, Datenbank, aktive Nutzer, App-Aktivität und Security-Events im Blick behalten."
+msgstr "Keep an eye on storage, database, active users, app activity and security events."
+
+#: app/manual-update-2026-07
+msgid "Benachrichtigungen pro Bereich weiter verfeinern"
+msgstr "Refine notifications per area further"
+
+#: app/manual-update-2026-07
+msgid "Mehr Startseiten-Statistiken und Aktivitätsverlauf ergänzen"
+msgstr "Add more home page statistics and activity history"
+
+#: app/manual-update-2026-07
+msgid "MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, Wetter, Notizen, Dateien, Profile, Chats und Mini-Games. Globale Suche, Quick Actions, mobile Navigation und Design-Optionen sorgen dafür, dass die vielen Bereiche schnell erreichbar und persönlich anpassbar bleiben."
+msgstr "MyTools is a private Django platform for shortcuts, widgets, weather, notes, files, profiles, chats and mini-games. Global search, quick actions, mobile navigation and design options keep the many areas easy to reach and personally customizable."
+
+#: app/manual-update-2026-07
+msgid "Changelog"
+msgstr "Changelog"
+
+#: app/manual-update-2026-07
+msgid "Alle sichtbaren Neuerungen, Bedienkomfort-Updates und größeren Plattform-Verbesserungen an einem Ort."
+msgstr "All visible new features, usability updates and major platform improvements in one place."
+
+#: app/manual-update-2026-07
+msgid "Aktuell"
+msgstr "Current"
+
+#: app/manual-update-2026-07
+msgid "Kurzer Blick auf die letzten Update-Pakete und Bedienungsverbesserungen."
+msgstr "A quick look at the latest update bundles and usability improvements."
+
+#: app/manual-update-2026-07
+msgid "Changelog Updates Neuigkeiten Versionen Verlauf"
+msgstr "Changelog updates news versions history"
+
+#: app/manual-update-2026-07
+msgid "Updates"
+msgstr "Updates"
+
+#: app/manual-update-2026-07
+msgid "MyTools durchsuchen"
+msgstr "Search MyTools"
+
+#: app/manual-update-2026-07
+msgid "Große Schrift"
+msgstr "Large text"
+
+#: app/manual-update-2026-07
+msgid "Weniger Bewegung"
+msgstr "Reduced motion"
+
+#: app/manual-update-2026-07
+msgid "Tools, Notizen, Dateien, Nutzer suchen..."
+msgstr "Search tools, notes, files, users..."
+
+#: app/manual-update-2026-07
+msgid "Suche schließen"
+msgstr "Close search"
+
+#: app/manual-update-2026-07
+msgid "MyTools Suche"
+msgstr "MyTools Search"
+
+#: app/manual-update-2026-07
+msgid "Enter öffnet den ersten Treffer"
+msgstr "Enter opens the first result"
+
+#: app/manual-update-2026-07
+msgid "Tippe etwas ein oder öffne direkt einen Vorschlag."
+msgstr "Type something or open a suggestion directly."
+
+#: app/manual-update-2026-07
+msgid "Mobile Navigation"
+msgstr "Mobile navigation"
+
+#: app/manual-update-2026-07
+msgid "Neu"
+msgstr "New"
+
+#: app/manual-update-2026-07
+msgid "Widgets"
+msgstr "Widgets"
+
+#: app/manual-update-2026-07
+msgid "Gültigkeit"
+msgstr "Validity"
+
+#: app/manual-update-2026-07
+msgid "Kein Ablauf"
+msgstr "No expiration"
+
+#: app/manual-update-2026-07
+msgid "1 Tag"
+msgstr "1 day"
+
+#: app/manual-update-2026-07
+msgid "7 Tage"
+msgstr "7 days"
+
+#: app/manual-update-2026-07
+msgid "30 Tage"
+msgstr "30 days"
+
+#: app/manual-update-2026-07
+msgid "Download-Limit"
+msgstr "Download limit"
+
+#: app/manual-update-2026-07
+msgid "Link-Passwort"
+msgstr "Link password"
+
+#: app/manual-update-2026-07
+msgid "Optional für private Links"
+msgstr "Optional for private links"
+
+#: app/manual-update-2026-07
+msgid "Passwortgeschützt"
+msgstr "Password protected"
+
+#: app/manual-update-2026-07
+msgid "PDF ansehen"
+msgstr "View PDF"
+
+#: app/manual-update-2026-07
+msgid "Dateifreigabe"
+msgstr "File share"
+
+#: app/manual-update-2026-07
+msgid "geteilt von"
+msgstr "shared by"
+
+#: app/manual-update-2026-07
+msgid "Datei öffnen"
+msgstr "Open file"
+
+#: app/manual-update-2026-07
+msgid "Diese Freigabe ist abgelaufen."
+msgstr "This share has expired."
+
+#: app/manual-update-2026-07
+msgid "Bitte den Besitzer um einen neuen Link."
+msgstr "Ask the owner for a new link."
+
+#: app/manual-update-2026-07
+msgid "Das Download-Limit wurde erreicht."
+msgstr "The download limit has been reached."
+
+#: app/manual-update-2026-07
+msgid "Weitere Downloads sind für diese Freigabe gesperrt."
+msgstr "Further downloads are blocked for this share."
+
+#: app/manual-update-2026-07
+msgid "App-Aktivität"
+msgstr "App activity"
+
+#: app/manual-update-2026-07
+msgid "Nutzer, Inhalte und heutige Bewegung in MyTools."
+msgstr "Users, content and today's activity in MyTools."
+
+#: app/manual-update-2026-07
+msgid "Admin-Überblick"
+msgstr "Admin overview"
+
+#: app/manual-update-2026-07
+msgid "Moderation, Feedback und Zugangskontrolle."
+msgstr "Moderation, feedback and access control."
+
+#: app/manual-update-2026-07
+msgid "Letzte Security-Events"
+msgstr "Latest security events"
+
+#: app/manual-update-2026-07
+msgid "Die neuesten sicherheitsrelevanten Einträge."
+msgstr "The latest security-related entries."
+
+#: app/manual-update-2026-07
+msgid "Noch keine Security-Events vorhanden."
+msgstr "No security events yet."
+
+#: app/manual-update-2026-07
+msgid "Suche, Mobile, Datei-Share und Profile"
+msgstr "Search, mobile, file share and profiles"
+
+#: app/manual-update-2026-07
+msgid "Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen MyTools schneller bedienbar und sichtbarer vernetzt."
+msgstr "Global search, quick actions, mobile navigation and better shares make MyTools faster to use and more visibly connected."
+
+#: app/manual-update-2026-07
+msgid "Plattform"
+msgstr "Platform"
+
+#: app/manual-update-2026-07
+msgid "Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen ergänzt."
+msgstr "Added global MyTools Search with Ctrl+K for tools, notes, files, users and roadmap ideas."
+
+#: app/manual-update-2026-07
+msgid "Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und Changelog erweitert."
+msgstr "Extended the home page with quick actions for search, widgets, favorites, design and changelog."
+
+#: app/manual-update-2026-07
+msgid "Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."
+msgstr "Added mobile bottom navigation for home, search, tools, chat and profile."
+
+#: app/manual-update-2026-07
+msgid "Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und PDF-Vorschau ausgebaut."
+msgstr "Extended file share with password protection, expiration date, download limit and image/PDF preview."
+
+#: app/manual-update-2026-07
+msgid "Profilseite mit Spotlight-Statistiken und feineren Benachrichtigungseinstellungen erweitert."
+msgstr "Extended the profile page with spotlight statistics and more granular notification settings."
+
+#: app/manual-update-2026-07
+msgid "Design, Status und Transparenz"
+msgstr "Design, status and transparency"
+
+#: app/manual-update-2026-07
+msgid "Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite machen MyTools leichter anpassbar und besser nachvollziehbar."
+msgstr "New design modes, an expanded system monitor and this changelog page make MyTools easier to customize and understand."
+
+#: app/manual-update-2026-07
+msgid "Update"
+msgstr "Update"
+
+#: app/manual-update-2026-07
+msgid "Design-Editor um Kompaktmodus, größere Schrift, hohen Kontrast und reduzierte Animationen erweitert."
+msgstr "Extended the design editor with compact mode, larger text, high contrast and reduced animations."
+
+#: app/manual-update-2026-07
+msgid "Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße und letzten Security-Events ausgebaut."
+msgstr "Expanded server status with admin cards, app activity, media size, database size and latest security events."
+
+#: app/manual-update-2026-07
+msgid "Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen ergänzt."
+msgstr "Added the new What's New page as a central history for visible changes."
+
+#: app/manual-update-2026-07
+msgid "Community und Sicherheit"
+msgstr "Community and security"
+
+#: app/manual-update-2026-07
+msgid "Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der Plattform mehr Struktur."
+msgstr "Roadmap, achievement center, moderation and security dashboard give the platform more structure."
+
+#: app/manual-update-2026-07
+msgid "Feature-Ideen können gesammelt, gevotet und kommentiert werden."
+msgstr "Feature ideas can be collected, voted on and commented on."
+
+#: app/manual-update-2026-07
+msgid "Admins erhalten Moderations- und Sicherheitswerkzeuge."
+msgstr "Admins get moderation and security tools."
+
+#: app/manual-update-2026-07
+msgid "Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."
+msgstr "Notifications, 2FA and security events complete the account area."
+
+#: app/manual-update-2026-07
+msgid "Mehr Tools für den Alltag"
+msgstr "More everyday tools"
+
+#: app/manual-update-2026-07
+msgid "Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen stärker zusammen."
+msgstr "Notes, file share, budget tracker, media tools and widgets are becoming more connected."
+
+#: app/manual-update-2026-07
+msgid "Startseiten-Widgets zeigen wichtige Daten schneller an."
+msgstr "Home page widgets show important data faster."
+
+#: app/manual-update-2026-07
+msgid "Notizen unterstützen Pins, Erinnerungen und Teilen."
+msgstr "Notes support pins, reminders and sharing."
+
+#: app/manual-update-2026-07
+msgid "Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."
+msgstr "Files, images and budget data get their own work areas."
+
+#: app/manual-update-2026-07
+msgid "Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform erweitert."
+msgstr "Solo and multiplayer areas have been expanded into a small game platform."
+
+#: app/manual-update-2026-07
+msgid "Games"
+msgstr "Games"
+
+#: app/manual-update-2026-07
+msgid "Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."
+msgstr "Multiplayer lobbies, invites and live status for multiple games."
+
+#: app/manual-update-2026-07
+msgid "Highscores und Leaderboards für Solo-Spiele."
+msgstr "Highscores and leaderboards for solo games."
+
+#: app/manual-update-2026-07
+msgid "Profilkarten und Achievements geben Spielern mehr Identität."
+msgstr "Profile cards and achievements give players more identity."
+
+#: app/manual-update-2026-07
+msgid "Nicht gesetzt"
+msgstr "Not set"
+
+#: app/manual-update-2026-07
+msgid "Media"
+msgstr "Media"
+
+#: app/manual-update-2026-07
+msgid "letzte 3 Minuten"
+msgstr "last 3 minutes"
+
+#: app/manual-update-2026-07
+msgid "Nutzer gesamt"
+msgstr "Total users"
+
+#: app/manual-update-2026-07
+msgid "aktive Konten"
+msgstr "active accounts"
+
+#: app/manual-update-2026-07
+msgid "Chatnachrichten heute"
+msgstr "Chat messages today"
+
+#: app/manual-update-2026-07
+msgid "neue Nachrichten"
+msgstr "new messages"
+
+#: app/manual-update-2026-07
+msgid "nicht archiviert"
+msgstr "not archived"
+
+#: app/manual-update-2026-07
+msgid "Dateifreigaben"
+msgstr "File shares"
+
+#: app/manual-update-2026-07
+msgid "Startseiten-Widgets"
+msgstr "Home page widgets"
+
+#: app/manual-update-2026-07
+msgid "konfiguriert"
+msgstr "configured"
+
+#: app/manual-update-2026-07
+msgid "Letzte Audits"
+msgstr "Latest audits"
+
+#: app/manual-update-2026-07
+msgid "Zugang"
+msgstr "Access"
+
+#: app/manual-update-2026-07
+msgid "Projekt-Laufwerk ist zu %(percent)s%% belegt."
+msgstr "Project drive is %(percent)s%% full."
+
+#: app/manual-update-2026-07
+msgid "%(count)s fehlgeschlagene Logins heute."
+msgstr "%(count)s failed logins today."
+
+#: app/manual-update-2026-07
+msgid "Login und Registrierung sind aktuell gesperrt."
+msgstr "Login and registration are currently blocked."
+
+#: app/manual-update-2026-07
+msgid "Datenbankgröße"
+msgstr "Database size"
+
+#: app/manual-update-2026-07
+msgid "Medienordner"
+msgstr "Media folder"
+
+#: app/manual-update-2026-07
+msgid "Vorname"
+msgstr "First name"
+
+#: app/manual-update-2026-07
+msgid "Dein Vorname"
+msgstr "Your first name"
+
+#: app/manual-update-2026-07
+msgid "Nachname"
+msgstr "Last name"
+
+#: app/manual-update-2026-07
+msgid "Dein Nachname"
+msgstr "Your last name"
+
+#: app/manual-update-2026-07
+msgid "Profilbanner"
+msgstr "Profile banner"
+
+#: app/manual-update-2026-07
+msgid "Statustext"
+msgstr "Status text"
+
+#: app/manual-update-2026-07
+msgid "Online-Status öffentlich anzeigen"
+msgstr "Show online status publicly"
+
+#: app/manual-update-2026-07
+msgid "Freundesliste öffentlich anzeigen"
+msgstr "Show friends list publicly"
+
+#: app/manual-update-2026-07
+msgid "Highscores öffentlich anzeigen"
+msgstr "Show highscores publicly"
+
+#: app/manual-update-2026-07
+msgid "Chat-Button im Profil anzeigen"
+msgstr "Show chat button on profile"
+
+#: app/manual-update-2026-07
+msgid "Chat-Benachrichtigungen"
+msgstr "Chat notifications"
+
+#: app/manual-update-2026-07
+msgid "Skribble-Einladungen"
+msgstr "Skribble invites"
+
+#: app/manual-update-2026-07
+msgid "Spiel-Einladungen"
+msgstr "Game invites"
+
+#: app/manual-update-2026-07
+msgid "Spielzüge"
+msgstr "Game turns"
+
+#: app/manual-update-2026-07
+msgid "Notiz-Erinnerungen"
+msgstr "Note reminders"
+
+#: app/manual-update-2026-07
+msgid "Roadmap-Updates"
+msgstr "Roadmap updates"
+
+#: app/manual-update-2026-07
+msgid "Browser-Benachrichtigungen"
+msgstr "Browser notifications"
+
+#: app/manual-update-2026-07
+msgid "Sounds abspielen"
+msgstr "Play sounds"
+
+#: app/manual-update-2026-07
+msgid "Bei Nicht stören stummschalten"
+msgstr "Mute during Do Not Disturb"
+
+#: app/manual-update-2026-07
+msgid "Schreibe kurz etwas über dich..."
+msgstr "Write a short note about yourself..."
+
+#: app/manual-update-2026-07
+msgid "z. B. Bin gerade am Zocken"
+msgstr "e.g. currently gaming"
+
+#: app/manual-update-2026-07
+msgid "Dieser Benutzername ist bereits vergeben."
+msgstr "This username is already taken."
+
+#: app/manual-update-2026-07
+msgid "Das Profilbild"
+msgstr "The profile picture"
+
+#: app/manual-update-2026-07
+msgid "Das Profilbanner"
+msgstr "The profile banner"
+
+#: app/manual-update-2026-07
+msgid "%(label)s darf maximal 5 MB groß sein."
+msgstr "%(label)s may be at most 5 MB."
+
+#: app/manual-update-2026-07
+msgid "%(label)s muss eine Bilddatei sein."
+msgstr "%(label)s must be an image file."
+
+#: app/manual-update-2026-07
+msgid "Öffentlich sichtbar"
+msgstr "Publicly visible"
+
+#: app/manual-update-2026-07
+msgid "Kurzer Bildtitel"
+msgstr "Short image title"
+
+#: app/manual-update-2026-07
+msgid "Galeriebilder dürfen maximal 5 MB groß sein."
+msgstr "Gallery images may be at most 5 MB."
+
+#: app/manual-update-2026-07
+msgid "Bitte lade eine Bilddatei hoch."
+msgstr "Please upload an image file."
+
+#: app/manual-update-2026-07
+msgid "Beschreibe kurz, was passiert ist..."
+msgstr "Briefly describe what happened..."
+
+#: app/manual-update-2026-07
+msgid "Das Passwort ist nicht korrekt."
+msgstr "The password is not correct."
+
+#: app/manual-update-2026-07
+msgid "Favorit"
+msgstr "Favorite"

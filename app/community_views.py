@@ -26,6 +26,21 @@ STARTED_AT = timezone.now()
 
 CHANGELOG_ENTRIES = [
     {
+        "version": "2026.07",
+        "date": "14.06.2026",
+        "title": _("Suche, Mobile, Datei-Share und Profile"),
+        "summary": _("Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen MyTools schneller bedienbar und sichtbarer vernetzt."),
+        "type": _("Plattform"),
+        "icon": "fa-solid fa-magnifying-glass",
+        "items": [
+            _("Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen ergänzt."),
+            _("Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und Changelog erweitert."),
+            _("Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."),
+            _("Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und PDF-Vorschau ausgebaut."),
+            _("Profilseite mit Spotlight-Statistiken und feineren Benachrichtigungseinstellungen erweitert."),
+        ],
+    },
+    {
         "version": "2026.06",
         "date": "14.06.2026",
         "title": _("Design, Status und Transparenz"),
@@ -34,8 +49,8 @@ CHANGELOG_ENTRIES = [
         "icon": "fa-solid fa-wand-magic-sparkles",
         "items": [
             _("Design-Editor um Kompaktmodus, größere Schrift, hohen Kontrast und reduzierte Animationen erweitert."),
-            _("Serverstatus mit App-Aktivität, Speichernutzung, Datenbankgröße und letzten Security-Events ausgebaut."),
-            _("Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen."),
+            _("Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße und letzten Security-Events ausgebaut."),
+            _("Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen ergänzt."),
         ],
     },
     {
