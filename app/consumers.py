@@ -1,6 +1,7 @@
 import asyncio
 import json
 from contextlib import suppress
+from types import SimpleNamespace
 
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
@@ -13,6 +14,8 @@ from django.utils.translation import gettext as _
 from .models import ChatMessage, ChatRoom, ChatRoomMember, ChatTypingStatus, PongGame
 from .chat_views import mark_room_messages_read, message_payload, pinned_message_for, typing_payload
 from .notification_utils import invalidate_notification_cache
+from .notification_views import _notification_payload, _presence_payload
+from .presence_utils import touch_user_presence
 from .pong_views import (
     FIELD_H,
     PADDLE_H,
@@ -23,12 +26,140 @@ from .pong_views import (
     _serialize_game,
     _tick_game,
 )
+from .realtime import live_presence_group_name, live_status_group_name
 
 
 ROOM_TICK_RATE = 1 / 45
 _room_tasks = {}
 _room_connections = {}
 _room_lock = asyncio.Lock()
+
+
+class LiveStatusConsumer(AsyncWebsocketConsumer):
+    """Global realtime channel for header badges, notifications and presence.
+
+    HTTP polling remains as a fallback in base.js. This socket pushes the same
+    payload when something relevant changes, so open pages react immediately
+    without waiting for the next polling interval.
+    """
+
+    async def connect(self):
+        self.user = self.scope.get("user")
+        self.include_items = False
+        self.presence_ids = []
+
+        if not self.user or not self.user.is_authenticated:
+            await self.close(code=4401)
+            return
+
+        self.group_name = live_status_group_name(self.user.id)
+        self.presence_group_name = live_presence_group_name()
+
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        await self.channel_layer.group_add(self.presence_group_name, self.channel_name)
+        await self.accept()
+        await self._touch_presence()
+        await self.send_live_status(reason="connected")
+        await self.channel_layer.group_send(
+            self.presence_group_name,
+            {"type": "live.presence_changed", "user_id": self.user.id},
+        )
+
+    async def disconnect(self, close_code):
+        with suppress(Exception):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        with suppress(Exception):
+            await self.channel_layer.group_discard(self.presence_group_name, self.channel_name)
+
+    async def receive(self, text_data=None, bytes_data=None):
+        if not text_data:
+            return
+
+        try:
+            payload = json.loads(text_data)
+        except json.JSONDecodeError:
+            return
+
+        action = payload.get("action")
+        if action == "configure":
+            self.include_items = bool(payload.get("includeItems") or payload.get("include_items"))
+            self.presence_ids = self._normalize_presence_ids(payload.get("presenceIds") or payload.get("presence_ids"))
+            await self.send_live_status(reason="configured")
+        elif action == "refresh":
+            include_items = payload.get("includeItems") if "includeItems" in payload else payload.get("include_items")
+            await self.send_live_status(
+                reason="manual",
+                include_items=self.include_items if include_items is None else bool(include_items),
+            )
+        elif action == "ping":
+            await self._touch_presence()
+            await self.channel_layer.group_send(
+                self.presence_group_name,
+                {"type": "live.presence_changed", "user_id": self.user.id},
+            )
+            await self.send_json({"type": "pong"})
+
+    async def live_status_changed(self, event):
+        await self.send_live_status(reason=event.get("reason", "changed"))
+
+    async def live_presence_changed(self, event):
+        try:
+            user_id = int(event.get("user_id"))
+        except (TypeError, ValueError):
+            return
+
+        if user_id not in self.presence_ids:
+            return
+
+        profiles = await self._presence_payload([user_id])
+        if profiles:
+            await self.send_json({"type": "presence", "profiles": profiles})
+
+    async def send_live_status(self, *, reason="refresh", include_items=None):
+        payload = await self._live_status_payload(
+            self.include_items if include_items is None else bool(include_items)
+        )
+        payload["type"] = "live_status"
+        payload["reason"] = reason
+        await self.send_json(payload)
+
+    async def send_json(self, payload):
+        await self.send(text_data=json.dumps(payload))
+
+    def _normalize_presence_ids(self, raw_ids):
+        if not isinstance(raw_ids, list):
+            return []
+
+        normalized_ids = []
+        for raw_id in raw_ids:
+            try:
+                user_id = int(raw_id)
+            except (TypeError, ValueError):
+                continue
+
+            if user_id not in normalized_ids:
+                normalized_ids.append(user_id)
+
+            if len(normalized_ids) >= 50:
+                break
+
+        return normalized_ids
+
+    @database_sync_to_async
+    def _touch_presence(self):
+        touch_user_presence(self.user)
+
+    @database_sync_to_async
+    def _live_status_payload(self, include_items):
+        request = SimpleNamespace(user=self.user)
+        payload = _notification_payload(self.user, include_items=include_items)
+        payload["profiles"] = _presence_payload(request, list(self.presence_ids))
+        return payload
+
+    @database_sync_to_async
+    def _presence_payload(self, user_ids):
+        request = SimpleNamespace(user=self.user)
+        return _presence_payload(request, user_ids)
 
 
 

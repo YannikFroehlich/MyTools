@@ -5,31 +5,77 @@ document.addEventListener('DOMContentLoaded', () => {
     window.__myToolsBaseInitialized = true;
 
     const body = document.body;
+    const mobileHeaderStorageKey = 'myToolsMobileHeaderVisible';
+
+    if (body.classList.contains('has-mobile-bottom-nav')) {
+        try {
+            if (window.localStorage.getItem(mobileHeaderStorageKey) === 'true') {
+                body.classList.add('mobile-header-visible');
+            }
+        } catch (error) {
+            // Private Browser-Modi koennen localStorage blockieren.
+        }
+    }
+
     /* ── FIXED HEADER ABSTAND ──
        Der Header ist fixed, damit er beim Scrollen immer sichtbar bleibt.
-       Da die Header-Höhe auf Handy/Tablet durch Umbruch größer werden kann,
-       wird der Abstand darunter automatisch gemessen.
+       Auf Mobile übernimmt die untere Navigation, daher darf der obere Header
+       keinen Abstand mehr reservieren.
     */
-    function syncFixedHeaderOffset() {
-        const nav = document.querySelector('nav');
+    const fixedHeader = document.querySelector('body > nav:not(.mobile-bottom-nav)');
 
-        if (!nav) {
+    function syncFixedHeaderOffset() {
+        if (!fixedHeader) {
             return;
         }
 
-        document.documentElement.style.setProperty('--nav-height', `${nav.offsetHeight}px`);
+        document.documentElement.style.setProperty('--nav-height', `${fixedHeader.offsetHeight}px`);
     }
 
     syncFixedHeaderOffset();
     window.addEventListener('resize', syncFixedHeaderOffset);
 
     if ('ResizeObserver' in window) {
-        const nav = document.querySelector('nav');
-
-        if (nav) {
-            new ResizeObserver(syncFixedHeaderOffset).observe(nav);
+        if (fixedHeader) {
+            new ResizeObserver(syncFixedHeaderOffset).observe(fixedHeader);
         }
     }
+
+    function setMobileHeaderVisible(isVisible, persist = true) {
+        body.classList.toggle('mobile-header-visible', isVisible);
+
+        document.querySelectorAll('[data-toggle-mobile-header]').forEach((button) => {
+            const label = isVisible
+                ? (button.dataset.mobileHeaderHideLabel || 'Header ausblenden')
+                : (button.dataset.mobileHeaderShowLabel || 'Header einblenden');
+
+            button.setAttribute('aria-pressed', String(isVisible));
+            button.setAttribute('aria-label', label);
+            button.setAttribute('title', label);
+        });
+
+        if (persist) {
+            try {
+                window.localStorage.setItem(mobileHeaderStorageKey, String(isVisible));
+            } catch (error) {
+                // Der Toggle funktioniert auch ohne persistente Speicherung.
+            }
+        }
+
+        syncFixedHeaderOffset();
+        window.requestAnimationFrame(syncFixedHeaderOffset);
+    }
+
+    document.querySelectorAll('[data-toggle-mobile-header]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            closeAllDropdowns();
+            closeGlobalSearch();
+            setMobileHeaderVisible(!body.classList.contains('mobile-header-visible'));
+        });
+    });
+    setMobileHeaderVisible(body.classList.contains('mobile-header-visible'), false);
 
     function hydrateDeferredImages(root = document) {
         root.querySelectorAll('img.js-deferred-image[data-src]').forEach((image) => {
@@ -733,13 +779,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ── LIVE BENACHRICHTIGUNGS-ZÄHLER ── */
     const liveStatusUrl = body.dataset.liveStatusUrl;
+    const liveStatusWsPath = body.dataset.liveStatusWsUrl;
     const notificationCountsUrl = body.dataset.notificationCountsUrl;
-    const notificationPollMs = liveStatusUrl ? 15000 : 7000;
+    const notificationPollMs = liveStatusWsPath ? 60000 : (liveStatusUrl ? 15000 : 7000);
     const liveStatusState = window.__myToolsLiveStatusState || {
         inFlight: false,
         lastFetchAt: 0,
         intervalId: null,
+        socket: null,
+        socketReady: false,
+        reconnectTimer: null,
+        reconnectDelay: 1500,
+        lastPingAt: 0,
     };
+    liveStatusState.socket = liveStatusState.socket || null;
+    liveStatusState.socketReady = Boolean(liveStatusState.socketReady);
+    liveStatusState.reconnectTimer = liveStatusState.reconnectTimer || null;
+    liveStatusState.reconnectDelay = liveStatusState.reconnectDelay || 1500;
+    liveStatusState.lastPingAt = liveStatusState.lastPingAt || 0;
     window.__myToolsLiveStatusState = liveStatusState;
 
     function setNotificationBadgeValue(badge, value) {
@@ -943,6 +1000,121 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function applyLiveStatusPayload(data) {
+        if (!data?.ok) {
+            return;
+        }
+
+        updateNotificationBadges(data.counts);
+        updateNotificationCenter(data.counts, data.items);
+        updatePresenceProfiles(data.profiles);
+    }
+
+    function notificationCenterIsOpen() {
+        return Boolean(document.getElementById('notification-center-dropdown')?.classList.contains('open'));
+    }
+
+    function liveStatusSocketUrl() {
+        if (!liveStatusWsPath || !('WebSocket' in window)) {
+            return '';
+        }
+
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        return `${protocol}://${window.location.host}${liveStatusWsPath}`;
+    }
+
+    function sendLiveStatusSocket(payload) {
+        if (!liveStatusState.socketReady || !liveStatusState.socket) {
+            return false;
+        }
+
+        try {
+            liveStatusState.socket.send(JSON.stringify(payload));
+            return true;
+        } catch (error) {
+            liveStatusState.socketReady = false;
+            return false;
+        }
+    }
+
+    function configureLiveStatusSocket(options = {}) {
+        return sendLiveStatusSocket({
+            action: 'configure',
+            includeItems: options.includeItems ?? notificationCenterIsOpen(),
+            presenceIds: collectPresenceUserIds(),
+        });
+    }
+
+    function pingLiveStatusSocket(force = false) {
+        const now = Date.now();
+        if (!force && now - liveStatusState.lastPingAt < 40000) {
+            return;
+        }
+
+        if (sendLiveStatusSocket({ action: 'ping' })) {
+            liveStatusState.lastPingAt = now;
+        }
+    }
+
+    function scheduleLiveStatusReconnect() {
+        if (!liveStatusWsPath || document.hidden || liveStatusState.reconnectTimer) {
+            return;
+        }
+
+        liveStatusState.reconnectTimer = window.setTimeout(() => {
+            liveStatusState.reconnectTimer = null;
+            connectLiveStatusSocket();
+        }, liveStatusState.reconnectDelay);
+        liveStatusState.reconnectDelay = Math.min(liveStatusState.reconnectDelay * 1.7, 15000);
+    }
+
+    function connectLiveStatusSocket() {
+        const url = liveStatusSocketUrl();
+        if (!url || liveStatusState.socketReady || liveStatusState.socket) {
+            return false;
+        }
+
+        try {
+            liveStatusState.socket = new WebSocket(url);
+        } catch (error) {
+            scheduleLiveStatusReconnect();
+            return false;
+        }
+
+        liveStatusState.socket.addEventListener('open', () => {
+            liveStatusState.socketReady = true;
+            liveStatusState.reconnectDelay = 1500;
+            configureLiveStatusSocket({ includeItems: notificationCenterIsOpen() });
+            pingLiveStatusSocket(true);
+        });
+
+        liveStatusState.socket.addEventListener('message', (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'live_status') {
+                    applyLiveStatusPayload(data);
+                } else if (data.type === 'presence') {
+                    updatePresenceProfiles(data.profiles);
+                }
+            } catch (error) {
+                // Ungueltige Socket-Nachrichten ignorieren wir bewusst.
+            }
+        });
+
+        liveStatusState.socket.addEventListener('close', () => {
+            liveStatusState.socketReady = false;
+            liveStatusState.socket = null;
+            refreshNotificationCounts({ force: true, forceHttp: true });
+            scheduleLiveStatusReconnect();
+        });
+
+        liveStatusState.socket.addEventListener('error', () => {
+            liveStatusState.socketReady = false;
+        });
+
+        return true;
+    }
+
     if (notificationList) {
         notificationList.addEventListener('click', (event) => {
             const deleteButton = event.target.closest('.js-notification-delete');
@@ -981,7 +1153,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const includeItems = Boolean(options.includeItems);
         const force = Boolean(options.force);
+        const forceHttp = Boolean(options.forceHttp);
         const now = Date.now();
+
+        if (!forceHttp && liveStatusState.socketReady) {
+            configureLiveStatusSocket({ includeItems });
+            sendLiveStatusSocket({ action: 'refresh', includeItems });
+            pingLiveStatusSocket();
+            return;
+        }
 
         if (liveStatusState.inFlight) {
             return;
@@ -1030,9 +1210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.ok) {
-                updateNotificationBadges(data.counts);
-                updateNotificationCenter(data.counts, data.items);
-                updatePresenceProfiles(data.profiles);
+                applyLiveStatusPayload(data);
             }
         } catch (error) {
             // Wenn der Server kurz nicht erreichbar ist, probieren wir es beim nächsten Intervall erneut.
@@ -1041,14 +1219,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if ((liveStatusUrl || notificationCountsUrl) && !liveStatusState.intervalId) {
-        refreshNotificationCounts({ includeItems: false, force: true });
+    if ((liveStatusUrl || notificationCountsUrl || liveStatusWsPath) && !liveStatusState.intervalId) {
+        if (liveStatusWsPath) {
+            connectLiveStatusSocket();
+            window.setTimeout(() => {
+                if (!liveStatusState.socketReady) {
+                    refreshNotificationCounts({ includeItems: false, force: true, forceHttp: true });
+                }
+            }, 250);
+        } else {
+            refreshNotificationCounts({ includeItems: false, force: true });
+        }
         liveStatusState.intervalId = window.setInterval(() => refreshNotificationCounts({
-            includeItems: document.getElementById('notification-center-dropdown')?.classList.contains('open'),
+            includeItems: notificationCenterIsOpen(),
         }), notificationPollMs);
-        window.addEventListener('focus', () => refreshNotificationCounts({ includeItems: false, force: true }));
+        window.addEventListener('focus', () => {
+            connectLiveStatusSocket();
+            refreshNotificationCounts({ includeItems: false, force: true });
+        });
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
+                connectLiveStatusSocket();
                 refreshNotificationCounts({ includeItems: false, force: true });
             }
         });

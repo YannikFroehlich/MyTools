@@ -22,7 +22,7 @@
                 <p>
                     {% blocktranslate trimmed %}
                         MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, Wetter, Notizen, Dateien, Profile, Chats und Mini-Games.
-                        Globale Suche, Quick Actions, mobile Navigation und Design-Optionen sorgen dafür, dass die vielen Bereiche schnell erreichbar und persönlich anpassbar bleiben.
+                        Globale Suche, Quick Actions, mobile Navigation mit Header-Toggle und Design-Optionen sorgen dafür, dass die vielen Bereiche schnell erreichbar und persönlich anpassbar bleiben.
                     {% endblocktranslate %}
                 </p>
 
@@ -256,6 +256,11 @@
                             <span>{% translate 'Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen per MyTools-Suche oder Ctrl+K finden.' %}</span>
                         </a>
                         <a href="{% url 'home' %}" class="about-link-card">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <strong>{% translate 'Mobile Bedienung' %}</strong>
+                            <span>{% translate 'Bottom-Navigation für Start, Suche, Tools, Header, Chat und Profil; der Header lässt sich bei Bedarf einblenden.' %}</span>
+                        </a>
+                        <a href="{% url 'home' %}" class="about-link-card">
                             <i class="fa-solid fa-palette"></i>
                             <strong>{% translate 'Design-Einstellungen' %}</strong>
                             <span>{% translate 'Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und Hintergrundeffekte im Browser speichern.' %}</span>
@@ -292,7 +297,9 @@
                 <ul class="about-check-list">
                     <li><i class="fa-solid fa-check"></i>{% translate 'Django als Hauptanwendung mit klassischen Templates und fokussierten Views.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'PostgreSQL, Redis, Gunicorn und Caddy sind für Docker-Deployment vorbereitet.' %}</li>
+                    <li><i class="fa-solid fa-check"></i>{% translate 'WebSocket-Updates halten Benachrichtigungen und Präsenz schneller aktuell, mit HTTP-Fallback.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'Externe APIs bleiben optional und werden über Umgebungsvariablen konfiguriert.' %}</li>
+                    <li><i class="fa-solid fa-check"></i>{% translate 'Ein gemeinsamer Qualitätslauf prüft Systemcheck, Migrationen, Tests, statische Dateien und JavaScript.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'Mehrsprachigkeit läuft über Django-Übersetzungen für Deutsch und Englisch.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'PWA-Unterstützung mit Manifest, Service Worker, App-Icons und Offline-Fallback ist vorbereitet.' %}</li>
                 </ul>

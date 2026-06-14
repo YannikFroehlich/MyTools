@@ -70,9 +70,16 @@
 }
 
 .search-icon {
+    width: 22px;
+    height: 42px;
+    flex: 0 0 22px;
+    display: grid;
+    place-items: center;
+    align-self: center;
     color: #6c7a92;
     margin: 0 0.7rem;
     font-size: 0.95rem;
+    line-height: 1;
 }
 
 #google-search-input {
@@ -1262,13 +1269,16 @@ body.dark-mode .icon-help code {
     }
 
     .search-wrapper {
-        align-items: stretch;
+        align-items: center;
         border-radius: 15px;
         padding: 0.4rem;
     }
 
     .search-icon {
-        margin: 0 0.55rem;
+        width: 20px;
+        height: 40px;
+        flex-basis: 20px;
+        margin: 0 0.45rem 0 0.35rem;
     }
 
     #google-search-input {
