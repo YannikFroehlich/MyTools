@@ -216,11 +216,12 @@ from .platform_views import (
     favorite_toggle_view,
     favorites_view,
     feedback_view,
+    global_search_api,
     inbox_mark_read_view,
     inbox_view,
 )
 from .security_views import qr_code_tool_view, security_dashboard_view
-from .community_views import achievement_center_view, roadmap_view, server_status_view
+from .community_views import achievement_center_view, changelog_view, roadmap_view, server_status_view
 from .moderation_views import (
     moderation_access_toggle_view,
     moderation_dashboard_view,
@@ -245,10 +246,12 @@ urlpatterns = [
     path('about/', about, name='about'),
     path('favorites/', favorites_view, name='favorites'),
     path('favorites/<slug:tool_key>/toggle/', favorite_toggle_view, name='favorite_toggle'),
+    path('api/search/', global_search_api, name='global_search_api'),
     path('inbox/', inbox_view, name='inbox'),
     path('inbox/read/', inbox_mark_read_view, name='inbox_mark_read'),
     path('feedback/', feedback_view, name='feedback'),
     path('roadmap/', roadmap_view, name='roadmap'),
+    path('changelog/', changelog_view, name='changelog'),
     path('achievements/', achievement_center_view, name='achievement_center'),
     path('server-status/', server_status_view, name='server_status'),
     path('moderation/', moderation_dashboard_view, name='moderation'),

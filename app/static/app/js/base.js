@@ -63,6 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeStorageKey = 'customTheme';
     const themePresetStorageKey = 'customThemePreset';
     const themeSlotsStorageKey = 'customThemeSlots';
+    const themeDisplayOptionsStorageKey = 'customThemeDisplayOptions';
+
+    const displayOptionControls = {
+        compact: { id: 'theme-density-toggle', className: 'theme-compact-mode' },
+        largeText: { id: 'theme-font-toggle', className: 'theme-large-text-mode' },
+        highContrast: { id: 'theme-contrast-toggle', className: 'theme-high-contrast-mode' },
+        reducedMotion: { id: 'theme-motion-toggle', className: 'theme-reduced-motion-mode' },
+    };
 
     const defaultTheme = {
         navStart: '#1a56d6',
@@ -282,6 +290,53 @@ document.addEventListener('DOMContentLoaded', () => {
         ].forEach((property) => document.documentElement.style.removeProperty(property));
     }
 
+    function defaultDisplayOptions() {
+        return {
+            compact: false,
+            largeText: false,
+            highContrast: false,
+            reducedMotion: false,
+        };
+    }
+
+    function loadDisplayOptions() {
+        try {
+            return {
+                ...defaultDisplayOptions(),
+                ...(JSON.parse(localStorage.getItem(themeDisplayOptionsStorageKey)) || {}),
+            };
+        } catch (error) {
+            localStorage.removeItem(themeDisplayOptionsStorageKey);
+            return defaultDisplayOptions();
+        }
+    }
+
+    function applyDisplayOptions(options) {
+        Object.entries(displayOptionControls).forEach(([key, config]) => {
+            body.classList.toggle(config.className, Boolean(options[key]));
+        });
+    }
+
+    function syncDisplayOptionControls(options) {
+        Object.entries(displayOptionControls).forEach(([key, config]) => {
+            const button = document.getElementById(config.id);
+            if (!button) {
+                return;
+            }
+
+            const isActive = Boolean(options[key]);
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+    }
+
+    function saveDisplayOptions(options) {
+        localStorage.setItem(themeDisplayOptionsStorageKey, JSON.stringify(options));
+        applyDisplayOptions(options);
+        syncDisplayOptionControls(options);
+        showThemeSaveHint();
+    }
+
     function loadCustomTheme() {
         try {
             const storedTheme = JSON.parse(localStorage.getItem(themeStorageKey));
@@ -316,6 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.head.removeChild(noTrans);
     }
+
+    let activeDisplayOptions = loadDisplayOptions();
+    applyDisplayOptions(activeDisplayOptions);
 
     let activeCustomTheme = loadCustomTheme();
     let activeThemePreset = localStorage.getItem(themePresetStorageKey);
@@ -510,6 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
         syncThemeInputs(activeCustomTheme || defaultThemeForMode());
         updateActivePresetButton(activeThemePreset);
         document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active', Boolean((activeCustomTheme || {}).pattern));
+        syncDisplayOptionControls(activeDisplayOptions);
         updateThemeSlotsUi();
 
         themeEditorButton.addEventListener('click', (event) => {
@@ -570,6 +629,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('theme-pattern-toggle')?.addEventListener('click', () => {
             document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active');
             saveThemeFromInputs();
+        });
+
+        Object.entries(displayOptionControls).forEach(([key, config]) => {
+            document.getElementById(config.id)?.addEventListener('click', () => {
+                activeDisplayOptions = {
+                    ...activeDisplayOptions,
+                    [key]: !activeDisplayOptions[key],
+                };
+                saveDisplayOptions(activeDisplayOptions);
+            });
         });
 
         document.querySelectorAll('.theme-preset').forEach((button) => {
@@ -633,10 +702,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             localStorage.removeItem(themeStorageKey);
             localStorage.removeItem(themePresetStorageKey);
+            localStorage.removeItem(themeDisplayOptionsStorageKey);
 
             syncThemeInputs(defaultThemeForMode());
             updateActivePresetButton(null);
             document.getElementById('theme-pattern-toggle')?.classList.remove('is-active');
+            activeDisplayOptions = defaultDisplayOptions();
+            applyDisplayOptions(activeDisplayOptions);
+            syncDisplayOptionControls(activeDisplayOptions);
             clearCustomTheme();
             showThemeSaveHint();
         });
@@ -1110,11 +1183,142 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDropdown('profile-menu-button', 'profile-menu-dropdown');
     setupDropdown('notification-center-button', 'notification-center-dropdown');
 
+    const globalSearchOverlay = document.getElementById('global-search-overlay');
+    const globalSearchInput = document.getElementById('global-search-input');
+    const globalSearchResults = document.getElementById('global-search-results');
+    const globalSearchUrl = body.dataset.globalSearchUrl;
+    let globalSearchController = null;
+    let globalSearchItems = [];
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderGlobalSearchResults(results) {
+        globalSearchItems = results || [];
+        if (!globalSearchResults) {
+            return;
+        }
+        if (!globalSearchItems.length) {
+            globalSearchResults.innerHTML = `
+                <div class="global-search-empty">
+                    <i class="fa-regular fa-face-meh"></i>
+                    <p>Kein Treffer gefunden.</p>
+                </div>
+            `;
+            return;
+        }
+
+        globalSearchResults.innerHTML = globalSearchItems.map((item, index) => `
+            <a class="global-search-result${index === 0 ? ' is-active' : ''}" href="${escapeHtml(item.url)}" data-search-index="${index}">
+                <span class="global-search-result-icon"><i class="${escapeHtml(item.icon || 'fa-solid fa-link')}"></i></span>
+                <span class="global-search-result-copy">
+                    <strong>${escapeHtml(item.title)}</strong>
+                    <small>${escapeHtml(item.subtitle)}</small>
+                </span>
+                <span class="global-search-result-kind">${escapeHtml(item.badge || item.kind)}</span>
+            </a>
+        `).join('');
+    }
+
+    function runGlobalSearch(query = '') {
+        if (!globalSearchUrl) {
+            return;
+        }
+
+        globalSearchController?.abort();
+        globalSearchController = new AbortController();
+        const url = `${globalSearchUrl}?q=${encodeURIComponent(query)}`;
+
+        fetch(url, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            signal: globalSearchController.signal,
+        })
+            .then((response) => response.ok ? response.json() : Promise.reject(response))
+            .then((data) => renderGlobalSearchResults(data.results || []))
+            .catch((error) => {
+                if (error.name !== 'AbortError') {
+                    renderGlobalSearchResults([]);
+                }
+            });
+    }
+
+    function openGlobalSearch() {
+        if (!globalSearchOverlay) {
+            return;
+        }
+        closeAllDropdowns();
+        globalSearchOverlay.hidden = false;
+        body.classList.add('global-search-open');
+        window.setTimeout(() => {
+            globalSearchInput?.focus({ preventScroll: true });
+            globalSearchInput?.select();
+        }, 30);
+        runGlobalSearch(globalSearchInput?.value || '');
+    }
+
+    function closeGlobalSearch() {
+        if (!globalSearchOverlay) {
+            return;
+        }
+        globalSearchOverlay.hidden = true;
+        body.classList.remove('global-search-open');
+    }
+
+    document.querySelectorAll('[data-open-global-search]').forEach((button) => {
+        button.addEventListener('click', openGlobalSearch);
+    });
+
+    document.querySelectorAll('[data-close-global-search]').forEach((button) => {
+        button.addEventListener('click', closeGlobalSearch);
+    });
+
+    globalSearchInput?.addEventListener('input', () => {
+        window.clearTimeout(globalSearchInput.searchTimeout);
+        globalSearchInput.searchTimeout = window.setTimeout(() => runGlobalSearch(globalSearchInput.value), 120);
+    });
+
+    globalSearchInput?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && globalSearchItems[0]?.url) {
+            event.preventDefault();
+            window.location.href = globalSearchItems[0].url;
+        }
+    });
+
+    document.querySelectorAll('[data-open-tools-menu]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            closeGlobalSearch();
+            document.getElementById('menu-button')?.click();
+        });
+    });
+
+    document.querySelectorAll('[data-open-theme-editor]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            closeGlobalSearch();
+            document.getElementById('theme-editor-button')?.click();
+        });
+    });
+
     document.addEventListener('click', () => {
         closeAllDropdowns();
     });
 
     document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            event.preventDefault();
+            openGlobalSearch();
+            return;
+        }
+        if (event.key === 'Escape') {
+            closeGlobalSearch();
+        }
         if (event.key === 'Escape') {
             closeAllDropdowns();
         }

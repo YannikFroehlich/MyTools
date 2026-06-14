@@ -6,9 +6,9 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
-from .models import ChatRoom, DrawingGameInvite, Friendship, InboxItem, ToolFavorite, ToolFeedback
+from .models import ChatRoom, DrawingGameInvite, FeatureIdea, FileShare, Friendship, InboxItem, Note, ToolFavorite, ToolFeedback, UserProfile
 from .platform_forms import ToolFeedbackForm
 from .platform_utils import resolve_tools, tool_by_key
 
@@ -44,6 +44,109 @@ def favorite_toggle_view(request, tool_key):
 
     messages.success(request, _("Favoriten wurden aktualisiert."))
     return redirect(request.POST.get("next") or "favorites")
+
+
+def _search_match(query, *values):
+    haystack = " ".join(str(value or "").lower() for value in values)
+    return query in haystack
+
+
+def _result(kind, title, subtitle, url, icon, badge=""):
+    return {
+        "kind": kind,
+        "title": str(title),
+        "subtitle": str(subtitle or ""),
+        "url": url,
+        "icon": icon,
+        "badge": str(badge or ""),
+    }
+
+
+@login_required
+@require_GET
+def global_search_api(request):
+    query = request.GET.get("q", "").strip().lower()
+    favorite_keys = set(ToolFavorite.objects.filter(user=request.user).values_list("tool_key", flat=True))
+    results = []
+
+    tools = resolve_tools(request, favorite_keys)
+    for tool in tools:
+        if not query or _search_match(query, tool["label"], tool["category"], tool["key"]):
+            results.append(_result(
+                _("Tool"),
+                tool["label"],
+                tool["category"],
+                tool["url"],
+                tool["icon"],
+                _("Favorit") if tool.get("is_favorite") else "",
+            ))
+
+    if query:
+        note_qs = (
+            Note.objects
+            .filter(Q(user=request.user) | Q(shared_with=request.user), is_archived=False)
+            .filter(Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__icontains=query))
+            .distinct()
+            .order_by("-updated_at")[:6]
+        )
+        for note in note_qs:
+            results.append(_result(
+                _("Notiz"),
+                note.title or _("Unbenannte Notiz"),
+                note.updated_at.strftime("%d.%m.%Y %H:%M"),
+                reverse("note_detail", args=[note.pk]),
+                "fa-regular fa-note-sticky",
+            ))
+
+        share_qs = (
+            FileShare.objects
+            .filter(Q(owner=request.user) | Q(recipients=request.user))
+            .filter(original_name__icontains=query)
+            .distinct()
+            .order_by("-created_at")[:6]
+        )
+        for share in share_qs:
+            results.append(_result(
+                _("Datei"),
+                share.original_name,
+                share.human_size,
+                reverse("file_share_download", args=[share.token]),
+                share.icon_class,
+                _("Link") if share.is_public_link else "",
+            ))
+
+        user_qs = (
+            UserProfile.objects
+            .select_related("user")
+            .filter(user__is_active=True)
+            .filter(Q(user__username__icontains=query) | Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(bio__icontains=query))
+            .order_by("user__username")[:6]
+        )
+        for profile in user_qs:
+            results.append(_result(
+                _("Nutzer"),
+                profile.user.get_full_name() or profile.user.username,
+                f"@{profile.user.username}",
+                reverse("public_profile", args=[profile.user_id]),
+                "fa-solid fa-user",
+            ))
+
+        idea_qs = (
+            FeatureIdea.objects
+            .filter(Q(title__icontains=query) | Q(description__icontains=query) | Q(admin_note__icontains=query))
+            .order_by("-updated_at")[:6]
+        )
+        for idea in idea_qs:
+            results.append(_result(
+                _("Roadmap"),
+                idea.title,
+                idea.get_status_display(),
+                f"{reverse('roadmap')}?q={query}",
+                "fa-solid fa-route",
+                idea.get_priority_display(),
+            ))
+
+    return JsonResponse({"results": results[:18]})
 
 
 @login_required

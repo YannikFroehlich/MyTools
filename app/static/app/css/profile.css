@@ -2147,3 +2147,96 @@ body.dark-mode .achievement-progress {
         grid-template-columns: 1fr;
     }
 }
+
+/* Profile spotlight stats */
+.profile-spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.profile-spotlight-item {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+    padding: 13px;
+    border-radius: 18px;
+    background: rgba(var(--theme-accent-rgb), 0.09);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.profile-spotlight-item i {
+    color: var(--theme-accent-start);
+}
+
+.profile-spotlight-item span,
+.profile-spotlight-item small {
+    min-width: 0;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 850;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-spotlight-item strong {
+    min-width: 0;
+    color: var(--theme-text);
+    font-size: 1.15rem;
+    overflow-wrap: anywhere;
+}
+
+.public-profile-spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.public-profile-spotlight-grid span {
+    min-width: 0;
+    display: grid;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.public-profile-spotlight-grid i,
+.public-profile-spotlight-grid strong,
+.public-profile-spotlight-grid small {
+    color: currentColor;
+}
+
+.public-profile-spotlight-grid strong,
+.public-profile-spotlight-grid small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.public-profile-spotlight-grid small {
+    opacity: 0.8;
+    font-weight: 850;
+}
+
+body.dark-mode .profile-spotlight-item {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(203, 213, 225, 0.12);
+}
+
+body.dark-mode .profile-spotlight-item span,
+body.dark-mode .profile-spotlight-item small {
+    color: #cbd5e1;
+}
+
+@media (max-width: 560px) {
+    .profile-spotlight-grid,
+    .public-profile-spotlight-grid {
+        grid-template-columns: 1fr;
+    }
+}

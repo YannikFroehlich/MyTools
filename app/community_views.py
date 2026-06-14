@@ -2,6 +2,7 @@ import os
 import platform
 import shutil
 from datetime import timedelta
+from pathlib import Path
 
 import django
 from django.conf import settings
@@ -10,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.cache import cache
 from django.db import connection
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -18,10 +19,65 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
 from .achievement_utils import get_achievement_summary
-from .models import FeatureComment, FeatureIdea, FeatureVote, SecurityEvent
+from .models import ChatMessage, FeatureComment, FeatureIdea, FeatureVote, FileShare, HomeWidget, ModerationAuditLog, Note, SecurityEvent, SiteAccessSettings, ToolFeedback, UserPresence, UserReport
 
 
 STARTED_AT = timezone.now()
+
+CHANGELOG_ENTRIES = [
+    {
+        "version": "2026.06",
+        "date": "14.06.2026",
+        "title": _("Design, Status und Transparenz"),
+        "summary": _("Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite machen MyTools leichter anpassbar und besser nachvollziehbar."),
+        "type": _("Update"),
+        "icon": "fa-solid fa-wand-magic-sparkles",
+        "items": [
+            _("Design-Editor um Kompaktmodus, größere Schrift, hohen Kontrast und reduzierte Animationen erweitert."),
+            _("Serverstatus mit App-Aktivität, Speichernutzung, Datenbankgröße und letzten Security-Events ausgebaut."),
+            _("Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen."),
+        ],
+    },
+    {
+        "version": "2026.05",
+        "date": "12.06.2026",
+        "title": _("Community und Sicherheit"),
+        "summary": _("Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der Plattform mehr Struktur."),
+        "type": _("Plattform"),
+        "icon": "fa-solid fa-shield-halved",
+        "items": [
+            _("Feature-Ideen können gesammelt, gevotet und kommentiert werden."),
+            _("Admins erhalten Moderations- und Sicherheitswerkzeuge."),
+            _("Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."),
+        ],
+    },
+    {
+        "version": "2026.04",
+        "date": "04.06.2026",
+        "title": _("Mehr Tools für den Alltag"),
+        "summary": _("Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen stärker zusammen."),
+        "type": _("Tools"),
+        "icon": "fa-solid fa-screwdriver-wrench",
+        "items": [
+            _("Startseiten-Widgets zeigen wichtige Daten schneller an."),
+            _("Notizen unterstützen Pins, Erinnerungen und Teilen."),
+            _("Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."),
+        ],
+    },
+    {
+        "version": "2026.03",
+        "date": "24.05.2026",
+        "title": _("Spielebibliothek"),
+        "summary": _("Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform erweitert."),
+        "type": _("Games"),
+        "icon": "fa-solid fa-gamepad",
+        "items": [
+            _("Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."),
+            _("Highscores und Leaderboards für Solo-Spiele."),
+            _("Profilkarten und Achievements geben Spielern mehr Identität."),
+        ],
+    },
+]
 
 staff_required = user_passes_test(
     lambda user: user.is_active and user.is_staff,
@@ -216,6 +272,14 @@ def achievement_center_view(request):
     return render(request, "app/achievement_center.html", context)
 
 
+def changelog_view(request):
+    context = {
+        "changelog_entries": CHANGELOG_ENTRIES,
+        "latest_entry": CHANGELOG_ENTRIES[0] if CHANGELOG_ENTRIES else None,
+    }
+    return render(request, "app/changelog.html", context)
+
+
 def _check_database():
     started = timezone.now()
     try:
@@ -256,6 +320,46 @@ def _safe_disk_usage(path):
         return None
 
 
+def _path_size(path):
+    root = Path(path)
+    if not root.exists():
+        return 0
+
+    if root.is_file():
+        try:
+            return root.stat().st_size
+        except OSError:
+            return 0
+
+    total = 0
+    try:
+        for item in root.rglob("*"):
+            if item.is_file():
+                try:
+                    total += item.stat().st_size
+                except OSError:
+                    continue
+    except OSError:
+        return total
+    return total
+
+
+def _database_size_label():
+    database_settings = settings.DATABASES.get("default", {})
+    database_name = database_settings.get("NAME")
+    if database_name and database_settings.get("ENGINE", "").endswith("sqlite3"):
+        return _human_bytes(_path_size(database_name))
+    return _("Nicht verfügbar")
+
+
+def _media_usage_summary():
+    media_root = getattr(settings, "MEDIA_ROOT", "")
+    if not media_root:
+        return {"label": _("Nicht gesetzt"), "bytes": 0}
+    size = _path_size(media_root)
+    return {"label": _human_bytes(size), "bytes": size}
+
+
 def _process_memory_label():
     status_path = "/proc/self/status"
     if not os.path.exists(status_path):
@@ -285,29 +389,85 @@ def _load_average_label():
 @staff_required
 def server_status_view(request):
     now = timezone.now()
+    today = timezone.localdate()
     uptime = now - STARTED_AT
     disk_usage = _safe_disk_usage(settings.BASE_DIR)
+    media_usage = _media_usage_summary()
     static_root = getattr(settings, "STATIC_ROOT", "") or _("nicht gesetzt")
-    media_root = getattr(settings, "MEDIA_ROOT", "") or _("nicht gesetzt")
+    media_root_value = getattr(settings, "MEDIA_ROOT", "")
+    media_root = media_root_value or _("nicht gesetzt")
+    media_ready = bool(media_root_value and os.path.isdir(media_root_value))
+    UserModel = get_user_model()
+    online_since = now - timedelta(minutes=3)
 
     services = [
         {"name": _("Django App"), "status": "ok", "label": _("Online"), "detail": _("Request wurde erfolgreich verarbeitet."), "icon": "fa-solid fa-cloud"},
         _check_database(),
         _check_cache(),
         {"name": _("PWA"), "status": "ok", "label": _("Aktiv"), "detail": reverse("pwa_service_worker"), "icon": "fa-solid fa-mobile-screen-button"},
+        {"name": _("Media"), "status": "ok" if media_ready else "warning", "label": _("Bereit") if media_ready else _("Prüfen"), "detail": media_usage["label"], "icon": "fa-solid fa-photo-film"},
     ]
 
     status_counts = {
-        "security_events_today": SecurityEvent.objects.filter(created_at__date=timezone.localdate()).count(),
-        "failed_logins_today": SecurityEvent.objects.filter(event_type=SecurityEvent.EVENT_LOGIN_FAILED, created_at__date=timezone.localdate()).count(),
+        "security_events_today": SecurityEvent.objects.filter(created_at__date=today).count(),
+        "failed_logins_today": SecurityEvent.objects.filter(event_type=SecurityEvent.EVENT_LOGIN_FAILED, created_at__date=today).count(),
         "feature_ideas_open": FeatureIdea.objects.exclude(status__in=[FeatureIdea.STATUS_DONE, FeatureIdea.STATUS_REJECTED]).count(),
         "feature_votes": FeatureVote.objects.count(),
     }
+    file_share_bytes = FileShare.objects.aggregate(total=Sum("size"))["total"] or 0
+    app_activity = [
+        {"label": _("Aktive Nutzer"), "value": UserPresence.objects.filter(last_seen__gte=online_since).count(), "hint": _("letzte 3 Minuten"), "icon": "fa-solid fa-signal"},
+        {"label": _("Nutzer gesamt"), "value": UserModel.objects.filter(is_active=True).count(), "hint": _("aktive Konten"), "icon": "fa-solid fa-users"},
+        {"label": _("Chatnachrichten heute"), "value": ChatMessage.objects.filter(created_at__date=today).count(), "hint": _("neue Nachrichten"), "icon": "fa-solid fa-comments"},
+        {"label": _("Notizen"), "value": Note.objects.filter(is_archived=False).count(), "hint": _("nicht archiviert"), "icon": "fa-regular fa-note-sticky"},
+        {"label": _("Dateifreigaben"), "value": FileShare.objects.count(), "hint": _human_bytes(file_share_bytes), "icon": "fa-solid fa-share-nodes"},
+        {"label": _("Startseiten-Widgets"), "value": HomeWidget.objects.count(), "hint": _("konfiguriert"), "icon": "fa-solid fa-table-cells-large"},
+    ]
+    recent_security_events = SecurityEvent.objects.select_related("user").order_by("-created_at")[:6]
+    site_access = SiteAccessSettings.get_solo()
+    admin_cards = [
+        {
+            "label": _("Offene Meldungen"),
+            "value": UserReport.objects.filter(is_resolved=False).count(),
+            "hint": _("Moderation"),
+            "icon": "fa-solid fa-flag",
+            "url": reverse("moderation"),
+        },
+        {
+            "label": _("Offenes Feedback"),
+            "value": ToolFeedback.objects.filter(status=ToolFeedback.STATUS_OPEN).count(),
+            "hint": _("Feedback"),
+            "icon": "fa-solid fa-comment-dots",
+            "url": reverse("moderation"),
+        },
+        {
+            "label": _("Letzte Audits"),
+            "value": ModerationAuditLog.objects.count(),
+            "hint": _("Protokoll"),
+            "icon": "fa-solid fa-clipboard-list",
+            "url": reverse("moderation"),
+        },
+        {
+            "label": _("Zugang"),
+            "value": _("Gesperrt") if site_access.login_registration_locked else _("Offen"),
+            "hint": site_access.updated_at.strftime("%d.%m.%Y %H:%M"),
+            "icon": "fa-solid fa-door-open",
+            "url": reverse("moderation"),
+        },
+    ]
+    status_warnings = []
+    if disk_usage and disk_usage["used_percent"] >= 85:
+        status_warnings.append(_("Projekt-Laufwerk ist zu %(percent)s%% belegt.") % {"percent": disk_usage["used_percent"]})
+    if status_counts["failed_logins_today"] >= 5:
+        status_warnings.append(_("%(count)s fehlgeschlagene Logins heute.") % {"count": status_counts["failed_logins_today"]})
+    if site_access.login_registration_locked:
+        status_warnings.append(_("Login und Registrierung sind aktuell gesperrt."))
 
     context = {
         "services": services,
         "all_services_ok": all(service["status"] == "ok" for service in services),
         "disk_usage": disk_usage,
+        "media_usage": media_usage,
         "metrics": [
             {"label": _("Python"), "value": platform.python_version(), "icon": "fa-brands fa-python"},
             {"label": _("Django"), "value": django.get_version(), "icon": "fa-solid fa-server"},
@@ -315,7 +475,13 @@ def server_status_view(request):
             {"label": _("Prozess-RAM"), "value": _process_memory_label(), "icon": "fa-solid fa-memory"},
             {"label": _("Load Average"), "value": _load_average_label(), "icon": "fa-solid fa-chart-line"},
             {"label": _("Uptime"), "value": str(timedelta(seconds=int(uptime.total_seconds()))), "icon": "fa-regular fa-clock"},
+            {"label": _("Datenbankgröße"), "value": _database_size_label(), "icon": "fa-solid fa-database"},
+            {"label": _("Medienordner"), "value": media_usage["label"], "icon": "fa-solid fa-photo-film"},
         ],
+        "app_activity": app_activity,
+        "admin_cards": admin_cards,
+        "status_warnings": status_warnings,
+        "recent_security_events": recent_security_events,
         "paths": [
             {"label": _("Projekt"), "value": str(settings.BASE_DIR)},
             {"label": _("Static Root"), "value": str(static_root)},

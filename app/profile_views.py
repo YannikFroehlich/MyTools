@@ -17,6 +17,7 @@ from .models import (
     ChatRoom,
     ConnectFourGame,
     CookieClickerHighScore,
+    FileShare,
     Game2048HighScore,
     Friendship,
     HangmanLobby,
@@ -30,6 +31,7 @@ from .models import (
     PongGame,
     SkribbleStats,
     StadtLandFlussPlayer,
+    Note,
     TicTacToeGame,
     UnoGame,
     UnoPlayer,
@@ -45,6 +47,7 @@ from .image_optimization import (
     PROFILE_BANNER_MAX_SIZE,
     optimize_uploaded_image,
 )
+from .notification_utils import invalidate_notification_cache
 from .presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
 
 User = get_user_model()
@@ -115,6 +118,53 @@ def _display_number(value, default="0"):
     if value is None:
         return default
     return f"{value:,}".replace(",", ".")
+
+
+def get_profile_spotlight_stats(user, achievement_summary, *, friends_count=0, highscore_count=0, include_private=False):
+    stats = [
+        {
+            "label": _("Level"),
+            "value": _display_number(achievement_summary["level"]["level"]),
+            "hint": _("%(xp)s XP") % {"xp": _display_number(achievement_summary["total_xp"])},
+            "icon": "fa-solid fa-ranking-star",
+        },
+        {
+            "label": _("Achievements"),
+            "value": _display_number(achievement_summary["unlocked_count"]),
+            "hint": _("%(total)s gesamt") % {"total": _display_number(achievement_summary["total_count"])},
+            "icon": "fa-solid fa-trophy",
+        },
+        {
+            "label": _("Freunde"),
+            "value": _display_number(friends_count),
+            "hint": _("Netzwerk"),
+            "icon": "fa-solid fa-user-group",
+        },
+        {
+            "label": _("Highscores"),
+            "value": _display_number(highscore_count),
+            "hint": _("sichtbar im Profil"),
+            "icon": "fa-solid fa-chart-simple",
+        },
+    ]
+
+    if include_private:
+        stats.extend([
+            {
+                "label": _("Notizen"),
+                "value": _display_number(Note.objects.filter(user=user, is_archived=False).count()),
+                "hint": _("aktive Einträge"),
+                "icon": "fa-regular fa-note-sticky",
+            },
+            {
+                "label": _("Uploads"),
+                "value": _display_number(FileShare.objects.filter(owner=user).count()),
+                "hint": _("Datei-Share"),
+                "icon": "fa-solid fa-share-nodes",
+            },
+        ])
+
+    return stats
 
 
 def get_profile_game_card_settings(profile):
@@ -689,6 +739,7 @@ def profile_view(request):
 
             # Profil speichern
             profile.save()
+            invalidate_notification_cache(request.user)
 
             # User-Daten speichern:
             # Vorname, Nachname, E-Mail und Benutzername liegen NICHT im UserProfile,
@@ -742,6 +793,13 @@ def profile_view(request):
         "chat_rooms_count": chat_rooms_count,
         "total_highscores_count": total_highscores_count,
         "achievement_summary": achievement_summary,
+        "profile_spotlight_stats": get_profile_spotlight_stats(
+            request.user,
+            achievement_summary,
+            friends_count=friends_count,
+            highscore_count=total_highscores_count,
+            include_private=True,
+        ),
         "gallery_form": ProfileGalleryImageForm(),
         "gallery_images": ProfileGalleryImage.objects.filter(user=request.user)[:12],
         "blocked_users": UserBlock.objects.select_related("blocked", "blocked__profile").filter(blocker=request.user)[:20],
@@ -821,6 +879,11 @@ def public_profile_view(request, user_id):
     total_highscores_count = get_total_profile_highscores(profile_user)
     can_view_highscores = profile.privacy_show_highscores or can_view_private_profile_area(request.user, profile_user)
     can_view_private_achievements = can_view_private_profile_area(request.user, profile_user)
+    achievement_summary = get_achievement_summary(
+        profile_user,
+        include_private=can_view_private_achievements,
+        include_games=can_view_highscores,
+    )
 
     return render(request, "app/public_profile.html", {
         "profile_user": profile_user,
@@ -834,10 +897,13 @@ def public_profile_view(request, user_id):
         "can_view_friends": profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user),
         "can_use_chat_button": profile.privacy_show_chat_button or can_view_private_profile_area(request.user, profile_user),
         "friend_activity": get_friend_activity(profile_user, request.user),
-        "achievement_summary": get_achievement_summary(
+        "achievement_summary": achievement_summary,
+        "profile_spotlight_stats": get_profile_spotlight_stats(
             profile_user,
-            include_private=can_view_private_achievements,
-            include_games=can_view_highscores,
+            achievement_summary,
+            friends_count=friends_count,
+            highscore_count=total_highscores_count if can_view_highscores else 0,
+            include_private=False,
         ),
         "can_view_private_achievements": can_view_private_achievements,
         "friends_count": friends_count,

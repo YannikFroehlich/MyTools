@@ -738,8 +738,30 @@ body.dark .roadmap-tab {
     color: #86efac;
 }
 
+.status-warning-strip {
+    display: grid;
+    gap: 10px;
+    margin: -8px 0 20px;
+}
+
+.status-warning-strip div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    color: #92400e;
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.22);
+    font-weight: 850;
+}
+
+.status-warning-strip i {
+    color: #f59e0b;
+}
+
 .service-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
 }
 
 .service-card {
@@ -825,13 +847,15 @@ body.dark .roadmap-tab {
 }
 
 .metric-grid,
-.counter-grid {
+.counter-grid,
+.activity-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
 }
 
 .metric-item,
+.activity-item,
 .counter-grid div,
 .path-row {
     padding: 14px;
@@ -839,18 +863,29 @@ body.dark .roadmap-tab {
     background: rgba(148, 163, 184, 0.1);
 }
 
-.metric-item {
+.metric-item,
+.activity-item {
     display: grid;
     gap: 4px;
 }
 
-.metric-item i {
+.metric-item i,
+.activity-item i {
     color: #2563eb;
 }
 
 .metric-item strong,
+.activity-item strong,
 .counter-grid strong {
     overflow-wrap: anywhere;
+}
+
+.activity-item strong {
+    font-size: 1.55rem;
+}
+
+.activity-item small {
+    color: #64748b;
 }
 
 .counter-grid strong {
@@ -858,9 +893,97 @@ body.dark .roadmap-tab {
     font-size: 1.7rem;
 }
 
+.admin-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.admin-mini-card {
+    min-width: 0;
+    display: grid;
+    gap: 5px;
+    padding: 14px;
+    border-radius: 16px;
+    color: inherit;
+    text-decoration: none;
+    background: rgba(148, 163, 184, 0.1);
+    transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.admin-mini-card:hover {
+    transform: translateY(-1px);
+    background: rgba(37, 99, 235, 0.12);
+}
+
+.admin-mini-card i {
+    color: #2563eb;
+}
+
+.admin-mini-card span,
+.admin-mini-card small {
+    min-width: 0;
+    color: #64748b;
+    font-size: 0.84rem;
+    font-weight: 850;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-mini-card strong {
+    font-size: 1.45rem;
+    overflow-wrap: anywhere;
+}
+
 .paths-card {
     grid-column: 1 / -1;
 }
+
+.activity-card,
+.security-events-card {
+    grid-column: span 1;
+}
+
+.security-event-list {
+    display: grid;
+    gap: 10px;
+}
+
+.security-event-row {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.security-event-row strong,
+.security-event-row span {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.security-event-row span {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.security-event-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+}
+
+.security-event-icon.severity-success { background: linear-gradient(135deg, #16a34a, #22c55e); }
+.security-event-icon.severity-warning { background: linear-gradient(135deg, #f59e0b, #f97316); }
+.security-event-icon.severity-danger { background: linear-gradient(135deg, #ef4444, #be123c); }
 
 .path-row {
     display: grid;
@@ -900,14 +1023,206 @@ body.dark .service-card small {
 }
 
 body.dark-mode .metric-item,
+body.dark-mode .activity-item,
 body.dark-mode .counter-grid div,
 body.dark-mode .path-row,
 body.dark-mode .comment-item,
+body.dark-mode .security-event-row,
+body.dark-mode .admin-mini-card,
 body.dark .metric-item,
+body.dark .activity-item,
 body.dark .counter-grid div,
 body.dark .path-row,
-body.dark .comment-item {
+body.dark .comment-item,
+body.dark .security-event-row,
+body.dark .admin-mini-card {
     background: rgba(30, 41, 59, 0.72);
+}
+
+body.dark-mode .activity-item small,
+body.dark-mode .security-event-row span,
+body.dark-mode .admin-mini-card span,
+body.dark-mode .admin-mini-card small,
+body.dark .activity-item small,
+body.dark .security-event-row span,
+body.dark .admin-mini-card span,
+body.dark .admin-mini-card small {
+    color: #94a3b8;
+}
+
+body.dark-mode .status-warning-strip div,
+body.dark .status-warning-strip div {
+    color: #fde68a;
+    background: rgba(245, 158, 11, 0.16);
+    border-color: rgba(245, 158, 11, 0.28);
+}
+
+/* Changelog */
+.changelog-hero {
+    background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.28), transparent 34%),
+        linear-gradient(135deg, #0f172a, #1e3a8a);
+}
+
+.changelog-latest-pill {
+    display: grid;
+    align-self: center;
+    min-width: 170px;
+    gap: 6px;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+}
+
+.changelog-latest-pill i {
+    color: #93c5fd;
+    font-size: 1.45rem;
+}
+
+.changelog-latest-pill span {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.changelog-latest-pill strong {
+    font-size: 1.45rem;
+}
+
+.changelog-layout {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.changelog-summary-card,
+.changelog-entry {
+    padding: 22px;
+}
+
+.changelog-summary-card {
+    position: sticky;
+    top: calc(var(--nav-height, 84px) + 18px);
+}
+
+.changelog-mini-list {
+    display: grid;
+    gap: 10px;
+}
+
+.changelog-mini-list a {
+    display: grid;
+    gap: 3px;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(148, 163, 184, 0.1);
+    color: inherit;
+    text-decoration: none;
+}
+
+.changelog-mini-list a:hover {
+    background: rgba(37, 99, 235, 0.12);
+}
+
+.changelog-mini-list span,
+.changelog-date {
+    color: #64748b;
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
+.changelog-timeline {
+    position: relative;
+    display: grid;
+    gap: 16px;
+}
+
+.changelog-entry {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 16px;
+}
+
+.changelog-entry-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    color: #fff;
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+}
+
+.changelog-entry-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.changelog-entry h2 {
+    margin: 4px 0 8px;
+}
+
+.changelog-entry p {
+    margin: 0 0 14px;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.changelog-type {
+    flex: 0 0 auto;
+    padding: 7px 10px;
+    border-radius: 999px;
+    color: #1d4ed8;
+    background: rgba(37, 99, 235, 0.1);
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.changelog-item-list {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.changelog-item-list li {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 9px;
+    align-items: start;
+}
+
+.changelog-item-list i {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    color: #fff;
+    background: #16a34a;
+    font-size: 0.72rem;
+}
+
+body.dark-mode .changelog-mini-list a,
+body.dark .changelog-mini-list a {
+    background: rgba(30, 41, 59, 0.72);
+}
+
+body.dark-mode .changelog-mini-list span,
+body.dark-mode .changelog-date,
+body.dark-mode .changelog-entry p,
+body.dark .changelog-mini-list span,
+body.dark .changelog-date,
+body.dark .changelog-entry p {
+    color: #94a3b8;
 }
 
 
@@ -925,7 +1240,8 @@ body.dark .comment-item {
     .feature-hero,
     .feature-layout.two-columns,
     .achievement-columns,
-    .server-grid {
+    .server-grid,
+    .changelog-layout {
         grid-template-columns: 1fr;
     }
 
@@ -942,6 +1258,10 @@ body.dark .comment-item {
     .roadmap-filter-card,
     .staff-status-form {
         grid-template-columns: 1fr;
+    }
+
+    .changelog-summary-card {
+        position: static;
     }
 }
 
@@ -961,9 +1281,19 @@ body.dark .comment-item {
     .category-progress-grid,
     .achievement-grid,
     .metric-grid,
+    .activity-grid,
     .counter-grid,
     .form-grid-2 {
         grid-template-columns: 1fr;
+    }
+
+    .changelog-entry,
+    .changelog-entry-top {
+        grid-template-columns: 1fr;
+    }
+
+    .changelog-entry-top {
+        display: grid;
     }
 
     .idea-card-top {

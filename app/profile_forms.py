@@ -46,7 +46,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ["avatar", "profile_banner", "bio", "status", "status_text", "privacy_show_online", "privacy_show_friends", "privacy_show_highscores", "privacy_show_chat_button", "notify_chat", "notify_friend_requests", "notify_skribble", "browser_notifications", "sound_notifications", "dnd_silence_notifications"]
+        fields = ["avatar", "profile_banner", "bio", "status", "status_text", "privacy_show_online", "privacy_show_friends", "privacy_show_highscores", "privacy_show_chat_button", "notify_chat", "notify_friend_requests", "notify_skribble", "notify_game_invites", "notify_game_turns", "notify_file_shares", "notify_note_reminders", "notify_roadmap", "notify_achievements", "browser_notifications", "sound_notifications", "dnd_silence_notifications"]
         labels = {
             "avatar": "Profilbild",
             "profile_banner": "Profilbanner",
@@ -60,6 +60,12 @@ class ProfileForm(forms.ModelForm):
             "notify_chat": "Chat-Benachrichtigungen",
             "notify_friend_requests": "Freundschaftsanfragen",
             "notify_skribble": "Skribble-Einladungen",
+            "notify_game_invites": "Spiel-Einladungen",
+            "notify_game_turns": "Spielzüge",
+            "notify_file_shares": "Dateifreigaben",
+            "notify_note_reminders": "Notiz-Erinnerungen",
+            "notify_roadmap": "Roadmap-Updates",
+            "notify_achievements": "Achievements",
             "browser_notifications": "Browser-Benachrichtigungen",
             "sound_notifications": "Sounds abspielen",
             "dnd_silence_notifications": "Bei Nicht stören stummschalten",
@@ -90,6 +96,12 @@ class ProfileForm(forms.ModelForm):
             "notify_chat": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "notify_friend_requests": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "notify_skribble": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "notify_game_invites": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "notify_game_turns": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "notify_file_shares": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "notify_note_reminders": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "notify_roadmap": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "notify_achievements": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "browser_notifications": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "sound_notifications": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "dnd_silence_notifications": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),

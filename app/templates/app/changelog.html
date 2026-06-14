@@ -1,0 +1,80 @@
+{% extends "app/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate "Was ist neu?" %} - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="feature-page changelog-page">
+    <div class="feature-hero changelog-hero">
+        <div class="feature-hero-copy">
+            <span class="feature-kicker"><i class="fa-solid fa-wand-magic-sparkles"></i> {% translate "Was ist neu?" %}</span>
+            <h1>{% translate "Changelog" %}</h1>
+            <p>{% translate "Alle sichtbaren Neuerungen, Plattform-Updates und größeren Verbesserungen an einem Ort." %}</p>
+        </div>
+
+        {% if latest_entry %}
+            <div class="changelog-latest-pill">
+                <i class="{{ latest_entry.icon }}"></i>
+                <span>{% translate "Aktuell" %}</span>
+                <strong>{{ latest_entry.version }}</strong>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="changelog-layout">
+        <aside class="feature-card changelog-summary-card">
+            <div class="feature-card-heading">
+                <i class="fa-solid fa-route"></i>
+                <div>
+                    <h2>{% translate "Verlauf" %}</h2>
+                    <p>{% translate "Kurzer Blick auf die letzten Update-Pakete." %}</p>
+                </div>
+            </div>
+
+            <div class="changelog-mini-list">
+                {% for entry in changelog_entries %}
+                    <a href="#release-{{ entry.version|slugify }}">
+                        <span>{{ entry.date }}</span>
+                        <strong>{{ entry.title }}</strong>
+                    </a>
+                {% endfor %}
+            </div>
+        </aside>
+
+        <div class="changelog-timeline">
+            {% for entry in changelog_entries %}
+                <article class="feature-card changelog-entry" id="release-{{ entry.version|slugify }}">
+                    <div class="changelog-entry-icon">
+                        <i class="{{ entry.icon }}"></i>
+                    </div>
+
+                    <div class="changelog-entry-main">
+                        <div class="changelog-entry-top">
+                            <div>
+                                <span class="changelog-date">{{ entry.date }}</span>
+                                <h2>{{ entry.title }}</h2>
+                            </div>
+                            <span class="changelog-type">{{ entry.type }}</span>
+                        </div>
+
+                        <p>{{ entry.summary }}</p>
+
+                        <ul class="changelog-item-list">
+                            {% for item in entry.items %}
+                                <li>
+                                    <i class="fa-solid fa-check"></i>
+                                    <span>{{ item }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
