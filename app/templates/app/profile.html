@@ -105,6 +105,17 @@
                 </a>
             </div>
 
+            <div class="profile-spotlight-grid">
+                {% for item in profile_spotlight_stats %}
+                    <div class="profile-spotlight-item">
+                        <i class="{{ item.icon }}"></i>
+                        <span>{{ item.label }}</span>
+                        <strong>{{ item.value }}</strong>
+                        <small>{{ item.hint }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+
 
 
             <div class="profile-showcase-card {{ profile.profile_card_classes }}" style="{{ profile.profile_card_style_vars }}">
@@ -437,6 +448,12 @@
                         <label>{{ form.notify_chat }} <span>{{ form.notify_chat.label }}</span></label>
                         <label>{{ form.notify_friend_requests }} <span>{{ form.notify_friend_requests.label }}</span></label>
                         <label>{{ form.notify_skribble }} <span>{{ form.notify_skribble.label }}</span></label>
+                        <label>{{ form.notify_game_invites }} <span>{{ form.notify_game_invites.label }}</span></label>
+                        <label>{{ form.notify_game_turns }} <span>{{ form.notify_game_turns.label }}</span></label>
+                        <label>{{ form.notify_file_shares }} <span>{{ form.notify_file_shares.label }}</span></label>
+                        <label>{{ form.notify_note_reminders }} <span>{{ form.notify_note_reminders.label }}</span></label>
+                        <label>{{ form.notify_roadmap }} <span>{{ form.notify_roadmap.label }}</span></label>
+                        <label>{{ form.notify_achievements }} <span>{{ form.notify_achievements.label }}</span></label>
                         <label>{{ form.browser_notifications }} <span>{{ form.browser_notifications.label }}</span></label>
                         <label>{{ form.sound_notifications }} <span>{{ form.sound_notifications.label }}</span></label>
                         <label>{{ form.dnd_silence_notifications }} <span>{{ form.dnd_silence_notifications.label }}</span></label>

@@ -73,6 +73,16 @@
                     <span><strong>{{ total_highscores_count }}</strong>{% translate "Highscores" %}</span>
                     <span><strong>{{ chat_rooms_count }}</strong>{% translate "Chats" %}</span>
                 </div>
+
+                <div class="public-profile-spotlight-grid">
+                    {% for item in profile_spotlight_stats %}
+                        <span>
+                            <i class="{{ item.icon }}"></i>
+                            <strong>{{ item.value }}</strong>
+                            <small>{{ item.label }}</small>
+                        </span>
+                    {% endfor %}
+                </div>
             </div>
 
         </div>

@@ -1,0 +1,53 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Dateifreigabe" %} | MyTools{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/performance_tools.css' %}">{% endblock %}
+
+{% block content %}
+<section class="perf-page share-access-page">
+    <article class="share-card share-access-card">
+        <span class="share-access-icon">
+            {% if state == "password" %}
+                <i class="fa-solid fa-lock"></i>
+            {% elif state == "expired" %}
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            {% else %}
+                <i class="fa-solid fa-circle-exclamation"></i>
+            {% endif %}
+        </span>
+
+        <div>
+            <p class="perf-kicker">Private Sharing</p>
+            <h1>{{ share.original_name }}</h1>
+            <p class="share-access-meta">
+                {{ share.human_size }} · {% translate "geteilt von" %} {{ share.owner.get_full_name|default:share.owner.username }}
+            </p>
+        </div>
+
+        {% if state == "password" %}
+            <form class="share-access-form" method="post">
+                {% csrf_token %}
+                <label for="share-password">{% translate "Passwort" %}</label>
+                <div class="share-access-password-row">
+                    <input id="share-password" type="password" name="password" autocomplete="current-password" required autofocus>
+                    <button class="perf-primary" type="submit">
+                        <i class="fa-solid fa-unlock"></i>
+                        {% translate "Datei öffnen" %}
+                    </button>
+                </div>
+            </form>
+        {% elif state == "expired" %}
+            <div class="share-access-note is-warning">
+                <strong>{% translate "Diese Freigabe ist abgelaufen." %}</strong>
+                <span>{% translate "Bitte den Besitzer um einen neuen Link." %}</span>
+            </div>
+        {% else %}
+            <div class="share-access-note is-warning">
+                <strong>{% translate "Das Download-Limit wurde erreicht." %}</strong>
+                <span>{% translate "Weitere Downloads sind für diese Freigabe gesperrt." %}</span>
+            </div>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}

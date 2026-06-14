@@ -19,6 +19,17 @@
         </div>
     </div>
 
+    {% if status_warnings %}
+        <div class="status-warning-strip">
+            {% for warning in status_warnings %}
+                <div>
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>{{ warning }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div class="service-grid">
         {% for service in services %}
             <article class="feature-card service-card service-{{ service.status }}">
@@ -45,6 +56,7 @@
                 <div class="disk-meter"><span style="width: {{ disk_usage.used_percent }}%;"></span></div>
                 <div class="disk-row"><span>{% translate "Belegt" %}</span><strong>{{ disk_usage.used_label }} / {{ disk_usage.total_label }}</strong></div>
                 <div class="disk-row"><span>{% translate "Frei" %}</span><strong>{{ disk_usage.free_label }}</strong></div>
+                <div class="disk-row"><span>{% translate "Medien" %}</span><strong>{{ media_usage.label }}</strong></div>
             {% else %}
                 <p>{% translate "Speicherplatz konnte nicht gelesen werden." %}</p>
             {% endif %}
@@ -65,6 +77,26 @@
             </div>
         </article>
 
+        <article class="feature-card activity-card">
+            <div class="feature-card-heading">
+                <i class="fa-solid fa-chart-line"></i>
+                <div>
+                    <h2>{% translate "App-Aktivität" %}</h2>
+                    <p>{% translate "Nutzer, Inhalte und heutige Bewegung in MyTools." %}</p>
+                </div>
+            </div>
+            <div class="activity-grid">
+                {% for item in app_activity %}
+                    <div class="activity-item">
+                        <i class="{{ item.icon }}"></i>
+                        <span>{{ item.label }}</span>
+                        <strong>{{ item.value }}</strong>
+                        <small>{{ item.hint }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+
         <article class="feature-card counters-card">
             <div class="feature-card-heading">
                 <i class="fa-solid fa-chart-simple"></i>
@@ -78,6 +110,49 @@
                 <div><strong>{{ status_counts.failed_logins_today }}</strong><span>{% translate "Fehlgeschlagene Logins heute" %}</span></div>
                 <div><strong>{{ status_counts.feature_ideas_open }}</strong><span>{% translate "Offene Ideen" %}</span></div>
                 <div><strong>{{ status_counts.feature_votes }}</strong><span>{% translate "Feature Votes" %}</span></div>
+            </div>
+        </article>
+
+        <article class="feature-card admin-overview-card">
+            <div class="feature-card-heading">
+                <i class="fa-solid fa-user-shield"></i>
+                <div>
+                    <h2>{% translate "Admin-Überblick" %}</h2>
+                    <p>{% translate "Moderation, Feedback und Zugangskontrolle." %}</p>
+                </div>
+            </div>
+            <div class="admin-card-grid">
+                {% for card in admin_cards %}
+                    <a href="{{ card.url }}" class="admin-mini-card">
+                        <i class="{{ card.icon }}"></i>
+                        <span>{{ card.label }}</span>
+                        <strong>{{ card.value }}</strong>
+                        <small>{{ card.hint }}</small>
+                    </a>
+                {% endfor %}
+            </div>
+        </article>
+
+        <article class="feature-card security-events-card">
+            <div class="feature-card-heading">
+                <i class="fa-solid fa-user-shield"></i>
+                <div>
+                    <h2>{% translate "Letzte Security-Events" %}</h2>
+                    <p>{% translate "Die neuesten sicherheitsrelevanten Einträge." %}</p>
+                </div>
+            </div>
+            <div class="security-event-list">
+                {% for event in recent_security_events %}
+                    <div class="security-event-row">
+                        <span class="security-event-icon severity-{{ event.severity }}"><i class="fa-solid fa-shield-halved"></i></span>
+                        <div>
+                            <strong>{{ event.get_event_type_display }}</strong>
+                            <span>{% if event.user %}{{ event.user.username }}{% else %}{% translate "Unbekannt" %}{% endif %} · {{ event.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="empty-small">{% translate "Noch keine Security-Events vorhanden." %}</div>
+                {% endfor %}
             </div>
         </article>
 

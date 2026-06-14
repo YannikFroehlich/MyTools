@@ -390,9 +390,11 @@ def _collect_notification_items(user, *, limit=10, include_dismissed=False):
                     "badge": unread_count,
                 })
 
-    if not muted_by_dnd:
+    if profile.notify_note_reminders and not muted_by_dnd:
         items.extend(_collect_reminder_items(user, dismissed_keys, limit))
+    if profile.notify_file_shares and not muted_by_dnd:
         items.extend(_collect_file_share_items(user, dismissed_keys, limit))
+    if profile.notify_game_turns and not muted_by_dnd:
         items.extend(_collect_game_turn_items(user, dismissed_keys, limit))
 
     if profile.notify_friend_requests and not muted_by_dnd:
@@ -430,6 +432,7 @@ def _collect_notification_items(user, *, limit=10, include_dismissed=False):
             dismissed_keys=dismissed_keys,
             limit=limit,
         )
+    if profile.notify_game_invites and not muted_by_dnd:
         _add_invite_items(
             items,
             TicTacToeInvite.objects.filter(to_user=user, status=TicTacToeInvite.STATUS_PENDING).select_related("game", "from_user").order_by("-created_at"),

@@ -74,6 +74,12 @@ class UserProfile(models.Model):
     notify_chat = models.BooleanField(default=True)
     notify_friend_requests = models.BooleanField(default=True)
     notify_skribble = models.BooleanField(default=True)
+    notify_game_invites = models.BooleanField(default=True)
+    notify_game_turns = models.BooleanField(default=True)
+    notify_file_shares = models.BooleanField(default=True)
+    notify_note_reminders = models.BooleanField(default=True)
+    notify_roadmap = models.BooleanField(default=True)
+    notify_achievements = models.BooleanField(default=True)
     browser_notifications = models.BooleanField(default=False)
     sound_notifications = models.BooleanField(default=True)
     dnd_silence_notifications = models.BooleanField(default=True)
@@ -3160,6 +3166,9 @@ class FileShare(models.Model):
     content_type = models.CharField(max_length=120, blank=True)
     token = models.CharField(max_length=48, unique=True)
     is_public_link = models.BooleanField(default=False)
+    password_hash = models.CharField(max_length=128, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    max_downloads = models.PositiveIntegerField(null=True, blank=True)
     download_count = models.PositiveIntegerField(default=0)
     last_downloaded_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -3170,6 +3179,7 @@ class FileShare(models.Model):
             models.Index(fields=["owner", "-created_at"]),
             models.Index(fields=["token"]),
             models.Index(fields=["is_public_link", "-created_at"]),
+            models.Index(fields=["expires_at"]),
             models.Index(fields=["content_type", "-created_at"], name="fileshare_type_created_idx"),
         ]
         verbose_name = "Dateifreigabe"
@@ -3201,6 +3211,43 @@ class FileShare(models.Model):
         if name.endswith((".xls", ".xlsx", ".csv")):
             return "fa-regular fa-file-excel"
         return "fa-regular fa-file"
+
+    @property
+    def is_image(self):
+        return (self.content_type or "").startswith("image/")
+
+    @property
+    def is_pdf(self):
+        return (self.content_type or "").lower() == "application/pdf" or (self.original_name or "").lower().endswith(".pdf")
+
+    @property
+    def is_expired(self):
+        return bool(self.expires_at and self.expires_at <= timezone.now())
+
+    @property
+    def download_limit_reached(self):
+        return self.max_downloads is not None and self.download_count >= self.max_downloads
+
+    @property
+    def is_locked(self):
+        return bool(self.password_hash)
+
+    @property
+    def availability_label(self):
+        if self.is_expired:
+            return _("Abgelaufen")
+        if self.download_limit_reached:
+            return _("Limit erreicht")
+        if self.expires_at:
+            return _("Bis %(date)s") % {"date": self.expires_at.strftime("%d.%m.%Y %H:%M")}
+        return _("Ohne Ablauf")
+
+    @property
+    def download_limit_label(self):
+        if self.max_downloads is None:
+            return _("Unbegrenzt")
+        remaining = max(self.max_downloads - self.download_count, 0)
+        return _("%(remaining)s von %(total)s übrig") % {"remaining": remaining, "total": self.max_downloads}
 
 
 class PongGame(models.Model):

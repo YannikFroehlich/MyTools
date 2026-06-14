@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260614-ui-updates">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -40,10 +40,10 @@
 
     {% block extra_css %}{% endblock %}
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}" defer></script>
+        <script src="{% static 'app/js/base.js' %}?v=20260614-ui-updates" defer></script>
     {% endblock %}
 </head>
-<body{% if request.user.is_authenticated %} data-live-status-url="{% url 'live_status_api' %}" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}"{% endif %}>
+<body{% if request.user.is_authenticated %} data-live-status-url="{% url 'live_status_api' %}" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}"{% endif %}>
     <nav>
         <div class="logo">
             <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
@@ -503,6 +503,14 @@
                                     </span>
                                 </a>
 
+                                <a href="{% url 'changelog' %}" class="game-menu-card is-blue" data-menu-card data-menu-name="{% translate 'Was ist neu?' %}" data-menu-category="{% translate 'Changelog Updates Neuigkeiten Versionen Verlauf' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Was ist neu?' %}</strong>
+                                        <small>{% translate 'Updates' %}</small>
+                                    </span>
+                                </a>
+
                                 {% if request.user.is_staff %}
                                     <a href="{% url 'moderation' %}" class="game-menu-card is-red" data-menu-card data-menu-name="{% translate 'Moderation' %}" data-menu-category="{% translate 'Admin Meldungen Feedback Dateien Nutzer' %}">
                                         <span class="game-menu-icon"><i class="fa-solid fa-shield-halved"></i></span>
@@ -674,6 +682,13 @@
                 </select>
             </form>
 
+            {% if request.user.is_authenticated %}
+                <button class="global-search-trigger" type="button" data-open-global-search aria-label="{% translate 'MyTools durchsuchen' %}" title="{% translate 'MyTools durchsuchen' %}">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Ctrl K</span>
+                </button>
+            {% endif %}
+
             <div class="theme-editor-wrapper">
                 <button class="theme-editor-btn" id="theme-editor-button" type="button" aria-label="{% translate 'Design anpassen' %}">
                     <i class="fa-solid fa-pen"></i>
@@ -814,10 +829,26 @@
                             <i class="fa-solid fa-sliders"></i>
                             <span>{% translate 'Optionen' %}</span>
                         </div>
-                        <div class="theme-option-row single-option">
+                        <div class="theme-option-row">
                             <button type="button" class="theme-toggle-option" id="theme-pattern-toggle">
                                 <i class="fa-solid fa-circle-nodes"></i>
                                 {% translate 'Hintergrund-Effekt' %}
+                            </button>
+                            <button type="button" class="theme-toggle-option" id="theme-density-toggle">
+                                <i class="fa-solid fa-compress"></i>
+                                {% translate 'Kompakt' %}
+                            </button>
+                            <button type="button" class="theme-toggle-option" id="theme-font-toggle">
+                                <i class="fa-solid fa-text-height"></i>
+                                {% translate 'Große Schrift' %}
+                            </button>
+                            <button type="button" class="theme-toggle-option" id="theme-contrast-toggle">
+                                <i class="fa-solid fa-circle-half-stroke"></i>
+                                {% translate 'Kontrast' %}
+                            </button>
+                            <button type="button" class="theme-toggle-option" id="theme-motion-toggle">
+                                <i class="fa-solid fa-person-walking-arrow-right"></i>
+                                {% translate 'Weniger Bewegung' %}
                             </button>
                         </div>
                     </div>
@@ -979,6 +1010,41 @@
         </div>
     </nav>
 
+    {% if request.user.is_authenticated %}
+        <div class="global-search-overlay" id="global-search-overlay" hidden>
+            <div class="global-search-backdrop" data-close-global-search></div>
+            <section class="global-search-panel" role="dialog" aria-modal="true" aria-labelledby="global-search-title">
+                <div class="global-search-input-row">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="global-search-input" placeholder="{% translate 'Tools, Notizen, Dateien, Nutzer suchen...' %}" autocomplete="off">
+                    <button type="button" data-close-global-search aria-label="{% translate 'Suche schließen' %}">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="global-search-meta">
+                    <strong id="global-search-title">{% translate 'MyTools Suche' %}</strong>
+                    <span>{% translate 'Enter öffnet den ersten Treffer' %}</span>
+                </div>
+
+                <div class="global-search-results" id="global-search-results">
+                    <div class="global-search-empty">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <p>{% translate 'Tippe etwas ein oder öffne direkt einen Vorschlag.' %}</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <nav class="mobile-bottom-nav" aria-label="{% translate 'Mobile Navigation' %}">
+            <a href="{% url 'home' %}"><i class="fa-solid fa-house"></i><span>{% translate 'Start' %}</span></a>
+            <button type="button" data-open-global-search><i class="fa-solid fa-magnifying-glass"></i><span>{% translate 'Suche' %}</span></button>
+            <button type="button" data-open-tools-menu><i class="fa-solid fa-table-cells-large"></i><span>{% translate 'Tools' %}</span></button>
+            <a href="{% url 'chat' %}"><i class="fa-solid fa-comments"></i><span>{% translate 'Chat' %}</span></a>
+            <a href="{% url 'profile' %}"><i class="fa-solid fa-user"></i><span>{% translate 'Profil' %}</span></a>
+        </nav>
+    {% endif %}
+
     <main>
         {% block content %}
         {% endblock %}
@@ -1027,6 +1093,11 @@
                 <a href="{% url 'about' %}">
                     <i class="fa-solid fa-circle-info"></i>
                     {% translate 'Über' %}
+                </a>
+
+                <a href="{% url 'changelog' %}">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {% translate 'Neu' %}
                 </a>
             </div>
 
