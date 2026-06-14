@@ -63,7 +63,7 @@ def api_error_response(message, status=400):
 
 PWA_THEME_COLOR = "#1a56d6"
 PWA_BACKGROUND_COLOR = "#dce5f5"
-PWA_CACHE_VERSION = "mytools-pwa-v1"
+PWA_CACHE_VERSION = "mytools-pwa-v3"
 
 
 def pwa_manifest_view(request):

@@ -1,6 +1,7 @@
 import json
 import shutil
 import tempfile
+from datetime import timedelta
 from io import BytesIO
 from pathlib import Path
 from unittest.mock import Mock, patch
@@ -13,6 +14,7 @@ from django.contrib.messages import constants as message_constants
 from django.contrib.messages.storage.base import Message
 from django.contrib.messages.storage.cookie import MessageEncoder
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.signals import pre_save
@@ -3715,6 +3717,53 @@ class FileShareTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("file_share"))
         self.assertEqual(FileShare.objects.filter(owner=self.user).count(), 2)
+
+    def test_public_file_share_access_states_do_not_require_login(self):
+        locked = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("locked.txt", b"secret", content_type="text/plain"),
+            original_name="locked.txt",
+            size=6,
+            content_type="text/plain",
+            token="locked-public-token",
+            is_public_link=True,
+            password_hash=make_password("pw"),
+        )
+        expired = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("expired.txt", b"old", content_type="text/plain"),
+            original_name="expired.txt",
+            size=3,
+            content_type="text/plain",
+            token="expired-public-token",
+            is_public_link=True,
+            expires_at=timezone.now() - timedelta(minutes=1),
+        )
+        limited = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("limited.txt", b"done", content_type="text/plain"),
+            original_name="limited.txt",
+            size=4,
+            content_type="text/plain",
+            token="limited-public-token",
+            is_public_link=True,
+            max_downloads=1,
+            download_count=1,
+        )
+
+        self.client.logout()
+
+        password_url = reverse("file_share_download", args=[locked.token])
+        self.assertEqual(self.client.get(password_url).status_code, 200)
+        self.assertEqual(self.client.get(reverse("file_share_download", args=[expired.token])).status_code, 410)
+        self.assertEqual(self.client.get(reverse("file_share_download", args=[limited.token])).status_code, 410)
+
+        password_response = self.client.post(password_url, {"password": "pw"})
+        self.assertEqual(password_response.status_code, 302)
+        download_response = self.client.get(password_url)
+        self.assertEqual(download_response.status_code, 200)
+        locked.refresh_from_db()
+        self.assertEqual(locked.download_count, 1)
 
 
 class ModerationTests(BaseTestCase):

@@ -1,8 +1,10 @@
 from pathlib import Path
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
@@ -33,6 +35,7 @@ from .models import (
 )
 
 MAX_SHARE_RECIPIENTS = 20
+FILE_SHARE_EXPIRY_DAYS = {"1": 1, "7": 7, "30": 30}
 
 
 def _display_name(user):
@@ -45,6 +48,24 @@ def _human_size(size):
         if size < 1024 or unit == "GB":
             return f"{size:.1f} {unit}" if unit != "B" else f"{int(size)} B"
         size /= 1024
+
+
+def _parse_download_limit(value):
+    value = str(value or "").strip()
+    if not value:
+        return None
+    try:
+        parsed = int(value)
+    except ValueError:
+        return None
+    return max(1, min(parsed, 1000))
+
+
+def _parse_share_expiry(value):
+    days = FILE_SHARE_EXPIRY_DAYS.get(str(value or "").strip())
+    if not days:
+        return None
+    return timezone.now() + timedelta(days=days)
 
 
 def _file_share_limit(user):
@@ -268,6 +289,10 @@ def file_share_upload_view(request):
         messages.error(request, _("Wähle mindestens einen Freund oder aktiviere den privaten Link."))
         return redirect("file_share")
 
+    password = str(request.POST.get("share_password") or "").strip()
+    expires_at = _parse_share_expiry(request.POST.get("expires_in"))
+    max_downloads = _parse_download_limit(request.POST.get("max_downloads"))
+
     created_count = 0
     for upload in uploads:
         safe_name = get_valid_filename(Path(upload.name).name)[:180] or "datei"
@@ -279,6 +304,9 @@ def file_share_upload_view(request):
             content_type=getattr(upload, "content_type", "")[:120],
             token=get_random_string(40),
             is_public_link=is_public,
+            password_hash=make_password(password) if password else "",
+            expires_at=expires_at,
+            max_downloads=max_downloads,
         )
         if recipients:
             share.recipients.set(recipients)
@@ -294,25 +322,46 @@ def file_share_upload_view(request):
     return redirect("file_share")
 
 
-def _can_access_share(user, share):
-    if not user.is_authenticated:
-        return share.is_public_link
-    if share.owner_id == user.id or share.is_public_link:
+def _has_direct_share_access(user, share):
+    if not getattr(user, "is_authenticated", False):
+        return False
+    if share.owner_id == user.id:
         return True
     return share.recipients.filter(id=user.id).exists()
 
 
-@login_required
+def _can_access_share(user, share):
+    if _has_direct_share_access(user, share):
+        return True
+    return share.is_public_link
+
+
 def file_share_download_view(request, token):
     share = get_object_or_404(FileShare.objects.select_related("owner"), token=token)
     if not _can_access_share(request.user, share):
         raise PermissionDenied
-    share.download_count = F("download_count") + 1
-    share.last_downloaded_at = timezone.now()
-    share.save(update_fields=["download_count", "last_downloaded_at"])
+    if share.is_expired:
+        return render(request, "app/file_share_access.html", {"share": share, "state": "expired"}, status=410)
+    if share.download_limit_reached:
+        return render(request, "app/file_share_access.html", {"share": share, "state": "limit"}, status=410)
+    direct_access = _has_direct_share_access(request.user, share)
+    session_key = f"file_share_access_{share.token}"
+    if share.password_hash and not direct_access and not request.session.get(session_key):
+        if request.method == "POST":
+            password = str(request.POST.get("password") or "")
+            if check_password(password, share.password_hash):
+                request.session[session_key] = True
+                return redirect(request.get_full_path())
+            messages.error(request, _("Das Passwort ist nicht korrekt."))
+        return render(request, "app/file_share_access.html", {"share": share, "state": "password"})
     if not share.file:
         raise Http404
-    response = FileResponse(share.file.open("rb"), as_attachment=True, filename=share.original_name)
+    preview = request.GET.get("preview") == "1" and (share.is_image or share.is_pdf)
+    if not preview:
+        share.download_count = F("download_count") + 1
+        share.last_downloaded_at = timezone.now()
+        share.save(update_fields=["download_count", "last_downloaded_at"])
+    response = FileResponse(share.file.open("rb"), as_attachment=not preview, filename=share.original_name)
     if share.content_type:
         response["Content-Type"] = share.content_type
     return response

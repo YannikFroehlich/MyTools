@@ -63,6 +63,26 @@
                 </label>
             </div>
 
+            <div class="share-security-grid">
+                <label>
+                    <span>{% translate "Gültigkeit" %}</span>
+                    <select name="expires_in">
+                        <option value="">{% translate "Kein Ablauf" %}</option>
+                        <option value="1">{% translate "1 Tag" %}</option>
+                        <option value="7">{% translate "7 Tage" %}</option>
+                        <option value="30">{% translate "30 Tage" %}</option>
+                    </select>
+                </label>
+                <label>
+                    <span>{% translate "Download-Limit" %}</span>
+                    <input type="number" name="max_downloads" min="1" max="1000" inputmode="numeric" placeholder="{% translate 'Unbegrenzt' %}">
+                </label>
+                <label class="share-security-full">
+                    <span>{% translate "Link-Passwort" %}</span>
+                    <input type="password" name="share_password" autocomplete="new-password" placeholder="{% translate 'Optional für private Links' %}">
+                </label>
+            </div>
+
             <div class="friend-picker">
                 <div class="friend-picker-head">
                     <strong>{% translate "Freunde auswählen" %}</strong>
@@ -105,13 +125,29 @@
                 </div>
                 {% for share in own_shares %}
                     <article class="share-row">
-                        <span class="share-file-icon"><i class="{{ share.icon_class }}"></i></span>
+                        {% if share.is_image %}
+                            <a class="share-preview-thumb" href="{% url 'file_share_download' share.token %}?preview=1" target="_blank" rel="noopener" title="{% translate 'Vorschau' %}">
+                                <img src="{% url 'file_share_download' share.token %}?preview=1" alt="{{ share.original_name }}" loading="lazy" decoding="async">
+                            </a>
+                        {% else %}
+                            <span class="share-file-icon"><i class="{{ share.icon_class }}"></i></span>
+                        {% endif %}
                         <div class="share-row-main">
-                            <strong>{{ share.original_name }}</strong>
+                            <strong>
+                                {{ share.original_name }}
+                                {% if share.is_locked %}<i class="fa-solid fa-lock" title="{% translate 'Passwortgeschützt' %}"></i>{% endif %}
+                            </strong>
                             <span>{{ share.human_size }} · {{ share.download_count }} {% translate "Downloads" %}</span>
+                            <div class="share-security-chips">
+                                <small><i class="fa-regular fa-clock"></i>{{ share.availability_label }}</small>
+                                <small><i class="fa-solid fa-download"></i>{{ share.download_limit_label }}</small>
+                            </div>
                             {% if share.is_public_link %}<small>{{ request.scheme }}://{{ request.get_host }}{% url 'file_share_download' share.token %}</small>{% endif %}
                         </div>
                         <div class="share-row-actions">
+                            {% if share.is_pdf %}
+                                <a href="{% url 'file_share_download' share.token %}?preview=1" target="_blank" rel="noopener" title="{% translate 'PDF ansehen' %}"><i class="fa-solid fa-eye"></i></a>
+                            {% endif %}
                             <a href="{% url 'file_share_download' share.token %}" title="{% translate 'Download' %}"><i class="fa-solid fa-download"></i></a>
                             <form method="post" action="{% url 'file_share_delete' share.id %}">
                                 {% csrf_token %}
@@ -133,12 +169,28 @@
                 </div>
                 {% for share in received_shares %}
                     <article class="share-row">
-                        <span class="share-file-icon"><i class="{{ share.icon_class }}"></i></span>
+                        {% if share.is_image %}
+                            <a class="share-preview-thumb" href="{% url 'file_share_download' share.token %}?preview=1" target="_blank" rel="noopener" title="{% translate 'Vorschau' %}">
+                                <img src="{% url 'file_share_download' share.token %}?preview=1" alt="{{ share.original_name }}" loading="lazy" decoding="async">
+                            </a>
+                        {% else %}
+                            <span class="share-file-icon"><i class="{{ share.icon_class }}"></i></span>
+                        {% endif %}
                         <div class="share-row-main">
-                            <strong>{{ share.original_name }}</strong>
+                            <strong>
+                                {{ share.original_name }}
+                                {% if share.is_locked %}<i class="fa-solid fa-lock" title="{% translate 'Passwortgeschützt' %}"></i>{% endif %}
+                            </strong>
                             <span>{{ share.human_size }} · {% translate "von" %} {{ share.owner.get_full_name|default:share.owner.username }}</span>
+                            <div class="share-security-chips">
+                                <small><i class="fa-regular fa-clock"></i>{{ share.availability_label }}</small>
+                                <small><i class="fa-solid fa-download"></i>{{ share.download_limit_label }}</small>
+                            </div>
                         </div>
                         <div class="share-row-actions">
+                            {% if share.is_pdf %}
+                                <a href="{% url 'file_share_download' share.token %}?preview=1" target="_blank" rel="noopener" title="{% translate 'PDF ansehen' %}"><i class="fa-solid fa-eye"></i></a>
+                            {% endif %}
                             <a href="{% url 'file_share_download' share.token %}" title="{% translate 'Download' %}"><i class="fa-solid fa-download"></i></a>
                         </div>
                     </article>

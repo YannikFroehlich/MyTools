@@ -22,7 +22,7 @@
                 <p>
                     {% blocktranslate trimmed %}
                         MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, Wetter, Notizen, Dateien, Profile, Chats und Mini-Games.
-                        Statt viele kleine Seiten und Links zu verstreuen, sammelt die App alles in einer Oberfläche, die du Schritt für Schritt personalisieren kannst.
+                        Globale Suche, Quick Actions, mobile Navigation und Design-Optionen sorgen dafür, dass die vielen Bereiche schnell erreichbar und persönlich anpassbar bleiben.
                     {% endblocktranslate %}
                 </p>
 
@@ -40,6 +40,10 @@
                         <i class="fa-solid fa-user-shield"></i>
                         {% translate 'Sicherheit öffnen' %}
                     </a>
+                    <a href="{% url 'changelog' %}" class="about-action about-action-secondary">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        {% translate 'Changelog öffnen' %}
+                    </a>
                 </div>
             </div>
 
@@ -52,7 +56,7 @@
                 <dl class="about-metrics">
                     <div>
                         <dt>{% translate 'Module' %}</dt>
-                        <dd>30+</dd>
+                        <dd>35+</dd>
                     </div>
                     <div>
                         <dt>{% translate 'Fokus' %}</dt>
@@ -70,19 +74,19 @@
             <article class="about-principle">
                 <i class="fa-solid fa-layer-group"></i>
                 <h2>{% translate 'Alles griffbereit' %}</h2>
-                <p>{% translate 'Shortcuts, Favoriten und Widgets bringen häufig genutzte Funktionen direkt auf die Startseite.' %}</p>
+                <p>{% translate 'Shortcuts, Favoriten, Quick Actions und Widgets bringen häufig genutzte Funktionen direkt auf die Startseite.' %}</p>
             </article>
 
             <article class="about-principle">
                 <i class="fa-solid fa-user-gear"></i>
                 <h2>{% translate 'Persönlich anpassbar' %}</h2>
-                <p>{% translate 'Profile, Designs, Widgets, Spielkarten und gespeicherte Orte lassen sich an deine Nutzung anpassen.' %}</p>
+                <p>{% translate 'Profile, Designs, Widgets, Spielkarten, Benachrichtigungen und gespeicherte Orte lassen sich an deine Nutzung anpassen.' %}</p>
             </article>
 
             <article class="about-principle">
                 <i class="fa-solid fa-people-group"></i>
                 <h2>{% translate 'Gemeinsam nutzbar' %}</h2>
-                <p>{% translate 'Freunde, Chats, Einladungen, geteilte Dateien und Multiplayer-Spiele machen die Toolbox sozial.' %}</p>
+                <p>{% translate 'Freunde, Chats, Einladungen, geteilte Dateien, private Links und Multiplayer-Spiele machen die Toolbox sozial.' %}</p>
             </article>
         </div>
 
@@ -119,7 +123,7 @@
                         <a href="{% url 'file_share' %}" class="about-link-card">
                             <i class="fa-solid fa-share-nodes"></i>
                             <strong>{% translate 'Datei-Share' %}</strong>
-                            <span>{% translate 'Dateien per Freundesfreigabe oder privatem Link teilen.' %}</span>
+                            <span>{% translate 'Dateien mit Freunden teilen, private Links schützen und Bilder oder PDFs direkt ansehen.' %}</span>
                         </a>
                     </div>
                 </article>
@@ -238,6 +242,43 @@
                         </a>
                     </div>
                 </article>
+
+                <article class="about-module-group">
+                    <div class="about-module-heading">
+                        <i class="fa-solid fa-compass-drafting"></i>
+                        <h3>{% translate 'Plattform & Bedienung' %}</h3>
+                    </div>
+
+                    <div class="about-link-grid">
+                        <a href="{% url 'home' %}" class="about-link-card">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <strong>{% translate 'Globale Suche' %}</strong>
+                            <span>{% translate 'Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen per MyTools-Suche oder Ctrl+K finden.' %}</span>
+                        </a>
+                        <a href="{% url 'home' %}" class="about-link-card">
+                            <i class="fa-solid fa-palette"></i>
+                            <strong>{% translate 'Design-Einstellungen' %}</strong>
+                            <span>{% translate 'Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und Hintergrundeffekte im Browser speichern.' %}</span>
+                        </a>
+                        <a href="{% url 'changelog' %}" class="about-link-card">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <strong>{% translate 'Was ist neu?' %}</strong>
+                            <span>{% translate 'Changelog mit den letzten Update-Paketen, sichtbaren Änderungen und Plattform-Verbesserungen.' %}</span>
+                        </a>
+                        <a href="{% url 'profile' %}" class="about-link-card">
+                            <i class="fa-solid fa-bell"></i>
+                            <strong>{% translate 'Benachrichtigungen' %}</strong>
+                            <span>{% translate 'Chat, Spiele, Dateien, Notizen, Roadmap und Achievements getrennt ein- oder ausschalten.' %}</span>
+                        </a>
+                        {% if request.user.is_staff %}
+                            <a href="{% url 'server_status' %}" class="about-link-card">
+                                <i class="fa-solid fa-server"></i>
+                                <strong>{% translate 'Admin-Status' %}</strong>
+                                <span>{% translate 'Speicher, Datenbank, aktive Nutzer, App-Aktivität und Security-Events im Blick behalten.' %}</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </article>
             </div>
         </section>
 
@@ -266,7 +307,7 @@
                 <div class="about-roadmap">
                     <div>
                         <i class="fa-solid fa-bell"></i>
-                        <span>{% translate 'Benachrichtigungen weiter bündeln' %}</span>
+                        <span>{% translate 'Benachrichtigungen pro Bereich weiter verfeinern' %}</span>
                     </div>
                     <div>
                         <i class="fa-solid fa-medal"></i>
@@ -274,7 +315,7 @@
                     </div>
                     <div>
                         <i class="fa-solid fa-chart-simple"></i>
-                        <span>{% translate 'Mehr Statistiken und Aktivitätsverlauf ergänzen' %}</span>
+                        <span>{% translate 'Mehr Startseiten-Statistiken und Aktivitätsverlauf ergänzen' %}</span>
                     </div>
                     <div>
                         <i class="fa-solid fa-palette"></i>

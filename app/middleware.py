@@ -42,6 +42,8 @@ class LoginRequiredMiddleware:
         return redirect(f"{login_url}?{urlencode({'next': request.get_full_path()})}")
 
     def _is_exempt(self, path):
+        file_share_download_pattern = reverse("file_share_download", args=["__token__"])
+        file_share_download_prefix, file_share_download_suffix = file_share_download_pattern.split("__token__")
         exempt_prefixes = (
             "/accounts/",
             reverse("signup"),
@@ -54,7 +56,10 @@ class LoginRequiredMiddleware:
             settings.STATIC_URL,
             settings.MEDIA_URL,
         )
-        return any(path.startswith(prefix) for prefix in exempt_prefixes if prefix)
+        return (
+            any(path.startswith(prefix) for prefix in exempt_prefixes if prefix)
+            or (path.startswith(file_share_download_prefix) and path.endswith(file_share_download_suffix))
+        )
 
     def _is_suspension_exempt(self, path):
         return path.startswith("/accounts/logout/") or path.startswith("/admin/")
