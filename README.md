@@ -33,7 +33,7 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Notizen-App mit Pins, Archiv, Farben und Tags
 - Human Benchmark mit gespeicherten Ergebnissen, Highscores und Bestenliste pro Nutzer
 - OBS Dashboard für lokale OBS-WebSocket-Steuerung
-- Stream-Deck-Seite als Button-Dashboard für Medien, Spotify und eigene Aktionen
+- Stream-Deck-Seite als Button-Dashboard für Medien, Spotify, Voicemod und eigene Aktionen
 - Spritkostenrechner mit Tankerkönig API
 - wissenschaftlicher Rechner mit Wurzeln, Potenzen, Trigonometrie, Logarithmen, Speicher und Verlauf
 - Genius Search mit Genius API
@@ -423,8 +423,14 @@ Mögliche Einsatzbereiche:
 
 - Mediensteuerung
 - Spotify-Verbindung
+- Voicemod-Steuerung mit lokal gespeichertem API-Key
+- Voicemod-Voices laden und per Dropdown auf Buttons legen
 - lokale Dashboard-Aktionen
 - eigene Buttons und Shortcuts
+- API-Key direkt in der Stream-Deck-Seitenleiste eintragen und im Browser speichern
+- Voice Changer, Hear Myself, Mikrofon-Mute und Zufalls-Voice als Schnellaktionen
+- eigene Buttons fuer Voicemod-Aktionen, inklusive Voice-Auswahl aus der geladenen Voicemod-Liste
+- klare Toast-Meldung, wenn kein Voicemod API-Key verbunden ist
 - Steuerung auf Tablet oder Zweitgerät
 
 ---

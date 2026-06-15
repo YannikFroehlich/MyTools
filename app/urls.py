@@ -24,6 +24,7 @@ from .views import (
     obs_dashboard,
     spritkostenrechner,
     stream_deck,
+    stream_deck_voicemod_action,
     tankstellen_api,
     unit_converter_view,
     randomizer_tools_view,
@@ -460,4 +461,5 @@ urlpatterns = [
     path('api/skribble/<slug:code>/guess/', skribble_guess_api, name='skribble_guess_api'),
 
     path('stream-deck/', stream_deck, name='stream-deck'),
+    path('stream-deck/voicemod/action/', stream_deck_voicemod_action, name='stream-deck-voicemod-action'),
 ]

@@ -37,6 +37,7 @@ from django.views.decorators.http import require_POST
 
 from .models import Note, SiteAccessSettings
 from .forms import SignUpForm
+from .voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
 
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -2156,11 +2157,85 @@ def cookie_clicker_score_api(request):
     })
 
 
+VOICEMOD_ALLOWED_ACTIONS = {
+    "getVoices",
+    "getCurrentVoice",
+    "getVoiceChangerStatus",
+    "toggleVoiceChanger",
+    "toggleHearMyVoice",
+    "toggleMuteMic",
+    "selectRandomVoice",
+    "loadVoice",
+}
+
+VOICEMOD_RANDOM_MODES = {"FreeVoices", "AllVoices", "FavoriteVoices"}
+
+
+@ensure_csrf_cookie
 def stream_deck(request):
     return render(request, "app/stream_deck.html", {
         "spotify_client_id": get_env_value("SPOTIFY_CLIENT_ID") or "",
         "spotify_redirect_uri": get_env_value("SPOTIFY_REDIRECT_URI") or request.build_absolute_uri(request.path),
     })
+
+
+@login_required
+@require_POST
+def stream_deck_voicemod_action(request):
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        return api_error_response(_("Ungueltige Anfrage."), status=400)
+
+    action = str(payload.get("action") or "").strip()
+
+    if action not in VOICEMOD_ALLOWED_ACTIONS:
+        return api_error_response(_("Unbekannte Voicemod Aktion."), status=400)
+
+    action_payload = _voicemod_action_payload(action, payload.get("payload") if isinstance(payload.get("payload"), dict) else {})
+
+    if action_payload is None:
+        return api_error_response(_("Voicemod Aktion unvollstaendig."), status=400)
+
+    request_api_key = str(payload.get("apiKey") or "").strip()
+    api_key = request_api_key[:512]
+
+    if not api_key:
+        return api_error_response(_("Kein Voicemod API-Key verbunden."), status=400)
+
+    host = (get_env_value("VOICEMOD_HOST") or "127.0.0.1").strip() or "127.0.0.1"
+    ports = parse_voicemod_ports(get_env_value("VOICEMOD_PORTS"))
+
+    try:
+        response = send_voicemod_action(api_key, action, action_payload, host=host, ports=ports)
+    except VoicemodError as exc:
+        return api_error_response(str(exc), status=exc.status_code)
+
+    return JsonResponse({
+        "status": "ok",
+        "action": action,
+        "response": response,
+    })
+
+
+def _voicemod_action_payload(action, payload):
+    if action == "loadVoice":
+        voice_id = str(payload.get("voiceID") or "").strip()
+
+        if not voice_id:
+            return None
+
+        return {"voiceID": voice_id[:120]}
+
+    if action == "selectRandomVoice":
+        mode = str(payload.get("mode") or "FreeVoices").strip()
+
+        if mode not in VOICEMOD_RANDOM_MODES:
+            mode = "FreeVoices"
+
+        return {"mode": mode}
+
+    return {}
 
 
 @login_required
