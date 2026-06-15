@@ -26,6 +26,7 @@ const STORAGE_KEYS = {
     obsAddress: "obs_streamdeck_address_v2",
     obsPassword: "obs_streamdeck_password_v2",
     spotifyToken: "obs_streamdeck_spotify_token_v2",
+    voicemodApiKey: "obs_streamdeck_voicemod_api_key_v1",
     logs: "obs_streamdeck_logs_v2"
 };
 
@@ -39,6 +40,8 @@ const SPOTIFY_CODE_VERIFIER_KEY = scopedStorageKey("spotify_code_verifier");
 
 const SPOTIFY_CLIENT_ID = streamDeckPage?.dataset.spotifyClientId || "";
 const SPOTIFY_REDIRECT_URI = streamDeckPage?.dataset.spotifyRedirectUri || window.location.href.split("?")[0];
+const VOICEMOD_ACTION_URL = streamDeckPage?.dataset.voicemodActionUrl || "";
+const VOICEMOD_DEFAULT_RANDOM_MODE = "FreeVoices";
 
 const SPOTIFY_SCOPES = [
     "user-read-currently-playing",
@@ -64,6 +67,9 @@ let spotifyProgressCache = {
     durationMs: 0,
     lastUpdated: 0
 };
+let voicemodVoices = [];
+let voicemodVoicesLoaded = false;
+let voicemodVoicesLoading = false;
 
 const $ = (id) => document.getElementById(id);
 
@@ -86,6 +92,17 @@ const elements = {
     spotifyStatusDot: $("spotify-status-dot"),
     spotifyStatusText: $("spotify-status-text"),
     spotifySystemStatus: $("spotify-system-status"),
+    voicemodStatusDot: $("voicemod-status-dot"),
+    voicemodStatusText: $("voicemod-status-text"),
+    voicemodStatusDetail: $("voicemod-status-detail"),
+    voicemodSystemStatus: $("voicemod-system-status"),
+    voicemodApiKeyInput: $("voicemod-api-key-input"),
+    toggleVoicemodApiKeyBtn: $("toggle-voicemod-api-key-btn"),
+    saveVoicemodApiKeyBtn: $("save-voicemod-api-key-btn"),
+    clearVoicemodApiKeyBtn: $("clear-voicemod-api-key-btn"),
+    voicemodVoicesSelect: $("voicemod-voices-select"),
+    loadVoicemodVoicesBtn: $("load-voicemod-voices-btn"),
+    refreshVoicemodStatusBtn: $("refresh-voicemod-status-btn"),
     editModeStatus: $("edit-mode-status"),
     buttonCountText: $("button-count-text"),
     lastActionText: $("last-action-text"),
@@ -117,12 +134,19 @@ const elements = {
     editAudioAction: $("edit-audio-action"),
     editAudioStep: $("edit-audio-step"),
     editSpotifyAction: $("edit-spotify-action"),
+    editVoicemodAction: $("edit-voicemod-action"),
+    editVoicemodVoiceId: $("edit-voicemod-voice-id"),
+    editVoicemodRandomMode: $("edit-voicemod-random-mode"),
+    loadEditorVoicemodVoicesBtn: $("load-editor-voicemod-voices-btn"),
     editUrl: $("edit-url"),
     obsRequestFields: $("obs-request-fields"),
     obsSceneFields: $("obs-scene-fields"),
     obsSourceFields: $("obs-source-fields"),
     obsAudioFields: $("obs-audio-fields"),
     spotifyFields: $("spotify-fields"),
+    voicemodFields: $("voicemod-fields"),
+    voicemodVoiceIdField: $("voicemod-voice-id-field"),
+    voicemodRandomModeField: $("voicemod-random-mode-field"),
     urlFields: $("url-fields"),
 
     spotifyModal: $("spotify-modal"),
@@ -145,6 +169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderButtons();
     updateObsUI();
     updateSidebarMeta();
+    updateVoicemodConfiguredState();
     refreshSpotifyState();
     startSpotifyAutoRefresh();
     startSpotifyProgressTicker();
@@ -154,6 +179,7 @@ function loadState() {
     const savedButtons = localStorage.getItem(STORAGE_KEYS.buttons);
     const savedAddress = localStorage.getItem(STORAGE_KEYS.obsAddress);
     const savedPassword = localStorage.getItem(STORAGE_KEYS.obsPassword);
+    const savedVoicemodApiKey = localStorage.getItem(STORAGE_KEYS.voicemodApiKey);
     const savedLogs = localStorage.getItem(STORAGE_KEYS.logs);
 
     try {
@@ -170,6 +196,7 @@ function loadState() {
 
     elements.obsAddress.value = savedAddress || "ws://127.0.0.1:4455";
     elements.obsPassword.value = savedPassword || "";
+    elements.voicemodApiKeyInput.value = savedVoicemodApiKey || "";
     elements.obsAddressPreview.textContent = elements.obsAddress.value || "-";
 }
 
@@ -194,11 +221,19 @@ function bindEvents() {
     elements.saveEditorBtn.addEventListener("click", saveEditor);
     elements.deleteButtonBtn.addEventListener("click", deleteCurrentButton);
     elements.editActionType.addEventListener("change", updateDynamicEditorFields);
+    elements.editVoicemodAction.addEventListener("change", updateVoicemodEditorFields);
 
     elements.spotifyTokenBtn.addEventListener("click", spotifyLogin);
     elements.closeSpotifyBtn.addEventListener("click", closeSpotifyModal);
     elements.saveSpotifyTokenBtn.addEventListener("click", saveSpotifyToken);
     elements.clearSpotifyTokenBtn.addEventListener("click", clearSpotifyToken);
+    elements.toggleVoicemodApiKeyBtn.addEventListener("click", toggleVoicemodApiKeyVisibility);
+    elements.saveVoicemodApiKeyBtn.addEventListener("click", saveVoicemodApiKey);
+    elements.clearVoicemodApiKeyBtn.addEventListener("click", clearVoicemodApiKey);
+    elements.loadVoicemodVoicesBtn.addEventListener("click", loadVoicemodVoices);
+    elements.loadEditorVoicemodVoicesBtn.addEventListener("click", loadVoicemodVoices);
+    elements.refreshVoicemodStatusBtn.addEventListener("click", refreshVoicemodStatus);
+    elements.voicemodVoicesSelect.addEventListener("change", loadSelectedVoicemodVoice);
 
     elements.showLogBtn.addEventListener("click", openLogModal);
     elements.closeLogBtn.addEventListener("click", closeLogModal);
@@ -212,6 +247,23 @@ function bindEvents() {
             } catch (error) {
                 showToast(error.message || "Spotify Aktion fehlgeschlagen.");
                 addLog(`Spotify Fehler: ${error.message || "Unbekannter Fehler"}`);
+            }
+        });
+    });
+
+    document.querySelectorAll("[data-voicemod-quick]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const action = btn.dataset.voicemodQuick;
+
+            try {
+                const payload = buildVoicemodPayload(action);
+                await executeVoicemodAction(action, payload);
+                addLog(`Voicemod Aktion: ${action}`);
+                showToast("Voicemod Aktion ausgefuehrt.");
+            } catch (error) {
+                setVoicemodErrorState(error.message || "Voicemod Aktion fehlgeschlagen.");
+                addLog(`Voicemod Fehler: ${error.message || "Unbekannter Fehler"}`);
+                showToast(error.message || "Voicemod Aktion fehlgeschlagen.");
             }
         });
     });
@@ -434,6 +486,10 @@ function openEditorModal(index) {
     elements.editAudioAction.value = button.audioAction || "toggle-mute";
     elements.editAudioStep.value = button.audioStepDb ?? 5;
     elements.editSpotifyAction.value = button.spotifyAction || "toggle";
+    ensureVoicemodVoiceOption(button.voicemodVoiceId);
+    elements.editVoicemodAction.value = button.voicemodAction || "toggleVoiceChanger";
+    elements.editVoicemodVoiceId.value = button.voicemodVoiceId || "";
+    elements.editVoicemodRandomMode.value = button.voicemodRandomMode || VOICEMOD_DEFAULT_RANDOM_MODE;
     elements.editUrl.value = button.url || "";
 
     updateDynamicEditorFields();
@@ -455,6 +511,10 @@ function updateDynamicEditorFields() {
     if (type === "obs-source-toggle") elements.obsSourceFields.classList.remove("hidden");
     if (type === "obs-audio") elements.obsAudioFields.classList.remove("hidden");
     if (type === "spotify") elements.spotifyFields.classList.remove("hidden");
+    if (type === "voicemod") {
+        elements.voicemodFields.classList.remove("hidden");
+        updateVoicemodEditorFields();
+    }
     if (type === "open-url") elements.urlFields.classList.remove("hidden");
 }
 
@@ -464,7 +524,23 @@ function hideAllDynamicSections() {
     elements.obsSourceFields.classList.add("hidden");
     elements.obsAudioFields.classList.add("hidden");
     elements.spotifyFields.classList.add("hidden");
+    elements.voicemodFields.classList.add("hidden");
     elements.urlFields.classList.add("hidden");
+}
+
+function updateVoicemodEditorFields() {
+    const action = elements.editVoicemodAction.value;
+    elements.voicemodVoiceIdField.classList.toggle("hidden", action !== "loadVoice");
+    elements.voicemodRandomModeField.classList.toggle("hidden", action !== "selectRandomVoice");
+
+    if (action === "loadVoice" && !elements.editVoicemodVoiceId.value && elements.voicemodVoicesSelect.value) {
+        ensureVoicemodVoiceOption(elements.voicemodVoicesSelect.value);
+        elements.editVoicemodVoiceId.value = elements.voicemodVoicesSelect.value;
+    }
+
+    if (action === "loadVoice" && hasVoicemodApiKey() && !voicemodVoicesLoaded && !voicemodVoicesLoading) {
+        loadVoicemodVoices({ silent: true });
+    }
 }
 
 function saveEditor() {
@@ -491,6 +567,14 @@ function saveEditor() {
         updated.audioStepDb = normalizeAudioStep(elements.editAudioStep.value);
     } else if (actionType === "spotify") {
         updated.spotifyAction = elements.editSpotifyAction.value;
+    } else if (actionType === "voicemod") {
+        updated.voicemodAction = elements.editVoicemodAction.value;
+
+        if (updated.voicemodAction === "loadVoice") {
+            updated.voicemodVoiceId = elements.editVoicemodVoiceId.value.trim();
+        } else if (updated.voicemodAction === "selectRandomVoice") {
+            updated.voicemodRandomMode = elements.editVoicemodRandomMode.value || VOICEMOD_DEFAULT_RANDOM_MODE;
+        }
     } else if (actionType === "open-url") {
         updated.url = elements.editUrl.value.trim();
     }
@@ -658,6 +742,12 @@ async function executeButton(index) {
                 showToast(`Spotify Aktion: ${button.title}`);
                 break;
 
+            case "voicemod":
+                await executeVoicemodButton(button);
+                addLog(`Voicemod Aktion: ${button.voicemodAction || button.title}`);
+                showToast(`Voicemod Aktion: ${button.title}`);
+                break;
+
             case "open-url":
                 openUrl(button.url);
                 addLog(`URL geöffnet: ${button.url}`);
@@ -777,6 +867,296 @@ function openUrl(url) {
 
     const normalized = /^https?:\/\//i.test(url) ? url : `https://${url}`;
     window.open(normalized, "_blank", "noopener,noreferrer");
+}
+
+async function executeVoicemodButton(button) {
+    const action = button.voicemodAction || "toggleVoiceChanger";
+    const payload = buildVoicemodPayload(action, button);
+    await executeVoicemodAction(action, payload);
+}
+
+function buildVoicemodPayload(action, source = {}) {
+    if (action === "loadVoice") {
+        const voiceID = (source.voicemodVoiceId || source.voiceID || "").trim();
+
+        if (!voiceID) {
+            throw new Error("Keine Voicemod Voice-ID eingetragen.");
+        }
+
+        return { voiceID };
+    }
+
+    if (action === "selectRandomVoice") {
+        return {
+            mode: source.voicemodRandomMode || source.mode || VOICEMOD_DEFAULT_RANDOM_MODE
+        };
+    }
+
+    return {};
+}
+
+async function executeVoicemodAction(action, payload = {}) {
+    const apiKey = getVoicemodApiKey();
+
+    if (!hasVoicemodApiKey()) {
+        throw new Error("Kein Voicemod API-Key verbunden.");
+    }
+
+    if (!VOICEMOD_ACTION_URL) {
+        throw new Error("Voicemod API-Endpunkt fehlt.");
+    }
+
+    setVoicemodBusyState();
+
+    const response = await fetch(VOICEMOD_ACTION_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({ action, payload, apiKey })
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok || data?.status !== "ok") {
+        const message = data?.message || "Voicemod Aktion fehlgeschlagen.";
+        throw new Error(message);
+    }
+
+    setVoicemodConnectedState(data);
+    return data;
+}
+
+async function loadVoicemodVoices(options = {}) {
+    const { silent = false } = options;
+
+    if (voicemodVoicesLoading) return;
+
+    voicemodVoicesLoading = true;
+
+    try {
+        const data = await executeVoicemodAction("getVoices");
+        const voices = extractVoicemodVoices(data);
+        renderVoicemodVoices(voices);
+
+        if (!silent) {
+            addLog(`Voicemod Voices geladen: ${voices.length}`);
+            showToast(voices.length ? "Voicemod Voices geladen." : "Keine Voicemod Voices gefunden.");
+        }
+    } catch (error) {
+        setVoicemodErrorState(error.message || "Voicemod Voices konnten nicht geladen werden.");
+
+        if (silent) {
+            console.warn("Voicemod Voices konnten nicht geladen werden.", error);
+        } else {
+            addLog(`Voicemod Fehler: ${error.message || "Unbekannter Fehler"}`);
+            showToast(error.message || "Voicemod Voices konnten nicht geladen werden.");
+        }
+    } finally {
+        voicemodVoicesLoading = false;
+    }
+}
+
+async function refreshVoicemodStatus() {
+    try {
+        await executeVoicemodAction("getVoiceChangerStatus");
+        addLog("Voicemod Status geprueft");
+        showToast("Voicemod ist erreichbar.");
+    } catch (error) {
+        setVoicemodErrorState(error.message || "Voicemod ist nicht erreichbar.");
+        addLog(`Voicemod Fehler: ${error.message || "Unbekannter Fehler"}`);
+        showToast(error.message || "Voicemod ist nicht erreichbar.");
+    }
+}
+
+async function loadSelectedVoicemodVoice() {
+    const voiceID = elements.voicemodVoicesSelect.value;
+
+    if (!voiceID) return;
+
+    try {
+        await executeVoicemodAction("loadVoice", { voiceID });
+        addLog(`Voicemod Voice geladen: ${voiceID}`);
+        showToast("Voicemod Voice geladen.");
+    } catch (error) {
+        setVoicemodErrorState(error.message || "Voicemod Voice konnte nicht geladen werden.");
+        addLog(`Voicemod Fehler: ${error.message || "Unbekannter Fehler"}`);
+        showToast(error.message || "Voicemod Voice konnte nicht geladen werden.");
+    }
+}
+
+function extractVoicemodVoices(data) {
+    const messages = data?.response?.messages || [];
+
+    for (const message of messages) {
+        const voices = message?.actionObject?.voices || message?.payload?.voices;
+
+        if (Array.isArray(voices)) {
+            return voices;
+        }
+    }
+
+    return [];
+}
+
+function renderVoicemodVoices(voices) {
+    const selectedSidebarVoice = elements.voicemodVoicesSelect.value;
+    const selectedEditorVoice = elements.editVoicemodVoiceId.value;
+
+    voicemodVoices = voices
+        .filter((voice) => voice?.enabled !== false)
+        .map((voice) => ({
+            id: String(voice.id || "").trim(),
+            name: String(voice.friendlyName || voice.name || voice.id || "").trim()
+        }))
+        .filter((voice) => voice.id)
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+    voicemodVoicesLoaded = true;
+
+    renderVoicemodVoiceSelect(elements.voicemodVoicesSelect, selectedSidebarVoice, "Voice auswaehlen...");
+    renderVoicemodVoiceSelect(elements.editVoicemodVoiceId, selectedEditorVoice, "Voice auswaehlen...");
+}
+
+function renderVoicemodVoiceSelect(select, selectedValue, placeholder) {
+    const value = selectedValue || "";
+    select.innerHTML = "";
+
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+
+    if (value && !voicemodVoices.some((voice) => voice.id === value)) {
+        const savedOption = document.createElement("option");
+        savedOption.value = value;
+        savedOption.textContent = `Gespeichert: ${value}`;
+        select.appendChild(savedOption);
+    }
+
+    voicemodVoices.forEach((voice) => {
+        const option = document.createElement("option");
+        option.value = voice.id;
+        option.textContent = voice.name || voice.id;
+        select.appendChild(option);
+    });
+
+    select.value = value;
+}
+
+function ensureVoicemodVoiceOption(voiceId) {
+    const value = String(voiceId || "").trim();
+
+    if (!value) return;
+
+    [elements.voicemodVoicesSelect, elements.editVoicemodVoiceId].forEach((select) => {
+        if ([...select.options].some((option) => option.value === value)) {
+            return;
+        }
+
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = `Gespeichert: ${value}`;
+        select.appendChild(option);
+    });
+}
+
+function getVoicemodApiKey() {
+    return elements.voicemodApiKeyInput.value.trim();
+}
+
+function hasVoicemodApiKey() {
+    return Boolean(getVoicemodApiKey());
+}
+
+function saveVoicemodApiKey() {
+    const apiKey = getVoicemodApiKey();
+
+    if (!apiKey) {
+        showToast("Bitte Voicemod API-Key eintragen.");
+        return;
+    }
+
+    localStorage.setItem(STORAGE_KEYS.voicemodApiKey, apiKey);
+    updateVoicemodConfiguredState();
+    addLog("Voicemod API-Key gespeichert");
+    showToast("Voicemod API-Key gespeichert.");
+}
+
+function clearVoicemodApiKey() {
+    localStorage.removeItem(STORAGE_KEYS.voicemodApiKey);
+    elements.voicemodApiKeyInput.value = "";
+    updateVoicemodConfiguredState();
+    addLog("Voicemod API-Key entfernt");
+    showToast("Voicemod API-Key entfernt.");
+}
+
+function toggleVoicemodApiKeyVisibility() {
+    if (elements.voicemodApiKeyInput.type === "password") {
+        elements.voicemodApiKeyInput.type = "text";
+        elements.toggleVoicemodApiKeyBtn.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+    } else {
+        elements.voicemodApiKeyInput.type = "password";
+        elements.toggleVoicemodApiKeyBtn.innerHTML = '<i class="fa-regular fa-eye"></i>';
+    }
+}
+
+function updateVoicemodConfiguredState() {
+    if (getVoicemodApiKey()) {
+        elements.voicemodStatusDot.classList.remove("online");
+        elements.voicemodStatusText.textContent = "Bereit";
+        elements.voicemodStatusDetail.textContent = "API-Key lokal gespeichert";
+        elements.voicemodSystemStatus.textContent = "Bereit";
+        setVoicemodControlsDisabled(false);
+    } else {
+        elements.voicemodStatusDot.classList.remove("online");
+        elements.voicemodStatusText.textContent = "API-Key fehlt";
+        elements.voicemodStatusDetail.textContent = "API-Key eintragen und speichern";
+        elements.voicemodSystemStatus.textContent = "Fehlt";
+        setVoicemodControlsDisabled(false);
+    }
+}
+
+function setVoicemodBusyState() {
+    elements.voicemodStatusDot.classList.remove("online");
+    elements.voicemodStatusText.textContent = "Sende...";
+    elements.voicemodSystemStatus.textContent = "Aktiv";
+}
+
+function setVoicemodConnectedState(data) {
+    const port = data?.response?.port;
+    elements.voicemodStatusDot.classList.add("online");
+    elements.voicemodStatusText.textContent = "Verbunden";
+    elements.voicemodStatusDetail.textContent = port ? `Lokaler Port ${port}` : "Voicemod erreichbar";
+    elements.voicemodSystemStatus.textContent = "OK";
+}
+
+function setVoicemodErrorState(message) {
+    elements.voicemodStatusDot.classList.remove("online");
+    elements.voicemodStatusText.textContent = "Fehler";
+    elements.voicemodStatusDetail.textContent = message;
+    elements.voicemodSystemStatus.textContent = "Fehler";
+}
+
+function setVoicemodControlsDisabled(disabled) {
+    elements.loadVoicemodVoicesBtn.disabled = disabled;
+    elements.loadEditorVoicemodVoicesBtn.disabled = disabled;
+    elements.refreshVoicemodStatusBtn.disabled = disabled;
+    elements.voicemodVoicesSelect.disabled = disabled;
+
+    document.querySelectorAll("[data-voicemod-quick]").forEach((button) => {
+        button.disabled = disabled;
+    });
+}
+
+function getCookie(name) {
+    const cookie = document.cookie
+        .split(";")
+        .map((item) => item.trim())
+        .find((item) => item.startsWith(`${name}=`));
+
+    return cookie ? decodeURIComponent(cookie.split("=").slice(1).join("=")) : "";
 }
 
 function openSpotifyModal() {

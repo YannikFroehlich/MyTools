@@ -26,6 +26,19 @@ STARTED_AT = timezone.now()
 
 CHANGELOG_ENTRIES = [
     {
+        "version": "2026.09",
+        "date": "15.06.2026",
+        "title": _("Stream Deck mit Voicemod-Steuerung"),
+        "summary": _("Das Stream Deck kann Voicemod jetzt direkt steuern und nutzt dafuer einen lokal gespeicherten API-Key pro Browser."),
+        "type": _("Integration"),
+        "icon": "fa-solid fa-wand-magic-sparkles",
+        "items": [
+            _("Voicemod-Aktionen fuer Voice Changer, Hear Myself, Mikrofon-Mute, Zufalls-Voice und Voice-Wechsel ergaenzt."),
+            _("Voices lassen sich aus Voicemod laden und im Button-Editor per Dropdown auswaehlen."),
+            _("Der Voicemod API-Key wird im Stream Deck gespeichert und bei fehlender Verbindung klar als Hinweis angezeigt."),
+        ],
+    },
+    {
         "version": "2026.08",
         "date": "14.06.2026",
         "title": _("Mobile Bedienung, Realtime und Qualität"),
