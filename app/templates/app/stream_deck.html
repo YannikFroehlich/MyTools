@@ -11,7 +11,8 @@
 <section class="stream-deck-page"
          data-user-id="{{ request.user.id }}"
          data-spotify-client-id="{{ spotify_client_id|escape }}"
-         data-spotify-redirect-uri="{{ spotify_redirect_uri|escape }}">
+         data-spotify-redirect-uri="{{ spotify_redirect_uri|escape }}"
+         data-voicemod-action-url="{% url 'stream-deck-voicemod-action' %}">
     <div class="app-shell">
         <header class="topbar">
             <div class="brand">
@@ -19,7 +20,7 @@
                     <i class="fa-solid fa-circle-notch"></i>
                 </div>
                 <div class="brand-text">
-                    <div class="brand-title">{% translate "OBS + Spotify" %}</div>
+                    <div class="brand-title">{% translate "OBS + Spotify + Voicemod" %}</div>
                     <div class="brand-subtitle">{% translate "Stream-Deck-Steuerung" %}</div>
                 </div>
             </div>
@@ -148,6 +149,72 @@
                         </button>
                     </div>
 
+                    <div class="sidebar-card voicemod-card">
+                        <h2>Voicemod</h2>
+
+                        <div class="status-line">
+                            <span class="status-dot" id="voicemod-status-dot"></span>
+                            <span id="voicemod-status-text">{% translate "API-Key fehlt" %}</span>
+                        </div>
+
+                        <div class="small-muted" id="voicemod-status-detail">
+                            {% translate "API-Key eintragen und speichern" %}
+                        </div>
+
+                        <div class="field compact-field">
+                            <label for="voicemod-api-key-input">{% translate "API-Key" %}</label>
+                            <div class="voicemod-key-row">
+                                <div class="password-wrap">
+                                    <input id="voicemod-api-key-input" type="password" placeholder="{% translate 'Voicemod API-Key' %}" autocomplete="off" />
+                                    <button id="toggle-voicemod-api-key-btn" class="ghost-icon-btn" type="button" aria-label="{% translate 'Voicemod API-Key anzeigen' %}">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                </div>
+                                <button id="save-voicemod-api-key-btn" class="small-btn" type="button">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                    <span>{% translate "Speichern" %}</span>
+                                </button>
+                                <button id="clear-voicemod-api-key-btn" class="small-btn danger" type="button" aria-label="{% translate 'Voicemod API-Key entfernen' %}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="field compact-field">
+                            <label for="voicemod-voices-select">{% translate "Voice" %}</label>
+                            <select id="voicemod-voices-select">
+                                <option value="">{% translate "Voices laden..." %}</option>
+                            </select>
+                        </div>
+
+                        <div class="voicemod-controls">
+                            <button data-voicemod-quick="toggleVoiceChanger" class="round-btn" type="button" aria-label="{% translate 'Voice Changer umschalten' %}" title="{% translate 'Voice Changer' %}">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </button>
+                            <button data-voicemod-quick="toggleHearMyVoice" class="round-btn" type="button" aria-label="{% translate 'Hear Myself umschalten' %}" title="{% translate 'Hear Myself' %}">
+                                <i class="fa-solid fa-headphones"></i>
+                            </button>
+                            <button data-voicemod-quick="toggleMuteMic" class="round-btn" type="button" aria-label="{% translate 'Voicemod Mikrofon stummschalten' %}" title="{% translate 'Mute' %}">
+                                <i class="fa-solid fa-microphone-slash"></i>
+                            </button>
+                            <button data-voicemod-quick="selectRandomVoice" class="round-btn" type="button" aria-label="{% translate 'Zufaellige Voicemod Voice' %}" title="{% translate 'Zufaellige Voice' %}">
+                                <i class="fa-solid fa-shuffle"></i>
+                            </button>
+                        </div>
+
+                        <div class="voicemod-secondary-actions">
+                            <button id="load-voicemod-voices-btn" class="sidebar-btn" type="button">
+                                <i class="fa-solid fa-list"></i>
+                                <span>{% translate "Voices laden" %}</span>
+                            </button>
+
+                            <button id="refresh-voicemod-status-btn" class="sidebar-btn" type="button">
+                                <i class="fa-solid fa-rotate"></i>
+                                <span>{% translate "Status pruefen" %}</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="sidebar-card">
                         <h2>{% translate "System" %}</h2>
 
@@ -165,6 +232,11 @@
                             <div class="info-item">
                                 <span>{% translate "Spotify-Status" %}</span>
                                 <strong id="spotify-system-status">-</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Voicemod</span>
+                                <strong id="voicemod-system-status">-</strong>
                             </div>
 
                             <div class="info-item">
@@ -222,6 +294,7 @@
                             <option value="fa-solid fa-comments">{% translate "Chat" %}</option>
                             <option value="fa-solid fa-circle-notch">OBS</option>
                             <option value="fa-brands fa-spotify">Spotify</option>
+                            <option value="fa-solid fa-wand-magic-sparkles">Voicemod</option>
                             <option value="fa-brands fa-discord">Discord</option>
                             <option value="fa-brands fa-twitch">Twitch</option>
                             <option value="fa-solid fa-microphone">{% translate "Mikrofon" %}</option>
@@ -267,6 +340,7 @@
                             <option value="obs-source-toggle">{% translate "OBS-Quelle umschalten" %}</option>
                             <option value="obs-audio">{% translate "OBS-Audiogerät steuern" %}</option>
                             <option value="spotify">Spotify</option>
+                            <option value="voicemod">Voicemod</option>
                             <option value="open-url">{% translate "URL öffnen" %}</option>
                         </select>
                     </div>
@@ -342,6 +416,42 @@
                             <option value="next">{% translate "Nächstes Lied" %}</option>
                             <option value="previous">{% translate "Vorheriges Lied" %}</option>
                             <option value="toggle">{% translate "Wiedergabe/Pause umschalten" %}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="voicemod-fields" class="dynamic-section hidden">
+                    <div class="field">
+                        <label for="edit-voicemod-action">{% translate "Voicemod-Aktion" %}</label>
+                        <select id="edit-voicemod-action">
+                            <option value="toggleVoiceChanger">{% translate "Voice Changer umschalten" %}</option>
+                            <option value="toggleHearMyVoice">{% translate "Hear Myself umschalten" %}</option>
+                            <option value="toggleMuteMic">{% translate "Mikrofon stumm umschalten" %}</option>
+                            <option value="selectRandomVoice">{% translate "Zufaellige Voice" %}</option>
+                            <option value="loadVoice">{% translate "Voice laden" %}</option>
+                            <option value="getVoices">{% translate "Voices laden" %}</option>
+                        </select>
+                    </div>
+
+                    <div id="voicemod-voice-id-field" class="field hidden">
+                        <label for="edit-voicemod-voice-id">{% translate "Voice" %}</label>
+                        <div class="voicemod-voice-picker">
+                            <select id="edit-voicemod-voice-id">
+                                <option value="">{% translate "Voices laden..." %}</option>
+                            </select>
+                            <button id="load-editor-voicemod-voices-btn" class="small-btn" type="button">
+                                <i class="fa-solid fa-list"></i>
+                                <span>{% translate "Laden" %}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="voicemod-random-mode-field" class="field hidden">
+                        <label for="edit-voicemod-random-mode">{% translate "Random-Modus" %}</label>
+                        <select id="edit-voicemod-random-mode">
+                            <option value="FreeVoices">{% translate "Freie Voices" %}</option>
+                            <option value="AllVoices">{% translate "Alle Voices" %}</option>
+                            <option value="FavoriteVoices">{% translate "Favoriten" %}</option>
                         </select>
                     </div>
                 </div>

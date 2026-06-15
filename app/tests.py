@@ -2010,6 +2010,28 @@ class StaticPageTests(BaseTestCase):
         self.assertContains(response, "Budget-Tracker")
         self.assertContains(response, "Monatsbudget, Einnahmen, Ausgaben, Fixkosten")
 
+    def test_about_page_mentions_stream_deck_voicemod(self):
+        response = self.client.get(reverse("about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("stream-deck"))
+        self.assertContains(response, "Stream Deck")
+        self.assertContains(response, "Voicemod")
+
+    def test_changelog_mentions_stream_deck_voicemod_update(self):
+        response = self.client.get(reverse("changelog"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Stream Deck mit Voicemod-Steuerung")
+        self.assertContains(response, "Voices lassen sich aus Voicemod laden")
+
+    def test_readme_mentions_stream_deck_voicemod(self):
+        readme = (Path(settings.BASE_DIR) / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("Spotify, Voicemod und eigene Aktionen", readme)
+        self.assertIn("Voicemod-Steuerung mit lokal gespeichertem API-Key", readme)
+        self.assertIn("Voice-Auswahl aus der geladenen Voicemod-Liste", readme)
+
     def test_simple_tool_pages_load(self):
         pages = [
             ("obs-dashboard", "app/obs-dashboard.html"),
@@ -2182,6 +2204,108 @@ class StaticPageTests(BaseTestCase):
         self.assertIn("warmObsWebSocketModule", js_content)
         self.assertIn('elements.connectBtn.addEventListener("pointerenter", warmObsWebSocketModule', js_content)
         self.assertNotIn('import OBSWebSocket from "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm"', js_content)
+
+    def test_stream_deck_contains_voicemod_controls(self):
+        response = self.client.get(reverse("stream-deck"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("stream-deck-voicemod-action"))
+        self.assertContains(response, 'id="voicemod-status-dot"')
+        self.assertContains(response, 'id="voicemod-voices-select"')
+        self.assertContains(response, 'data-voicemod-quick="toggleVoiceChanger"')
+        self.assertContains(response, 'value="voicemod"')
+        self.assertContains(response, 'id="voicemod-fields"')
+        self.assertContains(response, 'id="edit-voicemod-action"')
+        self.assertContains(response, 'id="edit-voicemod-voice-id"')
+        self.assertContains(response, 'id="load-editor-voicemod-voices-btn"')
+        self.assertContains(response, 'id="voicemod-api-key-input"')
+        self.assertContains(response, 'id="save-voicemod-api-key-btn"')
+        self.assertContains(response, 'id="clear-voicemod-api-key-btn"')
+
+    def test_stream_deck_populates_voicemod_editor_voice_dropdown(self):
+        js = Path(settings.BASE_DIR) / "app" / "static" / "app" / "js" / "stream_deck.js"
+        js_content = js.read_text(encoding="utf-8")
+
+        self.assertIn("let voicemodVoices = []", js_content)
+        self.assertIn("renderVoicemodVoiceSelect(elements.editVoicemodVoiceId", js_content)
+        self.assertIn("ensureVoicemodVoiceOption(button.voicemodVoiceId)", js_content)
+        self.assertIn('elements.loadEditorVoicemodVoicesBtn.addEventListener("click", loadVoicemodVoices)', js_content)
+        self.assertIn("voicemodApiKey", js_content)
+        self.assertIn("function saveVoicemodApiKey()", js_content)
+        self.assertIn('throw new Error("Kein Voicemod API-Key verbunden.")', js_content)
+
+    @patch("app.views.get_env_value")
+    @patch("app.views.send_voicemod_action")
+    def test_stream_deck_voicemod_action_uses_posted_key(self, mock_send_voicemod_action, mock_get_env_value):
+        mock_get_env_value.side_effect = lambda name: {
+            "VOICEMOD_HOST": "",
+            "VOICEMOD_PORTS": "59129",
+        }.get(name, "")
+        mock_send_voicemod_action.return_value = {"port": 59129, "messages": []}
+
+        response = self.client.post(
+            reverse("stream-deck-voicemod-action"),
+            data=json.dumps({"action": "loadVoice", "payload": {"voiceID": "robot"}, "apiKey": "posted-voicemod-key"}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["status"], "ok")
+        mock_send_voicemod_action.assert_called_once_with(
+            "posted-voicemod-key",
+            "loadVoice",
+            {"voiceID": "robot"},
+            host="127.0.0.1",
+            ports=[59129],
+        )
+
+    @patch("app.views.get_env_value")
+    @patch("app.views.send_voicemod_action")
+    def test_stream_deck_voicemod_action_prefers_posted_key(self, mock_send_voicemod_action, mock_get_env_value):
+        mock_get_env_value.side_effect = lambda name: {
+            "VOICEMOD_HOST": "",
+            "VOICEMOD_PORTS": "59129",
+        }.get(name, "")
+        mock_send_voicemod_action.return_value = {"port": 59129, "messages": []}
+
+        response = self.client.post(
+            reverse("stream-deck-voicemod-action"),
+            data=json.dumps({"action": "toggleMuteMic", "apiKey": "posted-voicemod-key"}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        mock_send_voicemod_action.assert_called_once_with(
+            "posted-voicemod-key",
+            "toggleMuteMic",
+            {},
+            host="127.0.0.1",
+            ports=[59129],
+        )
+
+    @patch("app.views.send_voicemod_action")
+    def test_stream_deck_voicemod_action_without_key_returns_error(self, mock_send_voicemod_action):
+        response = self.client.post(
+            reverse("stream-deck-voicemod-action"),
+            data=json.dumps({"action": "toggleMuteMic"}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["message"], "Kein Voicemod API-Key verbunden.")
+        mock_send_voicemod_action.assert_not_called()
+
+    @patch("app.views.send_voicemod_action")
+    def test_stream_deck_voicemod_action_rejects_unknown_action(self, mock_send_voicemod_action):
+        response = self.client.post(
+            reverse("stream-deck-voicemod-action"),
+            data=json.dumps({"action": "deleteEverything"}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        mock_send_voicemod_action.assert_not_called()
 
 
 class SecurityDashboardAndQrToolTests(BaseTestCase):
