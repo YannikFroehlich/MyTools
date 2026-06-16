@@ -1,11 +1,12 @@
 import random
 import string
 from datetime import timedelta
+from functools import wraps
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import OperationalError, transaction
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -53,6 +54,23 @@ def _player_name(user):
     if not user:
         return ""
     return user.get_full_name() or user.username
+
+
+def _database_lock_guard(view_func):
+    @wraps(view_func)
+    def wrapped(request, *args, **kwargs):
+        try:
+            return view_func(request, *args, **kwargs)
+        except OperationalError as exc:
+            message = str(exc).lower()
+            if "locked" not in message and "busy" not in message:
+                raise
+            return JsonResponse({
+                "ok": False,
+                "error": _("Das Spiel ist gerade besch\u00e4ftigt. Bitte versuche es nochmal."),
+            }, status=503)
+
+    return wrapped
 
 
 def _ensure_game_ready(game):
@@ -431,6 +449,7 @@ def tictactoe_state_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def tictactoe_move_api(request, code):
     try:
         index = int(request.POST.get("index"))
@@ -461,19 +480,23 @@ def tictactoe_move_api(request, code):
         winner_symbol, winning_line = _winner_for_board(board)
         game.board = board
         game.last_move_at = timezone.now()
+        update_fields = ["board", "last_move_at", "updated_at"]
 
         if winner_symbol:
             game.status = TicTacToeGame.STATUS_FINISHED
             game.winner_symbol = winner_symbol
             game.winning_line = winning_line
+            update_fields += ["status", "winner_symbol", "winning_line"]
         elif all(board):
             game.status = TicTacToeGame.STATUS_FINISHED
             game.winner_symbol = ""
             game.winning_line = []
+            update_fields += ["status", "winner_symbol", "winning_line"]
         else:
             game.current_symbol = TicTacToeGame.SYMBOL_O if player_symbol == TicTacToeGame.SYMBOL_X else TicTacToeGame.SYMBOL_X
+            update_fields.append("current_symbol")
 
-        game.save()
+        game.save(update_fields=update_fields)
 
     return JsonResponse({
         "ok": True,
@@ -483,6 +506,7 @@ def tictactoe_move_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def tictactoe_reset_api(request, code):
     with transaction.atomic():
         game = get_object_or_404(
