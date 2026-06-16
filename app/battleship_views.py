@@ -19,6 +19,7 @@ from .models import BattleshipGame, BattleshipInvite, Friendship, UserProfile
 
 
 GAME_PLAYER_TIMEOUT = timedelta(seconds=30)
+PLAYER_SEEN_UPDATE_INTERVAL = timedelta(seconds=5)
 
 BOARD_SIZE = 8
 FLEET = [4, 3, 3, 2, 2]
@@ -179,10 +180,11 @@ def _transfer_owner_if_needed(game, leaving_user):
 def _mark_player_seen(game, user):
     now = timezone.now()
     update_fields = []
-    if game.player_a_id == user.id:
+    recent_cutoff = now - PLAYER_SEEN_UPDATE_INTERVAL
+    if game.player_a_id == user.id and (not game.player_a_last_seen or game.player_a_last_seen < recent_cutoff):
         game.player_a_last_seen = now
         update_fields.append("player_a_last_seen")
-    if game.player_b_id == user.id:
+    if game.player_b_id == user.id and (not game.player_b_last_seen or game.player_b_last_seen < recent_cutoff):
         game.player_b_last_seen = now
         update_fields.append("player_b_last_seen")
     if update_fields:
