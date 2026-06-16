@@ -88,18 +88,25 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(url, {
                 method: "POST",
-                headers: {"X-CSRFToken": csrfToken},
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest",
+                },
                 body: formData,
             });
             const json = await response.json().catch(() => ({ok: false}));
             if (!response.ok || !json.ok) {
-                showToast(json.error || "Aktion fehlgeschlagen");
+                const fallback = response.status >= 500
+                    ? `Serverfehler ${response.status}. Bitte Logs prüfen.`
+                    : `Aktion fehlgeschlagen (${response.status})`;
+                showToast(json.error || fallback);
                 return;
             }
             game = json.game;
             render();
         } finally {
             isPosting = false;
+            syncHostControls();
         }
     }
 
