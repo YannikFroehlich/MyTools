@@ -8,6 +8,8 @@
     const STORAGE_KEY = root.dataset.saveKey || "mytools-cookie-cosmos-v1";
     const SCORE_URL = root.dataset.scoreUrl || "";
     const VERSION = 1;
+    const EXPORT_FORMAT = "mytools-cookie-cosmos-save";
+    const EXPORT_VERSION = 2;
     const ASCENSION_BASE = 50000000;
     const BUILDING_COST_GROWTH = 1.18;
     const SCORE_SYNC_INTERVAL = 15000;
@@ -40,6 +42,7 @@
         saveState: document.getElementById("saveState"),
         soundToggle: document.getElementById("soundToggle"),
         exportButton: document.getElementById("exportButton"),
+        importButton: document.getElementById("importButton"),
         resetButton: document.getElementById("resetButton"),
         canvas: document.getElementById("bakeryCanvas")
     };
@@ -561,28 +564,75 @@
         }
     }
 
-    function normalizeState(raw) {
+    function normalizeState(raw = {}) {
+        if (!raw || typeof raw !== "object") {
+            raw = {};
+        }
+
         const base = defaultState();
         const normalized = { ...base, ...raw };
-        normalized.buildings = { ...base.buildings, ...(raw.buildings || {}) };
-        normalized.stats = { ...base.stats, ...(raw.stats || {}) };
-        normalized.upgrades = Array.isArray(raw.upgrades) ? raw.upgrades : [];
-        normalized.achievements = Array.isArray(raw.achievements) ? raw.achievements : [];
-        normalized.cookies = Number(raw.cookies) || 0;
-        normalized.totalBaked = Number(raw.totalBaked) || 0;
-        normalized.lifetimeBaked = Number(raw.lifetimeBaked) || normalized.totalBaked;
-        normalized.totalClicks = Number(raw.totalClicks) || 0;
-        normalized.manualCookies = Number(raw.manualCookies) || 0;
-        normalized.stardust = Number(raw.stardust) || 0;
-        normalized.ascensions = Number(raw.ascensions) || 0;
-        normalized.combo = Number(raw.combo) || 0;
-        normalized.comboUntil = Number(raw.comboUntil) || 0;
-        normalized.eventUntil = Number(raw.eventUntil) || 0;
-        normalized.overdriveUntil = Number(raw.overdriveUntil) || 0;
-        normalized.overdriveCooldownUntil = Number(raw.overdriveCooldownUntil) || 0;
+        const rawBuildings = raw.buildings && typeof raw.buildings === "object" ? raw.buildings : {};
+        const rawStats = raw.stats && typeof raw.stats === "object" ? raw.stats : {};
+        const upgradeIds = new Set(upgrades.map(upgrade => upgrade.id));
+        const achievementIds = new Set(achievements.map(achievement => achievement.id));
+        const now = Date.now();
+
+        normalized.buildings = {};
+        for (const building of buildings) {
+            const owned = Math.floor(getSafeNumber(rawBuildings[building.id], 0));
+
+            if (owned > 0) {
+                normalized.buildings[building.id] = Math.min(999999, owned);
+            }
+        }
+
+        normalized.stats = { ...base.stats, ...rawStats };
+        normalized.stats.goldenClicks = Math.floor(getSafeNumber(normalized.stats.goldenClicks, 0));
+        normalized.stats.maxCombo = Math.floor(getSafeNumber(normalized.stats.maxCombo, 0));
+        normalized.stats.buildingsBought = Math.floor(getSafeNumber(normalized.stats.buildingsBought, 0));
+        normalized.stats.upgradesBought = Math.floor(getSafeNumber(normalized.stats.upgradesBought, 0));
+
+        normalized.upgrades = uniqueKnownIds(raw.upgrades, upgradeIds);
+        normalized.achievements = uniqueKnownIds(raw.achievements, achievementIds);
+        normalized.cookies = getSafeNumber(raw.cookies, 0);
+        normalized.totalBaked = getSafeNumber(raw.totalBaked, 0);
+        normalized.lifetimeBaked = Math.max(normalized.totalBaked, getSafeNumber(raw.lifetimeBaked, normalized.totalBaked));
+        normalized.totalClicks = Math.floor(getSafeNumber(raw.totalClicks, 0));
+        normalized.manualCookies = getSafeNumber(raw.manualCookies, 0);
+        normalized.stardust = Math.floor(getSafeNumber(raw.stardust, 0));
+        normalized.ascensions = Math.floor(getSafeNumber(raw.ascensions, 0));
+        normalized.combo = getSafeNumber(raw.combo, 0);
+        normalized.comboUntil = getSafeNumber(raw.comboUntil, 0);
+        normalized.eventUntil = getSafeNumber(raw.eventUntil, 0);
+        normalized.overdriveUntil = getSafeNumber(raw.overdriveUntil, 0);
+        normalized.overdriveCooldownUntil = getSafeNumber(raw.overdriveCooldownUntil, 0);
         normalized.sound = raw.sound !== false;
+        normalized.lastSaved = getSafeNumber(raw.lastSaved, now);
         normalized.version = VERSION;
+
+        const eventId = raw.event && typeof raw.event === "object" ? raw.event.id : null;
+        const knownEvent = eventTypes.find(event => event.id === eventId);
+        normalized.event = knownEvent && normalized.eventUntil > now ? { ...knownEvent } : null;
+
         return normalized;
+    }
+
+    function getSafeNumber(value, fallback = 0) {
+        const number = Number(value);
+
+        if (!Number.isFinite(number) || number < 0) {
+            return fallback;
+        }
+
+        return number;
+    }
+
+    function uniqueKnownIds(value, allowedIds) {
+        if (!Array.isArray(value)) {
+            return [];
+        }
+
+        return [...new Set(value.filter(id => allowedIds.has(id)))];
     }
 
     function saveState(label = "Gespeichert") {
@@ -1547,24 +1597,149 @@
         }
     }
 
+    function createExportPayload() {
+        return {
+            type: EXPORT_FORMAT,
+            exportVersion: EXPORT_VERSION,
+            gameVersion: VERSION,
+            app: "MyTools Cookie Cosmos",
+            exportedAt: new Date().toISOString(),
+            state: normalizeState(state)
+        };
+    }
+
+    function encodeExportPayload(payload) {
+        const json = JSON.stringify(payload);
+        const bytes = new TextEncoder().encode(json);
+        let binary = "";
+
+        bytes.forEach(byte => {
+            binary += String.fromCharCode(byte);
+        });
+
+        return btoa(binary);
+    }
+
+    function decodeExportPayload(input) {
+        const text = String(input || "").trim();
+
+        if (!text) {
+            throw new Error("empty");
+        }
+
+        let parsed = tryParseJson(text);
+
+        if (!parsed) {
+            const base64 = text.replace(/\s+/g, "").replace(/-/g, "+").replace(/_/g, "/");
+            const paddedBase64 = base64.padEnd(base64.length + ((4 - base64.length % 4) % 4), "=");
+            const binary = atob(paddedBase64);
+            const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+            parsed = JSON.parse(new TextDecoder().decode(bytes));
+        }
+
+        const importedState = unwrapImportPayload(parsed);
+
+        if (!isSaveLikeObject(importedState)) {
+            throw new Error("invalid-save");
+        }
+
+        return normalizeState(importedState);
+    }
+
+    function tryParseJson(text) {
+        try {
+            return JSON.parse(text);
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function unwrapImportPayload(payload) {
+        if (payload && typeof payload === "object" && payload.state && typeof payload.state === "object") {
+            return payload.state;
+        }
+
+        return payload;
+    }
+
+    function isSaveLikeObject(value) {
+        if (!value || typeof value !== "object") {
+            return false;
+        }
+
+        return [
+            "cookies",
+            "totalBaked",
+            "lifetimeBaked",
+            "buildings",
+            "upgrades",
+            "achievements",
+            "stardust",
+            "ascensions",
+            "version"
+        ].some(key => Object.prototype.hasOwnProperty.call(value, key));
+    }
+
+    function getExportFilename() {
+        const stamp = new Date().toISOString().slice(0, 19).replace(/[T:]/g, "-");
+        return `cookie-cosmos-save-${stamp}.json`;
+    }
+
+    function downloadExportFile(payload) {
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = getExportFilename();
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showNotice("Spielstand-Datei exportiert");
+    }
+
+    function closeOverlayOnBackdrop(overlay) {
+        overlay.querySelector("[data-close]").addEventListener("click", () => overlay.remove());
+        overlay.addEventListener("click", event => {
+            if (event.target === overlay) {
+                overlay.remove();
+            }
+        });
+        overlay.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                overlay.remove();
+            }
+        });
+    }
+
     function showExportDialog() {
+        const payload = createExportPayload();
+        const exportCode = encodeExportPayload(payload);
         const overlay = document.createElement("div");
+
         overlay.className = "export-box";
         overlay.innerHTML = `
-            <div class="export-dialog" role="dialog" aria-modal="true" aria-label="Spielstand exportieren">
+            <div class="export-dialog" role="dialog" aria-modal="true" aria-label="Spielstand exportieren" tabindex="-1">
                 <h2>Spielstand exportieren</h2>
-                <textarea readonly>${btoa(unescape(encodeURIComponent(JSON.stringify(state))))}</textarea>
+                <p>Speichere die JSON-Datei oder kopiere den Code. Beides kannst du spaeter wieder importieren.</p>
+                <textarea readonly aria-label="Export-Code"></textarea>
                 <div class="export-actions">
+                    <button type="button" data-download>Datei herunterladen</button>
                     <button type="button" data-copy>Code kopieren</button>
                     <button type="button" data-close>Schliessen</button>
                 </div>
             </div>
         `;
         document.body.appendChild(overlay);
+
+        const dialog = overlay.querySelector(".export-dialog");
         const textarea = overlay.querySelector("textarea");
-        textarea.focus();
+        textarea.value = exportCode;
+        dialog.focus();
         textarea.select();
 
+        overlay.querySelector("[data-download]").addEventListener("click", () => downloadExportFile(payload));
         overlay.querySelector("[data-copy]").addEventListener("click", async () => {
             textarea.select();
             try {
@@ -1576,12 +1751,91 @@
             }
         });
 
-        overlay.querySelector("[data-close]").addEventListener("click", () => overlay.remove());
-        overlay.addEventListener("click", event => {
-            if (event.target === overlay) {
-                overlay.remove();
+        closeOverlayOnBackdrop(overlay);
+    }
+
+    function showImportDialog() {
+        const overlay = document.createElement("div");
+
+        overlay.className = "export-box";
+        overlay.innerHTML = `
+            <div class="export-dialog" role="dialog" aria-modal="true" aria-label="Spielstand importieren" tabindex="-1">
+                <h2>Spielstand importieren</h2>
+                <p>Fuege deinen Export-Code ein oder waehle die exportierte JSON-Datei aus. Dein aktueller Spielstand wird dabei ersetzt.</p>
+                <textarea aria-label="Import-Code" placeholder="Export-Code oder JSON hier einfuegen"></textarea>
+                <label class="import-file-picker">
+                    <span>JSON-Datei auswaehlen</span>
+                    <input type="file" accept=".json,.txt,application/json,text/plain" data-file>
+                </label>
+                <p class="import-status" data-status></p>
+                <div class="export-actions">
+                    <button type="button" data-import>Importieren</button>
+                    <button type="button" data-close>Abbrechen</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const dialog = overlay.querySelector(".export-dialog");
+        const textarea = overlay.querySelector("textarea");
+        const status = overlay.querySelector("[data-status]");
+        const fileInput = overlay.querySelector("[data-file]");
+
+        dialog.focus();
+        textarea.focus();
+
+        fileInput.addEventListener("change", () => {
+            const file = fileInput.files?.[0];
+
+            if (!file) {
+                return;
             }
+
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+                textarea.value = String(reader.result || "");
+                status.textContent = `${file.name} geladen`;
+            });
+            reader.addEventListener("error", () => {
+                status.textContent = "Datei konnte nicht gelesen werden.";
+            });
+            reader.readAsText(file);
         });
+
+        overlay.querySelector("[data-import]").addEventListener("click", () => {
+            let importedState;
+
+            try {
+                importedState = decodeExportPayload(textarea.value);
+            } catch (error) {
+                status.textContent = "Der Import-Code oder die Datei ist ungueltig.";
+                showNotice("Import fehlgeschlagen");
+                return;
+            }
+
+            if (!window.confirm("Aktuellen Cookie-Cosmos-Spielstand ersetzen?")) {
+                return;
+            }
+
+            applyImportedState(importedState);
+            overlay.remove();
+        });
+
+        closeOverlayOnBackdrop(overlay);
+    }
+
+    function applyImportedState(importedState) {
+        state = normalizeState(importedState);
+        lastScoreSync = 0;
+        lastSubmittedScore = 0;
+        scoreSyncFailedUntil = 0;
+        hideGoldenCookie();
+        updateSoundIcon();
+        renderLists();
+        renderDynamic();
+        saveState("Importiert");
+        submitHighscore(true);
+        showNotice("Spielstand importiert");
     }
 
     function resetGame() {
@@ -1625,6 +1879,7 @@
         ui.ascendButton.addEventListener("click", ascend);
         ui.soundToggle.addEventListener("click", toggleSound);
         ui.exportButton.addEventListener("click", showExportDialog);
+        ui.importButton.addEventListener("click", showImportDialog);
         ui.resetButton.addEventListener("click", resetGame);
 
         document.querySelectorAll(".tab-button").forEach(button => {
