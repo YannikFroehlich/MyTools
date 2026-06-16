@@ -460,8 +460,14 @@ def tictactoe_move_api(request, code):
         return JsonResponse({"ok": False, "error": _("Ungültiges Feld.")}, status=400)
 
     with transaction.atomic():
+        # Wichtig für PostgreSQL/Production:
+        # select_for_update() darf hier nicht zusammen mit select_related() auf
+        # nullable ForeignKeys genutzt werden, weil PostgreSQL sonst mit
+        # "FOR UPDATE cannot be applied to the nullable side of an outer join"
+        # abbrechen kann. Lokal mit SQLite fällt das nicht auf, weil SQLite
+        # select_for_update() praktisch ignoriert.
         game = get_object_or_404(
-            TicTacToeGame.objects.select_for_update().select_related("owner", "player_x", "player_o"),
+            TicTacToeGame.objects.select_for_update(),
             code=code.upper(),
         )
         player_symbol = game.symbol_for_user(request.user)
@@ -509,8 +515,10 @@ def tictactoe_move_api(request, code):
 @_database_lock_guard
 def tictactoe_reset_api(request, code):
     with transaction.atomic():
+        # Siehe Kommentar in tictactoe_move_api: keine nullable Joins in
+        # select_for_update(), sonst crasht PostgreSQL auf dem Server.
         game = get_object_or_404(
-            TicTacToeGame.objects.select_for_update().select_related("owner", "player_x", "player_o"),
+            TicTacToeGame.objects.select_for_update(),
             code=code.upper(),
         )
         if game.owner_id != request.user.id:
