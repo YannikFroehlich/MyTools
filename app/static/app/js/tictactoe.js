@@ -17,10 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const cells = Array.from(document.querySelectorAll(".ttt-cell"));
     let game = null;
     let isPosting = false;
+    let isRefreshing = false;
 
     bindEvents();
     refreshState();
-    setInterval(refreshState, 900);
+    setInterval(refreshState, 1500);
 
     function bindEvents() {
         document.querySelectorAll("form[data-confirm]").forEach((form) => {
@@ -57,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function refreshState() {
+        if (isPosting || isRefreshing) return;
+        isRefreshing = true;
         try {
             const response = await fetch(urls.state, {
                 headers: {"X-Requested-With": "XMLHttpRequest"},
@@ -72,6 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.warn("Tic Tac Toe state failed", error);
+        } finally {
+            isRefreshing = false;
         }
     }
 

@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.backends.signals import connection_created
 from django.db.models.signals import m2m_changed, post_delete, post_save, pre_delete
 
 from .models import (
@@ -29,6 +30,16 @@ INVITE_MODELS = (
     HangmanInvite,
     PongInvite,
 )
+
+
+def _configure_sqlite_connection(sender, connection, **kwargs):
+    if connection.vendor != "sqlite":
+        return
+
+    with connection.cursor() as cursor:
+        cursor.execute("PRAGMA busy_timeout = 20000")
+        cursor.execute("PRAGMA journal_mode = WAL")
+        cursor.execute("PRAGMA synchronous = NORMAL")
 
 
 def _invalidate_users_on_commit(user_ids):
@@ -112,4 +123,8 @@ pre_delete.connect(
     _file_share_deleted,
     sender=FileShare,
     dispatch_uid="app.live_status.file_share.pre_delete",
+)
+connection_created.connect(
+    _configure_sqlite_connection,
+    dispatch_uid="app.sqlite.configure_connection",
 )
