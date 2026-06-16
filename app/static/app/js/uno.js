@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const csrfToken = getCookie("csrftoken");
     let game = null;
     let isPosting = false;
+    let isRefreshing = false;
     let pendingCard = null;
     let chosenColor = "";
     let targetUserId = "";
@@ -31,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bindEvents();
     bindSoundEvents();
     refreshState(true);
-    setInterval(() => refreshState(false), 900);
+    setInterval(() => refreshState(false), 1500);
 
     function bindEvents() {
         document.querySelectorAll("form[data-confirm]").forEach((form) => {
@@ -103,6 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function refreshState(force = false) {
+        if (isPosting || isRefreshing) return;
+        isRefreshing = true;
         try {
             const response = await fetch(urls.state, {headers: {"X-Requested-With": "XMLHttpRequest"}});
             const json = await response.json();
@@ -117,26 +120,45 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.warn("Uno state failed", error);
+        } finally {
+            isRefreshing = false;
         }
     }
 
-    async function post(url, data = {}, soundType = "") {
-        if (isPosting) return;
+    async function post(url, data = null, soundType = "") {
+        if (isPosting || !url) return;
         unlockAudio();
         isPosting = true;
         let nextGame = null;
-        const formData = new FormData();
-        Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+        const hasData = data && Object.keys(data).length > 0;
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json",
+            },
+        };
+
+        if (hasData) {
+            requestOptions.headers["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
+            requestOptions.body = new URLSearchParams(data).toString();
+        }
+
         try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {"X-CSRFToken": csrfToken},
-                body: formData,
-            });
-            const json = await response.json().catch(() => ({ok: false}));
+            const response = await fetch(url, requestOptions);
+            const rawBody = await response.text();
+            let json = {ok: false};
+
+            try {
+                json = rawBody ? JSON.parse(rawBody) : json;
+            } catch (error) {
+                console.warn("Uno action returned non-JSON", response.status, rawBody.slice(0, 200));
+            }
+
             if (!response.ok || !json.ok) {
                 playSound("error");
-                showToast(json.error || "Aktion fehlgeschlagen");
+                showToast(json.error || `Aktion fehlgeschlagen (${response.status})`);
                 return;
             }
             nextGame = json.game;
