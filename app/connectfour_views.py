@@ -22,6 +22,7 @@ BOARD_SIZE = ROWS * COLUMNS
 DIRECTIONS = [(0, 1), (1, 0), (1, 1), (1, -1)]
 PLAYER_STALE_AFTER_SECONDS = 20
 LEGACY_PLAYER_STALE_AFTER_SECONDS = 120
+PLAYER_SEEN_UPDATE_INTERVAL_SECONDS = 5
 
 
 def _generate_game_code():
@@ -90,10 +91,11 @@ def _reset_waiting_game(game):
 def _mark_player_seen(game, user):
     now = timezone.now()
     update_fields = []
-    if game.player_red_id == user.id:
+    recent_cutoff = now - timezone.timedelta(seconds=PLAYER_SEEN_UPDATE_INTERVAL_SECONDS)
+    if game.player_red_id == user.id and (not game.player_red_last_seen or game.player_red_last_seen < recent_cutoff):
         game.player_red_last_seen = now
         update_fields.append("player_red_last_seen")
-    if game.player_yellow_id == user.id:
+    if game.player_yellow_id == user.id and (not game.player_yellow_last_seen or game.player_yellow_last_seen < recent_cutoff):
         game.player_yellow_last_seen = now
         update_fields.append("player_yellow_last_seen")
     if update_fields:

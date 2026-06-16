@@ -19,6 +19,7 @@ from .models import Friendship, PongGame, PongInvite, UserPresence, UserProfile
 
 
 GAME_PLAYER_TIMEOUT = timedelta(seconds=35)
+PLAYER_SEEN_UPDATE_INTERVAL = timedelta(seconds=5)
 FIELD_W = 100.0
 FIELD_H = 100.0
 PADDLE_H = 20.0
@@ -84,10 +85,11 @@ def _ensure_game_ready(game):
 def _mark_player_seen(game, user):
     now = timezone.now()
     update_fields = []
-    if game.player_left_id == user.id:
+    recent_cutoff = now - PLAYER_SEEN_UPDATE_INTERVAL
+    if game.player_left_id == user.id and (not game.player_left_last_seen or game.player_left_last_seen < recent_cutoff):
         game.player_left_last_seen = now
         update_fields.append("player_left_last_seen")
-    if game.player_right_id == user.id:
+    if game.player_right_id == user.id and (not game.player_right_last_seen or game.player_right_last_seen < recent_cutoff):
         game.player_right_last_seen = now
         update_fields.append("player_right_last_seen")
     if update_fields:
