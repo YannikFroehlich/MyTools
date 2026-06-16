@@ -1405,6 +1405,31 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(highscore.score, 12345)
         self.assertEqual(highscore.display_score, "12.3K")
 
+    def test_cookie_clicker_page_sets_presence_status(self):
+        response = self.client.get(reverse("cookie-clicker"))
+
+        self.assertEqual(response.status_code, 200)
+        presence = UserPresence.objects.get(user=self.user)
+        self.assertEqual(presence.active_game, "cookie_cosmos")
+        self.assertEqual(presence.active_game_label, "spielt Cookie Cosmos")
+        self.assertIsNotNone(presence.active_game_updated_at)
+
+    def test_cookie_clicker_score_api_refreshes_presence_status(self):
+        response = self.client.post(
+            reverse("cookie-clicker-score-api"),
+            data=json.dumps({
+                "score": 12345,
+                "cps": 42.5,
+                "click_power": 7.25,
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        presence = UserPresence.objects.get(user=self.user)
+        self.assertEqual(presence.active_game, "cookie_cosmos")
+        self.assertEqual(presence.active_game_label, "spielt Cookie Cosmos")
+
     def test_cookie_clicker_score_api_rejects_non_finite_score(self):
         response = self.client.post(
             reverse("cookie-clicker-score-api"),
