@@ -440,7 +440,7 @@ def pong_invite_response(request, invite_id):
 @require_GET
 def pong_state_api(request, code):
     with transaction.atomic():
-        game = PongGame.objects.select_for_update().select_related("owner", "player_left", "player_right").filter(code=code.upper()).first()
+        game = PongGame.objects.select_for_update(of=("self",)).select_related("owner", "player_left", "player_right").filter(code=code.upper()).first()
         if not game:
             return JsonResponse({"ok": False, "gameDeleted": True, "error": _("Dieser Pong-Raum wurde gelöscht."), "redirectUrl": reverse("pong_home")}, status=410)
         _mark_player_seen(game, request.user)
@@ -461,7 +461,7 @@ def pong_paddle_api(request, code):
         return JsonResponse({"ok": False, "error": _("Ungültige Position.")}, status=400)
     y = _clamp(y, PADDLE_H / 2, FIELD_H - PADDLE_H / 2)
     with transaction.atomic():
-        game = get_object_or_404(PongGame.objects.select_for_update().select_related("owner", "player_left", "player_right"), code=code.upper())
+        game = get_object_or_404(PongGame.objects.select_for_update(of=("self",)).select_related("owner", "player_left", "player_right"), code=code.upper())
         side = game.side_for_user(request.user)
         if not side:
             return JsonResponse({"ok": False, "error": _("Du bist in diesem Raum nur Zuschauer.")}, status=403)
@@ -490,7 +490,7 @@ def pong_paddle_api(request, code):
 @require_POST
 def pong_reset_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(PongGame.objects.select_for_update().select_related("owner", "player_left", "player_right"), code=code.upper())
+        game = get_object_or_404(PongGame.objects.select_for_update(of=("self",)).select_related("owner", "player_left", "player_right"), code=code.upper())
         if game.owner_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Nur der Host kann eine neue Runde starten.")}, status=403)
         game.score_left = 0

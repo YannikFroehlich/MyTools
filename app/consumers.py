@@ -417,7 +417,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def _touch_player(self):
         with transaction.atomic():
-            game = PongGame.objects.select_for_update().select_related("owner", "player_left", "player_right").filter(code=self.code).first()
+            game = PongGame.objects.select_for_update(of=("self",)).select_related("owner", "player_left", "player_right").filter(code=self.code).first()
             if not game:
                 return False
             if not game.side_for_user(self.user):
@@ -441,7 +441,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             return False
         y = _clamp(y, PADDLE_H / 2, FIELD_H - PADDLE_H / 2)
         with transaction.atomic():
-            game = PongGame.objects.select_for_update().select_related("owner", "player_left", "player_right").filter(code=self.code).first()
+            game = PongGame.objects.select_for_update(of=("self",)).select_related("owner", "player_left", "player_right").filter(code=self.code).first()
             if not game:
                 return False
             side = game.side_for_user(self.user)
@@ -463,7 +463,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def _reset_round(self):
         with transaction.atomic():
-            game = PongGame.objects.select_for_update().select_related("owner", "player_left", "player_right").filter(code=self.code).first()
+            game = PongGame.objects.select_for_update(of=("self",)).select_related("owner", "player_left", "player_right").filter(code=self.code).first()
             if not game or game.owner_id != self.user.id:
                 return False
             game.score_left = 0
@@ -502,7 +502,7 @@ async def _room_loop(channel_layer, code, group_name):
 @database_sync_to_async
 def _tick_room(code):
     with transaction.atomic():
-        game = PongGame.objects.select_for_update().select_related("owner", "player_left", "player_right").filter(code=code).first()
+        game = PongGame.objects.select_for_update(of=("self",)).select_related("owner", "player_left", "player_right").filter(code=code).first()
         if not game:
             return False
         _ensure_game_ready(game)
