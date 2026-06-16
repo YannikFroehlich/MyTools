@@ -461,7 +461,7 @@ def tictactoe_move_api(request, code):
 
     with transaction.atomic():
         game = get_object_or_404(
-            TicTacToeGame.objects.select_for_update(of=("self",)).select_related("owner", "player_x", "player_o"),
+            TicTacToeGame.objects.select_for_update(of=("self",)),
             code=code.upper(),
         )
         player_symbol = game.symbol_for_user(request.user)
@@ -510,7 +510,7 @@ def tictactoe_move_api(request, code):
 def tictactoe_reset_api(request, code):
     with transaction.atomic():
         game = get_object_or_404(
-            TicTacToeGame.objects.select_for_update(of=("self",)).select_related("owner", "player_x", "player_o"),
+            TicTacToeGame.objects.select_for_update(of=("self",)),
             code=code.upper(),
         )
         if game.owner_id != request.user.id:
