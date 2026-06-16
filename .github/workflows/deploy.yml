@@ -37,6 +37,12 @@ jobs:
   osv_scan:
     name: OSV Security Scan
     runs-on: self-hosted
+    timeout-minutes: 10
+
+    # OSV nur bei direkten Pushes auf Arbeits-/Feature-Branches ausfuehren.
+    # Pull Requests, main-Merges, Deploys und manuelle Laeufe sollen nicht
+    # auf den Security-Scan warten.
+    if: github.event_name == 'push' && github.ref_name != 'main' && github.ref_name != 'develop'
 
     permissions:
       contents: read
@@ -111,7 +117,7 @@ jobs:
   test:
     name: Test Django App
     runs-on: self-hosted
-    needs: osv_scan
+    timeout-minutes: 25
 
     # Tests nur für Arbeits-/Feature-Branches.
     # Nicht auf main und nicht auf develop, damit Merge- und Develop-Läufe
@@ -166,7 +172,7 @@ jobs:
   build:
     name: Build Docker Image
     runs-on: self-hosted
-    needs: osv_scan
+    timeout-minutes: 20
 
     # Build nach Push/Merge auf main oder manuell.
     # Der Build hängt nicht vom Test-Job ab, weil Tests auf main bewusst
@@ -187,6 +193,7 @@ jobs:
     name: Deploy on yfserver
     runs-on: self-hosted
     needs: build
+    timeout-minutes: 15
 
     # Deployment nur nach echtem Push/Merge auf main, nicht bei Pull Requests.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'

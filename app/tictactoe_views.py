@@ -18,6 +18,7 @@ from .models import Friendship, TicTacToeGame, TicTacToeInvite, UserProfile
 
 
 GAME_PLAYER_TIMEOUT = timedelta(seconds=30)
+PLAYER_SEEN_UPDATE_INTERVAL = timedelta(seconds=5)
 
 
 WINNING_LINES = [
@@ -82,10 +83,11 @@ def _transfer_owner_if_needed(game, leaving_user):
 def _mark_player_seen(game, user):
     now = timezone.now()
     update_fields = []
-    if game.player_x_id == user.id:
+    recent_cutoff = now - PLAYER_SEEN_UPDATE_INTERVAL
+    if game.player_x_id == user.id and (not game.player_x_last_seen or game.player_x_last_seen < recent_cutoff):
         game.player_x_last_seen = now
         update_fields.append("player_x_last_seen")
-    if game.player_o_id == user.id:
+    if game.player_o_id == user.id and (not game.player_o_last_seen or game.player_o_last_seen < recent_cutoff):
         game.player_o_last_seen = now
         update_fields.append("player_o_last_seen")
     if update_fields:
