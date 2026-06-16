@@ -540,7 +540,7 @@ def battleship_state_api(request, code):
 def battleship_place_api(request, code):
     with transaction.atomic():
         game = get_object_or_404(
-            BattleshipGame.objects.select_for_update().select_related("owner", "player_a", "player_b"),
+            BattleshipGame.objects.select_for_update(of=("self",)).select_related("owner", "player_a", "player_b"),
             code=code.upper(),
         )
         side = game.side_for_user(request.user)
@@ -588,7 +588,7 @@ def battleship_attack_api(request, code):
 
     with transaction.atomic():
         game = get_object_or_404(
-            BattleshipGame.objects.select_for_update().select_related("owner", "player_a", "player_b"),
+            BattleshipGame.objects.select_for_update(of=("self",)).select_related("owner", "player_a", "player_b"),
             code=code.upper(),
         )
         side = game.side_for_user(request.user)

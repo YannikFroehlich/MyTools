@@ -627,7 +627,7 @@ def hangman_guess_api(request, code):
         return JsonResponse({"ok": False, "error": _("Bitte gib einen Buchstaben oder ein Wort ein.")}, status=400)
 
     with transaction.atomic():
-        lobby = get_object_or_404(HangmanLobby.objects.select_for_update().select_related("winner"), code=code.upper())
+        lobby = get_object_or_404(HangmanLobby.objects.select_for_update(of=("self",)).select_related("winner"), code=code.upper())
         player = lobby.players.select_for_update().filter(user=request.user).first()
         if not player:
             return JsonResponse({"ok": False, "error": _("Du bist nicht in diesem Raum.")}, status=403)
@@ -730,7 +730,7 @@ def hangman_review_api(request, code):
 
     with transaction.atomic():
         lobby = get_object_or_404(
-            HangmanLobby.objects.select_for_update().select_related("winner"),
+            HangmanLobby.objects.select_for_update(of=("self",)).select_related("winner"),
             code=code.upper(),
         )
         player = lobby.players.select_for_update().filter(user=request.user).first()
