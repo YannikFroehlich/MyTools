@@ -3,11 +3,12 @@ import random
 import string
 from collections import Counter
 from datetime import timedelta
+from functools import wraps
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import OperationalError, transaction
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -55,6 +56,23 @@ def _generate_game_code():
 
 def _player_name(user):
     return user.get_full_name() or user.username if user else ""
+
+
+def _database_lock_guard(view_func):
+    @wraps(view_func)
+    def wrapped(request, *args, **kwargs):
+        try:
+            return view_func(request, *args, **kwargs)
+        except OperationalError as exc:
+            message = str(exc).lower()
+            if "locked" not in message and "busy" not in message:
+                raise
+            return JsonResponse({
+                "ok": False,
+                "error": _("Das Spiel ist gerade besch\u00e4ftigt. Bitte versuche es nochmal."),
+            }, status=503)
+
+    return wrapped
 
 
 def _ordered_players(game):
@@ -594,9 +612,10 @@ def kniffel_state_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def kniffel_start_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(KniffelGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(KniffelGame.objects.select_for_update(of=("self",)), code=code.upper())
         if game.owner_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Nur der Host kann starten.")}, status=403)
         if game.status != KniffelGame.STATUS_WAITING or game.players.count() < 2:
@@ -608,9 +627,10 @@ def kniffel_start_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def kniffel_roll_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(KniffelGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(KniffelGame.objects.select_for_update(of=("self",)), code=code.upper())
         players = _ordered_players(game)
         current = players[game.current_player_index % len(players)] if players else None
         if not current or current.user_id != request.user.id or game.status != KniffelGame.STATUS_PLAYING:
@@ -639,13 +659,14 @@ def kniffel_roll_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def kniffel_score_api(request, code):
     category = request.POST.get("category", "")
     if category not in CATEGORY_ORDER:
         return JsonResponse({"ok": False, "error": _("Unbekannte Kategorie.")}, status=400)
 
     with transaction.atomic():
-        game = get_object_or_404(KniffelGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(KniffelGame.objects.select_for_update(of=("self",)), code=code.upper())
         players = _ordered_players(game)
         current = players[game.current_player_index % len(players)] if players else None
         if not current or current.user_id != request.user.id or game.status != KniffelGame.STATUS_PLAYING:
@@ -672,9 +693,10 @@ def kniffel_score_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def kniffel_reset_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(KniffelGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(KniffelGame.objects.select_for_update(of=("self",)), code=code.upper())
         if game.owner_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Nur der Host kann neu starten.")}, status=403)
         if game.players.count() < 2:
