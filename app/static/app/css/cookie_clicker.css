@@ -738,6 +738,13 @@ body:has(.cookie-page) main {
     font-size: 1.2rem;
 }
 
+.export-dialog p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    line-height: 1.45;
+    text-align: left;
+}
+
 .export-dialog textarea {
     width: 100%;
     min-height: 180px;
@@ -750,9 +757,36 @@ body:has(.cookie-page) main {
     font-family: Consolas, monospace;
 }
 
+.import-file-picker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.import-file-picker input {
+    max-width: 210px;
+}
+
+.import-status {
+    min-height: 20px;
+    margin-top: 8px !important;
+    color: var(--mint) !important;
+    font-size: 0.86rem;
+}
+
 .export-actions {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 8px;
     margin-top: 10px;
 }
