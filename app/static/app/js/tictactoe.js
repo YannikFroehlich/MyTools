@@ -80,26 +80,53 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    async function post(url, data = {}) {
+    async function post(url, data = null) {
         isPosting = true;
-        const formData = new FormData();
-        Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+        const hasData = data && Object.keys(data).length > 0;
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json",
+            },
+        };
+
+        if (hasData) {
+            requestOptions.headers["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
+            requestOptions.body = new URLSearchParams(data).toString();
+        }
 
         try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {"X-CSRFToken": csrfToken},
-                body: formData,
-            });
-            const json = await response.json().catch(() => ({ok: false}));
+            const response = await fetch(url, requestOptions);
+            const rawBody = await response.text();
+            let json = {ok: false};
+
+            try {
+                json = rawBody ? JSON.parse(rawBody) : {ok: false};
+            } catch (error) {
+                console.warn("Tic Tac Toe response was not JSON", {
+                    status: response.status,
+                    url,
+                    body: rawBody.slice(0, 500),
+                });
+            }
+
             if (!response.ok || !json.ok) {
-                showToast(json.error || "Aktion fehlgeschlagen");
+                const fallback = response.status >= 500
+                    ? `Serverfehler ${response.status}. Bitte Logs prüfen.`
+                    : `Aktion fehlgeschlagen (${response.status})`;
+                showToast(json.error || fallback);
                 return;
             }
             game = json.game;
             render();
+        } catch (error) {
+            console.warn("Tic Tac Toe post failed", error);
+            showToast("Aktion fehlgeschlagen");
         } finally {
             isPosting = false;
+            syncHostControls();
         }
     }
 

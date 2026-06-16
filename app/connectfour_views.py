@@ -445,7 +445,7 @@ def connectfour_move_api(request, code):
 
     with transaction.atomic():
         game = get_object_or_404(
-            ConnectFourGame.objects.select_for_update().select_related("owner", "player_red", "player_yellow"),
+            ConnectFourGame.objects.select_for_update(of=("self",)).select_related("owner", "player_red", "player_yellow"),
             code=code.upper(),
         )
         player_disc = game.disc_for_user(request.user)

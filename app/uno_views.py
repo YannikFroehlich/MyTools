@@ -1,11 +1,12 @@
 import random
 import string
 from datetime import timedelta
+from functools import wraps
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import OperationalError, transaction
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -47,6 +48,23 @@ def _generate_game_code():
 
 def _player_name(user):
     return user.get_full_name() or user.username if user else ""
+
+
+def _database_lock_guard(view_func):
+    @wraps(view_func)
+    def wrapped(request, *args, **kwargs):
+        try:
+            return view_func(request, *args, **kwargs)
+        except OperationalError as exc:
+            message = str(exc).lower()
+            if "locked" not in message and "busy" not in message:
+                raise
+            return JsonResponse({
+                "ok": False,
+                "error": _("Das Spiel ist gerade besch\u00e4ftigt. Bitte versuche es nochmal."),
+            }, status=503)
+
+    return wrapped
 
 
 def _card(card_id, color, value):
@@ -612,9 +630,10 @@ def uno_state_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def uno_start_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(UnoGame.objects.select_for_update(of=("self",)), code=code.upper())
         if game.owner_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Nur der Host kann starten.")}, status=403)
         if game.status != UnoGame.STATUS_WAITING or game.players.count() < 2:
@@ -627,13 +646,14 @@ def uno_start_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def uno_play_api(request, code):
     card_id = request.POST.get("card_id", "")
     chosen_color = request.POST.get("color", "")
     target_user_id = request.POST.get("target_user_id")
     target_user_id = int(target_user_id) if target_user_id and target_user_id.isdigit() else None
     with transaction.atomic():
-        game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(UnoGame.objects.select_for_update(of=("self",)), code=code.upper())
         players = _ordered_players(game)
         player = next((row for row in players if row.user_id == request.user.id), None)
         current = _current_player(game, players)
@@ -690,9 +710,10 @@ def uno_play_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def uno_draw_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(UnoGame.objects.select_for_update(of=("self",)), code=code.upper())
         players = _ordered_players(game)
         current = _current_player(game, players)
         player = next((row for row in players if row.user_id == request.user.id), None)
@@ -722,9 +743,10 @@ def uno_draw_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def uno_pass_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(UnoGame.objects.select_for_update(of=("self",)), code=code.upper())
         players = _ordered_players(game)
         current = _current_player(game, players)
         if not current or current.user_id != request.user.id or not game.has_drawn_this_turn:
@@ -740,9 +762,10 @@ def uno_pass_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def uno_call_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(UnoGame.objects.select_for_update(of=("self",)), code=code.upper())
         players = _ordered_players(game)
         current = _current_player(game, players)
         player = next((row for row in players if row.user_id == request.user.id), None)
@@ -762,12 +785,13 @@ def uno_call_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def uno_catch_api(request, code):
     target_user_id = request.POST.get("target_user_id")
     if not target_user_id or not target_user_id.isdigit():
         return JsonResponse({"ok": False, "error": _("W\u00e4hle einen Spieler.")}, status=400)
     with transaction.atomic():
-        game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(UnoGame.objects.select_for_update(of=("self",)), code=code.upper())
         hands = dict(game.hands or {})
         target_key = str(int(target_user_id))
         if len(hands.get(target_key, [])) != 1 or (game.uno_calls or {}).get(target_key):
@@ -781,9 +805,10 @@ def uno_catch_api(request, code):
 
 @login_required
 @require_POST
+@_database_lock_guard
 def uno_reset_api(request, code):
     with transaction.atomic():
-        game = get_object_or_404(UnoGame.objects.select_for_update(), code=code.upper())
+        game = get_object_or_404(UnoGame.objects.select_for_update(of=("self",)), code=code.upper())
         if game.owner_id != request.user.id:
             return JsonResponse({"ok": False, "error": _("Nur der Host kann neu starten.")}, status=403)
         if game.players.count() < 2:
