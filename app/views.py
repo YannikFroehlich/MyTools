@@ -19,7 +19,7 @@ from django.utils.translation import gettext as _
 from dotenv import dotenv_values, load_dotenv
 
 from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
-    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserPresence, UserProfile, WeatherLocation
+    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
 
 import json
 
@@ -32,11 +32,11 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.urls import reverse
-from django.utils import timezone as django_timezone
 from django.views.decorators.http import require_POST
 
 from .models import Note, SiteAccessSettings
 from .forms import SignUpForm
+from .presence_utils import mark_active_game
 from .voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
 
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -1508,6 +1508,7 @@ def get_human_benchmark_score_data(user):
 
 @ensure_csrf_cookie
 def human_benchmark(request):
+    mark_active_game(request.user, "human_benchmark")
     benchmark_labels = {
         "loading": _("Lade Text..."),
         "translating": _("Übersetze..."),
@@ -1531,6 +1532,7 @@ def human_benchmark(request):
 
 @require_POST
 def human_benchmark_score_api(request):
+    mark_active_game(request.user, "human_benchmark")
     try:
         payload = json.loads(request.body.decode("utf-8"))
     except (json.JSONDecodeError, UnicodeDecodeError):
@@ -1939,10 +1941,12 @@ def unit_converter_view(request):
 
 
 def drift_circuit(request):
+    mark_active_game(request.user, "drift_circuit")
     return render(request, "app/drift_circuit.html")
 
 
 def snake_powerups(request):
+    mark_active_game(request.user, "snake_powerups")
     return render(request, "app/snake_powerups.html")
 
 
@@ -1965,6 +1969,7 @@ def serialize_2048_highscore(highscore):
 
 @ensure_csrf_cookie
 def game_2048(request):
+    mark_active_game(request.user, "2048")
     return render(request, "app/game_2048.html", {
         "highscore": serialize_2048_highscore(
             Game2048HighScore.objects.filter(user=request.user).first() if request.user.is_authenticated else None
@@ -1973,18 +1978,7 @@ def game_2048(request):
 
 
 def _touch_2048_activity(user):
-    if not getattr(user, "is_authenticated", False):
-        return
-    now = django_timezone.now()
-    UserPresence.objects.update_or_create(
-        user=user,
-        defaults={
-            "last_seen": now,
-            "active_game": "2048",
-            "active_game_label": str(_("spielt 2048")),
-            "active_game_updated_at": now,
-        },
-    )
+    mark_active_game(user, "2048")
 
 
 @login_required
@@ -2090,12 +2084,14 @@ def serialize_cookie_clicker_highscore(highscore):
 
 @ensure_csrf_cookie
 def cookie_clicker(request):
+    mark_active_game(request.user, "cookie_cosmos")
     return render(request, "app/cookie_clicker.html")
 
 
 @login_required
 @require_POST
 def cookie_clicker_score_api(request):
+    mark_active_game(request.user, "cookie_cosmos")
     try:
         payload = json.loads(request.body.decode("utf-8"))
     except (json.JSONDecodeError, UnicodeDecodeError):
@@ -2111,10 +2107,10 @@ def cookie_clicker_score_api(request):
         upgrades_count = int(payload.get("upgrades_count") or 0)
         buildings_count = int(payload.get("buildings_count") or 0)
     except (TypeError, ValueError):
-        return api_error_response(_("Ungueltiger Cookie-Cosmos-Score."), status=400)
+        return api_error_response(_("Ung\u00fcltiger Cookie-Cosmos-Score."), status=400)
 
     if not all(math.isfinite(value) for value in (score, cps, click_power)) or score < 0 or cps < 0 or click_power < 0:
-        return api_error_response(_("Ungueltiger Cookie-Cosmos-Score."), status=400)
+        return api_error_response(_("Ung\u00fcltiger Cookie-Cosmos-Score."), status=400)
 
     details = payload.get("details") if isinstance(payload.get("details"), dict) else {}
     display_score = str(payload.get("display_score") or format_cookie_score(score))[:80]

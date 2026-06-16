@@ -503,8 +503,6 @@ def server_status_view(request):
         status_warnings.append(_("Projekt-Laufwerk ist zu %(percent)s%% belegt.") % {"percent": disk_usage["used_percent"]})
     if status_counts["failed_logins_today"] >= 5:
         status_warnings.append(_("%(count)s fehlgeschlagene Logins heute.") % {"count": status_counts["failed_logins_today"]})
-    if site_access.login_registration_locked:
-        status_warnings.append(_("Login und Registrierung sind aktuell gesperrt."))
 
     context = {
         "services": services,

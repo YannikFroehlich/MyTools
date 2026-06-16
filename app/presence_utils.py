@@ -19,6 +19,10 @@ GAME_ACTIVITY_LABELS = {
     "hangman": _("spielt Hangman"),
     "pong": _("spielt Pong"),
     "2048": _("spielt 2048"),
+    "cookie_cosmos": _("spielt Cookie Cosmos"),
+    "drift_circuit": _("spielt Racing Game"),
+    "human_benchmark": _("spielt Human Benchmark"),
+    "snake_powerups": _("spielt Snake Powerups"),
 }
 
 
@@ -35,6 +39,29 @@ def touch_user_presence(user):
         if created or presence.last_seen <= now - timezone.timedelta(seconds=TOUCH_THROTTLE_SECONDS):
             presence.last_seen = now
             presence.save(update_fields=["last_seen"])
+    except Exception:
+        pass
+
+
+def mark_active_game(user, game_key, label=None):
+    if not getattr(user, "is_authenticated", False):
+        return
+
+    label = label or GAME_ACTIVITY_LABELS.get(game_key, "")
+    if not label:
+        return
+
+    now = timezone.now()
+    try:
+        UserPresence.objects.update_or_create(
+            user=user,
+            defaults={
+                "last_seen": now,
+                "active_game": game_key,
+                "active_game_label": str(label),
+                "active_game_updated_at": now,
+            },
+        )
     except Exception:
         pass
 

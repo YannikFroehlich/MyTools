@@ -180,6 +180,7 @@ def leaderboard_view(request):
             "score": item.display_score,
             "detail": _("Cookie Cosmos Â· %(upgrades)s Upgrades") % {"upgrades": item.upgrades_count},
         })
+        cookie_rows[-1]["detail"] = _("Cookie Cosmos \u00b7 %(upgrades)s Upgrades") % {"upgrades": item.upgrades_count}
     boards.append({"title": _("Cookie Cosmos"), "icon": "fa-solid fa-cookie-bite", "rows": cookie_rows})
 
     stadt_rows = []

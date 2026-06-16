@@ -29,6 +29,14 @@ def hostname_from_value(value):
     return value.split("/", 1)[0].split(":", 1)[0]
 
 
+def is_public_host(host):
+    return (
+        host
+        and host not in {"*", "localhost", "127.0.0.1", "::1"}
+        and not host.startswith(".")
+    )
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-only-change-me")
 
@@ -54,8 +62,11 @@ if DOMAIN and DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(DOMAIN)
 
 CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
-if DOMAIN and DOMAIN not in {"localhost", "127.0.0.1"}:
-    origin = f"https://{DOMAIN}"
+for csrf_host in [*ALLOWED_HOSTS, DOMAIN]:
+    if not is_public_host(csrf_host):
+        continue
+
+    origin = f"https://{csrf_host}"
     if origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(origin)
 
