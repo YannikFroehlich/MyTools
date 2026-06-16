@@ -92,6 +92,11 @@
     cursor: pointer;
 }
 
+.weather-unit-toggle select option {
+    background: #ffffff;
+    color: #172033;
+}
+
 .weather-search-form:hover {
     border-color: rgba(var(--theme-accent-rgb), 0.34);
     box-shadow:
@@ -738,7 +743,8 @@
 
 /* ───────────────── DARK MODE ───────────────── */
 
-body.dark-mode .weather-search-form {
+body.dark-mode .weather-search-form,
+body.dark .weather-search-form {
     background: linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.18), rgba(0, 0, 0, 0.34));
     border-color: rgba(var(--theme-accent-end-rgb), 0.24);
 
@@ -747,7 +753,8 @@ body.dark-mode .weather-search-form {
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-body.dark-mode .weather-unit-toggle {
+body.dark-mode .weather-unit-toggle,
+body.dark .weather-unit-toggle {
     background: linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.18), rgba(0, 0, 0, 0.34));
     border-color: rgba(var(--theme-accent-end-rgb), 0.24);
     box-shadow:
@@ -755,19 +762,25 @@ body.dark-mode .weather-unit-toggle {
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-body.dark-mode .weather-unit-toggle i {
+body.dark-mode .weather-unit-toggle i,
+body.dark .weather-unit-toggle i {
     color: var(--theme-accent-end);
 }
 
-body.dark-mode .weather-unit-toggle select {
+body.dark-mode .weather-unit-toggle select,
+body.dark .weather-unit-toggle select {
+    color-scheme: dark;
     color: #ffffff;
 }
 
-body.dark-mode .weather-unit-toggle select option {
-    color: #111827;
+body.dark-mode .weather-unit-toggle select option,
+body.dark .weather-unit-toggle select option {
+    background: #111827;
+    color: #ffffff;
 }
 
-body.dark-mode .weather-search-form:hover {
+body.dark-mode .weather-search-form:hover,
+body.dark .weather-search-form:hover {
     border-color: rgba(var(--theme-accent-end-rgb), 0.24);
     box-shadow:
         0 16px 38px rgba(0, 0, 0, 0.28),

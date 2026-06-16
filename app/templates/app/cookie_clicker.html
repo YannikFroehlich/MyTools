@@ -1,11 +1,12 @@
 {% extends 'app/base.html' %}
 {% load static %}
 {% load i18n %}
+{% get_current_language as COOKIE_LANGUAGE %}
 
 {% block title %}Cookie Cosmos - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/cookie_clicker.css' %}?v=20260616-cookie-cosmos-import">
+    <link rel="stylesheet" href="{% static 'app/css/cookie_clicker.css' %}?v=20260616-cookie-cosmos-i18n">
 {% endblock %}
 
 {% block content %}
@@ -32,7 +33,7 @@
                 <button type="button" class="icon-button" id="importButton" aria-label="{% translate 'Spielstand importieren' %}" title="{% translate 'Import' %}">
                     <i class="fa-solid fa-file-import"></i>
                 </button>
-                <button type="button" class="icon-button danger" id="resetButton" aria-label="{% translate 'Spielstand zuruecksetzen' %}" title="{% translate 'Reset' %}">
+                <button type="button" class="icon-button danger" id="resetButton" aria-label="{% if COOKIE_LANGUAGE == 'en' %}Reset save{% else %}Spielstand zurücksetzen{% endif %}" title="{% translate 'Reset' %}">
                     <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -107,7 +108,7 @@
                         <i id="comboBar"></i>
                     </div>
                     <div>
-                        <span>{% translate "Naechster Stern" %}</span>
+                        <span>{% if COOKIE_LANGUAGE == 'en' %}Next star{% else %}Nächster Stern{% endif %}</span>
                         <strong id="nextStarLabel">50M</strong>
                     </div>
                 </div>
@@ -165,5 +166,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/cookie_clicker.js' %}?v=20260616-cookie-cosmos-import" defer></script>
+    <script src="{% static 'app/js/cookie_clicker.js' %}?v=20260616-cookie-cosmos-i18n" defer></script>
 {% endblock %}

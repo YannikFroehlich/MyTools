@@ -13,7 +13,8 @@
     const ASCENSION_BASE = 50000000;
     const BUILDING_COST_GROWTH = 1.18;
     const SCORE_SYNC_INTERVAL = 15000;
-    const numberFormatter = new Intl.NumberFormat("de-DE");
+    const language = (document.documentElement.lang || "de").toLowerCase().startsWith("en") ? "en" : "de";
+    const numberFormatter = new Intl.NumberFormat(language === "en" ? "en-US" : "de-DE");
     const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
 
     const ui = {
@@ -49,6 +50,286 @@
 
     const ctx = ui.canvas.getContext("2d", { alpha: false });
 
+    const copy = {
+        de: {
+            status: {
+                saved: "Gespeichert",
+                highscoreSynced: "Highscore synchronisiert",
+                bought: "Gekauft",
+                upgrade: "Upgrade",
+                golden: "Golden",
+                transcended: "Transzendiert",
+                imported: "Importiert",
+                reset: "Zurückgesetzt",
+                soundOn: "Sound an",
+                soundOff: "Sound aus",
+                ready: "Bereit"
+            },
+            ui: {
+                notEnoughCookies: "zu wenig Cookies",
+                boughtBuilding: "{amount}x {name} gekauft",
+                unlocked: "{name} freigeschaltet",
+                luckyBatch: "Lucky Batch: +{amount} Cookies",
+                timeJump: "Zeitsprung: +{amount} Cookies",
+                overdriveActive: "Overdrive aktiv: Klicks x4, CPS x2",
+                ascendConfirm: "Transzendieren und {amount} Stardust erhalten? Deine Anlagen und Upgrades starten neu.",
+                activeSeconds: "{seconds}s aktiv",
+                cooldownSeconds: "{seconds}s Cooldown",
+                untilStar: "{amount} bis Stern",
+                ownedSummary: "{amount} Anlagen aktiv",
+                buyAmount: "{amount} kaufen",
+                buy: "Kaufen",
+                cost: "Kosten",
+                output: "Output",
+                upgradeSummary: "{bought} gekauft, {ready} bereit",
+                emptyResearch: "Noch keine Forschung sichtbar.",
+                new: "Neu",
+                unlock: "Freischalten",
+                achievementSummary: "{complete} von {total} erledigt",
+                offlineGain: "Offline gebacken: +{amount} Cookies",
+                exportedFile: "Spielstand-Datei exportiert",
+                copiedExport: "Export-Code kopiert",
+                markedExport: "Export-Code markiert",
+                exportDialogLabel: "Spielstand exportieren",
+                exportTitle: "Spielstand exportieren",
+                exportDescription: "Speichere die JSON-Datei oder kopiere den Code. Beides kannst du später wieder importieren.",
+                exportCode: "Export-Code",
+                downloadFile: "Datei herunterladen",
+                copyCode: "Code kopieren",
+                close: "Schließen",
+                importDialogLabel: "Spielstand importieren",
+                importTitle: "Spielstand importieren",
+                importDescription: "Füge deinen Export-Code ein oder wähle die exportierte JSON-Datei aus. Dein aktueller Spielstand wird dabei ersetzt.",
+                importCode: "Import-Code",
+                importPlaceholder: "Export-Code oder JSON hier einfügen",
+                chooseJson: "JSON-Datei auswählen",
+                fileLoaded: "{name} geladen",
+                fileReadError: "Datei konnte nicht gelesen werden.",
+                importInvalid: "Der Import-Code oder die Datei ist ungültig.",
+                importFailed: "Import fehlgeschlagen",
+                replaceSaveConfirm: "Aktuellen Cookie-Cosmos-Spielstand ersetzen?",
+                importedSave: "Spielstand importiert",
+                resetConfirm: "Spielstand wirklich zurücksetzen?",
+                resetAria: "Spielstand zur\u00fccksetzen",
+                nextStar: "N\u00e4chster Stern"
+            }
+        },
+        en: {
+            status: {
+                saved: "Saved",
+                highscoreSynced: "High score synced",
+                bought: "Bought",
+                upgrade: "Upgrade",
+                golden: "Golden",
+                transcended: "Transcended",
+                imported: "Imported",
+                reset: "Reset",
+                soundOn: "Sound on",
+                soundOff: "Sound off",
+                ready: "Ready"
+            },
+            ui: {
+                notEnoughCookies: "not enough cookies",
+                boughtBuilding: "Bought {amount}x {name}",
+                unlocked: "{name} unlocked",
+                luckyBatch: "Lucky batch: +{amount} cookies",
+                timeJump: "Time jump: +{amount} cookies",
+                overdriveActive: "Overdrive active: clicks x4, CPS x2",
+                ascendConfirm: "Transcend and gain {amount} Stardust? Your buildings and upgrades will restart.",
+                activeSeconds: "{seconds}s active",
+                cooldownSeconds: "{seconds}s cooldown",
+                untilStar: "{amount} to next star",
+                ownedSummary: "{amount} buildings active",
+                buyAmount: "Buy {amount}",
+                buy: "Buy",
+                cost: "Cost",
+                output: "Output",
+                upgradeSummary: "{bought} bought, {ready} ready",
+                emptyResearch: "No research visible yet.",
+                new: "New",
+                unlock: "Unlock",
+                achievementSummary: "{complete} of {total} completed",
+                offlineGain: "Baked offline: +{amount} cookies",
+                exportedFile: "Save file exported",
+                copiedExport: "Export code copied",
+                markedExport: "Export code selected",
+                exportDialogLabel: "Export save",
+                exportTitle: "Export save",
+                exportDescription: "Save the JSON file or copy the code. You can import either one later.",
+                exportCode: "Export code",
+                downloadFile: "Download file",
+                copyCode: "Copy code",
+                close: "Close",
+                importDialogLabel: "Import save",
+                importTitle: "Import save",
+                importDescription: "Paste your export code or choose the exported JSON file. Your current save will be replaced.",
+                importCode: "Import code",
+                importPlaceholder: "Paste export code or JSON here",
+                chooseJson: "Choose JSON file",
+                fileLoaded: "{name} loaded",
+                fileReadError: "File could not be read.",
+                importInvalid: "The import code or file is invalid.",
+                importFailed: "Import failed",
+                replaceSaveConfirm: "Replace the current Cookie Cosmos save?",
+                importedSave: "Save imported",
+                resetConfirm: "Really reset your save?",
+                resetAria: "Reset save",
+                nextStar: "Next star"
+            },
+            buildings: {
+                clicker: { name: "Click bots", note: "Tiny arms for steady base production" },
+                apprentice: { name: "Doughlings", note: "Knead, roll, sort" },
+                oven: { name: "Turbo ovens", note: "Hot cores, short bake time" },
+                farm: { name: "Sugar fields", note: "Crystal sugar straight from the field" },
+                factory: { name: "Cookie factory", note: "Conveyor belt, icing, packaging" },
+                lab: { name: "Aroma lab", note: "Vanilla formulas with side effects" },
+                portal: { name: "Crumb portal", note: "Cookies from very practical dimensions" },
+                forge: { name: "Star forge", note: "Bakes with compressed starlight" },
+                timeline: { name: "Time mill", note: "Tomorrow was already baked yesterday" },
+                moon: { name: "Moon bakery", note: "Low gravity, high lift" },
+                nebula: { name: "Nebula refinery", note: "Sugar dust from glowing clouds" },
+                quantum: { name: "Quantum mixer", note: "Stirs every dough in several states" },
+                blackhole: { name: "Black-hole storage", note: "Stores everything, loses almost nothing" },
+                multiverse: { name: "Multiverse branch", note: "One bakery per reality" },
+                singularity: { name: "Singularity kitchen", note: "One point, infinite trays" }
+            },
+            upgrades: {
+                double_dough: { name: "Dense dough", effect: "Clicks x1.8" },
+                butter_logic: { name: "Butter logic", effect: "Click bots x2" },
+                caramel_cache: { name: "Caramel cache", effect: "CPS x1.15" },
+                oven_matrix: { name: "Oven matrix", effect: "Turbo ovens x2" },
+                lucky_glove: { name: "Lucky glove", effect: "Crit chance +4%" },
+                sugar_radar: { name: "Golden radar", effect: "Golden cookies faster, value x1.15" },
+                farm_weather: { name: "Sugar weather", effect: "Sugar fields x2" },
+                factory_flow: { name: "Conveyor sync", effect: "Cookie factory x2" },
+                critical_cocoa: { name: "Critical cocoa", effect: "Crits x7 instead of x5" },
+                lab_serum: { name: "Vanilla serum", effect: "Aroma lab x2" },
+                portal_treaty: { name: "Portal treaty", effect: "Crumb portal x2" },
+                comet_sugar: { name: "Comet sugar", effect: "Clicks x2.2" },
+                cosmic_butter: { name: "Cosmic butter", effect: "CPS x1.6" },
+                forge_chorus: { name: "Forge chorus", effect: "Star forge x2" },
+                timeline_anchor: { name: "Time anchor", effect: "Time mill x2 and longer events" },
+                stardust_lens: { name: "Stardust lens", effect: "Stronger Stardust bonus" },
+                overdrive_engine: { name: "Overdrive turbine", effect: "Longer Overdrive, shorter cooldown" },
+                combo_silo: { name: "Combo silo", effect: "Combo limit +40" },
+                moon_delivery: { name: "Moon delivery", effect: "CPS x1.25" },
+                nebula_contract: { name: "Nebula contract", effect: "Golden value x1.45" },
+                quantum_recipe: { name: "Quantum recipe", effect: "CPS and clicks x1.35" },
+                blackhole_vault: { name: "Black-hole vault", effect: "CPS x1.5" },
+                multiverse_brand: { name: "Multiverse brand", effect: "CPS x1.6" },
+                singularity_whisk: { name: "Singularity whisk", effect: "Clicks x3, CPS x1.4" },
+                prestige_matrix: { name: "Prestige matrix", effect: "Much stronger Stardust bonus" },
+                achievement_council: { name: "Achievement council", effect: "CPS and clicks x1.3" }
+            },
+            tiers: {
+                tuning: "Fine tuning",
+                automation: "Automation",
+                quality: "Quality batch",
+                logistics: "Logistics network",
+                mastery: "Master line"
+            },
+            achievements: {
+                first_click: { name: "First bite", note: "1 click" },
+                hundred: { name: "Cookie jar", note: "100 cookies" },
+                thousand: { name: "Tray ready", note: "1K cookies" },
+                click_runner: { name: "Finger festival", note: "250 clicks" },
+                click_marathon: { name: "Crunch marathon", note: "2,500 clicks" },
+                ten_buildings: { name: "Bake team", note: "10 buildings" },
+                fifty_buildings: { name: "Production hall", note: "50 buildings" },
+                two_hundred_buildings: { name: "Industrial complex", note: "200 buildings" },
+                combo_40: { name: "Combo crown", note: "40 combo" },
+                combo_100: { name: "Finger orbit", note: "100 combo" },
+                golden: { name: "Golden find", note: "Golden cookie" },
+                golden_25: { name: "Star hunter", note: "25 golden cookies" },
+                million: { name: "Million tray", note: "1M cookies" },
+                fifty_million: { name: "Star-ready", note: "50M cookies" },
+                hundred_million: { name: "Galactic delivery", note: "100M cookies" },
+                billion: { name: "Billion mix", note: "1B cookies" },
+                trillion: { name: "Trillion tray", note: "1T cookies" },
+                cps_1000: { name: "Constant fire", note: "1K CPS" },
+                cps_1m: { name: "Orbit oven", note: "1M CPS" },
+                cps_1b: { name: "Cosmic autobake", note: "1B CPS" },
+                upgrades_10: { name: "Research urge", note: "10 upgrades" },
+                upgrades_30: { name: "Lab lead", note: "30 upgrades" },
+                upgrades_60: { name: "Upgrade archive", note: "60 upgrades" },
+                stardust: { name: "Star crumb", note: "1 Stardust" },
+                stardust_25: { name: "Star stash", note: "25 Stardust" },
+                ascended: { name: "New oven, new luck", note: "Transcended" },
+                ascended_5: { name: "Prestige routine", note: "5 transcensions" },
+                moon: { name: "Moon flour", note: "Moon bakery built" },
+                quantum: { name: "Probably tasty", note: "Quantum mixer built" },
+                singularity: { name: "Point landing", note: "Singularity kitchen built" }
+            },
+            events: {
+                frenzy: { name: "Oven fever", text: "CPS x4" },
+                clickstorm: { name: "Click storm", text: "Clicks x8" },
+                balanced: { name: "Golden batch", text: "CPS x2.4 and clicks x2.4" }
+            }
+        }
+    };
+
+    function translate(section, key) {
+        return copy[language]?.[section]?.[key] || copy.de[section]?.[key] || key;
+    }
+
+    function interpolate(template, values = {}) {
+        return template.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key) => values[key] ?? "");
+    }
+
+    function label(key, values) {
+        return interpolate(translate("ui", key), values);
+    }
+
+    function statusLabel(key) {
+        return translate("status", key);
+    }
+
+    function localizeItems(section, items) {
+        if (language === "de") {
+            return;
+        }
+
+        const translations = copy.en[section] || {};
+        items.forEach(item => {
+            Object.assign(item, translations[item.id] || {});
+        });
+    }
+
+    function repairTextValue(value) {
+        if (typeof value !== "string" || !/[ÃÂ]/.test(value)) {
+            return value;
+        }
+
+        try {
+            return decodeURIComponent(escape(value));
+        } catch (error) {
+            return value;
+        }
+    }
+
+    function repairTextObject(target) {
+        if (!target || typeof target !== "object") {
+            return;
+        }
+
+        Object.keys(target).forEach(key => {
+            const value = target[key];
+
+            if (typeof value === "string") {
+                target[key] = repairTextValue(value);
+            } else if (value && typeof value === "object") {
+                repairTextObject(value);
+            }
+        });
+    }
+
+    function applyStaticLabels() {
+        ui.resetButton?.setAttribute("aria-label", label("resetAria"));
+        document.querySelector(".progress-strip > div:last-child span").textContent = label("nextStar");
+    }
+
+    repairTextObject(copy.de);
+
     const buildings = [
         {
             id: "clicker",
@@ -56,7 +337,7 @@
             icon: "fa-solid fa-hand-pointer",
             baseCost: 25,
             cps: 0.08,
-            note: "Mini-Arme fuer konstante Grundproduktion"
+            note: "Mini-Arme für konstante Grundproduktion"
         },
         {
             id: "apprentice",
@@ -68,11 +349,11 @@
         },
         {
             id: "oven",
-            name: "Turbo-Oefen",
+            name: "Turbo-Öfen",
             icon: "fa-solid fa-fire-burner",
             baseCost: 1200,
             cps: 4.5,
-            note: "Heisse Kerne, kurze Backzeit"
+            note: "Heiße Kerne, kurze Backzeit"
         },
         {
             id: "farm",
@@ -88,7 +369,7 @@
             icon: "fa-solid fa-industry",
             baseCost: 54000,
             cps: 110,
-            note: "Foerderband, Glasur, Verpackung"
+            note: "Förderband, Glasur, Verpackung"
         },
         {
             id: "lab",
@@ -116,7 +397,7 @@
         },
         {
             id: "timeline",
-            name: "Zeitmuehle",
+            name: "Zeitmühle",
             icon: "fa-solid fa-hourglass-half",
             baseCost: 95000000,
             cps: 98000,
@@ -124,7 +405,7 @@
         },
         {
             id: "moon",
-            name: "Mondbaeckerei",
+            name: "Mondbäckerei",
             icon: "fa-solid fa-moon",
             baseCost: 720000000,
             cps: 540000,
@@ -144,7 +425,7 @@
             icon: "fa-solid fa-atom",
             baseCost: 48000000000,
             cps: 19000000,
-            note: "Ruehrt jeden Teig in mehreren Zustaenden"
+            note: "Rührt jeden Teig in mehreren Zuständen"
         },
         {
             id: "blackhole",
@@ -160,17 +441,20 @@
             icon: "fa-solid fa-network-wired",
             baseCost: 3900000000000,
             cps: 720000000,
-            note: "Eine Backstube pro Realitaet"
+            note: "Eine Backstube pro Realität"
         },
         {
             id: "singularity",
-            name: "Singularitaets-Kueche",
+            name: "Singularitäts-Küche",
             icon: "fa-solid fa-infinity",
             baseCost: 39000000000000,
             cps: 4800000000,
             note: "Ein Punkt, unendlich viele Bleche"
         }
     ];
+
+    localizeItems("buildings", buildings);
+    buildings.forEach(repairTextObject);
 
     const buildingMap = Object.fromEntries(buildings.map(building => [building.id, building]));
 
@@ -207,13 +491,13 @@
             name: "Ofenmatrix",
             icon: "fa-solid fa-table-cells-large",
             cost: 22000,
-            effect: "Turbo-Oefen x2",
+            effect: "Turbo-Öfen x2",
             requires: state => getOwned(state, "oven") >= 8,
             apply: mods => { mods.buildingMultipliers.oven *= 2; }
         },
         {
             id: "lucky_glove",
-            name: "Glueckshandschuh",
+            name: "Glückshandschuh",
             icon: "fa-solid fa-hand-sparkles",
             cost: 45000,
             effect: "Kritchance +4%",
@@ -243,7 +527,7 @@
         },
         {
             id: "factory_flow",
-            name: "Foerderband-Sync",
+            name: "Förderband-Sync",
             icon: "fa-solid fa-arrows-spin",
             cost: 900000,
             effect: "Keksfabrik x2",
@@ -309,7 +593,7 @@
             name: "Zeitanker",
             icon: "fa-solid fa-clock-rotate-left",
             cost: 1800000000,
-            effect: "Zeitmuehle x2 und Events laenger",
+            effect: "Zeitmühle x2 und Events länger",
             requires: state => getOwned(state, "timeline") >= 4,
             apply: mods => {
                 mods.buildingMultipliers.timeline *= 2;
@@ -321,7 +605,7 @@
             name: "Stardust-Linse",
             icon: "fa-solid fa-gem",
             cost: 4200000000,
-            effect: "Stardust-Bonus staerker",
+            effect: "Stardust-Bonus stärker",
             requires: state => state.stardust >= 3,
             apply: mods => { mods.stardustBonus += 0.03; }
         },
@@ -330,7 +614,7 @@
             name: "Overdrive-Turbine",
             icon: "fa-solid fa-gauge-high",
             cost: 9500000000,
-            effect: "Overdrive laenger, Cooldown kuerzer",
+            effect: "Overdrive länger, Cooldown kürzer",
             requires: state => state.totalBaked >= 3000000000,
             apply: mods => {
                 mods.overdriveDurationMultiplier *= 1.35;
@@ -396,7 +680,7 @@
         },
         {
             id: "singularity_whisk",
-            name: "Singularitaets-Schneebesen",
+            name: "Singularitäts-Schneebesen",
             icon: "fa-solid fa-wand-magic-sparkles",
             cost: 2400000000000000,
             effect: "Klicks x3, CPS x1.4",
@@ -411,7 +695,7 @@
             name: "Prestige-Matrix",
             icon: "fa-solid fa-diagram-project",
             cost: 12000000000000000,
-            effect: "Stardust-Bonus massiv staerker",
+            effect: "Stardust-Bonus massiv stärker",
             requires: state => state.stardust >= 10,
             apply: mods => { mods.stardustBonus += 0.05; }
         },
@@ -429,13 +713,23 @@
         }
     ];
 
+    localizeItems("upgrades", specialUpgrades);
+    specialUpgrades.forEach(repairTextObject);
+
     const buildingTierDefinitions = [
         { id: "tuning", label: "Feinjustierung", icon: "fa-solid fa-screwdriver-wrench", count: 5, costMultiplier: 12, productionMultiplier: 1.6 },
         { id: "automation", label: "Automatisierung", icon: "fa-solid fa-robot", count: 15, costMultiplier: 70, productionMultiplier: 1.8 },
-        { id: "quality", label: "Qualitaets-Charge", icon: "fa-solid fa-medal", count: 30, costMultiplier: 390, productionMultiplier: 2 },
+        { id: "quality", label: "Qualitäts-Charge", icon: "fa-solid fa-medal", count: 30, costMultiplier: 390, productionMultiplier: 2 },
         { id: "logistics", label: "Logistiknetz", icon: "fa-solid fa-route", count: 55, costMultiplier: 2400, productionMultiplier: 2.25 },
         { id: "mastery", label: "Meisterlinie", icon: "fa-solid fa-crown", count: 85, costMultiplier: 15500, productionMultiplier: 2.5 }
     ];
+
+    if (language === "en") {
+        buildingTierDefinitions.forEach(tier => {
+            tier.label = copy.en.tiers[tier.id] || tier.label;
+        });
+    }
+    buildingTierDefinitions.forEach(repairTextObject);
 
     const upgrades = [
         ...specialUpgrades,
@@ -462,7 +756,7 @@
         { id: "combo_40", name: "Combo-Krone", icon: "fa-solid fa-crown", note: "40er Combo", test: state => state.stats.maxCombo >= 40 },
         { id: "combo_100", name: "Fingerorbit", icon: "fa-solid fa-arrows-spin", note: "100er Combo", test: state => state.stats.maxCombo >= 100 },
         { id: "golden", name: "Goldfund", icon: "fa-solid fa-star", note: "Golden Cookie", test: state => state.stats.goldenClicks >= 1 },
-        { id: "golden_25", name: "Sternjaeger", icon: "fa-solid fa-wand-magic-sparkles", note: "25 Golden Cookies", test: state => state.stats.goldenClicks >= 25 },
+        { id: "golden_25", name: "Sternjäger", icon: "fa-solid fa-wand-magic-sparkles", note: "25 Golden Cookies", test: state => state.stats.goldenClicks >= 25 },
         { id: "million", name: "Millionen-Blech", icon: "fa-solid fa-certificate", note: "1M Cookies", test: state => state.lifetimeBaked >= 1000000 },
         { id: "fifty_million", name: "Sternenreif", icon: "fa-solid fa-meteor", note: "50M Cookies", test: state => state.lifetimeBaked >= 50000000 },
         { id: "hundred_million", name: "Galaktische Lieferung", icon: "fa-solid fa-truck-fast", note: "100M Cookies", test: state => state.lifetimeBaked >= 100000000 },
@@ -476,12 +770,15 @@
         { id: "upgrades_60", name: "Upgrade-Archiv", icon: "fa-solid fa-folder-tree", note: "60 Upgrades", test: state => state.upgrades.length >= 60 },
         { id: "stardust", name: "Sternenkrume", icon: "fa-solid fa-meteor", note: "1 Stardust", test: state => state.stardust >= 1 },
         { id: "stardust_25", name: "Sternenlager", icon: "fa-solid fa-gem", note: "25 Stardust", test: state => state.stardust >= 25 },
-        { id: "ascended", name: "Neuer Ofen, neues Glueck", icon: "fa-solid fa-arrow-up-right-dots", note: "Transzendiert", test: state => state.ascensions >= 1 },
+        { id: "ascended", name: "Neuer Ofen, neues Glück", icon: "fa-solid fa-arrow-up-right-dots", note: "Transzendiert", test: state => state.ascensions >= 1 },
         { id: "ascended_5", name: "Prestige-Routine", icon: "fa-solid fa-repeat", note: "5 Transzendenzen", test: state => state.ascensions >= 5 },
-        { id: "moon", name: "Mondmehl", icon: "fa-solid fa-moon", note: "Mondbaeckerei gebaut", test: state => getOwned(state, "moon") >= 1 },
+        { id: "moon", name: "Mondmehl", icon: "fa-solid fa-moon", note: "Mondbäckerei gebaut", test: state => getOwned(state, "moon") >= 1 },
         { id: "quantum", name: "Wahrscheinlich lecker", icon: "fa-solid fa-atom", note: "Quantenmixer gebaut", test: state => getOwned(state, "quantum") >= 1 },
-        { id: "singularity", name: "Punktlandung", icon: "fa-solid fa-infinity", note: "Singularitaets-Kueche gebaut", test: state => getOwned(state, "singularity") >= 1 }
+        { id: "singularity", name: "Punktlandung", icon: "fa-solid fa-infinity", note: "Singularitäts-Küche gebaut", test: state => getOwned(state, "singularity") >= 1 }
     ];
+
+    localizeItems("achievements", achievements);
+    achievements.forEach(repairTextObject);
 
     const eventTypes = [
         {
@@ -509,6 +806,9 @@
             clickMultiplier: 2.4
         }
     ];
+
+    localizeItems("events", eventTypes);
+    eventTypes.forEach(repairTextObject);
 
     let state = loadState();
     let buyMode = "one";
@@ -635,7 +935,7 @@
         return [...new Set(value.filter(id => allowedIds.has(id)))];
     }
 
-    function saveState(label = "Gespeichert") {
+    function saveState(label = statusLabel("saved")) {
         state.lastSaved = Date.now();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 
@@ -713,7 +1013,7 @@
                 lastSubmittedScore = Math.max(lastSubmittedScore, score);
 
                 if (data.new_highscore && ui.saveState) {
-                    ui.saveState.textContent = "Highscore synchronisiert";
+                    ui.saveState.textContent = statusLabel("highscoreSynced");
                 }
             }
         } catch (error) {
@@ -837,11 +1137,11 @@
         state.buildings[id] = getOwned(state, id) + info.amount;
         state.stats.buildingsBought += info.amount;
         beep(220 + Math.min(700, building.cps * 2), 0.045, 0.04);
-        showNotice(`${info.amount}x ${building.name} gekauft`);
+        showNotice(label("boughtBuilding", { amount: info.amount, name: building.name }));
         checkAchievements();
         renderLists();
         renderDynamic();
-        saveState("Gekauft");
+        saveState(statusLabel("bought"));
     }
 
     function buyUpgrade(id) {
@@ -860,12 +1160,12 @@
         state.upgrades.push(id);
         state.stats.upgradesBought += 1;
         beep(620, 0.08, 0.06);
-        showNotice(`${upgrade.name} freigeschaltet`);
+        showNotice(label("unlocked", { name: upgrade.name }));
         scheduleGolden();
         checkAchievements();
         renderLists();
         renderDynamic();
-        saveState("Upgrade");
+        saveState(statusLabel("upgrade"));
     }
 
     function addCookies(amount) {
@@ -891,7 +1191,7 @@
         if (Math.random() < mods.critChance) {
             amount *= mods.critMultiplier;
             color = "#fb7185";
-            labelPrefix = "KRIT +";
+            labelPrefix = language === "en" ? "CRIT +" : "KRIT +";
             beep(900, 0.05, 0.06);
         } else {
             beep(300 + Math.random() * 70, 0.035, 0.03);
@@ -914,7 +1214,7 @@
     }
 
     function pulseUnavailable() {
-        spawnFloat(ui.bakeryScene.clientWidth / 2, ui.bakeryScene.clientHeight * 0.35, "zu wenig Cookies", "#fca5a5");
+        spawnFloat(ui.bakeryScene.clientWidth / 2, ui.bakeryScene.clientHeight * 0.35, label("notEnoughCookies"), "#fca5a5");
         beep(120, 0.05, 0.035);
     }
 
@@ -958,12 +1258,12 @@
         if (roll < 0.22) {
             const gain = Math.max(77, state.cookies * 0.08 + computeCps() * 120) * mods.goldenRewardMultiplier;
             addCookies(gain);
-            showNotice(`Lucky Batch: +${format(gain)} Cookies`);
+            showNotice(label("luckyBatch", { amount: format(gain) }));
             spawnFloat(x, y, `+${format(gain)}`, "#facc15");
         } else if (roll < 0.34) {
             const gain = Math.max(777, computeCps() * 240) * mods.goldenRewardMultiplier;
             addCookies(gain);
-            showNotice(`Zeitsprung: +${format(gain)} Cookies`);
+            showNotice(label("timeJump", { amount: format(gain) }));
             spawnFloat(x, y, `+${format(gain)}`, "#38bdf8");
         } else {
             const event = eventTypes[Math.floor(Math.random() * eventTypes.length)];
@@ -979,7 +1279,7 @@
         checkAchievements();
         renderLists();
         renderDynamic();
-        saveState("Golden");
+        saveState(statusLabel("golden"));
     }
 
     function activateOverdrive() {
@@ -992,7 +1292,7 @@
 
         state.overdriveUntil = now + 12000 * mods.overdriveDurationMultiplier;
         state.overdriveCooldownUntil = now + 120000 * mods.overdriveCooldownMultiplier;
-        showNotice("Overdrive aktiv: Klicks x4, CPS x2");
+        showNotice(label("overdriveActive"));
         beep(520, 0.12, 0.06);
         saveState("Overdrive");
     }
@@ -1008,7 +1308,7 @@
             return;
         }
 
-        const message = `Transzendieren und ${gain} Stardust erhalten? Deine Anlagen und Upgrades starten neu.`;
+        const message = label("ascendConfirm", { amount: gain });
 
         if (!window.confirm(message)) {
             return;
@@ -1030,7 +1330,7 @@
         checkAchievements();
         renderLists();
         renderDynamic();
-        saveState("Transzendiert");
+        saveState(statusLabel("transcended"));
     }
 
     function checkAchievements() {
@@ -1039,7 +1339,7 @@
         for (const achievement of achievements) {
             if (!state.achievements.includes(achievement.id) && achievement.test(state)) {
                 state.achievements.push(achievement.id);
-                showNotice(`${achievement.name} freigeschaltet`);
+                showNotice(label("unlocked", { name: achievement.name }));
                 unlocked = true;
             }
         }
@@ -1075,17 +1375,17 @@
         ui.ascendButton.disabled = ascendGain <= 0;
         ui.ascendStatus.textContent = ascendGain > 0
             ? `+${ascendGain} Stardust`
-            : `${format(Math.max(0, nextStar - state.totalBaked))} bis Stern`;
+            : label("untilStar", { amount: format(Math.max(0, nextStar - state.totalBaked)) });
 
         if (state.overdriveUntil > now) {
             ui.overdriveButton.disabled = true;
-            ui.overdriveStatus.textContent = `${Math.ceil((state.overdriveUntil - now) / 1000)}s aktiv`;
+            ui.overdriveStatus.textContent = label("activeSeconds", { seconds: Math.ceil((state.overdriveUntil - now) / 1000) });
         } else if (state.overdriveCooldownUntil > now) {
             ui.overdriveButton.disabled = true;
-            ui.overdriveStatus.textContent = `${Math.ceil((state.overdriveCooldownUntil - now) / 1000)}s Cooldown`;
+            ui.overdriveStatus.textContent = label("cooldownSeconds", { seconds: Math.ceil((state.overdriveCooldownUntil - now) / 1000) });
         } else {
             ui.overdriveButton.disabled = false;
-            ui.overdriveStatus.textContent = "Bereit";
+            ui.overdriveStatus.textContent = statusLabel("ready");
         }
 
         renderBanner();
@@ -1116,7 +1416,7 @@
 
     function renderBuildings() {
         const totalOwned = getTotalBuildings();
-        ui.ownedSummary.textContent = `${totalOwned} Anlagen aktiv`;
+        ui.ownedSummary.textContent = label("ownedSummary", { amount: totalOwned });
         const mods = createModifiers();
 
         ui.buildingList.innerHTML = buildings.map(building => {
@@ -1124,7 +1424,7 @@
             const info = getBuyInfo(building);
             const canBuy = info.amount > 0 && state.cookies >= info.cost;
             const production = building.cps * owned * mods.buildingMultipliers[building.id] * mods.cpsMultiplier;
-            const buyLabel = buyMode === "max" && info.amount > 0 ? `${info.amount} kaufen` : "Kaufen";
+            const buyLabel = buyMode === "max" && info.amount > 0 ? label("buyAmount", { amount: info.amount }) : label("buy");
 
             return `
                 <article class="building-card ${canBuy ? "can-buy" : ""}">
@@ -1137,8 +1437,8 @@
                         <span class="owned-pill">${owned}</span>
                     </div>
                     <div class="building-meta">
-                        <span>Kosten: <strong>${format(info.cost || getBuildingCost(building))}</strong></span>
-                        <span>Output: <strong>${format(production)}/s</strong></span>
+                        <span>${label("cost")}: <strong>${format(info.cost || getBuildingCost(building))}</strong></span>
+                        <span>${label("output")}: <strong>${format(production)}/s</strong></span>
                     </div>
                     <button type="button" data-buy-building="${building.id}" ${canBuy ? "" : "disabled"}>${buyLabel}</button>
                 </article>
@@ -1153,12 +1453,12 @@
     function renderUpgrades() {
         const available = upgrades.filter(upgrade => upgrade.requires(state));
         const buyableCount = available.filter(upgrade => !state.upgrades.includes(upgrade.id) && state.cookies >= upgrade.cost).length;
-        ui.upgradeSummary.textContent = `${state.upgrades.length} gekauft, ${buyableCount} bereit`;
+        ui.upgradeSummary.textContent = label("upgradeSummary", { bought: state.upgrades.length, ready: buyableCount });
 
         const visible = upgrades.filter(upgrade => upgrade.requires(state) || state.upgrades.includes(upgrade.id));
 
         if (!visible.length) {
-            ui.upgradeList.innerHTML = `<div class="empty-note">Noch keine Forschung sichtbar.</div>`;
+            ui.upgradeList.innerHTML = `<div class="empty-note">${label("emptyResearch")}</div>`;
             return;
         }
 
@@ -1172,12 +1472,12 @@
                         <span class="item-icon"><i class="${upgrade.icon}"></i></span>
                         <div class="upgrade-title">
                             <strong>${upgrade.name}</strong>
-                            <small>Kosten: ${format(upgrade.cost)}</small>
+                            <small>${label("cost")}: ${format(upgrade.cost)}</small>
                         </div>
-                        <span class="owned-pill">${bought ? "OK" : "Neu"}</span>
+                        <span class="owned-pill">${bought ? "OK" : label("new")}</span>
                     </div>
                     <div class="upgrade-effect">${upgrade.effect}</div>
-                    <button type="button" data-buy-upgrade="${upgrade.id}" ${canBuy ? "" : "disabled"}>${bought ? "Gekauft" : "Freischalten"}</button>
+                    <button type="button" data-buy-upgrade="${upgrade.id}" ${canBuy ? "" : "disabled"}>${bought ? statusLabel("bought") : label("unlock")}</button>
                 </article>
             `;
         }).join("");
@@ -1189,7 +1489,7 @@
 
     function renderAchievements() {
         const completeCount = state.achievements.length;
-        ui.achievementSummary.textContent = `${completeCount} von ${achievements.length} erledigt`;
+        ui.achievementSummary.textContent = label("achievementSummary", { complete: completeCount, total: achievements.length });
 
         ui.achievementList.innerHTML = achievements.map(achievement => {
             const complete = state.achievements.includes(achievement.id);
@@ -1241,7 +1541,7 @@
 
         if (gain > 1) {
             addCookies(gain);
-            showNotice(`Offline gebacken: +${format(gain)} Cookies`, 5200);
+            showNotice(label("offlineGain", { amount: format(gain) }), 5200);
         }
     }
 
@@ -1571,7 +1871,7 @@
     function toggleSound() {
         state.sound = !state.sound;
         updateSoundIcon();
-        saveState(state.sound ? "Sound an" : "Sound aus");
+        saveState(state.sound ? statusLabel("soundOn") : statusLabel("soundOff"));
     }
 
     function beep(frequency, duration, gain) {
@@ -1696,7 +1996,7 @@
         link.click();
         link.remove();
         URL.revokeObjectURL(url);
-        showNotice("Spielstand-Datei exportiert");
+        showNotice(label("exportedFile"));
     }
 
     function closeOverlayOnBackdrop(overlay) {
@@ -1720,14 +2020,14 @@
 
         overlay.className = "export-box";
         overlay.innerHTML = `
-            <div class="export-dialog" role="dialog" aria-modal="true" aria-label="Spielstand exportieren" tabindex="-1">
-                <h2>Spielstand exportieren</h2>
-                <p>Speichere die JSON-Datei oder kopiere den Code. Beides kannst du spaeter wieder importieren.</p>
-                <textarea readonly aria-label="Export-Code"></textarea>
+            <div class="export-dialog" role="dialog" aria-modal="true" aria-label="${label("exportDialogLabel")}" tabindex="-1">
+                <h2>${label("exportTitle")}</h2>
+                <p>${label("exportDescription")}</p>
+                <textarea readonly aria-label="${label("exportCode")}"></textarea>
                 <div class="export-actions">
-                    <button type="button" data-download>Datei herunterladen</button>
-                    <button type="button" data-copy>Code kopieren</button>
-                    <button type="button" data-close>Schliessen</button>
+                    <button type="button" data-download>${label("downloadFile")}</button>
+                    <button type="button" data-copy>${label("copyCode")}</button>
+                    <button type="button" data-close>${label("close")}</button>
                 </div>
             </div>
         `;
@@ -1744,10 +2044,10 @@
             textarea.select();
             try {
                 await navigator.clipboard.writeText(textarea.value);
-                showNotice("Export-Code kopiert");
+                showNotice(label("copiedExport"));
             } catch (error) {
                 document.execCommand("copy");
-                showNotice("Export-Code markiert");
+                showNotice(label("markedExport"));
             }
         });
 
@@ -1759,18 +2059,18 @@
 
         overlay.className = "export-box";
         overlay.innerHTML = `
-            <div class="export-dialog" role="dialog" aria-modal="true" aria-label="Spielstand importieren" tabindex="-1">
-                <h2>Spielstand importieren</h2>
-                <p>Fuege deinen Export-Code ein oder waehle die exportierte JSON-Datei aus. Dein aktueller Spielstand wird dabei ersetzt.</p>
-                <textarea aria-label="Import-Code" placeholder="Export-Code oder JSON hier einfuegen"></textarea>
+            <div class="export-dialog" role="dialog" aria-modal="true" aria-label="${label("importDialogLabel")}" tabindex="-1">
+                <h2>${label("importTitle")}</h2>
+                <p>${label("importDescription")}</p>
+                <textarea aria-label="${label("importCode")}" placeholder="${label("importPlaceholder")}"></textarea>
                 <label class="import-file-picker">
-                    <span>JSON-Datei auswaehlen</span>
+                    <span>${label("chooseJson")}</span>
                     <input type="file" accept=".json,.txt,application/json,text/plain" data-file>
                 </label>
                 <p class="import-status" data-status></p>
                 <div class="export-actions">
-                    <button type="button" data-import>Importieren</button>
-                    <button type="button" data-close>Abbrechen</button>
+                    <button type="button" data-import>${label("importTitle")}</button>
+                    <button type="button" data-close>${language === "en" ? "Cancel" : "Abbrechen"}</button>
                 </div>
             </div>
         `;
@@ -1794,10 +2094,10 @@
             const reader = new FileReader();
             reader.addEventListener("load", () => {
                 textarea.value = String(reader.result || "");
-                status.textContent = `${file.name} geladen`;
+                status.textContent = label("fileLoaded", { name: file.name });
             });
             reader.addEventListener("error", () => {
-                status.textContent = "Datei konnte nicht gelesen werden.";
+                status.textContent = label("fileReadError");
             });
             reader.readAsText(file);
         });
@@ -1808,12 +2108,12 @@
             try {
                 importedState = decodeExportPayload(textarea.value);
             } catch (error) {
-                status.textContent = "Der Import-Code oder die Datei ist ungueltig.";
-                showNotice("Import fehlgeschlagen");
+                status.textContent = label("importInvalid");
+                showNotice(label("importFailed"));
                 return;
             }
 
-            if (!window.confirm("Aktuellen Cookie-Cosmos-Spielstand ersetzen?")) {
+            if (!window.confirm(label("replaceSaveConfirm"))) {
                 return;
             }
 
@@ -1833,13 +2133,13 @@
         updateSoundIcon();
         renderLists();
         renderDynamic();
-        saveState("Importiert");
+        saveState(statusLabel("imported"));
         submitHighscore(true);
-        showNotice("Spielstand importiert");
+        showNotice(label("importedSave"));
     }
 
     function resetGame() {
-        if (!window.confirm("Spielstand wirklich zuruecksetzen?")) {
+        if (!window.confirm(label("resetConfirm"))) {
             return;
         }
 
@@ -1849,7 +2149,7 @@
         scheduleGolden();
         renderLists();
         renderDynamic();
-        saveState("Zurueckgesetzt");
+        saveState(statusLabel("reset"));
     }
 
     function format(value) {
@@ -1923,6 +2223,7 @@
     }
 
     resizeCanvas();
+    applyStaticLabels();
     setupEvents();
     applyOfflineProgress();
     checkAchievements();
