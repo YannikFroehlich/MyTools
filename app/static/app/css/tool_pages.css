@@ -1,0 +1,778 @@
+:root {
+    --tool-radius: var(--theme-card-radius, 28px);
+    --tool-radius-small: calc(var(--tool-radius) - 10px);
+}
+
+:where(
+    .clock-page,
+    .notes-page,
+    .perf-page,
+    .platform-page,
+    .feature-page,
+    .moderation-page,
+    .calculator-page,
+    .fuel-page,
+    .converter-page,
+    .randomizer-page,
+    .qr-tool-page,
+    .genius-page,
+    .file-converter-page,
+    .color-tool-page,
+    .profile-designer-page,
+    .avatar-page,
+    .stream-deck-page,
+    .obs-dashboard-page
+) {
+    --tool-card-bg: var(--theme-card-bg, var(--surface-strong, rgba(255, 255, 255, 0.9)));
+    --tool-card-text: var(--theme-card-text, var(--theme-text));
+    --tool-muted: color-mix(in srgb, var(--tool-card-text) 84%, transparent);
+    --tool-line: rgba(var(--theme-accent-rgb), 0.22);
+    --tool-line-strong: rgba(var(--theme-accent-end-rgb), 0.34);
+    --tool-soft: rgba(var(--theme-accent-rgb), 0.10);
+    --tool-soft-strong: rgba(var(--theme-accent-end-rgb), 0.16);
+    --tool-surface: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.10), rgba(var(--theme-accent-end-rgb), 0.08)), var(--tool-card-bg);
+    --tool-surface-strong: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.14), rgba(var(--theme-accent-end-rgb), 0.10)), var(--tool-card-bg);
+    --tool-accent-readable: color-mix(in srgb, var(--theme-accent-start) 38%, var(--tool-card-text) 62%);
+    --tool-input-bg: color-mix(in srgb, var(--tool-card-bg) 88%, var(--theme-accent-start) 12%);
+    --tool-shadow: 0 22px 60px rgba(var(--theme-accent-rgb), 0.13);
+    color: var(--tool-card-text);
+}
+
+body.dark-mode :where(
+    .clock-page,
+    .notes-page,
+    .perf-page,
+    .platform-page,
+    .feature-page,
+    .moderation-page,
+    .calculator-page,
+    .fuel-page,
+    .converter-page,
+    .randomizer-page,
+    .qr-tool-page,
+    .genius-page,
+    .file-converter-page,
+    .color-tool-page,
+    .profile-designer-page,
+    .avatar-page,
+    .stream-deck-page,
+    .obs-dashboard-page
+) {
+    --tool-muted: color-mix(in srgb, var(--tool-card-text) 88%, transparent);
+    --tool-accent-readable: color-mix(in srgb, var(--theme-accent-end) 28%, #ffffff 72%);
+    --tool-input-bg: color-mix(in srgb, var(--tool-card-bg) 82%, #020617 18%);
+    --tool-shadow: 0 22px 64px rgba(0, 0, 0, 0.28);
+}
+
+/* Großer Hero wie beim Datei-Konverter */
+:where(
+    .clock-hero,
+    .notes-dashboard-header,
+    .perf-hero,
+    .platform-hero,
+    .feature-hero,
+    .moderation-header,
+    .calculator-hero,
+    .converter-hero,
+    .randomizer-hero,
+    .qr-tool-hero,
+    .genius-header,
+    .color-hero,
+    .profile-designer-hero,
+    .obs-topbar
+) {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--tool-line) !important;
+    border-radius: var(--tool-radius) !important;
+    background: var(--tool-surface-strong) !important;
+    color: var(--tool-card-text) !important;
+    box-shadow: var(--tool-shadow) !important;
+    text-align: left !important;
+}
+
+:where(
+    .clock-hero,
+    .notes-dashboard-header,
+    .perf-hero,
+    .platform-hero,
+    .feature-hero,
+    .moderation-header,
+    .calculator-hero,
+    .converter-hero,
+    .randomizer-hero,
+    .qr-tool-hero,
+    .genius-header,
+    .color-hero,
+    .profile-designer-hero,
+    .obs-topbar
+)::after {
+    content: "";
+    position: absolute;
+    right: -90px;
+    bottom: -130px;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.30), transparent 68%);
+    pointer-events: none;
+}
+
+:where(
+    .clock-hero > *,
+    .notes-dashboard-header > *,
+    .perf-hero > *,
+    .platform-hero > *,
+    .feature-hero > *,
+    .moderation-header > *,
+    .calculator-hero > *,
+    .converter-hero > *,
+    .randomizer-hero > *,
+    .qr-tool-hero > *,
+    .genius-header > *,
+    .color-hero > *,
+    .profile-designer-hero > *,
+    .obs-topbar > *
+) {
+    position: relative;
+    z-index: 1;
+}
+
+/* Karten/Panele: einheitliche Surface, Border, Radius und Theme-Anbindung */
+:where(
+    .clock-panel,
+    .clock-now-card,
+    .timer-preset-card,
+    .notes-control-panel,
+    .notes-scope-panel,
+    .notes-tag-filter,
+    .notes-stat-card,
+    .notes-section,
+    .note-card,
+    .perf-stats-grid > *,
+    .share-card,
+    .share-drop-card,
+    .share-selected-file,
+    .share-toggle-box,
+    .share-list-card,
+    .image-drop,
+    .image-options-card,
+    .image-selected-panel,
+    .platform-card,
+    .feedback-item,
+    .feature-card,
+    .roadmap-filter-card,
+    .service-card,
+    .changelog-summary-card,
+    .changelog-entry,
+    .moderation-panel,
+    .moderation-stats > *,
+    .calculator-shell,
+    .calculator-info-card,
+    .calculator-side-panel,
+    .fuel-card,
+    .converter-shell,
+    .converter-card,
+    .converter-result-box,
+    .converter-example-grid > *,
+    .randomizer-card,
+    .randomizer-tool-stage,
+    .randomizer-tab-header,
+    .team-card,
+    .qr-tool-card,
+    .qr-preview-box,
+    .genius-search-box,
+    .genius-card,
+    .file-converter-card,
+    .format-group,
+    .color-card,
+    .color-preview-card,
+    .profile-card.profile-designer-form,
+    .profile-designer-preview-wrap,
+    .avatar-shell,
+    .avatar-card,
+    .dashboard-panel,
+    .deck-panel,
+    .sidebar-card,
+    .voicemod-card,
+    .dynamic-section,
+    .obs-connection-box,
+    .obs-panel,
+    .scene-card,
+    .source-toggle-card,
+    .obs-control-card,
+    .obs-audio-card
+) {
+    border: 1px solid var(--tool-line) !important;
+    border-radius: var(--tool-radius) !important;
+    background: var(--tool-surface) !important;
+    color: var(--tool-card-text) !important;
+    box-shadow: 0 18px 46px rgba(var(--theme-accent-rgb), 0.10) !important;
+    text-align: left;
+}
+
+:where(
+    .share-drop-card,
+    .image-drop,
+    .file-drop-zone,
+    .qr-empty-preview,
+    .converter-format-hint,
+    .converter-note,
+    .clock-alarm-form,
+    .clock-ringtone-drop,
+    .color-drop-zone,
+    .avatar-filter-panel
+) {
+    border-color: var(--tool-line-strong) !important;
+    background: var(--tool-soft) !important;
+    color: var(--tool-card-text) !important;
+}
+
+/* Kicker, Abschnittstitel und Icon-Farben */
+:where(
+    .file-converter-kicker,
+    .file-converter-section-head span,
+    .perf-kicker,
+    .platform-kicker,
+    .feature-kicker,
+    .notes-eyebrow,
+    .clock-panel-kicker,
+    .calculator-kicker,
+    .converter-kicker,
+    .qr-tool-kicker,
+    .qr-tool-section-head span,
+    .color-kicker,
+    .profile-kicker,
+    .avatar-kicker,
+    .obs-kicker,
+    .stream-deck-page .brand-subtitle
+) {
+    color: var(--tool-accent-readable) !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+:where(
+    .clock-hero h1,
+    .notes-dashboard-header h1,
+    .perf-hero h1,
+    .platform-hero h1,
+    .feature-hero h1,
+    .moderation-header h1,
+    .calculator-hero h1,
+    .converter-hero h1,
+    .randomizer-hero h1,
+    .qr-tool-hero h1,
+    .genius-header h1,
+    .file-converter-hero h1,
+    .color-hero h1,
+    .profile-designer-hero h1,
+    .avatar-page h1,
+    .stream-deck-page h1,
+    .obs-dashboard-page h1,
+    .clock-panel-header h2,
+    .feature-card-heading h2,
+    .platform-section-head h2,
+    .qr-tool-section-head h2,
+    .color-card-header h2,
+    .profile-form-header h2
+) {
+    color: var(--tool-card-text) !important;
+}
+
+:where(
+    .clock-hero p,
+    .notes-subtitle,
+    .perf-hero p,
+    .platform-hero p,
+    .feature-hero p,
+    .calculator-hero p,
+    .converter-hero p,
+    .randomizer-hero p,
+    .qr-tool-hero p,
+    .genius-header p,
+    .file-converter-hero p,
+    .color-hero p,
+    .profile-designer-hero p,
+    .avatar-page p,
+    .clock-panel-header p,
+    .feature-card-heading p,
+    .platform-empty,
+    .qr-empty-preview p,
+    .color-muted,
+    .converter-note p,
+    .converter-format-hint span
+) {
+    color: var(--tool-muted) !important;
+}
+
+/* Formularfelder im selben Look wie beim Datei-Konverter */
+:where(
+    .clock-page,
+    .notes-page,
+    .perf-page,
+    .platform-page,
+    .feature-page,
+    .moderation-page,
+    .calculator-page,
+    .fuel-page,
+    .converter-page,
+    .randomizer-page,
+    .qr-tool-page,
+    .genius-page,
+    .file-converter-page,
+    .color-tool-page,
+    .profile-designer-page,
+    .avatar-page,
+    .stream-deck-page,
+    .obs-dashboard-page
+) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]), select, textarea) {
+    border: 1px solid var(--tool-line) !important;
+    border-radius: 16px !important;
+    background: var(--tool-input-bg) !important;
+    color: var(--tool-card-text) !important;
+}
+
+:where(
+    .clock-page,
+    .notes-page,
+    .perf-page,
+    .platform-page,
+    .feature-page,
+    .moderation-page,
+    .calculator-page,
+    .fuel-page,
+    .converter-page,
+    .randomizer-page,
+    .qr-tool-page,
+    .genius-page,
+    .file-converter-page,
+    .color-tool-page,
+    .profile-designer-page,
+    .avatar-page,
+    .stream-deck-page,
+    .obs-dashboard-page
+) :where(input, select, textarea):focus {
+    outline: none !important;
+    border-color: rgba(var(--theme-accent-end-rgb), 0.72) !important;
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.16) !important;
+}
+
+/* Primäre Actions übernehmen die Theme-Buttonfarbe */
+:where(
+    .clock-button-primary,
+    .notes-primary-btn,
+    .perf-primary,
+    .platform-primary,
+    .feature-primary-btn,
+    .btn-primary,
+    .qr-submit-button,
+    .qr-download-button,
+    .file-converter-submit,
+    .color-btn-primary,
+    .profile-save-button,
+    .avatar-add-btn,
+    .primary-btn,
+    .obs-primary-btn,
+    .randomizer-big-button,
+    .calculator-side-action
+) {
+    border: 0 !important;
+    border-radius: 18px !important;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    color: var(--theme-accent-text) !important;
+    font-weight: 950 !important;
+    box-shadow: 0 16px 34px rgba(var(--theme-accent-rgb), 0.24) !important;
+}
+
+:where(
+    .clock-button-primary,
+    .notes-primary-btn,
+    .perf-primary,
+    .platform-primary,
+    .feature-primary-btn,
+    .btn-primary,
+    .qr-submit-button,
+    .qr-download-button,
+    .file-converter-submit,
+    .color-btn-primary,
+    .profile-save-button,
+    .avatar-add-btn,
+    .primary-btn,
+    .obs-primary-btn,
+    .randomizer-big-button,
+    .calculator-side-action
+):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 20px 42px rgba(var(--theme-accent-rgb), 0.30) !important;
+}
+
+/* Sekundäre Buttons, Tabs und Filter wirken wie die Format-Chips des Datei-Konverters. */
+:where(
+    .clock-button:not(.clock-button-primary),
+    .notes-secondary-btn,
+    .notes-ghost-btn,
+    .btn-secondary,
+    .qr-secondary-button,
+    .color-btn-soft,
+    .outline-btn,
+    .small-btn,
+    .sidebar-btn,
+    .avatar-secondary-btn,
+    .roadmap-tab,
+    .converter-tab,
+    .randomizer-tab,
+    .notes-scope-panel a,
+    .notes-tag-filter a,
+    .qr-type-option span,
+    .calculator-hero-chips span,
+    .format-chip-list span,
+    .share-security-chips span,
+    .changelog-type,
+    .status-big-pill
+) {
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.24) !important;
+    background: rgba(var(--theme-accent-rgb), 0.13) !important;
+    color: color-mix(in srgb, var(--theme-accent-start) 36%, var(--tool-card-text, var(--theme-text)) 64%) !important;
+    font-weight: 900 !important;
+}
+
+body.dark-mode :where(
+    .clock-button:not(.clock-button-primary),
+    .notes-secondary-btn,
+    .notes-ghost-btn,
+    .btn-secondary,
+    .qr-secondary-button,
+    .color-btn-soft,
+    .outline-btn,
+    .small-btn,
+    .sidebar-btn,
+    .avatar-secondary-btn,
+    .roadmap-tab,
+    .converter-tab,
+    .randomizer-tab,
+    .notes-scope-panel a,
+    .notes-tag-filter a,
+    .qr-type-option span,
+    .calculator-hero-chips span,
+    .format-chip-list span,
+    .share-security-chips span,
+    .changelog-type,
+    .status-big-pill
+) {
+    color: color-mix(in srgb, var(--theme-accent-end) 28%, #ffffff 72%) !important;
+}
+
+:where(
+    .roadmap-tab.active,
+    .converter-tab.active,
+    .randomizer-tab.active,
+    .notes-scope-panel a.is-active,
+    .notes-tag-filter a.is-active,
+    .qr-type-option input:checked + span,
+    .vote-button.voted
+) {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.62) !important;
+    background: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.24), rgba(var(--theme-accent-end-rgb), 0.18)) !important;
+    color: var(--tool-card-text) !important;
+}
+
+/* Icon-Kacheln wie beim Datei-Konverter-Drop-Icon */
+:where(
+    .notes-header-icon,
+    .perf-hero-icon,
+    .calculator-hero-icon,
+    .converter-hero-icon,
+    .randomizer-hero-orb,
+    .share-drop-icon,
+    .file-drop-icon,
+    .avatar-add-btn i,
+    .service-icon,
+    .changelog-entry-icon,
+    .obs-panel-header i
+) {
+    color: var(--theme-accent-text) !important;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    box-shadow: 0 14px 30px rgba(var(--theme-accent-rgb), 0.22) !important;
+}
+
+/* Menü-Seiten sollen Karteninhalte nicht zentrieren, außer bei echten Previews. */
+:where(
+    .clock-panel,
+    .notes-section,
+    .note-card,
+    .share-card,
+    .platform-card,
+    .feature-card,
+    .moderation-panel,
+    .fuel-card,
+    .converter-card,
+    .randomizer-card,
+    .qr-tool-card,
+    .genius-card,
+    .color-card,
+    .profile-card.profile-designer-form,
+    .avatar-card,
+    .obs-panel
+) :where(p, h1, h2, h3, label, small, strong) {
+    text-align: left;
+}
+
+/* Kontrastmodus: deutlichere Linien, weniger Transparenz, kräftigere Schrift. */
+body.theme-high-contrast-mode :where(
+    .clock-page,
+    .notes-page,
+    .perf-page,
+    .platform-page,
+    .feature-page,
+    .moderation-page,
+    .calculator-page,
+    .fuel-page,
+    .converter-page,
+    .randomizer-page,
+    .qr-tool-page,
+    .genius-page,
+    .file-converter-page,
+    .color-tool-page,
+    .profile-designer-page,
+    .avatar-page,
+    .stream-deck-page,
+    .obs-dashboard-page
+) {
+    --tool-card-text: var(--theme-card-text, var(--theme-text));
+    --tool-muted: var(--text-muted);
+    --tool-line: var(--border-strong);
+    --tool-line-strong: var(--border-strong);
+    --tool-soft: color-mix(in srgb, var(--tool-card-bg) 78%, var(--theme-accent-start) 22%);
+    --tool-surface: var(--tool-card-bg);
+    --tool-surface-strong: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.18), rgba(var(--theme-accent-end-rgb), 0.14)), var(--tool-card-bg);
+}
+
+body.theme-high-contrast-mode :where(
+    .clock-hero,
+    .notes-dashboard-header,
+    .perf-hero,
+    .platform-hero,
+    .feature-hero,
+    .moderation-header,
+    .calculator-hero,
+    .converter-hero,
+    .randomizer-hero,
+    .qr-tool-hero,
+    .genius-header,
+    .color-hero,
+    .profile-designer-hero,
+    .obs-topbar,
+    .clock-panel,
+    .clock-now-card,
+    .timer-preset-card,
+    .notes-control-panel,
+    .notes-scope-panel,
+    .notes-tag-filter,
+    .notes-stat-card,
+    .notes-section,
+    .note-card,
+    .share-card,
+    .image-drop,
+    .image-options-card,
+    .platform-card,
+    .feedback-item,
+    .feature-card,
+    .roadmap-filter-card,
+    .service-card,
+    .changelog-summary-card,
+    .changelog-entry,
+    .moderation-panel,
+    .fuel-card,
+    .converter-shell,
+    .converter-card,
+    .randomizer-card,
+    .randomizer-tool-stage,
+    .qr-tool-card,
+    .genius-search-box,
+    .genius-card,
+    .file-converter-card,
+    .format-group,
+    .color-card,
+    .color-preview-card,
+    .profile-card.profile-designer-form,
+    .profile-designer-preview-wrap,
+    .avatar-shell,
+    .avatar-card,
+    .dashboard-panel,
+    .deck-panel,
+    .sidebar-card,
+    .obs-panel
+) {
+    border-width: 2px !important;
+}
+
+body.theme-high-contrast-mode :where(
+    .clock-page,
+    .notes-page,
+    .perf-page,
+    .platform-page,
+    .feature-page,
+    .moderation-page,
+    .calculator-page,
+    .fuel-page,
+    .converter-page,
+    .randomizer-page,
+    .qr-tool-page,
+    .genius-page,
+    .file-converter-page,
+    .color-tool-page,
+    .profile-designer-page,
+    .avatar-page,
+    .stream-deck-page,
+    .obs-dashboard-page
+) :where(p, small, span, label, input, select, textarea, button, a) {
+    text-shadow: none;
+}
+
+@media (max-width: 640px) {
+    :where(
+        .clock-hero,
+        .notes-dashboard-header,
+        .perf-hero,
+        .platform-hero,
+        .feature-hero,
+        .moderation-header,
+        .calculator-hero,
+        .converter-hero,
+        .randomizer-hero,
+        .qr-tool-hero,
+        .genius-header,
+        .color-hero,
+        .profile-designer-hero,
+        .obs-topbar
+    ) {
+        border-radius: 22px !important;
+    }
+}
+
+/* Feinjustierung: Einheitenrechner + Standort-Button mit besserem Kontrast. */
+.converter-page {
+    --converter-chip-bg: color-mix(in srgb, var(--tool-card-bg) 74%, var(--theme-accent-start) 26%);
+    --converter-chip-bg-hover: color-mix(in srgb, var(--tool-card-bg) 66%, var(--theme-accent-end) 34%);
+    --converter-chip-text: var(--tool-card-text);
+    --converter-muted-strong: color-mix(in srgb, var(--tool-card-text) 92%, var(--theme-accent-end) 8%);
+}
+
+body.dark-mode .converter-page {
+    --converter-chip-bg: color-mix(in srgb, var(--tool-card-bg) 70%, var(--theme-accent-end) 30%);
+    --converter-chip-bg-hover: color-mix(in srgb, var(--tool-card-bg) 58%, var(--theme-accent-end) 42%);
+    --converter-muted-strong: color-mix(in srgb, #ffffff 88%, var(--theme-accent-end) 12%);
+}
+
+.converter-page .converter-tab:not(.active),
+.converter-page .converter-example {
+    border-color: var(--tool-line-strong) !important;
+    background: var(--converter-chip-bg) !important;
+    color: var(--converter-chip-text) !important;
+}
+
+.converter-page .converter-tab:not(.active):hover,
+.converter-page .converter-example:hover {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.62) !important;
+    background: var(--converter-chip-bg-hover) !important;
+    color: var(--converter-chip-text) !important;
+}
+
+.converter-page .converter-tab:not(.active) i,
+.converter-page .converter-section-title p,
+.converter-page .converter-result-box span {
+    color: var(--tool-accent-readable) !important;
+}
+
+.converter-page .converter-field label,
+.converter-page .converter-section-title h2,
+.converter-page .converter-result-box strong,
+.converter-page .converter-example strong {
+    color: var(--tool-card-text) !important;
+}
+
+.converter-page .converter-hero p:not(.converter-eyebrow),
+.converter-page .converter-result-box small,
+.converter-page .converter-example span {
+    color: var(--converter-muted-strong) !important;
+}
+
+.converter-page .converter-input,
+.converter-page .converter-select {
+    border-color: var(--tool-line-strong) !important;
+    background-color: var(--tool-input-bg) !important;
+    color: var(--tool-card-text) !important;
+}
+
+.converter-page .converter-select option {
+    background: var(--tool-card-bg);
+    color: var(--tool-card-text);
+}
+
+.converter-page .converter-result-box {
+    border-color: var(--tool-line-strong) !important;
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.18), transparent 44%),
+        var(--tool-card-bg) !important;
+}
+
+body.dark-mode .converter-page .converter-result-box {
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-end-rgb), 0.24), transparent 44%),
+        var(--tool-card-bg) !important;
+}
+
+.fuel-page #geo-btn.btn-secondary {
+    border: 0 !important;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.26), transparent 38%),
+        linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    color: var(--theme-accent-text) !important;
+    font-weight: 950 !important;
+    box-shadow: 0 16px 34px rgba(var(--theme-accent-rgb), 0.26) !important;
+}
+
+.fuel-page #geo-btn.btn-secondary i {
+    color: currentColor !important;
+}
+
+.fuel-page #geo-btn.btn-secondary:hover {
+    filter: brightness(1.08) saturate(1.04);
+    box-shadow: 0 20px 42px rgba(var(--theme-accent-rgb), 0.32) !important;
+}
+
+body.theme-high-contrast-mode .converter-page {
+    --converter-chip-bg: color-mix(in srgb, var(--tool-card-bg) 58%, var(--theme-accent-start) 42%);
+    --converter-chip-bg-hover: color-mix(in srgb, var(--tool-card-bg) 48%, var(--theme-accent-end) 52%);
+    --converter-muted-strong: var(--tool-card-text);
+    --tool-line-strong: var(--border-strong);
+}
+
+body.dark-mode.theme-high-contrast-mode .converter-page {
+    --converter-chip-bg: color-mix(in srgb, var(--tool-card-bg) 54%, var(--theme-accent-end) 46%);
+    --converter-chip-bg-hover: color-mix(in srgb, var(--tool-card-bg) 44%, var(--theme-accent-end) 56%);
+}
+
+body.theme-high-contrast-mode .converter-page .converter-tab:not(.active),
+body.theme-high-contrast-mode .converter-page .converter-example,
+body.theme-high-contrast-mode .converter-page .converter-result-box,
+body.theme-high-contrast-mode .converter-page .converter-input,
+body.theme-high-contrast-mode .converter-page .converter-select {
+    border-width: 2px !important;
+}
+
+body.theme-high-contrast-mode .converter-page .converter-result-box span,
+body.theme-high-contrast-mode .converter-page .converter-section-title p,
+body.theme-high-contrast-mode .converter-page .converter-tab:not(.active) i {
+    color: var(--tool-card-text) !important;
+}
+
+body.theme-high-contrast-mode .fuel-page #geo-btn.btn-secondary {
+    border: 2px solid var(--tool-card-text) !important;
+    color: var(--theme-accent-text) !important;
+    box-shadow:
+        0 0 0 2px rgba(var(--theme-accent-rgb), 0.28),
+        0 18px 38px rgba(var(--theme-accent-rgb), 0.34) !important;
+}

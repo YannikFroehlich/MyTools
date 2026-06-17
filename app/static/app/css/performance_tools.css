@@ -1823,3 +1823,257 @@ body.dark-mode .share-access-note {
         width: 100%;
     }
 }
+
+/* Theme sync for image tools: use the global theme editor variables instead of fixed blue/purple colors. */
+.image-tool-page {
+    --image-tool-card-bg: var(--theme-card-bg, rgba(255, 255, 255, 0.84));
+    --image-tool-muted: color-mix(in srgb, var(--theme-text) 62%, transparent);
+    --image-tool-line: rgba(var(--theme-accent-rgb), 0.22);
+    --image-tool-soft: rgba(var(--theme-accent-rgb), 0.09);
+    --image-tool-soft-strong: rgba(var(--theme-accent-rgb), 0.15);
+}
+
+body.dark-mode .image-tool-page {
+    --image-tool-card-bg: var(--theme-card-bg, rgba(15, 23, 42, 0.86));
+    --image-tool-muted: color-mix(in srgb, var(--theme-text) 68%, transparent);
+}
+
+.image-tool-page .perf-hero,
+.image-tool-page .image-options-card,
+.image-tool-page .image-result-card,
+.image-tool-page .image-selected-content {
+    border-color: var(--image-tool-line);
+    background:
+        linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.10), rgba(var(--theme-accent-end-rgb), 0.08)),
+        var(--image-tool-card-bg);
+    color: var(--theme-text);
+    box-shadow: 0 18px 48px rgba(var(--theme-accent-rgb), 0.10);
+}
+
+.image-tool-page .perf-hero p:last-child,
+.image-tool-page .option-grid-v2 label > span,
+.image-tool-page .image-meta-grid b,
+.image-tool-page .image-estimate span,
+.image-tool-page .image-selected-text span,
+.image-tool-page .image-selected-text small,
+.image-tool-page .image-result-info span {
+    color: var(--image-tool-muted);
+}
+
+.image-tool-page .perf-kicker,
+.image-tool-page .share-upload-progress-head strong {
+    color: var(--theme-accent-start);
+}
+
+.image-tool-page .perf-hero-icon,
+.image-tool-page .image-upload-orb,
+.image-tool-page .image-change-button,
+.image-tool-page .perf-primary,
+.image-tool-page .image-preset.active,
+.image-tool-page .image-preset:hover {
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 16px 34px rgba(var(--theme-accent-rgb), 0.24);
+}
+
+.image-tool-page .image-drop,
+.image-tool-page .image-drop-v2,
+.image-tool-page .image-empty-picker {
+    border-color: rgba(var(--theme-accent-rgb), 0.35);
+    background:
+        radial-gradient(circle at 20% 0%, rgba(var(--theme-accent-rgb), 0.20), transparent 34%),
+        radial-gradient(circle at 100% 40%, rgba(var(--theme-accent-end-rgb), 0.14), transparent 30%),
+        rgba(var(--theme-accent-rgb), 0.055);
+}
+
+.image-tool-page .image-empty-picker:hover,
+.image-tool-page .image-drop.is-dragover,
+.image-tool-page .image-drop-v2.is-dragover {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.72);
+    background:
+        radial-gradient(circle at 20% 0%, rgba(var(--theme-accent-rgb), 0.24), transparent 34%),
+        radial-gradient(circle at 100% 40%, rgba(var(--theme-accent-end-rgb), 0.18), transparent 30%),
+        rgba(var(--theme-accent-rgb), 0.11);
+    box-shadow: 0 22px 60px rgba(var(--theme-accent-rgb), 0.14);
+}
+
+.image-tool-page .image-preset,
+.image-tool-page .option-grid input,
+.image-tool-page .option-grid select {
+    border-color: rgba(var(--theme-accent-rgb), 0.20);
+}
+
+.image-tool-page .option-grid input:focus,
+.image-tool-page .option-grid select:focus {
+    outline: none;
+    border-color: rgba(var(--theme-accent-rgb), 0.56);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.image-tool-page .image-preset {
+    background: var(--image-tool-soft);
+}
+
+.image-tool-page .image-toggle-list label,
+.image-tool-page .image-meta-grid span,
+.image-tool-page .image-estimate span,
+.image-tool-page .image-result-info div {
+    background: var(--image-tool-soft);
+}
+
+.image-tool-page .image-toggle-list input,
+.image-tool-page input[type="range"] {
+    accent-color: var(--theme-accent-start);
+}
+
+/* Contrast polish for image tools: preserve theme colors while improving readability. */
+.image-tool-page {
+    --image-tool-muted: color-mix(in srgb, var(--theme-text) 82%, transparent);
+    --image-tool-accent-readable: color-mix(in srgb, var(--theme-accent-start) 42%, var(--theme-text) 58%);
+    --image-tool-chip-bg: rgba(var(--theme-accent-rgb), 0.14);
+    --image-tool-chip-border: rgba(var(--theme-accent-rgb), 0.24);
+}
+
+body.dark-mode .image-tool-page {
+    --image-tool-muted: color-mix(in srgb, var(--theme-text) 86%, transparent);
+    --image-tool-accent-readable: color-mix(in srgb, var(--theme-accent-end) 34%, #ffffff 66%);
+    --image-tool-chip-bg: rgba(var(--theme-accent-end-rgb), 0.20);
+    --image-tool-chip-border: rgba(var(--theme-accent-end-rgb), 0.34);
+}
+
+.image-tool-page .perf-kicker,
+.image-tool-page .share-upload-progress-head strong,
+.image-tool-page .image-card-head .perf-kicker,
+.image-tool-page .image-result-head .perf-kicker {
+    color: var(--image-tool-accent-readable);
+}
+
+.image-tool-page .perf-hero p:last-child,
+.image-tool-page .option-grid-v2 label > span,
+.image-tool-page .image-meta-grid b,
+.image-tool-page .image-estimate span,
+.image-tool-page .image-selected-text span,
+.image-tool-page .image-selected-text small,
+.image-tool-page .image-result-info span,
+.image-tool-page .image-selected-content p,
+.image-tool-page .image-empty-picker small {
+    color: var(--image-tool-muted);
+}
+
+.image-tool-page .image-preset,
+.image-tool-page .image-toggle-list label,
+.image-tool-page .image-meta-grid span,
+.image-tool-page .image-estimate,
+.image-tool-page .image-result-info div,
+.image-tool-page .image-status-pill,
+.image-tool-page .image-local-badge {
+    color: var(--theme-text);
+    background: var(--image-tool-chip-bg);
+    border-color: var(--image-tool-chip-border);
+}
+
+.image-tool-page .image-preset.active,
+.image-tool-page .image-preset:hover,
+.image-tool-page .image-change-button,
+.image-tool-page .perf-primary {
+    color: var(--theme-accent-text);
+}
+
+.image-tool-page .image-upload-orb {
+    color: var(--theme-accent-text);
+}
+
+.image-tool-page .image-empty-picker strong,
+.image-tool-page .image-selected-content h2,
+.image-tool-page .image-card-head h2,
+.image-tool-page .image-result-head h2,
+.image-tool-page .image-result-info strong,
+.image-tool-page .image-meta-grid em,
+.image-tool-page .range-line b,
+.image-tool-page .image-toggle-list span {
+    color: var(--theme-text);
+}
+
+body.theme-high-contrast-mode .image-tool-page {
+    --image-tool-muted: var(--text-muted);
+    --image-tool-accent-readable: var(--theme-text);
+    --image-tool-chip-bg: rgba(var(--theme-accent-rgb), 0.22);
+    --image-tool-chip-border: var(--border-strong);
+    --image-tool-line: var(--border-strong);
+}
+
+body.dark-mode.theme-high-contrast-mode .image-tool-page {
+    --image-tool-chip-bg: rgba(var(--theme-accent-end-rgb), 0.32);
+}
+
+body.theme-high-contrast-mode .image-tool-page .perf-hero,
+body.theme-high-contrast-mode .image-tool-page .image-options-card,
+body.theme-high-contrast-mode .image-tool-page .image-result-card,
+body.theme-high-contrast-mode .image-tool-page .image-selected-content,
+body.theme-high-contrast-mode .image-tool-page .image-drop,
+body.theme-high-contrast-mode .image-tool-page .image-drop-v2,
+body.theme-high-contrast-mode .image-tool-page .image-empty-picker,
+body.theme-high-contrast-mode .image-tool-page .image-preset,
+body.theme-high-contrast-mode .image-tool-page .image-toggle-list label,
+body.theme-high-contrast-mode .image-tool-page .image-meta-grid span,
+body.theme-high-contrast-mode .image-tool-page .image-estimate,
+body.theme-high-contrast-mode .image-tool-page .image-result-info div,
+body.theme-high-contrast-mode .image-tool-page .image-status-pill,
+body.theme-high-contrast-mode .image-tool-page .image-local-badge {
+    border-width: 2px;
+}
+
+body.theme-high-contrast-mode .image-tool-page .perf-kicker,
+body.theme-high-contrast-mode .image-tool-page .image-preset,
+body.theme-high-contrast-mode .image-tool-page .image-status-pill,
+body.theme-high-contrast-mode .image-tool-page .image-local-badge {
+    font-weight: 950;
+}
+
+/* Use the readable text color calculated from the configured card background. */
+.image-tool-page {
+    --image-tool-card-text: var(--theme-card-text, var(--theme-text));
+    --image-tool-muted: color-mix(in srgb, var(--image-tool-card-text) 84%, transparent);
+    --image-tool-accent-readable: color-mix(in srgb, var(--theme-accent-start) 38%, var(--image-tool-card-text) 62%);
+}
+
+body.dark-mode .image-tool-page {
+    --image-tool-muted: color-mix(in srgb, var(--image-tool-card-text) 88%, transparent);
+    --image-tool-accent-readable: color-mix(in srgb, var(--theme-accent-end) 32%, #ffffff 68%);
+}
+
+.image-tool-page .perf-hero,
+.image-tool-page .image-options-card,
+.image-tool-page .image-result-card,
+.image-tool-page .image-selected-content,
+.image-tool-page .image-preset,
+.image-tool-page .image-toggle-list label,
+.image-tool-page .image-meta-grid span,
+.image-tool-page .image-estimate,
+.image-tool-page .image-result-info div,
+.image-tool-page .image-status-pill,
+.image-tool-page .image-local-badge,
+.image-tool-page .image-empty-picker strong,
+.image-tool-page .image-selected-content h2,
+.image-tool-page .image-card-head h2,
+.image-tool-page .image-result-head h2,
+.image-tool-page .image-result-info strong,
+.image-tool-page .image-meta-grid em,
+.image-tool-page .range-line b,
+.image-tool-page .image-toggle-list span {
+    color: var(--image-tool-card-text);
+}
+
+.image-tool-page .image-preset.active,
+.image-tool-page .image-preset:hover,
+.image-tool-page .image-change-button,
+.image-tool-page .perf-primary,
+.image-tool-page .image-upload-orb {
+    color: var(--theme-accent-text);
+}
+
+body.theme-high-contrast-mode .image-tool-page {
+    --image-tool-card-text: var(--theme-card-text, var(--theme-text));
+    --image-tool-muted: var(--text-muted);
+    --image-tool-accent-readable: var(--image-tool-card-text);
+}

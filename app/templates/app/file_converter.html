@@ -1,0 +1,128 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate 'Datei-Konverter' %} - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/file_converter.css' %}?v=20260617-contrast-polish">
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'app/js/file_converter.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<section class="file-converter-page" data-file-converter>
+    <header class="file-converter-hero">
+        <div class="file-converter-hero-copy">
+            <span class="file-converter-kicker">
+                <i class="fa-solid fa-file-arrow-down"></i>
+                {% translate 'Dateien umwandeln' %}
+            </span>
+            <h1>{% translate 'Datei-Konverter' %}</h1>
+            <p>
+                {% blocktranslate trimmed %}
+                    Wandle Dokumente wie DOCX, XLSX oder PPTX in PDF um. Bilder kannst du zusätzlich direkt nach PNG, JPG, WEBP oder PDF konvertieren.
+                {% endblocktranslate %}
+            </p>
+        </div>
+        <div class="file-converter-hero-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>{% translate 'Temporär verarbeitet' %}</span>
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="file-converter-messages">
+            {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="file-converter-layout">
+        <form method="post" enctype="multipart/form-data" class="file-converter-card file-converter-form">
+            {% csrf_token %}
+
+            <div class="file-converter-section-head">
+                <span>{% translate 'Upload' %}</span>
+                <h2>{% translate 'Datei auswählen' %}</h2>
+                <p>{% translate 'Die Datei wird nur für die Konvertierung zwischengespeichert und danach wieder entfernt.' %}</p>
+            </div>
+
+            <label class="file-drop-zone" data-drop-zone>
+                <input type="file" name="file" data-file-input required>
+                <span class="file-drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+                <strong data-file-name>{% translate 'Datei hier ablegen oder auswählen' %}</strong>
+                <small data-file-meta>{% blocktranslate %}Maximal {{ max_upload_label }}{% endblocktranslate %}</small>
+            </label>
+
+            <div class="converter-options-grid">
+                <label>
+                    <span>{% translate 'Zielformat' %}</span>
+                    <select name="target" data-target-select>
+                        <option value="pdf" {% if selected_target == 'pdf' %}selected{% endif %}>PDF</option>
+                        <option value="png" {% if selected_target == 'png' %}selected{% endif %}>PNG {% translate '(nur Bilder)' %}</option>
+                        <option value="jpg" {% if selected_target == 'jpg' %}selected{% endif %}>JPG {% translate '(nur Bilder)' %}</option>
+                        <option value="webp" {% if selected_target == 'webp' %}selected{% endif %}>WEBP {% translate '(nur Bilder)' %}</option>
+                    </select>
+                </label>
+
+                <div class="converter-format-hint" data-format-hint>
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>{% translate 'PDF unterstützt Dokumente, Tabellen, Präsentationen, Textdateien und Bilder.' %}</span>
+                </div>
+            </div>
+
+            <button type="submit" class="file-converter-submit">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                {% translate 'Konvertieren & herunterladen' %}
+            </button>
+        </form>
+
+        <aside class="file-converter-card file-converter-info">
+            <div class="file-converter-section-head">
+                <span>{% translate 'Formate' %}</span>
+                <h2>{% translate 'Was geht aktuell?' %}</h2>
+            </div>
+
+            <div class="format-group">
+                <div class="format-group-title">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <strong>{% translate 'Zu PDF' %}</strong>
+                </div>
+                <p>{% translate 'Office-Dateien, Textdateien, Tabellen, Präsentationen und Bilder.' %}</p>
+                <div class="format-chip-list">
+                    {% for extension in office_extensions %}
+                        <span>{{ extension }}</span>
+                    {% endfor %}
+                    {% for extension in image_extensions %}
+                        <span>{{ extension }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="format-group">
+                <div class="format-group-title">
+                    <i class="fa-regular fa-image"></i>
+                    <strong>{% translate 'Bilder umwandeln' %}</strong>
+                </div>
+                <p>{% translate 'PNG, JPG, WEBP, BMP und GIF lassen sich in PNG, JPG, WEBP oder PDF umwandeln.' %}</p>
+                <div class="format-chip-list">
+                    <span>PNG</span>
+                    <span>JPG</span>
+                    <span>WEBP</span>
+                    <span>PDF</span>
+                </div>
+            </div>
+
+            <div class="converter-note">
+                <i class="fa-solid fa-server"></i>
+                <p>{% translate 'Für DOCX/XLSX/PPTX zu PDF braucht der Server LibreOffice. Im Dockerfile ist die Installation bereits ergänzt.' %}</p>
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}

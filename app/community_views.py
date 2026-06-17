@@ -26,6 +26,21 @@ STARTED_AT = timezone.now()
 
 CHANGELOG_ENTRIES = [
     {
+        "version": "2026.10",
+        "date": "17.06.2026",
+        "title": _("Datei-Konverter und einheitliches Tool-Design"),
+        "summary": _("Der neue Datei-Konverter, ein gemeinsamer Tool-Seiten-Look und gezielte Kontrastkorrekturen machen die Werkzeugbereiche einheitlicher und besser lesbar."),
+        "type": _("Tools"),
+        "icon": "fa-solid fa-file-arrow-down",
+        "items": [
+            _("Datei-Konverter für DOCX, Tabellen, Präsentationen, Textdateien und Bilder ergänzt."),
+            _("Office-zu-PDF läuft serverseitig über LibreOffice und verarbeitet Uploads nur temporär."),
+            _("Toolbox-Seiten übernehmen jetzt gemeinsame Theme-Farben, Karten, Buttons, Inputs und Kontrastmodus-Regeln."),
+            _("Bild Tools, Datei-Konverter, Einheitenrechner, Spritkosten und QR-Code Tool wurden farblich nachjustiert."),
+            _("Der Quality-Workflow startet nicht mehr automatisch bei jedem Push oder Merge, sondern nur noch manuell."),
+        ],
+    },
+    {
         "version": "2026.09",
         "date": "15.06.2026",
         "title": _("Stream Deck mit Voicemod-Steuerung"),

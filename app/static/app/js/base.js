@@ -13,15 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body.classList.add('mobile-header-visible');
             }
         } catch (error) {
-            // Private Browser-Modi koennen localStorage blockieren.
         }
     }
 
-    /* ── FIXED HEADER ABSTAND ──
-       Der Header ist fixed, damit er beim Scrollen immer sichtbar bleibt.
-       Auf Mobile übernimmt die untere Navigation, daher darf der obere Header
-       keinen Abstand mehr reservieren.
-    */
     const fixedHeader = document.querySelector('body > nav:not(.mobile-bottom-nav)');
 
     function syncFixedHeaderOffset() {
@@ -58,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 window.localStorage.setItem(mobileHeaderStorageKey, String(isVisible));
             } catch (error) {
-                // Der Toggle funktioniert auch ohne persistente Speicherung.
             }
         }
 
@@ -302,9 +295,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.style.setProperty('--theme-accent-text', readableTextColor(completeTheme.navStart));
         document.documentElement.style.setProperty('--theme-accent-rgb', rgbString(completeTheme.navStart));
         document.documentElement.style.setProperty('--theme-accent-end-rgb', rgbString(completeTheme.navEnd));
+        const cardBackground = completeTheme.cardBg || completeTheme.footerBg || '#ffffff';
+
         document.documentElement.style.setProperty('--theme-page-bg', pageBackground);
         document.documentElement.style.setProperty('--theme-footer-bg', completeTheme.footerBg);
-        document.documentElement.style.setProperty('--theme-card-bg', completeTheme.cardBg || completeTheme.footerBg || '#ffffff');
+        document.documentElement.style.setProperty('--theme-card-bg', cardBackground);
+        document.documentElement.style.setProperty('--theme-card-text', readableTextColor(cardBackground));
         document.documentElement.style.setProperty('--theme-card-radius', `${completeTheme.radius || 22}px`);
         document.documentElement.style.setProperty('--theme-text', readableTextColor(pageBackground));
         body.classList.toggle('theme-pattern-mode', Boolean(completeTheme.pattern));
@@ -328,6 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             '--theme-page-bg',
             '--theme-footer-bg',
             '--theme-card-bg',
+            '--theme-card-text',
             '--theme-card-radius',
             '--theme-text',
             '--theme-footer-text',
@@ -1097,7 +1094,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     updatePresenceProfiles(data.profiles);
                 }
             } catch (error) {
-                // Ungueltige Socket-Nachrichten ignorieren wir bewusst.
             }
         });
 
@@ -1213,7 +1209,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyLiveStatusPayload(data);
             }
         } catch (error) {
-            // Wenn der Server kurz nicht erreichbar ist, probieren wir es beim nächsten Intervall erneut.
         } finally {
             liveStatusState.inFlight = false;
         }
@@ -1526,7 +1521,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (canRegisterServiceWorker) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js').catch(() => {
-                    // Service Worker funktioniert nur unter HTTPS oder localhost.
                 });
             });
         }

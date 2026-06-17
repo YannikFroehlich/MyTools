@@ -39,6 +39,7 @@
     {% endif %}
 
     {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260617-tool-contrast-fix">
     {% block scripts %}
         <script src="{% static 'app/js/base.js' %}?v=20260614-mobile-header-toggle" defer></script>
     {% endblock %}
@@ -600,6 +601,14 @@
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Bild Tools' %}</strong>
                                         <small>{% translate 'Bilder' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="{% url 'file_converter' %}" class="game-menu-card is-slate" data-menu-card data-menu-name="{% translate 'Datei-Konverter' %}" data-menu-category="{% translate 'DOCX PDF Dateien Konverter Office Umwandeln' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-file-arrow-down"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Datei-Konverter' %}</strong>
+                                        <small>{% translate 'DOCX zu PDF' %}</small>
                                     </span>
                                 </a>
 

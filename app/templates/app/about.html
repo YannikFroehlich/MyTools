@@ -21,8 +21,8 @@
 
                 <p>
                     {% blocktranslate trimmed %}
-                        MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, Wetter, Notizen, Dateien, Profile, Chats und Mini-Games.
-                        Globale Suche, Quick Actions, mobile Navigation mit Header-Toggle und Design-Optionen sorgen dafür, dass die vielen Bereiche schnell erreichbar und persönlich anpassbar bleiben.
+                        MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, Wetter, Notizen, Dateien, Datei-Konvertierung, Profile, Chats und Mini-Games.
+                        Globale Suche, Quick Actions, mobile Navigation mit Header-Toggle, einheitliche Tool-Seiten und Design-Optionen sorgen dafür, dass die vielen Bereiche schnell erreichbar, gut lesbar und persönlich anpassbar bleiben.
                     {% endblocktranslate %}
                 </p>
 
@@ -175,6 +175,16 @@
                             <strong>{% translate 'QR-Code Tool' %}</strong>
                             <span>{% translate 'QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte als PNG erzeugen.' %}</span>
                         </a>
+                        <a href="{% url 'image_tools' %}" class="about-link-card">
+                            <i class="fa-regular fa-image"></i>
+                            <strong>{% translate 'Bild Tools' %}</strong>
+                            <span>{% translate 'Bilder komprimieren, konvertieren und direkt als Download vorbereiten.' %}</span>
+                        </a>
+                        <a href="{% url 'file_converter' %}" class="about-link-card">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            <strong>{% translate 'Datei-Konverter' %}</strong>
+                            <span>{% translate 'DOCX, Tabellen, Präsentationen, Textdateien und Bilder in PDF oder Bildformate umwandeln.' %}</span>
+                        </a>
                     </div>
                 </article>
 
@@ -304,7 +314,7 @@
                     <li><i class="fa-solid fa-check"></i>{% translate 'PostgreSQL, Redis, Gunicorn und Caddy sind für Docker-Deployment vorbereitet.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'WebSocket-Updates halten Benachrichtigungen und Präsenz schneller aktuell, mit HTTP-Fallback.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'Externe APIs bleiben optional und werden über Umgebungsvariablen konfiguriert.' %}</li>
-                    <li><i class="fa-solid fa-check"></i>{% translate 'Ein gemeinsamer Qualitätslauf prüft Systemcheck, Migrationen, Tests, statische Dateien und JavaScript.' %}</li>
+                    <li><i class="fa-solid fa-check"></i>{% translate 'Ein gemeinsamer Qualitätslauf prüft Systemcheck, Migrationen, Tests, statische Dateien und JavaScript und wird bei Bedarf manuell gestartet.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'Mehrsprachigkeit läuft über Django-Übersetzungen für Deutsch und Englisch.' %}</li>
                     <li><i class="fa-solid fa-check"></i>{% translate 'PWA-Unterstützung mit Manifest, Service Worker, App-Icons und Offline-Fallback ist vorbereitet.' %}</li>
                 </ul>
@@ -331,7 +341,7 @@
                     </div>
                     <div>
                         <i class="fa-solid fa-palette"></i>
-                        <span>{% translate 'Design-System und mobile Bedienung weiter verfeinern' %}</span>
+                        <span>{% translate 'Design-System, Kontrastmodus und mobile Bedienung weiter verfeinern' %}</span>
                     </div>
                 </div>
             </article>
