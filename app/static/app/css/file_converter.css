@@ -1,0 +1,595 @@
+.file-converter-page {
+    width: min(1180px, calc(100% - 32px));
+    margin: 34px auto 70px;
+}
+
+.file-converter-hero,
+.file-converter-card {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.82));
+    color: #f8fafc;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+
+body.light-mode .file-converter-hero,
+body.light-mode .file-converter-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(239, 246, 255, 0.94));
+    color: #0f172a;
+    box-shadow: 0 20px 55px rgba(15, 23, 42, 0.10);
+}
+
+.file-converter-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+    padding: clamp(22px, 4vw, 38px);
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+}
+
+.file-converter-hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -80px -130px auto;
+    width: 260px;
+    height: 260px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.38), transparent 67%);
+    pointer-events: none;
+}
+
+.file-converter-hero-copy {
+    max-width: 760px;
+    position: relative;
+    z-index: 1;
+    text-align: left;
+}
+
+.file-converter-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.16);
+    color: #bfdbfe;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+body.light-mode .file-converter-kicker {
+    color: #1d4ed8;
+    background: rgba(59, 130, 246, 0.12);
+}
+
+.file-converter-hero h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1;
+}
+
+.file-converter-hero p {
+    margin: 16px 0 0;
+    color: rgba(226, 232, 240, 0.82);
+    font-size: 1.04rem;
+    line-height: 1.65;
+}
+
+body.light-mode .file-converter-hero p {
+    color: #475569;
+}
+
+.file-converter-hero-badge {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-weight: 800;
+}
+
+body.light-mode .file-converter-hero-badge {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(148, 163, 184, 0.22);
+}
+
+.file-converter-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(310px, 0.9fr);
+    gap: 22px;
+    margin-top: 22px;
+    align-items: start;
+}
+
+.file-converter-card {
+    border-radius: 28px;
+    padding: clamp(18px, 3vw, 28px);
+}
+
+.file-converter-section-head {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.file-converter-section-head span {
+    display: inline-flex;
+    color: #93c5fd;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.74rem;
+}
+
+body.light-mode .file-converter-section-head span {
+    color: #2563eb;
+}
+
+.file-converter-section-head h2 {
+    margin: 6px 0 0;
+    font-size: 1.35rem;
+}
+
+.file-converter-section-head p,
+.file-converter-info p {
+    margin: 8px 0 0;
+    color: rgba(226, 232, 240, 0.72);
+    line-height: 1.55;
+}
+
+body.light-mode .file-converter-section-head p,
+body.light-mode .file-converter-info p {
+    color: #64748b;
+}
+
+.file-drop-zone {
+    display: grid;
+    place-items: center;
+    min-height: 230px;
+    padding: 24px;
+    text-align: center;
+    border: 2px dashed rgba(147, 197, 253, 0.42);
+    border-radius: 26px;
+    background: rgba(15, 23, 42, 0.34);
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+body.light-mode .file-drop-zone {
+    background: rgba(239, 246, 255, 0.72);
+    border-color: rgba(37, 99, 235, 0.28);
+}
+
+.file-drop-zone:hover,
+.file-drop-zone.is-dragover {
+    transform: translateY(-2px);
+    border-color: rgba(96, 165, 250, 0.9);
+    background: rgba(37, 99, 235, 0.16);
+}
+
+.file-drop-zone input {
+    display: none;
+}
+
+.file-drop-icon {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #fff;
+    font-size: 2rem;
+    margin-bottom: 16px;
+    box-shadow: 0 18px 35px rgba(59, 130, 246, 0.28);
+}
+
+.file-drop-zone strong {
+    font-size: 1.08rem;
+}
+
+.file-drop-zone small {
+    color: rgba(226, 232, 240, 0.64);
+    margin-top: 6px;
+}
+
+body.light-mode .file-drop-zone small {
+    color: #64748b;
+}
+
+.converter-options-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.45fr) minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+    align-items: end;
+}
+
+.converter-options-grid label {
+    display: grid;
+    gap: 8px;
+    font-weight: 800;
+}
+
+.converter-options-grid select {
+    width: 100%;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 16px;
+    padding: 13px 14px;
+    background: rgba(15, 23, 42, 0.58);
+    color: #f8fafc;
+    font: inherit;
+}
+
+body.light-mode .converter-options-grid select {
+    background: #fff;
+    color: #0f172a;
+}
+
+.converter-format-hint,
+.converter-note {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(59, 130, 246, 0.12);
+    color: #dbeafe;
+    line-height: 1.45;
+}
+
+body.light-mode .converter-format-hint,
+body.light-mode .converter-note {
+    background: rgba(37, 99, 235, 0.08);
+    color: #1e3a8a;
+}
+
+.file-converter-submit {
+    width: 100%;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 18px;
+    padding: 15px 18px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #fff;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 18px 34px rgba(37, 99, 235, 0.22);
+}
+
+.file-converter-submit:hover {
+    transform: translateY(-1px);
+}
+
+.format-group {
+    padding: 16px;
+    border-radius: 22px;
+    background: rgba(15, 23, 42, 0.32);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    margin-top: 14px;
+}
+
+body.light-mode .format-group {
+    background: rgba(248, 250, 252, 0.78);
+}
+
+.format-group-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.format-group-title i {
+    color: #93c5fd;
+}
+
+.format-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.format-chip-list span {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.14);
+    color: #bfdbfe;
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+body.light-mode .format-chip-list span {
+    background: rgba(37, 99, 235, 0.10);
+    color: #1d4ed8;
+}
+
+.converter-note {
+    margin-top: 14px;
+}
+
+.converter-note p {
+    margin: 0;
+}
+
+.file-converter-messages {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.file-converter-messages p {
+    margin: 0;
+    padding: 13px 15px;
+    border-radius: 16px;
+    background: rgba(239, 68, 68, 0.14);
+    color: #fecaca;
+    border: 1px solid rgba(248, 113, 113, 0.24);
+}
+
+.file-converter-messages p.success {
+    background: rgba(34, 197, 94, 0.14);
+    color: #bbf7d0;
+    border-color: rgba(74, 222, 128, 0.28);
+}
+
+body.light-mode .file-converter-messages p {
+    color: #991b1b;
+    background: rgba(254, 226, 226, 0.85);
+}
+
+body.light-mode .file-converter-messages p.success {
+    color: #166534;
+    background: rgba(220, 252, 231, 0.92);
+}
+
+@media (max-width: 880px) {
+    .file-converter-hero,
+    .file-converter-layout,
+    .converter-options-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .file-converter-hero {
+        display: grid;
+    }
+
+    .file-converter-hero-badge {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 560px) {
+    .file-converter-page {
+        width: min(100% - 18px, 1180px);
+        margin-top: 18px;
+    }
+
+    .file-drop-zone {
+        min-height: 190px;
+    }
+}
+
+/* Theme sync: keep file converter colors aligned with the global theme editor. */
+.file-converter-page {
+    --converter-card-bg: var(--theme-card-bg, rgba(255, 255, 255, 0.88));
+    --converter-muted: color-mix(in srgb, var(--theme-text) 62%, transparent);
+    --converter-line: rgba(var(--theme-accent-rgb), 0.20);
+    --converter-soft: rgba(var(--theme-accent-rgb), 0.09);
+    --converter-soft-strong: rgba(var(--theme-accent-rgb), 0.15);
+}
+
+body.dark-mode .file-converter-page {
+    --converter-card-bg: var(--theme-card-bg, rgba(15, 23, 42, 0.86));
+    --converter-muted: color-mix(in srgb, var(--theme-text) 68%, transparent);
+}
+
+.file-converter-hero,
+.file-converter-card {
+    border-color: var(--converter-line);
+    background:
+        linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.10), rgba(var(--theme-accent-end-rgb), 0.08)),
+        var(--converter-card-bg);
+    color: var(--theme-text);
+    box-shadow: 0 22px 60px rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.file-converter-hero::after {
+    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.32), transparent 67%);
+}
+
+.file-converter-kicker,
+.file-converter-section-head span,
+.format-group-title i {
+    color: var(--theme-accent-start);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.file-converter-section-head span,
+.format-group-title i {
+    background: transparent;
+}
+
+.file-converter-hero p,
+.file-converter-section-head p,
+.file-converter-info p,
+.file-drop-zone small {
+    color: var(--converter-muted);
+}
+
+.file-converter-hero-badge,
+.format-group,
+.file-drop-zone,
+.converter-format-hint,
+.converter-note {
+    border-color: var(--converter-line);
+    background: var(--converter-soft);
+    color: var(--theme-text);
+}
+
+.file-drop-zone {
+    border-color: rgba(var(--theme-accent-rgb), 0.38);
+}
+
+.file-drop-zone:hover,
+.file-drop-zone.is-dragover {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.72);
+    background: var(--converter-soft-strong);
+}
+
+.file-drop-icon,
+.file-converter-submit {
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 18px 34px rgba(var(--theme-accent-rgb), 0.24);
+}
+
+.converter-options-grid select {
+    border-color: rgba(var(--theme-accent-rgb), 0.24);
+    background: var(--converter-card-bg);
+    color: var(--theme-text);
+}
+
+.converter-options-grid select:focus {
+    outline: none;
+    border-color: rgba(var(--theme-accent-rgb), 0.58);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.format-chip-list span {
+    color: var(--theme-accent-start);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+}
+
+/* Contrast polish: keep custom theme colors, but make text/chips readable on dark custom cards. */
+.file-converter-page {
+    --converter-muted: color-mix(in srgb, var(--theme-text) 82%, transparent);
+    --converter-accent-readable: color-mix(in srgb, var(--theme-accent-start) 42%, var(--theme-text) 58%);
+    --converter-chip-text: color-mix(in srgb, var(--theme-accent-start) 46%, var(--theme-text) 54%);
+    --converter-chip-bg: rgba(var(--theme-accent-rgb), 0.15);
+    --converter-chip-border: rgba(var(--theme-accent-rgb), 0.24);
+}
+
+body.dark-mode .file-converter-page {
+    --converter-muted: color-mix(in srgb, var(--theme-text) 86%, transparent);
+    --converter-accent-readable: color-mix(in srgb, var(--theme-accent-end) 34%, #ffffff 66%);
+    --converter-chip-text: color-mix(in srgb, var(--theme-accent-end) 30%, #ffffff 70%);
+    --converter-chip-bg: rgba(var(--theme-accent-end-rgb), 0.22);
+    --converter-chip-border: rgba(var(--theme-accent-end-rgb), 0.34);
+}
+
+.file-converter-kicker,
+.file-converter-section-head span,
+.format-group-title i {
+    color: var(--converter-accent-readable);
+}
+
+.file-converter-hero p,
+.file-converter-section-head p,
+.file-converter-info p,
+.file-drop-zone small {
+    color: var(--converter-muted);
+}
+
+.format-group {
+    background:
+        linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.08), rgba(var(--theme-accent-end-rgb), 0.06)),
+        rgba(var(--theme-accent-rgb), 0.07);
+    border-color: rgba(var(--theme-accent-end-rgb), 0.24);
+}
+
+.format-group-title strong,
+.file-drop-zone strong,
+.converter-options-grid label > span {
+    color: var(--theme-text);
+}
+
+.format-group p {
+    color: var(--converter-muted);
+    text-align: left;
+}
+
+.format-chip-list span {
+    color: var(--converter-chip-text);
+    background: var(--converter-chip-bg);
+    border: 1px solid var(--converter-chip-border);
+    letter-spacing: 0.01em;
+}
+
+.converter-format-hint,
+.converter-note {
+    color: var(--theme-text);
+}
+
+.converter-format-hint span,
+.converter-note p {
+    color: var(--converter-muted);
+}
+
+body.theme-high-contrast-mode .file-converter-page {
+    --converter-muted: var(--text-muted);
+    --converter-accent-readable: var(--theme-text);
+    --converter-chip-text: var(--theme-text);
+    --converter-chip-bg: rgba(var(--theme-accent-rgb), 0.22);
+    --converter-chip-border: var(--border-strong);
+    --converter-line: var(--border-strong);
+}
+
+body.dark-mode.theme-high-contrast-mode .file-converter-page {
+    --converter-chip-bg: rgba(var(--theme-accent-end-rgb), 0.32);
+}
+
+body.theme-high-contrast-mode .file-converter-hero,
+body.theme-high-contrast-mode .file-converter-card,
+body.theme-high-contrast-mode .format-group,
+body.theme-high-contrast-mode .file-drop-zone,
+body.theme-high-contrast-mode .converter-format-hint,
+body.theme-high-contrast-mode .converter-note,
+body.theme-high-contrast-mode .format-chip-list span {
+    border-width: 2px;
+}
+
+body.theme-high-contrast-mode .format-chip-list span,
+body.theme-high-contrast-mode .file-converter-kicker,
+body.theme-high-contrast-mode .file-converter-section-head span {
+    font-weight: 950;
+}
+
+/* Use the readable text color calculated from the configured card background. */
+.file-converter-page {
+    --converter-card-text: var(--theme-card-text, var(--theme-text));
+    --converter-muted: color-mix(in srgb, var(--converter-card-text) 84%, transparent);
+    --converter-accent-readable: color-mix(in srgb, var(--theme-accent-start) 38%, var(--converter-card-text) 62%);
+    --converter-chip-text: color-mix(in srgb, var(--theme-accent-start) 38%, var(--converter-card-text) 62%);
+}
+
+body.dark-mode .file-converter-page {
+    --converter-muted: color-mix(in srgb, var(--converter-card-text) 88%, transparent);
+    --converter-accent-readable: color-mix(in srgb, var(--theme-accent-end) 32%, #ffffff 68%);
+    --converter-chip-text: color-mix(in srgb, var(--theme-accent-end) 26%, #ffffff 74%);
+}
+
+.file-converter-hero,
+.file-converter-card,
+.format-group-title strong,
+.file-drop-zone strong,
+.converter-options-grid label > span,
+.converter-format-hint,
+.converter-note,
+.converter-options-grid select {
+    color: var(--converter-card-text);
+}
+
+body.theme-high-contrast-mode .file-converter-page {
+    --converter-card-text: var(--theme-card-text, var(--theme-text));
+    --converter-muted: var(--text-muted);
+    --converter-accent-readable: var(--converter-card-text);
+    --converter-chip-text: var(--converter-card-text);
+}

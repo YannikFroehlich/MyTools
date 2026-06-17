@@ -38,10 +38,13 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - wissenschaftlicher Rechner mit Wurzeln, Potenzen, Trigonometrie, Logarithmen, Speicher und Verlauf
 - Genius Search mit Genius API
 - Einheitenrechner
+- Datei-Konverter für DOCX/XLSX/PPTX/Text/Bilder zu PDF und Bildformate
+- Bild Tools zum Komprimieren und Konvertieren von Bildern
 - Avatar Wiki mit Charakterverwaltung
 - Drift Circuit Pro als browserbasiertes Racing-Game
 - Google-Apps-Menü mit externen Links
 - Theme-Editor mit Farbvorgaben, eigener Farbwahl, Kompaktmodus, großer Schrift, Kontrastmodus und reduzierten Animationen
+- einheitliches Tool-Seiten-Design mit Theme-Buttons, Karten, Inputs und Kontrastmodus-Unterstützung
 - Dark Mode
 - globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen
 - mobile Bottom-Navigation mit optional einblendbarem Header für schnelle Bedienung auf Smartphone und Tablet
@@ -56,6 +59,10 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 
 Die letzten Updates verbinden bestehende Bereiche stärker miteinander und verbessern die Bedienung auf Desktop und Mobile:
 
+- **Datei-Konverter**: DOCX, Tabellen, Präsentationen, Textdateien und Bilder lassen sich zu PDF oder Bildformaten umwandeln; Office-Dateien laufen serverseitig über LibreOffice.
+- **Einheitliches Tool-Design**: Toolbox-Seiten nutzen gemeinsame Theme-Farben für Karten, Buttons, Inputs, Hover-Zustände und Kontrastmodus.
+- **Kontrast-Polish**: Datei-Konverter, Bild Tools, Einheitenrechner, Spritkosten und QR-Code Tool wurden auf bessere Lesbarkeit angepasst.
+- **Quality Checks entschärft**: der GitHub-Actions-Workflow startet nicht mehr automatisch bei jedem Push/Merge, sondern nur noch manuell; lokal bleibt `scripts/verify.py` verfügbar.
 - **Globale Suche / Tool-Launcher**: per Suchbutton oder `Ctrl + K` Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen finden.
 - **Startseiten-Quick-Actions**: direkte Buttons für MyTools-Suche, Widgets, Favoriten, Design und Changelog.
 - **Mobile Bedienung**: Bottom-Navigation für Start, Suche, Tools, Header, Chat und Profil; der obere Header lässt sich auf kleinen Displays ein- und ausblenden.
@@ -63,7 +70,7 @@ Die letzten Updates verbinden bestehende Bereiche stärker miteinander und verbe
 - **Design-Optionen**: Kompaktmodus, größere Schrift, hoher Kontrast, weniger Bewegung und Hintergrundeffekt werden im Browser gespeichert.
 - **Datei-Share-Sicherheit**: private Links können Passwort, Ablaufdatum und Download-Limit bekommen; Bilder und PDFs lassen sich als Vorschau öffnen.
 - **Profile & Benachrichtigungen**: Spotlight-Statistiken, Profilkarte und detaillierte Benachrichtigungsoptionen pro Bereich.
-- **Projektqualität**: `scripts/verify.py` bündelt Systemcheck, Migration-Check, Tests, collectstatic-Dry-Run und JavaScript-Syntaxprüfung; Notes- und PWA-Views sind ausgelagert.
+- **Projektqualität**: `scripts/verify.py` bündelt Systemcheck, Migration-Check, Tests, collectstatic-Dry-Run und JavaScript-Syntaxprüfung; der GitHub-Actions-Workflow läuft nur manuell.
 - **Admin-Komfort**: Serverstatus zeigt zusätzlich Mediengröße, Datenbankgröße, aktive Nutzer, App-Aktivität und letzte Security-Events.
 - **Changelog**: `/changelog/` fasst sichtbare Änderungen als Timeline zusammen.
 
@@ -515,6 +522,37 @@ Funktionen:
 
 ---
 
+## 📄 Datei-Konverter
+
+Der Datei-Konverter wandelt hochgeladene Dateien direkt im Browser-Workflow um. Die Dateien werden serverseitig nur temporär verarbeitet und danach wieder entfernt.
+
+Unterstützt sind aktuell:
+
+- DOC, DOCX, ODT, RTF und Textdateien zu PDF
+- XLS, XLSX und ODS zu PDF
+- PPT, PPTX und ODP zu PDF
+- PNG, JPG, WEBP, BMP und GIF zu PNG, JPG, WEBP oder PDF
+
+Für Office-Dateien nutzt der Server LibreOffice. Im Dockerfile sind die nötigen LibreOffice-Pakete installiert.
+
+---
+
+## 🎨 Einheitliches Tool-Design
+
+Die Toolbox-Seiten nutzen ein gemeinsames CSS-Layer über `app/static/app/css/tool_pages.css`.
+
+Dadurch übernehmen Tools wie Datei-Konverter, Bild Tools, QR-Code Tool, Einheitenrechner, Spritkosten, Rechner, Randomizer, Notizen und weitere Seiten dieselben Theme-Werte für:
+
+- Karten und Panels
+- Buttons und sekundäre Aktionen
+- Inputs, Selects und Textareas
+- Hover-/Focus-Zustände
+- Kontrastmodus und bessere Lesbarkeit
+
+Die einzelnen Tool-CSS-Dateien bleiben für Speziallayout zuständig. Das gemeinsame Tool-Design wird danach geladen und gleicht Farben, Abstände und Kontrast an.
+
+---
+
 ## 🌍 Internationalisierung
 
 MyTools nutzt Django i18n.
@@ -659,7 +697,7 @@ python scripts/verify.py
 ```
 
 Das prüft Django-Systemchecks, fehlende Migrationen, die Testsuite, `collectstatic` als Dry-Run und JavaScript-Syntax, falls Node.js verfügbar ist.
-Der gleiche Qualitätslauf ist zusätzlich als GitHub-Actions-Workflow vorbereitet.
+Der GitHub-Actions-Workflow für diesen Qualitätslauf ist bewusst nur manuell per `workflow_dispatch` aktiv, damit Pushes und Merges nicht mehr automatisch lange hängen bleiben.
 
 Tests lokal starten:
 

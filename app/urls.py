@@ -205,6 +205,7 @@ from .budget_views import (
     budget_tracker_export_csv,
     budget_tracker_view,
 )
+from .file_converter_views import file_converter_view
 from .performance_tools_views import (
     file_share_delete_view,
     file_share_download_view,
@@ -265,6 +266,7 @@ urlpatterns = [
 
     path('leaderboard/', leaderboard_view, name='leaderboard'),
     path('bild-tools/', image_tools_view, name='image_tools'),
+    path('datei-konverter/', file_converter_view, name='file_converter'),
     path('datei-share/', file_share_view, name='file_share'),
     path('datei-share/upload/', file_share_upload_view, name='file_share_upload'),
     path('datei-share/<str:token>/download/', file_share_download_view, name='file_share_download'),

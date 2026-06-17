@@ -2050,12 +2050,38 @@ class StaticPageTests(BaseTestCase):
         self.assertContains(response, "Stream Deck mit Voicemod-Steuerung")
         self.assertContains(response, "Voices lassen sich aus Voicemod laden")
 
+    def test_changelog_mentions_file_converter_and_tool_design_update(self):
+        response = self.client.get(reverse("changelog"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Datei-Konverter und einheitliches Tool-Design")
+        self.assertContains(response, "Toolbox-Seiten übernehmen jetzt gemeinsame Theme-Farben")
+        self.assertContains(response, "Quality-Workflow startet nicht mehr automatisch")
+
+    def test_about_page_mentions_file_converter_and_image_tools(self):
+        response = self.client.get(reverse("about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("file_converter"))
+        self.assertContains(response, reverse("image_tools"))
+        self.assertContains(response, "Datei-Konverter")
+        self.assertContains(response, "Bild Tools")
+        self.assertContains(response, "Kontrastmodus")
+
     def test_readme_mentions_stream_deck_voicemod(self):
         readme = (Path(settings.BASE_DIR) / "README.md").read_text(encoding="utf-8")
 
         self.assertIn("Spotify, Voicemod und eigene Aktionen", readme)
         self.assertIn("Voicemod-Steuerung mit lokal gespeichertem API-Key", readme)
         self.assertIn("Voice-Auswahl aus der geladenen Voicemod-Liste", readme)
+
+    def test_readme_mentions_file_converter_tool_design_and_manual_quality_checks(self):
+        readme = (Path(settings.BASE_DIR) / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("Datei-Konverter", readme)
+        self.assertIn("serverseitig über LibreOffice", readme)
+        self.assertIn("Einheitliches Tool-Design", readme)
+        self.assertIn("GitHub-Actions-Workflow läuft nur manuell", readme)
 
     def test_simple_tool_pages_load(self):
         pages = [
@@ -2067,6 +2093,7 @@ class StaticPageTests(BaseTestCase):
             ("genius-search", "app/genius_search.html"),
             ("avatar-wiki", "app/avatar_wiki.html"),
             ("unit_converter", "app/unit_converter.html"),
+            ("file_converter", "app/file_converter.html"),
             ("drift-circuit", "app/drift_circuit.html"),
             ("snake-powerups", "app/snake_powerups.html"),
             ("cookie-clicker", "app/cookie_clicker.html"),
@@ -2431,6 +2458,81 @@ class SecurityDashboardAndQrToolTests(BaseTestCase):
         self.assertContains(response, reverse("security_dashboard"))
         self.assertContains(response, reverse("qr_code_tool"))
 
+    def test_file_converter_page_loads_and_is_linked(self):
+        response = self.client.get(reverse("file_converter"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/file_converter.html")
+        self.assertContains(response, "Datei-Konverter")
+        self.assertContains(response, "DOCX")
+        self.assertContains(response, "app/js/file_converter.js")
+        self.assertContains(response, "app/css/file_converter.css")
+
+        home_response = self.client.get(reverse("home"))
+        self.assertContains(home_response, reverse("file_converter"))
+
+
+class FileConverterTests(BaseTestCase):
+    def test_image_file_can_be_converted_to_jpg(self):
+        response = self.client.post(reverse("file_converter"), {
+            "target": "jpg",
+            "file": self.get_test_image("avatar.png"),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "image/jpeg")
+        self.assertIn('filename="avatar-konvertiert.jpg"', response["Content-Disposition"])
+        self.assertTrue(response.content.startswith(b"\xff\xd8"))
+
+    @patch("app.file_converter_views._office_converter_binary", return_value=None)
+    def test_docx_to_pdf_shows_message_when_libreoffice_is_missing(self, _binary_mock):
+        response = self.client.post(reverse("file_converter"), {
+            "target": "pdf",
+            "file": SimpleUploadedFile(
+                "bericht.docx",
+                b"not-a-real-docx",
+                content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/file_converter.html")
+        self.assertContains(response, "LibreOffice ist auf dem Server nicht installiert")
+
+    @patch("app.file_converter_views._office_converter_binary", return_value="/usr/bin/libreoffice")
+    @patch("app.file_converter_views.subprocess.run")
+    def test_docx_to_pdf_downloads_generated_pdf(self, run_mock, _binary_mock):
+        def fake_run(command, **kwargs):
+            output_dir = Path(command[command.index("--outdir") + 1])
+            source_path = Path(command[-1])
+            (output_dir / f"{source_path.stem}.pdf").write_bytes(b"%PDF-1.4 fake pdf")
+            return Mock(stdout=b"", stderr=b"", returncode=0)
+
+        run_mock.side_effect = fake_run
+
+        response = self.client.post(reverse("file_converter"), {
+            "target": "pdf",
+            "file": SimpleUploadedFile(
+                "bericht.docx",
+                b"fake-docx-content",
+                content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertEqual(response.content, b"%PDF-1.4 fake pdf")
+        self.assertIn('filename="bericht-konvertiert.pdf"', response["Content-Disposition"])
+        run_mock.assert_called_once()
+
+    def test_non_image_cannot_be_converted_to_jpg(self):
+        response = self.client.post(reverse("file_converter"), {
+            "target": "jpg",
+            "file": SimpleUploadedFile("text.txt", b"Hallo", content_type="text/plain"),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Dieses Zielformat ist aktuell nur für Bilder verfügbar")
 
 
 class ChatEnhancementTests(BaseTestCase):
