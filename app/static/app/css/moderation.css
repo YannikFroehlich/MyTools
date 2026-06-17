@@ -340,7 +340,8 @@ body.dark-mode .moderation-search label,
 body.dark-mode .moderation-meta span,
 body.dark-mode .moderation-status-form select,
 body.dark-mode .moderation-suspend-form select,
-body.dark-mode .moderation-suspend-form input {
+body.dark-mode .moderation-suspend-form input,
+body.dark-mode .moderation-tool-access-row select {
     background: rgba(15, 23, 42, .74);
     color: #f8fafc;
     border-color: rgba(203, 213, 225, .16);
@@ -411,6 +412,10 @@ body.dark-mode .moderation-messages div {
     margin-bottom: 18px;
 }
 
+.moderation-tool-access-panel {
+    margin-bottom: 18px;
+}
+
 .moderation-panel-head span.is-lock-active {
     color: #fee2e2;
     background: linear-gradient(135deg, #dc2626, #f97316);
@@ -419,6 +424,104 @@ body.dark-mode .moderation-messages div {
 .moderation-access-form {
     display: grid;
     gap: 14px;
+}
+
+.moderation-tool-access-form {
+    display: grid;
+    gap: 14px;
+}
+
+.moderation-tool-access-copy {
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid var(--mod-line);
+    background: rgba(148, 163, 184, .08);
+}
+
+.moderation-tool-access-copy strong {
+    color: var(--mod-ink);
+    font-weight: 950;
+}
+
+.moderation-tool-access-copy p {
+    margin: 4px 0 0;
+    color: var(--mod-muted);
+    font-weight: 800;
+}
+
+.moderation-tool-access-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+}
+
+.moderation-tool-access-row {
+    min-width: 0;
+    min-height: 74px;
+    padding: 12px;
+    border-radius: 18px;
+    border: 1px solid var(--mod-line);
+    background: rgba(148, 163, 184, .08);
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) minmax(126px, auto);
+    gap: 10px;
+    align-items: center;
+}
+
+.moderation-tool-access-row.is-level-admin {
+    border-color: rgba(245, 158, 11, .42);
+    background: rgba(245, 158, 11, .1);
+}
+
+.moderation-tool-access-row.is-level-none {
+    border-color: rgba(220, 38, 38, .42);
+    background: rgba(220, 38, 38, .1);
+}
+
+.moderation-tool-access-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+}
+
+.moderation-tool-access-name {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+
+.moderation-tool-access-name strong,
+.moderation-tool-access-name small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.moderation-tool-access-name strong {
+    color: var(--mod-ink);
+    font-weight: 950;
+}
+
+.moderation-tool-access-name small {
+    color: var(--mod-muted);
+    font-weight: 850;
+}
+
+.moderation-tool-access-row select {
+    min-width: 126px;
+    min-height: 42px;
+    border-radius: 14px;
+    border: 1px solid var(--mod-line);
+    background: rgba(255, 255, 255, .88);
+    color: var(--theme-text);
+    font: inherit;
+    font-weight: 900;
+    padding: 0 10px;
 }
 
 .moderation-switch-row {
@@ -497,7 +600,8 @@ body.dark-mode .moderation-messages div {
     padding: 0 12px;
 }
 
-.moderation-access-form button {
+.moderation-access-form button,
+.moderation-tool-access-form button {
     justify-self: start;
     min-height: 44px;
     border: 0;
@@ -579,5 +683,16 @@ body.dark-mode .moderation-access-message input {
     .moderation-media-actions button {
         width: 100%;
         justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .moderation-tool-access-row {
+        grid-template-columns: 42px minmax(0, 1fr);
+    }
+
+    .moderation-tool-access-row select {
+        grid-column: 1 / -1;
+        width: 100%;
     }
 }

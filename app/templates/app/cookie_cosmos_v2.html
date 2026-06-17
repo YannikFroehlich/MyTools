@@ -4,7 +4,7 @@
 {% block title %}Cookie Cosmos V2 - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/cookie_cosmos_v2.css' %}?v=20260617-cookie-cosmos-v2-clean-layout">
+    <link rel="stylesheet" href="{% static 'app/css/cookie_cosmos_v2.css' %}?v=20260617-cookie-cosmos-v2-combo-shop">
 {% endblock %}
 
 {% block content %}
@@ -15,29 +15,6 @@
     data-save-url="{% url 'cookie-cosmos-v2-save-api' %}"
     data-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}"
 >
-    <script type="application/json" id="cc2AssetManifest">
-        {
-            "background": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_background.webp' %}",
-            "prestige": [
-                {"level": 1, "name": "Klassischer Keks", "src": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_normalcookie.webp' %}", "accent": "#f2b15b"},
-                {"level": 2, "name": "Weiße Schoko", "src": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_normalwhitecookie.webp' %}", "accent": "#fff0c9"},
-                {"level": 3, "name": "Dunkler Keks", "src": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_blackblackcookie.webp' %}", "accent": "#93664c"},
-                {"level": 4, "name": "Dunkle Schoko Weiß", "src": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_blackwhitecookie.webp' %}", "accent": "#ead9bb"}
-            ],
-            "forms": [
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form1.webp' %}",
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form2.webp' %}",
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form3.webp' %}",
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form4.webp' %}",
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form5.webp' %}",
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form6.webp' %}",
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form7.webp' %}",
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form8.webp' %}",
-                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form9.webp' %}"
-            ]
-        }
-    </script>
-
     <div class="cc2-loader" id="cc2Loader" role="status" aria-live="polite">
         <div class="cc2-loader-card">
             <div class="cc2-loader-cookie" aria-hidden="true"></div>
@@ -45,17 +22,17 @@
             <h1>Fabrik wird hochgefahren...</h1>
             <div class="cc2-loader-bar"><i id="cc2LoaderBar"></i></div>
             <strong id="cc2LoaderText">0%</strong>
-            <small>Assets, Cookie-Formen, UI-Rahmen und Background werden vorgeladen.</small>
+            <small>CSS-Fabrik, Rezeptfarben und Spiellogik werden vorbereitet.</small>
         </div>
     </div>
 
     <div class="cc2-shell" id="cc2Shell" aria-hidden="true">
         <header class="cc2-topbar" aria-label="Cookie Cosmos V2 Statusleiste">
             <div class="cc2-brand-card">
-                <span class="cc2-brand-cookie"><img id="cc2BrandCookie" alt="" src="" loading="eager"></span>
+                <span class="cc2-brand-cookie cc2-cookie-visual recipe-1" id="cc2BrandCookie" aria-hidden="true"></span>
                 <div>
                     <small>Factory Incremental Clicker</small>
-                    <h1>Cookie Cosmos <b>V2</b></h1>
+                    <h1><span class="cc2-brand-title-text">Cookie Cosmos</span><b>V2</b></h1>
                     <span id="cc2SaveHint">Lokal bereit · Cloud-Save optional</span>
                 </div>
             </div>
@@ -113,11 +90,18 @@
                     <div class="cc2-event-layer" id="cc2EventLayer" aria-hidden="true"></div>
                     <button type="button" class="cc2-cookie-button" id="cc2CookieButton" aria-label="Cookie backen">
                         <span class="cc2-cookie-aura" aria-hidden="true"></span>
-                        <img id="cc2MainCookie" src="" alt="Aktueller Prestige Cookie" draggable="false">
+                        <span class="cc2-main-cookie cc2-cookie-visual recipe-1" id="cc2MainCookie" aria-hidden="true"></span>
                     </button>
                     <div class="cc2-click-plaque" aria-hidden="true">
                         <i class="fa-solid fa-hand-pointer"></i>
                         <span>Klick mich!</span>
+                    </div>
+                    <div class="cc2-combo-meter" id="cc2ComboMeter" aria-hidden="true">
+                        <div>
+                            <span>Multiplier</span>
+                            <strong id="cc2ComboLabel">x1.00</strong>
+                        </div>
+                        <i><b id="cc2ComboBar"></b></i>
                     </div>
                     <div class="cc2-floating-layer" id="cc2FloatingLayer" aria-hidden="true"></div>
                     <div class="cc2-toast-layer" id="cc2ToastLayer" aria-live="polite"></div>
@@ -157,7 +141,7 @@
                 <section class="cc2-panel-section is-active" data-cc2-panel="buildings">
                     <div class="cc2-section-heading">
                         <h2>Produktionslinien</h2>
-                        <p>Anlagen kaufen und CPS erhöhen.</p>
+                        <p>Fabrikmodule kaufen, Produktion aufbauen und den Durchsatz steigern.</p>
                     </div>
                     <div class="cc2-list" id="cc2BuildingList"></div>
                 </section>
@@ -165,7 +149,7 @@
                 <section class="cc2-panel-section" data-cc2-panel="upgrades">
                     <div class="cc2-section-heading">
                         <h2>Forschung & Module</h2>
-                        <p>Klickpower, Fabrikleistung und Events verbessern.</p>
+                        <p>Werkzeuge, Maschinen und Ereignisse dauerhaft verbessern.</p>
                     </div>
                     <div class="cc2-list" id="cc2UpgradeList"></div>
                 </section>
@@ -185,32 +169,32 @@
                         </div>
 
                         <div class="cc2-current-recipe">
-                            <img id="cc2NextCookie" src="" alt="Nächster Cookie">
+                            <span class="cc2-next-cookie cc2-cookie-visual recipe-2" id="cc2NextCookie" aria-hidden="true"></span>
                             <div>
                                 <p>Nächstes Rezept</p>
                                 <h3 id="cc2NextPrestigeName">Weiße Schoko</h3>
-                                <small>Mehr Prestige = stärkerer Start und neue Cookie-Formen.</small>
+                                <small>Mehr Prestige = stärkerer Start, neue Cookies und bessere Events.</small>
                             </div>
                         </div>
 
                         <div class="cc2-recipe-ladder" aria-label="Prestige-Rezepte Vorschau">
                             <article class="is-current">
-                                <img src="{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_normalcookie.webp' %}" alt="">
+                                <span class="cc2-recipe-cookie cc2-cookie-visual recipe-1" aria-hidden="true"></span>
                                 <div><strong>Klassischer Keks</strong><small>Startform</small></div>
                                 <i class="fa-solid fa-check"></i>
                             </article>
                             <article>
-                                <img src="{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_normalwhitecookie.webp' %}" alt="">
+                                <span class="cc2-recipe-cookie cc2-cookie-visual recipe-2" aria-hidden="true"></span>
                                 <div><strong>Weiße Schoko</strong><small>nächstes Prestige</small></div>
                                 <i class="fa-solid fa-lock"></i>
                             </article>
                             <article>
-                                <img src="{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_blackblackcookie.webp' %}" alt="">
+                                <span class="cc2-recipe-cookie cc2-cookie-visual recipe-3" aria-hidden="true"></span>
                                 <div><strong>Dunkler Keks</strong><small>spätere Form</small></div>
                                 <i class="fa-solid fa-lock"></i>
                             </article>
                             <article>
-                                <img src="{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_blackwhitecookie.webp' %}" alt="">
+                                <span class="cc2-recipe-cookie cc2-cookie-visual recipe-4" aria-hidden="true"></span>
                                 <div><strong>Dunkle Schoko Weiß</strong><small>spätere Form</small></div>
                                 <i class="fa-solid fa-lock"></i>
                             </article>
@@ -253,5 +237,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/cookie_cosmos_v2.js' %}?v=20260617-cookie-cosmos-v2-clean-layout" defer></script>
+    <script src="{% static 'app/js/cookie_cosmos_v2.js' %}?v=20260617-cookie-cosmos-v2-combo-shop" defer></script>
 {% endblock %}

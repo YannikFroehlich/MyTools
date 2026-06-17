@@ -1,6 +1,8 @@
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from .access_control import user_can_access_key
+
 TOOL_CATALOG = [
     {"key": "home", "label": _("Start"), "icon": "fa-solid fa-house", "url_name": "home", "category": _("Alltag")},
     {"key": "weather", "label": _("Wetter"), "icon": "fa-solid fa-cloud-sun", "url_name": "weather", "category": _("Alltag")},
@@ -93,8 +95,13 @@ def get_feedback_tool_keys():
 
 def resolve_tools(request, favorite_keys=None):
     favorite_keys = set(favorite_keys or [])
+    from .models import SiteAccessSettings
+
+    access_settings = SiteAccessSettings.get_solo()
     tools = []
     for tool in TOOL_CATALOG:
+        if not user_can_access_key(request.user, tool["key"], access_settings):
+            continue
         item = dict(tool)
         item["url"] = reverse(item["url_name"])
         item["is_favorite"] = item["key"] in favorite_keys

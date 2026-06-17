@@ -13,6 +13,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from django.contrib.staticfiles import finders
 
+from .access_control import ACCESS_CONTROL_KEYS, get_access_control_items
 from .image_optimization import (
     CHAT_AVATAR_MAX_SIZE,
     FILE_SHARE_IMAGE_MAX_SIZE,
@@ -342,6 +343,12 @@ def moderation_dashboard_view(request):
         ends_at__gt=timezone.now(),
     ).count()
     access_settings = SiteAccessSettings.get_solo()
+    tool_access_items = get_access_control_items(access_settings)
+    restricted_tool_count = sum(
+        1
+        for item in tool_access_items
+        if item["access_level"] != SiteAccessSettings.TOOL_ACCESS_ALL
+    )
 
     total_share_size = FileShare.objects.aggregate(total=Sum("size"))["total"] or 0
     stats = [
@@ -395,6 +402,12 @@ def moderation_dashboard_view(request):
             "icon": "fa-solid fa-door-closed" if access_settings.login_registration_locked else "fa-solid fa-door-open",
             "tone": "danger" if access_settings.login_registration_locked else "success",
         },
+        {
+            "label": _("Tool-Regeln"),
+            "value": restricted_tool_count,
+            "icon": "fa-solid fa-sliders",
+            "tone": "danger" if restricted_tool_count else "success",
+        },
     ]
 
     context = {
@@ -415,6 +428,8 @@ def moderation_dashboard_view(request):
         "block_count": UserBlock.objects.count(),
         "active_suspension_count": active_suspension_count,
         "access_settings": access_settings,
+        "tool_access_items": tool_access_items,
+        "tool_access_choices": SiteAccessSettings.TOOL_ACCESS_CHOICES,
     }
     return render(request, "app/moderation.html", context)
 
@@ -442,6 +457,34 @@ def moderation_access_toggle_view(request):
         messages.success(request, _("Login und Registrierung sind jetzt für normale Nutzer gesperrt."))
     else:
         messages.success(request, _("Login und Registrierung sind wieder freigegeben."))
+    return redirect(_safe_next(request))
+
+
+@staff_required
+@require_POST
+def moderation_tool_access_view(request):
+    access_settings = SiteAccessSettings.get_solo()
+    rules = {}
+
+    for key in ACCESS_CONTROL_KEYS:
+        level = request.POST.get(f"access_{key}", SiteAccessSettings.TOOL_ACCESS_ALL)
+        rules[key] = level
+
+    previous_rules = access_settings.tool_access_rules if isinstance(access_settings.tool_access_rules, dict) else {}
+    access_settings.set_tool_access_rules(rules)
+    access_settings.updated_by = request.user
+    access_settings.save(update_fields=["tool_access_rules", "updated_by", "updated_at"])
+
+    _audit(
+        request,
+        ModerationAuditLog.ACTION_TOOL_ACCESS_UPDATED,
+        "Tool- und Spielzugriffe aktualisiert",
+        metadata={
+            "before": previous_rules,
+            "after": access_settings.tool_access_rules,
+        },
+    )
+    messages.success(request, _("Tool- und Spielzugriffe wurden aktualisiert."))
     return redirect(_safe_next(request))
 
 
