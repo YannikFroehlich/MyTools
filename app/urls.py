@@ -234,6 +234,7 @@ from .moderation_views import (
     moderation_file_share_delete_view,
     moderation_media_optimize_view,
     moderation_report_action_view,
+    moderation_tool_access_view,
     moderation_user_status_view,
 )
 
@@ -261,6 +262,7 @@ urlpatterns = [
     path('server-status/', server_status_view, name='server_status'),
     path('moderation/', moderation_dashboard_view, name='moderation'),
     path('moderation/access/', moderation_access_toggle_view, name='moderation_access_toggle'),
+    path('moderation/tool-access/', moderation_tool_access_view, name='moderation_tool_access'),
     path('moderation/reports/<int:report_id>/', moderation_report_action_view, name='moderation_report_action'),
     path('moderation/feedback/<int:feedback_id>/status/', moderation_feedback_status_view, name='moderation_feedback_status'),
     path('moderation/file-shares/<int:share_id>/delete/', moderation_file_share_delete_view, name='moderation_file_share_delete'),

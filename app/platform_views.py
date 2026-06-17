@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
+from .access_control import user_can_access_key
 from .models import ChatRoom, DrawingGameInvite, FeatureIdea, FileShare, Friendship, InboxItem, Note, ToolFavorite, ToolFeedback, UserProfile
 from .platform_forms import ToolFeedbackForm
 from .platform_utils import resolve_tools, tool_by_key
@@ -31,6 +32,12 @@ def favorite_toggle_view(request, tool_key):
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"ok": False, "error": _("Unbekanntes Tool.")}, status=404)
         messages.error(request, _("Dieses Tool gibt es nicht."))
+        return redirect("favorites")
+
+    if not user_can_access_key(request.user, tool_key):
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"ok": False, "error": _("Kein Zugriff auf dieses Tool.")}, status=403)
+        messages.error(request, _("Du hast keinen Zugriff auf dieses Tool."))
         return redirect("favorites")
 
     favorite, created = ToolFavorite.objects.get_or_create(user=request.user, tool_key=tool_key)

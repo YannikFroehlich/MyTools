@@ -2489,8 +2489,18 @@ class UserSuspension(models.Model):
 
 
 class SiteAccessSettings(models.Model):
+    TOOL_ACCESS_ALL = "all"
+    TOOL_ACCESS_ADMIN = "admin"
+    TOOL_ACCESS_NONE = "none"
+    TOOL_ACCESS_CHOICES = [
+        (TOOL_ACCESS_ALL, _("Alle")),
+        (TOOL_ACCESS_ADMIN, _("Nur Admins")),
+        (TOOL_ACCESS_NONE, _("Keiner")),
+    ]
+
     login_registration_locked = models.BooleanField(default=False)
     lock_message = models.CharField(max_length=240, blank=True)
+    tool_access_rules = models.JSONField(default=dict, blank=True)
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -2511,6 +2521,20 @@ class SiteAccessSettings(models.Model):
     def get_solo(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
+
+    def get_tool_access_level(self, key):
+        rules = self.tool_access_rules if isinstance(self.tool_access_rules, dict) else {}
+        level = rules.get(key, self.TOOL_ACCESS_ALL)
+        valid_levels = {choice[0] for choice in self.TOOL_ACCESS_CHOICES}
+        return level if level in valid_levels else self.TOOL_ACCESS_ALL
+
+    def set_tool_access_rules(self, rules):
+        valid_levels = {choice[0] for choice in self.TOOL_ACCESS_CHOICES}
+        clean_rules = {}
+        for key, level in (rules or {}).items():
+            if level in valid_levels and level != self.TOOL_ACCESS_ALL:
+                clean_rules[str(key)] = level
+        self.tool_access_rules = clean_rules
 
     @classmethod
     def is_locked(cls):
@@ -2630,6 +2654,7 @@ class ModerationAuditLog(models.Model):
     ACTION_USER_DEACTIVATED = "user_deactivated"
     ACTION_ACCESS_LOCKED = "access_locked"
     ACTION_ACCESS_UNLOCKED = "access_unlocked"
+    ACTION_TOOL_ACCESS_UPDATED = "tool_access_updated"
     ACTION_MEDIA_OPTIMIZED = "media_optimized"
 
     ACTION_CHOICES = [
@@ -2643,6 +2668,7 @@ class ModerationAuditLog(models.Model):
         (ACTION_USER_DEACTIVATED, _("Nutzer deaktiviert")),
         (ACTION_ACCESS_LOCKED, _("Login und Registrierung gesperrt")),
         (ACTION_ACCESS_UNLOCKED, _("Login und Registrierung entsperrt")),
+        (ACTION_TOOL_ACCESS_UPDATED, _("Tool-Zugriffe geaendert")),
         (ACTION_MEDIA_OPTIMIZED, _("Medien komprimiert")),
     ]
 
