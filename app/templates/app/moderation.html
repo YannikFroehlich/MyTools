@@ -5,7 +5,7 @@
 {% block title %}{% translate "Moderation" %} | MyTools{% endblock %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/platform.css' %}">
-    <link rel="stylesheet" href="{% static 'app/css/moderation.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/moderation.css' %}?v=20260617-tool-access">
 {% endblock %}
 
 {% block content %}
@@ -87,6 +87,41 @@
                 {% translate "Zuletzt geändert von" %} {{ access_settings.updated_by.username }} · {{ access_settings.updated_at|date:"d.m.Y H:i" }}
             </p>
         {% endif %}
+    </section>
+
+    <section class="moderation-panel moderation-tool-access-panel is-wide">
+        <div class="moderation-panel-head">
+            <h2>{% translate "Tool- & Spielzugriff" %}</h2>
+            <span><i class="fa-solid fa-sliders"></i></span>
+        </div>
+        <form class="moderation-tool-access-form" method="post" action="{% url 'moderation_tool_access' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <div class="moderation-tool-access-copy">
+                <strong>{% translate "Zugriff pro Bereich einstellen" %}</strong>
+                <p>{% translate "Alle bedeutet: jeder eingeloggte Nutzer. Nur Admins bedeutet: Staff/Admin-Rechte. Keiner sperrt den Bereich auch fuer Admins, bis du ihn hier wieder freigibst." %}</p>
+            </div>
+            <div class="moderation-tool-access-list">
+                {% for item in tool_access_items %}
+                    <label class="moderation-tool-access-row is-level-{{ item.access_level }}">
+                        <span class="moderation-tool-access-icon"><i class="{{ item.icon }}"></i></span>
+                        <span class="moderation-tool-access-name">
+                            <strong>{{ item.label }}</strong>
+                            <small>{{ item.kind }} &middot; {{ item.category }}</small>
+                        </span>
+                        <select name="access_{{ item.key }}" aria-label="{% blocktranslate with label=item.label %}Zugriff fuer {{ label }}{% endblocktranslate %}">
+                            {% for value, label in tool_access_choices %}
+                                <option value="{{ value }}" {% if value == item.access_level %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                {% endfor %}
+            </div>
+            <button type="submit">
+                <i class="fa-solid fa-floppy-disk"></i>
+                {% translate "Zugriffe speichern" %}
+            </button>
+        </form>
     </section>
 
     <section class="moderation-panel moderation-media-panel is-wide">
