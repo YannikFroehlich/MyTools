@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260614-mobile-header-toggle">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260617-theme-logo">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -39,16 +39,17 @@
     {% endif %}
 
     {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260617-tool-contrast-fix">
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}?v=20260614-mobile-header-toggle" defer></script>
+        <script src="{% static 'app/js/base.js' %}?v=20260617-theme-effect" defer></script>
     {% endblock %}
 </head>
 <body{% if request.user.is_authenticated %} class="has-mobile-bottom-nav" data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}"{% endif %}>
     <nav id="site-header">
-        <div class="logo">
-            <i class="fa-solid fa-cloud" style="margin-right: 10px"></i>
+        <a class="logo" href="{% url 'home' %}" aria-label="{% translate 'Start' %}" title="{% translate 'Start' %}">
+            <i class="fa-solid fa-cloud" style="margin-right: 10px" aria-hidden="true"></i>
             <span>MyTools</span>
-        </div>
+        </a>
 
         <div class="navigation">
             <a href="{% url 'home' %}">
@@ -139,6 +140,14 @@
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Cookie Cosmos' %}</strong>
                                         <small>{% translate 'Clicker' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="{% url 'cookie-cosmos-v2' %}" class="game-menu-card is-amber" data-game-card data-game-name="Cookie Cosmos V2" data-game-category="Solo Clicker Prestige Cookies Factory Upgrades Events">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-cookie-bite"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>Cookie Cosmos V2</strong>
+                                        <small>Prestige Clicker</small>
                                     </span>
                                 </a>
                             </div>
@@ -603,6 +612,14 @@
                                     </span>
                                 </a>
 
+                                <a href="{% url 'file_converter' %}" class="game-menu-card is-slate" data-menu-card data-menu-name="{% translate 'Datei-Konverter' %}" data-menu-category="{% translate 'DOCX PDF Dateien Konverter Office Umwandeln' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-file-arrow-down"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Datei-Konverter' %}</strong>
+                                        <small>{% translate 'DOCX zu PDF' %}</small>
+                                    </span>
+                                </a>
+
                                 <a href="{% url 'color_palette_tool' %}" class="game-menu-card is-violet" data-menu-card data-menu-name="{% translate 'Color Palette Tool' %}" data-menu-category="{% translate 'Farbe Palette Design Eyedropper Bildschirm Bild Kontrast HEX RGB HSL' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-eye-dropper"></i></span>
                                     <span class="game-menu-copy">
@@ -683,9 +700,9 @@
             </form>
 
             {% if request.user.is_authenticated %}
-                <button class="global-search-trigger" type="button" data-open-global-search aria-label="{% translate 'MyTools durchsuchen' %}" title="{% translate 'MyTools durchsuchen' %}">
+                <button class="global-search-trigger" type="button" data-open-global-search aria-label="{% translate 'Suche (Strg + K)' %}" title="{% translate 'Suche (Strg + K)' %}">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <span>Ctrl K</span>
+                    <span>{% translate 'Suche' %}</span>
                 </button>
             {% endif %}
 
@@ -833,14 +850,6 @@
                             <button type="button" class="theme-toggle-option" id="theme-pattern-toggle">
                                 <i class="fa-solid fa-circle-nodes"></i>
                                 {% translate 'Hintergrund-Effekt' %}
-                            </button>
-                            <button type="button" class="theme-toggle-option" id="theme-density-toggle">
-                                <i class="fa-solid fa-compress"></i>
-                                {% translate 'Kompakt' %}
-                            </button>
-                            <button type="button" class="theme-toggle-option" id="theme-font-toggle">
-                                <i class="fa-solid fa-text-height"></i>
-                                {% translate 'Große Schrift' %}
                             </button>
                             <button type="button" class="theme-toggle-option" id="theme-contrast-toggle">
                                 <i class="fa-solid fa-circle-half-stroke"></i>

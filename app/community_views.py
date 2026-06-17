@@ -24,103 +24,119 @@ from .models import ChatMessage, FeatureComment, FeatureIdea, FeatureVote, FileS
 
 STARTED_AT = timezone.now()
 
-CHANGELOG_ENTRIES = [
-    {
-        "version": "2026.09",
-        "date": "15.06.2026",
-        "title": _("Stream Deck mit Voicemod-Steuerung"),
-        "summary": _("Das Stream Deck kann Voicemod jetzt direkt steuern und nutzt dafuer einen lokal gespeicherten API-Key pro Browser."),
-        "type": _("Integration"),
-        "icon": "fa-solid fa-wand-magic-sparkles",
-        "items": [
-            _("Voicemod-Aktionen fuer Voice Changer, Hear Myself, Mikrofon-Mute, Zufalls-Voice und Voice-Wechsel ergaenzt."),
-            _("Voices lassen sich aus Voicemod laden und im Button-Editor per Dropdown auswaehlen."),
-            _("Der Voicemod API-Key wird im Stream Deck gespeichert und bei fehlender Verbindung klar als Hinweis angezeigt."),
-        ],
-    },
-    {
-        "version": "2026.08",
-        "date": "14.06.2026",
-        "title": _("Mobile Bedienung, Realtime und Qualität"),
-        "summary": _("Die mobile Navigation ist flexibler, Benachrichtigungen aktualisieren sich direkter und die Codebasis ist besser für weitere Updates vorbereitet."),
-        "type": _("Update"),
-        "icon": "fa-solid fa-mobile-screen-button",
-        "items": [
-            _("Mobile Ansicht blendet den oberen Header standardmäßig aus und bietet einen Button zum Ein- und Ausblenden."),
-            _("Google-Suche auf der Startseite wurde auf kleinen Displays optisch nachjustiert."),
-            _("Live-Status und Benachrichtigungszähler nutzen WebSocket-Updates mit HTTP-Fallback."),
-            _("Notes- und PWA-Views wurden aus der großen View-Datei herausgelöst."),
-            _("Neuer Qualitätslauf bündelt Systemcheck, Migration-Check, Tests, collectstatic-Dry-Run und JavaScript-Syntaxprüfung."),
-        ],
-    },
-    {
-        "version": "2026.07",
-        "date": "14.06.2026",
-        "title": _("Suche, Mobile, Datei-Share und Profile"),
-        "summary": _("Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen MyTools schneller bedienbar und sichtbarer vernetzt."),
-        "type": _("Plattform"),
-        "icon": "fa-solid fa-magnifying-glass",
-        "items": [
-            _("Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen ergänzt."),
-            _("Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und Changelog erweitert."),
-            _("Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."),
-            _("Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und PDF-Vorschau ausgebaut."),
-            _("Profilseite mit Spotlight-Statistiken und feineren Benachrichtigungseinstellungen erweitert."),
-        ],
-    },
-    {
-        "version": "2026.06",
-        "date": "14.06.2026",
-        "title": _("Design, Status und Transparenz"),
-        "summary": _("Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite machen MyTools leichter anpassbar und besser nachvollziehbar."),
-        "type": _("Update"),
-        "icon": "fa-solid fa-wand-magic-sparkles",
-        "items": [
-            _("Design-Editor um Kompaktmodus, größere Schrift, hohen Kontrast und reduzierte Animationen erweitert."),
-            _("Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße und letzten Security-Events ausgebaut."),
-            _("Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen ergänzt."),
-        ],
-    },
-    {
-        "version": "2026.05",
-        "date": "12.06.2026",
-        "title": _("Community und Sicherheit"),
-        "summary": _("Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der Plattform mehr Struktur."),
-        "type": _("Plattform"),
-        "icon": "fa-solid fa-shield-halved",
-        "items": [
-            _("Feature-Ideen können gesammelt, gevotet und kommentiert werden."),
-            _("Admins erhalten Moderations- und Sicherheitswerkzeuge."),
-            _("Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."),
-        ],
-    },
-    {
-        "version": "2026.04",
-        "date": "04.06.2026",
-        "title": _("Mehr Tools für den Alltag"),
-        "summary": _("Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen stärker zusammen."),
-        "type": _("Tools"),
-        "icon": "fa-solid fa-screwdriver-wrench",
-        "items": [
-            _("Startseiten-Widgets zeigen wichtige Daten schneller an."),
-            _("Notizen unterstützen Pins, Erinnerungen und Teilen."),
-            _("Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."),
-        ],
-    },
-    {
-        "version": "2026.03",
-        "date": "24.05.2026",
-        "title": _("Spielebibliothek"),
-        "summary": _("Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform erweitert."),
-        "type": _("Games"),
-        "icon": "fa-solid fa-gamepad",
-        "items": [
-            _("Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."),
-            _("Highscores und Leaderboards für Solo-Spiele."),
-            _("Profilkarten und Achievements geben Spielern mehr Identität."),
-        ],
-    },
-]
+def get_changelog_entries():
+    return [
+        {
+            "version": "2026.10",
+            "date": "17.06.2026",
+            "title": _("Datei-Konverter und einheitliches Tool-Design"),
+            "summary": _("Der neue Datei-Konverter, ein gemeinsamer Tool-Seiten-Look und gezielte Kontrastkorrekturen machen die Werkzeugbereiche einheitlicher und besser lesbar."),
+            "type": _("Tools"),
+            "icon": "fa-solid fa-file-arrow-down",
+            "items": [
+                _("Datei-Konverter für DOCX, Tabellen, Präsentationen, Textdateien und Bilder ergänzt."),
+                _("Office-zu-PDF läuft serverseitig über LibreOffice und verarbeitet Uploads nur temporär."),
+                _("Toolbox-Seiten übernehmen jetzt gemeinsame Theme-Farben, Karten, Buttons, Inputs und Kontrastmodus-Regeln."),
+                _("Bild Tools, Datei-Konverter, Einheitenrechner, Spritkosten und QR-Code Tool wurden farblich nachjustiert."),
+                _("Der Quality-Workflow startet nicht mehr automatisch bei jedem Push oder Merge, sondern nur noch manuell."),
+            ],
+        },
+        {
+            "version": "2026.09",
+            "date": "15.06.2026",
+            "title": _("Stream Deck mit Voicemod-Steuerung"),
+            "summary": _("Das Stream Deck kann Voicemod jetzt direkt steuern und nutzt dafuer einen lokal gespeicherten API-Key pro Browser."),
+            "type": _("Integration"),
+            "icon": "fa-solid fa-wand-magic-sparkles",
+            "items": [
+                _("Voicemod-Aktionen fuer Voice Changer, Hear Myself, Mikrofon-Mute, Zufalls-Voice und Voice-Wechsel ergaenzt."),
+                _("Voices lassen sich aus Voicemod laden und im Button-Editor per Dropdown auswaehlen."),
+                _("Der Voicemod API-Key wird im Stream Deck gespeichert und bei fehlender Verbindung klar als Hinweis angezeigt."),
+            ],
+        },
+        {
+            "version": "2026.08",
+            "date": "14.06.2026",
+            "title": _("Mobile Bedienung, Realtime und Qualität"),
+            "summary": _("Die mobile Navigation ist flexibler, Benachrichtigungen aktualisieren sich direkter und die Codebasis ist besser für weitere Updates vorbereitet."),
+            "type": _("Update"),
+            "icon": "fa-solid fa-mobile-screen-button",
+            "items": [
+                _("Mobile Ansicht blendet den oberen Header standardmäßig aus und bietet einen Button zum Ein- und Ausblenden."),
+                _("Google-Suche auf der Startseite wurde auf kleinen Displays optisch nachjustiert."),
+                _("Live-Status und Benachrichtigungszähler nutzen WebSocket-Updates mit HTTP-Fallback."),
+                _("Notes- und PWA-Views wurden aus der großen View-Datei herausgelöst."),
+                _("Neuer Qualitätslauf bündelt Systemcheck, Migration-Check, Tests, collectstatic-Dry-Run und JavaScript-Syntaxprüfung."),
+            ],
+        },
+        {
+            "version": "2026.07",
+            "date": "14.06.2026",
+            "title": _("Suche, Mobile, Datei-Share und Profile"),
+            "summary": _("Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen MyTools schneller bedienbar und sichtbarer vernetzt."),
+            "type": _("Plattform"),
+            "icon": "fa-solid fa-magnifying-glass",
+            "items": [
+                _("Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen ergänzt."),
+                _("Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und Changelog erweitert."),
+                _("Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."),
+                _("Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und PDF-Vorschau ausgebaut."),
+                _("Profilseite mit Spotlight-Statistiken und feineren Benachrichtigungseinstellungen erweitert."),
+            ],
+        },
+        {
+            "version": "2026.06",
+            "date": "14.06.2026",
+            "title": _("Design, Status und Transparenz"),
+            "summary": _("Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite machen MyTools leichter anpassbar und besser nachvollziehbar."),
+            "type": _("Update"),
+            "icon": "fa-solid fa-wand-magic-sparkles",
+            "items": [
+                _("Design-Editor fokussiert: eigene Farben, hoher Kontrast, weniger Bewegung und verbesserter Hintergrundeffekt."),
+                _("Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße und letzten Security-Events ausgebaut."),
+                _("Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen ergänzt."),
+            ],
+        },
+        {
+            "version": "2026.05",
+            "date": "12.06.2026",
+            "title": _("Community und Sicherheit"),
+            "summary": _("Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der Plattform mehr Struktur."),
+            "type": _("Plattform"),
+            "icon": "fa-solid fa-shield-halved",
+            "items": [
+                _("Feature-Ideen können gesammelt, gevotet und kommentiert werden."),
+                _("Admins erhalten Moderations- und Sicherheitswerkzeuge."),
+                _("Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."),
+            ],
+        },
+        {
+            "version": "2026.04",
+            "date": "04.06.2026",
+            "title": _("Mehr Tools für den Alltag"),
+            "summary": _("Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen stärker zusammen."),
+            "type": _("Tools"),
+            "icon": "fa-solid fa-screwdriver-wrench",
+            "items": [
+                _("Startseiten-Widgets zeigen wichtige Daten schneller an."),
+                _("Notizen unterstützen Pins, Erinnerungen und Teilen."),
+                _("Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."),
+            ],
+        },
+        {
+            "version": "2026.03",
+            "date": "24.05.2026",
+            "title": _("Spielebibliothek"),
+            "summary": _("Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform erweitert."),
+            "type": _("Games"),
+            "icon": "fa-solid fa-gamepad",
+            "items": [
+                _("Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."),
+                _("Highscores und Leaderboards für Solo-Spiele."),
+                _("Profilkarten und Achievements geben Spielern mehr Identität."),
+            ],
+        },
+    ]
 
 staff_required = user_passes_test(
     lambda user: user.is_active and user.is_staff,
@@ -316,9 +332,10 @@ def achievement_center_view(request):
 
 
 def changelog_view(request):
+    changelog_entries = get_changelog_entries()
     context = {
-        "changelog_entries": CHANGELOG_ENTRIES,
-        "latest_entry": CHANGELOG_ENTRIES[0] if CHANGELOG_ENTRIES else None,
+        "changelog_entries": changelog_entries,
+        "latest_entry": changelog_entries[0] if changelog_entries else None,
     }
     return render(request, "app/changelog.html", context)
 

@@ -12,6 +12,9 @@ from .views import (
     color_palette_tool_view,
     cookie_clicker,
     cookie_clicker_score_api,
+    cookie_cosmos_v2,
+    cookie_cosmos_v2_load_api,
+    cookie_cosmos_v2_save_api,
     game_2048,
     game_2048_activity_api,
     game_2048_score_api,
@@ -205,6 +208,7 @@ from .budget_views import (
     budget_tracker_export_csv,
     budget_tracker_view,
 )
+from .file_converter_views import file_converter_view
 from .performance_tools_views import (
     file_share_delete_view,
     file_share_download_view,
@@ -265,6 +269,7 @@ urlpatterns = [
 
     path('leaderboard/', leaderboard_view, name='leaderboard'),
     path('bild-tools/', image_tools_view, name='image_tools'),
+    path('datei-konverter/', file_converter_view, name='file_converter'),
     path('datei-share/', file_share_view, name='file_share'),
     path('datei-share/upload/', file_share_upload_view, name='file_share_upload'),
     path('datei-share/<str:token>/download/', file_share_download_view, name='file_share_download'),
@@ -337,6 +342,9 @@ urlpatterns = [
     path('snake-powerups/', snake_powerups, name='snake-powerups'),
     path('cookie-clicker/', cookie_clicker, name='cookie-clicker'),
     path('api/cookie-clicker/score/', cookie_clicker_score_api, name='cookie-clicker-score-api'),
+    path('cookie-cosmos-v2/', cookie_cosmos_v2, name='cookie-cosmos-v2'),
+    path('api/cookie-cosmos-v2/load/', cookie_cosmos_v2_load_api, name='cookie-cosmos-v2-load-api'),
+    path('api/cookie-cosmos-v2/save/', cookie_cosmos_v2_save_api, name='cookie-cosmos-v2-save-api'),
     path('2048/', game_2048, name='game-2048'),
     path('api/2048/score/', game_2048_score_api, name='game-2048-score-api'),
     path('api/2048/activity/', game_2048_activity_api, name='game-2048-activity-api'),

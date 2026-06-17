@@ -32,29 +32,6 @@
                 <div class="suggestions-box" id="suggestions-box"></div>
             </form>
 
-            <div class="home-quick-actions">
-                <button type="button" data-open-global-search>
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <span>{% translate "MyTools Suche" %}</span>
-                </button>
-                <a href="#widgets-grid">
-                    <i class="fa-solid fa-table-cells-large"></i>
-                    <span>{% translate "Widgets" %}</span>
-                </a>
-                <a href="{% url 'favorites' %}">
-                    <i class="fa-solid fa-star"></i>
-                    <span>{% translate "Favoriten" %}</span>
-                </a>
-                <button type="button" data-open-theme-editor>
-                    <i class="fa-solid fa-palette"></i>
-                    <span>{% translate "Design" %}</span>
-                </button>
-                <a href="{% url 'changelog' %}">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    <span>{% translate "Neu" %}</span>
-                </a>
-            </div>
-
             <div class="primary-shortcuts-wrapper">
                 {% with section=default_section %}
                     {% include 'app/partials/home_section_card.html' %}
