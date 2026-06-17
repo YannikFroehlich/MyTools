@@ -21,6 +21,7 @@ from .models import (
     ConnectFourGame,
     ConnectFourInvite,
     CookieClickerHighScore,
+    CookieCosmosV2Save,
     Game2048HighScore,
     DrawingGameGuess as SkribbleGuess,
     DrawingGameInvite as SkribbleInvite,
@@ -84,6 +85,15 @@ class BudgetEntryAdmin(admin.ModelAdmin):
     date_hierarchy = "date"
     readonly_fields = ("created_at", "updated_at")
 
+
+
+
+@admin.register(CookieCosmosV2Save)
+class CookieCosmosV2SaveAdmin(admin.ModelAdmin):
+    list_display = ("user", "prestige_level", "lifetime_cookies", "cps", "buildings_count", "updated_at")
+    list_filter = ("prestige_level", "updated_at", "last_manual_save")
+    search_fields = ("user__username", "user__email")
+    readonly_fields = ("created_at", "updated_at", "last_manual_save")
 
 @admin.register(SiteAccessSettings)
 class SiteAccessSettingsAdmin(admin.ModelAdmin):

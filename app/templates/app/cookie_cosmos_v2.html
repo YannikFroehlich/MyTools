@@ -1,0 +1,257 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Cookie Cosmos V2 - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/cookie_cosmos_v2.css' %}?v=20260617-cookie-cosmos-v2-clean-layout">
+{% endblock %}
+
+{% block content %}
+<section
+    class="cc2-page is-loading"
+    data-save-key="mytools-cookie-cosmos-v2"
+    data-load-url="{% url 'cookie-cosmos-v2-load-api' %}"
+    data-save-url="{% url 'cookie-cosmos-v2-save-api' %}"
+    data-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}"
+>
+    <script type="application/json" id="cc2AssetManifest">
+        {
+            "background": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_background.webp' %}",
+            "prestige": [
+                {"level": 1, "name": "Klassischer Keks", "src": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_normalcookie.webp' %}", "accent": "#f2b15b"},
+                {"level": 2, "name": "Weiße Schoko", "src": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_normalwhitecookie.webp' %}", "accent": "#fff0c9"},
+                {"level": 3, "name": "Dunkler Keks", "src": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_blackblackcookie.webp' %}", "accent": "#93664c"},
+                {"level": 4, "name": "Dunkle Schoko Weiß", "src": "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_blackwhitecookie.webp' %}", "accent": "#ead9bb"}
+            ],
+            "forms": [
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form1.webp' %}",
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form2.webp' %}",
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form3.webp' %}",
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form4.webp' %}",
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form5.webp' %}",
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form6.webp' %}",
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form7.webp' %}",
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form8.webp' %}",
+                "{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_form9.webp' %}"
+            ]
+        }
+    </script>
+
+    <div class="cc2-loader" id="cc2Loader" role="status" aria-live="polite">
+        <div class="cc2-loader-card">
+            <div class="cc2-loader-cookie" aria-hidden="true"></div>
+            <p>Cookie Cosmos V2</p>
+            <h1>Fabrik wird hochgefahren...</h1>
+            <div class="cc2-loader-bar"><i id="cc2LoaderBar"></i></div>
+            <strong id="cc2LoaderText">0%</strong>
+            <small>Assets, Cookie-Formen, UI-Rahmen und Background werden vorgeladen.</small>
+        </div>
+    </div>
+
+    <div class="cc2-shell" id="cc2Shell" aria-hidden="true">
+        <header class="cc2-topbar" aria-label="Cookie Cosmos V2 Statusleiste">
+            <div class="cc2-brand-card">
+                <span class="cc2-brand-cookie"><img id="cc2BrandCookie" alt="" src="" loading="eager"></span>
+                <div>
+                    <small>Factory Incremental Clicker</small>
+                    <h1>Cookie Cosmos <b>V2</b></h1>
+                    <span id="cc2SaveHint">Lokal bereit · Cloud-Save optional</span>
+                </div>
+            </div>
+
+            <div class="cc2-metrics" aria-label="Spielwerte">
+                <article class="cc2-metric is-primary">
+                    <small>Kekse</small>
+                    <strong id="cc2CookieCount">0</strong>
+                </article>
+                <article class="cc2-metric">
+                    <small>pro Sekunde</small>
+                    <strong id="cc2CpsCount">0</strong>
+                </article>
+                <article class="cc2-metric">
+                    <small>pro Klick</small>
+                    <strong id="cc2ClickPower">1</strong>
+                </article>
+                <article class="cc2-metric">
+                    <small>Prestige</small>
+                    <strong id="cc2PrestigeLevel">Level 1</strong>
+                </article>
+            </div>
+
+            <div class="cc2-actions" aria-label="Spielstand Aktionen">
+                <button type="button" class="cc2-action-button cc2-save-button" id="cc2CloudSaveButton" title="Spielstand in der Datenbank speichern">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>DB speichern</span>
+                </button>
+                <button type="button" class="cc2-action-button" id="cc2CloudLoadButton" title="Spielstand aus Datenbank laden">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                    <span>Laden</span>
+                </button>
+                <button type="button" class="cc2-action-button" id="cc2ExportButton" title="Spielstand exportieren">
+                    <i class="fa-solid fa-file-export"></i>
+                    <span>Export</span>
+                </button>
+                <button type="button" class="cc2-action-button" id="cc2ImportButton" title="Spielstand importieren">
+                    <i class="fa-solid fa-file-import"></i>
+                    <span>Import</span>
+                </button>
+                <button type="button" class="cc2-action-button danger" id="cc2ResetButton" title="Spielstand zurücksetzen">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>Reset</span>
+                </button>
+                <input type="file" id="cc2ImportInput" accept="application/json,.json" hidden>
+            </div>
+        </header>
+
+        <main class="cc2-layout">
+            <section class="cc2-stage-card" aria-label="Cookie Hauptbereich">
+                <div class="cc2-stage" id="cc2Stage">
+                    <div class="cc2-stage-bg" id="cc2StageBg" aria-hidden="true"></div>
+                    <div class="cc2-machine-ring" aria-hidden="true"></div>
+                    <div class="cc2-factory-lanes" id="cc2FactoryLanes" aria-hidden="true"></div>
+                    <div class="cc2-event-layer" id="cc2EventLayer" aria-hidden="true"></div>
+                    <button type="button" class="cc2-cookie-button" id="cc2CookieButton" aria-label="Cookie backen">
+                        <span class="cc2-cookie-aura" aria-hidden="true"></span>
+                        <img id="cc2MainCookie" src="" alt="Aktueller Prestige Cookie" draggable="false">
+                    </button>
+                    <div class="cc2-click-plaque" aria-hidden="true">
+                        <i class="fa-solid fa-hand-pointer"></i>
+                        <span>Klick mich!</span>
+                    </div>
+                    <div class="cc2-floating-layer" id="cc2FloatingLayer" aria-hidden="true"></div>
+                    <div class="cc2-toast-layer" id="cc2ToastLayer" aria-live="polite"></div>
+                </div>
+
+                <div class="cc2-buff-row" id="cc2BuffRow"></div>
+            </section>
+
+            <aside class="cc2-side-panel" aria-label="Cookie Cosmos V2 Verwaltung">
+                <div class="cc2-panel-tabs" role="tablist" aria-label="Cookie Cosmos V2 Bereiche">
+                    <button type="button" class="is-active" data-cc2-tab="buildings" role="tab" aria-selected="true">
+                        <i class="fa-solid fa-industry"></i><span>Anlagen</span>
+                    </button>
+                    <button type="button" data-cc2-tab="upgrades" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i><span>Upgrades</span>
+                    </button>
+                    <button type="button" data-cc2-tab="prestige" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-rocket"></i><span>Prestige</span>
+                    </button>
+                    <button type="button" data-cc2-tab="achievements" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-trophy"></i><span>Erfolge</span>
+                    </button>
+                    <button type="button" data-cc2-tab="events" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-star"></i><span>Events</span>
+                    </button>
+                </div>
+
+                <div class="cc2-buy-toolbar">
+                    <div class="cc2-buy-modes" aria-label="Kaufmodus">
+                        <button type="button" class="is-active" data-cc2-buy="1">1x</button>
+                        <button type="button" data-cc2-buy="10">10x</button>
+                        <button type="button" data-cc2-buy="max">Max</button>
+                    </div>
+                    <span id="cc2OwnedSummary">0 Anlagen</span>
+                </div>
+
+                <section class="cc2-panel-section is-active" data-cc2-panel="buildings">
+                    <div class="cc2-section-heading">
+                        <h2>Produktionslinien</h2>
+                        <p>Anlagen kaufen und CPS erhöhen.</p>
+                    </div>
+                    <div class="cc2-list" id="cc2BuildingList"></div>
+                </section>
+
+                <section class="cc2-panel-section" data-cc2-panel="upgrades">
+                    <div class="cc2-section-heading">
+                        <h2>Forschung & Module</h2>
+                        <p>Klickpower, Fabrikleistung und Events verbessern.</p>
+                    </div>
+                    <div class="cc2-list" id="cc2UpgradeList"></div>
+                </section>
+
+                <section class="cc2-panel-section" data-cc2-panel="prestige">
+                    <div class="cc2-section-heading">
+                        <h2>Prestige</h2>
+                        <p>Setze zurück, sammle Cosmic Crumbs und schalte neue Cookies frei.</p>
+                    </div>
+
+                    <div class="cc2-prestige-card">
+                        <div class="cc2-prestige-score">
+                            <small>Aktuelles Prestige</small>
+                            <strong id="cc2PrestigeName">Klassischer Keks</strong>
+                            <span id="cc2PrestigeTitle">Prestige-Level 1</span>
+                            <p id="cc2PrestigeDescription">Permanenter Multiplikator: x1.00 · Cosmic Crumbs: 0</p>
+                        </div>
+
+                        <div class="cc2-current-recipe">
+                            <img id="cc2NextCookie" src="" alt="Nächster Cookie">
+                            <div>
+                                <p>Nächstes Rezept</p>
+                                <h3 id="cc2NextPrestigeName">Weiße Schoko</h3>
+                                <small>Mehr Prestige = stärkerer Start und neue Cookie-Formen.</small>
+                            </div>
+                        </div>
+
+                        <div class="cc2-recipe-ladder" aria-label="Prestige-Rezepte Vorschau">
+                            <article class="is-current">
+                                <img src="{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_normalcookie.webp' %}" alt="">
+                                <div><strong>Klassischer Keks</strong><small>Startform</small></div>
+                                <i class="fa-solid fa-check"></i>
+                            </article>
+                            <article>
+                                <img src="{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_normalwhitecookie.webp' %}" alt="">
+                                <div><strong>Weiße Schoko</strong><small>nächstes Prestige</small></div>
+                                <i class="fa-solid fa-lock"></i>
+                            </article>
+                            <article>
+                                <img src="{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_blackblackcookie.webp' %}" alt="">
+                                <div><strong>Dunkler Keks</strong><small>spätere Form</small></div>
+                                <i class="fa-solid fa-lock"></i>
+                            </article>
+                            <article>
+                                <img src="{% static 'app/img/cookie_cosmos_v2/cookie_cosmos_v2_blackwhitecookie.webp' %}" alt="">
+                                <div><strong>Dunkle Schoko Weiß</strong><small>spätere Form</small></div>
+                                <i class="fa-solid fa-lock"></i>
+                            </article>
+                        </div>
+
+                        <div class="cc2-prestige-progress">
+                            <div class="cc2-progress-label">
+                                <span id="cc2PrestigeNeed">100K Cookies benötigt</span>
+                                <strong id="cc2PrestigeProgressLabel">0%</strong>
+                            </div>
+                            <div class="cc2-progress-bar"><i id="cc2PrestigeProgress"></i></div>
+                        </div>
+
+                        <button type="button" class="cc2-prestige-button" id="cc2PrestigeButton">
+                            <i class="fa-solid fa-rocket"></i>
+                            <span>Prestige upgraden</span>
+                        </button>
+                    </div>
+                </section>
+
+                <section class="cc2-panel-section" data-cc2-panel="achievements">
+                    <div class="cc2-section-heading">
+                        <h2>Erfolge</h2>
+                        <p id="cc2AchievementSummary">0 erledigt</p>
+                    </div>
+                    <div class="cc2-achievement-grid" id="cc2AchievementList"></div>
+                </section>
+
+                <section class="cc2-panel-section" data-cc2-panel="events">
+                    <div class="cc2-section-heading">
+                        <h2>Events</h2>
+                        <p>Orbit-Cookies, goldene Cookies und Fabrik-Buffs.</p>
+                    </div>
+                    <div class="cc2-event-log" id="cc2EventLog"></div>
+                </section>
+            </aside>
+        </main>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/cookie_cosmos_v2.js' %}?v=20260617-cookie-cosmos-v2-clean-layout" defer></script>
+{% endblock %}

@@ -13,12 +13,13 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils import translation
 from django.utils.formats import date_format
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from django.utils.translation import gettext as _
+from django.utils import timezone as django_timezone
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
+from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, CookieCosmosV2Save, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
     ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
 
 import json
@@ -2086,6 +2087,136 @@ def serialize_cookie_clicker_highscore(highscore):
 def cookie_clicker(request):
     mark_active_game(request.user, "cookie_cosmos")
     return render(request, "app/cookie_clicker.html")
+
+
+COOKIE_COSMOS_V2_SAVE_COOLDOWN_SECONDS = 60
+COOKIE_COSMOS_V2_MAX_SAVE_BYTES = 300_000
+
+
+def serialize_cookie_cosmos_v2_save(save):
+    if not save:
+        return None
+
+    return {
+        "cookies": save.cookies,
+        "lifetime_cookies": save.lifetime_cookies,
+        "cps": save.cps,
+        "click_power": save.click_power,
+        "prestige_level": save.prestige_level,
+        "prestige_crumbs": save.prestige_crumbs,
+        "achievements_count": save.achievements_count,
+        "upgrades_count": save.upgrades_count,
+        "buildings_count": save.buildings_count,
+        "updated_at": save.updated_at.isoformat() if save.updated_at else None,
+        "last_manual_save": save.last_manual_save.isoformat() if save.last_manual_save else None,
+    }
+
+
+def cookie_cosmos_v2_save_countdown(save):
+    if not save or not save.last_manual_save:
+        return 0
+
+    elapsed = django_timezone.now() - save.last_manual_save
+    remaining = COOKIE_COSMOS_V2_SAVE_COOLDOWN_SECONDS - int(elapsed.total_seconds())
+    return max(0, remaining)
+
+
+@ensure_csrf_cookie
+def cookie_cosmos_v2(request):
+    mark_active_game(request.user, "cookie_cosmos_v2")
+    return render(request, "app/cookie_cosmos_v2.html")
+
+
+@login_required
+def cookie_cosmos_v2_load_api(request):
+    mark_active_game(request.user, "cookie_cosmos_v2")
+    save = CookieCosmosV2Save.objects.filter(user=request.user).first()
+
+    return JsonResponse({
+        "status": "ok",
+        "save": serialize_cookie_cosmos_v2_save(save),
+        "save_data": save.save_data if save else None,
+        "next_save_in_seconds": cookie_cosmos_v2_save_countdown(save),
+    })
+
+
+@login_required
+@require_POST
+def cookie_cosmos_v2_save_api(request):
+    mark_active_game(request.user, "cookie_cosmos_v2")
+
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return api_error_response(_("Ungültige Anfrage."), status=400)
+
+    save_data = payload.get("save_data")
+    if not isinstance(save_data, dict):
+        return api_error_response(_("Ungültiger Cookie-Cosmos-V2-Spielstand."), status=400)
+
+    try:
+        serialized_size = len(json.dumps(save_data, separators=(",", ":")))
+    except (TypeError, ValueError):
+        return api_error_response(_("Ungültiger Cookie-Cosmos-V2-Spielstand."), status=400)
+
+    if serialized_size > COOKIE_COSMOS_V2_MAX_SAVE_BYTES:
+        return api_error_response(_("Der Cookie-Cosmos-V2-Spielstand ist zu groß."), status=400)
+
+    try:
+        cookies = float(payload.get("cookies") or 0)
+        lifetime_cookies = float(payload.get("lifetime_cookies") or 0)
+        cps = float(payload.get("cps") or 0)
+        click_power = float(payload.get("click_power") or 1)
+        prestige_level = int(payload.get("prestige_level") or 1)
+        prestige_crumbs = int(payload.get("prestige_crumbs") or 0)
+        achievements_count = int(payload.get("achievements_count") or 0)
+        upgrades_count = int(payload.get("upgrades_count") or 0)
+        buildings_count = int(payload.get("buildings_count") or 0)
+    except (TypeError, ValueError):
+        return api_error_response(_("Ungültige Cookie-Cosmos-V2-Werte."), status=400)
+
+    numeric_values = (cookies, lifetime_cookies, cps, click_power)
+    if not all(math.isfinite(value) for value in numeric_values):
+        return api_error_response(_("Ungültige Cookie-Cosmos-V2-Werte."), status=400)
+
+    if cookies < 0 or lifetime_cookies < 0 or cps < 0 or click_power < 0 or prestige_level < 1:
+        return api_error_response(_("Ungültige Cookie-Cosmos-V2-Werte."), status=400)
+
+    save = CookieCosmosV2Save.objects.filter(user=request.user).first()
+    remaining = cookie_cosmos_v2_save_countdown(save)
+    if remaining > 0:
+        return JsonResponse({
+            "status": "error",
+            "message": _("Du kannst Cookie Cosmos V2 nur einmal pro Minute in der Datenbank speichern."),
+            "next_save_in_seconds": remaining,
+            "save": serialize_cookie_cosmos_v2_save(save),
+        }, status=429)
+
+    now = django_timezone.now()
+    defaults = {
+        "save_data": save_data,
+        "cookies": max(0, cookies),
+        "lifetime_cookies": max(0, lifetime_cookies),
+        "cps": max(0, cps),
+        "click_power": max(0, click_power),
+        "prestige_level": max(1, prestige_level),
+        "prestige_crumbs": max(0, prestige_crumbs),
+        "achievements_count": max(0, min(achievements_count, 500)),
+        "upgrades_count": max(0, min(upgrades_count, 500)),
+        "buildings_count": max(0, buildings_count),
+        "last_manual_save": now,
+    }
+
+    save, _created = CookieCosmosV2Save.objects.update_or_create(
+        user=request.user,
+        defaults=defaults,
+    )
+
+    return JsonResponse({
+        "status": "ok",
+        "save": serialize_cookie_cosmos_v2_save(save),
+        "next_save_in_seconds": COOKIE_COSMOS_V2_SAVE_COOLDOWN_SECONDS,
+    })
 
 
 @login_required
