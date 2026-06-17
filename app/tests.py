@@ -36,6 +36,7 @@ from app.models import (
     ChatRoomMember,
     ConnectFourGame,
     CookieClickerHighScore,
+    CookieCosmosV2Save,
     Game2048HighScore,
     DrawingGameLobby,
     DrawingGamePlayer,
@@ -91,6 +92,7 @@ class BaseTestCase(TestCase):
         AvatarCharacter,
         HomeWidget,
         CookieClickerHighScore,
+        CookieCosmosV2Save,
         HumanBenchmarkHighScore,
         HumanBenchmarkScore,
         Note,
@@ -1440,6 +1442,74 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertFalse(CookieClickerHighScore.objects.filter(user=self.user).exists())
 
+    def test_cookie_cosmos_v2_page_sets_presence_status(self):
+        response = self.client.get(reverse("cookie-cosmos-v2"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/cookie_cosmos_v2.html")
+        presence = UserPresence.objects.get(user=self.user)
+        self.assertEqual(presence.active_game, "cookie_cosmos_v2")
+        self.assertEqual(presence.active_game_label, "spielt Cookie Cosmos V2")
+
+    def test_cookie_cosmos_v2_save_api_persists_save_and_rate_limits(self):
+        payload = {
+            "save_data": {
+                "version": 2,
+                "cookies": 1500,
+                "lifetimeCookies": 2500,
+                "prestigeLevel": 2,
+                "buildings": {"hand_mixer": 3},
+            },
+            "cookies": 1500,
+            "lifetime_cookies": 2500,
+            "cps": 12.5,
+            "click_power": 4.5,
+            "prestige_level": 2,
+            "prestige_crumbs": 1,
+            "achievements_count": 3,
+            "upgrades_count": 2,
+            "buildings_count": 3,
+        }
+
+        response = self.client.post(
+            reverse("cookie-cosmos-v2-save-api"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "ok")
+        save = CookieCosmosV2Save.objects.get(user=self.user)
+        self.assertEqual(save.save_data["prestigeLevel"], 2)
+        self.assertEqual(save.prestige_level, 2)
+        self.assertEqual(save.lifetime_cookies, 2500)
+        self.assertIsNotNone(save.last_manual_save)
+
+        limited_response = self.client.post(
+            reverse("cookie-cosmos-v2-save-api"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+
+        self.assertEqual(limited_response.status_code, 429)
+        self.assertGreater(limited_response.json()["next_save_in_seconds"], 0)
+
+    def test_cookie_cosmos_v2_load_api_returns_saved_state(self):
+        CookieCosmosV2Save.objects.create(
+            user=self.user,
+            save_data={"version": 2, "cookies": 99, "prestigeLevel": 3},
+            cookies=99,
+            lifetime_cookies=1234,
+            prestige_level=3,
+        )
+
+        response = self.client.get(reverse("cookie-cosmos-v2-load-api"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "ok")
+        self.assertEqual(response.json()["save_data"]["prestigeLevel"], 3)
+        self.assertEqual(response.json()["save"]["prestige_level"], 3)
+
     def test_profile_page_shows_cookie_clicker_highscore(self):
         CookieClickerHighScore.objects.create(
             user=self.user,
@@ -2097,6 +2167,7 @@ class StaticPageTests(BaseTestCase):
             ("drift-circuit", "app/drift_circuit.html"),
             ("snake-powerups", "app/snake_powerups.html"),
             ("cookie-clicker", "app/cookie_clicker.html"),
+            ("cookie-cosmos-v2", "app/cookie_cosmos_v2.html"),
             ("stream-deck", "app/stream_deck.html"),
         ]
 
