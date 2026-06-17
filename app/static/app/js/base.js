@@ -105,11 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeDisplayOptionsStorageKey = 'customThemeDisplayOptions';
 
     const displayOptionControls = {
-        compact: { id: 'theme-density-toggle', className: 'theme-compact-mode' },
-        largeText: { id: 'theme-font-toggle', className: 'theme-large-text-mode' },
         highContrast: { id: 'theme-contrast-toggle', className: 'theme-high-contrast-mode' },
         reducedMotion: { id: 'theme-motion-toggle', className: 'theme-reduced-motion-mode' },
     };
+
+    const deprecatedDisplayOptionClasses = [
+        'theme-compact-mode',
+        'theme-large-text-mode',
+    ];
 
     const defaultTheme = {
         navStart: '#1a56d6',
@@ -335,19 +338,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function defaultDisplayOptions() {
         return {
-            compact: false,
-            largeText: false,
             highContrast: false,
             reducedMotion: false,
         };
     }
 
+    function cleanDisplayOptions(options = {}) {
+        return Object.fromEntries(
+            Object.keys(displayOptionControls).map((key) => [key, Boolean(options[key])])
+        );
+    }
+
     function loadDisplayOptions() {
         try {
-            return {
+            return cleanDisplayOptions({
                 ...defaultDisplayOptions(),
                 ...(JSON.parse(localStorage.getItem(themeDisplayOptionsStorageKey)) || {}),
-            };
+            });
         } catch (error) {
             localStorage.removeItem(themeDisplayOptionsStorageKey);
             return defaultDisplayOptions();
@@ -355,6 +362,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyDisplayOptions(options) {
+        deprecatedDisplayOptionClasses.forEach((className) => body.classList.remove(className));
+
         Object.entries(displayOptionControls).forEach(([key, config]) => {
             body.classList.toggle(config.className, Boolean(options[key]));
         });
@@ -374,9 +383,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveDisplayOptions(options) {
-        localStorage.setItem(themeDisplayOptionsStorageKey, JSON.stringify(options));
-        applyDisplayOptions(options);
-        syncDisplayOptionControls(options);
+        activeDisplayOptions = cleanDisplayOptions(options);
+        localStorage.setItem(themeDisplayOptionsStorageKey, JSON.stringify(activeDisplayOptions));
+        applyDisplayOptions(activeDisplayOptions);
+        syncDisplayOptionControls(activeDisplayOptions);
         showThemeSaveHint();
     }
 
@@ -416,6 +426,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let activeDisplayOptions = loadDisplayOptions();
+    try {
+        localStorage.setItem(themeDisplayOptionsStorageKey, JSON.stringify(activeDisplayOptions));
+    } catch (error) {
+    }
     applyDisplayOptions(activeDisplayOptions);
 
     let activeCustomTheme = loadCustomTheme();
