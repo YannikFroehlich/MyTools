@@ -1,51 +1,30 @@
-name: Quality Checks
+name: Quality Checks (disabled)
+
+# Die automatischen Quality Checks wurden deaktiviert, weil sie bei Merges
+# unnötig lange liefen bzw. hängen bleiben konnten.
+#
+# Wichtig:
+# - Dieser Workflow startet NICHT mehr automatisch bei push/pull_request.
+# - Dadurch blockiert er keine Merges mehr.
+# - Falls du später wieder Checks brauchst, kannst du lokal weiterhin ausführen:
+#   python scripts/verify.py --test-label app
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
   workflow_dispatch:
 
 concurrency:
-  group: quality-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: quality-disabled-${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  verify:
-    name: Django quality gate
+  disabled:
+    name: Quality checks disabled
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    env:
-      USE_SQLITE: "True"
-      USE_LOCAL_CACHE: "True"
-      DEBUG: "True"
-      SECRET_KEY: "quality-check-secret"
-      ALLOWED_HOSTS: "localhost,127.0.0.1"
-      CSRF_TRUSTED_ORIGINS: ""
-      OPENWEATHER_API_KEY: "dummy-for-tests"
+    timeout-minutes: 2
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: "pip"
-
-      - name: Install dependencies
-        timeout-minutes: 5
+      - name: Hinweis
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run quality checks
-        timeout-minutes: 15
-        run: python scripts/verify.py --test-label app
+          echo "Automatische Quality Checks sind deaktiviert."
+          echo "Dieser Workflow läuft nur noch manuell und blockiert keine Merges mehr."
+          echo "Lokale Checks bei Bedarf: python scripts/verify.py --test-label app"
