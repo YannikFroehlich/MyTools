@@ -1451,6 +1451,15 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(presence.active_game, "cookie_cosmos_v2")
         self.assertEqual(presence.active_game_label, "spielt Cookie Cosmos V2")
 
+    def test_nebula_forge_tycoon_page_sets_presence_status(self):
+        response = self.client.get(reverse("nebula-forge-tycoon"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/nebula_forge_tycoon.html")
+        presence = UserPresence.objects.get(user=self.user)
+        self.assertEqual(presence.active_game, "nebula_forge_tycoon")
+        self.assertEqual(presence.active_game_label, "spielt Nebula Forge Tycoon")
+
     def test_cookie_cosmos_v2_save_api_persists_save_and_rate_limits(self):
         payload = {
             "save_data": {
@@ -2168,6 +2177,7 @@ class StaticPageTests(BaseTestCase):
             ("snake-powerups", "app/snake_powerups.html"),
             ("cookie-clicker", "app/cookie_clicker.html"),
             ("cookie-cosmos-v2", "app/cookie_cosmos_v2.html"),
+            ("nebula-forge-tycoon", "app/nebula_forge_tycoon.html"),
             ("stream-deck", "app/stream_deck.html"),
         ]
 
@@ -4182,7 +4192,13 @@ class ModerationTests(BaseTestCase):
         settings_obj.save(update_fields=["tool_access_rules"])
 
         response = self.client.get(reverse("calculator"))
-        self.assertEqual(response.status_code, 403)
+        self.assertRedirects(response, reverse("favorites"))
+
+        json_response = self.client.get(
+            reverse("calculator"),
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(json_response.status_code, 403)
 
         self.make_staff()
         response = self.client.get(reverse("calculator"))
@@ -4196,7 +4212,7 @@ class ModerationTests(BaseTestCase):
 
         response = self.client.get(reverse("calculator"))
 
-        self.assertEqual(response.status_code, 403)
+        self.assertRedirects(response, reverse("favorites"))
 
     def test_report_action_marks_report_resolved(self):
         self.make_staff()

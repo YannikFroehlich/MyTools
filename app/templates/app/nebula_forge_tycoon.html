@@ -1,0 +1,480 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Nebula Forge Tycoon" %} - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260618-nebula-forge-tycoon-focus-left">
+{% endblock %}
+
+{% block content %}
+<section class="nft-page" data-nebula-tycoon data-save-key="mytools-nebula-forge-tycoon-v1" data-db-load-url="{% url 'nebula-forge-tycoon-load-api' %}" data-db-save-url="{% url 'nebula-forge-tycoon-save-api' %}" data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
+    <div class="nft-bg-orb nft-bg-orb-one" aria-hidden="true"></div>
+    <div class="nft-bg-orb nft-bg-orb-two" aria-hidden="true"></div>
+
+    <div class="nft-shell">
+        <header class="nft-hero">
+            <div class="nft-brand">
+                <span class="nft-brand-icon"><i class="fa-solid fa-meteor"></i></span>
+                <div>
+                    <p>{% translate "Singleplayer Tycoon" %}</p>
+                    <h1>Nebula Forge Tycoon</h1>
+                    <span>{% translate "Baue eine Weltraum-Schmiede: AFK-Drohnen farmen weiter, aktives Spielen gibt Combos, Events und Overdrive." %}</span>
+                </div>
+            </div>
+
+            <div class="nft-hero-actions">
+                <button type="button" class="nft-ghost-button" id="nftSaveButton">
+                    <i class="fa-solid fa-database"></i>
+                    <span id="nftSaveButtonText">{% translate "Speichern" %}</span>
+                </button>
+                <button type="button" class="nft-ghost-button danger" id="nftResetHeaderButton">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    {% translate "Zurücksetzen" %}
+                </button>
+            </div>
+        </header>
+
+        <section class="nft-stats-grid" aria-label="{% translate 'Tycoon Werte' %}">
+            <article class="nft-stat primary">
+                <span>{% translate "Flux" %}</span>
+                <strong id="nftFlux">0</strong>
+                <small>{% translate "Hauptwährung" %}</small>
+            </article>
+            <article class="nft-stat">
+                <span>{% translate "AFK pro Sekunde" %}</span>
+                <strong id="nftCps">0/s</strong>
+                <small>{% translate "läuft automatisch" %}</small>
+            </article>
+            <article class="nft-stat">
+                <span>{% translate "Aktiver Abbau" %}</span>
+                <strong id="nftManualPower">1</strong>
+                <small>{% translate "pro Aktion" %}</small>
+            </article>
+            <article class="nft-stat">
+                <span>{% translate "Combo" %}</span>
+                <strong id="nftCombo">x1.00</strong>
+                <small id="nftComboHint">{% translate "halte Rhythmus" %}</small>
+            </article>
+            <article class="nft-stat">
+                <span>{% translate "Splitter" %}</span>
+                <strong id="nftShards">0</strong>
+                <small>{% translate "Prestige Bonus" %}</small>
+            </article>
+        </section>
+
+        <section class="nft-prestige-card nft-prestige-hero" aria-label="{% translate 'Prestige Neustart' %}">
+            <div class="nft-prestige-title">
+                <span><i class="fa-solid fa-star"></i></span>
+                <div>
+                    <p class="nft-kicker"><i class="fa-solid fa-wand-sparkles"></i> {% translate "Galaxie-Neustart" %}</p>
+                    <strong>{% translate "Prestige: neue Galaxie" %}</strong>
+                </div>
+            </div>
+            <p id="nftPrestigeHint">{% translate "Sammle genug Lifetime-Flux, um Splitter zu erhalten." %}</p>
+            <button type="button" class="nft-primary-button" id="nftPrestigeButton">
+                <i class="fa-solid fa-star"></i>
+                {% translate "Prestige starten" %}
+            </button>
+        </section>
+
+        <div class="nft-layout">
+            <section class="nft-stage-card">
+                <div class="nft-stage-head">
+                    <div>
+                        <p class="nft-kicker"><i class="fa-solid fa-satellite-dish"></i> {% translate "Aktive Schicht" %}</p>
+                        <h2>{% translate "Sternenkern abbauen" %}</h2>
+                    </div>
+                    <div class="nft-live-pill" id="nftModePill">{% translate "Balanced" %}</div>
+                </div>
+
+                <div class="nft-foundry" id="nftFoundry" aria-label="{% translate 'Nebula Forge Spielfeld' %}">
+                    <div class="nft-stars" aria-hidden="true"></div>
+                    <div class="nft-orbit nft-orbit-one" aria-hidden="true"></div>
+                    <div class="nft-orbit nft-orbit-two" aria-hidden="true"></div>
+                    <button type="button" class="nft-core-button" id="nftMineButton" aria-label="{% translate 'Sternenkern abbauen' %}">
+                        <span class="nft-core-glow" aria-hidden="true"></span>
+                        <span class="nft-core-icon"><i class="fa-solid fa-gem"></i></span>
+                        <span class="nft-core-copy">
+                            <strong>{% translate "Abbauen" %}</strong>
+                            <small>{% translate "klicken, halten oder Leertaste" %}</small>
+                        </span>
+                    </button>
+                    <div class="nft-event-layer" id="nftEventLayer" aria-live="polite"></div>
+                </div>
+
+                <div class="nft-heat-box">
+                    <div class="nft-meter-title">
+                        <span>{% translate "Reaktor-Hitze" %}</span>
+                        <strong id="nftHeatLabel">0%</strong>
+                    </div>
+                    <div class="nft-meter"><i id="nftHeatFill"></i></div>
+                    <p>{% translate "Hitze macht Overdrive möglich. Zu viel Hitze reduziert aktiven Abbau, bis der Reaktor abkühlt." %}</p>
+                </div>
+
+                <div class="nft-action-grid">
+                    <button type="button" class="nft-action-card" id="nftOverdriveButton" data-hotkey="1" aria-keyshortcuts="1" title="{% translate 'Taste 1' %}">
+                        <span><i class="fa-solid fa-bolt-lightning"></i></span>
+                        <strong>{% translate "Overdrive" %}</strong>
+                        <small id="nftOverdriveHint">{% translate "ab 92% Hitze bereit" %}</small>
+                    </button>
+                    <button type="button" class="nft-action-card" id="nftSignalButton" data-hotkey="2" aria-keyshortcuts="2" title="{% translate 'Taste 2' %}">
+                        <span><i class="fa-solid fa-crosshairs"></i></span>
+                        <strong>{% translate "Signal-Raid" %}</strong>
+                        <small id="nftSignalHint">{% translate "aktiver Timing-Bonus" %}</small>
+                    </button>
+                    <button type="button" class="nft-action-card" id="nftCollectButton" data-hotkey="3" aria-keyshortcuts="3" title="{% translate 'Taste 3' %}">
+                        <span><i class="fa-solid fa-hand-sparkles"></i></span>
+                        <strong>{% translate "Sammelimpuls" %}</strong>
+                        <small id="nftCollectHint">{% translate "sofort AFK-Ertrag einsammeln" %}</small>
+                    </button>
+                    <button type="button" class="nft-action-card" id="nftRiftButton" data-hotkey="4" aria-keyshortcuts="4" title="{% translate 'Taste 4' %}">
+                        <span><i class="fa-solid fa-wand-sparkles"></i></span>
+                        <strong>{% translate "Flux-Riss" %}</strong>
+                        <small id="nftRiftHint">{% translate "AFK-Boost erspielen" %}</small>
+                    </button>
+                    <button type="button" class="nft-action-card" id="nftCryoButton" data-hotkey="5" aria-keyshortcuts="5" title="{% translate 'Taste 5' %}">
+                        <span><i class="fa-solid fa-snowflake"></i></span>
+                        <strong>{% translate "Kryo-Takt" %}</strong>
+                        <small id="nftCryoHint">{% translate "Hitze senken + Boost" %}</small>
+                    </button>
+                </div>
+
+                <div class="nft-signal-panel" id="nftSignalPanel" hidden>
+                    <div class="nft-signal-top">
+                        <strong>{% translate "Signal-Raid" %}</strong>
+                        <span>{% translate "Stoppe den Marker im zufälligen grünen Fenster." %}</span>
+                    </div>
+                    <div class="nft-signal-track" id="nftSignalTrack">
+                        <span class="nft-signal-zone"></span>
+                        <i id="nftSignalMarker"></i>
+                    </div>
+                    <button type="button" class="nft-primary-button" id="nftStopSignalButton">
+                        <i class="fa-solid fa-hand-pointer"></i>
+                        {% translate "Jetzt stoppen" %}
+                    </button>
+                </div>
+
+                <div class="nft-signal-panel nft-rift-panel" id="nftRiftPanel" hidden>
+                    <div class="nft-signal-top">
+                        <strong>{% translate "Flux-Riss" %}</strong>
+                        <span>{% translate "Triff das zufällige violette Fenster für einen AFK-Produktionsboost." %}</span>
+                    </div>
+                    <div class="nft-signal-track">
+                        <span class="nft-signal-zone nft-rift-zone"></span>
+                        <i id="nftRiftMarker"></i>
+                    </div>
+                    <button type="button" class="nft-primary-button" id="nftStopRiftButton">
+                        <i class="fa-solid fa-wand-sparkles"></i>
+                        {% translate "Riss versiegeln" %}
+                    </button>
+                </div>
+
+                <div class="nft-signal-panel nft-cryo-panel" id="nftCryoPanel" hidden>
+                    <div class="nft-signal-top">
+                        <strong>{% translate "Kryo-Takt" %}</strong>
+                        <span>{% translate "Triff das zufällige blaue Fenster, um Hitze stark zu senken." %}</span>
+                    </div>
+                    <div class="nft-signal-track">
+                        <span class="nft-signal-zone nft-cryo-zone"></span>
+                        <i id="nftCryoMarker"></i>
+                    </div>
+                    <button type="button" class="nft-primary-button" id="nftStopCryoButton">
+                        <i class="fa-solid fa-snowflake"></i>
+                        {% translate "Kryo stoppen" %}
+                    </button>
+                </div>
+
+                <div class="nft-focus-panel">
+                    <div>
+                        <p class="nft-kicker"><i class="fa-solid fa-sliders"></i> {% translate "Schichtmodus" %}</p>
+                        <h3>{% translate "Wähle, wie du farmen willst" %}</h3>
+                    </div>
+                    <div class="nft-focus-buttons" role="group" aria-label="{% translate 'Schichtmodus wählen' %}">
+                        <button type="button" data-mode="balanced" class="is-active">{% translate "Balanced" %}<small>{% translate "100% / 100%" %}</small></button>
+                        <button type="button" data-mode="active">{% translate "Aktiv" %}<small>{% translate "+25% Klicks" %}</small></button>
+                        <button type="button" data-mode="afk">{% translate "AFK" %}<small>{% translate "+20% passiv" %}</small></button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="nft-panel" aria-label="{% translate 'Nebula Forge Verwaltung' %}">
+                <div class="nft-tabs" role="tablist" aria-label="{% translate 'Tycoon Bereiche' %}">
+                    <button type="button" class="is-active" data-tab="buildings">{% translate "Anlagen" %}</button>
+                    <button type="button" data-tab="upgrades">{% translate "Upgrades" %}</button>
+                    <button type="button" data-tab="achievements">{% translate "Erfolge" %}</button>
+                </div>
+
+                <section class="nft-tab-panel is-active" data-panel="buildings">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-industry"></i> {% translate "AFK-Farmen" %}</p>
+                            <h2>{% translate "Automatische Anlagen" %}</h2>
+                        </div>
+                        <span id="nftBuildingCount">0</span>
+                    </div>
+                    <div class="nft-shop-list" id="nftBuildings"></div>
+                </section>
+
+                <section class="nft-tab-panel" data-panel="upgrades">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-screwdriver-wrench"></i> {% translate "Aktiv + AFK" %}</p>
+                            <h2>{% translate "Labor-Upgrades" %}</h2>
+                        </div>
+                    </div>
+                    <div class="nft-shop-list" id="nftUpgrades"></div>
+                </section>
+
+                <section class="nft-tab-panel" data-panel="achievements">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-trophy"></i> {% translate "Fortschritt" %}</p>
+                            <h2>{% translate "Erfolge" %}</h2>
+                        </div>
+                        <span id="nftAchievementCount">0/0</span>
+                    </div>
+                    <div class="nft-achievement-list" id="nftAchievements"></div>
+                </section>
+
+            </aside>
+        </div>
+    </div>
+
+    <script id="nftI18n" type="application/json">
+        {
+            "messages": {
+                {% translate "Taschen-Bohrer" as nft_i18n_000 %}"Taschen-Bohrer": "{{ nft_i18n_000|escapejs }}",
+                {% translate "Solar-Crawler" as nft_i18n_001 %}"Solar-Crawler": "{{ nft_i18n_001|escapejs }}",
+                {% translate "Drohnen-Nest" as nft_i18n_002 %}"Drohnen-Nest": "{{ nft_i18n_002|escapejs }}",
+                {% translate "Kristall-Gewächshaus" as nft_i18n_003 %}"Kristall-Gewächshaus": "{{ nft_i18n_003|escapejs }}",
+                {% translate "Orbitale Gießerei" as nft_i18n_004 %}"Orbitale Gießerei": "{{ nft_i18n_004|escapejs }}",
+                {% translate "Singularitäts-Engine" as nft_i18n_005 %}"Singularitäts-Engine": "{{ nft_i18n_005|escapejs }}",
+                {% translate "Naniten-Schwarm" as nft_i18n_006 %}"Naniten-Schwarm": "{{ nft_i18n_006|escapejs }}",
+                {% translate "Mond-Harvester" as nft_i18n_007 %}"Mond-Harvester": "{{ nft_i18n_007|escapejs }}",
+                {% translate "Void-Raffinerie" as nft_i18n_008 %}"Void-Raffinerie": "{{ nft_i18n_008|escapejs }}",
+                {% translate "Chrono-Fabrik" as nft_i18n_009 %}"Chrono-Fabrik": "{{ nft_i18n_009|escapejs }}",
+                {% translate "Dyson-Gitter" as nft_i18n_010 %}"Dyson-Gitter": "{{ nft_i18n_010|escapejs }}",
+                {% translate "Galaxie-Drucker" as nft_i18n_011 %}"Galaxie-Drucker": "{{ nft_i18n_011|escapejs }}",
+                {% translate "Plasma-Handschuhe" as nft_i18n_012 %}"Plasma-Handschuhe": "{{ nft_i18n_012|escapejs }}",
+                {% translate "AFK-Protokoll" as nft_i18n_013 %}"AFK-Protokoll": "{{ nft_i18n_013|escapejs }}",
+                {% translate "Kryo-Kühlkreis" as nft_i18n_014 %}"Kryo-Kühlkreis": "{{ nft_i18n_014|escapejs }}",
+                {% translate "Combo-Matrix" as nft_i18n_015 %}"Combo-Matrix": "{{ nft_i18n_015|escapejs }}",
+                {% translate "Tiefenspeicher" as nft_i18n_016 %}"Tiefenspeicher": "{{ nft_i18n_016|escapejs }}",
+                {% translate "Meteor-Magnet" as nft_i18n_017 %}"Meteor-Magnet": "{{ nft_i18n_017|escapejs }}",
+                {% translate "Sammler-Array" as nft_i18n_018 %}"Sammler-Array": "{{ nft_i18n_018|escapejs }}",
+                {% translate "Event-Relais" as nft_i18n_019 %}"Event-Relais": "{{ nft_i18n_019|escapejs }}",
+                {% translate "Riss-Verstärker" as nft_i18n_020 %}"Riss-Verstärker": "{{ nft_i18n_020|escapejs }}",
+                {% translate "Neural-Picken" as nft_i18n_021 %}"Neural-Picken": "{{ nft_i18n_021|escapejs }}",
+                {% translate "Stellar-Logistik" as nft_i18n_022 %}"Stellar-Logistik": "{{ nft_i18n_022|escapejs }}",
+                {% translate "Harmonischer Kondensator" as nft_i18n_023 %}"Harmonischer Kondensator": "{{ nft_i18n_023|escapejs }}",
+                {% translate "Auto-Kalibrator" as nft_i18n_024 %}"Auto-Kalibrator": "{{ nft_i18n_024|escapejs }}",
+                {% translate "Klick-Resonator" as nft_i18n_025 %}"Klick-Resonator": "{{ nft_i18n_025|escapejs }}",
+                {% translate "Kern-Synchronisator" as nft_i18n_026 %}"Kern-Synchronisator": "{{ nft_i18n_026|escapejs }}",
+                {% translate "Rhythmus-Extraktor" as nft_i18n_027 %}"Rhythmus-Extraktor": "{{ nft_i18n_027|escapejs }}",
+                {% translate "Takt-Kondensator" as nft_i18n_028 %}"Takt-Kondensator": "{{ nft_i18n_028|escapejs }}",
+                {% translate "Hitze-Recycling" as nft_i18n_029 %}"Hitze-Recycling": "{{ nft_i18n_029|escapejs }}",
+                {% translate "Der erste kleine AFK-Bohrer am Rand des Sternenkerns." as nft_i18n_030 %}"Der erste kleine AFK-Bohrer am Rand des Sternenkerns.": "{{ nft_i18n_030|escapejs }}",
+                {% translate "Fährt über Asteroidenplatten und sammelt Flux-Splitter." as nft_i18n_031 %}"Fährt über Asteroidenplatten und sammelt Flux-Splitter.": "{{ nft_i18n_031|escapejs }}",
+                {% translate "Schickt Schwärme los, die auch während AFK weiterarbeiten." as nft_i18n_032 %}"Schickt Schwärme los, die auch während AFK weiterarbeiten.": "{{ nft_i18n_032|escapejs }}",
+                {% translate "Züchtet Flux-Kristalle in Schwerelosigkeit." as nft_i18n_033 %}"Züchtet Flux-Kristalle in Schwerelosigkeit.": "{{ nft_i18n_033|escapejs }}",
+                {% translate "Schmilzt Meteorstaub zu gewaltigen Flux-Barren." as nft_i18n_034 %}"Schmilzt Meteorstaub zu gewaltigen Flux-Barren.": "{{ nft_i18n_034|escapejs }}",
+                {% translate "Krümmt Raumzeit, damit deine Fabrik doppelt so fleißig wirkt." as nft_i18n_035 %}"Krümmt Raumzeit, damit deine Fabrik doppelt so fleißig wirkt.": "{{ nft_i18n_035|escapejs }}",
+                {% translate "Winzige Maschinen zerlegen Sternenstaub in verwertbaren Flux." as nft_i18n_036 %}"Winzige Maschinen zerlegen Sternenstaub in verwertbaren Flux.": "{{ nft_i18n_036|escapejs }}",
+                {% translate "Schürft komplette Mondadern leer und liefert konstant Nachschub." as nft_i18n_037 %}"Schürft komplette Mondadern leer und liefert konstant Nachschub.": "{{ nft_i18n_037|escapejs }}",
+                {% translate "Reinigt dunkle Materie und presst sie zu hochreinem Flux." as nft_i18n_038 %}"Reinigt dunkle Materie und presst sie zu hochreinem Flux.": "{{ nft_i18n_038|escapejs }}",
+                {% translate "Produziert in kleinen Zeitschleifen mehrfach denselben Flux-Barren." as nft_i18n_039 %}"Produziert in kleinen Zeitschleifen mehrfach denselben Flux-Barren.": "{{ nft_i18n_039|escapejs }}",
+                {% translate "Fängt Sternenenergie in riesigen Gitternetzen ein." as nft_i18n_040 %}"Fängt Sternenenergie in riesigen Gitternetzen ein.": "{{ nft_i18n_040|escapejs }}",
+                {% translate "Druckt ganze Produktionslinien aus komprimierter Raumzeit." as nft_i18n_041 %}"Druckt ganze Produktionslinien aus komprimierter Raumzeit.": "{{ nft_i18n_041|escapejs }}",
+                {% translate "+0,9 aktiver Abbau pro Level." as nft_i18n_042 %}"+0,9 aktiver Abbau pro Level.": "{{ nft_i18n_042|escapejs }}",
+                {% translate "+8% passive Produktion und besserer Offline-Ertrag." as nft_i18n_043 %}"+8% passive Produktion und besserer Offline-Ertrag.": "{{ nft_i18n_043|escapejs }}",
+                {% translate "Mehr Hitze-Kapazität und schnellere Abkühlung." as nft_i18n_044 %}"Mehr Hitze-Kapazität und schnellere Abkühlung.": "{{ nft_i18n_044|escapejs }}",
+                {% translate "Aktives Spielen skaliert stärker mit deiner Combo." as nft_i18n_045 %}"Aktives Spielen skaliert stärker mit deiner Combo.": "{{ nft_i18n_045|escapejs }}",
+                {% translate "+2 Stunden Offline-Cap pro Level." as nft_i18n_046 %}"+2 Stunden Offline-Cap pro Level.": "{{ nft_i18n_046|escapejs }}",
+                {% translate "Mehr Meteor-Events und bessere Event-Belohnungen." as nft_i18n_047 %}"Mehr Meteor-Events und bessere Event-Belohnungen.": "{{ nft_i18n_047|escapejs }}",
+                {% translate "Sammelimpuls gibt einen kleinen Sofort-Schub und lädt moderat schneller nach." as nft_i18n_048 %}"Sammelimpuls gibt einen kleinen Sofort-Schub und lädt moderat schneller nach.": "{{ nft_i18n_048|escapejs }}",
+                {% translate "Timing-Events laden schneller wieder auf." as nft_i18n_049 %}"Timing-Events laden schneller wieder auf.": "{{ nft_i18n_049|escapejs }}",
+                {% translate "Alle Timing-Events und Meteor-Funde geben mehr Flux." as nft_i18n_050 %}"Alle Timing-Events und Meteor-Funde geben mehr Flux.": "{{ nft_i18n_050|escapejs }}",
+                {% translate "+11% aktiver Abbau pro Level." as nft_i18n_051 %}"+11% aktiver Abbau pro Level.": "{{ nft_i18n_051|escapejs }}",
+                {% translate "+6,5% passive Produktion pro Level." as nft_i18n_052 %}"+6,5% passive Produktion pro Level.": "{{ nft_i18n_052|escapejs }}",
+                {% translate "Event-Boosts halten länger und passive Buffs werden stärker." as nft_i18n_053 %}"Event-Boosts halten länger und passive Buffs werden stärker.": "{{ nft_i18n_053|escapejs }}",
+                {% translate "Jede freigeschaltete Anlagenart gibt einen kleinen AFK-Bonus." as nft_i18n_054 %}"Jede freigeschaltete Anlagenart gibt einen kleinen AFK-Bonus.": "{{ nft_i18n_054|escapejs }}",
+                {% translate "Combos skalieren stärker und fallen langsamer ab." as nft_i18n_055 %}"Combos skalieren stärker und fallen langsamer ab.": "{{ nft_i18n_055|escapejs }}",
+                {% translate "Klicks erhalten einen Anteil deiner aktuellen AFK-Produktion als Sofort-Flux." as nft_i18n_056 %}"Klicks erhalten einen Anteil deiner aktuellen AFK-Produktion als Sofort-Flux.": "{{ nft_i18n_056|escapejs }}",
+                {% translate "Hohe Combos verstärken den AFK-Anteil pro Klick deutlich." as nft_i18n_057 %}"Hohe Combos verstärken den AFK-Anteil pro Klick deutlich.": "{{ nft_i18n_057|escapejs }}",
+                {% translate "Aktive Klickserien lösen öfter zusätzliche Takt-Bursts aus." as nft_i18n_058 %}"Aktive Klickserien lösen öfter zusätzliche Takt-Bursts aus.": "{{ nft_i18n_058|escapejs }}",
+                {% translate "Hohe Reaktor-Hitze erhöht aktive Klickerträge und kühlt bei Takt-Bursts leicht ab." as nft_i18n_059 %}"Hohe Reaktor-Hitze erhöht aktive Klickerträge und kühlt bei Takt-Bursts leicht ab.": "{{ nft_i18n_059|escapejs }}",
+                {% translate "Sammle 100 Flux." as nft_i18n_060 %}"Sammle 100 Flux.": "{{ nft_i18n_060|escapejs }}",
+                {% translate "Besitze 10 Anlagen." as nft_i18n_061 %}"Besitze 10 Anlagen.": "{{ nft_i18n_061|escapejs }}",
+                {% translate "Erreiche eine x10 Combo." as nft_i18n_062 %}"Erreiche eine x10 Combo.": "{{ nft_i18n_062|escapejs }}",
+                {% translate "Sammle 5 Meteor-Events." as nft_i18n_063 %}"Sammle 5 Meteor-Events.": "{{ nft_i18n_063|escapejs }}",
+                {% translate "Zünde 3 Overdrives." as nft_i18n_064 %}"Zünde 3 Overdrives.": "{{ nft_i18n_064|escapejs }}",
+                {% translate "Treffe 5 perfekte Signal-Raids." as nft_i18n_065 %}"Treffe 5 perfekte Signal-Raids.": "{{ nft_i18n_065|escapejs }}",
+                {% translate "Versiegle 8 Flux-Risse." as nft_i18n_066 %}"Versiegle 8 Flux-Risse.": "{{ nft_i18n_066|escapejs }}",
+                {% translate "Treffe 5 perfekte Kryo-Takte." as nft_i18n_067 %}"Treffe 5 perfekte Kryo-Takte.": "{{ nft_i18n_067|escapejs }}",
+                {% translate "Nutze den Sammelimpuls 30 Mal." as nft_i18n_068 %}"Nutze den Sammelimpuls 30 Mal.": "{{ nft_i18n_068|escapejs }}",
+                {% translate "Führe 300 aktive Kernaktionen aus." as nft_i18n_069 %}"Führe 300 aktive Kernaktionen aus.": "{{ nft_i18n_069|escapejs }}",
+                {% translate "Löse 25 aktive Takt-Bursts aus." as nft_i18n_070 %}"Löse 25 aktive Takt-Bursts aus.": "{{ nft_i18n_070|escapejs }}",
+                {% translate "Besitze 75 Anlagen." as nft_i18n_071 %}"Besitze 75 Anlagen.": "{{ nft_i18n_071|escapejs }}",
+                {% translate "Sammle 1.000.000 Lifetime-Flux." as nft_i18n_072 %}"Sammle 1.000.000 Lifetime-Flux.": "{{ nft_i18n_072|escapejs }}",
+                {% translate "Führe dein erstes Prestige aus." as nft_i18n_073 %}"Führe dein erstes Prestige aus.": "{{ nft_i18n_073|escapejs }}",
+                {% translate "Erster Funke" as nft_i18n_074 %}"Erster Funke": "{{ nft_i18n_074|escapejs }}",
+                {% translate "Automatisierung" as nft_i18n_075 %}"Automatisierung": "{{ nft_i18n_075|escapejs }}",
+                {% translate "Rhythmus gefunden" as nft_i18n_076 %}"Rhythmus gefunden": "{{ nft_i18n_076|escapejs }}",
+                {% translate "Kosmischer Fang" as nft_i18n_077 %}"Kosmischer Fang": "{{ nft_i18n_077|escapejs }}",
+                {% translate "Heiß gelaufen" as nft_i18n_078 %}"Heiß gelaufen": "{{ nft_i18n_078|escapejs }}",
+                {% translate "Signal-Profi" as nft_i18n_079 %}"Signal-Profi": "{{ nft_i18n_079|escapejs }}",
+                {% translate "Riss-Pilot" as nft_i18n_080 %}"Riss-Pilot": "{{ nft_i18n_080|escapejs }}",
+                {% translate "Kryo-Techniker" as nft_i18n_081 %}"Kryo-Techniker": "{{ nft_i18n_081|escapejs }}",
+                {% translate "Impuls-Sammler" as nft_i18n_082 %}"Impuls-Sammler": "{{ nft_i18n_082|escapejs }}",
+                {% translate "Aktiv-Schmied" as nft_i18n_083 %}"Aktiv-Schmied": "{{ nft_i18n_083|escapejs }}",
+                {% translate "Taktmaschine" as nft_i18n_084 %}"Taktmaschine": "{{ nft_i18n_084|escapejs }}",
+                {% translate "Großingenieur" as nft_i18n_085 %}"Großingenieur": "{{ nft_i18n_085|escapejs }}",
+                {% translate "Millionen-Schmiede" as nft_i18n_086 %}"Millionen-Schmiede": "{{ nft_i18n_086|escapejs }}",
+                {% translate "Neue Galaxie" as nft_i18n_087 %}"Neue Galaxie": "{{ nft_i18n_087|escapejs }}",
+                {% translate "Speichern" as nft_i18n_088 %}"Speichern": "{{ nft_i18n_088|escapejs }}",
+                {% translate "Zurücksetzen" as nft_i18n_089 %}"Zurücksetzen": "{{ nft_i18n_089|escapejs }}",
+                {% translate "Login nötig" as nft_i18n_090 %}"Login nötig": "{{ nft_i18n_090|escapejs }}",
+                {% translate "Speichern {seconds}s" as nft_i18n_091 %}"Speichern {seconds}s": "{{ nft_i18n_091|escapejs }}",
+                {% translate "Speichert..." as nft_i18n_092 %}"Speichert...": "{{ nft_i18n_092|escapejs }}",
+                {% translate "Balanced" as nft_i18n_093 %}"Balanced": "{{ nft_i18n_093|escapejs }}",
+                {% translate "AFK-Shift" as nft_i18n_094 %}"AFK-Shift": "{{ nft_i18n_094|escapejs }}",
+                {% translate "Aktiv-Shift" as nft_i18n_095 %}"Aktiv-Shift": "{{ nft_i18n_095|escapejs }}",
+                {% translate "Schichtmodus geändert" as nft_i18n_096 %}"Schichtmodus geändert": "{{ nft_i18n_096|escapejs }}",
+                {% translate "Signal-Raid" as nft_i18n_097 %}"Signal-Raid": "{{ nft_i18n_097|escapejs }}",
+                {% translate "Signal stoppen" as nft_i18n_098 %}"Signal stoppen": "{{ nft_i18n_098|escapejs }}",
+                {% translate "Marker treffen" as nft_i18n_099 %}"Marker treffen": "{{ nft_i18n_099|escapejs }}",
+                {% translate "Flux-Riss" as nft_i18n_100 %}"Flux-Riss": "{{ nft_i18n_100|escapejs }}",
+                {% translate "Riss versiegeln" as nft_i18n_101 %}"Riss versiegeln": "{{ nft_i18n_101|escapejs }}",
+                {% translate "Kryo-Takt" as nft_i18n_102 %}"Kryo-Takt": "{{ nft_i18n_102|escapejs }}",
+                {% translate "Kryo stoppen" as nft_i18n_103 %}"Kryo stoppen": "{{ nft_i18n_103|escapejs }}",
+                {% translate "kaltes Fenster treffen" as nft_i18n_104 %}"kaltes Fenster treffen": "{{ nft_i18n_104|escapejs }}",
+                {% translate "halte Rhythmus" as nft_i18n_105 %}"halte Rhythmus": "{{ nft_i18n_105|escapejs }}",
+                {% translate "{combo} Treffer · Takt {charge}/{required}" as nft_i18n_106 %}"{combo} Treffer · Takt {charge}/{required}": "{{ nft_i18n_106|escapejs }}",
+                {% translate "aktiv: {duration}" as nft_i18n_107 %}"aktiv: {duration}": "{{ nft_i18n_107|escapejs }}",
+                {% translate "bereit zum Zünden" as nft_i18n_108 %}"bereit zum Zünden": "{{ nft_i18n_108|escapejs }}",
+                {% translate "bereit ab {percent}% Hitze" as nft_i18n_109 %}"bereit ab {percent}% Hitze": "{{ nft_i18n_109|escapejs }}",
+                {% translate "bereit in {duration}" as nft_i18n_110 %}"bereit in {duration}": "{{ nft_i18n_110|escapejs }}",
+                {% translate "Bereit in {duration}." as nft_i18n_111 %}"Bereit in {duration}.": "{{ nft_i18n_111|escapejs }}",
+                {% translate "kleiner Schub ca. {amount} Flux" as nft_i18n_112 %}"kleiner Schub ca. {amount} Flux": "{{ nft_i18n_112|escapejs }}",
+                {% translate "Timing-Bonus bereit" as nft_i18n_113 %}"Timing-Bonus bereit": "{{ nft_i18n_113|escapejs }}",
+                {% translate "AFK-Boost erspielen" as nft_i18n_114 %}"AFK-Boost erspielen": "{{ nft_i18n_114|escapejs }}",
+                {% translate "Hitze senken + Boost" as nft_i18n_115 %}"Hitze senken + Boost": "{{ nft_i18n_115|escapejs }}",
+                {% translate "Bereit: {reward} Splitter beim Neustart. Aktueller Bonus danach ca. +{bonus}%." as nft_i18n_116 %}"Bereit: {reward} Splitter beim Neustart. Aktueller Bonus danach ca. +{bonus}%.": "{{ nft_i18n_116|escapejs }}",
+                {% translate "{current} / {required} Lifetime-Flux bis zum nächsten Prestige." as nft_i18n_117 %}"{current} / {required} Lifetime-Flux bis zum nächsten Prestige.": "{{ nft_i18n_117|escapejs }}",
+                {% translate "Offline-Effizienz: {efficiency}%, Offline-Cap: {hours}h." as nft_i18n_118 %}"Offline-Effizienz: {efficiency}%, Offline-Cap: {hours}h.": "{{ nft_i18n_118|escapejs }}",
+                {% translate "Letzter AFK-Ertrag: {amount} Flux für {duration}. Offline-Cap: {hours}h." as nft_i18n_119 %}"Letzter AFK-Ertrag: {amount} Flux für {duration}. Offline-Cap: {hours}h.": "{{ nft_i18n_119|escapejs }}",
+                {% translate "Kaufen" as nft_i18n_120 %}"Kaufen": "{{ nft_i18n_120|escapejs }}",
+                {% translate "Nicht genug Flux" as nft_i18n_121 %}"Nicht genug Flux": "{{ nft_i18n_121|escapejs }}",
+                {% translate "{item} kostet {cost} Flux." as nft_i18n_122 %}"{item} kostet {cost} Flux.": "{{ nft_i18n_122|escapejs }}",
+                {% translate "Besitz: {count}" as nft_i18n_123 %}"Besitz: {count}": "{{ nft_i18n_123|escapejs }}",
+                {% translate "+{rate}/s je Anlage" as nft_i18n_124 %}"+{rate}/s je Anlage": "{{ nft_i18n_124|escapejs }}",
+                {% translate "Es fehlen {amount} Flux" as nft_i18n_125 %}"Es fehlen {amount} Flux": "{{ nft_i18n_125|escapejs }}",
+                {% translate "fehlen {amount}" as nft_i18n_126 %}"fehlen {amount}": "{{ nft_i18n_126|escapejs }}",
+                {% translate "Level: {level}/{max}" as nft_i18n_127 %}"Level: {level}/{max}": "{{ nft_i18n_127|escapejs }}",
+                {% translate "Maximal" as nft_i18n_128 %}"Maximal": "{{ nft_i18n_128|escapejs }}",
+                {% translate "Nächster Ausbau" as nft_i18n_129 %}"Nächster Ausbau": "{{ nft_i18n_129|escapejs }}",
+                {% translate "Maximal ausgebaut" as nft_i18n_130 %}"Maximal ausgebaut": "{{ nft_i18n_130|escapejs }}",
+                {% translate "Max" as nft_i18n_131 %}"Max": "{{ nft_i18n_131|escapejs }}",
+                {% translate "Fertig" as nft_i18n_132 %}"Fertig": "{{ nft_i18n_132|escapejs }}",
+                {% translate "Erledigt" as nft_i18n_133 %}"Erledigt": "{{ nft_i18n_133|escapejs }}",
+                {% translate "Offen" as nft_i18n_134 %}"Offen": "{{ nft_i18n_134|escapejs }}",
+                {% translate "Gespeichert" as nft_i18n_135 %}"Gespeichert": "{{ nft_i18n_135|escapejs }}",
+                {% translate "Nebula Forge wurde lokal gespeichert." as nft_i18n_136 %}"Nebula Forge wurde lokal gespeichert.": "{{ nft_i18n_136|escapejs }}",
+                {% translate "Speichern fehlgeschlagen" as nft_i18n_137 %}"Speichern fehlgeschlagen": "{{ nft_i18n_137|escapejs }}",
+                {% translate "Der Browser hat den lokalen Spielstand blockiert." as nft_i18n_138 %}"Der Browser hat den lokalen Spielstand blockiert.": "{{ nft_i18n_138|escapejs }}",
+                {% translate "Datenbank-Spielstand geladen" as nft_i18n_139 %}"Datenbank-Spielstand geladen": "{{ nft_i18n_139|escapejs }}",
+                {% translate "Dein gespeicherter Nebula-Forge-Stand wurde geladen." as nft_i18n_140 %}"Dein gespeicherter Nebula-Forge-Stand wurde geladen.": "{{ nft_i18n_140|escapejs }}",
+                {% translate "Melde dich an, um in der Datenbank zu speichern." as nft_i18n_141 %}"Melde dich an, um in der Datenbank zu speichern.": "{{ nft_i18n_141|escapejs }}",
+                {% translate "Speichern nicht verfügbar" as nft_i18n_142 %}"Speichern nicht verfügbar": "{{ nft_i18n_142|escapejs }}",
+                {% translate "Die Datenbank-Speicherroute fehlt." as nft_i18n_143 %}"Die Datenbank-Speicherroute fehlt.": "{{ nft_i18n_143|escapejs }}",
+                {% translate "Speichern lädt" as nft_i18n_144 %}"Speichern lädt": "{{ nft_i18n_144|escapejs }}",
+                {% translate "Du kannst in {seconds}s wieder in der Datenbank speichern." as nft_i18n_145 %}"Du kannst in {seconds}s wieder in der Datenbank speichern.": "{{ nft_i18n_145|escapejs }}",
+                {% translate "Der Datenbank-Save wurde abgelehnt." as nft_i18n_146 %}"Der Datenbank-Save wurde abgelehnt.": "{{ nft_i18n_146|escapejs }}",
+                {% translate "Datenbank gespeichert" as nft_i18n_147 %}"Datenbank gespeichert": "{{ nft_i18n_147|escapejs }}",
+                {% translate "Dein Spielstand wurde gespeichert. Nächster DB-Save in 60s." as nft_i18n_148 %}"Dein Spielstand wurde gespeichert. Nächster DB-Save in 60s.": "{{ nft_i18n_148|escapejs }}",
+                {% translate "Der Datenbank-Save konnte nicht gesendet werden." as nft_i18n_149 %}"Der Datenbank-Save konnte nicht gesendet werden.": "{{ nft_i18n_149|escapejs }}",
+                {% translate "AFK-Ertrag eingesammelt" as nft_i18n_150 %}"AFK-Ertrag eingesammelt": "{{ nft_i18n_150|escapejs }}",
+                {% translate "{amount} Flux für {duration} Offline-Zeit." as nft_i18n_151 %}"{amount} Flux für {duration} Offline-Zeit.": "{{ nft_i18n_151|escapejs }}",
+                {% translate "Takt-Burst +{amount}" as nft_i18n_152 %}"Takt-Burst +{amount}": "{{ nft_i18n_152|escapejs }}",
+                {% translate "+{amount}" as nft_i18n_153 %}"+{amount}": "{{ nft_i18n_153|escapejs }}",
+                {% translate "Impuls +{amount}" as nft_i18n_154 %}"Impuls +{amount}": "{{ nft_i18n_154|escapejs }}",
+                {% translate "Overdrive +{amount}" as nft_i18n_155 %}"Overdrive +{amount}": "{{ nft_i18n_155|escapejs }}",
+                {% translate "Meteor +{amount}" as nft_i18n_156 %}"Meteor +{amount}": "{{ nft_i18n_156|escapejs }}",
+                {% translate "{label} +{amount}" as nft_i18n_157 %}"{label} +{amount}": "{{ nft_i18n_157|escapejs }}",
+                {% translate "Sammelimpuls lädt" as nft_i18n_158 %}"Sammelimpuls lädt": "{{ nft_i18n_158|escapejs }}",
+                {% translate "Wieder bereit in {duration}." as nft_i18n_159 %}"Wieder bereit in {duration}.": "{{ nft_i18n_159|escapejs }}",
+                {% translate "Sammelimpuls" as nft_i18n_160 %}"Sammelimpuls": "{{ nft_i18n_160|escapejs }}",
+                {% translate "Kleiner Sofort-Schub: {duration} AFK-Produktion gesammelt." as nft_i18n_161 %}"Kleiner Sofort-Schub: {duration} AFK-Produktion gesammelt.": "{{ nft_i18n_161|escapejs }}",
+                {% translate "Overdrive lädt" as nft_i18n_162 %}"Overdrive lädt": "{{ nft_i18n_162|escapejs }}",
+                {% translate "Du brauchst mindestens {heat} Hitze." as nft_i18n_163 %}"Du brauchst mindestens {heat} Hitze.": "{{ nft_i18n_163|escapejs }}",
+                {% translate "Overdrive gezündet" as nft_i18n_164 %}"Overdrive gezündet": "{{ nft_i18n_164|escapejs }}",
+                {% translate "Passive Produktion x2,4 für {duration}." as nft_i18n_165 %}"Passive Produktion x2,4 für {duration}.": "{{ nft_i18n_165|escapejs }}",
+                {% translate "Signal lädt" as nft_i18n_166 %}"Signal lädt": "{{ nft_i18n_166|escapejs }}",
+                {% translate "Perfekt" as nft_i18n_167 %}"Perfekt": "{{ nft_i18n_167|escapejs }}",
+                {% translate "Treffer" as nft_i18n_168 %}"Treffer": "{{ nft_i18n_168|escapejs }}",
+                {% translate "Signal" as nft_i18n_169 %}"Signal": "{{ nft_i18n_169|escapejs }}",
+                {% translate "Perfekter Signal-Raid" as nft_i18n_170 %}"Perfekter Signal-Raid": "{{ nft_i18n_170|escapejs }}",
+                {% translate "Signal getroffen" as nft_i18n_171 %}"Signal getroffen": "{{ nft_i18n_171|escapejs }}",
+                {% translate "Signal verfehlt" as nft_i18n_172 %}"Signal verfehlt": "{{ nft_i18n_172|escapejs }}",
+                {% translate "{amount} Flux und aktiver Boost für {duration}." as nft_i18n_173 %}"{amount} Flux und aktiver Boost für {duration}.": "{{ nft_i18n_173|escapejs }}",
+                {% translate "Flux-Riss lädt" as nft_i18n_174 %}"Flux-Riss lädt": "{{ nft_i18n_174|escapejs }}",
+                {% translate "Riss perfekt" as nft_i18n_175 %}"Riss perfekt": "{{ nft_i18n_175|escapejs }}",
+                {% translate "Riss" as nft_i18n_176 %}"Riss": "{{ nft_i18n_176|escapejs }}",
+                {% translate "Streifschuss" as nft_i18n_177 %}"Streifschuss": "{{ nft_i18n_177|escapejs }}",
+                {% translate "Flux-Riss perfekt versiegelt" as nft_i18n_178 %}"Flux-Riss perfekt versiegelt": "{{ nft_i18n_178|escapejs }}",
+                {% translate "Flux-Riss stabilisiert" as nft_i18n_179 %}"Flux-Riss stabilisiert": "{{ nft_i18n_179|escapejs }}",
+                {% translate "Flux-Riss instabil" as nft_i18n_180 %}"Flux-Riss instabil": "{{ nft_i18n_180|escapejs }}",
+                {% translate "{amount} Flux und AFK-Boost für {duration}." as nft_i18n_181 %}"{amount} Flux und AFK-Boost für {duration}.": "{{ nft_i18n_181|escapejs }}",
+                {% translate "{amount} Flux, aber kein AFK-Boost." as nft_i18n_182 %}"{amount} Flux, aber kein AFK-Boost.": "{{ nft_i18n_182|escapejs }}",
+                {% translate "Kryo-Takt lädt" as nft_i18n_183 %}"Kryo-Takt lädt": "{{ nft_i18n_183|escapejs }}",
+                {% translate "Kryo perfekt" as nft_i18n_184 %}"Kryo perfekt": "{{ nft_i18n_184|escapejs }}",
+                {% translate "Kryo" as nft_i18n_185 %}"Kryo": "{{ nft_i18n_185|escapejs }}",
+                {% translate "Kühlung" as nft_i18n_186 %}"Kühlung": "{{ nft_i18n_186|escapejs }}",
+                {% translate "Perfekter Kryo-Takt" as nft_i18n_187 %}"Perfekter Kryo-Takt": "{{ nft_i18n_187|escapejs }}",
+                {% translate "Kryo-Takt getroffen" as nft_i18n_188 %}"Kryo-Takt getroffen": "{{ nft_i18n_188|escapejs }}",
+                {% translate "Kryo-Takt verpasst" as nft_i18n_189 %}"Kryo-Takt verpasst": "{{ nft_i18n_189|escapejs }}",
+                {% translate "{amount} Flux, -{heat} Hitze{boostPart}." as nft_i18n_190 %}"{amount} Flux, -{heat} Hitze{boostPart}.": "{{ nft_i18n_190|escapejs }}",
+                {% translate " und aktiver Boost für {duration}" as nft_i18n_191 %}" und aktiver Boost für {duration}": "{{ nft_i18n_191|escapejs }}",
+                {% translate "Meteor eingesammelt" as nft_i18n_192 %}"Meteor eingesammelt": "{{ nft_i18n_192|escapejs }}",
+                {% translate "+{amount} Flux und +4 Combo." as nft_i18n_193 %}"+{amount} Flux und +4 Combo.": "{{ nft_i18n_193|escapejs }}",
+                {% translate "Erfolg freigeschaltet" as nft_i18n_194 %}"Erfolg freigeschaltet": "{{ nft_i18n_194|escapejs }}",
+                {% translate "Prestige noch nicht bereit" as nft_i18n_195 %}"Prestige noch nicht bereit": "{{ nft_i18n_195|escapejs }}",
+                {% translate "Du brauchst {amount} Lifetime-Flux." as nft_i18n_196 %}"Du brauchst {amount} Lifetime-Flux.": "{{ nft_i18n_196|escapejs }}",
+                {% translate "Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt." as nft_i18n_197 %}"Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.": "{{ nft_i18n_197|escapejs }}",
+                {% translate "Prestige abgeschlossen" as nft_i18n_198 %}"Prestige abgeschlossen": "{{ nft_i18n_198|escapejs }}",
+                {% translate "Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%." as nft_i18n_199 %}"Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%.": "{{ nft_i18n_199|escapejs }}",
+                {% translate "Export erstellt" as nft_i18n_200 %}"Export erstellt": "{{ nft_i18n_200|escapejs }}",
+                {% translate "Dein Nebula Forge Save wurde heruntergeladen." as nft_i18n_201 %}"Dein Nebula Forge Save wurde heruntergeladen.": "{{ nft_i18n_201|escapejs }}",
+                {% translate "Import fehlgeschlagen" as nft_i18n_202 %}"Import fehlgeschlagen": "{{ nft_i18n_202|escapejs }}",
+                {% translate "Die Datei ist kein gültiger Nebula Forge Save." as nft_i18n_203 %}"Die Datei ist kein gültiger Nebula Forge Save.": "{{ nft_i18n_203|escapejs }}",
+                {% translate "Aktuellen Nebula Forge Spielstand durch diesen Import ersetzen?" as nft_i18n_204 %}"Aktuellen Nebula Forge Spielstand durch diesen Import ersetzen?": "{{ nft_i18n_204|escapejs }}",
+                {% translate "Import abgeschlossen" as nft_i18n_205 %}"Import abgeschlossen": "{{ nft_i18n_205|escapejs }}",
+                {% translate "Dein Spielstand wurde geladen." as nft_i18n_206 %}"Dein Spielstand wurde geladen.": "{{ nft_i18n_206|escapejs }}",
+                {% translate "Die Datei konnte nicht gelesen werden." as nft_i18n_207 %}"Die Datei konnte nicht gelesen werden.": "{{ nft_i18n_207|escapejs }}",
+                {% translate "Nebula Forge Tycoon wirklich komplett zurücksetzen?" as nft_i18n_208 %}"Nebula Forge Tycoon wirklich komplett zurücksetzen?": "{{ nft_i18n_208|escapejs }}",
+                {% translate "Zurückgesetzt" as nft_i18n_209 %}"Zurückgesetzt": "{{ nft_i18n_209|escapejs }}",
+                {% translate "Du startest wieder mit einer frischen Schmiede." as nft_i18n_210 %}"Du startest wieder mit einer frischen Schmiede.": "{{ nft_i18n_210|escapejs }}",
+                {% translate "Nebula Forge bereit" as nft_i18n_211 %}"Nebula Forge bereit": "{{ nft_i18n_211|escapejs }}",
+                {% translate "Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen." as nft_i18n_212 %}"Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen.": "{{ nft_i18n_212|escapejs }}",
+                {% translate "Nebula Forge Tycoon" as nft_i18n_213 %}"Nebula Forge Tycoon": "{{ nft_i18n_213|escapejs }}",
+                {% translate "Taste 1" as nft_i18n_214 %}"Taste 1": "{{ nft_i18n_214|escapejs }}",
+                {% translate "Taste 2" as nft_i18n_215 %}"Taste 2": "{{ nft_i18n_215|escapejs }}",
+                {% translate "Taste 3" as nft_i18n_216 %}"Taste 3": "{{ nft_i18n_216|escapejs }}",
+                {% translate "Taste 4" as nft_i18n_217 %}"Taste 4": "{{ nft_i18n_217|escapejs }}",
+                {% translate "Taste 5" as nft_i18n_218 %}"Taste 5": "{{ nft_i18n_218|escapejs }}",
+                {% translate "100% / 100%" as nft_i18n_219 %}"100% / 100%": "{{ nft_i18n_219|escapejs }}",
+                {% translate "+25% Klicks" as nft_i18n_220 %}"+25% Klicks": "{{ nft_i18n_220|escapejs }}",
+                {% translate "+20% passiv" as nft_i18n_221 %}"+20% passiv": "{{ nft_i18n_221|escapejs }}"
+            }
+        }
+    </script>
+
+    <div class="nft-toast-stack" id="nftToastStack" aria-live="polite"></div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260618-nebula-forge-tycoon-focus-left" defer></script>
+{% endblock %}

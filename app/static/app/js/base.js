@@ -1254,6 +1254,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
+    function applyAccessLockedCards() {
+        const blockedElement = document.getElementById('access-blocked-paths');
+        const restrictedElement = document.getElementById('access-restricted-paths');
+
+        if (!blockedElement && !restrictedElement) {
+            return;
+        }
+
+        let blockedPaths = [];
+        let restrictedPaths = [];
+
+        try {
+            blockedPaths = JSON.parse(blockedElement?.textContent || '[]');
+        } catch (error) {
+            blockedPaths = [];
+        }
+
+        try {
+            restrictedPaths = JSON.parse(restrictedElement?.textContent || '[]');
+        } catch (error) {
+            restrictedPaths = [];
+        }
+
+        const normalizedBlockedPaths = new Set(Array.isArray(blockedPaths) ? blockedPaths.map((path) => String(path || '')) : []);
+        const normalizedRestrictedPaths = new Set(Array.isArray(restrictedPaths) ? restrictedPaths.map((path) => String(path || '')) : []);
+
+        if (normalizedBlockedPaths.size === 0 && normalizedRestrictedPaths.size === 0) {
+            return;
+        }
+
+        const lockedLabel = body.dataset.accessLockedLabel || 'Gesperrt';
+        const lockedTitle = body.dataset.accessLockedTitle || lockedLabel;
+        const restrictedLabel = body.dataset.accessRestrictedLabel || 'Admin';
+        const restrictedTitle = body.dataset.accessRestrictedTitle || restrictedLabel;
+
+        document.querySelectorAll('a[href]').forEach((link) => {
+            let targetPath = '';
+
+            try {
+                targetPath = new URL(link.getAttribute('href'), window.location.origin).pathname;
+            } catch (error) {
+                return;
+            }
+
+            const isBlocked = normalizedBlockedPaths.has(targetPath);
+            const isRestricted = normalizedRestrictedPaths.has(targetPath);
+
+            if (!isBlocked && !isRestricted) {
+                return;
+            }
+
+            if (isBlocked) {
+                link.dataset.originalHref = link.getAttribute('href');
+                link.removeAttribute('href');
+                link.setAttribute('aria-disabled', 'true');
+                link.setAttribute('tabindex', '-1');
+                link.setAttribute('title', lockedTitle);
+                link.classList.add('is-access-locked');
+                addAccessBadge(link, lockedLabel, 'fa-lock', 'access-locked-badge');
+                return;
+            }
+
+            link.setAttribute('title', restrictedTitle);
+            link.classList.add('is-access-restricted');
+            addAccessBadge(link, restrictedLabel, 'fa-lock-open', 'access-locked-badge access-restricted-badge');
+        });
+    }
+
+    function addAccessBadge(link, label, icon, className) {
+        if (link.querySelector('.access-locked-badge')) {
+            return;
+        }
+
+        const badge = document.createElement('span');
+        badge.className = className;
+        badge.innerHTML = `<i class="fa-solid ${icon}" aria-hidden="true"></i><span>${label}</span>`;
+        link.appendChild(badge);
+    }
+
     /* ── DROPDOWN MENÜS ── */
 
     function closeAllDropdowns(exceptDropdown = null, exceptButton = null) {
@@ -1376,6 +1456,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    applyAccessLockedCards();
     setupLibraryMenuFilters();
     setupDropdown('games-menu-button', 'games-menu-dropdown');
     setupDropdown('google-apps-menu-button', 'google-apps-menu-dropdown');

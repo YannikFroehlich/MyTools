@@ -21,6 +21,7 @@ GAME_ACTIVITY_LABELS = {
     "2048": _("spielt 2048"),
     "cookie_cosmos": _("spielt Cookie Cosmos"),
     "cookie_cosmos_v2": _("spielt Cookie Cosmos V2"),
+    "nebula_forge_tycoon": _("spielt Nebula Forge Tycoon"),
     "drift_circuit": _("spielt Racing Game"),
     "human_benchmark": _("spielt Human Benchmark"),
     "snake_powerups": _("spielt Snake Powerups"),

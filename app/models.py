@@ -1221,6 +1221,39 @@ class CookieCosmosV2Save(models.Model):
         return f"{self.user} - Cookie Cosmos V2 - Level {self.prestige_level}"
 
 
+class NebulaForgeTycoonSave(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="nebula_forge_tycoon_save",
+    )
+    save_data = models.JSONField(default=dict, blank=True)
+    flux = models.FloatField(default=0)
+    lifetime_flux = models.FloatField(default=0)
+    total_lifetime_flux = models.FloatField(default=0)
+    cps = models.FloatField(default=0)
+    manual_power = models.FloatField(default=1)
+    prestige_level = models.PositiveIntegerField(default=1)
+    shards = models.PositiveIntegerField(default=0)
+    achievements_count = models.PositiveSmallIntegerField(default=0)
+    upgrades_count = models.PositiveSmallIntegerField(default=0)
+    buildings_count = models.PositiveIntegerField(default=0)
+    last_manual_save = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["-prestige_level", "-total_lifetime_flux"]),
+            models.Index(fields=["-updated_at"]),
+        ]
+        verbose_name = "Nebula Forge Tycoon Spielstand"
+        verbose_name_plural = "Nebula Forge Tycoon Spielstände"
+
+    def __str__(self):
+        return f"{self.user} - Nebula Forge Tycoon - Level {self.prestige_level}"
+
+
 class Game2048HighScore(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

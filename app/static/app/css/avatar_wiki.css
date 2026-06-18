@@ -15,14 +15,22 @@
     --avatar-muted: #7a5c38;
     --avatar-shadow: 0 18px 52px rgba(74, 42, 20, 0.18);
     --avatar-option-bg: #fff8e8;
+    --avatar-background-image: url('../img/Airtemple-island.webp');
 
     position: relative;
+    isolation: isolate;
     min-height: calc(100vh - 120px);
     margin: -1rem -1.2rem;
     padding: 0;
     color: var(--avatar-text);
     font-family: 'Crimson Pro', Georgia, serif;
     text-align: left;
+    background-color: #d9c7a4;
+    background-image: var(--avatar-background-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     overflow: hidden;
 }
 
@@ -45,10 +53,13 @@ body.dark-mode .avatar-page {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: url('../img/Airtemple-island.webp');
+    background-image: var(--avatar-background-image);
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     z-index: 0;
+    pointer-events: none;
 }
 
 .avatar-page::after {
@@ -57,12 +68,23 @@ body.dark-mode .avatar-page {
     inset: 0;
     background: var(--avatar-overlay);
     z-index: 1;
+    pointer-events: none;
 }
 
 .avatar-shell {
     position: relative;
     z-index: 2;
     min-height: calc(100vh - 120px);
+}
+
+/* Die Avatar-Wiki-Seite hat ein eigenes Vollbild-Bildmotiv.
+   tool_pages.css stylt globale Tool-Container wie .avatar-shell als Card;
+   das würde das Airtemple-Bild komplett verdecken. */
+.avatar-page .avatar-shell {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 
 .avatar-topbar {

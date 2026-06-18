@@ -36,6 +36,89 @@
 .tool-card-main strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .tool-card form { margin:0; padding-right:10px; }
 .tool-card button { width:38px; height:38px; border:0; border-radius:14px; cursor:pointer; color:#f59e0b; background:rgba(245,158,11,.12); }
+.tool-card.is-access-locked {
+    background: rgba(254, 226, 226, 0.82);
+    border-color: rgba(220, 38, 38, 0.34);
+}
+
+.tool-card.is-access-locked .tool-card-main {
+    cursor: not-allowed;
+    color: #991b1b;
+}
+
+.tool-card.is-access-locked .tool-card-main span {
+    background: linear-gradient(135deg, #991b1b, #ef4444);
+    opacity: 0.82;
+}
+
+.tool-card.is-access-locked .tool-card-main em {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    color: #ffffff;
+    background: #dc2626;
+    font-size: 0.72rem;
+    font-style: normal;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.tool-card.is-access-locked button {
+    cursor: not-allowed;
+    color: #991b1b;
+    background: rgba(220, 38, 38, 0.12);
+    opacity: 0.55;
+}
+
+.tool-card.is-access-restricted {
+    background: rgba(var(--theme-accent-rgb), 0.09);
+    border-color: rgba(var(--theme-accent-rgb), 0.24);
+}
+
+.tool-card.is-access-restricted .tool-card-main em {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    color: rgb(var(--theme-accent-rgb));
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.18);
+    font-size: 0.72rem;
+    font-style: normal;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+body.dark-mode .tool-card.is-access-locked {
+    background: rgba(127, 29, 29, 0.34);
+    border-color: rgba(248, 113, 113, 0.26);
+}
+
+body.dark-mode .tool-card.is-access-locked .tool-card-main {
+    color: #fecaca;
+}
+
+body.dark-mode .tool-card.is-access-locked button {
+    color: #fecaca;
+    background: rgba(248, 113, 113, 0.14);
+}
+
+body.dark-mode .tool-card.is-access-restricted {
+    background: rgba(var(--theme-accent-rgb), 0.13);
+    border-color: rgba(var(--theme-accent-rgb), 0.28);
+}
+
+body.dark-mode .tool-card.is-access-restricted .tool-card-main em {
+    color: #ffffff;
+    background: rgba(var(--theme-accent-rgb), 0.22);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
 .platform-tabs { margin-bottom:18px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
 .platform-tabs a,
 .platform-tabs button,

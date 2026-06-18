@@ -27,6 +27,19 @@ STARTED_AT = timezone.now()
 def get_changelog_entries():
     return [
         {
+            "version": "2026.11",
+            "date": "18.06.2026",
+            "title": _("Nebula Forge Tycoon Release"),
+            "summary": _("Nebula Forge Tycoon wurde hinzugefügt, ähnlich wie Cookie Cosmos und man kann als Admin nun kontrollieren wer auf welches tool oder game zugreifen kann"),
+            "type": _("Games"),
+            "icon": "fa-solid fa-meteor",
+            "items": [
+                _("Nebula Forge Tycoon wurde hinzugefügt."),
+                _("Kontrolle wer auf welches tool zugreifen kann."),
+                _("Kleinere Style Anpassungen"),
+            ],
+        },
+        {
             "version": "2026.10",
             "date": "17.06.2026",
             "title": _("Datei-Konverter und einheitliches Tool-Design"),

@@ -1213,6 +1213,126 @@ body.dark-mode .games-menu-empty {
     border-color: rgba(203, 213, 225, 0.16);
 }
 
+
+.game-menu-card.is-access-locked,
+.games-menu-leaderboard-link.is-access-locked,
+.navigation a.is-access-locked {
+    position: relative;
+    cursor: not-allowed;
+    color: #991b1b;
+    background: linear-gradient(135deg, rgba(254, 226, 226, 0.98), rgba(254, 202, 202, 0.88));
+    border-color: rgba(220, 38, 38, 0.42);
+    box-shadow: 0 10px 24px rgba(127, 29, 29, 0.1);
+}
+
+.game-menu-card.is-access-locked:hover,
+.game-menu-card.is-access-locked:focus-visible,
+.games-menu-leaderboard-link.is-access-locked:hover,
+.games-menu-leaderboard-link.is-access-locked:focus-visible,
+.navigation a.is-access-locked:hover,
+.navigation a.is-access-locked:focus-visible {
+    color: #7f1d1d;
+    background: linear-gradient(135deg, rgba(254, 226, 226, 1), rgba(252, 165, 165, 0.92));
+    border-color: rgba(220, 38, 38, 0.58);
+    box-shadow: 0 12px 28px rgba(127, 29, 29, 0.14);
+    transform: none;
+}
+
+.game-menu-card.is-access-locked .game-menu-icon {
+    background: linear-gradient(135deg, #991b1b, #ef4444);
+    opacity: 0.78;
+}
+
+.game-menu-card.is-access-locked .game-menu-copy small,
+.games-menu-leaderboard-link.is-access-locked,
+.navigation a.is-access-locked {
+    color: #991b1b;
+}
+
+.access-locked-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 22px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    color: #ffffff;
+    background: #dc2626;
+    border: 1px solid rgba(255, 255, 255, 0.66);
+    font-size: 0.66rem;
+    font-weight: 950;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.games-menu-leaderboard-link.is-access-locked .access-locked-badge,
+.navigation a.is-access-locked .access-locked-badge {
+    margin-left: 6px;
+}
+
+.game-menu-card.is-access-restricted,
+.games-menu-leaderboard-link.is-access-restricted,
+.navigation a.is-access-restricted {
+    position: relative;
+    border-color: rgba(var(--theme-accent-rgb), 0.24);
+    background: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.1), rgba(255, 255, 255, 0.7));
+}
+
+.game-menu-card.is-access-restricted .game-menu-icon {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.access-restricted-badge {
+    color: rgb(var(--theme-accent-rgb));
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    border-color: rgba(var(--theme-accent-rgb), 0.2);
+}
+
+.games-menu-leaderboard-link.is-access-restricted .access-restricted-badge,
+.navigation a.is-access-restricted .access-restricted-badge {
+    margin-left: 6px;
+}
+
+body.dark-mode .game-menu-card.is-access-locked,
+body.dark-mode .games-menu-leaderboard-link.is-access-locked,
+body.dark-mode .navigation a.is-access-locked {
+    color: #fecaca;
+    background: linear-gradient(135deg, rgba(127, 29, 29, 0.62), rgba(69, 10, 10, 0.5));
+    border-color: rgba(248, 113, 113, 0.34);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
+}
+
+body.dark-mode .game-menu-card.is-access-locked:hover,
+body.dark-mode .game-menu-card.is-access-locked:focus-visible,
+body.dark-mode .games-menu-leaderboard-link.is-access-locked:hover,
+body.dark-mode .games-menu-leaderboard-link.is-access-locked:focus-visible,
+body.dark-mode .navigation a.is-access-locked:hover,
+body.dark-mode .navigation a.is-access-locked:focus-visible {
+    color: #fee2e2;
+    background: linear-gradient(135deg, rgba(127, 29, 29, 0.72), rgba(69, 10, 10, 0.62));
+    border-color: rgba(248, 113, 113, 0.5);
+}
+
+body.dark-mode .game-menu-card.is-access-locked .game-menu-copy small,
+body.dark-mode .games-menu-leaderboard-link.is-access-locked,
+body.dark-mode .navigation a.is-access-locked {
+    color: #fecaca;
+}
+
+body.dark-mode .game-menu-card.is-access-restricted,
+body.dark-mode .games-menu-leaderboard-link.is-access-restricted,
+body.dark-mode .navigation a.is-access-restricted {
+    background: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.15), rgba(15, 23, 42, 0.5));
+    border-color: rgba(var(--theme-accent-rgb), 0.28);
+}
+
+body.dark-mode .access-restricted-badge {
+    color: #ffffff;
+    background: rgba(var(--theme-accent-rgb), 0.22);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
 /* ── THEME FLASH OVERLAY ── */
 
 .theme-flash {

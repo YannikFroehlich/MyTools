@@ -32,6 +32,7 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 - Stadt Land Fluss mit Live-Runden, Stopp-Regel, manueller Auswertung, Voting und Endplatzierungen
 - Notizen-App mit Pins, Archiv, Farben und Tags
 - Human Benchmark mit gespeicherten Ergebnissen, Highscores und Bestenliste pro Nutzer
+- Nebula Forge Tycoon als AFK-Tycoon mit Anlagen, Upgrades, Erfolgen, Datenbank-Speichern, Export/Import und übersetzbaren Spieltexten
 - OBS Dashboard für lokale OBS-WebSocket-Steuerung
 - Stream-Deck-Seite als Button-Dashboard für Medien, Spotify, Voicemod und eigene Aktionen
 - Spritkostenrechner mit Tankerkönig API
@@ -59,6 +60,8 @@ MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unte
 
 Die letzten Updates verbinden bestehende Bereiche stärker miteinander und verbessern die Bedienung auf Desktop und Mobile:
 
+- **Nebula Forge Tycoon Polish**: Reset heißt jetzt Zurücksetzen, das Meteor-Icon wurde vereinheitlicht, der Sichern-Reiter entfernt und Anlagen, Upgrades sowie Schichtmodus sind linksbündig ausgerichtet.
+- **Nebula Forge Tycoon i18n**: Template- und JavaScript-Texte wurden für Django-Übersetzungen vorbereitet, damit `makemessages -l en` sie in die PO-Dateien übernehmen kann.
 - **Datei-Konverter**: DOCX, Tabellen, Präsentationen, Textdateien und Bilder lassen sich zu PDF oder Bildformaten umwandeln; Office-Dateien laufen serverseitig über LibreOffice.
 - **Einheitliches Tool-Design**: Toolbox-Seiten nutzen gemeinsame Theme-Farben für Karten, Buttons, Inputs, Hover-Zustände und Kontrastmodus.
 - **Kontrast-Polish**: Datei-Konverter, Bild Tools, Einheitenrechner, Spritkosten und QR-Code Tool wurden auf bessere Lesbarkeit angepasst.
@@ -403,6 +406,23 @@ Funktionen:
 
 ---
 
+## 🌌 Nebula Forge Tycoon
+
+Nebula Forge Tycoon ist ein AFK-/Clicker-Tycoon mit Weltraum-Fokus.
+
+Funktionen:
+
+- Nebula per Klick oder Leertaste aktivieren
+- Anlagen kaufen und automatischen Flux-Aufbau steigern
+- Upgrades für Klickstärke, Multiplikatoren und Automatisierung freischalten
+- Erfolge und aktive Ereignisse anzeigen
+- Spielstand lokal speichern und per Datenbank-Save mit 60-Sekunden-Cooldown sichern
+- Spielstand exportieren und wieder importieren
+- klare Bedienung mit Zurücksetzen-Button, Meteor-Icon, entfernten Sichern-Reiter und linksbündigen Panels
+- Template- und JavaScript-Texte sind für Django-i18n vorbereitet
+
+---
+
 ## 🎛️ OBS Dashboard
 
 Das OBS Dashboard ist als lokale Steuerzentrale für OBS gedacht.
@@ -561,6 +581,8 @@ Aktuell vorgesehen:
 
 - Deutsch
 - Englisch
+
+Nebula Forge Tycoon enthält auch übersetzbare JavaScript-Texte über ein Template-basiertes i18n-JSON, damit Spieltexte bei `makemessages` in den normalen PO-Dateien landen.
 
 Nach Änderungen an übersetzbaren Texten:
 
