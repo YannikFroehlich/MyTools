@@ -14,6 +14,40 @@
     const hadLocalSaveAtStartup = Boolean(localStorage.getItem(SAVE_KEY));
     const now = () => Date.now();
 
+    const i18nMessages = (() => {
+        const node = document.getElementById("nftI18n");
+        if (!node) return {};
+        try {
+            const parsed = JSON.parse(node.textContent || "{}");
+            return parsed && typeof parsed.messages === "object" ? parsed.messages : {};
+        } catch (error) {
+            console.warn("Nebula Forge Übersetzungen konnten nicht geladen werden.", error);
+            return {};
+        }
+    })();
+
+    function t(source) {
+        return i18nMessages[source] || source;
+    }
+
+    function fmt(source, values = {}) {
+        return t(source).replace(/\{([a-zA-Z0-9_]+)\}/g, (_match, key) => {
+            const value = values[key];
+            return value === undefined || value === null ? "" : String(value);
+        });
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+        })[char]);
+    }
+
+
     const buildings = [
         {
             id: "pocketDrill",
@@ -307,6 +341,20 @@
         { id: "prestige", title: "Neue Galaxie", description: "Führe dein erstes Prestige aus.", icon: "fa-solid fa-star", test: s => s.prestigeLevel >= 2 },
     ];
 
+
+    buildings.forEach(item => {
+        item.name = t(item.name);
+        item.description = t(item.description);
+    });
+    upgrades.forEach(item => {
+        item.name = t(item.name);
+        item.description = t(item.description);
+    });
+    achievements.forEach(item => {
+        item.title = t(item.title);
+        item.description = t(item.description);
+    });
+
     const defaultState = () => ({
         version: SAVE_VERSION,
         flux: 0,
@@ -505,10 +553,10 @@
         state.lastSaved = now();
         try {
             localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-            if (showToast) showMessage("Gespeichert", "Nebula Forge wurde lokal gespeichert.");
+            if (showToast) showMessage(t("Gespeichert"), t("Nebula Forge wurde lokal gespeichert."));
         } catch (error) {
             console.warn("Nebula Forge Save konnte nicht geschrieben werden.", error);
-            showMessage("Speichern fehlgeschlagen", "Der Browser hat den lokalen Spielstand blockiert.");
+            showMessage(t("Speichern fehlgeschlagen"), t("Der Browser hat den lokalen Spielstand blockiert."));
         }
     }
 
@@ -534,19 +582,19 @@
 
         if (!USER_IS_AUTHENTICATED) {
             elements.saveButton.disabled = false;
-            elements.saveButtonText.textContent = "Login nötig";
+            elements.saveButtonText.textContent = t("Login nötig");
             return;
         }
 
         const remaining = Math.ceil(Math.max(0, dbSaveCooldownUntil - now()) / 1000);
         if (remaining > 0) {
             elements.saveButton.disabled = true;
-            elements.saveButtonText.textContent = `Speichern ${remaining}s`;
+            elements.saveButtonText.textContent = fmt("Speichern {seconds}s", { seconds: remaining });
             return;
         }
 
         elements.saveButton.disabled = false;
-        elements.saveButtonText.textContent = "Speichern";
+        elements.saveButtonText.textContent = t("Speichern");
     }
 
     function setDatabaseSaveCooldown(seconds) {
@@ -609,7 +657,7 @@
             state = loaded;
             saveState(false);
             renderAll(true);
-            showMessage("Datenbank-Spielstand geladen", "Dein gespeicherter Nebula-Forge-Stand wurde geladen.");
+            showMessage(t("Datenbank-Spielstand geladen"), t("Dein gespeicherter Nebula-Forge-Stand wurde geladen."));
         } catch (error) {
             console.warn("Nebula Forge Datenbank-Spielstand konnte nicht geladen werden.", error);
             updateDatabaseSaveButton();
@@ -618,25 +666,25 @@
 
     async function saveDatabaseState() {
         if (!USER_IS_AUTHENTICATED) {
-            showMessage("Login nötig", "Melde dich an, um in der Datenbank zu speichern.");
+            showMessage(t("Login nötig"), t("Melde dich an, um in der Datenbank zu speichern."));
             return;
         }
 
         if (!DB_SAVE_URL) {
-            showMessage("Speichern nicht verfügbar", "Die Datenbank-Speicherroute fehlt.");
+            showMessage(t("Speichern nicht verfügbar"), t("Die Datenbank-Speicherroute fehlt."));
             return;
         }
 
         const remaining = Math.ceil(Math.max(0, dbSaveCooldownUntil - now()) / 1000);
         if (remaining > 0) {
-            showMessage("Speichern lädt", `Du kannst in ${remaining}s wieder in der Datenbank speichern.`);
+            showMessage(t("Speichern lädt"), fmt("Du kannst in {seconds}s wieder in der Datenbank speichern.", { seconds: remaining }));
             updateDatabaseSaveButton();
             return;
         }
 
         saveState(false);
         if (elements.saveButton) elements.saveButton.disabled = true;
-        if (elements.saveButtonText) elements.saveButtonText.textContent = "Speichert...";
+        if (elements.saveButtonText) elements.saveButtonText.textContent = t("Speichert...");
 
         try {
             const response = await fetch(DB_SAVE_URL, {
@@ -653,7 +701,7 @@
 
             if (!response.ok || data.status !== "ok") {
                 setDatabaseSaveCooldown(data.next_save_in_seconds || 0);
-                showMessage("Speichern fehlgeschlagen", data.message || "Der Datenbank-Save wurde abgelehnt.");
+                showMessage(t("Speichern fehlgeschlagen"), data.message || t("Der Datenbank-Save wurde abgelehnt."));
                 return;
             }
 
@@ -661,10 +709,10 @@
             state.databaseSavedAt = Number.isFinite(savedAt) ? savedAt : now();
             saveState(false);
             setDatabaseSaveCooldown(data.next_save_in_seconds || DB_SAVE_COOLDOWN_SECONDS);
-            showMessage("Datenbank gespeichert", "Dein Spielstand wurde gespeichert. Nächster DB-Save in 60s.");
+            showMessage(t("Datenbank gespeichert"), t("Dein Spielstand wurde gespeichert. Nächster DB-Save in 60s."));
         } catch (error) {
             console.warn("Nebula Forge Datenbank-Speichern fehlgeschlagen.", error);
-            showMessage("Speichern fehlgeschlagen", "Der Datenbank-Save konnte nicht gesendet werden.");
+            showMessage(t("Speichern fehlgeschlagen"), t("Der Datenbank-Save konnte nicht gesendet werden."));
             updateDatabaseSaveButton();
         }
     }
@@ -684,10 +732,10 @@
         loaded.totalLifetimeFlux += gain;
         loaded.lastSaved = now();
         window.setTimeout(() => {
-            showMessage("AFK-Ertrag eingesammelt", `${format(gain)} Flux für ${formatSeconds(usedSeconds)} Offline-Zeit.`);
+            showMessage(t("AFK-Ertrag eingesammelt"), fmt("{amount} Flux für {duration} Offline-Zeit.", { amount: format(gain), duration: formatSeconds(usedSeconds) }));
             if (elements.offlineInfo) {
                 elements.offlineInfo.dataset.touched = "true";
-                elements.offlineInfo.textContent = `Letzter AFK-Ertrag: ${format(gain)} Flux für ${formatSeconds(usedSeconds)}. Offline-Cap: ${offlineCapHours(loaded)}h.`;
+                elements.offlineInfo.textContent = fmt("Letzter AFK-Ertrag: {amount} Flux für {duration}. Offline-Cap: {hours}h.", { amount: format(gain), duration: formatSeconds(usedSeconds), hours: offlineCapHours(loaded) });
             }
         }, 250);
     }
@@ -840,7 +888,7 @@
 
     function activePulseBurst() {
         const reward = Math.max(manualPower() * 5.5, calculateCps() * activePulseSeconds()) * eventRewardMultiplier();
-        addFlux(reward, `Takt-Burst +${format(reward)}`);
+        addFlux(reward, fmt("Takt-Burst +{amount}", { amount: format(reward) }));
         state.activeBursts += 1;
         const heatRecycler = upgradeLevel("heatRecycler");
         if (heatRecycler > 0) {
@@ -850,7 +898,7 @@
 
     function manualMine(multiplier = 1, heatGain = 2.8) {
         const gain = manualPower() * multiplier;
-        addFlux(gain, `+${format(gain)}`);
+        addFlux(gain, fmt("+{amount}", { amount: format(gain) }));
         state.clicks += 1;
         state.combo = Math.min(maxCombo(), state.combo + 1);
         state.bestCombo = Math.max(state.bestCombo, state.combo);
@@ -886,7 +934,7 @@
         const owned = buildingCount(id);
         const cost = costFor(item, owned);
         if (!spendFlux(cost)) {
-            showMessage("Nicht genug Flux", `${item.name} kostet ${format(cost)} Flux.`);
+            showMessage(t("Nicht genug Flux"), fmt("{item} kostet {cost} Flux.", { item: item.name, cost: format(cost) }));
             return;
         }
         state.buildings[id] = owned + 1;
@@ -903,7 +951,7 @@
         if (level >= item.max) return;
         const cost = costFor(item, level);
         if (!spendFlux(cost)) {
-            showMessage("Nicht genug Flux", `${item.name} kostet ${format(cost)} Flux.`);
+            showMessage(t("Nicht genug Flux"), fmt("{item} kostet {cost} Flux.", { item: item.name, cost: format(cost) }));
             return;
         }
         state.upgrades[id] = level + 1;
@@ -936,20 +984,20 @@
     function collectImpulse() {
         const currentTime = now();
         if (currentTime < state.collectReadyAt) {
-            showMessage("Sammelimpuls lädt", `Wieder bereit in ${formatSeconds((state.collectReadyAt - currentTime) / 1000)}.`);
+            showMessage(t("Sammelimpuls lädt"), fmt("Wieder bereit in {duration}.", { duration: formatSeconds((state.collectReadyAt - currentTime) / 1000) }));
             return;
         }
         const collector = upgradeLevel("collectorArray");
         const preview = collectImpulseRewardPreview();
         const reward = preview.reward;
-        addFlux(reward, `Impuls +${format(reward)}`);
+        addFlux(reward, fmt("Impuls +{amount}", { amount: format(reward) }));
         state.combo = Math.min(maxCombo(), state.combo + 1 + Math.floor(collector / 6));
         state.bestCombo = Math.max(state.bestCombo, state.combo);
         state.lastManualAt = currentTime;
         state.heat = Math.min(maxHeat(), state.heat + 1.15);
         state.collectImpulses += 1;
         state.collectReadyAt = currentTime + collectImpulseCooldownMs();
-        showMessage("Sammelimpuls", `Kleiner Sofort-Schub: ${formatSeconds(preview.secondsOfAfk)} AFK-Produktion gesammelt.`);
+        showMessage(t("Sammelimpuls"), fmt("Kleiner Sofort-Schub: {duration} AFK-Produktion gesammelt.", { duration: formatSeconds(preview.secondsOfAfk) }));
         checkAchievements();
         saveState();
     }
@@ -957,7 +1005,7 @@
     function startOverdrive() {
         const readyHeat = maxHeat() * 0.92;
         if (state.heat < readyHeat) {
-            showMessage("Overdrive lädt", `Du brauchst mindestens ${Math.ceil(readyHeat)} Hitze.`);
+            showMessage(t("Overdrive lädt"), fmt("Du brauchst mindestens {heat} Hitze.", { heat: Math.ceil(readyHeat) }));
             return;
         }
         const duration = 9000 + upgradeLevel("coolingLoop") * 750;
@@ -965,8 +1013,8 @@
         state.heat = 0;
         state.overdriveUntil = now() + duration;
         state.overdrives += 1;
-        addFlux(burst, `Overdrive +${format(burst)}`);
-        showMessage("Overdrive gezündet", `Passive Produktion x2,4 für ${formatSeconds(duration / 1000)}.`);
+        addFlux(burst, fmt("Overdrive +{amount}", { amount: format(burst) }));
+        showMessage(t("Overdrive gezündet"), fmt("Passive Produktion x2,4 für {duration}.", { duration: formatSeconds(duration / 1000) }));
         checkAchievements();
         saveState();
     }
@@ -1010,7 +1058,7 @@
         }
         const currentTime = now();
         if (currentTime < state.signalReadyAt) {
-            showMessage("Signal lädt", `Bereit in ${formatSeconds((state.signalReadyAt - currentTime) / 1000)}.`);
+            showMessage(t("Signal lädt"), fmt("Bereit in {duration}.", { duration: formatSeconds((state.signalReadyAt - currentTime) / 1000) }));
             return;
         }
         const timingWindow = createTimingWindow(20, 10);
@@ -1023,8 +1071,8 @@
         };
         applyTimingZone(elements.signalZone, timingWindow);
         elements.signalPanel.hidden = false;
-        elements.signalButton.querySelector("strong").textContent = "Signal stoppen";
-        elements.signalHint.textContent = "Marker treffen";
+        elements.signalButton.querySelector("strong").textContent = t("Signal stoppen");
+        elements.signalHint.textContent = t("Marker treffen");
     }
 
     function stopSignalRaid() {
@@ -1040,16 +1088,16 @@
             state.perfectSignals += 1;
         }
         const reward = (manualPower() * rewardMultiplier + calculateCps() * (perfect ? 22 : close ? 10 : 4)) * eventRewardMultiplier();
-        addFlux(reward, `${perfect ? "Perfekt" : close ? "Treffer" : "Signal"} +${format(reward)}`);
+        addFlux(reward, fmt("{label} +{amount}", { label: t(perfect ? "Perfekt" : close ? "Treffer" : "Signal"), amount: format(reward) }));
         state.activeBoostUntil = now() + boostDuration;
         state.signalReadyAt = now() + eventCooldownMs(36000 - upgradeLevel("meteorMagnet") * 900, 12000);
         showMessage(
-            perfect ? "Perfekter Signal-Raid" : close ? "Signal getroffen" : "Signal verfehlt",
-            `${format(reward)} Flux und aktiver Boost für ${formatSeconds(boostDuration / 1000)}.`
+            t(perfect ? "Perfekter Signal-Raid" : close ? "Signal getroffen" : "Signal verfehlt"),
+            fmt("{amount} Flux und aktiver Boost für {duration}.", { amount: format(reward), duration: formatSeconds(boostDuration / 1000) })
         );
         activeSignal = null;
         elements.signalPanel.hidden = true;
-        elements.signalButton.querySelector("strong").textContent = "Signal-Raid";
+        elements.signalButton.querySelector("strong").textContent = t("Signal-Raid");
         checkAchievements();
         saveState();
     }
@@ -1061,7 +1109,7 @@
         }
         const currentTime = now();
         if (currentTime < state.riftReadyAt) {
-            showMessage("Flux-Riss lädt", `Bereit in ${formatSeconds((state.riftReadyAt - currentTime) / 1000)}.`);
+            showMessage(t("Flux-Riss lädt"), fmt("Bereit in {duration}.", { duration: formatSeconds((state.riftReadyAt - currentTime) / 1000) }));
             return;
         }
         const timingWindow = createTimingWindow(16, 9);
@@ -1074,8 +1122,8 @@
         };
         applyTimingZone(elements.riftZone, timingWindow);
         elements.riftPanel.hidden = false;
-        elements.riftButton.querySelector("strong").textContent = "Riss versiegeln";
-        elements.riftHint.textContent = "Marker treffen";
+        elements.riftButton.querySelector("strong").textContent = t("Riss versiegeln");
+        elements.riftHint.textContent = t("Marker treffen");
     }
 
     function stopRiftEvent() {
@@ -1085,7 +1133,7 @@
         const close = isInsideTimingWindow(position, activeRift.timingWindow, "close");
         const boostDuration = eventBoostDuration(perfect ? 26000 : close ? 15000 : 6500);
         const reward = (manualPower() * (perfect ? 95 : close ? 48 : 15) + calculateCps() * (perfect ? 34 : close ? 16 : 5)) * eventRewardMultiplier();
-        addFlux(reward, `${perfect ? "Riss perfekt" : close ? "Riss" : "Streifschuss"} +${format(reward)}`);
+        addFlux(reward, fmt("{label} +{amount}", { label: t(perfect ? "Riss perfekt" : close ? "Riss" : "Streifschuss"), amount: format(reward) }));
         if (close) {
             state.passiveBoostUntil = now() + boostDuration;
             state.riftsSealed += 1;
@@ -1093,12 +1141,12 @@
         state.heat = Math.min(maxHeat(), state.heat + (perfect ? 8 : close ? 13 : 19));
         state.riftReadyAt = now() + eventCooldownMs(42000, 15000);
         showMessage(
-            perfect ? "Flux-Riss perfekt versiegelt" : close ? "Flux-Riss stabilisiert" : "Flux-Riss instabil",
-            close ? `${format(reward)} Flux und AFK-Boost für ${formatSeconds(boostDuration / 1000)}.` : `${format(reward)} Flux, aber kein AFK-Boost.`
+            t(perfect ? "Flux-Riss perfekt versiegelt" : close ? "Flux-Riss stabilisiert" : "Flux-Riss instabil"),
+            close ? fmt("{amount} Flux und AFK-Boost für {duration}.", { amount: format(reward), duration: formatSeconds(boostDuration / 1000) }) : fmt("{amount} Flux, aber kein AFK-Boost.", { amount: format(reward) })
         );
         activeRift = null;
         elements.riftPanel.hidden = true;
-        elements.riftButton.querySelector("strong").textContent = "Flux-Riss";
+        elements.riftButton.querySelector("strong").textContent = t("Flux-Riss");
         checkAchievements();
         saveState();
     }
@@ -1110,7 +1158,7 @@
         }
         const currentTime = now();
         if (currentTime < state.cryoReadyAt) {
-            showMessage("Kryo-Takt lädt", `Bereit in ${formatSeconds((state.cryoReadyAt - currentTime) / 1000)}.`);
+            showMessage(t("Kryo-Takt lädt"), fmt("Bereit in {duration}.", { duration: formatSeconds((state.cryoReadyAt - currentTime) / 1000) }));
             return;
         }
         const timingWindow = createTimingWindow(16, 7);
@@ -1123,8 +1171,8 @@
         };
         applyTimingZone(elements.cryoZone, timingWindow);
         elements.cryoPanel.hidden = false;
-        elements.cryoButton.querySelector("strong").textContent = "Kryo stoppen";
-        elements.cryoHint.textContent = "kaltes Fenster treffen";
+        elements.cryoButton.querySelector("strong").textContent = t("Kryo stoppen");
+        elements.cryoHint.textContent = t("kaltes Fenster treffen");
     }
 
     function stopCryoEvent() {
@@ -1137,17 +1185,17 @@
         state.heat = Math.max(0, state.heat - heatDrop);
         const boostDuration = eventBoostDuration(perfect ? 22000 : close ? 12000 : 5000);
         const reward = (manualPower() * (perfect ? 55 : close ? 24 : 8) + calculateCps() * (perfect ? 13 : close ? 6 : 2)) * eventRewardMultiplier();
-        addFlux(reward, `${perfect ? "Kryo perfekt" : close ? "Kryo" : "Kühlung"} +${format(reward)}`);
+        addFlux(reward, fmt("{label} +{amount}", { label: t(perfect ? "Kryo perfekt" : close ? "Kryo" : "Kühlung"), amount: format(reward) }));
         if (close) state.activeBoostUntil = now() + boostDuration;
         if (perfect) state.cryoPerfects += 1;
         state.cryoReadyAt = now() + eventCooldownMs(34000, 12000);
         showMessage(
-            perfect ? "Perfekter Kryo-Takt" : close ? "Kryo-Takt getroffen" : "Kryo-Takt verpasst",
-            `${format(reward)} Flux, -${Math.round(Math.min(beforeHeat, heatDrop))} Hitze${close ? ` und aktiver Boost für ${formatSeconds(boostDuration / 1000)}` : ""}.`
+            t(perfect ? "Perfekter Kryo-Takt" : close ? "Kryo-Takt getroffen" : "Kryo-Takt verpasst"),
+            fmt("{amount} Flux, -{heat} Hitze{boostPart}.", { amount: format(reward), heat: Math.round(Math.min(beforeHeat, heatDrop)), boostPart: close ? fmt(" und aktiver Boost für {duration}", { duration: formatSeconds(boostDuration / 1000) }) : "" })
         );
         activeCryo = null;
         elements.cryoPanel.hidden = true;
-        elements.cryoButton.querySelector("strong").textContent = "Kryo-Takt";
+        elements.cryoButton.querySelector("strong").textContent = t("Kryo-Takt");
         checkAchievements();
         saveState();
     }
@@ -1227,8 +1275,8 @@
             const reward = Math.max(80, (manualPower() * (35 + upgradeLevel("meteorMagnet") * 7) + calculateCps() * 12) * eventRewardMultiplier());
             state.meteorsCollected += 1;
             state.combo = Math.min(maxCombo(), state.combo + 4);
-            addFlux(reward, `Meteor +${format(reward)}`);
-            showMessage("Meteor eingesammelt", `+${format(reward)} Flux und +4 Combo.`);
+            addFlux(reward, fmt("Meteor +{amount}", { amount: format(reward) }));
+            showMessage(t("Meteor eingesammelt"), fmt("+{amount} Flux und +4 Combo.", { amount: format(reward) }));
             button.remove();
             checkAchievements();
             saveState();
@@ -1245,7 +1293,7 @@
             if (!state.achievements[item.id] && item.test(state)) {
                 state.achievements[item.id] = now();
                 changed = true;
-                showMessage("Erfolg freigeschaltet", item.title);
+                showMessage(t("Erfolg freigeschaltet"), item.title);
             }
         });
         if (changed) {
@@ -1260,10 +1308,10 @@
 
         const reward = prestigeReward();
         if (reward <= 0) {
-            showMessage("Prestige noch nicht bereit", `Du brauchst ${format(prestigeRequirement())} Lifetime-Flux.`);
+            showMessage(t("Prestige noch nicht bereit"), fmt("Du brauchst {amount} Lifetime-Flux.", { amount: format(prestigeRequirement()) }));
             return;
         }
-        const confirmed = window.confirm(`Neue Galaxie starten und ${reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.`);
+        const confirmed = window.confirm(fmt("Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.", { reward }));
         if (!confirmed) return;
         const keepTotal = state.totalLifetimeFlux;
         const newLevel = state.prestigeLevel + 1;
@@ -1273,7 +1321,7 @@
         state.shards = newShards;
         state.totalLifetimeFlux = keepTotal;
         state.lastSaved = now();
-        showMessage("Prestige abgeschlossen", `Galaxie Level ${newLevel}. Dauerhafter Bonus: +${Math.round((prestigeMultiplier() - 1) * 100)}%.`);
+        showMessage(t("Prestige abgeschlossen"), fmt("Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%.", { level: newLevel, bonus: Math.round((prestigeMultiplier() - 1) * 100) }));
         checkAchievements();
         saveState();
         renderAll(true);
@@ -1343,8 +1391,8 @@
         elements.manualPower.textContent = formatRate(manual);
         elements.combo.textContent = `x${comboMultiplier().toFixed(2)}`;
         elements.comboHint.textContent = state.combo > 0
-            ? `${Math.floor(state.combo)} Treffer · Takt ${Math.floor(state.activePulseCharge)}/${Math.ceil(activePulseRequirement())}`
-            : "halte Rhythmus";
+            ? fmt("{combo} Treffer · Takt {charge}/{required}", { combo: Math.floor(state.combo), charge: Math.floor(state.activePulseCharge), required: Math.ceil(activePulseRequirement()) })
+            : t("halte Rhythmus");
         elements.shards.textContent = format(state.shards);
         elements.heatLabel.textContent = `${Math.round(heatPercent)}%`;
         elements.heatFill.style.width = `${heatPercent}%`;
@@ -1353,34 +1401,34 @@
         const overdriveActive = state.overdriveUntil > now();
         elements.overdriveButton.disabled = overdriveActive || state.heat < readyHeat;
         elements.overdriveHint.textContent = overdriveActive
-            ? `aktiv: ${formatSeconds((state.overdriveUntil - now()) / 1000)}`
+            ? fmt("aktiv: {duration}", { duration: formatSeconds((state.overdriveUntil - now()) / 1000) })
             : state.heat >= readyHeat
-                ? "bereit zum Zünden"
-                : `bereit ab ${Math.ceil((readyHeat / maxHeat()) * 100)}% Hitze`;
+                ? t("bereit zum Zünden")
+                : fmt("bereit ab {percent}% Hitze", { percent: Math.ceil((readyHeat / maxHeat()) * 100) });
 
         const currentTime = now();
         const collectRemaining = Math.max(0, state.collectReadyAt - currentTime);
         elements.collectButton.disabled = collectRemaining > 0;
         elements.collectHint.textContent = collectRemaining > 0
-            ? `bereit in ${formatSeconds(collectRemaining / 1000)}`
-            : `kleiner Schub ca. ${format(collectImpulseRewardPreview().reward)} Flux`;
+            ? fmt("bereit in {duration}", { duration: formatSeconds(collectRemaining / 1000) })
+            : fmt("kleiner Schub ca. {amount} Flux", { amount: format(collectImpulseRewardPreview().reward) });
 
         const signalRemaining = Math.max(0, state.signalReadyAt - currentTime);
         elements.signalButton.disabled = signalRemaining > 0 && !activeSignal;
         if (!activeSignal) {
-            elements.signalHint.textContent = signalRemaining > 0 ? `bereit in ${formatSeconds(signalRemaining / 1000)}` : "Timing-Bonus bereit";
+            elements.signalHint.textContent = signalRemaining > 0 ? fmt("bereit in {duration}", { duration: formatSeconds(signalRemaining / 1000) }) : t("Timing-Bonus bereit");
         }
 
         const riftRemaining = Math.max(0, state.riftReadyAt - currentTime);
         elements.riftButton.disabled = riftRemaining > 0 && !activeRift;
         if (!activeRift) {
-            elements.riftHint.textContent = riftRemaining > 0 ? `bereit in ${formatSeconds(riftRemaining / 1000)}` : "AFK-Boost erspielen";
+            elements.riftHint.textContent = riftRemaining > 0 ? fmt("bereit in {duration}", { duration: formatSeconds(riftRemaining / 1000) }) : t("AFK-Boost erspielen");
         }
 
         const cryoRemaining = Math.max(0, state.cryoReadyAt - currentTime);
         elements.cryoButton.disabled = cryoRemaining > 0 && !activeCryo;
         if (!activeCryo) {
-            elements.cryoHint.textContent = cryoRemaining > 0 ? `bereit in ${formatSeconds(cryoRemaining / 1000)}` : "Hitze senken + Boost";
+            elements.cryoHint.textContent = cryoRemaining > 0 ? fmt("bereit in {duration}", { duration: formatSeconds(cryoRemaining / 1000) }) : t("Hitze senken + Boost");
         }
 
         updateDatabaseSaveButton();
@@ -1389,11 +1437,11 @@
         const requirement = prestigeRequirement();
         elements.prestigeButton.disabled = reward <= 0;
         elements.prestigeHint.textContent = reward > 0
-            ? `Bereit: ${reward} Splitter beim Neustart. Aktueller Bonus danach ca. +${Math.round(((prestigeMultiplier() + reward * 0.045 + 0.12) - 1) * 100)}%.`
-            : `${format(state.lifetimeFlux)} / ${format(requirement)} Lifetime-Flux bis zum nächsten Prestige.`;
+            ? fmt("Bereit: {reward} Splitter beim Neustart. Aktueller Bonus danach ca. +{bonus}%.", { reward, bonus: Math.round(((prestigeMultiplier() + reward * 0.045 + 0.12) - 1) * 100) })
+            : fmt("{current} / {required} Lifetime-Flux bis zum nächsten Prestige.", { current: format(state.lifetimeFlux), required: format(requirement) });
 
         if (elements.offlineInfo && !elements.offlineInfo.dataset.touched) {
-            elements.offlineInfo.textContent = `Offline-Effizienz: ${Math.round(offlineEfficiency() * 100)}%, Offline-Cap: ${offlineCapHours()}h.`;
+            elements.offlineInfo.textContent = fmt("Offline-Effizienz: {efficiency}%, Offline-Cap: {hours}h.", { efficiency: Math.round(offlineEfficiency() * 100), hours: offlineCapHours() });
         }
     }
 
@@ -1484,20 +1532,23 @@
             const owned = buildingCount(item.id);
             const cost = costFor(item, owned);
             const affordable = state.flux >= cost;
+            const missing = format(Math.max(0, cost - state.flux));
+            const buyTitle = affordable ? t("Kaufen") : fmt("Es fehlen {amount} Flux", { amount: missing });
+            const buyHint = affordable ? t("Kaufen") : fmt("fehlen {amount}", { amount: missing });
             return `
                 <article class="nft-shop-card ${affordable ? "is-affordable" : "is-unaffordable"}">
                     <span class="nft-shop-icon"><i class="${item.icon}"></i></span>
                     <div class="nft-shop-copy">
-                        <strong>${item.name}</strong>
-                        <p>${item.description}</p>
+                        <strong>${escapeHtml(item.name)}</strong>
+                        <p>${escapeHtml(item.description)}</p>
                         <div class="nft-shop-meta">
-                            <span>Besitz: ${owned}</span>
-                            <span>+${formatRate(item.rate * passiveMultiplier())}/s je Anlage</span>
+                            <span>${escapeHtml(fmt("Besitz: {count}", { count: owned }))}</span>
+                            <span>${escapeHtml(fmt("+{rate}/s je Anlage", { rate: formatRate(item.rate * passiveMultiplier()) }))}</span>
                         </div>
                     </div>
-                    <button type="button" class="nft-shop-buy ${affordable ? "is-affordable" : "is-unaffordable"}" data-buy-building="${item.id}" aria-disabled="${affordable ? "false" : "true"}" title="${affordable ? "Kaufen" : `Es fehlen ${format(Math.max(0, cost - state.flux))} Flux`}">
+                    <button type="button" class="nft-shop-buy ${affordable ? "is-affordable" : "is-unaffordable"}" data-buy-building="${item.id}" aria-disabled="${affordable ? "false" : "true"}" title="${escapeHtml(buyTitle)}">
                         ${format(cost)} Flux
-                        <small>${affordable ? "Kaufen" : `fehlen ${format(Math.max(0, cost - state.flux))}`}</small>
+                        <small>${escapeHtml(buyHint)}</small>
                     </button>
                 </article>
             `;
@@ -1510,20 +1561,23 @@
             const maxed = level >= item.max;
             const cost = costFor(item, level);
             const affordable = state.flux >= cost && !maxed;
+            const missing = format(Math.max(0, cost - state.flux));
+            const buyTitle = maxed ? t("Maximal ausgebaut") : affordable ? t("Kaufen") : fmt("Es fehlen {amount} Flux", { amount: missing });
+            const buyHint = maxed ? t("Fertig") : affordable ? t("Kaufen") : fmt("fehlen {amount}", { amount: missing });
             return `
                 <article class="nft-shop-card ${maxed ? "is-locked" : affordable ? "is-affordable" : "is-unaffordable"}">
                     <span class="nft-shop-icon"><i class="${item.icon}"></i></span>
                     <div class="nft-shop-copy">
-                        <strong>${item.name}</strong>
-                        <p>${item.description}</p>
+                        <strong>${escapeHtml(item.name)}</strong>
+                        <p>${escapeHtml(item.description)}</p>
                         <div class="nft-shop-meta">
-                            <span>Level: ${level}/${item.max}</span>
-                            <span>${maxed ? "Maximal" : "Nächster Ausbau"}</span>
+                            <span>${escapeHtml(fmt("Level: {level}/{max}", { level, max: item.max }))}</span>
+                            <span>${escapeHtml(maxed ? t("Maximal") : t("Nächster Ausbau"))}</span>
                         </div>
                     </div>
-                    <button type="button" class="nft-shop-buy ${maxed ? "is-maxed" : affordable ? "is-affordable" : "is-unaffordable"}" data-buy-upgrade="${item.id}" ${maxed ? "disabled" : ""} aria-disabled="${affordable ? "false" : "true"}" title="${maxed ? "Maximal ausgebaut" : affordable ? "Kaufen" : `Es fehlen ${format(Math.max(0, cost - state.flux))} Flux`}">
-                        ${maxed ? "Max" : `${format(cost)} Flux`}
-                        <small>${maxed ? "Fertig" : affordable ? "Kaufen" : `fehlen ${format(Math.max(0, cost - state.flux))}`}</small>
+                    <button type="button" class="nft-shop-buy ${maxed ? "is-maxed" : affordable ? "is-affordable" : "is-unaffordable"}" data-buy-upgrade="${item.id}" ${maxed ? "disabled" : ""} aria-disabled="${affordable ? "false" : "true"}" title="${escapeHtml(buyTitle)}">
+                        ${maxed ? escapeHtml(t("Max")) : `${format(cost)} Flux`}
+                        <small>${escapeHtml(buyHint)}</small>
                     </button>
                 </article>
             `;
@@ -1539,10 +1593,10 @@
                 <article class="nft-achievement-card ${unlocked ? "is-done" : ""}">
                     <span class="nft-achievement-icon"><i class="${unlocked ? item.icon : "fa-solid fa-lock"}"></i></span>
                     <div class="nft-achievement-copy">
-                        <strong>${item.title}</strong>
-                        <p>${item.description}</p>
+                        <strong>${escapeHtml(item.title)}</strong>
+                        <p>${escapeHtml(item.description)}</p>
                     </div>
-                    <span class="nft-shop-meta"><span>${unlocked ? "Erledigt" : "Offen"}</span></span>
+                    <span class="nft-shop-meta"><span>${escapeHtml(unlocked ? t("Erledigt") : t("Offen"))}</span></span>
                 </article>
             `;
         }).join("");
@@ -1552,7 +1606,7 @@
         document.querySelectorAll(".nft-focus-buttons button").forEach(button => {
             button.classList.toggle("is-active", button.dataset.mode === state.activeMode);
         });
-        elements.modePill.textContent = state.activeMode === "afk" ? "AFK-Shift" : state.activeMode === "active" ? "Aktiv-Shift" : "Balanced";
+        elements.modePill.textContent = t(state.activeMode === "afk" ? "AFK-Shift" : state.activeMode === "active" ? "Aktiv-Shift" : "Balanced");
     }
 
     function queueRender() {
@@ -1567,7 +1621,14 @@
     function showMessage(title, message = "") {
         const toast = document.createElement("div");
         toast.className = "nft-toast";
-        toast.innerHTML = `<strong>${title}</strong>${message ? `<p>${message}</p>` : ""}`;
+        const strong = document.createElement("strong");
+        strong.textContent = title;
+        toast.appendChild(strong);
+        if (message) {
+            const paragraph = document.createElement("p");
+            paragraph.textContent = message;
+            toast.appendChild(paragraph);
+        }
         elements.toastStack.appendChild(toast);
         window.setTimeout(() => {
             toast.style.opacity = "0";
@@ -1593,7 +1654,7 @@
         link.click();
         link.remove();
         URL.revokeObjectURL(url);
-        showMessage("Export erstellt", "Dein Nebula Forge Save wurde heruntergeladen.");
+        showMessage(t("Export erstellt"), t("Dein Nebula Forge Save wurde heruntergeladen."));
     }
 
     function importSave(file) {
@@ -1603,19 +1664,19 @@
             try {
                 const payload = JSON.parse(String(reader.result || ""));
                 if (payload.format !== EXPORT_FORMAT || !payload.state) {
-                    showMessage("Import fehlgeschlagen", "Die Datei ist kein gültiger Nebula Forge Save.");
+                    showMessage(t("Import fehlgeschlagen"), t("Die Datei ist kein gültiger Nebula Forge Save."));
                     return;
                 }
-                const confirmed = window.confirm("Aktuellen Nebula Forge Spielstand durch diesen Import ersetzen?");
+                const confirmed = window.confirm(t("Aktuellen Nebula Forge Spielstand durch diesen Import ersetzen?"));
                 if (!confirmed) return;
                 state = mergeState(payload.state);
                 state.lastSaved = now();
                 saveState();
                 renderAll(true);
-                showMessage("Import abgeschlossen", "Dein Spielstand wurde geladen.");
+                showMessage(t("Import abgeschlossen"), t("Dein Spielstand wurde geladen."));
             } catch (error) {
                 console.warn("Nebula Forge Import fehlgeschlagen.", error);
-                showMessage("Import fehlgeschlagen", "Die Datei konnte nicht gelesen werden.");
+                showMessage(t("Import fehlgeschlagen"), t("Die Datei konnte nicht gelesen werden."));
             } finally {
                 elements.importInput.value = "";
             }
@@ -1624,7 +1685,7 @@
     }
 
     function resetSave() {
-        const confirmed = window.confirm("Nebula Forge Tycoon wirklich komplett zurücksetzen?");
+        const confirmed = window.confirm(t("Nebula Forge Tycoon wirklich komplett zurücksetzen?"));
         if (!confirmed) return;
         localStorage.removeItem(SAVE_KEY);
         state = defaultState();
@@ -1638,7 +1699,7 @@
         nextMeteorAt = nextMeteorTime();
         renderAll(true);
         saveState();
-        showMessage("Zurückgesetzt", "Du startest wieder mit einer frischen Schmiede.");
+        showMessage(t("Zurückgesetzt"), t("Du startest wieder mit einer frischen Schmiede."));
     }
 
     function gameLoop() {
@@ -1848,7 +1909,7 @@
             button.addEventListener("click", () => {
                 state.activeMode = button.dataset.mode;
                 renderModes();
-                showMessage("Schichtmodus geändert", elements.modePill.textContent);
+                showMessage(t("Schichtmodus geändert"), elements.modePill.textContent);
                 saveState();
             });
         });
@@ -1865,6 +1926,6 @@
     attachEvents();
     renderAll(true);
     loadDatabaseSave();
-    showMessage("Nebula Forge bereit", "Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen.");
+    showMessage(t("Nebula Forge bereit"), t("Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen."));
     window.requestAnimationFrame(gameLoop);
 })();

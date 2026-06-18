@@ -795,7 +795,7 @@ body:not(.dark-mode) .nft-tabs button {
 .nft-tabs {
     display: grid;
     flex: 0 0 auto;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     margin-bottom: 0.8rem;
 }
 
@@ -1432,7 +1432,7 @@ body:not(.dark-mode) .nft-toast {
 
 @media (max-width: 1120px) {
     .nft-stats-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .nft-layout {
@@ -1707,10 +1707,14 @@ body:not(.dark-mode) .nft-prestige-hero {
 .nft-panel-head > div,
 .nft-stage-head > div {
     min-width: 0;
+    text-align: left;
 }
 
+.nft-panel-head .nft-kicker,
+.nft-stage-head .nft-kicker,
 .nft-panel-head h2,
 .nft-stage-head h2 {
+    width: 100%;
     line-height: 1.12;
     padding-bottom: 0.06em;
     text-align: left;
@@ -1726,6 +1730,31 @@ body:not(.dark-mode) .nft-prestige-hero {
     }
 }
 
+
+
+/* Shift mode header alignment */
+.nft-focus-panel > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    justify-self: stretch;
+    min-width: 0;
+    text-align: left;
+}
+
+.nft-focus-panel .nft-kicker,
+.nft-focus-panel h3 {
+    width: 100%;
+    text-align: left;
+}
+
+.nft-focus-panel .nft-kicker {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.35rem;
+}
 
 /* Header icon hotfix: only the description span may behave like text. */
 .nft-brand .nft-brand-icon {
