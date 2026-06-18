@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 14:03+0200\n"
+"POT-Creation-Date: 2026-06-18 14:21+0200\n"
 "PO-Revision-Date: 2026-05-30 18:45+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: English\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: .\app\access_control.py:9 .\app\achievement_utils.py:38 .\app\models.py:2788
-#: .\app\platform_utils.py:9 .\app\templates\app\about.html:230
+#: .\app\platform_utils.py:9 .\app\templates\app\about.html:235
 #: .\app\templates\app\base.html:1000 .\app\templates\app\base.html:1073
 #: .\app\templates\app\base.html:1115 .\app\templates\app\chat.html:6
 #: .\app\templates\app\chat.html:18 .\app\templates\app\inbox.html:22
@@ -59,7 +59,7 @@ msgid "Nutzer"
 msgstr "Users"
 
 #: .\app\access_control.py:48 .\app\achievement_utils.py:37
-#: .\app\community_views.py:482 .\app\models.py:953 .\app\platform_utils.py:11
+#: .\app\community_views.py:494 .\app\models.py:953 .\app\platform_utils.py:11
 #: .\app\platform_utils.py:66 .\app\profile_views.py:155
 #: .\app\templates\app\about.html:120 .\app\templates\app\base.html:491
 #: .\app\templates\app\base.html:494 .\app\templates\app\base.html:1120
@@ -93,7 +93,7 @@ msgstr "Clock"
 msgid "Datei-Share"
 msgstr "File share"
 
-#: .\app\access_control.py:80 .\app\community_views.py:499 .\app\models.py:2791
+#: .\app\access_control.py:80 .\app\community_views.py:511 .\app\models.py:2791
 #: .\app\models.py:2819 .\app\templates\app\base.html:507
 #: .\app\templates\app\base.html:510 .\app\templates\app\feedback.html:5
 #: .\app\templates\app\feedback.html:12 .\app\templates\app\moderation.html:184
@@ -107,7 +107,7 @@ msgid "Roadmap"
 msgstr "Roadmap"
 
 #: .\app\access_control.py:96 .\app\platform_utils.py:39
-#: .\app\platform_utils.py:75 .\app\templates\app\about.html:245
+#: .\app\platform_utils.py:75 .\app\templates\app\about.html:250
 #: .\app\templates\app\achievement_center.html:12
 #: .\app\templates\app\base.html:984
 msgid "Achievement-Center"
@@ -326,7 +326,8 @@ msgid "Cookie Cosmos V2"
 msgstr "Cookie Cosmos"
 
 #: .\app\access_control.py:280 .\app\platform_utils.py:24
-#: .\app\platform_utils.py:63 .\app\templates\app\nebula_forge_tycoon.html:5
+#: .\app\platform_utils.py:63 .\app\templates\app\about.html:210
+#: .\app\templates\app\nebula_forge_tycoon.html:5
 #: .\app\templates\app\nebula_forge_tycoon.html:461
 msgid "Nebula Forge Tycoon"
 msgstr "Nebula Forge Tycoon"
@@ -414,7 +415,7 @@ msgstr "Pong"
 #: .\app\access_control.py:455 .\app\models.py:959 .\app\models.py:2790
 #: .\app\notification_utils.py:359 .\app\performance_tools_views.py:167
 #: .\app\platform_utils.py:13 .\app\platform_utils.py:54
-#: .\app\templates\app\about.html:250 .\app\templates\app\base.html:281
+#: .\app\templates\app\about.html:255 .\app\templates\app\base.html:281
 #: .\app\templates\app\base.html:284 .\app\templates\app\home.html:632
 #: .\app\templates\app\inbox.html:24 .\app\templates\app\skribble_home.html:4
 #: .\app\templates\app\skribble_home.html:16
@@ -1286,10 +1287,33 @@ msgid "Du hast die Gruppe verlassen."
 msgstr "You have left the group."
 
 #: .\app\community_views.py:32
+msgid "Nebula Forge Tycoon Release"
+msgstr "Nebula Forge Tycoon Release"
+
+#: .\app\community_views.py:33
+msgid ""
+"Nebula Forge Tycoon wurde hinzugefügt, ähnlich wie Cookie Cosmos und man "
+"kann als Admin nun kontrollieren wer auf welches tool oder game zugreifen "
+"kann"
+msgstr "Nebula Forge Tycoon has been added, similar to Cookie Cosmos, and as an admin, you can now control who has access to which tool or game."
+
+#: .\app\community_views.py:34 .\app\community_views.py:143
+msgid "Games"
+msgstr "Games"
+
+#: .\app\community_views.py:37
+msgid "Nebula Forge Tycoon wurde hinzugefügt."
+msgstr "Nebula Forge Tycoon has been added."
+
+#: .\app\community_views.py:38
+msgid "kontrolle wer auf welches tool zugreifen kann."
+msgstr "Control who has access to which tool."
+
+#: .\app\community_views.py:44
 msgid "Datei-Konverter und einheitliches Tool-Design"
 msgstr "File converter and unified tool design"
 
-#: .\app\community_views.py:33
+#: .\app\community_views.py:45
 msgid ""
 "Der neue Datei-Konverter, ein gemeinsamer Tool-Seiten-Look und gezielte "
 "Kontrastkorrekturen machen die Werkzeugbereiche einheitlicher und besser "
@@ -1298,7 +1322,7 @@ msgstr ""
 "The new file converter, shared tool page layout and targeted contrast fixes "
 "make the tool areas more consistent and easier to read."
 
-#: .\app\community_views.py:34 .\app\community_views.py:118
+#: .\app\community_views.py:46 .\app\community_views.py:130
 #: .\app\platform_utils.py:25 .\app\platform_utils.py:26
 #: .\app\platform_utils.py:27 .\app\platform_utils.py:28
 #: .\app\platform_utils.py:29 .\app\platform_utils.py:30
@@ -1307,7 +1331,7 @@ msgstr ""
 msgid "Tools"
 msgstr "Tools"
 
-#: .\app\community_views.py:37
+#: .\app\community_views.py:49
 msgid ""
 "Datei-Konverter für DOCX, Tabellen, Präsentationen, Textdateien und Bilder "
 "ergänzt."
@@ -1315,7 +1339,7 @@ msgstr ""
 "Added a file converter for DOCX files, spreadsheets, presentations, text "
 "files and images."
 
-#: .\app\community_views.py:38
+#: .\app\community_views.py:50
 msgid ""
 "Office-zu-PDF läuft serverseitig über LibreOffice und verarbeitet Uploads "
 "nur temporär."
@@ -1323,7 +1347,7 @@ msgstr ""
 "Office-to-PDF conversion runs server-side through LibreOffice and only "
 "processes uploads temporarily."
 
-#: .\app\community_views.py:39
+#: .\app\community_views.py:51
 msgid ""
 "Toolbox-Seiten übernehmen jetzt gemeinsame Theme-Farben, Karten, Buttons, "
 "Inputs und Kontrastmodus-Regeln."
@@ -1331,7 +1355,7 @@ msgstr ""
 "Toolbox pages now use shared theme colors, cards, buttons, inputs and "
 "contrast-mode rules."
 
-#: .\app\community_views.py:40
+#: .\app\community_views.py:52
 msgid ""
 "Bild Tools, Datei-Konverter, Einheitenrechner, Spritkosten und QR-Code Tool "
 "wurden farblich nachjustiert."
@@ -1339,7 +1363,7 @@ msgstr ""
 "Image tools, file converter, unit calculator, fuel cost calculator and QR "
 "code tool were visually adjusted."
 
-#: .\app\community_views.py:41
+#: .\app\community_views.py:53
 msgid ""
 "Der Quality-Workflow startet nicht mehr automatisch bei jedem Push oder "
 "Merge, sondern nur noch manuell."
@@ -1348,11 +1372,11 @@ msgstr ""
 "and now only runs manually."
 
 # | msgid "Stream-Deck-Steuerung"
-#: .\app\community_views.py:47
+#: .\app\community_views.py:59
 msgid "Stream Deck mit Voicemod-Steuerung"
 msgstr "Stream Deck with Voicemod control"
 
-#: .\app\community_views.py:48
+#: .\app\community_views.py:60
 msgid ""
 "Das Stream Deck kann Voicemod jetzt direkt steuern und nutzt dafuer einen "
 "lokal gespeicherten API-Key pro Browser."
@@ -1361,11 +1385,11 @@ msgstr ""
 "API key per browser."
 
 # | msgid "Tools & Integrationen"
-#: .\app\community_views.py:49
+#: .\app\community_views.py:61
 msgid "Integration"
 msgstr "Integration"
 
-#: .\app\community_views.py:52
+#: .\app\community_views.py:64
 msgid ""
 "Voicemod-Aktionen fuer Voice Changer, Hear Myself, Mikrofon-Mute, Zufalls-"
 "Voice und Voice-Wechsel ergaenzt."
@@ -1373,7 +1397,7 @@ msgstr ""
 "Added Voicemod actions for Voice Changer, Hear Myself, microphone mute, "
 "random voice and voice switching."
 
-#: .\app\community_views.py:53
+#: .\app\community_views.py:65
 msgid ""
 "Voices lassen sich aus Voicemod laden und im Button-Editor per Dropdown "
 "auswaehlen."
@@ -1381,7 +1405,7 @@ msgstr ""
 "Voices can be loaded from Voicemod and selected in the button editor via "
 "dropdown."
 
-#: .\app\community_views.py:54
+#: .\app\community_views.py:66
 msgid ""
 "Der Voicemod API-Key wird im Stream Deck gespeichert und bei fehlender "
 "Verbindung klar als Hinweis angezeigt."
@@ -1389,11 +1413,11 @@ msgstr ""
 "The Voicemod API key is saved in the Stream Deck and a clear notice is shown "
 "when the connection is missing."
 
-#: .\app\community_views.py:60
+#: .\app\community_views.py:72
 msgid "Mobile Bedienung, Realtime und Qualität"
 msgstr "Mobile controls, realtime updates and quality"
 
-#: .\app\community_views.py:61
+#: .\app\community_views.py:73
 msgid ""
 "Die mobile Navigation ist flexibler, Benachrichtigungen aktualisieren sich "
 "direkter und die Codebasis ist besser für weitere Updates vorbereitet."
@@ -1401,11 +1425,11 @@ msgstr ""
 "Mobile navigation is more flexible, notifications update more directly and "
 "the codebase is better prepared for future updates."
 
-#: .\app\community_views.py:62 .\app\community_views.py:92
+#: .\app\community_views.py:74 .\app\community_views.py:104
 msgid "Update"
 msgstr "Update"
 
-#: .\app\community_views.py:65
+#: .\app\community_views.py:77
 msgid ""
 "Mobile Ansicht blendet den oberen Header standardmäßig aus und bietet einen "
 "Button zum Ein- und Ausblenden."
@@ -1413,14 +1437,14 @@ msgstr ""
 "The mobile view hides the top header by default and provides a button to "
 "show or hide it."
 
-#: .\app\community_views.py:66
+#: .\app\community_views.py:78
 msgid ""
 "Google-Suche auf der Startseite wurde auf kleinen Displays optisch "
 "nachjustiert."
 msgstr ""
 "Google search on the home page was visually adjusted for small displays."
 
-#: .\app\community_views.py:67
+#: .\app\community_views.py:79
 msgid ""
 "Live-Status und Benachrichtigungszähler nutzen WebSocket-Updates mit HTTP-"
 "Fallback."
@@ -1428,11 +1452,11 @@ msgstr ""
 "Live status and notification counters use WebSocket updates with an HTTP "
 "fallback."
 
-#: .\app\community_views.py:68
+#: .\app\community_views.py:80
 msgid "Notes- und PWA-Views wurden aus der großen View-Datei herausgelöst."
 msgstr "Notes and PWA views were moved out of the large view file."
 
-#: .\app\community_views.py:69
+#: .\app\community_views.py:81
 msgid ""
 "Neuer Qualitätslauf bündelt Systemcheck, Migration-Check, Tests, "
 "collectstatic-Dry-Run und JavaScript-Syntaxprüfung."
@@ -1440,11 +1464,11 @@ msgstr ""
 "The new quality run bundles system checks, migration checks, tests, "
 "collectstatic dry run and JavaScript syntax checks."
 
-#: .\app\community_views.py:75
+#: .\app\community_views.py:87
 msgid "Suche, Mobile, Datei-Share und Profile"
 msgstr "Search, mobile, file sharing and profiles"
 
-#: .\app\community_views.py:76
+#: .\app\community_views.py:88
 msgid ""
 "Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen "
 "MyTools schneller bedienbar und sichtbarer vernetzt."
@@ -1452,11 +1476,11 @@ msgstr ""
 "Global search, quick actions, mobile navigation and improved shares make "
 "MyTools faster to use and more visibly connected."
 
-#: .\app\community_views.py:77 .\app\community_views.py:105
+#: .\app\community_views.py:89 .\app\community_views.py:117
 msgid "Plattform"
 msgstr "Platform"
 
-#: .\app\community_views.py:80
+#: .\app\community_views.py:92
 msgid ""
 "Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und "
 "Roadmap-Ideen ergänzt."
@@ -1464,7 +1488,7 @@ msgstr ""
 "Added global MyTools search with Ctrl+K for tools, notes, files, users and "
 "roadmap ideas."
 
-#: .\app\community_views.py:81
+#: .\app\community_views.py:93
 msgid ""
 "Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und "
 "Changelog erweitert."
@@ -1472,13 +1496,13 @@ msgstr ""
 "Extended the home page with quick actions for search, widgets, favorites, "
 "design and changelog."
 
-#: .\app\community_views.py:82
+#: .\app\community_views.py:94
 msgid ""
 "Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."
 msgstr ""
 "Added mobile bottom navigation for home, search, tools, chat and profile."
 
-#: .\app\community_views.py:83
+#: .\app\community_views.py:95
 msgid ""
 "Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und "
 "PDF-Vorschau ausgebaut."
@@ -1486,7 +1510,7 @@ msgstr ""
 "Expanded file sharing with password protection, expiration date, download "
 "limit and image/PDF preview."
 
-#: .\app\community_views.py:84
+#: .\app\community_views.py:96
 msgid ""
 "Profilseite mit Spotlight-Statistiken und feineren "
 "Benachrichtigungseinstellungen erweitert."
@@ -1494,11 +1518,11 @@ msgstr ""
 "Expanded the profile page with spotlight statistics and more detailed "
 "notification settings."
 
-#: .\app\community_views.py:90
+#: .\app\community_views.py:102
 msgid "Design, Status und Transparenz"
 msgstr "Design, status and transparency"
 
-#: .\app\community_views.py:91
+#: .\app\community_views.py:103
 msgid ""
 "Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite "
 "machen MyTools leichter anpassbar und besser nachvollziehbar."
@@ -1509,7 +1533,7 @@ msgstr ""
 # | msgid ""
 # | "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und "
 # | "Hintergrundeffekte im Browser speichern."
-#: .\app\community_views.py:95
+#: .\app\community_views.py:107
 msgid ""
 "Design-Editor fokussiert: eigene Farben, hoher Kontrast, weniger Bewegung "
 "und verbesserter Hintergrundeffekt."
@@ -1517,7 +1541,7 @@ msgstr ""
 "Focused the design editor on custom colors, high contrast, reduced motion "
 "and an improved background effect."
 
-#: .\app\community_views.py:96
+#: .\app\community_views.py:108
 msgid ""
 "Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße "
 "und letzten Security-Events ausgebaut."
@@ -1525,18 +1549,18 @@ msgstr ""
 "Expanded server status with admin cards, app activity, media size, database "
 "size and the latest security events."
 
-#: .\app\community_views.py:97
+#: .\app\community_views.py:109
 msgid ""
 "Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen "
 "ergänzt."
 msgstr ""
 "Added the new What's New page as a central history for visible changes."
 
-#: .\app\community_views.py:103
+#: .\app\community_views.py:115
 msgid "Community und Sicherheit"
 msgstr "Community and security"
 
-#: .\app\community_views.py:104
+#: .\app\community_views.py:116
 msgid ""
 "Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der "
 "Plattform mehr Struktur."
@@ -1544,23 +1568,23 @@ msgstr ""
 "Roadmap, achievement center, moderation and security dashboard give the "
 "platform more structure."
 
-#: .\app\community_views.py:108
+#: .\app\community_views.py:120
 msgid "Feature-Ideen können gesammelt, gevotet und kommentiert werden."
 msgstr "Feature ideas can be collected, voted on and commented on."
 
-#: .\app\community_views.py:109
+#: .\app\community_views.py:121
 msgid "Admins erhalten Moderations- und Sicherheitswerkzeuge."
 msgstr "Admins get moderation and security tools."
 
-#: .\app\community_views.py:110
+#: .\app\community_views.py:122
 msgid "Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."
 msgstr "Notifications, 2FA and security events complete the account area."
 
-#: .\app\community_views.py:116
+#: .\app\community_views.py:128
 msgid "Mehr Tools für den Alltag"
 msgstr "More tools for everyday use"
 
-#: .\app\community_views.py:117
+#: .\app\community_views.py:129
 msgid ""
 "Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen "
 "stärker zusammen."
@@ -1568,88 +1592,84 @@ msgstr ""
 "Notes, file sharing, budget tracker, media tools and widgets are becoming "
 "more connected."
 
-#: .\app\community_views.py:121
+#: .\app\community_views.py:133
 msgid "Startseiten-Widgets zeigen wichtige Daten schneller an."
 msgstr "Home page widgets show important data faster."
 
-#: .\app\community_views.py:122
+#: .\app\community_views.py:134
 msgid "Notizen unterstützen Pins, Erinnerungen und Teilen."
 msgstr "Notes support pins, reminders and sharing."
 
-#: .\app\community_views.py:123
+#: .\app\community_views.py:135
 msgid "Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."
 msgstr "Files, images and budget data get their own work areas."
 
-#: .\app\community_views.py:129 .\app\templates\app\base.html:82
+#: .\app\community_views.py:141 .\app\templates\app\base.html:82
 msgid "Spielebibliothek"
 msgstr "Game library"
 
-#: .\app\community_views.py:130
+#: .\app\community_views.py:142
 msgid ""
 "Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform "
 "erweitert."
 msgstr "Solo and multiplayer areas were expanded into a small game platform."
 
-#: .\app\community_views.py:131
-msgid "Games"
-msgstr "Games"
-
-#: .\app\community_views.py:134
+#: .\app\community_views.py:146
 msgid "Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."
 msgstr "Multiplayer lobbies, invites and live status for multiple games."
 
-#: .\app\community_views.py:135
+#: .\app\community_views.py:147
 msgid "Highscores und Leaderboards für Solo-Spiele."
 msgstr "High scores and leaderboards for solo games."
 
-#: .\app\community_views.py:136
+#: .\app\community_views.py:148
 msgid "Profilkarten und Achievements geben Spielern mehr Identität."
 msgstr "Profile cards and achievements give players more identity."
 
-#: .\app\community_views.py:186
+#: .\app\community_views.py:198
 msgid "Bitte gib Titel und Beschreibung ein."
 msgstr "Bitte gib Titel und Beschreibung ein."
 
-#: .\app\community_views.py:195
+#: .\app\community_views.py:207
 msgid "Deine Feature-Idee wurde eingetragen."
 msgstr "Your feature idea has been submitted."
 
-#: .\app\community_views.py:202
+#: .\app\community_views.py:214
 msgid "Vote gesetzt."
 msgstr "Vote added."
 
-#: .\app\community_views.py:205
+#: .\app\community_views.py:217
 msgid "Vote entfernt."
 msgstr "Vote removed."
 
-#: .\app\community_views.py:213
+#: .\app\community_views.py:225
 msgid "Kommentar gespeichert."
 msgstr "Comment saved."
 
-#: .\app\community_views.py:215
+#: .\app\community_views.py:227
 msgid "Bitte gib einen Kommentar ein."
 msgstr "Please enter a comment."
 
-#: .\app\community_views.py:226
+#: .\app\community_views.py:238
 msgid "Roadmap-Status wurde aktualisiert."
 msgstr "Roadmap status updated."
 
-#: .\app\community_views.py:228
+#: .\app\community_views.py:240
 msgid "Ungültiger Status."
 msgstr "Invalid status."
 
-#: .\app\community_views.py:272 .\app\models.py:2529
+#: .\app\community_views.py:284 .\app\models.py:2529
 #: .\app\templates\app\avatar_wiki.html:76 .\app\templates\app\inbox.html:20
 #: .\app\templates\app\notes.html:106 .\app\templates\app\roadmap.html:103
 msgid "Alle"
 msgstr "All"
 
-#: .\app\community_views.py:350 .\app\community_views.py:352
+#: .\app\community_views.py:362 .\app\community_views.py:364
 msgid "Datenbank"
 msgstr "Datenbank"
 
-#: .\app\community_views.py:350 .\app\community_views.py:361
-#: .\app\community_views.py:464 .\app\models.py:61
+#: .\app\community_views.py:362 .\app\community_views.py:373
+#: .\app\community_views.py:476 .\app\models.py:61
 #: .\app\notification_views.py:74 .\app\profile_views.py:590
 #: .\app\templates\app\chat.html:45 .\app\templates\app\chat.html:162
 #: .\app\templates\app\chat.html:249 .\app\templates\app\friends.html:62
@@ -1660,54 +1680,54 @@ msgstr "Datenbank"
 msgid "Online"
 msgstr "Online"
 
-#: .\app\community_views.py:352 .\app\community_views.py:363
+#: .\app\community_views.py:364 .\app\community_views.py:375
 #: .\app\templates\app\hangman_lobby.html:133
 msgid "Fehler"
 msgstr "Error"
 
-#: .\app\community_views.py:361 .\app\community_views.py:363
+#: .\app\community_views.py:373 .\app\community_views.py:375
 msgid "Cache"
 msgstr "Cache"
 
-#: .\app\community_views.py:361 .\app\community_views.py:468
+#: .\app\community_views.py:373 .\app\community_views.py:480
 msgid "Prüfen"
 msgstr "Pruefen"
 
-#: .\app\community_views.py:361
+#: .\app\community_views.py:373
 msgid "Schreiben/Lesen erfolgreich"
 msgstr "Read/write successful"
 
-#: .\app\community_views.py:361
+#: .\app\community_views.py:373
 msgid "Cache-Wert konnte nicht gelesen werden."
 msgstr "Cache-Wert konnte nicht gelesen werden."
 
-#: .\app\community_views.py:412 .\app\community_views.py:426
-#: .\app\community_views.py:436 .\app\community_views.py:445
-#: .\app\community_views.py:446
+#: .\app\community_views.py:424 .\app\community_views.py:438
+#: .\app\community_views.py:448 .\app\community_views.py:457
+#: .\app\community_views.py:458
 msgid "Nicht verfügbar"
 msgstr "Nicht verfuegbar"
 
-#: .\app\community_views.py:418
+#: .\app\community_views.py:430
 msgid "Nicht gesetzt"
 msgstr "Not set"
 
-#: .\app\community_views.py:456 .\app\community_views.py:458
+#: .\app\community_views.py:468 .\app\community_views.py:470
 msgid "nicht gesetzt"
 msgstr "nicht gesetzt"
 
-#: .\app\community_views.py:464
+#: .\app\community_views.py:476
 msgid "Django App"
 msgstr "Django App"
 
-#: .\app\community_views.py:464
+#: .\app\community_views.py:476
 msgid "Request wurde erfolgreich verarbeitet."
 msgstr "Request wurde erfolgreich verarbeitet."
 
-#: .\app\community_views.py:467
+#: .\app\community_views.py:479
 msgid "PWA"
 msgstr "PWA"
 
-#: .\app\community_views.py:467 .\app\community_views.py:532
+#: .\app\community_views.py:479 .\app\community_views.py:544
 #: .\app\moderation_views.py:401
 #: .\app\templates\app\nebula_forge_tycoon.html:196
 #: .\app\templates\app\security_dashboard.html:39
@@ -1715,93 +1735,93 @@ msgstr "PWA"
 msgid "Aktiv"
 msgstr "Active"
 
-#: .\app\community_views.py:468
+#: .\app\community_views.py:480
 msgid "Media"
 msgstr "Media"
 
-#: .\app\community_views.py:468 .\app\templates\app\calculator.html:50
+#: .\app\community_views.py:480 .\app\templates\app\calculator.html:50
 #: .\app\templates\app\calculator.html:168 .\app\templates\app\clock.html:142
 #: .\app\templates\app\cookie_clicker.html:90
 #: .\app\templates\app\snake_powerups.html:64
 msgid "Bereit"
 msgstr "Ready"
 
-#: .\app\community_views.py:479 .\app\moderation_views.py:388
+#: .\app\community_views.py:491 .\app\moderation_views.py:388
 msgid "Aktive Nutzer"
 msgstr "Active users"
 
-#: .\app\community_views.py:479
+#: .\app\community_views.py:491
 msgid "letzte 3 Minuten"
 msgstr "last 3 minutes"
 
-#: .\app\community_views.py:480
+#: .\app\community_views.py:492
 msgid "Nutzer gesamt"
 msgstr "Total users"
 
-#: .\app\community_views.py:480
+#: .\app\community_views.py:492
 msgid "aktive Konten"
 msgstr "active accounts"
 
-#: .\app\community_views.py:481
+#: .\app\community_views.py:493
 msgid "Chatnachrichten heute"
 msgstr "Chat messages today"
 
-#: .\app\community_views.py:481
+#: .\app\community_views.py:493
 msgid "neue Nachrichten"
 msgstr "new messages"
 
-#: .\app\community_views.py:482
+#: .\app\community_views.py:494
 msgid "nicht archiviert"
 msgstr "not archived"
 
-#: .\app\community_views.py:483 .\app\profile_forms.py:66
+#: .\app\community_views.py:495 .\app\profile_forms.py:66
 msgid "Dateifreigaben"
 msgstr "File shares"
 
-#: .\app\community_views.py:484
+#: .\app\community_views.py:496
 msgid "Startseiten-Widgets"
 msgstr "Home page widgets"
 
-#: .\app\community_views.py:484
+#: .\app\community_views.py:496
 msgid "konfiguriert"
 msgstr "configured"
 
 # | msgid "Einstellungen"
-#: .\app\community_views.py:490 .\app\moderation_views.py:356
+#: .\app\community_views.py:502 .\app\moderation_views.py:356
 msgid "Offene Meldungen"
 msgstr "Open reports"
 
-#: .\app\community_views.py:492 .\app\templates\app\base.html:532
+#: .\app\community_views.py:504 .\app\templates\app\base.html:532
 #: .\app\templates\app\base.html:535 .\app\templates\app\moderation.html:5
 #: .\app\templates\app\moderation.html:16
 msgid "Moderation"
 msgstr "Moderation"
 
-#: .\app\community_views.py:497 .\app\moderation_views.py:362
+#: .\app\community_views.py:509 .\app\moderation_views.py:362
 msgid "Offenes Feedback"
 msgstr "Open feedback"
 
-#: .\app\community_views.py:504
+#: .\app\community_views.py:516
 msgid "Letzte Audits"
 msgstr "Latest audits"
 
-#: .\app\community_views.py:506 .\app\templates\app\security_dashboard.html:142
+#: .\app\community_views.py:518 .\app\templates\app\security_dashboard.html:142
 #: .\app\templates\app\stream_deck.html:528
 #: .\app\templates\app\uno_lobby.html:91
 msgid "Protokoll"
 msgstr "Log"
 
-#: .\app\community_views.py:511
+#: .\app\community_views.py:523
 msgid "Zugang"
 msgstr "Access"
 
-#: .\app\community_views.py:512
+#: .\app\community_views.py:524
 #: .\app\templates\app\includes\achievement_panel.html:61
 #: .\app\templates\app\moderation.html:62
 msgid "Gesperrt"
 msgstr "Locked"
 
-#: .\app\community_views.py:512 .\app\models.py:1386 .\app\models.py:1522
+#: .\app\community_views.py:524 .\app\models.py:1386 .\app\models.py:1522
 #: .\app\models.py:1661 .\app\models.py:1809 .\app\models.py:1946
 #: .\app\models.py:2121 .\app\models.py:2292 .\app\models.py:2829
 #: .\app\models.py:3079 .\app\models.py:3436
@@ -1811,62 +1831,62 @@ msgstr "Locked"
 msgid "Offen"
 msgstr "Open"
 
-#: .\app\community_views.py:520
+#: .\app\community_views.py:532
 #, python-format
 msgid "Projekt-Laufwerk ist zu %(percent)s%% belegt."
 msgstr "Project drive is %(percent)s%% full."
 
-#: .\app\community_views.py:522
+#: .\app\community_views.py:534
 #, python-format
 msgid "%(count)s fehlgeschlagene Logins heute."
 msgstr "%(count)s failed logins today."
 
-#: .\app\community_views.py:530
+#: .\app\community_views.py:542
 msgid "Python"
 msgstr "Python"
 
-#: .\app\community_views.py:531
+#: .\app\community_views.py:543
 msgid "Django"
 msgstr "Django"
 
-#: .\app\community_views.py:532
+#: .\app\community_views.py:544
 msgid "Debug"
 msgstr "Debug"
 
-#: .\app\community_views.py:532 .\app\moderation_views.py:401
+#: .\app\community_views.py:544 .\app\moderation_views.py:401
 #: .\app\templates\app\stream_deck.html:249
 msgid "Aus"
 msgstr "Off"
 
-#: .\app\community_views.py:533
+#: .\app\community_views.py:545
 msgid "Prozess-RAM"
 msgstr "Prozess-RAM"
 
-#: .\app\community_views.py:534
+#: .\app\community_views.py:546
 msgid "Load Average"
 msgstr "Load Average"
 
-#: .\app\community_views.py:535
+#: .\app\community_views.py:547
 msgid "Uptime"
 msgstr "Uptime"
 
-#: .\app\community_views.py:536
+#: .\app\community_views.py:548
 msgid "Datenbankgröße"
 msgstr "Database size"
 
-#: .\app\community_views.py:537
+#: .\app\community_views.py:549
 msgid "Medienordner"
 msgstr "Media folder"
 
-#: .\app\community_views.py:544
+#: .\app\community_views.py:556
 msgid "Projekt"
 msgstr "Projekt"
 
-#: .\app\community_views.py:545
+#: .\app\community_views.py:557
 msgid "Static Root"
 msgstr "Static Root"
 
-#: .\app\community_views.py:546
+#: .\app\community_views.py:558
 msgid "Media Root"
 msgstr "Media Root"
 
@@ -4745,44 +4765,50 @@ msgstr "Reaction, aim, numbers, typing, visual memory, and highscores."
 msgid "Clicker mit Upgrades, Events, Offline-Fortschritt und Prestige."
 msgstr "A clicker with upgrades, events, offline progress, and prestige."
 
-#: .\app\templates\app\about.html:210
+#: .\app\templates\app\about.html:211
+msgid ""
+"AFK-Tycoon mit Anlagen, Upgrades, Erfolgen, Datenbank-Speichern, Import/"
+"Export und vollständig übersetzbarer Oberfläche."
+msgstr ""
+
+#: .\app\templates\app\about.html:215
 msgid "Drift Circuit Pro"
 msgstr "Drift Circuit Pro"
 
-#: .\app\templates\app\about.html:211
+#: .\app\templates\app\about.html:216
 msgid "Canvas-Racing mit Maps, Nitro und Drift-Score."
 msgstr "Canvas racing with maps, nitro, and drift score."
 
-#: .\app\templates\app\about.html:215
+#: .\app\templates\app\about.html:220
 msgid "Bestenlisten"
 msgstr "Leaderboards"
 
-#: .\app\templates\app\about.html:216
+#: .\app\templates\app\about.html:221
 msgid "Highscores und Fortschritt über mehrere Spiele hinweg vergleichen."
 msgstr "Compare highscores and progress across multiple games."
 
-#: .\app\templates\app\about.html:224
+#: .\app\templates\app\about.html:229
 msgid "Community & Multiplayer"
 msgstr "Community & multiplayer"
 
-#: .\app\templates\app\about.html:231
+#: .\app\templates\app\about.html:236
 msgid ""
 "Direktchats, Gruppen, Reaktionen, Pins und löschbare eigene Nachrichten."
 msgstr "Direct chats, groups, reactions, pins, and deletable own messages."
 
-#: .\app\templates\app\about.html:235
+#: .\app\templates\app\about.html:240
 msgid "Nutzer & Freunde"
 msgstr "Users & friends"
 
-#: .\app\templates\app\about.html:236
+#: .\app\templates\app\about.html:241
 msgid "Öffentliche Profile, Freundschaftsanfragen, Blockieren und Meldungen."
 msgstr "Public profiles, friend requests, blocking, and reports."
 
-#: .\app\templates\app\about.html:240
+#: .\app\templates\app\about.html:245
 msgid "Roadmap & Voting"
 msgstr "Roadmap & Voting"
 
-#: .\app\templates\app\about.html:241
+#: .\app\templates\app\about.html:246
 msgid ""
 "Feature-Ideen einreichen, voten, kommentieren und den Umsetzungsstatus "
 "verfolgen."
@@ -4790,32 +4816,32 @@ msgstr ""
 "Feature-Ideen einreichen, voten, kommentieren und den Umsetzungsstatus "
 "verfolgen."
 
-#: .\app\templates\app\about.html:246
+#: .\app\templates\app\about.html:251
 msgid "Level, XP, Fortschritt und Ranking über MyTools-Aktivitäten anzeigen."
 msgstr "Level, XP, Fortschritt und Ranking ueber MyTools-activeitaeten show."
 
-#: .\app\templates\app\about.html:251
+#: .\app\templates\app\about.html:256
 msgid "Zeichnen, raten, Freunde einladen und Punkte nach jeder Runde ansehen."
 msgstr "Draw, guess, invite friends, and view points after every round."
 
-#: .\app\templates\app\about.html:255
+#: .\app\templates\app\about.html:260
 msgid "Tic Tac Toe & mehr"
 msgstr "Tic Tac Toe & more"
 
-#: .\app\templates\app\about.html:256
+#: .\app\templates\app\about.html:261
 msgid ""
 "Auch Vier gewinnt, Schiffe versenken und Stadt Land Fluss sind integriert."
 msgstr "Connect Four, Battleship, and Stadt Land Fluss are integrated too."
 
-#: .\app\templates\app\about.html:264
+#: .\app\templates\app\about.html:269
 msgid "Plattform & Bedienung"
 msgstr "Platform & usability"
 
-#: .\app\templates\app\about.html:270
+#: .\app\templates\app\about.html:275
 msgid "Globale Suche"
 msgstr "Global search"
 
-#: .\app\templates\app\about.html:271
+#: .\app\templates\app\about.html:276
 msgid ""
 "Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen per MyTools-Suche oder "
 "Ctrl+K finden."
@@ -4823,14 +4849,14 @@ msgstr ""
 "Find tools, notes, files, users and roadmap ideas with MyTools Search or "
 "Ctrl+K."
 
-#: .\app\templates\app\about.html:275
+#: .\app\templates\app\about.html:280
 msgid "Mobile Bedienung"
 msgstr ""
 
 # | msgid ""
 # | "Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil "
 # | "eingebaut."
-#: .\app\templates\app\about.html:276
+#: .\app\templates\app\about.html:281
 #, fuzzy
 msgid ""
 "Bottom-Navigation für Start, Suche, Tools, Header, Chat und Profil; der "
@@ -4838,14 +4864,14 @@ msgid ""
 msgstr ""
 "Added mobile bottom navigation for home, search, tools, chat and profile."
 
-#: .\app\templates\app\about.html:280
+#: .\app\templates\app\about.html:285
 msgid "Design-Einstellungen"
 msgstr "Design settings"
 
 # | msgid ""
 # | "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und "
 # | "Hintergrundeffekte im Browser speichern."
-#: .\app\templates\app\about.html:281
+#: .\app\templates\app\about.html:286
 #, fuzzy
 msgid ""
 "Eigene Farben, Rundungen, hohen Kontrast, weniger Bewegung und verbesserte "
@@ -4854,13 +4880,13 @@ msgstr ""
 "Save compact mode, large text, high contrast, reduced motion and background "
 "effects in the browser."
 
-#: .\app\templates\app\about.html:285 .\app\templates\app\base.html:523
+#: .\app\templates\app\about.html:290 .\app\templates\app\base.html:523
 #: .\app\templates\app\base.html:526 .\app\templates\app\changelog.html:4
 #: .\app\templates\app\changelog.html:14
 msgid "Was ist neu?"
 msgstr "What's new?"
 
-#: .\app\templates\app\about.html:286
+#: .\app\templates\app\about.html:291
 msgid ""
 "Changelog mit den letzten Update-Paketen, sichtbaren Änderungen und "
 "Plattform-Verbesserungen."
@@ -4869,12 +4895,12 @@ msgstr ""
 "improvements."
 
 # | msgid "Nachricht"
-#: .\app\templates\app\about.html:290 .\app\templates\app\base.html:901
+#: .\app\templates\app\about.html:295 .\app\templates\app\base.html:901
 #: .\app\templates\app\base.html:907 .\app\templates\app\profile.html:445
 msgid "Benachrichtigungen"
 msgstr "Notifications"
 
-#: .\app\templates\app\about.html:291
+#: .\app\templates\app\about.html:296
 msgid ""
 "Chat, Spiele, Dateien, Notizen, Roadmap und Achievements getrennt ein- oder "
 "ausschalten."
@@ -4882,11 +4908,11 @@ msgstr ""
 "Enable or disable chat, games, files, notes, roadmap and achievements "
 "separately."
 
-#: .\app\templates\app\about.html:296
+#: .\app\templates\app\about.html:301
 msgid "Admin-Status"
 msgstr "Admin status"
 
-#: .\app\templates\app\about.html:297
+#: .\app\templates\app\about.html:302
 msgid ""
 "Speicher, Datenbank, aktive Nutzer, App-Aktivität und Security-Events im "
 "Blick behalten."
@@ -4894,52 +4920,58 @@ msgstr ""
 "Keep an eye on storage, database, active users, app activity and security "
 "events."
 
-#: .\app\templates\app\about.html:308
+#: .\app\templates\app\about.html:313
 msgid "Technik"
 msgstr "Technology"
 
-#: .\app\templates\app\about.html:309
+#: .\app\templates\app\about.html:314
 msgid "Gebaut für lokale Kontrolle"
 msgstr "Built for local control"
 
-#: .\app\templates\app\about.html:313
+#: .\app\templates\app\about.html:318
 msgid ""
 "Django als Hauptanwendung mit klassischen Templates und fokussierten Views."
 msgstr ""
 "Django as the main application with classic templates and focused views."
 
-#: .\app\templates\app\about.html:314
+#: .\app\templates\app\about.html:319
 msgid ""
 "PostgreSQL, Redis, Gunicorn und Caddy sind für Docker-Deployment vorbereitet."
 msgstr ""
 "PostgreSQL, Redis, Gunicorn, and Caddy are prepared for Docker deployment."
 
-#: .\app\templates\app\about.html:315
+#: .\app\templates\app\about.html:320
 msgid ""
 "WebSocket-Updates halten Benachrichtigungen und Präsenz schneller aktuell, "
 "mit HTTP-Fallback."
 msgstr ""
 
-#: .\app\templates\app\about.html:316
+#: .\app\templates\app\about.html:321
 msgid ""
 "Externe APIs bleiben optional und werden über Umgebungsvariablen "
 "konfiguriert."
 msgstr ""
 "External APIs stay optional and are configured through environment variables."
 
-#: .\app\templates\app\about.html:317
+#: .\app\templates\app\about.html:322
 msgid ""
 "Ein gemeinsamer Qualitätslauf prüft Systemcheck, Migrationen, Tests, "
 "statische Dateien und JavaScript und wird bei Bedarf manuell gestartet."
 msgstr ""
 
-#: .\app\templates\app\about.html:318
+#: .\app\templates\app\about.html:323
 msgid ""
 "Mehrsprachigkeit läuft über Django-Übersetzungen für Deutsch und Englisch."
 msgstr ""
 "Multilingual support runs through Django translations for German and English."
 
-#: .\app\templates\app\about.html:319
+#: .\app\templates\app\about.html:324
+msgid ""
+"Nebula Forge Tycoon nutzt übersetzbare Template- und JavaScript-Texte für "
+"die Django-PO-Dateien."
+msgstr ""
+
+#: .\app\templates\app\about.html:325
 msgid ""
 "PWA-Unterstützung mit Manifest, Service Worker, App-Icons und Offline-"
 "Fallback ist vorbereitet."
@@ -4947,28 +4979,28 @@ msgstr ""
 "PWA-Unterstuetzung mit Manifest, Service Worker, App-Icons und Offline-"
 "Fallback ist vorbereitet."
 
-#: .\app\templates\app\about.html:325
+#: .\app\templates\app\about.html:331
 msgid "Ausblick"
 msgstr "Outlook"
 
-#: .\app\templates\app\about.html:326
+#: .\app\templates\app\about.html:332
 msgid "Was als Nächstes wachsen kann"
 msgstr "What can grow next"
 
-#: .\app\templates\app\about.html:332
+#: .\app\templates\app\about.html:338
 msgid "Benachrichtigungen pro Bereich weiter verfeinern"
 msgstr "Refine notifications per area further"
 
-#: .\app\templates\app\about.html:336
+#: .\app\templates\app\about.html:342
 msgid "Achievements und Profil-Showcases ausbauen"
 msgstr "Expand achievements and profile showcases"
 
-#: .\app\templates\app\about.html:340
+#: .\app\templates\app\about.html:346
 msgid "Mehr Startseiten-Statistiken und Aktivitätsverlauf ergänzen"
 msgstr "Add more home page statistics and activity history"
 
 # | msgid "Design-System und mobile Bedienung weiter verfeinern"
-#: .\app\templates\app\about.html:344
+#: .\app\templates\app\about.html:350
 #, fuzzy
 msgid "Design-System, Kontrastmodus und mobile Bedienung weiter verfeinern"
 msgstr "Further refine the design system and mobile usability"
@@ -9155,7 +9187,9 @@ msgstr "Single-player Tycoon"
 msgid ""
 "Baue eine Weltraum-Schmiede: AFK-Drohnen farmen weiter, aktives Spielen gibt "
 "Combos, Events und Overdrive."
-msgstr "Build a space forge: AFK drones keep farming, active play gives combos, events, and Overdrive."
+msgstr ""
+"Build a space forge: AFK drones keep farming, active play gives combos, "
+"events, and Overdrive."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:34
 #: .\app\templates\app\nebula_forge_tycoon.html:337
@@ -9261,7 +9295,9 @@ msgstr "Reactor heat"
 msgid ""
 "Hitze macht Overdrive möglich. Zu viel Hitze reduziert aktiven Abbau, bis "
 "der Reaktor abkühlt."
-msgstr "Heat enables Overdrive. Too much heat reduces active mining until the reactor cools."
+msgstr ""
+"Heat enables Overdrive. Too much heat reduces active mining until the "
+"reactor cools."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:117
 #: .\app\templates\app\nebula_forge_tycoon.html:462
@@ -9618,7 +9654,8 @@ msgstr "More meteor events and better event rewards."
 #: .\app\templates\app\nebula_forge_tycoon.html:296
 msgid ""
 "Sammelimpuls gibt einen kleinen Sofort-Schub und lädt moderat schneller nach."
-msgstr "Collection Pulse gives a small instant boost and recharges moderately faster."
+msgstr ""
+"Collection Pulse gives a small instant boost and recharges moderately faster."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:297
 msgid "Timing-Events laden schneller wieder auf."
@@ -9667,7 +9704,9 @@ msgstr "Active click streaks trigger extra beat bursts more often."
 msgid ""
 "Hohe Reaktor-Hitze erhöht aktive Klickerträge und kühlt bei Takt-Bursts "
 "leicht ab."
-msgstr "High reactor heat increases active click yields and cools down slightly on beat bursts."
+msgstr ""
+"High reactor heat increases active click yields and cools down slightly on "
+"beat bursts."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:308
 msgid "Sammle 100 Flux."
@@ -9861,7 +9900,9 @@ msgstr "Timing bonus ready"
 msgid ""
 "Bereit: {reward} Splitter beim Neustart. Aktueller Bonus danach ca. +{bonus}"
 "%%."
-msgstr "Ready: {reward} Shards on restart. Current bonus afterward approx. +{bonus}%%."
+msgstr ""
+"Ready: {reward} Shards on restart. Current bonus afterward approx. +{bonus}"
+"%%."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:365
 #, python-brace-format
@@ -9877,7 +9918,8 @@ msgstr "Offline efficiency: {efficiency}%%, offline cap: {hours}h."
 #, python-brace-format
 msgid ""
 "Letzter AFK-Ertrag: {amount} Flux für {duration}. Offline-Cap: {hours}h."
-msgstr "Last AFK earnings: {amount} Flux for {duration}. Offline cap: {hours}h."
+msgstr ""
+"Last AFK earnings: {amount} Flux for {duration}. Offline cap: {hours}h."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:368
 msgid "Kaufen"
@@ -10193,7 +10235,9 @@ msgstr "You need {amount} lifetime Flux."
 msgid ""
 "Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und "
 "Upgrades werden zurückgesetzt."
-msgstr "Start a new galaxy and receive {reward} Shards? Flux, facilities, and upgrades will be reset."
+msgstr ""
+"Start a new galaxy and receive {reward} Shards? Flux, facilities, and "
+"upgrades will be reset."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:446
 msgid "Prestige abgeschlossen"
@@ -10256,7 +10300,9 @@ msgstr "Nebula Forge ready"
 msgid ""
 "Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und "
 "Takt-Bursts auslösen."
-msgstr "Active clicking now scales with your AFK production: keep combos going and trigger beat bursts."
+msgstr ""
+"Active clicking now scales with your AFK production: keep combos going and "
+"trigger beat bursts."
 
 #: .\app\templates\app\note_detail.html:18
 #: .\app\templates\app\note_form.html:16
