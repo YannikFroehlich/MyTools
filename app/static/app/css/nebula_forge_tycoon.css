@@ -138,7 +138,7 @@ body:not(.dark-mode) .nft-page {
     font-size: clamp(1.65rem, 3.35vw, 2.45rem);
 }
 
-.nft-brand span {
+.nft-brand > div > span {
     display: block;
     max-width: 60rem;
     margin-top: 0.22rem;
@@ -322,6 +322,13 @@ body:not(.dark-mode) .nft-stat {
 }
 
 .nft-foundry {
+    --nft-nebula-center: rgba(124, 244, 255, 0.2);
+    --nft-nebula-side: rgba(250, 204, 21, 0.15);
+    --nft-nebula-deep: rgba(236, 72, 153, 0.11);
+    --nft-stars-opacity: 0.32;
+    --nft-star-scale: 1;
+    --nft-orbit-scale: 1;
+    --nft-orbit-speed: 1;
     position: relative;
     display: grid;
     place-items: center;
@@ -331,15 +338,17 @@ body:not(.dark-mode) .nft-stat {
     border: 1px solid var(--nft-border);
     border-radius: 30px;
     background:
-        radial-gradient(circle at center, rgba(124, 244, 255, 0.2), transparent 16rem),
-        radial-gradient(circle at 35% 25%, rgba(250, 204, 21, 0.15), transparent 14rem),
+        radial-gradient(circle at center, var(--nft-nebula-center), transparent 16rem),
+        radial-gradient(circle at 35% 25%, var(--nft-nebula-side), transparent 14rem),
+        radial-gradient(circle at 68% 65%, var(--nft-nebula-deep), transparent 18rem),
         linear-gradient(145deg, rgba(3, 7, 18, 0.82), rgba(14, 21, 47, 0.92));
 }
 
 body:not(.dark-mode) .nft-foundry {
     background:
-        radial-gradient(circle at center, rgba(124, 244, 255, 0.25), transparent 16rem),
-        radial-gradient(circle at 35% 25%, rgba(250, 204, 21, 0.18), transparent 14rem),
+        radial-gradient(circle at center, var(--nft-nebula-center, rgba(124, 244, 255, 0.25)), transparent 16rem),
+        radial-gradient(circle at 35% 25%, var(--nft-nebula-side, rgba(250, 204, 21, 0.18)), transparent 14rem),
+        radial-gradient(circle at 68% 65%, var(--nft-nebula-deep, rgba(236, 72, 153, 0.12)), transparent 18rem),
         linear-gradient(145deg, rgba(229, 241, 255, 0.92), rgba(197, 221, 255, 0.72));
 }
 
@@ -354,20 +363,24 @@ body:not(.dark-mode) .nft-foundry {
         radial-gradient(circle, rgba(124,244,255,.75) 0 1px, transparent 1.5px);
     background-size: 64px 64px, 94px 94px;
     background-position: 0 0, 23px 31px;
-    opacity: 0.32;
+    opacity: var(--nft-stars-opacity, 0.32);
     animation: nftStars 18s linear infinite;
 }
 
+.nft-stars {
+    transform: scale(var(--nft-star-scale, 1));
+}
+
 .nft-stars::before {
-    transform: scale(1.25);
+    transform: scale(calc(1.25 * var(--nft-star-scale, 1)));
     animation-duration: 26s;
-    opacity: 0.22;
+    opacity: calc(var(--nft-stars-opacity, 0.32) * 0.68);
 }
 
 .nft-stars::after {
-    transform: scale(0.8);
+    transform: scale(calc(0.8 * var(--nft-star-scale, 1)));
     animation-duration: 13s;
-    opacity: 0.18;
+    opacity: calc(var(--nft-stars-opacity, 0.32) * 0.56);
 }
 
 .nft-orbit {
@@ -380,13 +393,15 @@ body:not(.dark-mode) .nft-foundry {
 
 .nft-orbit-one {
     width: min(72%, 26rem);
-    animation: nftSpin 20s linear infinite;
+    transform: scale(var(--nft-orbit-scale, 1));
+    animation: nftSpin calc(20s / var(--nft-orbit-speed, 1)) linear infinite;
 }
 
 .nft-orbit-two {
     width: min(88%, 34rem);
     border-color: rgba(250, 204, 21, 0.18);
-    animation: nftSpin 32s linear infinite reverse;
+    transform: scale(calc(var(--nft-orbit-scale, 1) * 1.03));
+    animation: nftSpin calc(32s / var(--nft-orbit-speed, 1)) linear infinite reverse;
 }
 
 .nft-orbit::after,
@@ -405,6 +420,16 @@ body:not(.dark-mode) .nft-foundry {
 .nft-orbit::before { right: -0.35rem; background: var(--nft-accent-3); }
 
 .nft-core-button {
+    --nft-core-scale: 1;
+    --nft-core-halo: rgba(124,244,255,.3);
+    --nft-core-shadow-size: 55px;
+    --nft-core-shadow-depth: 70px;
+    --nft-core-sat: 1;
+    --nft-core-hue: 0deg;
+    --nft-core-ring-width: 0px;
+    --nft-core-ring-opacity: 0.06;
+    --nft-core-ring-scale: 1.08;
+    --nft-core-glow-blur: 8px;
     position: relative;
     z-index: 3;
     display: grid;
@@ -418,22 +443,38 @@ body:not(.dark-mode) .nft-foundry {
         radial-gradient(circle at 55% 60%, rgba(250, 204, 21, .92), rgba(236, 72, 153, .68) 35%, rgba(67, 56, 202, .95) 68%, rgba(15, 23, 42, .98));
     box-shadow:
         0 0 0 1px rgba(255,255,255,.18) inset,
-        0 0 55px rgba(124,244,255,.3),
-        0 30px 70px rgba(0,0,0,.34);
-    transition: transform 0.12s ease, filter 0.12s ease;
+        0 0 var(--nft-core-shadow-size) var(--nft-core-halo),
+        0 30px var(--nft-core-shadow-depth) rgba(0,0,0,.34);
+    transition: transform 0.12s ease, filter 0.18s ease, box-shadow 0.18s ease;
+    filter: saturate(var(--nft-core-sat)) hue-rotate(var(--nft-core-hue));
     user-select: none;
     -webkit-user-select: none;
 }
 
+.nft-core-button::after {
+    content: '';
+    position: absolute;
+    inset: calc(-0.5rem - var(--nft-core-ring-width) * 0.06);
+    border-radius: inherit;
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow:
+        0 0 0 var(--nft-core-ring-width) rgba(124, 244, 255, var(--nft-core-ring-opacity)),
+        0 0 calc(18px + var(--nft-core-ring-width) * 1.8) rgba(250, 204, 21, calc(var(--nft-core-ring-opacity) * 0.82));
+    opacity: 0.95;
+    transform: scale(var(--nft-core-ring-scale));
+    animation: nftPulse 3.4s ease-in-out infinite;
+    pointer-events: none;
+}
+
 .nft-core-button:hover,
 .nft-core-button:focus-visible {
-    transform: translateY(-3px) scale(1.02);
+    transform: translateY(-3px) scale(calc(var(--nft-core-scale) * 1.02));
 }
 
 .nft-core-button:active,
 .nft-core-button.is-pressed {
-    transform: translateY(1px) scale(0.985);
-    filter: brightness(1.08);
+    transform: translateY(1px) scale(calc(var(--nft-core-scale) * 0.985));
+    filter: saturate(var(--nft-core-sat)) hue-rotate(var(--nft-core-hue)) brightness(1.08);
 }
 
 .nft-core-glow {
@@ -441,7 +482,7 @@ body:not(.dark-mode) .nft-foundry {
     inset: -1.2rem;
     border-radius: inherit;
     background: conic-gradient(from 90deg, transparent, rgba(124,244,255,.32), transparent, rgba(250,204,21,.26), transparent);
-    filter: blur(8px);
+    filter: blur(var(--nft-core-glow-blur));
     animation: nftSpin 5s linear infinite;
 }
 
@@ -1060,7 +1101,7 @@ body:not(.dark-mode) .nft-toast {
         font-size: clamp(1.4rem, 2.55vw, 2rem);
     }
 
-    .nft-brand span {
+    .nft-brand > div > span {
         max-width: 54rem;
         margin-top: 0.12rem;
         font-size: 0.8rem;
@@ -1116,6 +1157,7 @@ body:not(.dark-mode) .nft-toast {
     .nft-layout {
         grid-template-columns: minmax(0, 1.43fr) minmax(340px, 0.57fr);
         gap: 0.7rem;
+        align-items: stretch;
     }
 
     .nft-stage-card,
@@ -1296,14 +1338,23 @@ body:not(.dark-mode) .nft-toast {
 
     .nft-panel {
         top: calc(var(--nav-height) + 0.6rem);
+        height: calc(100vh - var(--nav-height) - 1.2rem);
+        min-height: clamp(34rem, 78vh, 47rem);
         max-height: calc(100vh - var(--nav-height) - 1.2rem);
+    }
+
+    .nft-tab-panel.is-active {
+        flex: 1 1 auto;
+        overflow: hidden;
     }
 
     .nft-shop-list,
     .nft-achievement-list {
+        flex: 1 1 auto;
+        min-height: 0;
         gap: 0.45rem;
         margin-top: 0.5rem;
-        max-height: clamp(15rem, 50vh, 27rem);
+        max-height: none;
         padding-right: 0.25rem;
     }
 
@@ -1460,5 +1511,258 @@ body:not(.dark-mode) .nft-toast {
 
     .nft-foundry {
         min-height: 300px;
+    }
+}
+
+/* Prestige is a major reset mechanic, so it sits outside the normal shop tabs. */
+.nft-prestige-hero {
+    position: relative;
+    overflow: hidden;
+    grid-template-columns: minmax(13rem, 0.85fr) minmax(0, 1.4fr) auto;
+    gap: 1rem;
+    align-items: center;
+    margin: 0.85rem 0 1rem;
+    padding: clamp(0.9rem, 1.4vw, 1.15rem);
+    border-radius: 26px;
+    border-color: rgba(var(--theme-accent-rgb), 0.42);
+    background:
+        radial-gradient(circle at 12% 50%, rgba(124, 244, 255, 0.22), transparent 18rem),
+        radial-gradient(circle at 82% 48%, rgba(var(--theme-accent-rgb), 0.28), transparent 16rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 18px 46px rgba(0, 0, 0, 0.18),
+        0 0 38px rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.nft-prestige-hero::before {
+    content: '';
+    position: absolute;
+    inset: -45% -10%;
+    background: conic-gradient(from 160deg, transparent, rgba(124, 244, 255, 0.13), transparent, rgba(250, 204, 21, 0.11), transparent);
+    opacity: 0.8;
+    animation: nftSpin 18s linear infinite;
+    pointer-events: none;
+}
+
+body:not(.dark-mode) .nft-prestige-hero {
+    background:
+        radial-gradient(circle at 12% 50%, rgba(14, 165, 233, 0.18), transparent 18rem),
+        radial-gradient(circle at 82% 48%, rgba(var(--theme-accent-rgb), 0.19), transparent 16rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(234, 244, 255, 0.78));
+}
+
+.nft-prestige-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.nft-prestige-title {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.nft-prestige-title span {
+    flex: 0 0 auto;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1.1rem;
+    box-shadow: 0 0 26px rgba(250, 204, 21, 0.3);
+}
+
+.nft-prestige-hero strong {
+    display: block;
+    font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+    line-height: 1.12;
+}
+
+.nft-prestige-hero p {
+    margin: 0;
+    color: var(--nft-muted);
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.nft-prestige-hero .nft-primary-button {
+    min-height: 3.15rem;
+    border-radius: 18px;
+    padding: 0.82rem 1.2rem;
+    font-size: 0.98rem;
+    font-weight: 950;
+    box-shadow:
+        0 16px 34px rgba(var(--theme-accent-rgb), 0.28),
+        0 0 28px rgba(var(--theme-accent-rgb), 0.16);
+}
+
+.nft-prestige-hero .nft-primary-button:not(:disabled) {
+    animation: nftPrestigeReadyPulse 1.85s ease-in-out infinite;
+}
+
+@keyframes nftPrestigeReadyPulse {
+    0%, 100% { transform: translateY(0); filter: brightness(1); }
+    50% { transform: translateY(-2px); filter: brightness(1.08); }
+}
+
+@media (max-width: 1120px) {
+    .nft-prestige-hero {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .nft-prestige-hero > p {
+        grid-column: 1 / -1;
+        order: 3;
+    }
+}
+
+@media (max-width: 780px) {
+    .nft-prestige-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .nft-prestige-hero .nft-primary-button {
+        width: 100%;
+    }
+}
+
+
+/* Keep management cards and prestige content left-aligned for readability. */
+.nft-shop-card,
+.nft-achievement-card,
+.nft-shop-copy,
+.nft-achievement-copy,
+.nft-shop-copy strong,
+.nft-achievement-copy strong,
+.nft-shop-copy p,
+.nft-achievement-copy p,
+.nft-shop-meta,
+.nft-prestige-card,
+.nft-prestige-card > div,
+.nft-prestige-card strong,
+.nft-prestige-card p,
+.nft-prestige-hero,
+.nft-prestige-title,
+.nft-prestige-title > div,
+.nft-prestige-hero strong,
+.nft-prestige-hero p {
+    text-align: left;
+}
+
+.nft-shop-copy,
+.nft-achievement-copy,
+.nft-prestige-card > div,
+.nft-prestige-title > div {
+    justify-self: stretch;
+}
+
+.nft-shop-card,
+.nft-achievement-card,
+.nft-prestige-card,
+.nft-prestige-hero {
+    justify-items: stretch;
+}
+
+.nft-prestige-hero > p {
+    justify-self: start;
+}
+
+
+/* Final alignment polish for hero and panel headers */
+.nft-hero {
+    align-items: flex-start;
+}
+
+.nft-brand {
+    flex: 1 1 auto;
+    align-items: flex-start;
+}
+
+.nft-brand > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+    min-width: 0;
+}
+
+.nft-brand p,
+.nft-brand h1,
+.nft-brand > div > span {
+    width: 100%;
+    text-align: left;
+}
+
+.nft-hero-actions {
+    flex: 0 0 auto;
+    align-self: center;
+}
+
+.nft-panel-head,
+.nft-stage-head {
+    align-items: flex-start;
+}
+
+.nft-panel-head > div,
+.nft-stage-head > div {
+    min-width: 0;
+}
+
+.nft-panel-head h2,
+.nft-stage-head h2 {
+    line-height: 1.12;
+    padding-bottom: 0.06em;
+    text-align: left;
+}
+
+@media (max-width: 780px) {
+    .nft-hero {
+        align-items: stretch;
+    }
+
+    .nft-hero-actions {
+        align-self: stretch;
+    }
+}
+
+
+/* Header icon hotfix: only the description span may behave like text. */
+.nft-brand .nft-brand-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: clamp(2.65rem, 4.7vw, 3.4rem);
+    height: clamp(2.65rem, 4.7vw, 3.4rem);
+    max-width: none;
+    margin: 0;
+    color: #08111f;
+    line-height: 1;
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+.nft-brand > div > span {
+    display: block;
+    max-width: 60rem;
+    margin-top: 0.22rem;
+    color: var(--nft-muted);
+    line-height: 1.32;
+    font-size: 0.94rem;
+}
+
+@media (min-width: 1400px) {
+    .nft-brand .nft-brand-icon {
+        width: clamp(2.25rem, 3.8vw, 2.7rem);
+        height: clamp(2.25rem, 3.8vw, 2.7rem);
+        border-radius: 14px;
+        font-size: 1rem;
+    }
+
+    .nft-brand > div > span {
+        max-width: 54rem;
+        margin-top: 0.12rem;
+        font-size: 0.8rem;
+        line-height: 1.22;
     }
 }

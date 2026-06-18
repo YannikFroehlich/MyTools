@@ -6,6 +6,8 @@
     const EXPORT_FORMAT = "mytools-nebula-forge-tycoon-save";
     const SAVE_VERSION = 2;
     const DB_SAVE_COOLDOWN_SECONDS = 60;
+    const SPACE_MINE_REPEAT_INTERVAL_MS = 150;
+    const SPACE_MINE_SPAM_INTERVAL_MS = 55;
     const DB_LOAD_URL = root.dataset.dbLoadUrl || "";
     const DB_SAVE_URL = root.dataset.dbSaveUrl || "";
     const USER_IS_AUTHENTICATED = root.dataset.authenticated === "true";
@@ -360,16 +362,19 @@
         signalHint: document.getElementById("nftSignalHint"),
         signalPanel: document.getElementById("nftSignalPanel"),
         signalMarker: document.getElementById("nftSignalMarker"),
+        signalZone: document.querySelector("#nftSignalPanel .nft-signal-zone"),
         stopSignalButton: document.getElementById("nftStopSignalButton"),
         riftButton: document.getElementById("nftRiftButton"),
         riftHint: document.getElementById("nftRiftHint"),
         riftPanel: document.getElementById("nftRiftPanel"),
         riftMarker: document.getElementById("nftRiftMarker"),
+        riftZone: document.querySelector("#nftRiftPanel .nft-signal-zone"),
         stopRiftButton: document.getElementById("nftStopRiftButton"),
         cryoButton: document.getElementById("nftCryoButton"),
         cryoHint: document.getElementById("nftCryoHint"),
         cryoPanel: document.getElementById("nftCryoPanel"),
         cryoMarker: document.getElementById("nftCryoMarker"),
+        cryoZone: document.querySelector("#nftCryoPanel .nft-signal-zone"),
         stopCryoButton: document.getElementById("nftStopCryoButton"),
         buildings: document.getElementById("nftBuildings"),
         buildingCount: document.getElementById("nftBuildingCount"),
@@ -394,11 +399,17 @@
     let lastFrame = now();
     let holdTimer = null;
     let renderQueued = false;
+    let shopScrollLockUntil = 0;
+    let lastBuildingsRenderKey = "";
+    let lastUpgradesRenderKey = "";
+    let lastAchievementsRenderKey = "";
+    const SHOP_SCROLL_IDLE_MS = 650;
     let activeSignal = null;
     let activeRift = null;
     let activeCryo = null;
     let nextMeteorAt = nextMeteorTime();
     let dbSaveCooldownUntil = 0;
+    let lastSpaceMineAt = 0;
 
     function sanitizeNumber(value, fallback = 0) {
         const parsed = Number(value);
@@ -597,7 +608,7 @@
             applyOfflineProgress(loaded);
             state = loaded;
             saveState(false);
-            renderAll();
+            renderAll(true);
             showMessage("Datenbank-Spielstand geladen", "Dein gespeicherter Nebula-Forge-Stand wurde geladen.");
         } catch (error) {
             console.warn("Nebula Forge Datenbank-Spielstand konnte nicht geladen werden.", error);
@@ -879,7 +890,8 @@
             return;
         }
         state.buildings[id] = owned + 1;
-        renderAll();
+        renderStats();
+        renderShopLists(true);
         checkAchievements();
         saveState();
     }
@@ -896,7 +908,8 @@
         }
         state.upgrades[id] = level + 1;
         state.heat = clamp(state.heat, 0, maxHeat());
-        renderAll();
+        renderStats();
+        renderShopLists(true);
         checkAchievements();
         saveState();
     }
@@ -958,6 +971,38 @@
         saveState();
     }
 
+    function randomRange(min, max) {
+        return min + Math.random() * (max - min);
+    }
+
+    function createTimingWindow(perfectWidth, closePadding) {
+        const safeMargin = 6;
+        const minStart = safeMargin + closePadding;
+        const maxStart = 100 - safeMargin - closePadding - perfectWidth;
+        const perfectStart = randomRange(minStart, Math.max(minStart, maxStart));
+        const perfectEnd = perfectStart + perfectWidth;
+        return {
+            perfectStart,
+            perfectEnd,
+            closeStart: Math.max(0, perfectStart - closePadding),
+            closeEnd: Math.min(100, perfectEnd + closePadding),
+        };
+    }
+
+    function applyTimingZone(zoneElement, timingWindow) {
+        if (!zoneElement || !timingWindow) return;
+        zoneElement.style.left = `${timingWindow.perfectStart}%`;
+        zoneElement.style.width = `${timingWindow.perfectEnd - timingWindow.perfectStart}%`;
+    }
+
+    function isInsideTimingWindow(position, timingWindow, mode) {
+        if (!timingWindow) return false;
+        if (mode === "perfect") {
+            return position >= timingWindow.perfectStart && position <= timingWindow.perfectEnd;
+        }
+        return position >= timingWindow.closeStart && position <= timingWindow.closeEnd;
+    }
+
     function startSignalRaid() {
         if (activeSignal) {
             stopSignalRaid();
@@ -968,12 +1013,15 @@
             showMessage("Signal lädt", `Bereit in ${formatSeconds((state.signalReadyAt - currentTime) / 1000)}.`);
             return;
         }
+        const timingWindow = createTimingWindow(20, 10);
         activeSignal = {
             startedAt: currentTime,
             position: 0,
             direction: 1,
             speed: 42 + Math.min(40, state.prestigeLevel * 2 + upgradeLevel("comboMatrix") * 2),
+            timingWindow,
         };
+        applyTimingZone(elements.signalZone, timingWindow);
         elements.signalPanel.hidden = false;
         elements.signalButton.querySelector("strong").textContent = "Signal stoppen";
         elements.signalHint.textContent = "Marker treffen";
@@ -982,8 +1030,8 @@
     function stopSignalRaid() {
         if (!activeSignal) return;
         const position = activeSignal.position;
-        const perfect = position >= 62 && position <= 82;
-        const close = position >= 52 && position <= 92;
+        const perfect = isInsideTimingWindow(position, activeSignal.timingWindow, "perfect");
+        const close = isInsideTimingWindow(position, activeSignal.timingWindow, "close");
         let rewardMultiplier = close ? 35 : 12;
         let boostDuration = eventBoostDuration(close ? 14000 : 7000);
         if (perfect) {
@@ -1016,12 +1064,15 @@
             showMessage("Flux-Riss lädt", `Bereit in ${formatSeconds((state.riftReadyAt - currentTime) / 1000)}.`);
             return;
         }
+        const timingWindow = createTimingWindow(16, 9);
         activeRift = {
             startedAt: currentTime,
             position: 100,
             direction: -1,
             speed: 58 + upgradeLevel("eventRelay") * 2.5 + Math.min(18, state.prestigeLevel * 1.5),
+            timingWindow,
         };
+        applyTimingZone(elements.riftZone, timingWindow);
         elements.riftPanel.hidden = false;
         elements.riftButton.querySelector("strong").textContent = "Riss versiegeln";
         elements.riftHint.textContent = "Marker treffen";
@@ -1030,8 +1081,8 @@
     function stopRiftEvent() {
         if (!activeRift) return;
         const position = activeRift.position;
-        const perfect = position >= 38 && position <= 54;
-        const close = position >= 30 && position <= 64;
+        const perfect = isInsideTimingWindow(position, activeRift.timingWindow, "perfect");
+        const close = isInsideTimingWindow(position, activeRift.timingWindow, "close");
         const boostDuration = eventBoostDuration(perfect ? 26000 : close ? 15000 : 6500);
         const reward = (manualPower() * (perfect ? 95 : close ? 48 : 15) + calculateCps() * (perfect ? 34 : close ? 16 : 5)) * eventRewardMultiplier();
         addFlux(reward, `${perfect ? "Riss perfekt" : close ? "Riss" : "Streifschuss"} +${format(reward)}`);
@@ -1062,12 +1113,15 @@
             showMessage("Kryo-Takt lädt", `Bereit in ${formatSeconds((state.cryoReadyAt - currentTime) / 1000)}.`);
             return;
         }
+        const timingWindow = createTimingWindow(16, 7);
         activeCryo = {
             startedAt: currentTime,
             position: 0,
             direction: 1,
             speed: 72 + upgradeLevel("eventRelay") * 2,
+            timingWindow,
         };
+        applyTimingZone(elements.cryoZone, timingWindow);
         elements.cryoPanel.hidden = false;
         elements.cryoButton.querySelector("strong").textContent = "Kryo stoppen";
         elements.cryoHint.textContent = "kaltes Fenster treffen";
@@ -1076,8 +1130,8 @@
     function stopCryoEvent() {
         if (!activeCryo) return;
         const position = activeCryo.position;
-        const perfect = position >= 12 && position <= 28;
-        const close = position >= 7 && position <= 36;
+        const perfect = isInsideTimingWindow(position, activeCryo.timingWindow, "perfect");
+        const close = isInsideTimingWindow(position, activeCryo.timingWindow, "close");
         const beforeHeat = state.heat;
         const heatDrop = close ? maxHeat() * (perfect ? 0.58 : 0.34) : maxHeat() * 0.12;
         state.heat = Math.max(0, state.heat - heatDrop);
@@ -1194,7 +1248,11 @@
                 showMessage("Erfolg freigeschaltet", item.title);
             }
         });
-        if (changed) saveState();
+        if (changed) {
+            saveState();
+            renderShopLists(true);
+        }
+        return changed;
     }
 
     function performPrestige() {
@@ -1218,15 +1276,62 @@
         showMessage("Prestige abgeschlossen", `Galaxie Level ${newLevel}. Dauerhafter Bonus: +${Math.round((prestigeMultiplier() - 1) * 100)}%.`);
         checkAchievements();
         saveState();
-        renderAll();
+        renderAll(true);
     }
 
-    function renderAll() {
+    function renderAll(forceShops = false) {
         renderStats();
-        renderBuildings();
-        renderUpgrades();
-        renderAchievements();
+        updateNebulaAppearance();
+        renderShopLists(forceShops);
         renderModes();
+    }
+
+    function updateNebulaAppearance() {
+        if (!elements.mineButton || !elements.foundry) return;
+
+        const prestigeLevel = Math.max(1, Math.floor(state.prestigeLevel || 1));
+        const intensity = Math.max(0, prestigeLevel - 1);
+        const shardIntensity = Math.min(20, state.shards || 0);
+
+        const coreScale = 1 + Math.min(0.14, intensity * 0.012);
+        const hueRotate = Math.min(165, intensity * 11 + shardIntensity * 1.8);
+        const saturation = 1 + Math.min(0.95, intensity * 0.055 + shardIntensity * 0.014);
+        const coreHaloOpacity = clamp(0.30 + intensity * 0.055 + shardIntensity * 0.008, 0.30, 0.98);
+        const coreShadowSize = 55 + Math.min(90, intensity * 6 + shardIntensity * 2.2);
+        const coreShadowDepth = 70 + Math.min(80, intensity * 5 + shardIntensity * 1.8);
+        const ringWidth = Math.min(20, intensity * 1.6 + shardIntensity * 0.35);
+        const ringOpacity = clamp(0.05 + intensity * 0.018 + shardIntensity * 0.004, 0.05, 0.28);
+        const ringScale = 1.08 + Math.min(0.16, intensity * 0.012);
+        const glowBlur = 8 + Math.min(16, intensity * 1.15 + shardIntensity * 0.25);
+
+        const starOpacity = clamp(0.32 + intensity * 0.018 + shardIntensity * 0.004, 0.32, 0.72);
+        const starScale = 1 + Math.min(0.12, intensity * 0.01);
+        const orbitScale = 1 + Math.min(0.18, intensity * 0.014);
+        const orbitSpeed = 1 + Math.min(0.85, intensity * 0.055 + shardIntensity * 0.01);
+        const nebulaCenter = clamp(0.20 + intensity * 0.022, 0.20, 0.58);
+        const nebulaSide = clamp(0.15 + intensity * 0.018, 0.15, 0.46);
+        const nebulaDeep = clamp(0.11 + intensity * 0.014, 0.11, 0.38);
+
+        elements.mineButton.style.setProperty("--nft-core-scale", coreScale.toFixed(3));
+        elements.mineButton.style.setProperty("--nft-core-hue", `${hueRotate.toFixed(0)}deg`);
+        elements.mineButton.style.setProperty("--nft-core-sat", saturation.toFixed(3));
+        elements.mineButton.style.setProperty("--nft-core-halo", `rgba(124, 244, 255, ${coreHaloOpacity.toFixed(3)})`);
+        elements.mineButton.style.setProperty("--nft-core-shadow-size", `${Math.round(coreShadowSize)}px`);
+        elements.mineButton.style.setProperty("--nft-core-shadow-depth", `${Math.round(coreShadowDepth)}px`);
+        elements.mineButton.style.setProperty("--nft-core-ring-width", `${ringWidth.toFixed(2)}px`);
+        elements.mineButton.style.setProperty("--nft-core-ring-opacity", ringOpacity.toFixed(3));
+        elements.mineButton.style.setProperty("--nft-core-ring-scale", ringScale.toFixed(3));
+        elements.mineButton.style.setProperty("--nft-core-glow-blur", `${Math.round(glowBlur)}px`);
+        elements.mineButton.dataset.prestigeLevel = String(prestigeLevel);
+
+        elements.foundry.style.setProperty("--nft-stars-opacity", starOpacity.toFixed(3));
+        elements.foundry.style.setProperty("--nft-star-scale", starScale.toFixed(3));
+        elements.foundry.style.setProperty("--nft-orbit-scale", orbitScale.toFixed(3));
+        elements.foundry.style.setProperty("--nft-orbit-speed", orbitSpeed.toFixed(3));
+        elements.foundry.style.setProperty("--nft-nebula-center", `rgba(124, 244, 255, ${nebulaCenter.toFixed(3)})`);
+        elements.foundry.style.setProperty("--nft-nebula-side", `rgba(250, 204, 21, ${nebulaSide.toFixed(3)})`);
+        elements.foundry.style.setProperty("--nft-nebula-deep", `rgba(236, 72, 153, ${nebulaDeep.toFixed(3)})`);
+        elements.foundry.dataset.prestigeLevel = String(prestigeLevel);
     }
 
     function renderStats() {
@@ -1289,6 +1394,87 @@
 
         if (elements.offlineInfo && !elements.offlineInfo.dataset.touched) {
             elements.offlineInfo.textContent = `Offline-Effizienz: ${Math.round(offlineEfficiency() * 100)}%, Offline-Cap: ${offlineCapHours()}h.`;
+        }
+    }
+
+    function markShopScrollActive() {
+        shopScrollLockUntil = now() + SHOP_SCROLL_IDLE_MS;
+    }
+
+    function missingBucket(cost) {
+        const missing = Math.max(0, cost - state.flux);
+        if (missing <= 0) return 0;
+        return Math.ceil(missing / Math.max(1, cost * 0.04));
+    }
+
+    function buildingsRenderKey() {
+        return buildings.map(item => {
+            const owned = buildingCount(item.id);
+            const cost = costFor(item, owned);
+            const affordable = state.flux >= cost ? 1 : 0;
+            return `${item.id}:${owned}:${affordable}:${missingBucket(cost)}`;
+        }).join("|");
+    }
+
+    function upgradesRenderKey() {
+        return upgrades.map(item => {
+            const level = upgradeLevel(item.id);
+            const maxed = level >= item.max ? 1 : 0;
+            const cost = costFor(item, level);
+            const affordable = state.flux >= cost && !maxed ? 1 : 0;
+            return `${item.id}:${level}:${maxed}:${affordable}:${missingBucket(cost)}`;
+        }).join("|");
+    }
+
+    function achievementsRenderKey() {
+        return achievements.map(item => `${item.id}:${state.achievements[item.id] ? 1 : 0}`).join("|");
+    }
+
+    function preserveListScroll(element, renderCallback) {
+        if (!element) {
+            renderCallback();
+            return;
+        }
+
+        const previousScrollTop = element.scrollTop;
+        const previousMaxScrollTop = Math.max(0, element.scrollHeight - element.clientHeight);
+        const distanceFromBottom = previousMaxScrollTop - previousScrollTop;
+        renderCallback();
+
+        window.requestAnimationFrame(() => {
+            const nextMaxScrollTop = Math.max(0, element.scrollHeight - element.clientHeight);
+            const shouldStayAtBottom = previousMaxScrollTop > 0 && distanceFromBottom <= 2;
+            element.scrollTop = shouldStayAtBottom
+                ? nextMaxScrollTop
+                : Math.min(previousScrollTop, nextMaxScrollTop);
+        });
+    }
+
+    function renderShopLists(force = false) {
+        const isUserScrollingShop = now() < shopScrollLockUntil;
+        const buildingKey = buildingsRenderKey();
+        const upgradeKey = upgradesRenderKey();
+        const achievementKey = achievementsRenderKey();
+
+        if ((force || buildingKey !== lastBuildingsRenderKey) && (!isUserScrollingShop || force)) {
+            preserveListScroll(elements.buildings, () => {
+                renderBuildings();
+                lastBuildingsRenderKey = buildingKey;
+            });
+        }
+
+        if ((force || upgradeKey !== lastUpgradesRenderKey) && (!isUserScrollingShop || force)) {
+            preserveListScroll(elements.upgrades, () => {
+                renderUpgrades();
+                lastUpgradesRenderKey = upgradeKey;
+            });
+        }
+
+        if ((force || achievementKey !== lastAchievementsRenderKey) && (!isUserScrollingShop || force)) {
+            preserveListScroll(elements.achievements, () => {
+                renderAchievements();
+                lastAchievementsRenderKey = achievementKey;
+            });
         }
     }
 
@@ -1425,7 +1611,7 @@
                 state = mergeState(payload.state);
                 state.lastSaved = now();
                 saveState();
-                renderAll();
+                renderAll(true);
                 showMessage("Import abgeschlossen", "Dein Spielstand wurde geladen.");
             } catch (error) {
                 console.warn("Nebula Forge Import fehlgeschlagen.", error);
@@ -1450,7 +1636,7 @@
         elements.cryoPanel.hidden = true;
         elements.eventLayer.innerHTML = "";
         nextMeteorAt = nextMeteorTime();
-        renderAll();
+        renderAll(true);
         saveState();
         showMessage("Zurückgesetzt", "Du startest wieder mit einer frischen Schmiede.");
     }
@@ -1584,14 +1770,37 @@
             "Numpad5": { button: elements.cryoButton, run: startCryoEvent },
         };
 
+        const pulseCoreButton = () => {
+            elements.mineButton.classList.add("is-pressed");
+            window.setTimeout(() => elements.mineButton.classList.remove("is-pressed"), 95);
+        };
+
+        const mineWithSpace = event => {
+            const currentTime = now();
+            const minimumInterval = event.repeat ? SPACE_MINE_REPEAT_INTERVAL_MS : SPACE_MINE_SPAM_INTERVAL_MS;
+            if (currentTime - lastSpaceMineAt < minimumInterval) return;
+            lastSpaceMineAt = currentTime;
+            pulseCoreButton();
+            manualMine(event.repeat ? 0.58 : 1, event.repeat ? 1.35 : 2.8);
+        };
+
         document.addEventListener("keydown", event => {
-            if (event.repeat || isTypingTarget(event.target)) return;
+            if (isTypingTarget(event.target)) return;
+
+            if ((event.code === "Space" || event.key === " ") && !event.ctrlKey && !event.altKey && !event.metaKey) {
+                event.preventDefault();
+                event.stopPropagation();
+                mineWithSpace(event);
+                return;
+            }
+
+            if (event.repeat) return;
             const action = shortcutActions[event.key] || shortcutActions[event.code];
             if (!action) return;
             event.preventDefault();
             pulseShortcutButton(action.button);
             action.run();
-        });
+        }, true);
 
         const handleShopBuy = (event, selector, callback) => {
             const button = event.target.closest(selector);
@@ -1621,6 +1830,13 @@
             handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade));
         });
 
+        [elements.buildings, elements.upgrades, elements.achievements].forEach(list => {
+            if (!list) return;
+            list.addEventListener("scroll", markShopScrollActive, { passive: true });
+            list.addEventListener("wheel", markShopScrollActive, { passive: true });
+            list.addEventListener("touchmove", markShopScrollActive, { passive: true });
+        });
+
         document.querySelectorAll(".nft-tabs button").forEach(button => {
             button.addEventListener("click", () => {
                 document.querySelectorAll(".nft-tabs button").forEach(item => item.classList.toggle("is-active", item === button));
@@ -1637,17 +1853,17 @@
             });
         });
 
-        elements.saveButton.addEventListener("click", saveDatabaseState);
-        elements.exportButton.addEventListener("click", exportSave);
-        elements.importInput.addEventListener("change", () => importSave(elements.importInput.files[0]));
-        elements.resetButton.addEventListener("click", resetSave);
-        elements.resetHeaderButton.addEventListener("click", resetSave);
+        elements.saveButton?.addEventListener("click", saveDatabaseState);
+        elements.exportButton?.addEventListener("click", exportSave);
+        elements.importInput?.addEventListener("change", () => importSave(elements.importInput.files[0]));
+        elements.resetButton?.addEventListener("click", resetSave);
+        elements.resetHeaderButton?.addEventListener("click", resetSave);
         window.addEventListener("beforeunload", () => saveState(false));
         window.setInterval(() => saveState(false), 5000);
     }
 
     attachEvents();
-    renderAll();
+    renderAll(true);
     loadDatabaseSave();
     showMessage("Nebula Forge bereit", "Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen.");
     window.requestAnimationFrame(gameLoop);

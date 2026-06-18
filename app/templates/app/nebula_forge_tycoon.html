@@ -5,7 +5,7 @@
 {% block title %}Nebula Forge Tycoon - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260618-nebula-forge-meteor-safe-spawn">
+    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260618-nebula-forge-header-icon-hotfix">
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
     <div class="nft-shell">
         <header class="nft-hero">
             <div class="nft-brand">
-                <span class="nft-brand-icon"><i class="fa-solid fa-meteor"></i></span>
+                <span class="nft-brand-icon"><i class="fa-solid fa-atom"></i></span>
                 <div>
                     <p>{% translate "Singleplayer Tycoon" %}</p>
                     <h1>Nebula Forge Tycoon</h1>
@@ -64,6 +64,21 @@
             </article>
         </section>
 
+        <section class="nft-prestige-card nft-prestige-hero" aria-label="{% translate 'Prestige Neustart' %}">
+            <div class="nft-prestige-title">
+                <span><i class="fa-solid fa-star"></i></span>
+                <div>
+                    <p class="nft-kicker"><i class="fa-solid fa-wand-sparkles"></i> {% translate "Galaxie-Neustart" %}</p>
+                    <strong>{% translate "Prestige: neue Galaxie" %}</strong>
+                </div>
+            </div>
+            <p id="nftPrestigeHint">{% translate "Sammle genug Lifetime-Flux, um Splitter zu erhalten." %}</p>
+            <button type="button" class="nft-primary-button" id="nftPrestigeButton">
+                <i class="fa-solid fa-star"></i>
+                {% translate "Prestige starten" %}
+            </button>
+        </section>
+
         <div class="nft-layout">
             <section class="nft-stage-card">
                 <div class="nft-stage-head">
@@ -83,7 +98,7 @@
                         <span class="nft-core-icon"><i class="fa-solid fa-gem"></i></span>
                         <span class="nft-core-copy">
                             <strong>{% translate "Abbauen" %}</strong>
-                            <small>{% translate "klicken oder halten" %}</small>
+                            <small>{% translate "klicken, halten oder Leertaste" %}</small>
                         </span>
                     </button>
                     <div class="nft-event-layer" id="nftEventLayer" aria-live="polite"></div>
@@ -129,7 +144,7 @@
                 <div class="nft-signal-panel" id="nftSignalPanel" hidden>
                     <div class="nft-signal-top">
                         <strong>{% translate "Signal-Raid" %}</strong>
-                        <span>{% translate "Stoppe den Marker im grünen Fenster." %}</span>
+                        <span>{% translate "Stoppe den Marker im zufälligen grünen Fenster." %}</span>
                     </div>
                     <div class="nft-signal-track" id="nftSignalTrack">
                         <span class="nft-signal-zone"></span>
@@ -144,7 +159,7 @@
                 <div class="nft-signal-panel nft-rift-panel" id="nftRiftPanel" hidden>
                     <div class="nft-signal-top">
                         <strong>{% translate "Flux-Riss" %}</strong>
-                        <span>{% translate "Triff das violette Fenster für einen AFK-Produktionsboost." %}</span>
+                        <span>{% translate "Triff das zufällige violette Fenster für einen AFK-Produktionsboost." %}</span>
                     </div>
                     <div class="nft-signal-track">
                         <span class="nft-signal-zone nft-rift-zone"></span>
@@ -159,7 +174,7 @@
                 <div class="nft-signal-panel nft-cryo-panel" id="nftCryoPanel" hidden>
                     <div class="nft-signal-top">
                         <strong>{% translate "Kryo-Takt" %}</strong>
-                        <span>{% translate "Triff das blaue Fenster, um Hitze stark zu senken." %}</span>
+                        <span>{% translate "Triff das zufällige blaue Fenster, um Hitze stark zu senken." %}</span>
                     </div>
                     <div class="nft-signal-track">
                         <span class="nft-signal-zone nft-cryo-zone"></span>
@@ -211,14 +226,6 @@
                         </div>
                     </div>
                     <div class="nft-shop-list" id="nftUpgrades"></div>
-                    <div class="nft-prestige-card">
-                        <div>
-                            <span><i class="fa-solid fa-star"></i></span>
-                            <strong>{% translate "Prestige: neue Galaxie" %}</strong>
-                            <p id="nftPrestigeHint">{% translate "Sammle genug Lifetime-Flux, um Splitter zu erhalten." %}</p>
-                        </div>
-                        <button type="button" class="nft-primary-button" id="nftPrestigeButton">{% translate "Prestige" %}</button>
-                    </div>
                 </section>
 
                 <section class="nft-tab-panel" data-panel="achievements">
@@ -271,5 +278,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260618-nebula-forge-meteor-safe-spawn" defer></script>
+    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260618-nebula-forge-header-icon-hotfix" defer></script>
 {% endblock %}
