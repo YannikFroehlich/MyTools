@@ -25,6 +25,9 @@
         eventLayer: document.getElementById("cc2EventLayer"),
         cookieButton: document.getElementById("cc2CookieButton"),
         mainCookie: document.getElementById("cc2MainCookie"),
+        comboMeter: document.getElementById("cc2ComboMeter"),
+        comboLabel: document.getElementById("cc2ComboLabel"),
+        comboBar: document.getElementById("cc2ComboBar"),
         floatingLayer: document.getElementById("cc2FloatingLayer"),
         toastLayer: document.getElementById("cc2ToastLayer"),
         buffRow: document.getElementById("cc2BuffRow"),
@@ -53,43 +56,53 @@
     const SAVE_VERSION = 2;
     const LOCAL_SAVE_INTERVAL = 5000;
     const RENDER_INTERVAL = 180;
+    const SHOP_RENDER_INTERVAL = 900;
+    const PANEL_RENDER_INTERVAL = 1800;
+    const COMBO_CAP = 100;
+    const COMBO_DECAY_PER_SECOND = 36;
+    const COMBO_GRACE_MS = 1450;
 
-    const manifest = readManifest();
+    const PRESTIGE_RECIPES = [
+        { level: 1, name: "Klassischer Keks", accent: "#f2b15b", crumb: "#5d2e13", dough: "#d58a38", shine: "#ffe2a5", className: "recipe-1" },
+        { level: 2, name: "Weiße Schoko", accent: "#fff0c9", crumb: "#fff5d8", dough: "#e4b55a", shine: "#fff8e8", className: "recipe-2" },
+        { level: 3, name: "Dunkler Keks", accent: "#93664c", crumb: "#1f100b", dough: "#5b2b1d", shine: "#bd8762", className: "recipe-3" },
+        { level: 4, name: "Dunkle Schoko Weiß", accent: "#ead9bb", crumb: "#fff0c9", dough: "#6b3422", shine: "#f7d99e", className: "recipe-4" },
+    ];
 
     const BUILDINGS = [
-        { id: "hand_mixer", name: "Handmixer", desc: "Kleine Startlinie für die ersten Kekse.", icon: "fa-solid fa-hand-sparkles", baseCost: 15, baseCps: 0.12 },
-        { id: "cookie_drone", name: "Cookie-Drohne", desc: "Sammelt Krümel direkt aus der Umlaufbahn.", icon: "fa-solid fa-helicopter", baseCost: 110, baseCps: 0.85 },
-        { id: "dough_robot", name: "Teigroboter", desc: "Knetet ohne Pause und trifft fast jede Rezeptur.", icon: "fa-solid fa-robot", baseCost: 640, baseCps: 4.4 },
-        { id: "sugar_press", name: "Zuckerpresse", desc: "Presst Sterne zu knusprigem Cookie-Staub.", icon: "fa-solid fa-compress", baseCost: 3200, baseCps: 22 },
-        { id: "choco_mine", name: "Schoko-Mine", desc: "Bohrt dunkle und weiße Schokoadern an.", icon: "fa-solid fa-mountain", baseCost: 14500, baseCps: 105 },
-        { id: "cookie_factory", name: "Cookie-Fabrik", desc: "Deine erste richtige Produktionshalle.", icon: "fa-solid fa-industry", baseCost: 68000, baseCps: 520 },
-        { id: "orbit_oven", name: "Orbit-Ofen", desc: "Backt Cookies auf stabiler Planetenumlaufbahn.", icon: "fa-solid fa-satellite", baseCost: 340000, baseCps: 2900 },
-        { id: "milky_mill", name: "Milchstraßen-Mühle", desc: "Mahlt Galaxien zu feinem Vanillemehl.", icon: "fa-solid fa-star-and-crescent", baseCost: 1900000, baseCps: 16000 },
-        { id: "quantum_bakery", name: "Quanten-Bäckerei", desc: "Backt denselben Cookie in mehreren Realitäten.", icon: "fa-solid fa-atom", baseCost: 12500000, baseCps: 115000 },
-        { id: "cosmos_core", name: "Cosmos Core", desc: "Das Herzstück für absurde Prestige-Runs.", icon: "fa-solid fa-sun", baseCost: 95000000, baseCps: 820000 },
+        { id: "hand_mixer", name: "Handmixer", desc: "Rührt die ersten Teigschüsseln an und bringt die Linie ins Rollen.", icon: "fa-solid fa-hand-sparkles", baseCost: 15, baseCps: 0.12, frame: 8, tile: 3, accent: "#ffd76b", tier: "Startlinie" },
+        { id: "cookie_drone", name: "Krümel-Drohne", desc: "Fliegt am Förderband entlang und sammelt liegengebliebene Kekse ein.", icon: "fa-solid fa-helicopter", baseCost: 110, baseCps: 0.85, frame: 9, tile: 3, accent: "#77d7c8", tier: "Automatik" },
+        { id: "dough_robot", name: "Teigroboter", desc: "Knetet gleichmäßig, portioniert sauber und arbeitet ohne Pausen.", icon: "fa-solid fa-robot", baseCost: 640, baseCps: 4.4, frame: 7, tile: 4, accent: "#9cc9ff", tier: "Werkbank" },
+        { id: "sugar_press", name: "Zuckerpresse", desc: "Presst Glasur, Zucker und Streusel direkt in die Backform.", icon: "fa-solid fa-compress", baseCost: 3200, baseCps: 22, frame: 6, tile: 4, accent: "#ffca85", tier: "Presse" },
+        { id: "choco_mine", name: "Kakao-Mine", desc: "Fördert dunklen Kakao und weiße Schoko für bessere Chargen.", icon: "fa-solid fa-mountain", baseCost: 14500, baseCps: 105, frame: 8, tile: 3, accent: "#c58a66", tier: "Rohstoffe" },
+        { id: "cookie_factory", name: "Dampf-Fabrik", desc: "Eine vollständige Produktionshalle mit Öfen, Rohren und Taktband.", icon: "fa-solid fa-industry", baseCost: 68000, baseCps: 520, frame: 9, tile: 4, accent: "#f6a45d", tier: "Fabrik" },
+        { id: "orbit_oven", name: "Orbit-Ofen", desc: "Nutzt schwerelose Umluft für perfekt gleichmäßige Kosmos-Cookies.", icon: "fa-solid fa-satellite", baseCost: 340000, baseCps: 2900, frame: 7, tile: 3, accent: "#b99cff", tier: "Orbit" },
+        { id: "milky_mill", name: "Milchstraßen-Mühle", desc: "Mahlt Sternenstaub zu Vanillemehl und stabilisiert große Läufe.", icon: "fa-solid fa-star-and-crescent", baseCost: 1900000, baseCps: 16000, frame: 6, tile: 4, accent: "#ffe4a6", tier: "Kosmos" },
+        { id: "quantum_bakery", name: "Quanten-Bäckerei", desc: "Backt mehrere mögliche Chargen und behält die beste davon.", icon: "fa-solid fa-atom", baseCost: 12500000, baseCps: 115000, frame: 8, tile: 3, accent: "#8fe8ff", tier: "Quantum" },
+        { id: "cosmos_core", name: "Cosmos Core", desc: "Bündelt alle Linien zu einem stabilen Prestige-Reaktor.", icon: "fa-solid fa-sun", baseCost: 95000000, baseCps: 820000, frame: 9, tile: 4, accent: "#ff8fbd", tier: "Prestige" },
     ];
 
     const UPGRADES = [
-        { id: "butter_gloves", name: "Butterhandschuhe", desc: "+1 Cookie pro Klick.", icon: "fa-solid fa-hand", cost: 75, kind: "clickAdd", value: 1, requires: s => s.totalClicks >= 10 },
-        { id: "double_tap", name: "Doppel-Biss", desc: "Klicks sind 1.8x stärker.", icon: "fa-solid fa-computer-mouse", cost: 450, kind: "clickMult", value: 1.8, requires: s => s.totalClicks >= 75 },
-        { id: "white_choco_core", name: "White-Choco-Kern", desc: "Alle Produktionen +20%.", icon: "fa-solid fa-circle", cost: 1200, kind: "cpsMult", value: 1.2, requires: s => s.lifetimeCookies >= 1000 },
-        { id: "drone_ai", name: "Drohnen-KI", desc: "Cookie-Drohnen produzieren doppelt.", icon: "fa-solid fa-microchip", cost: 2500, kind: "buildingMult", target: "cookie_drone", value: 2, requires: s => getBuildingCount(s, "cookie_drone") >= 5 },
-        { id: "robot_arms", name: "Roboterarme", desc: "Teigroboter produzieren doppelt.", icon: "fa-solid fa-gears", cost: 7200, kind: "buildingMult", target: "dough_robot", value: 2, requires: s => getBuildingCount(s, "dough_robot") >= 5 },
-        { id: "golden_sensor", name: "Goldener Sensor", desc: "Goldene Cookies erscheinen schneller.", icon: "fa-solid fa-radar", cost: 12000, kind: "goldenFrequency", value: 0.82, requires: s => s.lifetimeCookies >= 10000 },
-        { id: "event_magnet", name: "Orbit-Magnet", desc: "Kleine Event-Cookies erscheinen schneller.", icon: "fa-solid fa-magnet", cost: 21000, kind: "orbitFrequency", value: 0.78, requires: s => s.eventStats.orbitCookies >= 2 || s.lifetimeCookies >= 20000 },
-        { id: "cocoa_filters", name: "Kakao-Filter", desc: "Klicks sind 2.5x stärker.", icon: "fa-solid fa-filter", cost: 45000, kind: "clickMult", value: 2.5, requires: s => s.lifetimeCookies >= 35000 },
-        { id: "factory_blueprint", name: "Fabrik-Blueprints", desc: "Alle Produktionen +35%.", icon: "fa-solid fa-drafting-compass", cost: 85000, kind: "cpsMult", value: 1.35, requires: s => getTotalBuildings(s) >= 25 },
-        { id: "sugar_hydraulics", name: "Zucker-Hydraulik", desc: "Zuckerpressen produzieren 2.5x.", icon: "fa-solid fa-oil-well", cost: 130000, kind: "buildingMult", target: "sugar_press", value: 2.5, requires: s => getBuildingCount(s, "sugar_press") >= 10 },
-        { id: "golden_recipe", name: "Gold-Rezept", desc: "Goldene Cookies geben 1.6x Belohnung.", icon: "fa-solid fa-star", cost: 250000, kind: "goldenReward", value: 1.6, requires: s => s.eventStats.goldenCookies >= 3 },
-        { id: "choco_excavator", name: "Schoko-Bagger", desc: "Schoko-Minen produzieren 3x.", icon: "fa-solid fa-truck-monster", cost: 480000, kind: "buildingMult", target: "choco_mine", value: 3, requires: s => getBuildingCount(s, "choco_mine") >= 10 },
-        { id: "factory_rush", name: "Rush-Schichtplan", desc: "Zufällige Fabrik-Rush-Events dauern länger.", icon: "fa-solid fa-clock", cost: 900000, kind: "factoryDuration", value: 1.35, requires: s => s.lifetimeCookies >= 500000 },
-        { id: "orbit_stabilizer", name: "Orbit-Stabilisator", desc: "Orbit-Öfen produzieren 3x.", icon: "fa-solid fa-satellite-dish", cost: 1750000, kind: "buildingMult", target: "orbit_oven", value: 3, requires: s => getBuildingCount(s, "orbit_oven") >= 8 },
-        { id: "cosmic_clicks", name: "Kosmische Klicks", desc: "Klicks skalieren zusätzlich mit Prestige.", icon: "fa-solid fa-meteor", cost: 4000000, kind: "prestigeClick", value: 0.12, requires: s => s.prestigeLevel >= 2 },
-        { id: "milk_reactor", name: "Milch-Reaktor", desc: "Milchstraßen-Mühlen produzieren 3.5x.", icon: "fa-solid fa-flask", cost: 10500000, kind: "buildingMult", target: "milky_mill", value: 3.5, requires: s => getBuildingCount(s, "milky_mill") >= 6 },
-        { id: "black_cookie_lab", name: "Black-Cookie-Labor", desc: "Alle Produktionen +75%.", icon: "fa-solid fa-vial-circle-check", cost: 30000000, kind: "cpsMult", value: 1.75, requires: s => s.prestigeLevel >= 3 || s.lifetimeCookies >= 25000000 },
-        { id: "quantum_splitter", name: "Quanten-Splitter", desc: "Quanten-Bäckereien produzieren 4x.", icon: "fa-solid fa-code-branch", cost: 85000000, kind: "buildingMult", target: "quantum_bakery", value: 4, requires: s => getBuildingCount(s, "quantum_bakery") >= 5 },
-        { id: "event_overclock", name: "Event-Overclock", desc: "Alle Buffs sind 20% stärker.", icon: "fa-solid fa-gauge-high", cost: 160000000, kind: "buffPower", value: 1.2, requires: s => s.eventStats.totalEvents >= 20 },
-        { id: "cosmos_resonator", name: "Cosmos-Resonator", desc: "Cosmos Cores produzieren 5x.", icon: "fa-solid fa-circle-nodes", cost: 650000000, kind: "buildingMult", target: "cosmos_core", value: 5, requires: s => getBuildingCount(s, "cosmos_core") >= 3 },
+        { id: "butter_gloves", name: "Butterhandschuhe", desc: "+1 Cookie pro Klick.", icon: "fa-solid fa-hand", cost: 75, kind: "clickAdd", value: 1, frame: 7, accent: "#ffd76b", unlockHint: "10 Klicks", requires: s => s.totalClicks >= 10 },
+        { id: "double_tap", name: "Doppelklick-Griff", desc: "Klicks sind 1.8x stärker.", icon: "fa-solid fa-computer-mouse", cost: 450, kind: "clickMult", value: 1.8, frame: 6, accent: "#9cc9ff", unlockHint: "75 Klicks", requires: s => s.totalClicks >= 75 },
+        { id: "white_choco_core", name: "Weiße-Schoko-Kern", desc: "Alle Produktionen +20%.", icon: "fa-solid fa-circle", cost: 1200, kind: "cpsMult", value: 1.2, frame: 8, accent: "#fff0c9", unlockHint: "1K Lifetime-Cookies", requires: s => s.lifetimeCookies >= 1000 },
+        { id: "drone_ai", name: "Drohnen-KI", desc: "Krümel-Drohnen produzieren doppelt.", icon: "fa-solid fa-microchip", cost: 2500, kind: "buildingMult", target: "cookie_drone", value: 2, frame: 9, accent: "#77d7c8", unlockHint: "5 Krümel-Drohnen", requires: s => getBuildingCount(s, "cookie_drone") >= 5 },
+        { id: "robot_arms", name: "Präzisionsarme", desc: "Teigroboter produzieren doppelt.", icon: "fa-solid fa-gears", cost: 7200, kind: "buildingMult", target: "dough_robot", value: 2, frame: 7, accent: "#9cc9ff", unlockHint: "5 Teigroboter", requires: s => getBuildingCount(s, "dough_robot") >= 5 },
+        { id: "golden_sensor", name: "Gold-Sensor", desc: "Goldene Cookies erscheinen schneller.", icon: "fa-solid fa-radar", cost: 12000, kind: "goldenFrequency", value: 0.82, frame: 6, accent: "#ffd76b", unlockHint: "10K Lifetime-Cookies", requires: s => s.lifetimeCookies >= 10000 },
+        { id: "event_magnet", name: "Orbit-Magnet", desc: "Kleine Event-Cookies erscheinen schneller.", icon: "fa-solid fa-magnet", cost: 21000, kind: "orbitFrequency", value: 0.78, frame: 8, accent: "#b99cff", unlockHint: "2 Orbit-Cookies oder 20K Cookies", requires: s => s.eventStats.orbitCookies >= 2 || s.lifetimeCookies >= 20000 },
+        { id: "cocoa_filters", name: "Kakao-Filter", desc: "Klicks sind 2.5x stärker.", icon: "fa-solid fa-filter", cost: 45000, kind: "clickMult", value: 2.5, frame: 9, accent: "#c58a66", unlockHint: "35K Lifetime-Cookies", requires: s => s.lifetimeCookies >= 35000 },
+        { id: "factory_blueprint", name: "Fabrik-Blaupausen", desc: "Alle Produktionen +35%.", icon: "fa-solid fa-drafting-compass", cost: 85000, kind: "cpsMult", value: 1.35, frame: 7, accent: "#8fe8ff", unlockHint: "25 Anlagen", requires: s => getTotalBuildings(s) >= 25 },
+        { id: "sugar_hydraulics", name: "Zucker-Hydraulik", desc: "Zuckerpressen produzieren 2.5x.", icon: "fa-solid fa-oil-well", cost: 130000, kind: "buildingMult", target: "sugar_press", value: 2.5, frame: 6, accent: "#ffca85", unlockHint: "10 Zuckerpressen", requires: s => getBuildingCount(s, "sugar_press") >= 10 },
+        { id: "golden_recipe", name: "Gold-Rezept", desc: "Goldene Cookies geben 1.6x Belohnung.", icon: "fa-solid fa-star", cost: 250000, kind: "goldenReward", value: 1.6, frame: 8, accent: "#ffd76b", unlockHint: "3 goldene Cookies", requires: s => s.eventStats.goldenCookies >= 3 },
+        { id: "choco_excavator", name: "Kakao-Bagger", desc: "Kakao-Minen produzieren 3x.", icon: "fa-solid fa-truck-monster", cost: 480000, kind: "buildingMult", target: "choco_mine", value: 3, frame: 9, accent: "#c58a66", unlockHint: "10 Kakao-Minen", requires: s => getBuildingCount(s, "choco_mine") >= 10 },
+        { id: "factory_rush", name: "Rush-Schichtplan", desc: "Fabrik-Rush-Events dauern länger.", icon: "fa-solid fa-clock", cost: 900000, kind: "factoryDuration", value: 1.35, frame: 7, accent: "#f6a45d", unlockHint: "500K Lifetime-Cookies", requires: s => s.lifetimeCookies >= 500000 },
+        { id: "orbit_stabilizer", name: "Orbit-Stabilisator", desc: "Orbit-Öfen produzieren 3x.", icon: "fa-solid fa-satellite-dish", cost: 1750000, kind: "buildingMult", target: "orbit_oven", value: 3, frame: 6, accent: "#b99cff", unlockHint: "8 Orbit-Öfen", requires: s => getBuildingCount(s, "orbit_oven") >= 8 },
+        { id: "cosmic_clicks", name: "Kosmische Klicks", desc: "Klicks skalieren zusätzlich mit Prestige.", icon: "fa-solid fa-meteor", cost: 4000000, kind: "prestigeClick", value: 0.12, frame: 8, accent: "#ff8fbd", unlockHint: "Prestige-Level 2", requires: s => s.prestigeLevel >= 2 },
+        { id: "milk_reactor", name: "Milch-Reaktor", desc: "Milchstraßen-Mühlen produzieren 3.5x.", icon: "fa-solid fa-flask", cost: 10500000, kind: "buildingMult", target: "milky_mill", value: 3.5, frame: 9, accent: "#ffe4a6", unlockHint: "6 Milchstraßen-Mühlen", requires: s => getBuildingCount(s, "milky_mill") >= 6 },
+        { id: "black_cookie_lab", name: "Dark-Cookie-Labor", desc: "Alle Produktionen +75%.", icon: "fa-solid fa-vial-circle-check", cost: 30000000, kind: "cpsMult", value: 1.75, frame: 7, accent: "#c58a66", unlockHint: "Prestige 3 oder 25M Cookies", requires: s => s.prestigeLevel >= 3 || s.lifetimeCookies >= 25000000 },
+        { id: "quantum_splitter", name: "Quanten-Splitter", desc: "Quanten-Bäckereien produzieren 4x.", icon: "fa-solid fa-code-branch", cost: 85000000, kind: "buildingMult", target: "quantum_bakery", value: 4, frame: 6, accent: "#8fe8ff", unlockHint: "5 Quanten-Bäckereien", requires: s => getBuildingCount(s, "quantum_bakery") >= 5 },
+        { id: "event_overclock", name: "Event-Overclock", desc: "Alle Buffs sind 20% stärker.", icon: "fa-solid fa-gauge-high", cost: 160000000, kind: "buffPower", value: 1.2, frame: 8, accent: "#77d7c8", unlockHint: "20 Events", requires: s => s.eventStats.totalEvents >= 20 },
+        { id: "cosmos_resonator", name: "Cosmos-Resonator", desc: "Cosmos Cores produzieren 5x.", icon: "fa-solid fa-circle-nodes", cost: 650000000, kind: "buildingMult", target: "cosmos_core", value: 5, frame: 9, accent: "#ff8fbd", unlockHint: "3 Cosmos Cores", requires: s => getBuildingCount(s, "cosmos_core") >= 3 },
     ];
 
     const ACHIEVEMENTS = [
@@ -118,6 +131,8 @@
     let lastTick = Date.now();
     let lastLocalSave = 0;
     let lastRender = 0;
+    let lastShopRender = 0;
+    let lastPanelRender = 0;
     let saveCooldownUntil = 0;
     let eventTimers = createEventTimers(Date.now());
     let renderQueued = false;
@@ -125,51 +140,30 @@
 
     preloadAssets().then(() => startGame());
 
-    function readManifest() {
-        try {
-            const raw = document.getElementById("cc2AssetManifest")?.textContent || "{}";
-            const parsed = JSON.parse(raw);
-            return {
-                background: parsed.background || "",
-                prestige: Array.isArray(parsed.prestige) ? parsed.prestige : [],
-                forms: Array.isArray(parsed.forms) ? parsed.forms : [],
-                frames: Array.isArray(parsed.frames) ? parsed.frames : [],
-            };
-        } catch (error) {
-            console.warn("Cookie Cosmos V2 manifest konnte nicht gelesen werden.", error);
-            return { background: "", prestige: [], forms: [], frames: [] };
-        }
+    function cssVariant(value, fallback) {
+        const number = Math.max(1, Math.floor(Number(value) || fallback || 1));
+        return number;
+    }
+
+    function cardFrameMarkup(number, fallbackNumber) {
+        return `<span class="cc2-card-frame cc2-frame-${cssVariant(number, fallbackNumber)}" aria-hidden="true"></span>`;
+    }
+
+    function cardArtFrameMarkup(number, fallbackNumber) {
+        return `<span class="cc2-card-art-frame cc2-tile-${cssVariant(number, fallbackNumber)}" aria-hidden="true"></span>`;
+    }
+
+    function cardStyle(accent) {
+        return `style="--cc2-card-accent: ${escapeAttr(accent || "#ffd76b")};"`;
     }
 
     function preloadAssets() {
-        const urls = [manifest.background]
-            .concat(manifest.prestige.map(item => item.src))
-            .concat(manifest.forms)
-            .concat(manifest.frames)
-            .filter(Boolean);
-
-        if (!urls.length) {
-            updateLoader(1, 1);
-            return Promise.resolve();
-        }
-
-        let loaded = 0;
-        updateLoader(0, urls.length);
-
-        return Promise.allSettled(urls.map(url => new Promise(resolve => {
-            const img = new Image();
-            img.onload = () => resolve({ url, ok: true });
-            img.onerror = () => resolve({ url, ok: false });
-            img.src = url;
-        }).then(result => {
-            loaded += 1;
-            updateLoader(loaded, urls.length);
-            return result;
-        }))).then(results => {
-            const failed = results.filter(result => result.value && result.value.ok === false).length;
-            if (failed) {
-                showToast("Assets teilweise geladen", `${failed} Bild(er) konnten nicht vorgeladen werden. Das Spiel startet trotzdem.`);
-            }
+        updateLoader(0, 1);
+        return new Promise(resolve => {
+            window.setTimeout(() => {
+                updateLoader(1, 1);
+                resolve();
+            }, 160);
         });
     }
 
@@ -200,20 +194,11 @@
         lastTick = Date.now();
         window.setInterval(tick, 100);
         window.setInterval(updateCloudSaveButton, 500);
-        showToast("Cookie Cosmos V2 bereit", "Assets geladen. Kleine und goldene Cookies erscheinen während des Spiels.");
+        showToast("Cookie Cosmos V2 bereit", "CSS-Fabrik geladen. Kleine und goldene Cookies erscheinen während des Spiels.");
     }
 
     function applyStaticVisuals() {
-        const recipe = getPrestigeRecipe(1);
-        if (manifest.background) {
-            root.style.setProperty("--cc2-bg-image", `url("${manifest.background}")`);
-        }
-        if (ui.stageBg && manifest.background) {
-            ui.stageBg.style.setProperty("--cc2-bg-image", `url("${manifest.background}")`);
-        }
-        if (ui.brandCookie) ui.brandCookie.src = recipe.src || "";
-        if (ui.mainCookie) ui.mainCookie.src = recipe.src || "";
-        if (ui.nextCookie) ui.nextCookie.src = getPrestigeRecipe(2).src || recipe.src || "";
+        updateRecipeVisuals();
     }
 
     function bindEvents() {
@@ -246,6 +231,8 @@
             lifetimeCookies: 0,
             manualCookies: 0,
             totalClicks: 0,
+            combo: 0,
+            comboUntil: 0,
             prestigeLevel: 1,
             prestigeCrumbs: 0,
             buildings: Object.fromEntries(BUILDINGS.map(building => [building.id, 0])),
@@ -276,6 +263,8 @@
         normalized.lifetimeCookies = safeNumber(raw.lifetimeCookies, safeNumber(raw.totalCookies, 0));
         normalized.manualCookies = safeNumber(raw.manualCookies, 0);
         normalized.totalClicks = Math.max(0, Math.floor(safeNumber(raw.totalClicks, 0)));
+        normalized.combo = Math.min(COMBO_CAP, Math.max(0, safeNumber(raw.combo, 0)));
+        normalized.comboUntil = Math.max(0, Math.floor(safeNumber(raw.comboUntil, 0)));
         normalized.prestigeLevel = Math.max(1, Math.floor(safeNumber(raw.prestigeLevel, 1)));
         normalized.prestigeCrumbs = Math.max(0, Math.floor(safeNumber(raw.prestigeCrumbs, 0)));
         normalized.cloudSaves = Math.max(0, Math.floor(safeNumber(raw.cloudSaves, 0)));
@@ -540,6 +529,7 @@
         lastTick = now;
 
         expireBuffs(now);
+        decayCombo(now, dt);
         const cps = computeCps(state);
         if (cps > 0 && dt > 0) addCookies(cps * dt, { manual: false });
 
@@ -553,16 +543,24 @@
     }
 
     function handleCookieClick(event) {
-        const amount = computeClickPower(state);
+        const comboMultiplier = getComboMultiplier(state);
+        const amount = computeClickPower(state) * comboMultiplier;
         addCookies(amount, { manual: true });
         state.totalClicks += 1;
+        state.combo = Math.min(COMBO_CAP, safeNumber(state.combo, 0) + 1);
+        state.comboUntil = Date.now() + COMBO_GRACE_MS;
         ui.cookieButton.classList.add("is-pressed");
         window.setTimeout(() => ui.cookieButton.classList.remove("is-pressed"), 95);
+        if (ui.comboMeter) {
+            ui.comboMeter.classList.add("is-pulsing");
+            window.setTimeout(() => ui.comboMeter.classList.remove("is-pulsing"), 170);
+        }
 
         const rect = ui.stage.getBoundingClientRect();
         const x = event.clientX ? event.clientX - rect.left : rect.width / 2;
         const y = event.clientY ? event.clientY - rect.top : rect.height / 2;
-        spawnFloatingText(`+${format(amount)}`, x, y);
+        const comboText = comboMultiplier > 1.01 ? ` x${comboMultiplier.toFixed(2)}` : "";
+        spawnFloatingText(`+${format(amount)}${comboText}`, x, y);
         checkAchievements();
         scheduleRender();
     }
@@ -578,6 +576,12 @@
         const before = state.activeBuffs.length;
         state.activeBuffs = state.activeBuffs.filter(buff => buff.expiresAt > now);
         if (state.activeBuffs.length !== before) scheduleRender(true);
+    }
+
+    function decayCombo(now, dt) {
+        if (state.combo <= 0 || state.comboUntil > now) return;
+        state.combo = Math.max(0, state.combo - COMBO_DECAY_PER_SECOND * dt);
+        if (state.combo === 0) state.comboUntil = 0;
     }
 
     function createEventTimers(now) {
@@ -615,7 +619,8 @@
         button.type = "button";
         button.className = "cc2-event-cookie is-golden";
         button.setAttribute("aria-label", "Goldenen Cookie einsammeln");
-        button.innerHTML = `<img alt="" src="${getPrestigeRecipe(state.prestigeLevel).src}">`;
+        const recipe = getPrestigeRecipe(state.prestigeLevel);
+        button.innerHTML = `<span class="cc2-mini-cookie cc2-cookie-visual ${escapeAttr(recipe.className)}" aria-hidden="true"></span>`;
         const position = randomStagePosition(72);
         button.style.left = `${position.x}px`;
         button.style.top = `${position.y}px`;
@@ -670,7 +675,7 @@
         button.className = "cc2-event-cookie is-orbit";
         button.setAttribute("aria-label", "Kleinen Event-Cookie einsammeln");
         const recipe = getPrestigeRecipe(Math.max(1, state.prestigeLevel - 1));
-        button.innerHTML = `<img alt="" src="${recipe.src}">`;
+        button.innerHTML = `<span class="cc2-mini-cookie cc2-cookie-visual ${escapeAttr(recipe.className)}" aria-hidden="true"></span>`;
 
         const position = orbitPosition();
         button.style.left = `${position.x}px`;
@@ -794,12 +799,8 @@
 
     function getPrestigeRecipe(level) {
         const safeLevel = Math.max(1, Math.floor(level || 1));
-        if (manifest.prestige[safeLevel - 1]) {
-            return manifest.prestige[safeLevel - 1];
-        }
-        const cookieVariants = manifest.prestige.length ? manifest.prestige : [];
-        const variant = cookieVariants[(safeLevel - 1) % Math.max(1, cookieVariants.length)] || { src: "", accent: "#ffd85c" };
-        const cycle = Math.floor((safeLevel - 1) / Math.max(1, cookieVariants.length));
+        const variant = PRESTIGE_RECIPES[(safeLevel - 1) % PRESTIGE_RECIPES.length] || PRESTIGE_RECIPES[0];
+        const cycle = Math.floor((safeLevel - 1) / PRESTIGE_RECIPES.length);
         const names = [
             "Klassischer Keks",
             "Weiße Schoko",
@@ -813,18 +814,30 @@
         return {
             level: safeLevel,
             name: cycle === 0 ? (variant.name || names[(safeLevel - 1) % names.length]) : `${names[(safeLevel - 1) % names.length]} +${cycle}`,
-            src: variant.src || "",
-            accent: variant.accent || ["#ffd85c", "#ffaf3f", "#c4b5fd", "#67e8f9", "#6ee7b7"][(safeLevel - 1) % 5],
+            accent: variant.accent || "#ffd85c",
+            crumb: variant.crumb || "#5d2e13",
+            dough: variant.dough || "#d58a38",
+            shine: variant.shine || "#ffe2a5",
+            className: variant.className || "recipe-1",
         };
+    }
+
+    function setRecipeVisual(element, recipe) {
+        if (!element) return;
+        PRESTIGE_RECIPES.forEach(item => element.classList.remove(item.className));
+        element.classList.add(recipe.className || "recipe-1");
     }
 
     function updateRecipeVisuals() {
         const current = getPrestigeRecipe(state.prestigeLevel);
         const next = getPrestigeRecipe(state.prestigeLevel + 1);
-        if (ui.mainCookie) ui.mainCookie.src = current.src || "";
-        if (ui.brandCookie) ui.brandCookie.src = current.src || "";
-        if (ui.nextCookie) ui.nextCookie.src = next.src || current.src || "";
+        setRecipeVisual(ui.mainCookie, current);
+        setRecipeVisual(ui.brandCookie, current);
+        setRecipeVisual(ui.nextCookie, next);
         root.style.setProperty("--cc2-current-accent", current.accent || "#ffd85c");
+        root.style.setProperty("--cc2-cookie-dough", current.dough || "#d58a38");
+        root.style.setProperty("--cc2-cookie-crumb", current.crumb || "#5d2e13");
+        root.style.setProperty("--cc2-cookie-shine", current.shine || "#ffe2a5");
     }
 
     function computePrestigeMultiplier(s) {
@@ -890,6 +903,10 @@
         const prestige = computePrestigeMultiplier(s);
         const buff = computeBuffMultiplier(s, "click");
         return Math.max(1, (1 + mods.clickAdd) * mods.clickMult * prestige.base * prestige.prestigeClickUpgrade * buff);
+    }
+
+    function getComboMultiplier(s) {
+        return 1 + Math.min(COMBO_CAP, Math.max(0, safeNumber(s.combo, 0))) / 100;
     }
 
     function hasUpgrade(s, id) {
@@ -970,10 +987,19 @@
         renderStats();
         renderPrestige();
         renderBuffs();
-        renderBuildings();
-        renderUpgrades();
-        renderEvents();
-        renderAchievements();
+
+        if (force || now - lastShopRender > SHOP_RENDER_INTERVAL) {
+            lastShopRender = now;
+            renderBuildings();
+            renderUpgrades();
+        }
+
+        if (force || now - lastPanelRender > PANEL_RENDER_INTERVAL) {
+            lastPanelRender = now;
+            renderEvents();
+            renderAchievements();
+        }
+
         updateCloudSaveButton();
     }
 
@@ -987,10 +1013,15 @@
     }
 
     function renderStats() {
+        const comboMultiplier = getComboMultiplier(state);
+        const comboProgress = Math.min(1, Math.max(0, safeNumber(state.combo, 0)) / COMBO_CAP);
         ui.cookieCount.textContent = format(state.cookies);
         ui.cpsCount.textContent = format(computeCps(state));
-        ui.clickPower.textContent = format(computeClickPower(state));
+        ui.clickPower.textContent = format(computeClickPower(state) * comboMultiplier);
         ui.prestigeLevel.textContent = `Level ${state.prestigeLevel}`;
+        if (ui.comboLabel) ui.comboLabel.textContent = `x${comboMultiplier.toFixed(2)}`;
+        if (ui.comboBar) ui.comboBar.style.transform = `scaleX(${comboProgress})`;
+        if (ui.comboMeter) ui.comboMeter.classList.toggle("is-active", comboProgress > 0.005);
         ui.ownedSummary.textContent = `${getTotalBuildings(state)} Anlagen · ${state.upgrades.length} Upgrades`;
     }
 
@@ -1035,17 +1066,31 @@
     }
 
     function renderBuildings() {
-        ui.buildingList.innerHTML = BUILDINGS.map(building => {
+        ui.buildingList.innerHTML = BUILDINGS.map((building, index) => {
             const count = getBuildingCount(state, building.id);
             const info = getBuyInfo(building);
             const canBuy = info.amount > 0 && state.cookies >= info.cost;
             const mods = computeUpgradeMods(state);
             const production = building.baseCps * (mods.buildingMult[building.id] || 1) * computePrestigeMultiplier(state).base * mods.cpsMult;
+            const frame = building.frame || (index % 2 ? 9 : 8);
+            const tile = building.tile || 3;
+            const missing = Math.max(0, info.cost - state.cookies);
+            const actionText = canBuy
+                ? `${info.amount}x kaufen - ${format(info.cost)}`
+                : info.amount > 0
+                    ? `Fehlen ${format(missing)}`
+                    : `Naechster Preis ${format(info.nextCost)}`;
+            const buyText = info.amount > 0 ? `${info.amount}x kaufen · ${format(info.cost)}` : `Nächster Preis · ${format(info.nextCost)}`;
             return `
-                <article class="cc2-card ${canBuy ? "can-buy" : ""}">
+                <article class="cc2-card cc2-shop-card cc2-building-card ${canBuy ? "can-buy" : ""}" ${cardStyle(building.accent)}>
+                    ${cardFrameMarkup(frame, 8)}
                     <div class="cc2-card-top">
-                        <span class="cc2-card-icon"><i class="${building.icon}"></i></span>
+                        <span class="cc2-card-art">
+                            ${cardArtFrameMarkup(tile, 3)}
+                            <i class="${escapeAttr(building.icon)}"></i>
+                        </span>
                         <div class="cc2-card-title">
+                            <small>${escapeHtml(building.tier || "Anlage")}</small>
                             <h3>${escapeHtml(building.name)} <span>×${count}</span></h3>
                             <p>${escapeHtml(building.desc)}</p>
                         </div>
@@ -1055,7 +1100,7 @@
                         <span>${format(count * production)} CPS gesamt</span>
                     </div>
                     <button type="button" class="cc2-card-button" data-building-id="${building.id}" ${canBuy ? "" : "disabled"}>
-                        ${info.amount > 0 ? `${info.amount}x kaufen · ${format(info.cost)}` : `Kaufen · ${format(info.nextCost)}`}
+                        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><span>${actionText}</span>
                     </button>
                 </article>
             `;
@@ -1069,24 +1114,34 @@
     function renderUpgrades() {
         const visible = UPGRADES.filter(upgrade => upgrade.requires(state) || hasUpgrade(state, upgrade.id));
         const nextLocked = UPGRADES.find(upgrade => !visible.includes(upgrade) && !hasUpgrade(state, upgrade.id));
-        const cards = visible.map(upgrade => {
+        const cards = visible.map((upgrade, index) => {
             const bought = hasUpgrade(state, upgrade.id);
             const canBuy = !bought && state.cookies >= upgrade.cost;
+            const status = bought ? "Installiert" : canBuy ? "Bereit" : "Zu teuer";
+            const frame = upgrade.frame || (index % 2 ? 6 : 7);
+            const missing = Math.max(0, upgrade.cost - state.cookies);
+            const actionText = bought ? "Gekauft" : canBuy ? "Upgrade kaufen" : `Fehlen ${format(missing)}`;
+            const actionIcon = bought ? "fa-solid fa-check" : "fa-solid fa-cart-shopping";
             return `
-                <article class="cc2-card ${canBuy ? "can-buy" : ""}">
+                <article class="cc2-card cc2-shop-card cc2-upgrade-card ${bought ? "is-owned" : ""} ${canBuy ? "can-buy" : ""}" ${cardStyle(upgrade.accent)}>
+                    ${cardFrameMarkup(frame, 7)}
                     <div class="cc2-card-top">
-                        <span class="cc2-card-icon"><i class="${upgrade.icon}"></i></span>
+                        <span class="cc2-card-art">
+                            ${cardArtFrameMarkup(3, 3)}
+                            <i class="${escapeAttr(upgrade.icon)}"></i>
+                        </span>
                         <div class="cc2-card-title">
+                            <small>${escapeHtml(status)}</small>
                             <h3>${escapeHtml(upgrade.name)}</h3>
                             <p>${escapeHtml(upgrade.desc)}</p>
                         </div>
                     </div>
                     <div class="cc2-upgrade-meta">
                         <span class="cc2-price"><i class="fa-solid fa-cookie-bite"></i>${format(upgrade.cost)}</span>
-                        <span>${bought ? "Freigeschaltet" : canBuy ? "Bereit" : "Zu teuer"}</span>
+                        <span>${escapeHtml(upgrade.unlockHint || status)}</span>
                     </div>
                     <button type="button" class="cc2-card-button" data-upgrade-id="${upgrade.id}" ${canBuy ? "" : "disabled"}>
-                        ${bought ? "Gekauft" : "Upgrade kaufen"}
+                        <i class="${actionIcon}" aria-hidden="true"></i><span>${actionText}</span>
                     </button>
                 </article>
             `;
@@ -1094,12 +1149,17 @@
 
         if (nextLocked) {
             cards.push(`
-                <article class="cc2-card">
+                <article class="cc2-card cc2-shop-card cc2-upgrade-card is-locked" ${cardStyle("#8fe8ff")}>
+                    ${cardFrameMarkup(6, 7)}
                     <div class="cc2-card-top">
-                        <span class="cc2-card-icon"><i class="fa-solid fa-lock"></i></span>
+                        <span class="cc2-card-art">
+                            ${cardArtFrameMarkup(4, 3)}
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
                         <div class="cc2-card-title">
-                            <h3>Nächstes Upgrade verborgen</h3>
-                            <p>Spiele weiter, kaufe Anlagen oder sammle Events, um mehr Forschung freizuschalten.</p>
+                            <small>Nächste Forschung</small>
+                            <h3>${escapeHtml(nextLocked.name)}</h3>
+                            <p>${escapeHtml(nextLocked.unlockHint || "Spiele weiter, um dieses Upgrade freizuschalten.")}</p>
                         </div>
                     </div>
                 </article>
