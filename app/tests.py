@@ -4192,7 +4192,13 @@ class ModerationTests(BaseTestCase):
         settings_obj.save(update_fields=["tool_access_rules"])
 
         response = self.client.get(reverse("calculator"))
-        self.assertEqual(response.status_code, 403)
+        self.assertRedirects(response, reverse("favorites"))
+
+        json_response = self.client.get(
+            reverse("calculator"),
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(json_response.status_code, 403)
 
         self.make_staff()
         response = self.client.get(reverse("calculator"))
@@ -4206,7 +4212,7 @@ class ModerationTests(BaseTestCase):
 
         response = self.client.get(reverse("calculator"))
 
-        self.assertEqual(response.status_code, 403)
+        self.assertRedirects(response, reverse("favorites"))
 
     def test_report_action_marks_report_resolved(self):
         self.make_staff()

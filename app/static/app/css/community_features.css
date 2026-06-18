@@ -1319,3 +1319,168 @@ body.dark .changelog-entry p {
         grid-template-columns: 1fr;
     }
 }
+
+/* Serverstatus: Karten, Iconflächen und Metrik-Boxen an das aktive Theme koppeln. */
+.server-status-page {
+    --status-card-bg: var(--theme-card-bg, rgba(255, 255, 255, 0.9));
+    --status-card-text: var(--theme-card-text, var(--theme-text, #0f172a));
+    --status-card-radius: var(--theme-card-radius, 24px);
+    --status-muted-text: color-mix(in srgb, var(--status-card-text) 86%, var(--theme-accent-end) 14%);
+    --status-subtle-text: color-mix(in srgb, var(--status-card-text) 76%, var(--theme-accent-end) 24%);
+    --status-panel-bg: color-mix(
+        in srgb,
+        color-mix(in srgb, var(--status-card-bg) 78%, var(--status-card-text) 22%) 86%,
+        var(--theme-accent-start) 14%
+    );
+    --status-panel-bg-hover: color-mix(
+        in srgb,
+        color-mix(in srgb, var(--status-card-bg) 72%, var(--status-card-text) 28%) 80%,
+        var(--theme-accent-end) 20%
+    );
+    --status-accent-soft: color-mix(in srgb, var(--status-card-bg) 70%, var(--theme-accent-start) 30%);
+    --status-accent-softer: var(--status-panel-bg);
+    --status-accent-strong: color-mix(in srgb, var(--status-card-bg) 16%, var(--theme-accent-start) 84%);
+    --status-accent-end-strong: color-mix(in srgb, var(--status-card-bg) 16%, var(--theme-accent-end) 84%);
+    color: var(--theme-text, var(--status-card-text));
+}
+
+.server-status-page .feature-card {
+    border-color: rgba(var(--theme-accent-rgb), 0.34) !important;
+    border-radius: var(--status-card-radius) !important;
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.08), transparent 40%),
+        color-mix(in srgb, var(--status-card-bg) 96%, var(--theme-accent-start) 4%) !important;
+    color: var(--status-card-text) !important;
+    box-shadow: 0 18px 46px rgba(var(--theme-accent-rgb), 0.13) !important;
+}
+
+.server-status-page .feature-card-heading > i,
+.server-status-page .service-icon {
+    color: var(--theme-accent-text) !important;
+    background: linear-gradient(135deg, var(--status-accent-strong), var(--status-accent-end-strong)) !important;
+    box-shadow:
+        0 14px 30px rgba(var(--theme-accent-rgb), 0.26),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+.server-status-page .feature-card-heading h2,
+.server-status-page .service-card strong,
+.server-status-page .metric-item strong,
+.server-status-page .activity-item strong,
+.server-status-page .counter-grid strong,
+.server-status-page .admin-mini-card strong,
+.server-status-page .disk-row strong,
+.server-status-page .security-event-row strong {
+    color: var(--status-card-text) !important;
+}
+
+.server-status-page .feature-card-heading p,
+.server-status-page .meter-head span,
+.server-status-page .mini-stat span,
+.server-status-page .next-achievement-item span,
+.server-status-page .leaderboard-row small,
+.server-status-page .path-row span,
+.server-status-page .metric-item span,
+.server-status-page .disk-row span,
+.server-status-page .activity-item small,
+.server-status-page .security-event-row span,
+.server-status-page .admin-mini-card span,
+.server-status-page .admin-mini-card small,
+.server-status-page .service-card small {
+    color: var(--status-muted-text) !important;
+}
+
+.server-status-page .service-card > div > span,
+.server-status-page .activity-item > span,
+.server-status-page .counter-grid span {
+    color: var(--status-card-text) !important;
+}
+
+.server-status-page .metric-item,
+.server-status-page .activity-item,
+.server-status-page .counter-grid div,
+.server-status-page .path-row,
+.server-status-page .security-event-row,
+.server-status-page .admin-mini-card {
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.28) !important;
+    background: var(--status-panel-bg) !important;
+    color: var(--status-card-text) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.server-status-page .metric-item i,
+.server-status-page .activity-item i,
+.server-status-page .admin-mini-card i,
+.server-status-page .path-row code,
+.server-status-page .empty-small i {
+    color: color-mix(in srgb, var(--status-card-text) 34%, var(--theme-accent-end) 66%) !important;
+}
+
+.server-status-page .path-row code {
+    background: color-mix(in srgb, var(--status-card-bg) 82%, var(--status-card-text) 18%) !important;
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.24) !important;
+    border-radius: 10px;
+    padding: 3px 7px;
+}
+
+.server-status-page .admin-mini-card:hover,
+.server-status-page .admin-mini-card:focus-visible {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.5) !important;
+    background: var(--status-panel-bg-hover) !important;
+    box-shadow: 0 12px 26px rgba(var(--theme-accent-rgb), 0.16) !important;
+}
+
+.server-status-page .disk-meter,
+.server-status-page .progress-track {
+    background: color-mix(in srgb, var(--status-card-bg) 78%, var(--status-card-text) 22%) !important;
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.22) !important;
+    overflow: hidden;
+}
+
+.server-status-page .disk-meter span,
+.server-status-page .progress-track span {
+    background: linear-gradient(90deg, var(--status-accent-strong), var(--status-accent-end-strong)) !important;
+    box-shadow: 0 0 18px rgba(var(--theme-accent-rgb), 0.34) !important;
+}
+
+body.dark-mode .server-status-page,
+body.dark .server-status-page {
+    --status-muted-text: color-mix(in srgb, var(--status-card-text) 88%, var(--theme-accent-end) 12%);
+    --status-subtle-text: color-mix(in srgb, var(--status-card-text) 80%, var(--theme-accent-end) 20%);
+    --status-panel-bg: color-mix(
+        in srgb,
+        color-mix(in srgb, var(--status-card-bg) 70%, var(--status-card-text) 30%) 82%,
+        var(--theme-accent-end) 18%
+    );
+    --status-panel-bg-hover: color-mix(
+        in srgb,
+        color-mix(in srgb, var(--status-card-bg) 64%, var(--status-card-text) 36%) 76%,
+        var(--theme-accent-end) 24%
+    );
+    --status-accent-soft: color-mix(in srgb, var(--status-card-bg) 60%, var(--theme-accent-end) 40%);
+    --status-accent-softer: var(--status-panel-bg);
+    --status-accent-strong: color-mix(in srgb, var(--status-card-bg) 20%, var(--theme-accent-start) 80%);
+    --status-accent-end-strong: color-mix(in srgb, var(--status-card-bg) 18%, var(--theme-accent-end) 82%);
+}
+
+body.dark-mode .server-status-page .feature-card,
+body.dark .server-status-page .feature-card {
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-end-rgb), 0.1), transparent 40%),
+        color-mix(in srgb, var(--status-card-bg) 92%, var(--theme-accent-end) 8%) !important;
+}
+
+body.dark-mode .server-status-page .metric-item,
+body.dark-mode .server-status-page .activity-item,
+body.dark-mode .server-status-page .counter-grid div,
+body.dark-mode .server-status-page .path-row,
+body.dark-mode .server-status-page .security-event-row,
+body.dark-mode .server-status-page .admin-mini-card,
+body.dark .server-status-page .metric-item,
+body.dark .server-status-page .activity-item,
+body.dark .server-status-page .counter-grid div,
+body.dark .server-status-page .path-row,
+body.dark .server-status-page .security-event-row,
+body.dark .server-status-page .admin-mini-card {
+    background: var(--status-panel-bg) !important;
+}

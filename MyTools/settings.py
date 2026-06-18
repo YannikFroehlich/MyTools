@@ -139,6 +139,7 @@ TEMPLATES = [
                 'app.context_processors.fontawesome_kit',
                 'app.context_processors.analytics_settings',
                 'app.context_processors.current_profile',
+                'app.context_processors.access_control_status',
             ],
         },
     },

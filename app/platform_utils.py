@@ -95,18 +95,24 @@ def get_feedback_tool_keys():
     return {key for key, _label in FEEDBACK_TOOL_CHOICES}
 
 
-def resolve_tools(request, favorite_keys=None):
+def resolve_tools(request, favorite_keys=None, include_inaccessible=False):
     favorite_keys = set(favorite_keys or [])
     from .models import SiteAccessSettings
 
     access_settings = SiteAccessSettings.get_solo()
     tools = []
     for tool in TOOL_CATALOG:
-        if not user_can_access_key(request.user, tool["key"], access_settings):
+        can_access = user_can_access_key(request.user, tool["key"], access_settings)
+        if not can_access and not include_inaccessible:
             continue
+
         item = dict(tool)
         item["url"] = reverse(item["url_name"])
         item["is_favorite"] = item["key"] in favorite_keys
+        item["can_access"] = can_access
+        item["access_level"] = access_settings.get_tool_access_level(item["key"])
+        item["is_restricted"] = item["access_level"] != access_settings.TOOL_ACCESS_ALL
+        item["access_badge"] = _("Admin") if item["access_level"] == access_settings.TOOL_ACCESS_ADMIN else _("Gesperrt")
         tools.append(item)
     return tools
 

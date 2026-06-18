@@ -2077,3 +2077,109 @@ body.theme-high-contrast-mode .image-tool-page {
     --image-tool-muted: var(--text-muted);
     --image-tool-accent-readable: var(--image-tool-card-text);
 }
+
+/* Final optimizer theme cleanup: keep controls in the configured page/card palette instead of the old blue/cyan defaults. */
+.image-tool-page {
+    --image-tool-control-start: color-mix(in srgb, var(--theme-card-bg, transparent) 42%, var(--theme-accent-end, var(--theme-accent-start)) 58%);
+    --image-tool-control-end: color-mix(in srgb, var(--theme-card-bg, transparent) 60%, var(--theme-accent-end, var(--theme-accent-start)) 40%);
+    --image-tool-control-soft: color-mix(in srgb, var(--theme-card-bg, transparent) 80%, var(--theme-accent-end, var(--theme-accent-start)) 20%);
+    --image-tool-control-line: color-mix(in srgb, var(--theme-card-bg, transparent) 54%, var(--theme-accent-end, var(--theme-accent-start)) 46%);
+    --image-tool-control-readable: color-mix(in srgb, var(--theme-accent-end, var(--theme-accent-start)) 40%, var(--image-tool-card-text, var(--theme-text)) 60%);
+}
+
+body.dark-mode .image-tool-page {
+    --image-tool-control-start: color-mix(in srgb, var(--theme-card-bg, transparent) 34%, var(--theme-accent-end, var(--theme-accent-start)) 66%);
+    --image-tool-control-end: color-mix(in srgb, var(--theme-card-bg, transparent) 58%, var(--theme-accent-end, var(--theme-accent-start)) 42%);
+    --image-tool-control-readable: color-mix(in srgb, var(--theme-accent-end, var(--theme-accent-start)) 34%, #ffffff 66%);
+}
+
+.image-tool-page .image-preset.active,
+.image-tool-page .image-preset:hover,
+.image-tool-page .image-upload-orb,
+.image-tool-page .image-change-button,
+.image-tool-page .perf-primary {
+    background: linear-gradient(135deg, var(--image-tool-control-start), var(--image-tool-control-end));
+    border-color: var(--image-tool-control-line);
+    box-shadow: 0 16px 34px color-mix(in srgb, var(--image-tool-control-start) 24%, transparent);
+}
+
+.image-tool-page .image-local-badge,
+.image-tool-page .image-status-pill {
+    color: var(--image-tool-control-readable);
+    background: var(--image-tool-control-soft);
+    border-color: var(--image-tool-control-line);
+}
+
+.image-tool-page .image-local-badge i,
+.image-tool-page .image-status-pill i {
+    color: var(--image-tool-control-readable);
+}
+
+.image-tool-page .option-grid input,
+.image-tool-page .option-grid select,
+.image-tool-page .image-preset {
+    background-color: color-mix(in srgb, var(--theme-card-bg, transparent) 86%, #000 14%);
+    border-color: var(--image-tool-control-line);
+}
+
+.image-tool-page input[type="range"],
+.image-tool-page .image-toggle-list input {
+    accent-color: var(--image-tool-control-start);
+}
+
+body.theme-high-contrast-mode .image-tool-page {
+    --image-tool-control-start: var(--theme-accent-end, var(--theme-accent-start));
+    --image-tool-control-end: color-mix(in srgb, var(--theme-accent-end, var(--theme-accent-start)) 72%, var(--theme-card-bg, transparent) 28%);
+    --image-tool-control-soft: color-mix(in srgb, var(--theme-card-bg, transparent) 72%, var(--theme-accent-end, var(--theme-accent-start)) 28%);
+    --image-tool-control-line: var(--border-strong);
+    --image-tool-control-readable: var(--image-tool-card-text, var(--theme-text));
+}
+
+/* Image optimizer preset buttons: keep active/hover states inside the configured card palette, not the old blue/purple accent gradient. */
+.image-tool-page {
+    --image-preset-bg: color-mix(in srgb, var(--theme-card-bg, transparent) 88%, #000 12%);
+    --image-preset-hover-bg: color-mix(in srgb, var(--theme-card-bg, transparent) 78%, var(--image-tool-card-text, var(--theme-text)) 10%);
+    --image-preset-active-start: color-mix(in srgb, var(--theme-card-bg, transparent) 72%, var(--image-tool-card-text, var(--theme-text)) 16%);
+    --image-preset-active-end: color-mix(in srgb, var(--theme-card-bg, transparent) 86%, var(--image-tool-card-text, var(--theme-text)) 8%);
+    --image-preset-active-line: color-mix(in srgb, var(--image-tool-card-text, var(--theme-text)) 26%, var(--theme-card-bg, transparent) 74%);
+}
+
+body.dark-mode .image-tool-page {
+    --image-preset-bg: color-mix(in srgb, var(--theme-card-bg, transparent) 84%, #000 16%);
+    --image-preset-hover-bg: color-mix(in srgb, var(--theme-card-bg, transparent) 74%, #ffffff 10%);
+    --image-preset-active-start: color-mix(in srgb, var(--theme-card-bg, transparent) 70%, #ffffff 16%);
+    --image-preset-active-end: color-mix(in srgb, var(--theme-card-bg, transparent) 84%, #ffffff 8%);
+    --image-preset-active-line: color-mix(in srgb, #ffffff 24%, var(--theme-card-bg, transparent) 76%);
+}
+
+.image-tool-page .image-preset {
+    color: var(--image-tool-card-text, var(--theme-text));
+    background: var(--theme-card-bg, rgba(255, 255, 255, 0.62));
+    background: var(--image-preset-bg);
+    border-color: var(--image-preset-active-line);
+    box-shadow: none;
+}
+
+.image-tool-page .image-preset:hover {
+    color: var(--image-tool-card-text, var(--theme-text));
+    background: var(--image-preset-hover-bg);
+    border-color: var(--image-preset-active-line);
+    box-shadow: 0 12px 26px color-mix(in srgb, var(--theme-card-bg, transparent) 48%, transparent);
+}
+
+.image-tool-page .image-preset.active,
+.image-tool-page .image-preset.active:hover {
+    color: var(--image-tool-card-text, var(--theme-text));
+    background: var(--theme-card-bg, rgba(255, 255, 255, 0.78));
+    background: linear-gradient(135deg, var(--image-preset-active-start), var(--image-preset-active-end));
+    border-color: var(--image-preset-active-line);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--image-tool-card-text, var(--theme-text)) 16%, transparent),
+        0 14px 30px color-mix(in srgb, var(--theme-card-bg, transparent) 45%, transparent);
+}
+
+body.theme-high-contrast-mode .image-tool-page .image-preset.active,
+body.theme-high-contrast-mode .image-tool-page .image-preset.active:hover {
+    color: var(--image-tool-card-text, var(--theme-text));
+    border-color: var(--border-strong);
+}
+

@@ -35,7 +35,8 @@ def get_changelog_entries():
             "icon": "fa-solid fa-meteor",
             "items": [
                 _("Nebula Forge Tycoon wurde hinzugefügt."),
-                _("kontrolle wer auf welches tool zugreifen kann."),
+                _("Kontrolle wer auf welches tool zugreifen kann."),
+                _("Kleinere Style Anpassungen"),
             ],
         },
         {

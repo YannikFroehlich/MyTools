@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 14:22+0200\n"
+"POT-Creation-Date: 2026-06-18 17:17+0200\n"
 "PO-Revision-Date: 2026-06-12 18:30+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: German\n"
@@ -19,8 +19,8 @@ msgstr ""
 
 #: .\app\access_control.py:9 .\app\achievement_utils.py:38 .\app\models.py:2788
 #: .\app\platform_utils.py:9 .\app\templates\app\about.html:235
-#: .\app\templates\app\base.html:1000 .\app\templates\app\base.html:1073
-#: .\app\templates\app\base.html:1115 .\app\templates\app\chat.html:6
+#: .\app\templates\app\base.html:1002 .\app\templates\app\base.html:1075
+#: .\app\templates\app\base.html:1117 .\app\templates\app\chat.html:6
 #: .\app\templates\app\chat.html:18 .\app\templates\app\inbox.html:22
 #: .\app\templates\app\stream_deck.html:294 .\app\templates\app\users.html:51
 msgid "Chat"
@@ -49,8 +49,8 @@ msgid "Kommunikation"
 msgstr "Kommunikation"
 
 #: .\app\access_control.py:33 .\app\platform_utils.py:10
-#: .\app\platform_views.py:134 .\app\templates\app\base.html:989
-#: .\app\templates\app\base.html:1110 .\app\templates\app\leaderboard.html:36
+#: .\app\platform_views.py:134 .\app\templates\app\base.html:991
+#: .\app\templates\app\base.html:1112 .\app\templates\app\leaderboard.html:36
 #: .\app\templates\app\moderation.html:242 .\app\templates\app\users.html:6
 #: .\app\templates\app\users.html:19 .\app\templates\app\users.html:59
 #: .\app\views.py:1523
@@ -58,10 +58,10 @@ msgid "Nutzer"
 msgstr "Nutzer"
 
 #: .\app\access_control.py:48 .\app\achievement_utils.py:37
-#: .\app\community_views.py:494 .\app\models.py:953 .\app\platform_utils.py:11
+#: .\app\community_views.py:495 .\app\models.py:953 .\app\platform_utils.py:11
 #: .\app\platform_utils.py:66 .\app\profile_views.py:155
-#: .\app\templates\app\about.html:120 .\app\templates\app\base.html:491
-#: .\app\templates\app\base.html:494 .\app\templates\app\base.html:1120
+#: .\app\templates\app\about.html:120 .\app\templates\app\base.html:493
+#: .\app\templates\app\base.html:496 .\app\templates\app\base.html:1122
 #: .\app\templates\app\home.html:562 .\app\templates\app\home.html:628
 #: .\app\templates\app\notes.html:4 .\app\templates\app\notes.html:21
 msgid "Notizen"
@@ -73,48 +73,48 @@ msgstr "Notizen"
 #: .\app\platform_utils.py:7 .\app\platform_utils.py:8
 #: .\app\platform_utils.py:11 .\app\platform_utils.py:12
 #: .\app\platform_utils.py:35 .\app\platform_utils.py:36
-#: .\app\templates\app\base.html:479
+#: .\app\templates\app\base.html:481
 msgid "Alltag"
 msgstr "Alltag"
 
 #: .\app\access_control.py:64 .\app\models.py:956 .\app\platform_utils.py:12
-#: .\app\platform_utils.py:67 .\app\templates\app\base.html:483
-#: .\app\templates\app\base.html:486 .\app\templates\app\clock.html:5
+#: .\app\platform_utils.py:67 .\app\templates\app\base.html:485
+#: .\app\templates\app\base.html:488 .\app\templates\app\clock.html:5
 #: .\app\templates\app\clock.html:19 .\app\templates\app\home.html:629
 msgid "Uhr"
 msgstr "Uhr"
 
 #: .\app\access_control.py:72 .\app\platform_utils.py:32
 #: .\app\platform_utils.py:81 .\app\profile_views.py:163
-#: .\app\templates\app\about.html:125 .\app\templates\app\base.html:499
-#: .\app\templates\app\base.html:502 .\app\templates\app\file_share.html:4
+#: .\app\templates\app\about.html:125 .\app\templates\app\base.html:501
+#: .\app\templates\app\base.html:504 .\app\templates\app\file_share.html:4
 #: .\app\templates\app\file_share.html:12
 msgid "Datei-Share"
 msgstr "Datei-Share"
 
-#: .\app\access_control.py:80 .\app\community_views.py:511 .\app\models.py:2791
-#: .\app\models.py:2819 .\app\templates\app\base.html:507
-#: .\app\templates\app\base.html:510 .\app\templates\app\feedback.html:5
+#: .\app\access_control.py:80 .\app\community_views.py:512 .\app\models.py:2791
+#: .\app\models.py:2819 .\app\templates\app\base.html:509
+#: .\app\templates\app\base.html:512 .\app\templates\app\feedback.html:5
 #: .\app\templates\app\feedback.html:12 .\app\templates\app\moderation.html:184
 msgid "Feedback"
 msgstr "Feedback"
 
 #: .\app\access_control.py:88 .\app\platform_utils.py:38
-#: .\app\platform_views.py:148 .\app\templates\app\base.html:515
-#: .\app\templates\app\base.html:518 .\app\templates\app\roadmap.html:12
+#: .\app\platform_views.py:148 .\app\templates\app\base.html:517
+#: .\app\templates\app\base.html:520 .\app\templates\app\roadmap.html:12
 msgid "Roadmap"
 msgstr "Roadmap"
 
 #: .\app\access_control.py:96 .\app\platform_utils.py:39
 #: .\app\platform_utils.py:75 .\app\templates\app\about.html:250
 #: .\app\templates\app\achievement_center.html:12
-#: .\app\templates\app\base.html:984
+#: .\app\templates\app\base.html:986
 msgid "Achievement-Center"
 msgstr "Achievement-Center"
 
 #: .\app\access_control.py:98 .\app\achievement_utils.py:39
 #: .\app\platform_utils.py:39 .\app\platform_utils.py:51
-#: .\app\templates\app\base.html:1074 .\app\templates\app\chat.html:332
+#: .\app\templates\app\base.html:1076 .\app\templates\app\chat.html:332
 #: .\app\templates\app\profile.html:6
 #: .\app\templates\app\public_profile.html:48
 msgid "Profil"
@@ -122,27 +122,27 @@ msgstr "Profil"
 
 #: .\app\access_control.py:104 .\app\models.py:952 .\app\platform_utils.py:8
 #: .\app\platform_utils.py:65 .\app\templates\app\about.html:110
-#: .\app\templates\app\base.html:62 .\app\templates\app\base.html:1105
+#: .\app\templates\app\base.html:64 .\app\templates\app\base.html:1107
 #: .\app\templates\app\home.html:627 .\app\templates\app\weather.html:5
 msgid "Wetter"
 msgstr "Wetter"
 
 #: .\app\access_control.py:112 .\app\platform_utils.py:25
-#: .\app\platform_utils.py:68 .\app\templates\app\base.html:558
-#: .\app\templates\app\base.html:561
+#: .\app\platform_utils.py:68 .\app\templates\app\base.html:560
+#: .\app\templates\app\base.html:563
 msgid "Rechner"
 msgstr "Rechner"
 
 #: .\app\access_control.py:114 .\app\access_control.py:122
 #: .\app\access_control.py:130 .\app\access_control.py:138
 #: .\app\access_control.py:146 .\app\access_control.py:154
-#: .\app\templates\app\base.html:554
+#: .\app\templates\app\base.html:556
 msgid "Rechner & Helfer"
 msgstr "Rechner & Helfer"
 
 #: .\app\access_control.py:120 .\app\platform_utils.py:35
 #: .\app\platform_utils.py:71 .\app\templates\app\about.html:155
-#: .\app\templates\app\base.html:566 .\app\templates\app\base.html:569
+#: .\app\templates\app\base.html:568 .\app\templates\app\base.html:571
 msgid "Spritkosten"
 msgstr "Spritkosten"
 
@@ -155,22 +155,22 @@ msgstr "Budget-Tracker"
 
 #: .\app\access_control.py:136 .\app\platform_utils.py:26
 #: .\app\platform_utils.py:69 .\app\templates\app\about.html:170
-#: .\app\templates\app\base.html:574 .\app\templates\app\base.html:577
+#: .\app\templates\app\base.html:576 .\app\templates\app\base.html:579
 #: .\app\templates\app\unit_converter.html:4
 #: .\app\templates\app\unit_converter.html:20
 msgid "Einheitenrechner"
 msgstr "Einheitenrechner"
 
 #: .\app\access_control.py:144 .\app\platform_utils.py:27
-#: .\app\platform_utils.py:70 .\app\templates\app\base.html:582
-#: .\app\templates\app\base.html:585
+#: .\app\platform_utils.py:70 .\app\templates\app\base.html:584
+#: .\app\templates\app\base.html:587
 #: .\app\templates\app\randomizer_tools.html:5
 msgid "Randomizer"
 msgstr "Randomizer"
 
 #: .\app\access_control.py:152 .\app\platform_utils.py:37
 #: .\app\platform_utils.py:73 .\app\templates\app\about.html:175
-#: .\app\templates\app\base.html:590 .\app\templates\app\base.html:593
+#: .\app\templates\app\base.html:592 .\app\templates\app\base.html:595
 #: .\app\templates\app\qr_code_tool.html:5
 #: .\app\templates\app\qr_code_tool.html:21
 msgid "QR-Code Tool"
@@ -178,7 +178,7 @@ msgstr "QR-Code Tool"
 
 #: .\app\access_control.py:160 .\app\platform_utils.py:28
 #: .\app\platform_utils.py:77 .\app\templates\app\about.html:165
-#: .\app\templates\app\base.html:607 .\app\templates\app\base.html:610
+#: .\app\templates\app\base.html:609 .\app\templates\app\base.html:612
 #: .\app\templates\app\genius_search.html:5
 #: .\app\templates\app\genius_search.html:16
 msgid "Genius Search"
@@ -187,20 +187,20 @@ msgstr "Genius Search"
 #: .\app\access_control.py:162 .\app\access_control.py:170
 #: .\app\access_control.py:178 .\app\access_control.py:186
 #: .\app\access_control.py:194 .\app\access_control.py:202
-#: .\app\templates\app\base.html:603
+#: .\app\templates\app\base.html:605
 msgid "Medien & Design"
 msgstr "Medien & Design"
 
 #: .\app\access_control.py:168 .\app\platform_utils.py:30
 #: .\app\platform_utils.py:79 .\app\templates\app\about.html:180
-#: .\app\templates\app\base.html:615 .\app\templates\app\base.html:618
+#: .\app\templates\app\base.html:617 .\app\templates\app\base.html:620
 #: .\app\templates\app\image_tools.html:4
 msgid "Bild Tools"
 msgstr "Bild Tools"
 
 #: .\app\access_control.py:176 .\app\platform_utils.py:31
 #: .\app\platform_utils.py:80 .\app\templates\app\about.html:185
-#: .\app\templates\app\base.html:623 .\app\templates\app\base.html:626
+#: .\app\templates\app\base.html:625 .\app\templates\app\base.html:628
 #: .\app\templates\app\file_converter.html:5
 #: .\app\templates\app\file_converter.html:24
 #, fuzzy
@@ -208,45 +208,45 @@ msgstr "Bild Tools"
 msgid "Datei-Konverter"
 msgstr "Datei-Verteiler"
 
-#: .\app\access_control.py:184 .\app\templates\app\base.html:634
+#: .\app\access_control.py:184 .\app\templates\app\base.html:636
 msgid "Color Palette"
 msgstr "Color Palette"
 
-#: .\app\access_control.py:192 .\app\templates\app\base.html:639
-#: .\app\templates\app\base.html:642
+#: .\app\access_control.py:192 .\app\templates\app\base.html:641
+#: .\app\templates\app\base.html:644
 #: .\app\templates\app\profile_card_designer.html:6
 msgid "Profilkarten-Designer"
 msgstr "Profilkarten-Designer"
 
 #: .\app\access_control.py:200 .\app\platform_utils.py:29
 #: .\app\platform_utils.py:78 .\app\templates\app\avatar_wiki.html:5
-#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:647
-#: .\app\templates\app\base.html:650
+#: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:649
+#: .\app\templates\app\base.html:652
 msgid "Avatar Wiki"
 msgstr "Avatar Wiki"
 
 #: .\app\access_control.py:208 .\app\platform_utils.py:33
 #: .\app\platform_utils.py:82 .\app\templates\app\about.html:145
-#: .\app\templates\app\base.html:664 .\app\templates\app\base.html:667
+#: .\app\templates\app\base.html:666 .\app\templates\app\base.html:669
 msgid "Stream Deck"
 msgstr "Stream Deck"
 
 #: .\app\access_control.py:210 .\app\access_control.py:218
 #: .\app\platform_utils.py:33 .\app\platform_utils.py:34
-#: .\app\templates\app\base.html:660 .\app\templates\app\base.html:676
+#: .\app\templates\app\base.html:662 .\app\templates\app\base.html:678
 msgid "Streaming"
 msgstr "Streaming"
 
 #: .\app\access_control.py:216 .\app\platform_utils.py:34
 #: .\app\platform_utils.py:83 .\app\templates\app\about.html:140
-#: .\app\templates\app\base.html:672 .\app\templates\app\base.html:675
+#: .\app\templates\app\base.html:674 .\app\templates\app\base.html:677
 #: .\app\templates\app\obs-dashboard.html:5
 #: .\app\templates\app\obs-dashboard.html:21
 msgid "OBS Dashboard"
 msgstr "OBS Dashboard"
 
 #: .\app\access_control.py:224 .\app\platform_utils.py:19
-#: .\app\platform_utils.py:60 .\app\templates\app\base.html:87
+#: .\app\platform_utils.py:60 .\app\templates\app\base.html:89
 #: .\app\templates\app\leaderboard.html:4
 msgid "Leaderboard"
 msgstr "Leaderboard"
@@ -280,21 +280,21 @@ msgstr "Spiel"
 #: .\app\platform_utils.py:23 .\app\platform_utils.py:24
 #: .\app\profile_views.py:265 .\app\profile_views.py:332
 #: .\app\profile_views.py:359 .\app\profile_views.py:378
-#: .\app\profile_views.py:395 .\app\templates\app\base.html:73
+#: .\app\profile_views.py:395 .\app\templates\app\base.html:75
 msgid "Spiele"
 msgstr "Spiele"
 
 #: .\app\access_control.py:232 .\app\models.py:954 .\app\platform_utils.py:17
 #: .\app\platform_utils.py:58 .\app\templates\app\about.html:200
-#: .\app\templates\app\base.html:106 .\app\templates\app\base.html:109
+#: .\app\templates\app\base.html:108 .\app\templates\app\base.html:111
 #: .\app\templates\app\home.html:637 .\app\templates\app\human_benchmark.html:5
 #: .\app\templates\app\human_benchmark.html:19
 msgid "Human Benchmark"
 msgstr "Human Benchmark"
 
 #: .\app\access_control.py:240 .\app\platform_utils.py:20
-#: .\app\platform_utils.py:84 .\app\templates\app\base.html:114
-#: .\app\templates\app\base.html:117
+#: .\app\platform_utils.py:84 .\app\templates\app\base.html:116
+#: .\app\templates\app\base.html:119
 msgid "Racing Game"
 msgstr "Racing Game"
 
@@ -304,15 +304,15 @@ msgid "2048"
 msgstr "2048"
 
 #: .\app\access_control.py:256 .\app\platform_utils.py:21
-#: .\app\platform_utils.py:64 .\app\templates\app\base.html:130
-#: .\app\templates\app\base.html:133
+#: .\app\platform_utils.py:64 .\app\templates\app\base.html:132
+#: .\app\templates\app\base.html:135
 msgid "Snake Powerups"
 msgstr "Snake Powerups"
 
 #: .\app\access_control.py:264 .\app\performance_tools_views.py:184
 #: .\app\platform_utils.py:22 .\app\platform_utils.py:61
-#: .\app\templates\app\about.html:205 .\app\templates\app\base.html:138
-#: .\app\templates\app\base.html:141
+#: .\app\templates\app\about.html:205 .\app\templates\app\base.html:140
+#: .\app\templates\app\base.html:143
 msgid "Cookie Cosmos"
 msgstr "Cookie Cosmos"
 
@@ -332,7 +332,7 @@ msgstr ""
 
 #: .\app\access_control.py:288 .\app\models.py:960
 #: .\app\notification_utils.py:254 .\app\performance_tools_views.py:213
-#: .\app\templates\app\base.html:171 .\app\templates\app\base.html:174
+#: .\app\templates\app\base.html:173 .\app\templates\app\base.html:176
 #: .\app\templates\app\home.html:633 .\app\templates\app\tictactoe_home.html:4
 #: .\app\templates\app\tictactoe_home.html:27
 #: .\app\templates\app\tictactoe_home.html:44
@@ -342,7 +342,7 @@ msgstr "Tic Tac Toe"
 
 #: .\app\access_control.py:307 .\app\connectfour_views.py:295
 #: .\app\notification_utils.py:267 .\app\performance_tools_views.py:218
-#: .\app\templates\app\base.html:197 .\app\templates\app\base.html:200
+#: .\app\templates\app\base.html:199 .\app\templates\app\base.html:202
 #: .\app\templates\app\connectfour_home.html:4
 #: .\app\templates\app\connectfour_home.html:27
 #: .\app\templates\app\connectfour_home.html:44
@@ -352,7 +352,7 @@ msgstr "Vier gewinnt"
 
 #: .\app\access_control.py:326 .\app\battleship_views.py:393
 #: .\app\notification_utils.py:283 .\app\notification_utils.py:294
-#: .\app\templates\app\base.html:184 .\app\templates\app\base.html:187
+#: .\app\templates\app\base.html:186 .\app\templates\app\base.html:189
 #: .\app\templates\app\battleship_home.html:4
 #: .\app\templates\app\battleship_home.html:27
 #: .\app\templates\app\battleship_home.html:44
@@ -362,8 +362,8 @@ msgstr "Schiffe versenken"
 
 #: .\app\access_control.py:346 .\app\models.py:961
 #: .\app\notification_utils.py:344 .\app\performance_tools_views.py:196
-#: .\app\stadtlandfluss_views.py:487 .\app\templates\app\base.html:210
-#: .\app\templates\app\base.html:213 .\app\templates\app\home.html:634
+#: .\app\stadtlandfluss_views.py:487 .\app\templates\app\base.html:212
+#: .\app\templates\app\base.html:215 .\app\templates\app\home.html:634
 #: .\app\templates\app\stadtlandfluss_home.html:4
 #: .\app\templates\app\stadtlandfluss_home.html:15
 #: .\app\templates\app\stadtlandfluss_home.html:28
@@ -373,8 +373,8 @@ msgstr "Stadt Land Fluss"
 
 #: .\app\access_control.py:369 .\app\hangman_views.py:462
 #: .\app\performance_tools_views.py:208 .\app\platform_utils.py:16
-#: .\app\platform_utils.py:57 .\app\templates\app\base.html:268
-#: .\app\templates\app\base.html:271 .\app\templates\app\hangman_home.html:4
+#: .\app\platform_utils.py:57 .\app\templates\app\base.html:270
+#: .\app\templates\app\base.html:273 .\app\templates\app\hangman_home.html:4
 #: .\app\templates\app\hangman_home.html:14
 #: .\app\templates\app\hangman_home.html:26
 #: .\app\templates\app\hangman_lobby.html:4
@@ -383,8 +383,8 @@ msgstr "Hangman"
 
 #: .\app\access_control.py:391 .\app\models.py:962
 #: .\app\notification_utils.py:308 .\app\platform_utils.py:14
-#: .\app\platform_utils.py:55 .\app\templates\app\base.html:223
-#: .\app\templates\app\base.html:227 .\app\templates\app\home.html:635
+#: .\app\platform_utils.py:55 .\app\templates\app\base.html:225
+#: .\app\templates\app\base.html:229 .\app\templates\app\home.html:635
 #: .\app\templates\app\uno_home.html:4 .\app\templates\app\uno_home.html:27
 #: .\app\templates\app\uno_home.html:46 .\app\templates\app\uno_lobby.html:4
 #: .\app\uno_views.py:536
@@ -394,8 +394,8 @@ msgstr "Uno"
 #: .\app\access_control.py:415 .\app\kniffel_views.py:42
 #: .\app\kniffel_views.py:511 .\app\models.py:963
 #: .\app\notification_utils.py:322 .\app\platform_utils.py:15
-#: .\app\platform_utils.py:56 .\app\templates\app\base.html:239
-#: .\app\templates\app\base.html:242 .\app\templates\app\home.html:636
+#: .\app\platform_utils.py:56 .\app\templates\app\base.html:241
+#: .\app\templates\app\base.html:244 .\app\templates\app\home.html:636
 #: .\app\templates\app\kniffel_home.html:4
 #: .\app\templates\app\kniffel_home.html:27
 #: .\app\templates\app\kniffel_home.html:47
@@ -404,7 +404,7 @@ msgid "Kniffel"
 msgstr "Kniffel"
 
 #: .\app\access_control.py:436 .\app\pong_views.py:337
-#: .\app\templates\app\base.html:252 .\app\templates\app\base.html:255
+#: .\app\templates\app\base.html:254 .\app\templates\app\base.html:257
 #: .\app\templates\app\pong_home.html:4 .\app\templates\app\pong_home.html:43
 #: .\app\templates\app\pong_lobby.html:4
 msgid "Pong"
@@ -413,8 +413,8 @@ msgstr "Pong"
 #: .\app\access_control.py:455 .\app\models.py:959 .\app\models.py:2790
 #: .\app\notification_utils.py:359 .\app\performance_tools_views.py:167
 #: .\app\platform_utils.py:13 .\app\platform_utils.py:54
-#: .\app\templates\app\about.html:255 .\app\templates\app\base.html:281
-#: .\app\templates\app\base.html:284 .\app\templates\app\home.html:632
+#: .\app\templates\app\about.html:255 .\app\templates\app\base.html:283
+#: .\app\templates\app\base.html:286 .\app\templates\app\home.html:632
 #: .\app\templates\app\inbox.html:24 .\app\templates\app\skribble_home.html:4
 #: .\app\templates\app\skribble_home.html:16
 #: .\app\templates\app\skribble_lobby.html:4
@@ -1280,7 +1280,7 @@ msgid ""
 "kann"
 msgstr ""
 
-#: .\app\community_views.py:34 .\app\community_views.py:143
+#: .\app\community_views.py:34 .\app\community_views.py:144
 msgid "Games"
 msgstr "Games"
 
@@ -1294,139 +1294,143 @@ msgstr "Buchung wurde hinzugefügt."
 msgid "kontrolle wer auf welches tool zugreifen kann."
 msgstr ""
 
-#: .\app\community_views.py:44
-msgid "Datei-Konverter und einheitliches Tool-Design"
+#: .\app\community_views.py:39
+msgid "Kleinere Style Anpassungen"
 msgstr ""
 
 #: .\app\community_views.py:45
+msgid "Datei-Konverter und einheitliches Tool-Design"
+msgstr ""
+
+#: .\app\community_views.py:46
 msgid ""
 "Der neue Datei-Konverter, ein gemeinsamer Tool-Seiten-Look und gezielte "
 "Kontrastkorrekturen machen die Werkzeugbereiche einheitlicher und besser "
 "lesbar."
 msgstr ""
 
-#: .\app\community_views.py:46 .\app\community_views.py:130
+#: .\app\community_views.py:47 .\app\community_views.py:131
 #: .\app\platform_utils.py:25 .\app\platform_utils.py:26
 #: .\app\platform_utils.py:27 .\app\platform_utils.py:28
 #: .\app\platform_utils.py:29 .\app\platform_utils.py:30
 #: .\app\platform_utils.py:31 .\app\platform_utils.py:37
-#: .\app\templates\app\base.html:1059
+#: .\app\templates\app\base.html:1061
 msgid "Tools"
 msgstr "Tools"
 
-#: .\app\community_views.py:49
+#: .\app\community_views.py:50
 msgid ""
 "Datei-Konverter für DOCX, Tabellen, Präsentationen, Textdateien und Bilder "
 "ergänzt."
 msgstr ""
 
-#: .\app\community_views.py:50
+#: .\app\community_views.py:51
 msgid ""
 "Office-zu-PDF läuft serverseitig über LibreOffice und verarbeitet Uploads "
 "nur temporär."
 msgstr ""
 
-#: .\app\community_views.py:51
+#: .\app\community_views.py:52
 msgid ""
 "Toolbox-Seiten übernehmen jetzt gemeinsame Theme-Farben, Karten, Buttons, "
 "Inputs und Kontrastmodus-Regeln."
 msgstr ""
 
-#: .\app\community_views.py:52
+#: .\app\community_views.py:53
 msgid ""
 "Bild Tools, Datei-Konverter, Einheitenrechner, Spritkosten und QR-Code Tool "
 "wurden farblich nachjustiert."
 msgstr ""
 
-#: .\app\community_views.py:53
+#: .\app\community_views.py:54
 msgid ""
 "Der Quality-Workflow startet nicht mehr automatisch bei jedem Push oder "
 "Merge, sondern nur noch manuell."
 msgstr ""
 
-#: .\app\community_views.py:59
+#: .\app\community_views.py:60
 #, fuzzy
 #| msgid "Stream-Deck-Steuerung"
 msgid "Stream Deck mit Voicemod-Steuerung"
 msgstr "Stream-Deck-Steuerung"
 
-#: .\app\community_views.py:60
+#: .\app\community_views.py:61
 msgid ""
 "Das Stream Deck kann Voicemod jetzt direkt steuern und nutzt dafuer einen "
 "lokal gespeicherten API-Key pro Browser."
 msgstr ""
 
-#: .\app\community_views.py:61
+#: .\app\community_views.py:62
 #, fuzzy
 #| msgid "Tools & Integrationen"
 msgid "Integration"
 msgstr "Tools & Integrationen"
 
-#: .\app\community_views.py:64
+#: .\app\community_views.py:65
 msgid ""
 "Voicemod-Aktionen fuer Voice Changer, Hear Myself, Mikrofon-Mute, Zufalls-"
 "Voice und Voice-Wechsel ergaenzt."
 msgstr ""
 
-#: .\app\community_views.py:65
+#: .\app\community_views.py:66
 msgid ""
 "Voices lassen sich aus Voicemod laden und im Button-Editor per Dropdown "
 "auswaehlen."
 msgstr ""
 
-#: .\app\community_views.py:66
+#: .\app\community_views.py:67
 msgid ""
 "Der Voicemod API-Key wird im Stream Deck gespeichert und bei fehlender "
 "Verbindung klar als Hinweis angezeigt."
 msgstr ""
 
-#: .\app\community_views.py:72
+#: .\app\community_views.py:73
 msgid "Mobile Bedienung, Realtime und Qualität"
 msgstr ""
 
-#: .\app\community_views.py:73
+#: .\app\community_views.py:74
 msgid ""
 "Die mobile Navigation ist flexibler, Benachrichtigungen aktualisieren sich "
 "direkter und die Codebasis ist besser für weitere Updates vorbereitet."
 msgstr ""
 
-#: .\app\community_views.py:74 .\app\community_views.py:104
+#: .\app\community_views.py:75 .\app\community_views.py:105
 msgid "Update"
 msgstr "Update"
 
-#: .\app\community_views.py:77
+#: .\app\community_views.py:78
 msgid ""
 "Mobile Ansicht blendet den oberen Header standardmäßig aus und bietet einen "
 "Button zum Ein- und Ausblenden."
 msgstr ""
 
-#: .\app\community_views.py:78
+#: .\app\community_views.py:79
 msgid ""
 "Google-Suche auf der Startseite wurde auf kleinen Displays optisch "
 "nachjustiert."
 msgstr ""
 
-#: .\app\community_views.py:79
+#: .\app\community_views.py:80
 msgid ""
 "Live-Status und Benachrichtigungszähler nutzen WebSocket-Updates mit HTTP-"
 "Fallback."
 msgstr ""
 
-#: .\app\community_views.py:80
+#: .\app\community_views.py:81
 msgid "Notes- und PWA-Views wurden aus der großen View-Datei herausgelöst."
 msgstr ""
 
-#: .\app\community_views.py:81
+#: .\app\community_views.py:82
 msgid ""
 "Neuer Qualitätslauf bündelt Systemcheck, Migration-Check, Tests, "
 "collectstatic-Dry-Run und JavaScript-Syntaxprüfung."
 msgstr ""
 
-#: .\app\community_views.py:87
+#: .\app\community_views.py:88
 msgid "Suche, Mobile, Datei-Share und Profile"
 msgstr "Suche, Mobile, Datei-Share und Profile"
 
-#: .\app\community_views.py:88
+#: .\app\community_views.py:89
 msgid ""
 "Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen "
 "MyTools schneller bedienbar und sichtbarer vernetzt."
@@ -1434,53 +1438,53 @@ msgstr ""
 "Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen "
 "MyTools schneller bedienbar und sichtbarer vernetzt."
 
-#: .\app\community_views.py:89 .\app\community_views.py:117
+#: .\app\community_views.py:90 .\app\community_views.py:118
 msgid "Plattform"
 msgstr "Plattform"
 
-#: .\app\community_views.py:92
-msgid ""
-"Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und "
-"Roadmap-Ideen ergänzt."
-msgstr ""
-"Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und "
-"Roadmap-Ideen ergänzt."
-
 #: .\app\community_views.py:93
 msgid ""
-"Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und "
-"Changelog erweitert."
+"Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und "
+"Roadmap-Ideen ergänzt."
 msgstr ""
-"Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und "
-"Changelog erweitert."
+"Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und "
+"Roadmap-Ideen ergänzt."
 
 #: .\app\community_views.py:94
 msgid ""
-"Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."
+"Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und "
+"Changelog erweitert."
 msgstr ""
-"Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."
+"Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und "
+"Changelog erweitert."
 
 #: .\app\community_views.py:95
 msgid ""
-"Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und "
-"PDF-Vorschau ausgebaut."
+"Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."
 msgstr ""
-"Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und "
-"PDF-Vorschau ausgebaut."
+"Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."
 
 #: .\app\community_views.py:96
 msgid ""
+"Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und "
+"PDF-Vorschau ausgebaut."
+msgstr ""
+"Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und "
+"PDF-Vorschau ausgebaut."
+
+#: .\app\community_views.py:97
+msgid ""
 "Profilseite mit Spotlight-Statistiken und feineren "
 "Benachrichtigungseinstellungen erweitert."
 msgstr ""
 "Profilseite mit Spotlight-Statistiken und feineren "
 "Benachrichtigungseinstellungen erweitert."
 
-#: .\app\community_views.py:102
+#: .\app\community_views.py:103
 msgid "Design, Status und Transparenz"
 msgstr "Design, Status und Transparenz"
 
-#: .\app\community_views.py:103
+#: .\app\community_views.py:104
 msgid ""
 "Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite "
 "machen MyTools leichter anpassbar und besser nachvollziehbar."
@@ -1488,7 +1492,7 @@ msgstr ""
 "Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite "
 "machen MyTools leichter anpassbar und besser nachvollziehbar."
 
-#: .\app\community_views.py:107
+#: .\app\community_views.py:108
 #, fuzzy
 #| msgid ""
 #| "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und "
@@ -1500,27 +1504,27 @@ msgstr ""
 "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und "
 "Hintergrundeffekte im Browser speichern."
 
-#: .\app\community_views.py:108
-msgid ""
-"Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße "
-"und letzten Security-Events ausgebaut."
-msgstr ""
-"Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße "
-"und letzten Security-Events ausgebaut."
-
 #: .\app\community_views.py:109
 msgid ""
+"Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße "
+"und letzten Security-Events ausgebaut."
+msgstr ""
+"Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße "
+"und letzten Security-Events ausgebaut."
+
+#: .\app\community_views.py:110
+msgid ""
 "Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen "
 "ergänzt."
 msgstr ""
 "Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen "
 "ergänzt."
 
-#: .\app\community_views.py:115
+#: .\app\community_views.py:116
 msgid "Community und Sicherheit"
 msgstr "Community und Sicherheit"
 
-#: .\app\community_views.py:116
+#: .\app\community_views.py:117
 msgid ""
 "Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der "
 "Plattform mehr Struktur."
@@ -1528,24 +1532,24 @@ msgstr ""
 "Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der "
 "Plattform mehr Struktur."
 
-#: .\app\community_views.py:120
+#: .\app\community_views.py:121
 msgid "Feature-Ideen können gesammelt, gevotet und kommentiert werden."
 msgstr "Feature-Ideen können gesammelt, gevotet und kommentiert werden."
 
-#: .\app\community_views.py:121
+#: .\app\community_views.py:122
 msgid "Admins erhalten Moderations- und Sicherheitswerkzeuge."
 msgstr "Admins erhalten Moderations- und Sicherheitswerkzeuge."
 
-#: .\app\community_views.py:122
+#: .\app\community_views.py:123
 msgid "Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."
 msgstr ""
 "Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."
 
-#: .\app\community_views.py:128
+#: .\app\community_views.py:129
 msgid "Mehr Tools für den Alltag"
 msgstr "Mehr Tools für den Alltag"
 
-#: .\app\community_views.py:129
+#: .\app\community_views.py:130
 msgid ""
 "Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen "
 "stärker zusammen."
@@ -1553,23 +1557,23 @@ msgstr ""
 "Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen "
 "stärker zusammen."
 
-#: .\app\community_views.py:133
+#: .\app\community_views.py:134
 msgid "Startseiten-Widgets zeigen wichtige Daten schneller an."
 msgstr "Startseiten-Widgets zeigen wichtige Daten schneller an."
 
-#: .\app\community_views.py:134
+#: .\app\community_views.py:135
 msgid "Notizen unterstützen Pins, Erinnerungen und Teilen."
 msgstr "Notizen unterstützen Pins, Erinnerungen und Teilen."
 
-#: .\app\community_views.py:135
+#: .\app\community_views.py:136
 msgid "Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."
 msgstr "Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."
 
-#: .\app\community_views.py:141 .\app\templates\app\base.html:82
+#: .\app\community_views.py:142 .\app\templates\app\base.html:84
 msgid "Spielebibliothek"
 msgstr "Spielebibliothek"
 
-#: .\app\community_views.py:142
+#: .\app\community_views.py:143
 msgid ""
 "Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform "
 "erweitert."
@@ -1577,62 +1581,62 @@ msgstr ""
 "Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform "
 "erweitert."
 
-#: .\app\community_views.py:146
+#: .\app\community_views.py:147
 msgid "Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."
 msgstr "Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."
 
-#: .\app\community_views.py:147
+#: .\app\community_views.py:148
 msgid "Highscores und Leaderboards für Solo-Spiele."
 msgstr "Highscores und Leaderboards für Solo-Spiele."
 
-#: .\app\community_views.py:148
+#: .\app\community_views.py:149
 msgid "Profilkarten und Achievements geben Spielern mehr Identität."
 msgstr "Profilkarten und Achievements geben Spielern mehr Identität."
 
-#: .\app\community_views.py:198
+#: .\app\community_views.py:199
 msgid "Bitte gib Titel und Beschreibung ein."
 msgstr "Bitte gib Titel und Beschreibung ein."
 
-#: .\app\community_views.py:207
+#: .\app\community_views.py:208
 msgid "Deine Feature-Idee wurde eingetragen."
 msgstr "Deine Feature-Idee wurde eingetragen."
 
-#: .\app\community_views.py:214
+#: .\app\community_views.py:215
 msgid "Vote gesetzt."
 msgstr "Vote gesetzt."
 
-#: .\app\community_views.py:217
+#: .\app\community_views.py:218
 msgid "Vote entfernt."
 msgstr "Vote entfernt."
 
-#: .\app\community_views.py:225
+#: .\app\community_views.py:226
 msgid "Kommentar gespeichert."
 msgstr "Kommentar gespeichert."
 
-#: .\app\community_views.py:227
+#: .\app\community_views.py:228
 msgid "Bitte gib einen Kommentar ein."
 msgstr "Bitte gib einen Kommentar ein."
 
-#: .\app\community_views.py:238
+#: .\app\community_views.py:239
 msgid "Roadmap-Status wurde aktualisiert."
 msgstr "Roadmap-Status wurde aktualisiert."
 
-#: .\app\community_views.py:240
+#: .\app\community_views.py:241
 msgid "Ungültiger Status."
 msgstr "Ungültiger Status."
 
-#: .\app\community_views.py:284 .\app\models.py:2529
+#: .\app\community_views.py:285 .\app\models.py:2529
 #: .\app\templates\app\avatar_wiki.html:76 .\app\templates\app\inbox.html:20
 #: .\app\templates\app\notes.html:106 .\app\templates\app\roadmap.html:103
 msgid "Alle"
 msgstr "Alle"
 
-#: .\app\community_views.py:362 .\app\community_views.py:364
+#: .\app\community_views.py:363 .\app\community_views.py:365
 msgid "Datenbank"
 msgstr "Datenbank"
 
-#: .\app\community_views.py:362 .\app\community_views.py:373
-#: .\app\community_views.py:476 .\app\models.py:61
+#: .\app\community_views.py:363 .\app\community_views.py:374
+#: .\app\community_views.py:477 .\app\models.py:61
 #: .\app\notification_views.py:74 .\app\profile_views.py:590
 #: .\app\templates\app\chat.html:45 .\app\templates\app\chat.html:162
 #: .\app\templates\app\chat.html:249 .\app\templates\app\friends.html:62
@@ -1643,54 +1647,54 @@ msgstr "Datenbank"
 msgid "Online"
 msgstr "Online"
 
-#: .\app\community_views.py:364 .\app\community_views.py:375
+#: .\app\community_views.py:365 .\app\community_views.py:376
 #: .\app\templates\app\hangman_lobby.html:133
 msgid "Fehler"
 msgstr "Fehler"
 
-#: .\app\community_views.py:373 .\app\community_views.py:375
+#: .\app\community_views.py:374 .\app\community_views.py:376
 msgid "Cache"
 msgstr "Cache"
 
-#: .\app\community_views.py:373 .\app\community_views.py:480
+#: .\app\community_views.py:374 .\app\community_views.py:481
 msgid "Prüfen"
 msgstr "Prüfen"
 
-#: .\app\community_views.py:373
+#: .\app\community_views.py:374
 msgid "Schreiben/Lesen erfolgreich"
 msgstr "Schreiben/Lesen erfolgreich"
 
-#: .\app\community_views.py:373
+#: .\app\community_views.py:374
 msgid "Cache-Wert konnte nicht gelesen werden."
 msgstr "Cache-Wert konnte nicht gelesen werden."
 
-#: .\app\community_views.py:424 .\app\community_views.py:438
-#: .\app\community_views.py:448 .\app\community_views.py:457
-#: .\app\community_views.py:458
+#: .\app\community_views.py:425 .\app\community_views.py:439
+#: .\app\community_views.py:449 .\app\community_views.py:458
+#: .\app\community_views.py:459
 msgid "Nicht verfügbar"
 msgstr "Nicht verfügbar"
 
-#: .\app\community_views.py:430
+#: .\app\community_views.py:431
 msgid "Nicht gesetzt"
 msgstr "Nicht gesetzt"
 
-#: .\app\community_views.py:468 .\app\community_views.py:470
+#: .\app\community_views.py:469 .\app\community_views.py:471
 msgid "nicht gesetzt"
 msgstr "nicht gesetzt"
 
-#: .\app\community_views.py:476
+#: .\app\community_views.py:477
 msgid "Django App"
 msgstr "Django App"
 
-#: .\app\community_views.py:476
+#: .\app\community_views.py:477
 msgid "Request wurde erfolgreich verarbeitet."
 msgstr "Request wurde erfolgreich verarbeitet."
 
-#: .\app\community_views.py:479
+#: .\app\community_views.py:480
 msgid "PWA"
 msgstr "PWA"
 
-#: .\app\community_views.py:479 .\app\community_views.py:544
+#: .\app\community_views.py:480 .\app\community_views.py:545
 #: .\app\moderation_views.py:401
 #: .\app\templates\app\nebula_forge_tycoon.html:196
 #: .\app\templates\app\security_dashboard.html:39
@@ -1698,92 +1702,93 @@ msgstr "PWA"
 msgid "Aktiv"
 msgstr "Aktiv"
 
-#: .\app\community_views.py:480
+#: .\app\community_views.py:481
 msgid "Media"
 msgstr "Media"
 
-#: .\app\community_views.py:480 .\app\templates\app\calculator.html:50
+#: .\app\community_views.py:481 .\app\templates\app\calculator.html:50
 #: .\app\templates\app\calculator.html:168 .\app\templates\app\clock.html:142
 #: .\app\templates\app\cookie_clicker.html:90
 #: .\app\templates\app\snake_powerups.html:64
 msgid "Bereit"
 msgstr "Bereit"
 
-#: .\app\community_views.py:491 .\app\moderation_views.py:388
+#: .\app\community_views.py:492 .\app\moderation_views.py:388
 msgid "Aktive Nutzer"
 msgstr "Aktive Nutzer"
 
-#: .\app\community_views.py:491
+#: .\app\community_views.py:492
 msgid "letzte 3 Minuten"
 msgstr "letzte 3 Minuten"
 
-#: .\app\community_views.py:492
+#: .\app\community_views.py:493
 msgid "Nutzer gesamt"
 msgstr "Nutzer gesamt"
 
-#: .\app\community_views.py:492
+#: .\app\community_views.py:493
 msgid "aktive Konten"
 msgstr "aktive Konten"
 
-#: .\app\community_views.py:493
+#: .\app\community_views.py:494
 msgid "Chatnachrichten heute"
 msgstr "Chatnachrichten heute"
 
-#: .\app\community_views.py:493
+#: .\app\community_views.py:494
 msgid "neue Nachrichten"
 msgstr "neue Nachrichten"
 
-#: .\app\community_views.py:494
+#: .\app\community_views.py:495
 msgid "nicht archiviert"
 msgstr "nicht archiviert"
 
-#: .\app\community_views.py:495 .\app\profile_forms.py:66
+#: .\app\community_views.py:496 .\app\profile_forms.py:66
 msgid "Dateifreigaben"
 msgstr "Dateifreigaben"
 
-#: .\app\community_views.py:496
+#: .\app\community_views.py:497
 msgid "Startseiten-Widgets"
 msgstr "Startseiten-Widgets"
 
-#: .\app\community_views.py:496
+#: .\app\community_views.py:497
 msgid "konfiguriert"
 msgstr "konfiguriert"
 
-#: .\app\community_views.py:502 .\app\moderation_views.py:356
+#: .\app\community_views.py:503 .\app\moderation_views.py:356
 msgid "Offene Meldungen"
 msgstr "Offene Meldungen"
 
-#: .\app\community_views.py:504 .\app\templates\app\base.html:532
-#: .\app\templates\app\base.html:535 .\app\templates\app\moderation.html:5
+#: .\app\community_views.py:505 .\app\templates\app\base.html:534
+#: .\app\templates\app\base.html:537 .\app\templates\app\moderation.html:5
 #: .\app\templates\app\moderation.html:16
 msgid "Moderation"
 msgstr "Moderation"
 
-#: .\app\community_views.py:509 .\app\moderation_views.py:362
+#: .\app\community_views.py:510 .\app\moderation_views.py:362
 msgid "Offenes Feedback"
 msgstr "Offenes Feedback"
 
-#: .\app\community_views.py:516
+#: .\app\community_views.py:517
 msgid "Letzte Audits"
 msgstr "Letzte Audits"
 
-#: .\app\community_views.py:518 .\app\templates\app\security_dashboard.html:142
+#: .\app\community_views.py:519 .\app\templates\app\security_dashboard.html:142
 #: .\app\templates\app\stream_deck.html:528
 #: .\app\templates\app\uno_lobby.html:91
 msgid "Protokoll"
 msgstr "Protokoll"
 
-#: .\app\community_views.py:523
+#: .\app\community_views.py:524
 msgid "Zugang"
 msgstr "Zugang"
 
-#: .\app\community_views.py:524
+#: .\app\community_views.py:525 .\app\platform_utils.py:115
+#: .\app\templates\app\base.html:47 .\app\templates\app\favorites.html:39
 #: .\app\templates\app\includes\achievement_panel.html:61
 #: .\app\templates\app\moderation.html:62
 msgid "Gesperrt"
 msgstr "Gesperrt"
 
-#: .\app\community_views.py:524 .\app\models.py:1386 .\app\models.py:1522
+#: .\app\community_views.py:525 .\app\models.py:1386 .\app\models.py:1522
 #: .\app\models.py:1661 .\app\models.py:1809 .\app\models.py:1946
 #: .\app\models.py:2121 .\app\models.py:2292 .\app\models.py:2829
 #: .\app\models.py:3079 .\app\models.py:3436
@@ -1793,62 +1798,62 @@ msgstr "Gesperrt"
 msgid "Offen"
 msgstr "Offen"
 
-#: .\app\community_views.py:532
+#: .\app\community_views.py:533
 #, python-format
 msgid "Projekt-Laufwerk ist zu %(percent)s%% belegt."
 msgstr "Projekt-Laufwerk ist zu %(percent)s%% belegt."
 
-#: .\app\community_views.py:534
+#: .\app\community_views.py:535
 #, python-format
 msgid "%(count)s fehlgeschlagene Logins heute."
 msgstr "%(count)s fehlgeschlagene Logins heute."
 
-#: .\app\community_views.py:542
+#: .\app\community_views.py:543
 msgid "Python"
 msgstr "Python"
 
-#: .\app\community_views.py:543
+#: .\app\community_views.py:544
 msgid "Django"
 msgstr "Django"
 
-#: .\app\community_views.py:544
+#: .\app\community_views.py:545
 msgid "Debug"
 msgstr "Debug"
 
-#: .\app\community_views.py:544 .\app\moderation_views.py:401
+#: .\app\community_views.py:545 .\app\moderation_views.py:401
 #: .\app\templates\app\stream_deck.html:249
 msgid "Aus"
 msgstr "Aus"
 
-#: .\app\community_views.py:545
+#: .\app\community_views.py:546
 msgid "Prozess-RAM"
 msgstr "Prozess-RAM"
 
-#: .\app\community_views.py:546
+#: .\app\community_views.py:547
 msgid "Load Average"
 msgstr "Load Average"
 
-#: .\app\community_views.py:547
+#: .\app\community_views.py:548
 msgid "Uptime"
 msgstr "Uptime"
 
-#: .\app\community_views.py:548
+#: .\app\community_views.py:549
 msgid "Datenbankgröße"
 msgstr "Datenbankgröße"
 
-#: .\app\community_views.py:549
+#: .\app\community_views.py:550
 msgid "Medienordner"
 msgstr "Medienordner"
 
-#: .\app\community_views.py:556
+#: .\app\community_views.py:557
 msgid "Projekt"
 msgstr "Projekt"
 
-#: .\app\community_views.py:557
+#: .\app\community_views.py:558
 msgid "Static Root"
 msgstr "Static Root"
 
-#: .\app\community_views.py:558
+#: .\app\community_views.py:559
 msgid "Media Root"
 msgstr "Media Root"
 
@@ -1992,7 +1997,7 @@ msgid "Diese Kombination aus Datei und Zielformat wird nicht unterstützt."
 msgstr ""
 
 #: .\app\forms.py:49 .\app\models.py:580 .\app\models.py:690
-#: .\app\models.py:1021 .\app\templates\app\base.html:741
+#: .\app\models.py:1021 .\app\templates\app\base.html:743
 #: .\app\templates\app\home.html:695 .\app\templates\app\home.html:908
 #: .\app\templates\app\uno_lobby.html:186 .\app\uno_views.py:26
 msgid "Blau"
@@ -2740,7 +2745,7 @@ msgstr "Ocean"
 msgid "Forest"
 msgstr "Forest"
 
-#: .\app\models.py:390 .\app\models.py:1004 .\app\templates\app\base.html:761
+#: .\app\models.py:390 .\app\models.py:1004 .\app\templates\app\base.html:763
 msgid "Sunset"
 msgstr "Sunset"
 
@@ -2772,7 +2777,7 @@ msgid "Chats"
 msgstr "Chats"
 
 #: .\app\models.py:958 .\app\models.py:2789 .\app\profile_views.py:139
-#: .\app\templates\app\base.html:994 .\app\templates\app\friends.html:6
+#: .\app\templates\app\base.html:996 .\app\templates\app\friends.html:6
 #: .\app\templates\app\friends.html:27 .\app\templates\app\friends.html:44
 #: .\app\templates\app\home.html:284 .\app\templates\app\home.html:631
 #: .\app\templates\app\inbox.html:23 .\app\templates\app\profile.html:76
@@ -3559,9 +3564,9 @@ msgstr "Was ist dir aufgefallen oder was wünschst du dir?"
 msgid "Allgemein"
 msgstr "Allgemein"
 
-#: .\app\platform_utils.py:7 .\app\templates\app\base.html:49
-#: .\app\templates\app\base.html:57 .\app\templates\app\base.html:1057
-#: .\app\templates\app\base.html:1100 .\app\templates\app\clock.html:119
+#: .\app\platform_utils.py:7 .\app\templates\app\base.html:51
+#: .\app\templates\app\base.html:59 .\app\templates\app\base.html:1059
+#: .\app\templates\app\base.html:1102 .\app\templates\app\clock.html:119
 #: .\app\templates\app\clock.html:168
 #: .\app\templates\app\human_benchmark.html:98
 #: .\app\templates\app\randomizer_tools.html:120
@@ -3595,8 +3600,8 @@ msgstr "Nutzer / Freunde"
 msgid "Roadmap / Feature Voting"
 msgstr "Roadmap / Feature Voting"
 
-#: .\app\platform_utils.py:76 .\app\templates\app\base.html:540
-#: .\app\templates\app\base.html:543 .\app\templates\app\server_status.html:12
+#: .\app\platform_utils.py:76 .\app\templates\app\base.html:542
+#: .\app\templates\app\base.html:545 .\app\templates\app\server_status.html:12
 msgid "Serverstatus"
 msgstr "Serverstatus"
 
@@ -3607,6 +3612,12 @@ msgstr "Theme / Design"
 #: .\app\platform_utils.py:86
 msgid "Benachrichtigungseinstellungen"
 msgstr "Benachrichtigungseinstellungen"
+
+#: .\app\platform_utils.py:115 .\app\templates\app\base.html:47
+#: .\app\templates\app\base.html:538 .\app\templates\app\chat.html:213
+#: .\app\templates\app\moderation.html:15
+msgid "Admin"
+msgstr "Admin"
 
 #: .\app\platform_views.py:33
 msgid "Unbekanntes Tool."
@@ -3778,8 +3789,8 @@ msgstr "Nachname"
 msgid "Dein Nachname"
 msgstr "Dein Nachname"
 
-#: .\app\profile_forms.py:52 .\app\templates\app\base.html:928
-#: .\app\templates\app\base.html:943 .\app\templates\app\chat.html:39
+#: .\app\profile_forms.py:52 .\app\templates\app\base.html:930
+#: .\app\templates\app\base.html:945 .\app\templates\app\chat.html:39
 #: .\app\templates\app\chat.html:87 .\app\templates\app\chat.html:126
 #: .\app\templates\app\chat.html:156 .\app\templates\app\chat.html:245
 #: .\app\templates\app\chat.html:282 .\app\templates\app\chat.html:316
@@ -3840,7 +3851,7 @@ msgstr "Chat-Button im Profil anzeigen"
 msgid "Chat-Benachrichtigungen"
 msgstr "Chat-Benachrichtigungen"
 
-#: .\app\profile_forms.py:62 .\app\templates\app\base.html:1010
+#: .\app\profile_forms.py:62 .\app\templates\app\base.html:1012
 msgid "Freundschaftsanfragen"
 msgstr "Freundschaftsanfragen"
 
@@ -4106,8 +4117,8 @@ msgstr "Beste Rally"
 msgid "Top-Score"
 msgstr "Top-Score"
 
-#: .\app\profile_views.py:424 .\app\templates\app\base.html:134
-#: .\app\templates\app\base.html:257
+#: .\app\profile_views.py:424 .\app\templates\app\base.html:136
+#: .\app\templates\app\base.html:259
 msgid "Arcade"
 msgstr "Arcade"
 
@@ -4454,8 +4465,8 @@ msgstr "Stadt-Land-Fluss-Lobby wurde gelöscht."
 msgid "Nur der Host kann diese Lobby löschen."
 msgstr "Nur der Host kann diese Lobby löschen."
 
-#: .\app\templates\app\about.html:5 .\app\templates\app\base.html:67
-#: .\app\templates\app\base.html:1125
+#: .\app\templates\app\about.html:5 .\app\templates\app\base.html:69
+#: .\app\templates\app\base.html:1127
 msgid "Über"
 msgstr "Über"
 
@@ -4807,8 +4818,8 @@ msgstr ""
 "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und "
 "Hintergrundeffekte im Browser speichern."
 
-#: .\app\templates\app\about.html:290 .\app\templates\app\base.html:523
-#: .\app\templates\app\base.html:526 .\app\templates\app\changelog.html:4
+#: .\app\templates\app\about.html:290 .\app\templates\app\base.html:525
+#: .\app\templates\app\base.html:528 .\app\templates\app\changelog.html:4
 #: .\app\templates\app\changelog.html:14
 msgid "Was ist neu?"
 msgstr "Was ist neu?"
@@ -4821,8 +4832,8 @@ msgstr ""
 "Changelog mit den letzten Update-Paketen, sichtbaren Änderungen und "
 "Plattform-Verbesserungen."
 
-#: .\app\templates\app\about.html:295 .\app\templates\app\base.html:901
-#: .\app\templates\app\base.html:907 .\app\templates\app\profile.html:445
+#: .\app\templates\app\about.html:295 .\app\templates\app\base.html:903
+#: .\app\templates\app\base.html:909 .\app\templates\app\profile.html:445
 msgid "Benachrichtigungen"
 msgstr "Benachrichtigungen"
 
@@ -4963,7 +4974,7 @@ msgid "Kategorien"
 msgstr "Kategorien"
 
 #: .\app\templates\app\achievement_center.html:42
-#: .\app\templates\app\base.html:969
+#: .\app\templates\app\base.html:971
 msgid "Profil öffnen"
 msgstr "Profil öffnen"
 
@@ -5008,7 +5019,7 @@ msgstr "Passwort geändert"
 #: .\app\templates\app\auth\password_reset_confirm.html:29
 #: .\app\templates\app\auth\password_reset_done.html:29
 #: .\app\templates\app\auth\password_reset_form.html:29
-#: .\app\templates\app\base.html:892 .\app\templates\registration\login.html:44
+#: .\app\templates\app\base.html:894 .\app\templates\registration\login.html:44
 #: .\app\templates\registration\signup.html:44
 #: .\app\templates\registration\two_factor_verify.html:27
 msgid "Dark Mode umschalten"
@@ -5159,8 +5170,8 @@ msgstr "Beschreibung (optional)"
 msgid "Abbrechen"
 msgstr "Abbrechen"
 
-#: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\base.html:822
-#: .\app\templates\app\base.html:833 .\app\templates\app\base.html:844
+#: .\app\templates\app\avatar_wiki.html:50 .\app\templates\app\base.html:824
+#: .\app\templates\app\base.html:835 .\app\templates\app\base.html:846
 #: .\app\templates\app\chat.html:204 .\app\templates\app\chat.html:341
 #: .\app\templates\app\home.html:869 .\app\templates\app\moderation.html:82
 #: .\app\templates\app\moderation.html:204
@@ -5218,514 +5229,519 @@ msgstr "Noch keine Charaktere hinzugefügt."
 msgid "Mein myManager"
 msgstr "Mein myManager"
 
-#: .\app\templates\app\base.html:71
+#: .\app\templates\app\base.html:47 .\app\templates\app\favorites.html:36
+#, fuzzy
+#| msgid "Kein Zugriff."
+msgid "Kein Zugriff"
+msgstr "Kein Zugriff."
+
+#: .\app\templates\app\base.html:47
+msgid "Eingeschränkt freigegeben"
+msgstr ""
+
+#: .\app\templates\app\base.html:73
 msgid "Spiele-Menü öffnen"
 msgstr "Spiele-Menü öffnen"
 
-#: .\app\templates\app\base.html:84
+#: .\app\templates\app\base.html:86
 msgid "Alle Spiele"
 msgstr "Alle Spiele"
 
-#: .\app\templates\app\base.html:87
+#: .\app\templates\app\base.html:89
 msgid "Scores Rangliste"
 msgstr "Scores Rangliste"
 
-#: .\app\templates\app\base.html:89
+#: .\app\templates\app\base.html:91
 msgid "Rangliste"
 msgstr "Rangliste"
 
-#: .\app\templates\app\base.html:95
+#: .\app\templates\app\base.html:97
 msgid "Spiel suchen..."
 msgstr "Spiel suchen..."
 
-#: .\app\templates\app\base.html:102
+#: .\app\templates\app\base.html:104
 msgid "Einzelspieler"
 msgstr "Einzelspieler"
 
-#: .\app\templates\app\base.html:106
+#: .\app\templates\app\base.html:108
 msgid "Solo Scores Reaktion Aim Typing Visual"
 msgstr "Solo Scores Reaktion Aim Typing Visual"
 
-#: .\app\templates\app\base.html:110
+#: .\app\templates\app\base.html:112
 msgid "Solo-Scores"
 msgstr "Solo-Scores"
 
-#: .\app\templates\app\base.html:114
+#: .\app\templates\app\base.html:116
 msgid "Solo Racing Drift Auto"
 msgstr "Solo Racing Drift Auto"
 
-#: .\app\templates\app\base.html:118
+#: .\app\templates\app\base.html:120
 msgid "Racing"
 msgstr "Racing"
 
-#: .\app\templates\app\base.html:122
+#: .\app\templates\app\base.html:124
 msgid "Solo Puzzle Zahlen Highscore Kacheln"
 msgstr "Solo Puzzle Zahlen Highscore Kacheln"
 
-#: .\app\templates\app\base.html:126
+#: .\app\templates\app\base.html:128
 msgid "Puzzle"
 msgstr "Puzzle"
 
-#: .\app\templates\app\base.html:130
+#: .\app\templates\app\base.html:132
 msgid "Solo Arcade Snake Powerups Score"
 msgstr "Solo Arcade Snake Powerups Score"
 
-#: .\app\templates\app\base.html:138
+#: .\app\templates\app\base.html:140
 msgid "Solo Clicker Incremental Cookies Upgrades"
 msgstr "Solo Clicker Incremental Cookies Upgrades"
 
-#: .\app\templates\app\base.html:142
+#: .\app\templates\app\base.html:144
 msgid "Clicker"
 msgstr "Clicker"
 
-#: .\app\templates\app\base.html:167
+#: .\app\templates\app\base.html:169
 msgid "Mehrspieler"
 msgstr "Mehrspieler"
 
-#: .\app\templates\app\base.html:171 .\app\templates\app\base.html:184
-#: .\app\templates\app\base.html:197
+#: .\app\templates\app\base.html:173 .\app\templates\app\base.html:186
+#: .\app\templates\app\base.html:199
 msgid "Mehrspieler 1v1 Strategie Einladung"
 msgstr "Mehrspieler 1v1 Strategie Einladung"
 
-#: .\app\templates\app\base.html:175 .\app\templates\app\base.html:201
+#: .\app\templates\app\base.html:177 .\app\templates\app\base.html:203
 msgid "1v1"
 msgstr "1v1"
 
-#: .\app\templates\app\base.html:178
+#: .\app\templates\app\base.html:180
 msgid "offene Tic-Tac-Toe-Einladung"
 msgstr "offene Tic-Tac-Toe-Einladung"
 
-#: .\app\templates\app\base.html:178
+#: .\app\templates\app\base.html:180
 msgid "offene Tic-Tac-Toe-Einladungen"
 msgstr "offene Tic-Tac-Toe-Einladungen"
 
-#: .\app\templates\app\base.html:178
+#: .\app\templates\app\base.html:180
 #, python-format
 msgid "%(count)s offene Tic-Tac-Toe-Einladung"
 msgid_plural "%(count)s offene Tic-Tac-Toe-Einladungen"
 msgstr[0] "%(count)s offene Tic-Tac-Toe-Einladung"
 msgstr[1] "%(count)s offene Tic-Tac-Toe-Einladungen"
 
-#: .\app\templates\app\base.html:188
+#: .\app\templates\app\base.html:190
 msgid "Strategie"
 msgstr "Strategie"
 
-#: .\app\templates\app\base.html:191
+#: .\app\templates\app\base.html:193
 msgid "offene Schiffe-versenken-Einladung"
 msgstr "offene Schiffe-versenken-Einladung"
 
-#: .\app\templates\app\base.html:191
+#: .\app\templates\app\base.html:193
 msgid "offene Schiffe-versenken-Einladungen"
 msgstr "offene Schiffe-versenken-Einladungen"
 
-#: .\app\templates\app\base.html:191
+#: .\app\templates\app\base.html:193
 #, python-format
 msgid "%(count)s offene Schiffe-versenken-Einladung"
 msgid_plural "%(count)s offene Schiffe-versenken-Einladungen"
 msgstr[0] "%(count)s offene Schiffe-versenken-Einladung"
 msgstr[1] "%(count)s offene Schiffe-versenken-Einladungen"
 
-#: .\app\templates\app\base.html:204
+#: .\app\templates\app\base.html:206
 msgid "offene Vier-gewinnt-Einladung"
 msgstr "offene Vier-gewinnt-Einladung"
 
-#: .\app\templates\app\base.html:204
+#: .\app\templates\app\base.html:206
 msgid "offene Vier-gewinnt-Einladungen"
 msgstr "offene Vier-gewinnt-Einladungen"
 
-#: .\app\templates\app\base.html:204
+#: .\app\templates\app\base.html:206
 #, python-format
 msgid "%(count)s offene Vier-gewinnt-Einladung"
 msgid_plural "%(count)s offene Vier-gewinnt-Einladungen"
 msgstr[0] "%(count)s offene Vier-gewinnt-Einladung"
 msgstr[1] "%(count)s offene Vier-gewinnt-Einladungen"
 
-#: .\app\templates\app\base.html:210
+#: .\app\templates\app\base.html:212
 msgid "Mehrspieler Party Wörter Einladung"
 msgstr "Mehrspieler Party Wörter Einladung"
 
-#: .\app\templates\app\base.html:214
+#: .\app\templates\app\base.html:216
 msgid "Party"
 msgstr "Party"
 
-#: .\app\templates\app\base.html:217
+#: .\app\templates\app\base.html:219
 msgid "offene Stadt-Land-Fluss-Einladung"
 msgstr "offene Stadt-Land-Fluss-Einladung"
 
-#: .\app\templates\app\base.html:217
+#: .\app\templates\app\base.html:219
 msgid "offene Stadt-Land-Fluss-Einladungen"
 msgstr "offene Stadt-Land-Fluss-Einladungen"
 
-#: .\app\templates\app\base.html:217
+#: .\app\templates\app\base.html:219
 #, python-format
 msgid "%(count)s offene Stadt-Land-Fluss-Einladung"
 msgid_plural "%(count)s offene Stadt-Land-Fluss-Einladungen"
 msgstr[0] "%(count)s offene Stadt-Land-Fluss-Einladung"
 msgstr[1] "%(count)s offene Stadt-Land-Fluss-Einladungen"
 
-#: .\app\templates\app\base.html:223
+#: .\app\templates\app\base.html:225
 msgid "Mehrspieler Karten Party Einladung Beta Testphase"
 msgstr "Mehrspieler Karten Party Einladung Beta Testphase"
 
-#: .\app\templates\app\base.html:230 .\app\templates\app\base.html:350
-#: .\app\templates\app\base.html:794
+#: .\app\templates\app\base.html:232 .\app\templates\app\base.html:352
+#: .\app\templates\app\base.html:796
 msgid "Karten"
 msgstr "Karten"
 
-#: .\app\templates\app\base.html:233
+#: .\app\templates\app\base.html:235
 msgid "offene Uno-Einladung"
 msgstr "offene Uno-Einladung"
 
-#: .\app\templates\app\base.html:233
+#: .\app\templates\app\base.html:235
 msgid "offene Uno-Einladungen"
 msgstr "offene Uno-Einladungen"
 
-#: .\app\templates\app\base.html:233
+#: .\app\templates\app\base.html:235
 #, python-format
 msgid "%(count)s offene Uno-Einladung"
 msgid_plural "%(count)s offene Uno-Einladungen"
 msgstr[0] "%(count)s offene Uno-Einladung"
 msgstr[1] "%(count)s offene Uno-Einladungen"
 
-#: .\app\templates\app\base.html:239
+#: .\app\templates\app\base.html:241
 msgid "Mehrspieler Würfel Punkte Einladung"
 msgstr "Mehrspieler Würfel Punkte Einladung"
 
-#: .\app\templates\app\base.html:243
+#: .\app\templates\app\base.html:245
 #: .\app\templates\app\randomizer_tools.html:37
 #: .\app\templates\app\randomizer_tools.html:107
 msgid "Würfel"
 msgstr "Würfel"
 
-#: .\app\templates\app\base.html:246
+#: .\app\templates\app\base.html:248
 msgid "offene Kniffel-Einladung"
 msgstr "offene Kniffel-Einladung"
 
-#: .\app\templates\app\base.html:246
+#: .\app\templates\app\base.html:248
 msgid "offene Kniffel-Einladungen"
 msgstr "offene Kniffel-Einladungen"
 
-#: .\app\templates\app\base.html:246
+#: .\app\templates\app\base.html:248
 #, python-format
 msgid "%(count)s offene Kniffel-Einladung"
 msgid_plural "%(count)s offene Kniffel-Einladungen"
 msgstr[0] "%(count)s offene Kniffel-Einladung"
 msgstr[1] "%(count)s offene Kniffel-Einladungen"
 
-#: .\app\templates\app\base.html:252
+#: .\app\templates\app\base.html:254
 msgid "Mehrspieler 1v1 Arcade Echtzeit Einladung Beta Testphase"
 msgstr "Mehrspieler 1v1 Arcade Echtzeit Einladung Beta Testphase"
 
-#: .\app\templates\app\base.html:262
+#: .\app\templates\app\base.html:264
 msgid "offene Pong-Einladung"
 msgstr "offene Pong-Einladung"
 
-#: .\app\templates\app\base.html:262
+#: .\app\templates\app\base.html:264
 msgid "offene Pong-Einladungen"
 msgstr "offene Pong-Einladungen"
 
-#: .\app\templates\app\base.html:262
+#: .\app\templates\app\base.html:264
 #, python-format
 msgid "%(count)s offene Pong-Einladung"
 msgid_plural "%(count)s offene Pong-Einladungen"
 msgstr[0] "%(count)s offene Pong-Einladung"
 msgstr[1] "%(count)s offene Pong-Einladungen"
 
-#: .\app\templates\app\base.html:268
+#: .\app\templates\app\base.html:270
 msgid "Mehrspieler Wörter Raten Einladung"
 msgstr "Mehrspieler Wörter Raten Einladung"
 
-#: .\app\templates\app\base.html:272
+#: .\app\templates\app\base.html:274
 msgid "Wörter"
 msgstr "Wörter"
 
-#: .\app\templates\app\base.html:275
+#: .\app\templates\app\base.html:277
 msgid "offene Hangman-Einladung"
 msgstr "offene Hangman-Einladung"
 
-#: .\app\templates\app\base.html:275
+#: .\app\templates\app\base.html:277
 msgid "offene Hangman-Einladungen"
 msgstr "offene Hangman-Einladungen"
 
-#: .\app\templates\app\base.html:275
+#: .\app\templates\app\base.html:277
 #, python-format
 msgid "%(count)s offene Hangman-Einladung"
 msgid_plural "%(count)s offene Hangman-Einladungen"
 msgstr[0] "%(count)s offene Hangman-Einladung"
 msgstr[1] "%(count)s offene Hangman-Einladungen"
 
-#: .\app\templates\app\base.html:281
+#: .\app\templates\app\base.html:283
 msgid "Mehrspieler Zeichnen Raten Einladung Beta Testphase"
 msgstr "Mehrspieler Zeichnen Raten Einladung Beta Testphase"
 
-#: .\app\templates\app\base.html:286
+#: .\app\templates\app\base.html:288
 msgid "Zeichnen"
 msgstr "Zeichnen"
 
-#: .\app\templates\app\base.html:291
+#: .\app\templates\app\base.html:293
 msgid "offene Skribble-Einladung"
 msgstr "offene Skribble-Einladung"
 
-#: .\app\templates\app\base.html:291
+#: .\app\templates\app\base.html:293
 msgid "offene Skribble-Einladungen"
 msgstr "offene Skribble-Einladungen"
 
-#: .\app\templates\app\base.html:291
+#: .\app\templates\app\base.html:293
 #, python-format
 msgid "%(count)s offene Skribble-Einladung"
 msgid_plural "%(count)s offene Skribble-Einladungen"
 msgstr[0] "%(count)s offene Skribble-Einladung"
 msgstr[1] "%(count)s offene Skribble-Einladungen"
 
-#: .\app\templates\app\base.html:302
+#: .\app\templates\app\base.html:304
 msgid "Kein Spiel gefunden."
 msgstr "Kein Spiel gefunden."
 
-#: .\app\templates\app\base.html:308
+#: .\app\templates\app\base.html:310
 msgid "Google-Apps-Menü öffnen"
 msgstr "Google-Apps-Menü öffnen"
 
-#: .\app\templates\app\base.html:310
+#: .\app\templates\app\base.html:312
 msgid "Google"
 msgstr "Google"
 
-#: .\app\templates\app\base.html:319
+#: .\app\templates\app\base.html:321
 msgid "Google Apps"
 msgstr "Google Apps"
 
-#: .\app\templates\app\base.html:321
+#: .\app\templates\app\base.html:323
 msgid "Schnellzugriff"
 msgstr "Schnellzugriff"
 
-#: .\app\templates\app\base.html:327
+#: .\app\templates\app\base.html:329
 msgid "Google-App suchen..."
 msgstr "Google-App suchen..."
 
-#: .\app\templates\app\base.html:334
+#: .\app\templates\app\base.html:336
 msgid "Suche & Medien"
 msgstr "Suche & Medien"
 
-#: .\app\templates\app\base.html:338 .\app\templates\app\base.html:341
-#: .\app\templates\app\base.html:713 .\app\templates\app\base.html:1058
+#: .\app\templates\app\base.html:340 .\app\templates\app\base.html:343
+#: .\app\templates\app\base.html:715 .\app\templates\app\base.html:1060
 #: .\app\templates\app\roadmap.html:97
 msgid "Suche"
 msgstr "Suche"
 
-#: .\app\templates\app\base.html:338
+#: .\app\templates\app\base.html:340
 msgid "Google Suche Web Recherche"
 msgstr "Google Suche Web Recherche"
 
-#: .\app\templates\app\base.html:342
+#: .\app\templates\app\base.html:344
 msgid "Web"
 msgstr "Web"
 
-#: .\app\templates\app\base.html:346 .\app\templates\app\base.html:349
+#: .\app\templates\app\base.html:348 .\app\templates\app\base.html:351
 msgid "Maps"
 msgstr "Maps"
 
-#: .\app\templates\app\base.html:346
+#: .\app\templates\app\base.html:348
 msgid "Karten Navigation Orte Routen"
 msgstr "Karten Navigation Orte Routen"
 
-#: .\app\templates\app\base.html:354 .\app\templates\app\base.html:357
+#: .\app\templates\app\base.html:356 .\app\templates\app\base.html:359
 msgid "Youtube"
 msgstr "Youtube"
 
-#: .\app\templates\app\base.html:354
+#: .\app\templates\app\base.html:356
 msgid "Video Musik Medien"
 msgstr "Video Musik Medien"
 
-#: .\app\templates\app\base.html:358
+#: .\app\templates\app\base.html:360
 msgid "Videos"
 msgstr "Videos"
 
-#: .\app\templates\app\base.html:362 .\app\templates\app\base.html:365
+#: .\app\templates\app\base.html:364 .\app\templates\app\base.html:367
 msgid "News"
 msgstr "News"
 
-#: .\app\templates\app\base.html:362
+#: .\app\templates\app\base.html:364
 msgid "Nachrichten News Artikel"
 msgstr "Nachrichten News Artikel"
 
-#: .\app\templates\app\base.html:366 .\app\templates\app\chat.html:17
+#: .\app\templates\app\base.html:368 .\app\templates\app\chat.html:17
 msgid "Nachrichten"
 msgstr "Nachrichten"
 
-#: .\app\templates\app\base.html:370 .\app\templates\app\base.html:373
+#: .\app\templates\app\base.html:372 .\app\templates\app\base.html:375
 msgid "Fotos"
 msgstr "Fotos"
 
-#: .\app\templates\app\base.html:370
+#: .\app\templates\app\base.html:372
 msgid "Bilder Fotos Galerie"
 msgstr "Bilder Fotos Galerie"
 
-#: .\app\templates\app\base.html:374 .\app\templates\app\base.html:619
+#: .\app\templates\app\base.html:376 .\app\templates\app\base.html:621
 #: .\app\templates\app\public_profile.html:237
 msgid "Bilder"
 msgstr "Bilder"
 
-#: .\app\templates\app\base.html:383
+#: .\app\templates\app\base.html:385
 msgid "Arbeiten"
 msgstr "Arbeiten"
 
-#: .\app\templates\app\base.html:387 .\app\templates\app\base.html:390
+#: .\app\templates\app\base.html:389 .\app\templates\app\base.html:392
 msgid "Gmail"
 msgstr "Gmail"
 
-#: .\app\templates\app\base.html:387
+#: .\app\templates\app\base.html:389
 msgid "Mail E-Mail Postfach"
 msgstr "Mail E-Mail Postfach"
 
-#: .\app\templates\app\base.html:391
+#: .\app\templates\app\base.html:393
 msgid "Mail"
 msgstr "Mail"
 
-#: .\app\templates\app\base.html:395 .\app\templates\app\base.html:398
+#: .\app\templates\app\base.html:397 .\app\templates\app\base.html:400
 msgid "Drive"
 msgstr "Drive"
 
-#: .\app\templates\app\base.html:395
+#: .\app\templates\app\base.html:397
 msgid "Dateien Cloud Speicher"
 msgstr "Dateien Cloud Speicher"
 
-#: .\app\templates\app\base.html:399
+#: .\app\templates\app\base.html:401
 msgid "Dateien"
 msgstr "Dateien"
 
-#: .\app\templates\app\base.html:403 .\app\templates\app\base.html:406
+#: .\app\templates\app\base.html:405 .\app\templates\app\base.html:408
 msgid "Kalender"
 msgstr "Kalender"
 
-#: .\app\templates\app\base.html:403
+#: .\app\templates\app\base.html:405
 msgid "Termine Kalender Events"
 msgstr "Termine Kalender Events"
 
-#: .\app\templates\app\base.html:407
+#: .\app\templates\app\base.html:409
 msgid "Termine"
 msgstr "Termine"
 
-#: .\app\templates\app\base.html:411 .\app\templates\app\base.html:414
+#: .\app\templates\app\base.html:413 .\app\templates\app\base.html:416
 msgid "Translator"
 msgstr "Translator"
 
-#: .\app\templates\app\base.html:411
+#: .\app\templates\app\base.html:413
 msgid "Übersetzen Sprache Translator"
 msgstr "Übersetzen Sprache Translator"
 
-#: .\app\templates\app\base.html:415
+#: .\app\templates\app\base.html:417
 msgid "Sprache"
 msgstr "Sprache"
 
-#: .\app\templates\app\base.html:424
+#: .\app\templates\app\base.html:426
 msgid "Weitere Apps"
 msgstr "Weitere Apps"
 
-#: .\app\templates\app\base.html:428 .\app\templates\app\base.html:431
+#: .\app\templates\app\base.html:430 .\app\templates\app\base.html:433
 msgid "Play"
 msgstr "Play"
 
-#: .\app\templates\app\base.html:428
+#: .\app\templates\app\base.html:430
 msgid "Store Apps Play"
 msgstr "Store Apps Play"
 
-#: .\app\templates\app\base.html:432
+#: .\app\templates\app\base.html:434
 msgid "Store"
 msgstr "Store"
 
-#: .\app\templates\app\base.html:436 .\app\templates\app\base.html:439
+#: .\app\templates\app\base.html:438 .\app\templates\app\base.html:441
 msgid "Gemini"
 msgstr "Gemini"
 
-#: .\app\templates\app\base.html:436
+#: .\app\templates\app\base.html:438
 msgid "KI AI Chat Gemini"
 msgstr "KI AI Chat Gemini"
 
-#: .\app\templates\app\base.html:440
+#: .\app\templates\app\base.html:442
 msgid "KI"
 msgstr "KI"
 
-#: .\app\templates\app\base.html:449
+#: .\app\templates\app\base.html:451
 msgid "Keine App gefunden."
 msgstr "Keine App gefunden."
 
-#: .\app\templates\app\base.html:455 .\app\templates\app\base.html:466
+#: .\app\templates\app\base.html:457 .\app\templates\app\base.html:468
 msgid "Weitere Seiten"
 msgstr "Weitere Seiten"
 
-#: .\app\templates\app\base.html:464
+#: .\app\templates\app\base.html:466
 msgid "Toolbox"
 msgstr "Toolbox"
 
-#: .\app\templates\app\base.html:472
+#: .\app\templates\app\base.html:474
 msgid "Tool suchen..."
 msgstr "Tool suchen..."
 
-#: .\app\templates\app\base.html:483
+#: .\app\templates\app\base.html:485
 msgid "Timer Weltuhr Zeit Wecker"
 msgstr "Timer Weltuhr Zeit Wecker"
 
-#: .\app\templates\app\base.html:487 .\app\templates\app\clock.html:140
+#: .\app\templates\app\base.html:489 .\app\templates\app\clock.html:140
 msgid "Timer"
 msgstr "Timer"
 
-#: .\app\templates\app\base.html:491
+#: .\app\templates\app\base.html:493
 msgid "Notizen Aufgaben Texte"
 msgstr "Notizen Aufgaben Texte"
 
-#: .\app\templates\app\base.html:495
+#: .\app\templates\app\base.html:497
 msgid "Schreiben"
 msgstr "Schreiben"
 
-#: .\app\templates\app\base.html:499
+#: .\app\templates\app\base.html:501
 msgid "Dateien Teilen Upload Share"
 msgstr "Dateien Teilen Upload Share"
 
-#: .\app\templates\app\base.html:503 .\app\templates\app\note_form.html:157
+#: .\app\templates\app\base.html:505 .\app\templates\app\note_form.html:157
 msgid "Teilen"
 msgstr "Teilen"
 
-#: .\app\templates\app\base.html:507
+#: .\app\templates\app\base.html:509
 msgid "Feedback Kontakt Ideen"
 msgstr "Feedback Kontakt Ideen"
 
-#: .\app\templates\app\base.html:511 .\app\templates\app\qr_code_tool.html:62
+#: .\app\templates\app\base.html:513 .\app\templates\app\qr_code_tool.html:62
 msgid "Kontakt"
 msgstr "Kontakt"
 
-#: .\app\templates\app\base.html:515
+#: .\app\templates\app\base.html:517
 msgid "Feature Voting Ideen Vorschläge Planung"
 msgstr "Feature Voting Ideen Vorschläge Planung"
 
-#: .\app\templates\app\base.html:519
+#: .\app\templates\app\base.html:521
 msgid "Voting"
 msgstr "Voting"
 
-#: .\app\templates\app\base.html:523
+#: .\app\templates\app\base.html:525
 msgid "Changelog Updates Neuigkeiten Versionen Verlauf"
 msgstr "Changelog Updates Neuigkeiten Versionen Verlauf"
 
-#: .\app\templates\app\base.html:527
+#: .\app\templates\app\base.html:529
 msgid "Updates"
 msgstr "Updates"
 
-#: .\app\templates\app\base.html:532
+#: .\app\templates\app\base.html:534
 msgid "Admin Meldungen Feedback Dateien Nutzer"
 msgstr "Admin Meldungen Feedback Dateien Nutzer"
 
-#: .\app\templates\app\base.html:536 .\app\templates\app\chat.html:213
-#: .\app\templates\app\moderation.html:15
-msgid "Admin"
-msgstr "Admin"
-
-#: .\app\templates\app\base.html:540
+#: .\app\templates\app\base.html:542
 msgid "Admin Server System Monitor Status Datenbank Cache Speicher"
 msgstr "Admin Server System Monitor Status Datenbank Cache Speicher"
 
-#: .\app\templates\app\base.html:544
+#: .\app\templates\app\base.html:546
 msgid "Monitor"
 msgstr "Monitor"
 
-#: .\app\templates\app\base.html:558
+#: .\app\templates\app\base.html:560
 msgid ""
 "Taschenrechner Wissenschaftlich Wurzel Potenzen Logarithmus Sinus Cosinus "
 "Casio"
@@ -5733,123 +5749,123 @@ msgstr ""
 "Taschenrechner Wissenschaftlich Wurzel Potenzen Logarithmus Sinus Cosinus "
 "Casio"
 
-#: .\app\templates\app\base.html:562 .\app\templates\app\calculator.html:36
+#: .\app\templates\app\base.html:564 .\app\templates\app\calculator.html:36
 msgid "Wissenschaftlich"
 msgstr "Wissenschaftlich"
 
-#: .\app\templates\app\base.html:566
+#: .\app\templates\app\base.html:568
 msgid "Auto Sprit Benzin Kosten Rechner"
 msgstr "Auto Sprit Benzin Kosten Rechner"
 
-#: .\app\templates\app\base.html:570
+#: .\app\templates\app\base.html:572
 msgid "Auto"
 msgstr "Auto"
 
-#: .\app\templates\app\base.html:574
+#: .\app\templates\app\base.html:576
 msgid "Einheiten Rechner Umrechnen"
 msgstr "Einheiten Rechner Umrechnen"
 
-#: .\app\templates\app\base.html:578
+#: .\app\templates\app\base.html:580
 msgid "Umrechnen"
 msgstr "Umrechnen"
 
-#: .\app\templates\app\base.html:582
+#: .\app\templates\app\base.html:584
 msgid "Zufall Auslosen Entscheiden Randomizer"
 msgstr "Zufall Auslosen Entscheiden Randomizer"
 
-#: .\app\templates\app\base.html:586
+#: .\app\templates\app\base.html:588
 msgid "Zufall"
 msgstr "Zufall"
 
-#: .\app\templates\app\base.html:590
+#: .\app\templates\app\base.html:592
 msgid "QR Code Generator WLAN Kontakt URL Text Download"
 msgstr "QR Code Generator WLAN Kontakt URL Text Download"
 
-#: .\app\templates\app\base.html:594 .\app\templates\app\qr_code_tool.html:20
+#: .\app\templates\app\base.html:596 .\app\templates\app\qr_code_tool.html:20
 msgid "Generator"
 msgstr "Generator"
 
-#: .\app\templates\app\base.html:607
+#: .\app\templates\app\base.html:609
 msgid "Musik Lyrics Song Suche"
 msgstr "Musik Lyrics Song Suche"
 
-#: .\app\templates\app\base.html:611
+#: .\app\templates\app\base.html:613
 msgid "Musik"
 msgstr "Musik"
 
-#: .\app\templates\app\base.html:615
+#: .\app\templates\app\base.html:617
 msgid "Bilder Foto Medien Tools"
 msgstr "Bilder Foto Medien Tools"
 
-#: .\app\templates\app\base.html:623
+#: .\app\templates\app\base.html:625
 msgid "DOCX PDF Dateien Konverter Office Umwandeln"
 msgstr ""
 
-#: .\app\templates\app\base.html:627
+#: .\app\templates\app\base.html:629
 msgid "DOCX zu PDF"
 msgstr ""
 
-#: .\app\templates\app\base.html:631
+#: .\app\templates\app\base.html:633
 #: .\app\templates\app\color_palette_tool.html:5
 #: .\app\templates\app\color_palette_tool.html:25
 msgid "Color Palette Tool"
 msgstr "Color Palette Tool"
 
-#: .\app\templates\app\base.html:631
+#: .\app\templates\app\base.html:633
 msgid "Farbe Palette Design Eyedropper Bildschirm Bild Kontrast HEX RGB HSL"
 msgstr "Farbe Palette Design Eyedropper Bildschirm Bild Kontrast HEX RGB HSL"
 
-#: .\app\templates\app\base.html:635 .\app\templates\app\base.html:770
+#: .\app\templates\app\base.html:637 .\app\templates\app\base.html:772
 #: .\app\templates\app\skribble_lobby.html:162
 msgid "Farben"
 msgstr "Farben"
 
-#: .\app\templates\app\base.html:639
+#: .\app\templates\app\base.html:641
 msgid "Profil Design Karte Designer"
 msgstr "Profil Design Karte Designer"
 
-#: .\app\templates\app\base.html:643 .\app\templates\app\base.html:724
+#: .\app\templates\app\base.html:645 .\app\templates\app\base.html:726
 #: .\app\templates\app\qr_code_tool.html:127
 msgid "Design"
 msgstr "Design"
 
-#: .\app\templates\app\base.html:647
+#: .\app\templates\app\base.html:649
 msgid "Avatar Wiki Figuren Übersicht"
 msgstr "Avatar Wiki Figuren Übersicht"
 
-#: .\app\templates\app\base.html:651
+#: .\app\templates\app\base.html:653
 msgid "Wiki"
 msgstr "Wiki"
 
-#: .\app\templates\app\base.html:664
+#: .\app\templates\app\base.html:666
 msgid "Streaming Stream Deck Kontrolle"
 msgstr "Streaming Stream Deck Kontrolle"
 
-#: .\app\templates\app\base.html:668
+#: .\app\templates\app\base.html:670
 msgid "Controls"
 msgstr "Controls"
 
-#: .\app\templates\app\base.html:672
+#: .\app\templates\app\base.html:674
 msgid "OBS Streaming Dashboard"
 msgstr "OBS Streaming Dashboard"
 
-#: .\app\templates\app\base.html:685
+#: .\app\templates\app\base.html:687
 msgid "Kein Tool gefunden."
 msgstr "Kein Tool gefunden."
 
-#: .\app\templates\app\base.html:711
+#: .\app\templates\app\base.html:713
 msgid "Suche (Strg + K)"
 msgstr "Suche (Strg + K)"
 
-#: .\app\templates\app\base.html:718
+#: .\app\templates\app\base.html:720
 msgid "Design anpassen"
 msgstr "Design anpassen"
 
-#: .\app\templates\app\base.html:725
+#: .\app\templates\app\base.html:727
 msgid "Design-Men&uuml; schlie&szlig;en"
 msgstr "Design-Men&uuml; schlie&szlig;en"
 
-#: .\app\templates\app\base.html:731
+#: .\app\templates\app\base.html:733
 msgid ""
 "Passe Farben, Rundungen und Hintergrund-Effekt live an. Deine Auswahl wird "
 "automatisch gespeichert."
@@ -5857,251 +5873,251 @@ msgstr ""
 "Passe Farben, Rundungen und Hintergrund-Effekt live an. Deine Auswahl wird "
 "automatisch gespeichert."
 
-#: .\app\templates\app\base.html:738 .\app\templates\app\clock.html:203
+#: .\app\templates\app\base.html:740 .\app\templates\app\clock.html:203
 msgid "Vorlagen"
 msgstr "Vorlagen"
 
-#: .\app\templates\app\base.html:740
+#: .\app\templates\app\base.html:742
 msgid "Design-Vorlagen"
 msgstr "Design-Vorlagen"
 
-#: .\app\templates\app\base.html:745
+#: .\app\templates\app\base.html:747
 msgid "Gr&uuml;n"
 msgstr "Gr&uuml;n"
 
-#: .\app\templates\app\base.html:749
+#: .\app\templates\app\base.html:751
 msgid "Rose"
 msgstr "Rose"
 
-#: .\app\templates\app\base.html:753
+#: .\app\templates\app\base.html:755
 msgid "Graphit"
 msgstr "Graphit"
 
-#: .\app\templates\app\base.html:757
+#: .\app\templates\app\base.html:759
 msgid "Violett"
 msgstr "Violett"
 
-#: .\app\templates\app\base.html:774
+#: .\app\templates\app\base.html:776
 msgid "Header links"
 msgstr "Header links"
 
-#: .\app\templates\app\base.html:779
+#: .\app\templates\app\base.html:781
 msgid "Header rechts"
 msgstr "Header rechts"
 
-#: .\app\templates\app\base.html:784
+#: .\app\templates\app\base.html:786
 msgid "Hintergrund Light Mode"
 msgstr "Hintergrund Light Mode"
 
-#: .\app\templates\app\base.html:789
+#: .\app\templates\app\base.html:791
 msgid "Hintergrund Dark Mode"
 msgstr "Hintergrund Dark Mode"
 
-#: .\app\templates\app\base.html:799
+#: .\app\templates\app\base.html:801
 msgid "Footer"
 msgstr "Footer"
 
-#: .\app\templates\app\base.html:804
+#: .\app\templates\app\base.html:806
 msgid "Rundung"
 msgstr "Rundung"
 
-#: .\app\templates\app\base.html:813
+#: .\app\templates\app\base.html:815
 msgid "Eigene Farbkombis"
 msgstr "Eigene Farbkombis"
 
-#: .\app\templates\app\base.html:815
+#: .\app\templates\app\base.html:817
 msgid "Eigene Design-Speicherpl&auml;tze"
 msgstr "Eigene Design-Speicherpl&auml;tze"
 
-#: .\app\templates\app\base.html:818
+#: .\app\templates\app\base.html:820
 msgid "Platz 1"
 msgstr "Platz 1"
 
-#: .\app\templates\app\base.html:819 .\app\templates\app\base.html:830
-#: .\app\templates\app\base.html:841
+#: .\app\templates\app\base.html:821 .\app\templates\app\base.html:832
+#: .\app\templates\app\base.html:843
 msgid "Leer"
 msgstr "Leer"
 
-#: .\app\templates\app\base.html:823 .\app\templates\app\base.html:834
-#: .\app\templates\app\base.html:845 .\app\templates\app\clock.html:222
+#: .\app\templates\app\base.html:825 .\app\templates\app\base.html:836
+#: .\app\templates\app\base.html:847 .\app\templates\app\clock.html:222
 #: .\app\templates\app\stream_deck.html:444
 msgid "Laden"
 msgstr "Laden"
 
-#: .\app\templates\app\base.html:824
+#: .\app\templates\app\base.html:826
 msgid "Speicherplatz 1 l&ouml;schen"
 msgstr "Speicherplatz 1 l&ouml;schen"
 
-#: .\app\templates\app\base.html:829
+#: .\app\templates\app\base.html:831
 msgid "Platz 2"
 msgstr "Platz 2"
 
-#: .\app\templates\app\base.html:835
+#: .\app\templates\app\base.html:837
 msgid "Speicherplatz 2 l&ouml;schen"
 msgstr "Speicherplatz 2 l&ouml;schen"
 
-#: .\app\templates\app\base.html:840
+#: .\app\templates\app\base.html:842
 msgid "Platz 3"
 msgstr "Platz 3"
 
-#: .\app\templates\app\base.html:846
+#: .\app\templates\app\base.html:848
 msgid "Speicherplatz 3 l&ouml;schen"
 msgstr "Speicherplatz 3 l&ouml;schen"
 
-#: .\app\templates\app\base.html:855
+#: .\app\templates\app\base.html:857
 #: .\app\templates\app\randomizer_tools.html:62
 msgid "Optionen"
 msgstr "Optionen"
 
-#: .\app\templates\app\base.html:860
+#: .\app\templates\app\base.html:862
 msgid "Hintergrund-Effekt"
 msgstr "Hintergrund-Effekt"
 
-#: .\app\templates\app\base.html:864
+#: .\app\templates\app\base.html:866
 #: .\app\templates\app\color_palette_tool.html:152
 msgid "Kontrast"
 msgstr "Kontrast"
 
-#: .\app\templates\app\base.html:868
+#: .\app\templates\app\base.html:870
 msgid "Weniger Bewegung"
 msgstr "Weniger Bewegung"
 
-#: .\app\templates\app\base.html:876 .\app\templates\app\stream_deck.html:317
+#: .\app\templates\app\base.html:878 .\app\templates\app\stream_deck.html:317
 msgid "Zufällig"
 msgstr "Zufällig"
 
-#: .\app\templates\app\base.html:880
+#: .\app\templates\app\base.html:882
 msgid "Zur&uuml;cksetzen"
 msgstr "Zur&uuml;cksetzen"
 
-#: .\app\templates\app\base.html:883
+#: .\app\templates\app\base.html:885
 msgid "Automatisch gespeichert"
 msgstr "Automatisch gespeichert"
 
-#: .\app\templates\app\base.html:888
+#: .\app\templates\app\base.html:890
 msgid "MyTools als App installieren"
 msgstr "MyTools als App installieren"
 
-#: .\app\templates\app\base.html:888
+#: .\app\templates\app\base.html:890
 msgid "App installieren"
 msgstr "App installieren"
 
-#: .\app\templates\app\base.html:899
+#: .\app\templates\app\base.html:901
 msgid "Benachrichtigungen öffnen"
 msgstr "Benachrichtigungen öffnen"
 
-#: .\app\templates\app\base.html:901
+#: .\app\templates\app\base.html:903
 msgid "Benachrichtigung"
 msgstr "Benachrichtigung"
 
-#: .\app\templates\app\base.html:908
+#: .\app\templates\app\base.html:910
 msgid "Chats, Freundschaftsanfragen und Skribble"
 msgstr "Chats, Freundschaftsanfragen und Skribble"
 
-#: .\app\templates\app\base.html:911
+#: .\app\templates\app\base.html:913
 msgid "Alle löschen"
 msgstr "Alle löschen"
 
-#: .\app\templates\app\base.html:918
+#: .\app\templates\app\base.html:920
 msgid "Keine neuen Benachrichtigungen."
 msgstr "Keine neuen Benachrichtigungen."
 
-#: .\app\templates\app\base.html:925
+#: .\app\templates\app\base.html:927
 msgid "Profilmenü öffnen"
 msgstr "Profilmenü öffnen"
 
-#: .\app\templates\app\base.html:974
+#: .\app\templates\app\base.html:976
 msgid "2FA / Sicherheit"
 msgstr "2FA / Sicherheit"
 
-#: .\app\templates\app\base.html:979
+#: .\app\templates\app\base.html:981
 #: .\app\templates\app\security_dashboard.html:5
 #: .\app\templates\app\security_dashboard.html:16
 msgid "Sicherheits-Dashboard"
 msgstr "Sicherheits-Dashboard"
 
-#: .\app\templates\app\base.html:1002
+#: .\app\templates\app\base.html:1004
 msgid "ungelesene Nachricht"
 msgstr "ungelesene Nachricht"
 
-#: .\app\templates\app\base.html:1002 .\app\templates\app\inbox.html:39
+#: .\app\templates\app\base.html:1004 .\app\templates\app\inbox.html:39
 msgid "ungelesene Nachrichten"
 msgstr "ungelesene Nachrichten"
 
-#: .\app\templates\app\base.html:1002
+#: .\app\templates\app\base.html:1004
 #, python-format
 msgid "%(count)s ungelesene Nachricht"
 msgid_plural "%(count)s ungelesene Nachrichten"
 msgstr[0] "%(count)s ungelesene Nachricht"
 msgstr[1] "%(count)s ungelesene Nachrichten"
 
-#: .\app\templates\app\base.html:1012
+#: .\app\templates\app\base.html:1014
 msgid "offene Freundschaftsanfrage"
 msgstr "offene Freundschaftsanfrage"
 
-#: .\app\templates\app\base.html:1012
+#: .\app\templates\app\base.html:1014
 msgid "offene Freundschaftsanfragen"
 msgstr "offene Freundschaftsanfragen"
 
-#: .\app\templates\app\base.html:1012
+#: .\app\templates\app\base.html:1014
 #, python-format
 msgid "%(count)s offene Freundschaftsanfrage"
 msgid_plural "%(count)s offene Freundschaftsanfragen"
 msgstr[0] "%(count)s offene Freundschaftsanfrage"
 msgstr[1] "%(count)s offene Freundschaftsanfragen"
 
-#: .\app\templates\app\base.html:1021
+#: .\app\templates\app\base.html:1023
 msgid "Abmelden"
 msgstr "Abmelden"
 
-#: .\app\templates\app\base.html:1036
+#: .\app\templates\app\base.html:1038
 msgid "Tools, Notizen, Dateien, Nutzer suchen..."
 msgstr "Tools, Notizen, Dateien, Nutzer suchen..."
 
-#: .\app\templates\app\base.html:1037
+#: .\app\templates\app\base.html:1039
 msgid "Suche schließen"
 msgstr "Suche schließen"
 
-#: .\app\templates\app\base.html:1043
+#: .\app\templates\app\base.html:1045
 msgid "MyTools Suche"
 msgstr "MyTools Suche"
 
-#: .\app\templates\app\base.html:1044
+#: .\app\templates\app\base.html:1046
 msgid "Enter öffnet den ersten Treffer"
 msgstr "Enter öffnet den ersten Treffer"
 
-#: .\app\templates\app\base.html:1050
+#: .\app\templates\app\base.html:1052
 msgid "Tippe etwas ein oder öffne direkt einen Vorschlag."
 msgstr "Tippe etwas ein oder öffne direkt einen Vorschlag."
 
-#: .\app\templates\app\base.html:1056
+#: .\app\templates\app\base.html:1058
 msgid "Mobile Navigation"
 msgstr "Mobile Navigation"
 
-#: .\app\templates\app\base.html:1063 .\app\templates\app\base.html:1067
-#: .\app\templates\app\base.html:1068
+#: .\app\templates\app\base.html:1065 .\app\templates\app\base.html:1069
+#: .\app\templates\app\base.html:1070
 #, fuzzy
 #| msgid "Freunde einladen"
 msgid "Header einblenden"
 msgstr "Freunde einladen"
 
-#: .\app\templates\app\base.html:1064
+#: .\app\templates\app\base.html:1066
 #, fuzzy
 #| msgid "Top 10 ausblenden"
 msgid "Header ausblenden"
 msgstr "Top 10 ausblenden"
 
-#: .\app\templates\app\base.html:1071
+#: .\app\templates\app\base.html:1073
 #, fuzzy
 #| msgid "Header links"
 msgid "Header"
 msgstr "Header links"
 
-#: .\app\templates\app\base.html:1097
+#: .\app\templates\app\base.html:1099
 msgid "Footer Navigation"
 msgstr "Footer Navigation"
 
-#: .\app\templates\app\base.html:1130
+#: .\app\templates\app\base.html:1132
 msgid "Neu"
 msgstr "Neu"
 
@@ -7528,7 +7544,7 @@ msgstr "App-Launcher"
 msgid "Markiere deine wichtigsten Tools und öffne sie schneller."
 msgstr "Markiere deine wichtigsten Tools und öffne sie schneller."
 
-#: .\app\templates\app\favorites.html:34
+#: .\app\templates\app\favorites.html:45
 msgid "Favorit umschalten"
 msgstr "Favorit umschalten"
 
