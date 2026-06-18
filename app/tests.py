@@ -1451,6 +1451,15 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(presence.active_game, "cookie_cosmos_v2")
         self.assertEqual(presence.active_game_label, "spielt Cookie Cosmos V2")
 
+    def test_nebula_forge_tycoon_page_sets_presence_status(self):
+        response = self.client.get(reverse("nebula-forge-tycoon"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/nebula_forge_tycoon.html")
+        presence = UserPresence.objects.get(user=self.user)
+        self.assertEqual(presence.active_game, "nebula_forge_tycoon")
+        self.assertEqual(presence.active_game_label, "spielt Nebula Forge Tycoon")
+
     def test_cookie_cosmos_v2_save_api_persists_save_and_rate_limits(self):
         payload = {
             "save_data": {
@@ -2168,6 +2177,7 @@ class StaticPageTests(BaseTestCase):
             ("snake-powerups", "app/snake_powerups.html"),
             ("cookie-clicker", "app/cookie_clicker.html"),
             ("cookie-cosmos-v2", "app/cookie_cosmos_v2.html"),
+            ("nebula-forge-tycoon", "app/nebula_forge_tycoon.html"),
             ("stream-deck", "app/stream_deck.html"),
         ]
 
@@ -4158,6 +4168,45 @@ class ModerationTests(BaseTestCase):
         self.assertContains(response, "Chat Fehler")
         self.assertContains(response, "proof.txt")
         self.assertContains(response, "System Hinweis")
+
+    def test_staff_can_update_tool_access_rules_from_moderation(self):
+        self.make_staff()
+
+        response = self.client.post(reverse("moderation_tool_access"), {
+            "access_cookie_cosmos_v2": SiteAccessSettings.TOOL_ACCESS_ADMIN,
+            "access_calculator": SiteAccessSettings.TOOL_ACCESS_NONE,
+        })
+
+        self.assertRedirects(response, reverse("moderation"))
+        settings_obj = SiteAccessSettings.get_solo()
+        self.assertEqual(settings_obj.get_tool_access_level("cookie_cosmos_v2"), SiteAccessSettings.TOOL_ACCESS_ADMIN)
+        self.assertEqual(settings_obj.get_tool_access_level("calculator"), SiteAccessSettings.TOOL_ACCESS_NONE)
+        self.assertEqual(settings_obj.get_tool_access_level("notes"), SiteAccessSettings.TOOL_ACCESS_ALL)
+        self.assertTrue(
+            ModerationAuditLog.objects.filter(action=ModerationAuditLog.ACTION_TOOL_ACCESS_UPDATED).exists()
+        )
+
+    def test_tool_access_admin_level_blocks_normal_user_and_allows_staff(self):
+        settings_obj = SiteAccessSettings.get_solo()
+        settings_obj.set_tool_access_rules({"calculator": SiteAccessSettings.TOOL_ACCESS_ADMIN})
+        settings_obj.save(update_fields=["tool_access_rules"])
+
+        response = self.client.get(reverse("calculator"))
+        self.assertEqual(response.status_code, 403)
+
+        self.make_staff()
+        response = self.client.get(reverse("calculator"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_tool_access_none_level_blocks_staff_too(self):
+        self.make_staff()
+        settings_obj = SiteAccessSettings.get_solo()
+        settings_obj.set_tool_access_rules({"calculator": SiteAccessSettings.TOOL_ACCESS_NONE})
+        settings_obj.save(update_fields=["tool_access_rules"])
+
+        response = self.client.get(reverse("calculator"))
+
+        self.assertEqual(response.status_code, 403)
 
     def test_report_action_marks_report_resolved(self):
         self.make_staff()

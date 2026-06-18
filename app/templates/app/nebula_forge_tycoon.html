@@ -1,0 +1,275 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Nebula Forge Tycoon - MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260618-nebula-forge-meteor-safe-spawn">
+{% endblock %}
+
+{% block content %}
+<section class="nft-page" data-nebula-tycoon data-save-key="mytools-nebula-forge-tycoon-v1" data-db-load-url="{% url 'nebula-forge-tycoon-load-api' %}" data-db-save-url="{% url 'nebula-forge-tycoon-save-api' %}" data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
+    <div class="nft-bg-orb nft-bg-orb-one" aria-hidden="true"></div>
+    <div class="nft-bg-orb nft-bg-orb-two" aria-hidden="true"></div>
+
+    <div class="nft-shell">
+        <header class="nft-hero">
+            <div class="nft-brand">
+                <span class="nft-brand-icon"><i class="fa-solid fa-meteor"></i></span>
+                <div>
+                    <p>{% translate "Singleplayer Tycoon" %}</p>
+                    <h1>Nebula Forge Tycoon</h1>
+                    <span>{% translate "Baue eine Weltraum-Schmiede: AFK-Drohnen farmen weiter, aktives Spielen gibt Combos, Events und Overdrive." %}</span>
+                </div>
+            </div>
+
+            <div class="nft-hero-actions">
+                <button type="button" class="nft-ghost-button" id="nftSaveButton">
+                    <i class="fa-solid fa-database"></i>
+                    <span id="nftSaveButtonText">{% translate "Speichern" %}</span>
+                </button>
+                <button type="button" class="nft-ghost-button danger" id="nftResetHeaderButton">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    {% translate "Reset" %}
+                </button>
+            </div>
+        </header>
+
+        <section class="nft-stats-grid" aria-label="{% translate 'Tycoon Werte' %}">
+            <article class="nft-stat primary">
+                <span>{% translate "Flux" %}</span>
+                <strong id="nftFlux">0</strong>
+                <small>{% translate "Hauptwährung" %}</small>
+            </article>
+            <article class="nft-stat">
+                <span>{% translate "AFK pro Sekunde" %}</span>
+                <strong id="nftCps">0/s</strong>
+                <small>{% translate "läuft automatisch" %}</small>
+            </article>
+            <article class="nft-stat">
+                <span>{% translate "Aktiver Abbau" %}</span>
+                <strong id="nftManualPower">1</strong>
+                <small>{% translate "pro Aktion" %}</small>
+            </article>
+            <article class="nft-stat">
+                <span>{% translate "Combo" %}</span>
+                <strong id="nftCombo">x1.00</strong>
+                <small id="nftComboHint">{% translate "halte Rhythmus" %}</small>
+            </article>
+            <article class="nft-stat">
+                <span>{% translate "Splitter" %}</span>
+                <strong id="nftShards">0</strong>
+                <small>{% translate "Prestige Bonus" %}</small>
+            </article>
+        </section>
+
+        <div class="nft-layout">
+            <section class="nft-stage-card">
+                <div class="nft-stage-head">
+                    <div>
+                        <p class="nft-kicker"><i class="fa-solid fa-satellite-dish"></i> {% translate "Aktive Schicht" %}</p>
+                        <h2>{% translate "Sternenkern abbauen" %}</h2>
+                    </div>
+                    <div class="nft-live-pill" id="nftModePill">{% translate "Balanced" %}</div>
+                </div>
+
+                <div class="nft-foundry" id="nftFoundry" aria-label="{% translate 'Nebula Forge Spielfeld' %}">
+                    <div class="nft-stars" aria-hidden="true"></div>
+                    <div class="nft-orbit nft-orbit-one" aria-hidden="true"></div>
+                    <div class="nft-orbit nft-orbit-two" aria-hidden="true"></div>
+                    <button type="button" class="nft-core-button" id="nftMineButton" aria-label="{% translate 'Sternenkern abbauen' %}">
+                        <span class="nft-core-glow" aria-hidden="true"></span>
+                        <span class="nft-core-icon"><i class="fa-solid fa-gem"></i></span>
+                        <span class="nft-core-copy">
+                            <strong>{% translate "Abbauen" %}</strong>
+                            <small>{% translate "klicken oder halten" %}</small>
+                        </span>
+                    </button>
+                    <div class="nft-event-layer" id="nftEventLayer" aria-live="polite"></div>
+                </div>
+
+                <div class="nft-heat-box">
+                    <div class="nft-meter-title">
+                        <span>{% translate "Reaktor-Hitze" %}</span>
+                        <strong id="nftHeatLabel">0%</strong>
+                    </div>
+                    <div class="nft-meter"><i id="nftHeatFill"></i></div>
+                    <p>{% translate "Hitze macht Overdrive möglich. Zu viel Hitze reduziert aktiven Abbau, bis der Reaktor abkühlt." %}</p>
+                </div>
+
+                <div class="nft-action-grid">
+                    <button type="button" class="nft-action-card" id="nftOverdriveButton" data-hotkey="1" aria-keyshortcuts="1" title="Taste 1">
+                        <span><i class="fa-solid fa-bolt-lightning"></i></span>
+                        <strong>{% translate "Overdrive" %}</strong>
+                        <small id="nftOverdriveHint">{% translate "ab 92% Hitze bereit" %}</small>
+                    </button>
+                    <button type="button" class="nft-action-card" id="nftSignalButton" data-hotkey="2" aria-keyshortcuts="2" title="Taste 2">
+                        <span><i class="fa-solid fa-crosshairs"></i></span>
+                        <strong>{% translate "Signal-Raid" %}</strong>
+                        <small id="nftSignalHint">{% translate "aktiver Timing-Bonus" %}</small>
+                    </button>
+                    <button type="button" class="nft-action-card" id="nftCollectButton" data-hotkey="3" aria-keyshortcuts="3" title="Taste 3">
+                        <span><i class="fa-solid fa-hand-sparkles"></i></span>
+                        <strong>{% translate "Sammelimpuls" %}</strong>
+                        <small id="nftCollectHint">{% translate "sofort AFK-Ertrag einsammeln" %}</small>
+                    </button>
+                    <button type="button" class="nft-action-card" id="nftRiftButton" data-hotkey="4" aria-keyshortcuts="4" title="Taste 4">
+                        <span><i class="fa-solid fa-wand-sparkles"></i></span>
+                        <strong>{% translate "Flux-Riss" %}</strong>
+                        <small id="nftRiftHint">{% translate "AFK-Boost erspielen" %}</small>
+                    </button>
+                    <button type="button" class="nft-action-card" id="nftCryoButton" data-hotkey="5" aria-keyshortcuts="5" title="Taste 5">
+                        <span><i class="fa-solid fa-snowflake"></i></span>
+                        <strong>{% translate "Kryo-Takt" %}</strong>
+                        <small id="nftCryoHint">{% translate "Hitze senken + Boost" %}</small>
+                    </button>
+                </div>
+
+                <div class="nft-signal-panel" id="nftSignalPanel" hidden>
+                    <div class="nft-signal-top">
+                        <strong>{% translate "Signal-Raid" %}</strong>
+                        <span>{% translate "Stoppe den Marker im grünen Fenster." %}</span>
+                    </div>
+                    <div class="nft-signal-track" id="nftSignalTrack">
+                        <span class="nft-signal-zone"></span>
+                        <i id="nftSignalMarker"></i>
+                    </div>
+                    <button type="button" class="nft-primary-button" id="nftStopSignalButton">
+                        <i class="fa-solid fa-hand-pointer"></i>
+                        {% translate "Jetzt stoppen" %}
+                    </button>
+                </div>
+
+                <div class="nft-signal-panel nft-rift-panel" id="nftRiftPanel" hidden>
+                    <div class="nft-signal-top">
+                        <strong>{% translate "Flux-Riss" %}</strong>
+                        <span>{% translate "Triff das violette Fenster für einen AFK-Produktionsboost." %}</span>
+                    </div>
+                    <div class="nft-signal-track">
+                        <span class="nft-signal-zone nft-rift-zone"></span>
+                        <i id="nftRiftMarker"></i>
+                    </div>
+                    <button type="button" class="nft-primary-button" id="nftStopRiftButton">
+                        <i class="fa-solid fa-wand-sparkles"></i>
+                        {% translate "Riss versiegeln" %}
+                    </button>
+                </div>
+
+                <div class="nft-signal-panel nft-cryo-panel" id="nftCryoPanel" hidden>
+                    <div class="nft-signal-top">
+                        <strong>{% translate "Kryo-Takt" %}</strong>
+                        <span>{% translate "Triff das blaue Fenster, um Hitze stark zu senken." %}</span>
+                    </div>
+                    <div class="nft-signal-track">
+                        <span class="nft-signal-zone nft-cryo-zone"></span>
+                        <i id="nftCryoMarker"></i>
+                    </div>
+                    <button type="button" class="nft-primary-button" id="nftStopCryoButton">
+                        <i class="fa-solid fa-snowflake"></i>
+                        {% translate "Kryo stoppen" %}
+                    </button>
+                </div>
+
+                <div class="nft-focus-panel">
+                    <div>
+                        <p class="nft-kicker"><i class="fa-solid fa-sliders"></i> {% translate "Schichtmodus" %}</p>
+                        <h3>{% translate "Wähle, wie du farmen willst" %}</h3>
+                    </div>
+                    <div class="nft-focus-buttons" role="group" aria-label="{% translate 'Schichtmodus wählen' %}">
+                        <button type="button" data-mode="balanced" class="is-active">{% translate "Balanced" %}<small>100% / 100%</small></button>
+                        <button type="button" data-mode="active">{% translate "Aktiv" %}<small>+25% Klicks</small></button>
+                        <button type="button" data-mode="afk">{% translate "AFK" %}<small>+20% passiv</small></button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="nft-panel" aria-label="{% translate 'Nebula Forge Verwaltung' %}">
+                <div class="nft-tabs" role="tablist" aria-label="{% translate 'Tycoon Bereiche' %}">
+                    <button type="button" class="is-active" data-tab="buildings">{% translate "Anlagen" %}</button>
+                    <button type="button" data-tab="upgrades">{% translate "Upgrades" %}</button>
+                    <button type="button" data-tab="achievements">{% translate "Erfolge" %}</button>
+                    <button type="button" data-tab="save">{% translate "Save" %}</button>
+                </div>
+
+                <section class="nft-tab-panel is-active" data-panel="buildings">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-industry"></i> {% translate "AFK-Farmen" %}</p>
+                            <h2>{% translate "Automatische Anlagen" %}</h2>
+                        </div>
+                        <span id="nftBuildingCount">0</span>
+                    </div>
+                    <div class="nft-shop-list" id="nftBuildings"></div>
+                </section>
+
+                <section class="nft-tab-panel" data-panel="upgrades">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-screwdriver-wrench"></i> {% translate "Aktiv + AFK" %}</p>
+                            <h2>{% translate "Labor-Upgrades" %}</h2>
+                        </div>
+                    </div>
+                    <div class="nft-shop-list" id="nftUpgrades"></div>
+                    <div class="nft-prestige-card">
+                        <div>
+                            <span><i class="fa-solid fa-star"></i></span>
+                            <strong>{% translate "Prestige: neue Galaxie" %}</strong>
+                            <p id="nftPrestigeHint">{% translate "Sammle genug Lifetime-Flux, um Splitter zu erhalten." %}</p>
+                        </div>
+                        <button type="button" class="nft-primary-button" id="nftPrestigeButton">{% translate "Prestige" %}</button>
+                    </div>
+                </section>
+
+                <section class="nft-tab-panel" data-panel="achievements">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-trophy"></i> {% translate "Fortschritt" %}</p>
+                            <h2>{% translate "Erfolge" %}</h2>
+                        </div>
+                        <span id="nftAchievementCount">0/0</span>
+                    </div>
+                    <div class="nft-achievement-list" id="nftAchievements"></div>
+                </section>
+
+                <section class="nft-tab-panel" data-panel="save">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-database"></i> {% translate "Spielstand" %}</p>
+                            <h2>{% translate "Speichern & Import" %}</h2>
+                        </div>
+                    </div>
+                    <div class="nft-save-grid">
+                        <button type="button" class="nft-save-card" id="nftExportButton">
+                            <i class="fa-solid fa-file-export"></i>
+                            <strong>{% translate "Exportieren" %}</strong>
+                            <small>{% translate "JSON Backup herunterladen" %}</small>
+                        </button>
+                        <label class="nft-save-card" for="nftImportInput">
+                            <i class="fa-solid fa-file-import"></i>
+                            <strong>{% translate "Importieren" %}</strong>
+                            <small>{% translate "Backup wiederherstellen" %}</small>
+                        </label>
+                        <input type="file" id="nftImportInput" accept="application/json,.json" hidden>
+                        <button type="button" class="nft-save-card danger" id="nftResetButton">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <strong>{% translate "Alles zurücksetzen" %}</strong>
+                            <small>{% translate "lokalen Save löschen" %}</small>
+                        </button>
+                    </div>
+                    <div class="nft-offline-card">
+                        <strong>{% translate "AFK-System" %}</strong>
+                        <p id="nftOfflineInfo">{% translate "Wenn du später zurückkommst, wird dein Offline-Ertrag automatisch berechnet." %}</p>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+
+    <div class="nft-toast-stack" id="nftToastStack" aria-live="polite"></div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260618-nebula-forge-meteor-safe-spawn" defer></script>
+{% endblock %}
