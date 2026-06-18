@@ -17,7 +17,7 @@ from .platform_utils import resolve_tools, tool_by_key
 @login_required
 def favorites_view(request):
     favorite_keys = set(ToolFavorite.objects.filter(user=request.user).values_list("tool_key", flat=True))
-    tools = resolve_tools(request, favorite_keys)
+    tools = resolve_tools(request, favorite_keys, include_inaccessible=True)
     categories = []
     for category in dict.fromkeys([tool["category"] for tool in tools]):
         categories.append({"name": category, "tools": [tool for tool in tools if tool["category"] == category]})

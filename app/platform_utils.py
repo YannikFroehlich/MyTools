@@ -21,6 +21,7 @@ TOOL_CATALOG = [
     {"key": "snake_powerups", "label": _("Snake Powerups"), "icon": "fa-solid fa-staff-snake", "url_name": "snake-powerups", "category": _("Spiele")},
     {"key": "cookie_clicker", "label": _("Cookie Cosmos"), "icon": "fa-solid fa-cookie-bite", "url_name": "cookie-clicker", "category": _("Spiele")},
     {"key": "cookie_cosmos_v2", "label": _("Cookie Cosmos V2"), "icon": "fa-solid fa-cookie-bite", "url_name": "cookie-cosmos-v2", "category": _("Spiele")},
+    {"key": "nebula_forge_tycoon", "label": _("Nebula Forge Tycoon"), "icon": "fa-solid fa-meteor", "url_name": "nebula-forge-tycoon", "category": _("Spiele")},
     {"key": "calculator", "label": _("Rechner"), "icon": "fa-solid fa-square-root-variable", "url_name": "calculator", "category": _("Tools")},
     {"key": "unit_converter", "label": _("Einheitenrechner"), "icon": "fa-solid fa-calculator", "url_name": "unit_converter", "category": _("Tools")},
     {"key": "randomizer_tools", "label": _("Randomizer"), "icon": "fa-solid fa-shuffle", "url_name": "randomizer_tools", "category": _("Tools")},
@@ -59,6 +60,7 @@ FEEDBACK_TOOL_CHOICES = [
     ("leaderboard", _("Leaderboard")),
     ("cookie_clicker", _("Cookie Cosmos")),
     ("cookie_cosmos_v2", _("Cookie Cosmos V2")),
+    ("nebula_forge_tycoon", _("Nebula Forge Tycoon")),
     ("snake_powerups", _("Snake Powerups")),
     ("weather", _("Wetter")),
     ("notes", _("Notizen")),
@@ -93,18 +95,24 @@ def get_feedback_tool_keys():
     return {key for key, _label in FEEDBACK_TOOL_CHOICES}
 
 
-def resolve_tools(request, favorite_keys=None):
+def resolve_tools(request, favorite_keys=None, include_inaccessible=False):
     favorite_keys = set(favorite_keys or [])
     from .models import SiteAccessSettings
 
     access_settings = SiteAccessSettings.get_solo()
     tools = []
     for tool in TOOL_CATALOG:
-        if not user_can_access_key(request.user, tool["key"], access_settings):
+        can_access = user_can_access_key(request.user, tool["key"], access_settings)
+        if not can_access and not include_inaccessible:
             continue
+
         item = dict(tool)
         item["url"] = reverse(item["url_name"])
         item["is_favorite"] = item["key"] in favorite_keys
+        item["can_access"] = can_access
+        item["access_level"] = access_settings.get_tool_access_level(item["key"])
+        item["is_restricted"] = item["access_level"] != access_settings.TOOL_ACCESS_ALL
+        item["access_badge"] = _("Admin") if item["access_level"] == access_settings.TOOL_ACCESS_ADMIN else _("Gesperrt")
         tools.append(item)
     return tools
 

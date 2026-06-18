@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block title %}{% translate "Favoriten" %} | MyTools{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/platform.css' %}">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/platform.css' %}?v=20260618-access-state">{% endblock %}
 
 {% block content %}
 <section class="platform-page">
@@ -23,15 +23,26 @@
             </div>
             <div class="tool-grid">
                 {% for tool in category.tools %}
-                    <article class="tool-card {% if tool.is_favorite %}is-favorite{% endif %}">
-                        <a href="{{ tool.url }}" class="tool-card-main">
-                            <span><i class="{{ tool.icon }}"></i></span>
-                            <strong>{{ tool.label }}</strong>
-                        </a>
+                    <article class="tool-card {% if tool.is_favorite %}is-favorite{% endif %} {% if not tool.can_access %}is-access-locked{% elif tool.is_restricted %}is-access-restricted{% endif %}">
+                        {% if tool.can_access %}
+                            <a href="{{ tool.url }}" class="tool-card-main">
+                                <span><i class="{{ tool.icon }}"></i></span>
+                                <strong>{{ tool.label }}</strong>
+                                {% if tool.is_restricted %}
+                                    <em class="access-locked-badge access-restricted-badge"><i class="fa-solid fa-lock-open"></i> {{ tool.access_badge }}</em>
+                                {% endif %}
+                            </a>
+                        {% else %}
+                            <span class="tool-card-main" aria-disabled="true" title="{% translate 'Kein Zugriff' %}">
+                                <span><i class="{{ tool.icon }}"></i></span>
+                                <strong>{{ tool.label }}</strong>
+                                <em class="access-locked-badge"><i class="fa-solid fa-lock"></i> {% translate 'Gesperrt' %}</em>
+                            </span>
+                        {% endif %}
                         <form method="post" action="{% url 'favorite_toggle' tool.key %}">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                            <button type="submit" title="{% translate 'Favorit umschalten' %}">
+                            <button type="submit" title="{% translate 'Favorit umschalten' %}" {% if not tool.can_access %}disabled aria-disabled="true"{% endif %}>
                                 <i class="fa-{% if tool.is_favorite %}solid{% else %}regular{% endif %} fa-star"></i>
                             </button>
                         </form>

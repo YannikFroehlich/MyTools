@@ -489,12 +489,61 @@ body.dark-mode :where(
     .file-drop-icon,
     .avatar-add-btn i,
     .service-icon,
+    .feature-card-heading > i,
     .changelog-entry-icon,
     .obs-panel-header i
 ) {
     color: var(--theme-accent-text) !important;
     background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
     box-shadow: 0 14px 30px rgba(var(--theme-accent-rgb), 0.22) !important;
+}
+
+/* Changelog: Verlauf/Topics sollen die gewählten Theme-Farben übernehmen. */
+.changelog-page .changelog-latest-pill,
+.changelog-page .changelog-mini-list a,
+.changelog-page .changelog-item-list li {
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.18) !important;
+    background: color-mix(in srgb, var(--tool-card-bg, var(--theme-card-bg, #ffffff)) 82%, var(--theme-accent-start) 18%) !important;
+    color: var(--tool-card-text, var(--theme-card-text, var(--theme-text))) !important;
+}
+
+.changelog-page .changelog-mini-list a:hover,
+.changelog-page .changelog-mini-list a:focus-visible {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.42) !important;
+    background: color-mix(in srgb, var(--tool-card-bg, var(--theme-card-bg, #ffffff)) 74%, var(--theme-accent-end) 26%) !important;
+    box-shadow: 0 10px 22px rgba(var(--theme-accent-rgb), 0.12) !important;
+}
+
+.changelog-page .changelog-item-list li {
+    padding: 10px 12px !important;
+    border-radius: calc(var(--tool-radius-small, 18px) - 2px) !important;
+}
+
+.changelog-page .changelog-item-list i {
+    color: var(--theme-accent-text) !important;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    box-shadow: 0 8px 18px rgba(var(--theme-accent-rgb), 0.18) !important;
+}
+
+.changelog-page .changelog-type {
+    border-color: rgba(var(--theme-accent-rgb), 0.24) !important;
+    background: color-mix(in srgb, var(--tool-card-bg, var(--theme-card-bg, #ffffff)) 78%, var(--theme-accent-start) 22%) !important;
+    color: color-mix(in srgb, var(--theme-accent-start) 38%, var(--tool-card-text, var(--theme-text)) 62%) !important;
+}
+
+body.dark-mode .changelog-page .changelog-latest-pill,
+body.dark-mode .changelog-page .changelog-mini-list a,
+body.dark-mode .changelog-page .changelog-item-list li,
+body.dark .changelog-page .changelog-latest-pill,
+body.dark .changelog-page .changelog-mini-list a,
+body.dark .changelog-page .changelog-item-list li {
+    background: color-mix(in srgb, var(--tool-card-bg, var(--theme-card-bg, #0f172a)) 72%, var(--theme-accent-end) 28%) !important;
+}
+
+body.dark-mode .changelog-page .changelog-type,
+body.dark .changelog-page .changelog-type {
+    color: color-mix(in srgb, var(--theme-accent-end) 30%, #ffffff 70%) !important;
+    background: color-mix(in srgb, var(--tool-card-bg, var(--theme-card-bg, #0f172a)) 70%, var(--theme-accent-end) 30%) !important;
 }
 
 /* Menü-Seiten sollen Karteninhalte nicht zentrieren, außer bei echten Previews. */
@@ -775,4 +824,205 @@ body.theme-high-contrast-mode .fuel-page #geo-btn.btn-secondary {
     box-shadow:
         0 0 0 2px rgba(var(--theme-accent-rgb), 0.28),
         0 18px 38px rgba(var(--theme-accent-rgb), 0.34) !important;
+}
+
+/* Datei-Share: Upload-Karte und Unterbereiche konsequent an Theme-Farben koppeln. */
+.perf-page :where(
+    .share-upload-card,
+    .share-upload-panel,
+    .friend-picker,
+    .friend-grid label,
+    .share-row,
+    .share-upload-progress,
+    .share-list-card .empty-state
+) {
+    border-color: var(--tool-line) !important;
+    background: var(--tool-surface) !important;
+    color: var(--tool-card-text) !important;
+    box-shadow: 0 16px 40px rgba(var(--theme-accent-rgb), 0.09) !important;
+}
+
+.perf-page :where(
+    .share-drop-card,
+    .share-toggle-box,
+    .share-selected-file,
+    .share-upload-progress,
+    .share-row,
+    .share-row-actions a,
+    .share-row-actions button,
+    .share-row-main .share-security-chips small
+) {
+    border-color: var(--tool-line-strong) !important;
+    background: color-mix(in srgb, var(--tool-card-bg) 84%, var(--theme-accent-start) 16%) !important;
+    color: var(--tool-card-text) !important;
+}
+
+body.dark-mode .perf-page :where(
+    .share-drop-card,
+    .share-toggle-box,
+    .share-selected-file,
+    .share-upload-progress,
+    .share-row,
+    .share-row-actions a,
+    .share-row-actions button,
+    .share-row-main .share-security-chips small
+),
+body.dark .perf-page :where(
+    .share-drop-card,
+    .share-toggle-box,
+    .share-selected-file,
+    .share-upload-progress,
+    .share-row,
+    .share-row-actions a,
+    .share-row-actions button,
+    .share-row-main .share-security-chips small
+) {
+    background: color-mix(in srgb, var(--tool-card-bg) 76%, var(--theme-accent-end) 24%) !important;
+}
+
+.perf-page :where(
+    .share-section-title > span,
+    .share-drop-icon,
+    .share-selected-file-icon,
+    .share-file-icon,
+    .share-access-icon
+) {
+    color: var(--theme-accent-text) !important;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    box-shadow: 0 14px 30px rgba(var(--theme-accent-rgb), 0.22) !important;
+}
+
+.perf-page .share-file-icon {
+    color: var(--theme-accent-text) !important;
+}
+
+.perf-page .share-drop-card:hover {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.58) !important;
+    background: color-mix(in srgb, var(--tool-card-bg) 78%, var(--theme-accent-end) 22%) !important;
+}
+
+.perf-page .share-drop-card.is-dragover,
+.perf-page .share-drop-card.has-file {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.66) !important;
+    background: color-mix(in srgb, var(--tool-card-bg) 72%, var(--theme-accent-end) 28%) !important;
+}
+
+.perf-page .friend-grid label:has(input:checked) {
+    outline-color: rgba(var(--theme-accent-end-rgb), 0.58) !important;
+    background: color-mix(in srgb, var(--tool-card-bg) 70%, var(--theme-accent-end) 30%) !important;
+}
+
+.perf-page :where(
+    .share-section-title p,
+    .share-card-head p,
+    .share-drop-card small,
+    .share-check span small,
+    .friend-picker-head small,
+    .share-row-main span,
+    .share-row-main small,
+    .share-upload-progress-head
+) {
+    color: var(--tool-muted) !important;
+}
+
+.perf-page .share-upload-progress-head strong,
+.perf-page .share-row-main strong i {
+    color: var(--tool-accent-readable) !important;
+}
+
+.perf-page .share-upload-progress-track span {
+    background: linear-gradient(90deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+}
+
+body.theme-high-contrast-mode .perf-page :where(
+    .share-upload-card,
+    .share-drop-card,
+    .share-toggle-box,
+    .friend-picker,
+    .friend-grid label,
+    .share-row,
+    .share-upload-progress,
+    .share-row-actions a,
+    .share-row-actions button,
+    .share-row-main .share-security-chips small
+) {
+    border-width: 2px !important;
+    background: var(--tool-card-bg) !important;
+    color: var(--tool-card-text) !important;
+}
+
+/* Roadmap/Feature-Voting: keine blauen Restfarben, alles an das aktuelle Theme anbinden. */
+.roadmap-page .feature-kicker,
+.roadmap-page .feature-kicker i,
+.roadmap-page .idea-comments summary,
+.roadmap-page .empty-state-card > i {
+    color: var(--tool-accent-readable, var(--theme-accent-start)) !important;
+}
+
+.roadmap-page .feature-card-heading > i,
+.roadmap-page .roadmap-filter-card button,
+.roadmap-page .feature-primary-btn,
+.roadmap-page .comment-form button,
+.roadmap-page .staff-status-form button,
+.roadmap-page .vote-button.voted {
+    border: 0 !important;
+    color: var(--theme-accent-text) !important;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    box-shadow: 0 14px 30px rgba(var(--theme-accent-rgb), 0.24) !important;
+}
+
+.roadmap-page .roadmap-filter-card button:hover,
+.roadmap-page .feature-primary-btn:hover,
+.roadmap-page .comment-form button:hover,
+.roadmap-page .staff-status-form button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 38px rgba(var(--theme-accent-rgb), 0.32) !important;
+}
+
+.roadmap-page .vote-button:not(.voted),
+.roadmap-page .category-pill,
+.roadmap-page .priority-pill,
+.roadmap-page .status-pill:not(.status-done):not(.status-in_progress):not(.status-rejected) {
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.24) !important;
+    background: rgba(var(--theme-accent-rgb), 0.12) !important;
+    color: var(--tool-accent-readable, var(--theme-accent-start)) !important;
+}
+
+.roadmap-page .roadmap-filter-card,
+.roadmap-page .idea-form-card,
+.roadmap-page .idea-card,
+.roadmap-page .empty-state-card {
+    border-color: rgba(var(--theme-accent-rgb), 0.24) !important;
+    background: var(--tool-surface, var(--tool-card-bg)) !important;
+}
+
+.roadmap-page .stacked-form input,
+.roadmap-page .stacked-form textarea,
+.roadmap-page .stacked-form select,
+.roadmap-page .roadmap-filter-card input,
+.roadmap-page .roadmap-filter-card select,
+.roadmap-page .comment-form input,
+.roadmap-page .staff-status-form input,
+.roadmap-page .staff-status-form select {
+    border-color: rgba(var(--theme-accent-rgb), 0.22) !important;
+    background: var(--tool-input-bg, rgba(var(--theme-accent-rgb), 0.10)) !important;
+    color: var(--tool-card-text, var(--theme-text)) !important;
+}
+
+.roadmap-page .stacked-form input::placeholder,
+.roadmap-page .stacked-form textarea::placeholder,
+.roadmap-page .roadmap-filter-card input::placeholder,
+.roadmap-page .comment-form input::placeholder {
+    color: color-mix(in srgb, var(--tool-card-text, var(--theme-text)) 58%, transparent) !important;
+}
+
+body.dark-mode .roadmap-page .vote-button:not(.voted),
+body.dark-mode .roadmap-page .category-pill,
+body.dark-mode .roadmap-page .priority-pill,
+body.dark-mode .roadmap-page .status-pill:not(.status-done):not(.status-in_progress):not(.status-rejected),
+body.dark .roadmap-page .vote-button:not(.voted),
+body.dark .roadmap-page .category-pill,
+body.dark .roadmap-page .priority-pill,
+body.dark .roadmap-page .status-pill:not(.status-done):not(.status-in_progress):not(.status-rejected) {
+    color: color-mix(in srgb, var(--theme-accent-end) 30%, #ffffff 70%) !important;
 }

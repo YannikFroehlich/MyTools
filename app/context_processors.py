@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.urls import NoReverseMatch, reverse
 
-from .models import UserProfile
+from .access_control import ACCESS_CONTROL_ITEMS, user_can_access_key
+from .models import SiteAccessSettings, UserProfile
 from .notification_utils import get_notification_counts
 
 
@@ -17,6 +19,51 @@ def analytics_settings(request):
     return {
         "google_analytics_enabled": getattr(settings, "GOOGLE_ANALYTICS_ENABLED", False),
         "google_analytics_id": getattr(settings, "GOOGLE_ANALYTICS_ID", ""),
+    }
+
+
+def access_control_status(request):
+    if not request.user.is_authenticated:
+        return {
+            "access_blocked_keys": {},
+            "access_blocked_paths": [],
+            "access_restricted_paths": [],
+        }
+
+    try:
+        access_settings = SiteAccessSettings.get_solo()
+    except Exception:
+        return {
+            "access_blocked_keys": {},
+            "access_blocked_paths": [],
+            "access_restricted_paths": [],
+        }
+
+    blocked_keys = {}
+    blocked_paths = set()
+    restricted_paths = set()
+
+    for item in ACCESS_CONTROL_ITEMS:
+        key = item["key"]
+        access_level = access_settings.get_tool_access_level(key)
+        is_restricted = access_level != SiteAccessSettings.TOOL_ACCESS_ALL
+        is_blocked = not user_can_access_key(request.user, key, access_settings)
+        blocked_keys[key] = is_blocked
+
+        path_bucket = blocked_paths if is_blocked else restricted_paths if is_restricted else None
+        if path_bucket is None:
+            continue
+
+        for url_name in item.get("url_names", ()):
+            try:
+                path_bucket.add(reverse(url_name))
+            except NoReverseMatch:
+                continue
+
+    return {
+        "access_blocked_keys": blocked_keys,
+        "access_blocked_paths": sorted(blocked_paths),
+        "access_restricted_paths": sorted(restricted_paths),
     }
 
 

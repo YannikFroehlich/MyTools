@@ -276,6 +276,14 @@ ACCESS_CONTROL_ITEMS = (
         "url_names": ("cookie-cosmos-v2", "cookie-cosmos-v2-load-api", "cookie-cosmos-v2-save-api"),
     },
     {
+        "key": "nebula_forge_tycoon",
+        "label": _("Nebula Forge Tycoon"),
+        "kind": _("Spiel"),
+        "category": _("Spiele"),
+        "icon": "fa-solid fa-meteor",
+        "url_names": ("nebula-forge-tycoon",),
+    },
+    {
         "key": "tictactoe",
         "label": _("Tic Tac Toe"),
         "kind": _("Spiel"),

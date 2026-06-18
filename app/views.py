@@ -19,7 +19,7 @@ from django.utils import timezone as django_timezone
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, CookieCosmosV2Save, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, Shortcut, \
+from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, CookieCosmosV2Save, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, NebulaForgeTycoonSave, Shortcut, \
     ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
 
 import json
@@ -1949,6 +1949,142 @@ def drift_circuit(request):
 def snake_powerups(request):
     mark_active_game(request.user, "snake_powerups")
     return render(request, "app/snake_powerups.html")
+
+
+NEBULA_FORGE_SAVE_COOLDOWN_SECONDS = 60
+NEBULA_FORGE_MAX_SAVE_BYTES = 300_000
+
+
+def serialize_nebula_forge_save(save):
+    if not save:
+        return None
+
+    return {
+        "flux": save.flux,
+        "lifetime_flux": save.lifetime_flux,
+        "total_lifetime_flux": save.total_lifetime_flux,
+        "cps": save.cps,
+        "manual_power": save.manual_power,
+        "prestige_level": save.prestige_level,
+        "shards": save.shards,
+        "achievements_count": save.achievements_count,
+        "upgrades_count": save.upgrades_count,
+        "buildings_count": save.buildings_count,
+        "updated_at": save.updated_at.isoformat() if save.updated_at else None,
+        "last_manual_save": save.last_manual_save.isoformat() if save.last_manual_save else None,
+    }
+
+
+def nebula_forge_save_countdown(save):
+    if not save or not save.last_manual_save:
+        return 0
+
+    elapsed = django_timezone.now() - save.last_manual_save
+    remaining = NEBULA_FORGE_SAVE_COOLDOWN_SECONDS - int(elapsed.total_seconds())
+    return max(0, remaining)
+
+
+@ensure_csrf_cookie
+def nebula_forge_tycoon(request):
+    mark_active_game(request.user, "nebula_forge_tycoon")
+    return render(request, "app/nebula_forge_tycoon.html")
+
+
+@login_required
+def nebula_forge_tycoon_load_api(request):
+    mark_active_game(request.user, "nebula_forge_tycoon")
+    save = NebulaForgeTycoonSave.objects.filter(user=request.user).first()
+
+    return JsonResponse({
+        "status": "ok",
+        "save": serialize_nebula_forge_save(save),
+        "save_data": save.save_data if save else None,
+        "next_save_in_seconds": nebula_forge_save_countdown(save),
+    })
+
+
+@login_required
+@require_POST
+def nebula_forge_tycoon_save_api(request):
+    mark_active_game(request.user, "nebula_forge_tycoon")
+
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return api_error_response(_("Ungültige Anfrage."), status=400)
+
+    save_data = payload.get("save_data")
+    if not isinstance(save_data, dict):
+        return api_error_response(_("Ungültiger Nebula-Forge-Spielstand."), status=400)
+
+    try:
+        serialized_size = len(json.dumps(save_data, separators=(",", ":")))
+    except (TypeError, ValueError):
+        return api_error_response(_("Ungültiger Nebula-Forge-Spielstand."), status=400)
+
+    if serialized_size > NEBULA_FORGE_MAX_SAVE_BYTES:
+        return api_error_response(_("Der Nebula-Forge-Spielstand ist zu groß."), status=400)
+
+    try:
+        flux = float(payload.get("flux") or 0)
+        lifetime_flux = float(payload.get("lifetime_flux") or 0)
+        total_lifetime_flux = float(payload.get("total_lifetime_flux") or 0)
+        cps = float(payload.get("cps") or 0)
+        manual_power = float(payload.get("manual_power") or 1)
+        prestige_level = int(payload.get("prestige_level") or 1)
+        shards = int(payload.get("shards") or 0)
+        achievements_count = int(payload.get("achievements_count") or 0)
+        upgrades_count = int(payload.get("upgrades_count") or 0)
+        buildings_count = int(payload.get("buildings_count") or 0)
+    except (TypeError, ValueError):
+        return api_error_response(_("Ungültige Nebula-Forge-Werte."), status=400)
+
+    numeric_values = (flux, lifetime_flux, total_lifetime_flux, cps, manual_power)
+    if not all(math.isfinite(value) for value in numeric_values):
+        return api_error_response(_("Ungültige Nebula-Forge-Werte."), status=400)
+
+    if flux < 0 or lifetime_flux < 0 or total_lifetime_flux < 0 or cps < 0 or manual_power < 0 or prestige_level < 1:
+        return api_error_response(_("Ungültige Nebula-Forge-Werte."), status=400)
+
+    save = NebulaForgeTycoonSave.objects.filter(user=request.user).first()
+    remaining = nebula_forge_save_countdown(save)
+    if remaining > 0:
+        return JsonResponse({
+            "status": "error",
+            "message": _("Du kannst Nebula Forge Tycoon nur einmal pro Minute in der Datenbank speichern."),
+            "next_save_in_seconds": remaining,
+            "save": serialize_nebula_forge_save(save),
+        }, status=429)
+
+    manual_saved_at = django_timezone.now()
+    save_data["databaseSavedAt"] = int(manual_saved_at.timestamp() * 1000)
+
+    defaults = {
+        "save_data": save_data,
+        "flux": max(0, flux),
+        "lifetime_flux": max(0, lifetime_flux),
+        "total_lifetime_flux": max(0, total_lifetime_flux),
+        "cps": max(0, cps),
+        "manual_power": max(0, manual_power),
+        "prestige_level": max(1, prestige_level),
+        "shards": max(0, shards),
+        "achievements_count": max(0, min(achievements_count, 500)),
+        "upgrades_count": max(0, min(upgrades_count, 500)),
+        "buildings_count": max(0, buildings_count),
+        "last_manual_save": manual_saved_at,
+    }
+
+    save, _created = NebulaForgeTycoonSave.objects.update_or_create(
+        user=request.user,
+        defaults=defaults,
+    )
+
+    return JsonResponse({
+        "status": "ok",
+        "save": serialize_nebula_forge_save(save),
+        "save_data": save.save_data,
+        "next_save_in_seconds": NEBULA_FORGE_SAVE_COOLDOWN_SECONDS,
+    })
 
 
 def serialize_2048_highscore(highscore):

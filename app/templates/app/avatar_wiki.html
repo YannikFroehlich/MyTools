@@ -5,11 +5,11 @@
 {% block title %}{% translate 'Avatar Wiki' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/avatar_wiki.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/avatar_wiki.css' %}?v=20260618-2">
 {% endblock %}
 
 {% block content %}
-    <section class="avatar-page" data-characters-url="{% url 'avatar-characters-api' %}">
+    <section class="avatar-page" data-characters-url="{% url 'avatar-characters-api' %}" style="--avatar-background-image: url('{% static 'app/img/Airtemple-island.webp' %}');">
         <div class="avatar-shell">
             <div class="avatar-topbar">
                 <div class="avatar-brand">
