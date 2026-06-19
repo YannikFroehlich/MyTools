@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 17:17+0200\n"
+"POT-Creation-Date: 2026-06-19 11:16+0200\n"
 "PO-Revision-Date: 2026-06-12 18:30+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: German\n"
@@ -53,12 +53,12 @@ msgstr "Kommunikation"
 #: .\app\templates\app\base.html:1112 .\app\templates\app\leaderboard.html:36
 #: .\app\templates\app\moderation.html:242 .\app\templates\app\users.html:6
 #: .\app\templates\app\users.html:19 .\app\templates\app\users.html:59
-#: .\app\views.py:1523
+#: .\app\views.py:1525
 msgid "Nutzer"
 msgstr "Nutzer"
 
 #: .\app\access_control.py:48 .\app\achievement_utils.py:37
-#: .\app\community_views.py:495 .\app\models.py:953 .\app\platform_utils.py:11
+#: .\app\community_views.py:509 .\app\models.py:953 .\app\platform_utils.py:11
 #: .\app\platform_utils.py:66 .\app\profile_views.py:155
 #: .\app\templates\app\about.html:120 .\app\templates\app\base.html:493
 #: .\app\templates\app\base.html:496 .\app\templates\app\base.html:1122
@@ -80,7 +80,7 @@ msgstr "Alltag"
 #: .\app\access_control.py:64 .\app\models.py:956 .\app\platform_utils.py:12
 #: .\app\platform_utils.py:67 .\app\templates\app\base.html:485
 #: .\app\templates\app\base.html:488 .\app\templates\app\clock.html:5
-#: .\app\templates\app\clock.html:19 .\app\templates\app\home.html:629
+#: .\app\templates\app\clock.html:31 .\app\templates\app\home.html:629
 msgid "Uhr"
 msgstr "Uhr"
 
@@ -92,7 +92,7 @@ msgstr "Uhr"
 msgid "Datei-Share"
 msgstr "Datei-Share"
 
-#: .\app\access_control.py:80 .\app\community_views.py:512 .\app\models.py:2791
+#: .\app\access_control.py:80 .\app\community_views.py:526 .\app\models.py:2791
 #: .\app\models.py:2819 .\app\templates\app\base.html:509
 #: .\app\templates\app\base.html:512 .\app\templates\app\feedback.html:5
 #: .\app\templates\app\feedback.html:12 .\app\templates\app\moderation.html:184
@@ -255,11 +255,11 @@ msgstr "Leaderboard"
 #: .\app\access_control.py:241 .\app\access_control.py:249
 #: .\app\access_control.py:257 .\app\access_control.py:265
 #: .\app\access_control.py:273 .\app\access_control.py:281
-#: .\app\access_control.py:289 .\app\access_control.py:308
-#: .\app\access_control.py:327 .\app\access_control.py:347
-#: .\app\access_control.py:370 .\app\access_control.py:392
-#: .\app\access_control.py:416 .\app\access_control.py:437
-#: .\app\access_control.py:456 .\app\models.py:2879
+#: .\app\access_control.py:293 .\app\access_control.py:312
+#: .\app\access_control.py:331 .\app\access_control.py:351
+#: .\app\access_control.py:374 .\app\access_control.py:396
+#: .\app\access_control.py:420 .\app\access_control.py:441
+#: .\app\access_control.py:460 .\app\models.py:2879
 msgid "Spiel"
 msgstr "Spiel"
 
@@ -267,11 +267,11 @@ msgstr "Spiel"
 #: .\app\access_control.py:242 .\app\access_control.py:250
 #: .\app\access_control.py:258 .\app\access_control.py:266
 #: .\app\access_control.py:274 .\app\access_control.py:282
-#: .\app\access_control.py:290 .\app\access_control.py:309
-#: .\app\access_control.py:328 .\app\access_control.py:348
-#: .\app\access_control.py:371 .\app\access_control.py:393
-#: .\app\access_control.py:417 .\app\access_control.py:438
-#: .\app\access_control.py:457 .\app\achievement_utils.py:36
+#: .\app\access_control.py:294 .\app\access_control.py:313
+#: .\app\access_control.py:332 .\app\access_control.py:352
+#: .\app\access_control.py:375 .\app\access_control.py:397
+#: .\app\access_control.py:421 .\app\access_control.py:442
+#: .\app\access_control.py:461 .\app\achievement_utils.py:36
 #: .\app\platform_utils.py:13 .\app\platform_utils.py:14
 #: .\app\platform_utils.py:15 .\app\platform_utils.py:16
 #: .\app\platform_utils.py:17 .\app\platform_utils.py:18
@@ -298,8 +298,8 @@ msgstr "Human Benchmark"
 msgid "Racing Game"
 msgstr "Racing Game"
 
-#: .\app\access_control.py:248 .\app\platform_utils.py:18
-#: .\app\platform_utils.py:59
+#: .\app\access_control.py:248 .\app\performance_tools_views.py:210
+#: .\app\platform_utils.py:18 .\app\platform_utils.py:59
 msgid "2048"
 msgstr "2048"
 
@@ -309,29 +309,30 @@ msgstr "2048"
 msgid "Snake Powerups"
 msgstr "Snake Powerups"
 
-#: .\app\access_control.py:264 .\app\performance_tools_views.py:184
+#: .\app\access_control.py:264 .\app\performance_tools_views.py:353
 #: .\app\platform_utils.py:22 .\app\platform_utils.py:61
 #: .\app\templates\app\about.html:205 .\app\templates\app\base.html:140
 #: .\app\templates\app\base.html:143
 msgid "Cookie Cosmos"
 msgstr "Cookie Cosmos"
 
-#: .\app\access_control.py:272 .\app\platform_utils.py:23
-#: .\app\platform_utils.py:62
+#: .\app\access_control.py:272 .\app\performance_tools_views.py:234
+#: .\app\platform_utils.py:23 .\app\platform_utils.py:62
 #, fuzzy
 #| msgid "Cookie Cosmos"
 msgid "Cookie Cosmos V2"
 msgstr "Cookie Cosmos"
 
-#: .\app\access_control.py:280 .\app\platform_utils.py:24
-#: .\app\platform_utils.py:63 .\app\templates\app\about.html:210
+#: .\app\access_control.py:280 .\app\performance_tools_views.py:258
+#: .\app\platform_utils.py:24 .\app\platform_utils.py:63
+#: .\app\templates\app\about.html:210
 #: .\app\templates\app\nebula_forge_tycoon.html:5
-#: .\app\templates\app\nebula_forge_tycoon.html:461
+#: .\app\templates\app\nebula_forge_tycoon.html:464
 msgid "Nebula Forge Tycoon"
 msgstr ""
 
-#: .\app\access_control.py:288 .\app\models.py:960
-#: .\app\notification_utils.py:254 .\app\performance_tools_views.py:213
+#: .\app\access_control.py:292 .\app\models.py:960
+#: .\app\notification_utils.py:254 .\app\performance_tools_views.py:384
 #: .\app\templates\app\base.html:173 .\app\templates\app\base.html:176
 #: .\app\templates\app\home.html:633 .\app\templates\app\tictactoe_home.html:4
 #: .\app\templates\app\tictactoe_home.html:27
@@ -340,8 +341,8 @@ msgstr ""
 msgid "Tic Tac Toe"
 msgstr "Tic Tac Toe"
 
-#: .\app\access_control.py:307 .\app\connectfour_views.py:295
-#: .\app\notification_utils.py:267 .\app\performance_tools_views.py:218
+#: .\app\access_control.py:311 .\app\connectfour_views.py:295
+#: .\app\notification_utils.py:267 .\app\performance_tools_views.py:389
 #: .\app\templates\app\base.html:199 .\app\templates\app\base.html:202
 #: .\app\templates\app\connectfour_home.html:4
 #: .\app\templates\app\connectfour_home.html:27
@@ -350,18 +351,18 @@ msgstr "Tic Tac Toe"
 msgid "Vier gewinnt"
 msgstr "Vier gewinnt"
 
-#: .\app\access_control.py:326 .\app\battleship_views.py:393
+#: .\app\access_control.py:330 .\app\battleship_views.py:393
 #: .\app\notification_utils.py:283 .\app\notification_utils.py:294
-#: .\app\templates\app\base.html:186 .\app\templates\app\base.html:189
-#: .\app\templates\app\battleship_home.html:4
+#: .\app\performance_tools_views.py:394 .\app\templates\app\base.html:186
+#: .\app\templates\app\base.html:189 .\app\templates\app\battleship_home.html:4
 #: .\app\templates\app\battleship_home.html:27
 #: .\app\templates\app\battleship_home.html:44
 #: .\app\templates\app\battleship_lobby.html:4
 msgid "Schiffe versenken"
 msgstr "Schiffe versenken"
 
-#: .\app\access_control.py:346 .\app\models.py:961
-#: .\app\notification_utils.py:344 .\app\performance_tools_views.py:196
+#: .\app\access_control.py:350 .\app\models.py:961
+#: .\app\notification_utils.py:344 .\app\performance_tools_views.py:367
 #: .\app\stadtlandfluss_views.py:487 .\app\templates\app\base.html:212
 #: .\app\templates\app\base.html:215 .\app\templates\app\home.html:634
 #: .\app\templates\app\stadtlandfluss_home.html:4
@@ -371,8 +372,8 @@ msgstr "Schiffe versenken"
 msgid "Stadt Land Fluss"
 msgstr "Stadt Land Fluss"
 
-#: .\app\access_control.py:369 .\app\hangman_views.py:462
-#: .\app\performance_tools_views.py:208 .\app\platform_utils.py:16
+#: .\app\access_control.py:373 .\app\hangman_views.py:462
+#: .\app\performance_tools_views.py:379 .\app\platform_utils.py:16
 #: .\app\platform_utils.py:57 .\app\templates\app\base.html:270
 #: .\app\templates\app\base.html:273 .\app\templates\app\hangman_home.html:4
 #: .\app\templates\app\hangman_home.html:14
@@ -381,37 +382,37 @@ msgstr "Stadt Land Fluss"
 msgid "Hangman"
 msgstr "Hangman"
 
-#: .\app\access_control.py:391 .\app\models.py:962
-#: .\app\notification_utils.py:308 .\app\platform_utils.py:14
-#: .\app\platform_utils.py:55 .\app\templates\app\base.html:225
-#: .\app\templates\app\base.html:229 .\app\templates\app\home.html:635
-#: .\app\templates\app\uno_home.html:4 .\app\templates\app\uno_home.html:27
-#: .\app\templates\app\uno_home.html:46 .\app\templates\app\uno_lobby.html:4
-#: .\app\uno_views.py:536
+#: .\app\access_control.py:395 .\app\models.py:962
+#: .\app\notification_utils.py:308 .\app\performance_tools_views.py:396
+#: .\app\platform_utils.py:14 .\app\platform_utils.py:55
+#: .\app\templates\app\base.html:225 .\app\templates\app\base.html:229
+#: .\app\templates\app\home.html:635 .\app\templates\app\uno_home.html:4
+#: .\app\templates\app\uno_home.html:27 .\app\templates\app\uno_home.html:46
+#: .\app\templates\app\uno_lobby.html:4 .\app\uno_views.py:536
 msgid "Uno"
 msgstr "Uno"
 
-#: .\app\access_control.py:415 .\app\kniffel_views.py:42
+#: .\app\access_control.py:419 .\app\kniffel_views.py:42
 #: .\app\kniffel_views.py:511 .\app\models.py:963
-#: .\app\notification_utils.py:322 .\app\platform_utils.py:15
-#: .\app\platform_utils.py:56 .\app\templates\app\base.html:241
-#: .\app\templates\app\base.html:244 .\app\templates\app\home.html:636
-#: .\app\templates\app\kniffel_home.html:4
+#: .\app\notification_utils.py:322 .\app\performance_tools_views.py:397
+#: .\app\platform_utils.py:15 .\app\platform_utils.py:56
+#: .\app\templates\app\base.html:241 .\app\templates\app\base.html:244
+#: .\app\templates\app\home.html:636 .\app\templates\app\kniffel_home.html:4
 #: .\app\templates\app\kniffel_home.html:27
 #: .\app\templates\app\kniffel_home.html:47
 #: .\app\templates\app\kniffel_lobby.html:4
 msgid "Kniffel"
 msgstr "Kniffel"
 
-#: .\app\access_control.py:436 .\app\pong_views.py:337
-#: .\app\templates\app\base.html:254 .\app\templates\app\base.html:257
-#: .\app\templates\app\pong_home.html:4 .\app\templates\app\pong_home.html:43
-#: .\app\templates\app\pong_lobby.html:4
+#: .\app\access_control.py:440 .\app\performance_tools_views.py:402
+#: .\app\pong_views.py:337 .\app\templates\app\base.html:254
+#: .\app\templates\app\base.html:257 .\app\templates\app\pong_home.html:4
+#: .\app\templates\app\pong_home.html:43 .\app\templates\app\pong_lobby.html:4
 msgid "Pong"
 msgstr "Pong"
 
-#: .\app\access_control.py:455 .\app\models.py:959 .\app\models.py:2790
-#: .\app\notification_utils.py:359 .\app\performance_tools_views.py:167
+#: .\app\access_control.py:459 .\app\models.py:959 .\app\models.py:2790
+#: .\app\notification_utils.py:359 .\app\performance_tools_views.py:326
 #: .\app\platform_utils.py:13 .\app\platform_utils.py:54
 #: .\app\templates\app\about.html:255 .\app\templates\app\base.html:283
 #: .\app\templates\app\base.html:286 .\app\templates\app\home.html:632
@@ -1268,48 +1269,93 @@ msgid "Du hast die Gruppe verlassen."
 msgstr "Du hast die Gruppe verlassen."
 
 #: .\app\community_views.py:32
+msgid "Nebula Forge Tycoon Update"
+msgstr "Nebula Forge Tycoon Update"
+
+#: .\app\community_views.py:33
+msgid ""
+"Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt und "
+"das Leaderboard zeigt jetzt die aktuellen Spiele."
+msgstr ""
+"Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt und "
+"das Leaderboard zeigt jetzt die aktuellen Spiele."
+
+#: .\app\community_views.py:34 .\app\community_views.py:48
+#: .\app\community_views.py:158
+msgid "Games"
+msgstr "Games"
+
+#: .\app\community_views.py:37
+msgid ""
+"Nebula Forge Tycoon wurde visuell überarbeitet und wirkt jetzt deutlich "
+"lebendiger."
+msgstr ""
+"Nebula Forge Tycoon wurde visuell überarbeitet und wirkt jetzt deutlich "
+"lebendiger."
+
+#: .\app\community_views.py:38
+msgid ""
+"Kauf-, Prestige- und Ability-Aktionen haben neue Animationen und Effekte "
+"bekommen."
+msgstr ""
+"Kauf-, Prestige- und Ability-Aktionen haben neue Animationen und Effekte "
+"bekommen."
+
+#: .\app\community_views.py:39
+msgid ""
+"Das Leaderboard wurde um aktuelle Spiele wie 2048, Cookie Cosmos V2, Nebula "
+"Forge Tycoon, Schiffe versenken, Uno, Kniffel und Pong erweitert."
+msgstr ""
+"Das Leaderboard wurde um aktuelle Spiele wie 2048, Cookie Cosmos V2, Nebula "
+"Forge Tycoon, Schiffe versenken, Uno, Kniffel und Pong erweitert."
+
+#: .\app\community_views.py:40
+msgid ""
+"Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre "
+"Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."
+msgstr ""
+"Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre "
+"Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."
+
+#: .\app\community_views.py:46
 #, fuzzy
 #| msgid "Eigenes Spielfeld"
 msgid "Nebula Forge Tycoon Release"
 msgstr "Eigenes Spielfeld"
 
-#: .\app\community_views.py:33
+#: .\app\community_views.py:47
 msgid ""
 "Nebula Forge Tycoon wurde hinzugefügt, ähnlich wie Cookie Cosmos und man "
 "kann als Admin nun kontrollieren wer auf welches tool oder game zugreifen "
 "kann"
 msgstr ""
 
-#: .\app\community_views.py:34 .\app\community_views.py:144
-msgid "Games"
-msgstr "Games"
-
-#: .\app\community_views.py:37
+#: .\app\community_views.py:51
 #, fuzzy
 #| msgid "Buchung wurde hinzugefügt."
 msgid "Nebula Forge Tycoon wurde hinzugefügt."
 msgstr "Buchung wurde hinzugefügt."
 
-#: .\app\community_views.py:38
-msgid "kontrolle wer auf welches tool zugreifen kann."
+#: .\app\community_views.py:52
+msgid "Kontrolle wer auf welches tool zugreifen kann."
 msgstr ""
 
-#: .\app\community_views.py:39
+#: .\app\community_views.py:53
 msgid "Kleinere Style Anpassungen"
 msgstr ""
 
-#: .\app\community_views.py:45
+#: .\app\community_views.py:59
 msgid "Datei-Konverter und einheitliches Tool-Design"
 msgstr ""
 
-#: .\app\community_views.py:46
+#: .\app\community_views.py:60
 msgid ""
 "Der neue Datei-Konverter, ein gemeinsamer Tool-Seiten-Look und gezielte "
 "Kontrastkorrekturen machen die Werkzeugbereiche einheitlicher und besser "
 "lesbar."
 msgstr ""
 
-#: .\app\community_views.py:47 .\app\community_views.py:131
+#: .\app\community_views.py:61 .\app\community_views.py:145
 #: .\app\platform_utils.py:25 .\app\platform_utils.py:26
 #: .\app\platform_utils.py:27 .\app\platform_utils.py:28
 #: .\app\platform_utils.py:29 .\app\platform_utils.py:30
@@ -1318,119 +1364,119 @@ msgstr ""
 msgid "Tools"
 msgstr "Tools"
 
-#: .\app\community_views.py:50
+#: .\app\community_views.py:64
 msgid ""
 "Datei-Konverter für DOCX, Tabellen, Präsentationen, Textdateien und Bilder "
 "ergänzt."
 msgstr ""
 
-#: .\app\community_views.py:51
+#: .\app\community_views.py:65
 msgid ""
 "Office-zu-PDF läuft serverseitig über LibreOffice und verarbeitet Uploads "
 "nur temporär."
 msgstr ""
 
-#: .\app\community_views.py:52
+#: .\app\community_views.py:66
 msgid ""
 "Toolbox-Seiten übernehmen jetzt gemeinsame Theme-Farben, Karten, Buttons, "
 "Inputs und Kontrastmodus-Regeln."
 msgstr ""
 
-#: .\app\community_views.py:53
+#: .\app\community_views.py:67
 msgid ""
 "Bild Tools, Datei-Konverter, Einheitenrechner, Spritkosten und QR-Code Tool "
 "wurden farblich nachjustiert."
 msgstr ""
 
-#: .\app\community_views.py:54
+#: .\app\community_views.py:68
 msgid ""
 "Der Quality-Workflow startet nicht mehr automatisch bei jedem Push oder "
 "Merge, sondern nur noch manuell."
 msgstr ""
 
-#: .\app\community_views.py:60
+#: .\app\community_views.py:74
 #, fuzzy
 #| msgid "Stream-Deck-Steuerung"
 msgid "Stream Deck mit Voicemod-Steuerung"
 msgstr "Stream-Deck-Steuerung"
 
-#: .\app\community_views.py:61
+#: .\app\community_views.py:75
 msgid ""
 "Das Stream Deck kann Voicemod jetzt direkt steuern und nutzt dafuer einen "
 "lokal gespeicherten API-Key pro Browser."
 msgstr ""
 
-#: .\app\community_views.py:62
+#: .\app\community_views.py:76
 #, fuzzy
 #| msgid "Tools & Integrationen"
 msgid "Integration"
 msgstr "Tools & Integrationen"
 
-#: .\app\community_views.py:65
+#: .\app\community_views.py:79
 msgid ""
 "Voicemod-Aktionen fuer Voice Changer, Hear Myself, Mikrofon-Mute, Zufalls-"
 "Voice und Voice-Wechsel ergaenzt."
 msgstr ""
 
-#: .\app\community_views.py:66
+#: .\app\community_views.py:80
 msgid ""
 "Voices lassen sich aus Voicemod laden und im Button-Editor per Dropdown "
 "auswaehlen."
 msgstr ""
 
-#: .\app\community_views.py:67
+#: .\app\community_views.py:81
 msgid ""
 "Der Voicemod API-Key wird im Stream Deck gespeichert und bei fehlender "
 "Verbindung klar als Hinweis angezeigt."
 msgstr ""
 
-#: .\app\community_views.py:73
+#: .\app\community_views.py:87
 msgid "Mobile Bedienung, Realtime und Qualität"
 msgstr ""
 
-#: .\app\community_views.py:74
+#: .\app\community_views.py:88
 msgid ""
 "Die mobile Navigation ist flexibler, Benachrichtigungen aktualisieren sich "
 "direkter und die Codebasis ist besser für weitere Updates vorbereitet."
 msgstr ""
 
-#: .\app\community_views.py:75 .\app\community_views.py:105
+#: .\app\community_views.py:89 .\app\community_views.py:119
 msgid "Update"
 msgstr "Update"
 
-#: .\app\community_views.py:78
+#: .\app\community_views.py:92
 msgid ""
 "Mobile Ansicht blendet den oberen Header standardmäßig aus und bietet einen "
 "Button zum Ein- und Ausblenden."
 msgstr ""
 
-#: .\app\community_views.py:79
+#: .\app\community_views.py:93
 msgid ""
 "Google-Suche auf der Startseite wurde auf kleinen Displays optisch "
 "nachjustiert."
 msgstr ""
 
-#: .\app\community_views.py:80
+#: .\app\community_views.py:94
 msgid ""
 "Live-Status und Benachrichtigungszähler nutzen WebSocket-Updates mit HTTP-"
 "Fallback."
 msgstr ""
 
-#: .\app\community_views.py:81
+#: .\app\community_views.py:95
 msgid "Notes- und PWA-Views wurden aus der großen View-Datei herausgelöst."
 msgstr ""
 
-#: .\app\community_views.py:82
+#: .\app\community_views.py:96
 msgid ""
 "Neuer Qualitätslauf bündelt Systemcheck, Migration-Check, Tests, "
 "collectstatic-Dry-Run und JavaScript-Syntaxprüfung."
 msgstr ""
 
-#: .\app\community_views.py:88
+#: .\app\community_views.py:102
 msgid "Suche, Mobile, Datei-Share und Profile"
 msgstr "Suche, Mobile, Datei-Share und Profile"
 
-#: .\app\community_views.py:89
+#: .\app\community_views.py:103
 msgid ""
 "Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen "
 "MyTools schneller bedienbar und sichtbarer vernetzt."
@@ -1438,11 +1484,11 @@ msgstr ""
 "Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen "
 "MyTools schneller bedienbar und sichtbarer vernetzt."
 
-#: .\app\community_views.py:90 .\app\community_views.py:118
+#: .\app\community_views.py:104 .\app\community_views.py:132
 msgid "Plattform"
 msgstr "Plattform"
 
-#: .\app\community_views.py:93
+#: .\app\community_views.py:107
 msgid ""
 "Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und "
 "Roadmap-Ideen ergänzt."
@@ -1450,7 +1496,7 @@ msgstr ""
 "Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und "
 "Roadmap-Ideen ergänzt."
 
-#: .\app\community_views.py:94
+#: .\app\community_views.py:108
 msgid ""
 "Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und "
 "Changelog erweitert."
@@ -1458,13 +1504,13 @@ msgstr ""
 "Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und "
 "Changelog erweitert."
 
-#: .\app\community_views.py:95
+#: .\app\community_views.py:109
 msgid ""
 "Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."
 msgstr ""
 "Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."
 
-#: .\app\community_views.py:96
+#: .\app\community_views.py:110
 msgid ""
 "Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und "
 "PDF-Vorschau ausgebaut."
@@ -1472,7 +1518,7 @@ msgstr ""
 "Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und "
 "PDF-Vorschau ausgebaut."
 
-#: .\app\community_views.py:97
+#: .\app\community_views.py:111
 msgid ""
 "Profilseite mit Spotlight-Statistiken und feineren "
 "Benachrichtigungseinstellungen erweitert."
@@ -1480,11 +1526,11 @@ msgstr ""
 "Profilseite mit Spotlight-Statistiken und feineren "
 "Benachrichtigungseinstellungen erweitert."
 
-#: .\app\community_views.py:103
+#: .\app\community_views.py:117
 msgid "Design, Status und Transparenz"
 msgstr "Design, Status und Transparenz"
 
-#: .\app\community_views.py:104
+#: .\app\community_views.py:118
 msgid ""
 "Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite "
 "machen MyTools leichter anpassbar und besser nachvollziehbar."
@@ -1492,7 +1538,7 @@ msgstr ""
 "Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite "
 "machen MyTools leichter anpassbar und besser nachvollziehbar."
 
-#: .\app\community_views.py:108
+#: .\app\community_views.py:122
 #, fuzzy
 #| msgid ""
 #| "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und "
@@ -1504,7 +1550,7 @@ msgstr ""
 "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und "
 "Hintergrundeffekte im Browser speichern."
 
-#: .\app\community_views.py:109
+#: .\app\community_views.py:123
 msgid ""
 "Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße "
 "und letzten Security-Events ausgebaut."
@@ -1512,7 +1558,7 @@ msgstr ""
 "Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße "
 "und letzten Security-Events ausgebaut."
 
-#: .\app\community_views.py:110
+#: .\app\community_views.py:124
 msgid ""
 "Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen "
 "ergänzt."
@@ -1520,11 +1566,11 @@ msgstr ""
 "Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen "
 "ergänzt."
 
-#: .\app\community_views.py:116
+#: .\app\community_views.py:130
 msgid "Community und Sicherheit"
 msgstr "Community und Sicherheit"
 
-#: .\app\community_views.py:117
+#: .\app\community_views.py:131
 msgid ""
 "Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der "
 "Plattform mehr Struktur."
@@ -1532,24 +1578,24 @@ msgstr ""
 "Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der "
 "Plattform mehr Struktur."
 
-#: .\app\community_views.py:121
+#: .\app\community_views.py:135
 msgid "Feature-Ideen können gesammelt, gevotet und kommentiert werden."
 msgstr "Feature-Ideen können gesammelt, gevotet und kommentiert werden."
 
-#: .\app\community_views.py:122
+#: .\app\community_views.py:136
 msgid "Admins erhalten Moderations- und Sicherheitswerkzeuge."
 msgstr "Admins erhalten Moderations- und Sicherheitswerkzeuge."
 
-#: .\app\community_views.py:123
+#: .\app\community_views.py:137
 msgid "Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."
 msgstr ""
 "Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."
 
-#: .\app\community_views.py:129
+#: .\app\community_views.py:143
 msgid "Mehr Tools für den Alltag"
 msgstr "Mehr Tools für den Alltag"
 
-#: .\app\community_views.py:130
+#: .\app\community_views.py:144
 msgid ""
 "Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen "
 "stärker zusammen."
@@ -1557,23 +1603,23 @@ msgstr ""
 "Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen "
 "stärker zusammen."
 
-#: .\app\community_views.py:134
+#: .\app\community_views.py:148
 msgid "Startseiten-Widgets zeigen wichtige Daten schneller an."
 msgstr "Startseiten-Widgets zeigen wichtige Daten schneller an."
 
-#: .\app\community_views.py:135
+#: .\app\community_views.py:149
 msgid "Notizen unterstützen Pins, Erinnerungen und Teilen."
 msgstr "Notizen unterstützen Pins, Erinnerungen und Teilen."
 
-#: .\app\community_views.py:136
+#: .\app\community_views.py:150
 msgid "Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."
 msgstr "Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."
 
-#: .\app\community_views.py:142 .\app\templates\app\base.html:84
+#: .\app\community_views.py:156 .\app\templates\app\base.html:84
 msgid "Spielebibliothek"
 msgstr "Spielebibliothek"
 
-#: .\app\community_views.py:143
+#: .\app\community_views.py:157
 msgid ""
 "Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform "
 "erweitert."
@@ -1581,62 +1627,62 @@ msgstr ""
 "Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform "
 "erweitert."
 
-#: .\app\community_views.py:147
+#: .\app\community_views.py:161
 msgid "Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."
 msgstr "Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."
 
-#: .\app\community_views.py:148
+#: .\app\community_views.py:162
 msgid "Highscores und Leaderboards für Solo-Spiele."
 msgstr "Highscores und Leaderboards für Solo-Spiele."
 
-#: .\app\community_views.py:149
+#: .\app\community_views.py:163
 msgid "Profilkarten und Achievements geben Spielern mehr Identität."
 msgstr "Profilkarten und Achievements geben Spielern mehr Identität."
 
-#: .\app\community_views.py:199
+#: .\app\community_views.py:213
 msgid "Bitte gib Titel und Beschreibung ein."
 msgstr "Bitte gib Titel und Beschreibung ein."
 
-#: .\app\community_views.py:208
+#: .\app\community_views.py:222
 msgid "Deine Feature-Idee wurde eingetragen."
 msgstr "Deine Feature-Idee wurde eingetragen."
 
-#: .\app\community_views.py:215
+#: .\app\community_views.py:229
 msgid "Vote gesetzt."
 msgstr "Vote gesetzt."
 
-#: .\app\community_views.py:218
+#: .\app\community_views.py:232
 msgid "Vote entfernt."
 msgstr "Vote entfernt."
 
-#: .\app\community_views.py:226
+#: .\app\community_views.py:240
 msgid "Kommentar gespeichert."
 msgstr "Kommentar gespeichert."
 
-#: .\app\community_views.py:228
+#: .\app\community_views.py:242
 msgid "Bitte gib einen Kommentar ein."
 msgstr "Bitte gib einen Kommentar ein."
 
-#: .\app\community_views.py:239
+#: .\app\community_views.py:253
 msgid "Roadmap-Status wurde aktualisiert."
 msgstr "Roadmap-Status wurde aktualisiert."
 
-#: .\app\community_views.py:241
+#: .\app\community_views.py:255
 msgid "Ungültiger Status."
 msgstr "Ungültiger Status."
 
-#: .\app\community_views.py:285 .\app\models.py:2529
+#: .\app\community_views.py:299 .\app\models.py:2529
 #: .\app\templates\app\avatar_wiki.html:76 .\app\templates\app\inbox.html:20
 #: .\app\templates\app\notes.html:106 .\app\templates\app\roadmap.html:103
 msgid "Alle"
 msgstr "Alle"
 
-#: .\app\community_views.py:363 .\app\community_views.py:365
+#: .\app\community_views.py:377 .\app\community_views.py:379
 msgid "Datenbank"
 msgstr "Datenbank"
 
-#: .\app\community_views.py:363 .\app\community_views.py:374
-#: .\app\community_views.py:477 .\app\models.py:61
+#: .\app\community_views.py:377 .\app\community_views.py:388
+#: .\app\community_views.py:491 .\app\models.py:61
 #: .\app\notification_views.py:74 .\app\profile_views.py:590
 #: .\app\templates\app\chat.html:45 .\app\templates\app\chat.html:162
 #: .\app\templates\app\chat.html:249 .\app\templates\app\friends.html:62
@@ -1647,213 +1693,214 @@ msgstr "Datenbank"
 msgid "Online"
 msgstr "Online"
 
-#: .\app\community_views.py:365 .\app\community_views.py:376
+#: .\app\community_views.py:379 .\app\community_views.py:390
 #: .\app\templates\app\hangman_lobby.html:133
 msgid "Fehler"
 msgstr "Fehler"
 
-#: .\app\community_views.py:374 .\app\community_views.py:376
+#: .\app\community_views.py:388 .\app\community_views.py:390
 msgid "Cache"
 msgstr "Cache"
 
-#: .\app\community_views.py:374 .\app\community_views.py:481
+#: .\app\community_views.py:388 .\app\community_views.py:495
 msgid "Prüfen"
 msgstr "Prüfen"
 
-#: .\app\community_views.py:374
+#: .\app\community_views.py:388
 msgid "Schreiben/Lesen erfolgreich"
 msgstr "Schreiben/Lesen erfolgreich"
 
-#: .\app\community_views.py:374
+#: .\app\community_views.py:388
 msgid "Cache-Wert konnte nicht gelesen werden."
 msgstr "Cache-Wert konnte nicht gelesen werden."
 
-#: .\app\community_views.py:425 .\app\community_views.py:439
-#: .\app\community_views.py:449 .\app\community_views.py:458
-#: .\app\community_views.py:459
+#: .\app\community_views.py:439 .\app\community_views.py:453
+#: .\app\community_views.py:463 .\app\community_views.py:472
+#: .\app\community_views.py:473
 msgid "Nicht verfügbar"
 msgstr "Nicht verfügbar"
 
-#: .\app\community_views.py:431
+#: .\app\community_views.py:445
 msgid "Nicht gesetzt"
 msgstr "Nicht gesetzt"
 
-#: .\app\community_views.py:469 .\app\community_views.py:471
+#: .\app\community_views.py:483 .\app\community_views.py:485
 msgid "nicht gesetzt"
 msgstr "nicht gesetzt"
 
-#: .\app\community_views.py:477
+#: .\app\community_views.py:491
 msgid "Django App"
 msgstr "Django App"
 
-#: .\app\community_views.py:477
+#: .\app\community_views.py:491
 msgid "Request wurde erfolgreich verarbeitet."
 msgstr "Request wurde erfolgreich verarbeitet."
 
-#: .\app\community_views.py:480
+#: .\app\community_views.py:494
 msgid "PWA"
 msgstr "PWA"
 
-#: .\app\community_views.py:480 .\app\community_views.py:545
+#: .\app\community_views.py:494 .\app\community_views.py:559
 #: .\app\moderation_views.py:401
-#: .\app\templates\app\nebula_forge_tycoon.html:196
+#: .\app\templates\app\nebula_forge_tycoon.html:201
 #: .\app\templates\app\security_dashboard.html:39
 #: .\app\templates\app\two_factor_settings.html:21
 msgid "Aktiv"
 msgstr "Aktiv"
 
-#: .\app\community_views.py:481
+#: .\app\community_views.py:495
 msgid "Media"
 msgstr "Media"
 
-#: .\app\community_views.py:481 .\app\templates\app\calculator.html:50
-#: .\app\templates\app\calculator.html:168 .\app\templates\app\clock.html:142
+#: .\app\community_views.py:495 .\app\templates\app\calculator.html:50
+#: .\app\templates\app\calculator.html:168 .\app\templates\app\clock.html:21
+#: .\app\templates\app\clock.html:154
 #: .\app\templates\app\cookie_clicker.html:90
 #: .\app\templates\app\snake_powerups.html:64
 msgid "Bereit"
 msgstr "Bereit"
 
-#: .\app\community_views.py:492 .\app\moderation_views.py:388
+#: .\app\community_views.py:506 .\app\moderation_views.py:388
 msgid "Aktive Nutzer"
 msgstr "Aktive Nutzer"
 
-#: .\app\community_views.py:492
+#: .\app\community_views.py:506
 msgid "letzte 3 Minuten"
 msgstr "letzte 3 Minuten"
 
-#: .\app\community_views.py:493
+#: .\app\community_views.py:507
 msgid "Nutzer gesamt"
 msgstr "Nutzer gesamt"
 
-#: .\app\community_views.py:493
+#: .\app\community_views.py:507
 msgid "aktive Konten"
 msgstr "aktive Konten"
 
-#: .\app\community_views.py:494
+#: .\app\community_views.py:508
 msgid "Chatnachrichten heute"
 msgstr "Chatnachrichten heute"
 
-#: .\app\community_views.py:494
+#: .\app\community_views.py:508
 msgid "neue Nachrichten"
 msgstr "neue Nachrichten"
 
-#: .\app\community_views.py:495
+#: .\app\community_views.py:509
 msgid "nicht archiviert"
 msgstr "nicht archiviert"
 
-#: .\app\community_views.py:496 .\app\profile_forms.py:66
+#: .\app\community_views.py:510 .\app\profile_forms.py:66
 msgid "Dateifreigaben"
 msgstr "Dateifreigaben"
 
-#: .\app\community_views.py:497
+#: .\app\community_views.py:511
 msgid "Startseiten-Widgets"
 msgstr "Startseiten-Widgets"
 
-#: .\app\community_views.py:497
+#: .\app\community_views.py:511
 msgid "konfiguriert"
 msgstr "konfiguriert"
 
-#: .\app\community_views.py:503 .\app\moderation_views.py:356
+#: .\app\community_views.py:517 .\app\moderation_views.py:356
 msgid "Offene Meldungen"
 msgstr "Offene Meldungen"
 
-#: .\app\community_views.py:505 .\app\templates\app\base.html:534
+#: .\app\community_views.py:519 .\app\templates\app\base.html:534
 #: .\app\templates\app\base.html:537 .\app\templates\app\moderation.html:5
 #: .\app\templates\app\moderation.html:16
 msgid "Moderation"
 msgstr "Moderation"
 
-#: .\app\community_views.py:510 .\app\moderation_views.py:362
+#: .\app\community_views.py:524 .\app\moderation_views.py:362
 msgid "Offenes Feedback"
 msgstr "Offenes Feedback"
 
-#: .\app\community_views.py:517
+#: .\app\community_views.py:531
 msgid "Letzte Audits"
 msgstr "Letzte Audits"
 
-#: .\app\community_views.py:519 .\app\templates\app\security_dashboard.html:142
+#: .\app\community_views.py:533 .\app\templates\app\security_dashboard.html:142
 #: .\app\templates\app\stream_deck.html:528
 #: .\app\templates\app\uno_lobby.html:91
 msgid "Protokoll"
 msgstr "Protokoll"
 
-#: .\app\community_views.py:524
+#: .\app\community_views.py:538
 msgid "Zugang"
 msgstr "Zugang"
 
-#: .\app\community_views.py:525 .\app\platform_utils.py:115
+#: .\app\community_views.py:539 .\app\platform_utils.py:115
 #: .\app\templates\app\base.html:47 .\app\templates\app\favorites.html:39
 #: .\app\templates\app\includes\achievement_panel.html:61
 #: .\app\templates\app\moderation.html:62
 msgid "Gesperrt"
 msgstr "Gesperrt"
 
-#: .\app\community_views.py:525 .\app\models.py:1386 .\app\models.py:1522
+#: .\app\community_views.py:539 .\app\models.py:1386 .\app\models.py:1522
 #: .\app\models.py:1661 .\app\models.py:1809 .\app\models.py:1946
 #: .\app\models.py:2121 .\app\models.py:2292 .\app\models.py:2829
 #: .\app\models.py:3079 .\app\models.py:3436
 #: .\app\templates\app\moderation.html:62
-#: .\app\templates\app\nebula_forge_tycoon.html:382
+#: .\app\templates\app\nebula_forge_tycoon.html:387
 #: .\app\templates\app\users.html:101
 msgid "Offen"
 msgstr "Offen"
 
-#: .\app\community_views.py:533
+#: .\app\community_views.py:547
 #, python-format
 msgid "Projekt-Laufwerk ist zu %(percent)s%% belegt."
 msgstr "Projekt-Laufwerk ist zu %(percent)s%% belegt."
 
-#: .\app\community_views.py:535
+#: .\app\community_views.py:549
 #, python-format
 msgid "%(count)s fehlgeschlagene Logins heute."
 msgstr "%(count)s fehlgeschlagene Logins heute."
 
-#: .\app\community_views.py:543
+#: .\app\community_views.py:557
 msgid "Python"
 msgstr "Python"
 
-#: .\app\community_views.py:544
+#: .\app\community_views.py:558
 msgid "Django"
 msgstr "Django"
 
-#: .\app\community_views.py:545
+#: .\app\community_views.py:559
 msgid "Debug"
 msgstr "Debug"
 
-#: .\app\community_views.py:545 .\app\moderation_views.py:401
+#: .\app\community_views.py:559 .\app\moderation_views.py:401
 #: .\app\templates\app\stream_deck.html:249
 msgid "Aus"
 msgstr "Aus"
 
-#: .\app\community_views.py:546
+#: .\app\community_views.py:560
 msgid "Prozess-RAM"
 msgstr "Prozess-RAM"
 
-#: .\app\community_views.py:547
+#: .\app\community_views.py:561
 msgid "Load Average"
 msgstr "Load Average"
 
-#: .\app\community_views.py:548
+#: .\app\community_views.py:562
 msgid "Uptime"
 msgstr "Uptime"
 
-#: .\app\community_views.py:549
+#: .\app\community_views.py:563
 msgid "Datenbankgröße"
 msgstr "Datenbankgröße"
 
-#: .\app\community_views.py:550
+#: .\app\community_views.py:564
 msgid "Medienordner"
 msgstr "Medienordner"
 
-#: .\app\community_views.py:557
+#: .\app\community_views.py:571
 msgid "Projekt"
 msgstr "Projekt"
 
-#: .\app\community_views.py:558
+#: .\app\community_views.py:572
 msgid "Static Root"
 msgstr "Static Root"
 
-#: .\app\community_views.py:559
+#: .\app\community_views.py:573
 msgid "Media Root"
 msgstr "Media Root"
 
@@ -1973,7 +2020,7 @@ msgstr ""
 msgid "Bitte wähle zuerst eine Datei aus."
 msgstr "Bitte wähle eine Datei aus."
 
-#: .\app\file_converter_views.py:173 .\app\performance_tools_views.py:283
+#: .\app\file_converter_views.py:173 .\app\performance_tools_views.py:467
 #, python-format
 msgid "Die Datei ist zu groß. Maximal erlaubt sind %(size)s."
 msgstr "Die Datei ist zu groß. Maximal erlaubt sind %(size)s."
@@ -2644,7 +2691,7 @@ msgstr "Rund"
 msgid "Sehr rund"
 msgstr "Sehr rund"
 
-#: .\app\models.py:143 .\app\templates\app\nebula_forge_tycoon.html:376
+#: .\app\models.py:143 .\app\templates\app\nebula_forge_tycoon.html:381
 msgid "Maximal"
 msgstr "Maximal"
 
@@ -3054,7 +3101,7 @@ msgstr "Feature-Idee"
 msgid "Geplant"
 msgstr "Geplant"
 
-#: .\app\models.py:2831 .\app\templates\app\nebula_forge_tycoon.html:381
+#: .\app\models.py:2831 .\app\templates\app\nebula_forge_tycoon.html:386
 msgid "Erledigt"
 msgstr "Erledigt"
 
@@ -3066,7 +3113,7 @@ msgstr "Vorgeschlagen"
 msgid "In Arbeit"
 msgstr "In Arbeit"
 
-#: .\app\models.py:2866 .\app\templates\app\nebula_forge_tycoon.html:380
+#: .\app\models.py:2866 .\app\templates\app\nebula_forge_tycoon.html:385
 #: .\app\templates\app\roadmap.html:20
 msgid "Fertig"
 msgstr "Fertig"
@@ -3112,7 +3159,7 @@ msgstr "Einmalig"
 msgid "Monatlich"
 msgstr "Monatlich"
 
-#: .\app\models.py:3329
+#: .\app\models.py:3329 .\app\templates\app\clock.html:23
 #, fuzzy
 #| msgid "Abgelehnt"
 msgid "Abgelaufen"
@@ -3141,7 +3188,7 @@ msgstr "Kein Ablauf"
 msgid "%(remaining)s von %(total)s übrig"
 msgstr ""
 
-#: .\app\models.py:3353
+#: .\app\models.py:3353 .\app\templates\app\clock.html:20
 msgid "Pausiert"
 msgstr "Pausiert"
 
@@ -3296,7 +3343,7 @@ msgstr "Notiz wurde aktualisiert."
 msgid "Notiz bearbeiten"
 msgstr "Notiz bearbeiten"
 
-#: .\app\notes_views.py:162 .\app\views.py:713
+#: .\app\notes_views.py:162 .\app\views.py:715
 msgid "Änderungen speichern"
 msgstr "Änderungen speichern"
 
@@ -3460,81 +3507,110 @@ msgstr "Zuletzt online"
 msgid "Offline"
 msgstr "Offline"
 
-#: .\app\performance_tools_views.py:103 .\app\profile_views.py:333
-#: .\app\profile_views.py:357 .\app\profile_views.py:379
-#: .\app\profile_views.py:393
+#: .\app\performance_tools_views.py:74
+msgid "Bio."
+msgstr ""
+
+#: .\app\performance_tools_views.py:75
+msgid "Mrd."
+msgstr ""
+
+#: .\app\performance_tools_views.py:76
+msgid "Mio."
+msgstr ""
+
+#: .\app\performance_tools_views.py:157 .\app\performance_tools_views.py:283
+#: .\app\profile_views.py:333 .\app\profile_views.py:357
+#: .\app\profile_views.py:379 .\app\profile_views.py:393
 msgid "Siege"
 msgstr "Siege"
 
-#: .\app\performance_tools_views.py:148
-#: .\app\templates\app\human_benchmark.html:23 .\app\views.py:1422
+#: .\app\performance_tools_views.py:205
+#, python-format
+msgid "Kachel %(tile)s · %(games)s Runs"
+msgstr ""
+
+#: .\app\performance_tools_views.py:227 .\app\performance_tools_views.py:251
+#: .\app\performance_tools_views.py:349 .\app\profile_views.py:248
+#: .\app\profile_views.py:272 .\app\templates\app\game_2048.html:26
+msgid "Highscore"
+msgstr "Highscore"
+
+#: .\app\performance_tools_views.py:228
+#, fuzzy, python-format
+#| msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
+msgid "Prestige %(level)s · %(upgrades)s Upgrades"
+msgstr "Cookie Cosmos Â· %(upgrades)s Upgrades"
+
+#: .\app\performance_tools_views.py:252
+#, python-format
+msgid "Prestige %(level)s · %(buildings)s Anlagen"
+msgstr ""
+
+#: .\app\performance_tools_views.py:306
+#: .\app\templates\app\human_benchmark.html:23 .\app\views.py:1424
 msgid "Reaktion"
 msgstr "Reaktion"
 
-#: .\app\performance_tools_views.py:149
-#: .\app\templates\app\human_benchmark.html:24 .\app\views.py:1423
+#: .\app\performance_tools_views.py:307
+#: .\app\templates\app\human_benchmark.html:24 .\app\views.py:1425
 msgid "Aim Trainer"
 msgstr "Aim Trainer"
 
-#: .\app\performance_tools_views.py:150
+#: .\app\performance_tools_views.py:308
 #: .\app\templates\app\human_benchmark.html:25
-#: .\app\templates\app\human_benchmark.html:112 .\app\views.py:1424
+#: .\app\templates\app\human_benchmark.html:112 .\app\views.py:1426
 msgid "Typing Test"
 msgstr "Typing Test"
 
-#: .\app\performance_tools_views.py:151
+#: .\app\performance_tools_views.py:309
 #: .\app\templates\app\human_benchmark.html:26
-#: .\app\templates\app\human_benchmark.html:96 .\app\views.py:1425
+#: .\app\templates\app\human_benchmark.html:96 .\app\views.py:1427
 msgid "Visual Memory"
 msgstr "Visual Memory"
 
-#: .\app\performance_tools_views.py:165
+#: .\app\performance_tools_views.py:324
 #, python-format
 msgid "Siege · %(score)s Punkte"
 msgstr "Siege · %(score)s Punkte"
 
-#: .\app\performance_tools_views.py:181
-#, python-format
-msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
-msgstr "Cookie Cosmos Â· %(upgrades)s Upgrades"
-
-#: .\app\performance_tools_views.py:183
+#: .\app\performance_tools_views.py:350
 #, fuzzy, python-format
 #| msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
 msgid "Cookie Cosmos · %(upgrades)s Upgrades"
 msgstr "Cookie Cosmos Â· %(upgrades)s Upgrades"
 
-#: .\app\performance_tools_views.py:195 .\app\profile_views.py:380
+#: .\app\performance_tools_views.py:366 .\app\profile_views.py:380
 msgid "Gesamtpunkte"
 msgstr "Gesamtpunkte"
 
-#: .\app\performance_tools_views.py:207
+#: .\app\performance_tools_views.py:378
 #, python-format
 msgid "Punkte aus %(games)s Runden"
 msgstr "Punkte aus %(games)s Runden"
 
-#: .\app\performance_tools_views.py:274
+#: .\app\performance_tools_views.py:458
 msgid "Bitte wähle eine Datei aus."
 msgstr "Bitte wähle eine Datei aus."
 
-#: .\app\performance_tools_views.py:290
+#: .\app\performance_tools_views.py:474
 msgid "Wähle mindestens einen Freund oder aktiviere den privaten Link."
 msgstr "Wähle mindestens einen Freund oder aktiviere den privaten Link."
 
-#: .\app\performance_tools_views.py:317
+#: .\app\performance_tools_views.py:501
 msgid "Datei wurde geteilt."
 msgstr "Datei wurde geteilt."
 
-#: .\app\performance_tools_views.py:319
+#: .\app\performance_tools_views.py:503
 #, python-format
 msgid "%(count)s Dateien wurden geteilt."
 msgstr "%(count)s Dateien wurden geteilt."
 
-#: .\app\performance_tools_views.py:356
+#: .\app\performance_tools_views.py:540
 msgid "Das Passwort ist nicht korrekt."
 msgstr "Das Passwort ist nicht korrekt."
 
-#: .\app\performance_tools_views.py:378
+#: .\app\performance_tools_views.py:562
 msgid "Datei wurde gelöscht."
 msgstr "Datei wurde gelöscht."
 
@@ -3566,8 +3642,7 @@ msgstr "Allgemein"
 
 #: .\app\platform_utils.py:7 .\app\templates\app\base.html:51
 #: .\app\templates\app\base.html:59 .\app\templates\app\base.html:1059
-#: .\app\templates\app\base.html:1102 .\app\templates\app\clock.html:119
-#: .\app\templates\app\clock.html:168
+#: .\app\templates\app\base.html:1102
 #: .\app\templates\app\human_benchmark.html:98
 #: .\app\templates\app\randomizer_tools.html:120
 #: .\app\templates\app\snake_powerups.html:70
@@ -4002,11 +4077,6 @@ msgstr "Statistiken"
 msgid "Noch keine Statistik gespeichert."
 msgstr "Noch keine Statistik gespeichert."
 
-#: .\app\profile_views.py:248 .\app\profile_views.py:272
-#: .\app\templates\app\game_2048.html:26
-msgid "Highscore"
-msgstr "Highscore"
-
 #: .\app\profile_views.py:249
 msgid "Noch kein 2048-Highscore gespeichert."
 msgstr "Noch kein 2048-Highscore gespeichert."
@@ -4049,11 +4119,11 @@ msgid "Transzendenzen"
 msgstr "Transzendenzen"
 
 #: .\app\profile_views.py:290 .\app\templates\app\cookie_clicker.html:125
-#: .\app\templates\app\nebula_forge_tycoon.html:205
+#: .\app\templates\app\nebula_forge_tycoon.html:210
 msgid "Upgrades"
 msgstr "Upgrades"
 
-#: .\app\profile_views.py:291 .\app\templates\app\nebula_forge_tycoon.html:204
+#: .\app\profile_views.py:291 .\app\templates\app\nebula_forge_tycoon.html:209
 msgid "Anlagen"
 msgstr "Anlagen"
 
@@ -5131,7 +5201,7 @@ msgstr "Charakter hinzufügen"
 
 #: .\app\templates\app\avatar_wiki.html:37
 #: .\app\templates\app\budget_tracker.html:324
-#: .\app\templates\app\clock.html:61 .\app\templates\app\home.html:749
+#: .\app\templates\app\clock.html:73 .\app\templates\app\home.html:749
 #: .\app\templates\app\qr_code_tool.html:105
 msgid "Name"
 msgstr "Name"
@@ -5176,7 +5246,7 @@ msgstr "Abbrechen"
 #: .\app\templates\app\home.html:869 .\app\templates\app\moderation.html:82
 #: .\app\templates\app\moderation.html:204
 #: .\app\templates\app\nebula_forge_tycoon.html:30
-#: .\app\templates\app\nebula_forge_tycoon.html:336
+#: .\app\templates\app\nebula_forge_tycoon.html:341
 #: .\app\templates\app\profile.html:224 .\app\templates\app\profile.html:475
 #: .\app\templates\app\profile.html:495
 #: .\app\templates\app\profile_card_designer.html:38
@@ -5685,7 +5755,7 @@ msgstr "Tool suchen..."
 msgid "Timer Weltuhr Zeit Wecker"
 msgstr "Timer Weltuhr Zeit Wecker"
 
-#: .\app\templates\app\base.html:489 .\app\templates\app\clock.html:140
+#: .\app\templates\app\base.html:489 .\app\templates\app\clock.html:152
 msgid "Timer"
 msgstr "Timer"
 
@@ -5873,7 +5943,7 @@ msgstr ""
 "Passe Farben, Rundungen und Hintergrund-Effekt live an. Deine Auswahl wird "
 "automatisch gespeichert."
 
-#: .\app\templates\app\base.html:740 .\app\templates\app\clock.html:203
+#: .\app\templates\app\base.html:740 .\app\templates\app\clock.html:215
 msgid "Vorlagen"
 msgstr "Vorlagen"
 
@@ -5939,7 +6009,7 @@ msgid "Leer"
 msgstr "Leer"
 
 #: .\app\templates\app\base.html:825 .\app\templates\app\base.html:836
-#: .\app\templates\app\base.html:847 .\app\templates\app\clock.html:222
+#: .\app\templates\app\base.html:847 .\app\templates\app\clock.html:234
 #: .\app\templates\app\stream_deck.html:444
 msgid "Laden"
 msgstr "Laden"
@@ -6184,7 +6254,7 @@ msgstr "Ablehnen"
 
 #: .\app\templates\app\battleship_home.html:23
 #: .\app\templates\app\battleship_home.html:123
-#: .\app\templates\app\clock.html:123
+#: .\app\templates\app\clock.html:18 .\app\templates\app\clock.html:135
 #: .\app\templates\app\connectfour_home.html:23
 #: .\app\templates\app\connectfour_home.html:121
 #: .\app\templates\app\connectfour_lobby.html:121
@@ -6621,7 +6691,7 @@ msgstr "z. B. Arbeit Essen, Gehalt, Einkauf"
 msgid "Betrag"
 msgstr "Betrag"
 
-#: .\app\templates\app\budget_tracker.html:109 .\app\views.py:1525
+#: .\app\templates\app\budget_tracker.html:109 .\app\views.py:1527
 msgid "Datum"
 msgstr "Datum"
 
@@ -7104,121 +7174,177 @@ msgstr ""
 "Öffne ein Nutzerprofil und starte einen Direktchat oder erstelle links eine "
 "Gruppe."
 
-#: .\app\templates\app\clock.html:18
+#: .\app\templates\app\clock.html:16 .\app\templates\app\clock.html:131
+#: .\app\templates\app\clock.html:180
+#, fuzzy
+#| msgid "Start"
+msgctxt "clock action"
+msgid "Start"
+msgstr "Start"
+
+#: .\app\templates\app\clock.html:17
+#, fuzzy
+#| msgid "Stopp"
+msgid "Stoppen"
+msgstr "Stopp"
+
+#: .\app\templates\app\clock.html:19
+#, fuzzy
+#| msgid "Läuft ab"
+msgid "Läuft gerade"
+msgstr "Läuft ab"
+
+#: .\app\templates\app\clock.html:22
+#, fuzzy
+#| msgid "Design einstellen"
+msgid "Zeit einstellen"
+msgstr "Design einstellen"
+
+#: .\app\templates\app\clock.html:24
+#, fuzzy
+#| msgid "Bitte gib einen Text ein."
+msgid "Bitte erst eine Zeit einstellen"
+msgstr "Bitte gib einen Text ein."
+
+#: .\app\templates\app\clock.html:25
+#, fuzzy
+#| msgid "Bitte gib einen Text ein."
+msgid "Bitte stelle erst eine Timer-Zeit ein."
+msgstr "Bitte gib einen Text ein."
+
+#: .\app\templates\app\clock.html:26 .\app\views.py:255
+msgid "Der eigene Klingelton darf maximal 5 MB groß sein."
+msgstr "Der eigene Klingelton darf maximal 5 MB groß sein."
+
+#: .\app\templates\app\clock.html:27
+msgid ""
+"Du hast bereits einen eigenen Klingelton gespeichert. Soll der alte Ton "
+"wirklich überschrieben werden?"
+msgstr ""
+
+#: .\app\templates\app\clock.html:30
 msgid "Zeit-Zentrale"
 msgstr "Zeit-Zentrale"
 
-#: .\app\templates\app\clock.html:20
+#: .\app\templates\app\clock.html:32
 msgid ""
 "Weltuhr, Stoppuhr, gespeicherte Timer und eigene Timer-Sounds an einem Ort."
 msgstr ""
 "Weltuhr, Stoppuhr, gespeicherte Timer und eigene Timer-Sounds an einem Ort."
 
-#: .\app\templates\app\clock.html:26 .\app\templates\app\clock.html:248
+#: .\app\templates\app\clock.html:38 .\app\templates\app\clock.html:260
 #: .\app\templates\app\profile.html:215
 msgid "Einstellungen"
 msgstr "Einstellungen"
 
-#: .\app\templates\app\clock.html:30
+#: .\app\templates\app\clock.html:42
 msgid "Lokale Uhrzeit"
 msgstr "Lokale Uhrzeit"
 
-#: .\app\templates\app\clock.html:51
+#: .\app\templates\app\clock.html:63
 msgid "Weltuhr"
 msgstr "Weltuhr"
 
-#: .\app\templates\app\clock.html:52
+#: .\app\templates\app\clock.html:64
 msgid "Orte"
 msgstr "Orte"
 
-#: .\app\templates\app\clock.html:66
+#: .\app\templates\app\clock.html:74
+msgid "z.B. Zuhause, Urlaub, Server-Zeit"
+msgstr ""
+
+#: .\app\templates\app\clock.html:78
 msgid "Zeitzone"
 msgstr "Zeitzone"
 
-#: .\app\templates\app\clock.html:76
+#: .\app\templates\app\clock.html:88
 msgid "Ort hinzufügen"
 msgstr "Ort hinzufügen"
 
-#: .\app\templates\app\clock.html:93 .\app\templates\app\weather.html:107
+#: .\app\templates\app\clock.html:105 .\app\templates\app\weather.html:107
 msgid "Ort löschen"
 msgstr "Ort löschen"
 
-#: .\app\templates\app\clock.html:103
+#: .\app\templates\app\clock.html:115
 msgid "Noch keine Orte gespeichert."
 msgstr "Noch keine Orte gespeichert."
 
-#: .\app\templates\app\clock.html:111
+#: .\app\templates\app\clock.html:123
 msgid "Stoppuhr"
 msgstr "Stoppuhr"
 
-#: .\app\templates\app\clock.html:127 .\app\templates\app\clock.html:176
+#: .\app\templates\app\clock.html:139 .\app\templates\app\clock.html:188
 #: .\app\templates\app\cookie_clicker.html:36
 #: .\app\templates\app\snake_powerups.html:74
 msgid "Reset"
 msgstr "Reset"
 
-#: .\app\templates\app\clock.html:133
+#: .\app\templates\app\clock.html:145
 msgid "Noch keine Runden gespeichert."
 msgstr "Noch keine Runden gespeichert."
 
-#: .\app\templates\app\clock.html:152
-#: .\app\templates\app\unit_converter.html:101 .\app\views.py:1918
+#: .\app\templates\app\clock.html:164
+#: .\app\templates\app\unit_converter.html:101 .\app\views.py:1920
 msgid "Stunden"
 msgstr "Stunden"
 
-#: .\app\templates\app\clock.html:156 .\app\views.py:1917
+#: .\app\templates\app\clock.html:168 .\app\views.py:1919
 msgid "Minuten"
 msgstr "Minuten"
 
-#: .\app\templates\app\clock.html:160 .\app\views.py:1916
+#: .\app\templates\app\clock.html:172 .\app\views.py:1918
 msgid "Sekunden"
 msgstr "Sekunden"
 
-#: .\app\templates\app\clock.html:172
+#: .\app\templates\app\clock.html:184
 msgid "Zeit übernehmen"
 msgstr "Zeit übernehmen"
 
-#: .\app\templates\app\clock.html:188
+#: .\app\templates\app\clock.html:200
 msgid "Als Vorlage speichern"
 msgstr "Als Vorlage speichern"
 
-#: .\app\templates\app\clock.html:194
+#: .\app\templates\app\clock.html:201
+msgid "z.B. Tee, Pause, Fokus"
+msgstr ""
+
+#: .\app\templates\app\clock.html:206
 msgid "Aktuelle Zeit speichern"
 msgstr "Aktuelle Zeit speichern"
 
-#: .\app\templates\app\clock.html:202
+#: .\app\templates\app\clock.html:214
 msgid "Gespeicherte Timer"
 msgstr "Gespeicherte Timer"
 
-#: .\app\templates\app\clock.html:229
+#: .\app\templates\app\clock.html:241
 msgid "Timer löschen"
 msgstr "Timer löschen"
 
-#: .\app\templates\app\clock.html:236
+#: .\app\templates\app\clock.html:248
 msgid "Noch keine Timer gespeichert."
 msgstr "Noch keine Timer gespeichert."
 
-#: .\app\templates\app\clock.html:249
+#: .\app\templates\app\clock.html:261
 msgid "Ton & Lautstärke"
 msgstr "Ton & Lautstärke"
 
-#: .\app\templates\app\clock.html:254
+#: .\app\templates\app\clock.html:266
 msgid "Testen"
 msgstr "Testen"
 
-#: .\app\templates\app\clock.html:256
+#: .\app\templates\app\clock.html:268
 msgid "Einstellungen schließen"
 msgstr "Einstellungen schließen"
 
-#: .\app\templates\app\clock.html:267 .\app\templates\app\stream_deck.html:302
+#: .\app\templates\app\clock.html:279 .\app\templates\app\stream_deck.html:302
 msgid "Lautstärke"
 msgstr "Lautstärke"
 
-#: .\app\templates\app\clock.html:284
+#: .\app\templates\app\clock.html:296
 msgid "Eigenen Klingelton hochladen"
 msgstr "Eigenen Klingelton hochladen"
 
-#: .\app\templates\app\clock.html:287
+#: .\app\templates\app\clock.html:299
 msgid ""
 "Maximal 5 MB. Wenn du einen neuen Ton hochlädst, wird der alte eigene Ton "
 "gelöscht."
@@ -7226,15 +7352,15 @@ msgstr ""
 "Maximal 5 MB. Wenn du einen neuen Ton hochlädst, wird der alte eigene Ton "
 "gelöscht."
 
-#: .\app\templates\app\clock.html:292
+#: .\app\templates\app\clock.html:304
 msgid "Eigener Ton ist aktuell gespeichert."
 msgstr "Eigener Ton ist aktuell gespeichert."
 
-#: .\app\templates\app\clock.html:299
+#: .\app\templates\app\clock.html:311
 msgid "Einstellungen speichern"
 msgstr "Einstellungen speichern"
 
-#: .\app\templates\app\clock.html:309
+#: .\app\templates\app\clock.html:321
 msgid "Eigenen Ton löschen"
 msgstr "Eigenen Ton löschen"
 
@@ -7478,7 +7604,7 @@ msgid "Golden Cookie"
 msgstr "Golden Cookie"
 
 #: .\app\templates\app\cookie_clicker.html:89
-#: .\app\templates\app\nebula_forge_tycoon.html:119
+#: .\app\templates\app\nebula_forge_tycoon.html:120
 msgid "Overdrive"
 msgstr "Overdrive"
 
@@ -7506,13 +7632,13 @@ msgstr "Backstube"
 
 #: .\app\templates\app\cookie_clicker.html:129
 #: .\app\templates\app\cookie_clicker.html:157
-#: .\app\templates\app\nebula_forge_tycoon.html:206
-#: .\app\templates\app\nebula_forge_tycoon.html:234
+#: .\app\templates\app\nebula_forge_tycoon.html:211
+#: .\app\templates\app\nebula_forge_tycoon.html:239
 msgid "Erfolge"
 msgstr "Erfolge"
 
 #: .\app\templates\app\cookie_clicker.html:136
-#: .\app\templates\app\nebula_forge_tycoon.html:383
+#: .\app\templates\app\nebula_forge_tycoon.html:388
 msgid "Gespeichert"
 msgstr "Gespeichert"
 
@@ -7943,7 +8069,7 @@ msgid "2048 Punktestand"
 msgstr "2048 Punktestand"
 
 #: .\app\templates\app\game_2048.html:22
-#: .\app\templates\app\snake_powerups.html:40 .\app\views.py:1524
+#: .\app\templates\app\snake_powerups.html:40 .\app\views.py:1526
 msgid "Score"
 msgstr "Score"
 
@@ -8154,7 +8280,7 @@ msgid "Widget-Bereich verschieben"
 msgstr "Widget-Bereich verschieben"
 
 #: .\app\templates\app\home.html:55 .\app\templates\app\home.html:721
-#: .\app\views.py:717
+#: .\app\views.py:719
 msgid "Widget hinzufügen"
 msgstr "Widget hinzufügen"
 
@@ -8162,7 +8288,7 @@ msgstr "Widget hinzufügen"
 msgid "Widget verschieben"
 msgstr "Widget verschieben"
 
-#: .\app\templates\app\home.html:101 .\app\views.py:716
+#: .\app\templates\app\home.html:101 .\app\views.py:718
 msgid "Widget bearbeiten"
 msgstr "Widget bearbeiten"
 
@@ -8284,7 +8410,7 @@ msgstr "Bereich hinzufügen"
 msgid "Erstelle einen neuen Bereich für weitere Verknüpfungen."
 msgstr "Erstelle einen neuen Bereich für weitere Verknüpfungen."
 
-#: .\app\templates\app\home.html:607 .\app\views.py:715
+#: .\app\templates\app\home.html:607 .\app\views.py:717
 msgid "Neues Widget"
 msgstr "Neues Widget"
 
@@ -8332,7 +8458,7 @@ msgstr "Hier wählst du die Anordnung, zum Beispiel digital oder analog."
 msgid "Widget-Farbe"
 msgstr "Widget-Farbe"
 
-#: .\app\templates\app\home.html:732 .\app\views.py:706
+#: .\app\templates\app\home.html:732 .\app\views.py:708
 msgid "Neue Verknüpfung"
 msgstr "Neue Verknüpfung"
 
@@ -8376,7 +8502,7 @@ msgstr "Eigenes Bild, falls du kein Icon nutzen möchtest"
 msgid "Bild auswählen"
 msgstr "Bild auswählen"
 
-#: .\app\templates\app\home.html:858 .\app\views.py:714
+#: .\app\templates\app\home.html:858 .\app\views.py:716
 msgid "Keine Datei ausgewählt"
 msgstr "Keine Datei ausgewählt"
 
@@ -8388,7 +8514,7 @@ msgstr "Aktuelles Bild entfernen"
 msgid "Beispiele:"
 msgstr "Beispiele:"
 
-#: .\app\templates\app\home.html:885 .\app\views.py:710
+#: .\app\templates\app\home.html:885 .\app\views.py:712
 msgid "Neuer Bereich"
 msgstr "Neuer Bereich"
 
@@ -8400,7 +8526,7 @@ msgstr "Bereichsname"
 msgid "Bereichsfarbe"
 msgstr "Bereichsfarbe"
 
-#: .\app\templates\app\home.html:934 .\app\views.py:711
+#: .\app\templates\app\home.html:934 .\app\views.py:713
 msgid "Bereich erstellen"
 msgstr "Bereich erstellen"
 
@@ -8466,7 +8592,7 @@ msgstr "Klicke auf Start, um den Test zu beginnen."
 msgid "Warte auf Start..."
 msgstr "Warte auf Start..."
 
-#: .\app\templates\app\human_benchmark.html:79 .\app\views.py:1518
+#: .\app\templates\app\human_benchmark.html:79 .\app\views.py:1520
 msgid "Test starten"
 msgstr "Test starten"
 
@@ -8500,7 +8626,7 @@ msgid "Letzte 10 Ergebnisse"
 msgstr "Letzte 10 Ergebnisse"
 
 #: .\app\templates\app\human_benchmark.html:137
-#: .\app\templates\app\human_benchmark.html:147 .\app\views.py:1521
+#: .\app\templates\app\human_benchmark.html:147 .\app\views.py:1523
 msgid "Noch keine Ergebnisse."
 msgstr "Noch keine Ergebnisse."
 
@@ -8842,7 +8968,9 @@ msgid "Benchmark Scores"
 msgstr "Benchmark Scores"
 
 #: .\app\templates\app\leaderboard.html:44
-msgid "beendete Duelle"
+#, fuzzy
+#| msgid "beendete Duelle"
+msgid "beendete Spiele"
 msgstr "beendete Duelle"
 
 #: .\app\templates\app\leaderboard.html:56
@@ -9082,7 +9210,7 @@ msgid ""
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:34
-#: .\app\templates\app\nebula_forge_tycoon.html:337
+#: .\app\templates\app\nebula_forge_tycoon.html:342
 #: .\app\templates\app\notes.html:76 .\app\templates\app\skribble_lobby.html:47
 #: .\app\templates\app\stadtlandfluss_lobby.html:35
 #: .\app\templates\app\stream_deck.html:83
@@ -9126,7 +9254,7 @@ msgid "pro Aktion"
 msgstr "Aktion"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:58
-#: .\app\templates\app\nebula_forge_tycoon.html:353
+#: .\app\templates\app\nebula_forge_tycoon.html:358
 #, fuzzy
 #| msgid "Wochenrhythmus"
 msgid "halte Rhythmus"
@@ -9178,8 +9306,8 @@ msgid "Sternenkern abbauen"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:89
-#: .\app\templates\app\nebula_forge_tycoon.html:195
-#: .\app\templates\app\nebula_forge_tycoon.html:341
+#: .\app\templates\app\nebula_forge_tycoon.html:200
+#: .\app\templates\app\nebula_forge_tycoon.html:346
 msgid "Balanced"
 msgstr ""
 
@@ -9210,1114 +9338,1104 @@ msgid ""
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:117
-#: .\app\templates\app\nebula_forge_tycoon.html:462
+#: .\app\templates\app\nebula_forge_tycoon.html:465
 msgid "Taste 1"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:120
+#: .\app\templates\app\nebula_forge_tycoon.html:121
 #, python-format
 msgid "ab 92%% Hitze bereit"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:122
-#: .\app\templates\app\nebula_forge_tycoon.html:463
+#: .\app\templates\app\nebula_forge_tycoon.html:123
+#: .\app\templates\app\nebula_forge_tycoon.html:466
 msgid "Taste 2"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:124
-#: .\app\templates\app\nebula_forge_tycoon.html:146
-#: .\app\templates\app\nebula_forge_tycoon.html:345
+#: .\app\templates\app\nebula_forge_tycoon.html:126
+#: .\app\templates\app\nebula_forge_tycoon.html:151
+#: .\app\templates\app\nebula_forge_tycoon.html:350
 msgid "Signal-Raid"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:125
+#: .\app\templates\app\nebula_forge_tycoon.html:127
 msgid "aktiver Timing-Bonus"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:127
-#: .\app\templates\app\nebula_forge_tycoon.html:464
+#: .\app\templates\app\nebula_forge_tycoon.html:129
+#: .\app\templates\app\nebula_forge_tycoon.html:467
 msgid "Taste 3"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:129
-#: .\app\templates\app\nebula_forge_tycoon.html:408
+#: .\app\templates\app\nebula_forge_tycoon.html:132
+#: .\app\templates\app\nebula_forge_tycoon.html:413
 #, fuzzy
 #| msgid "Sammlung"
 msgid "Sammelimpuls"
 msgstr "Sammlung"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:130
+#: .\app\templates\app\nebula_forge_tycoon.html:133
 msgid "sofort AFK-Ertrag einsammeln"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:132
-#: .\app\templates\app\nebula_forge_tycoon.html:465
+#: .\app\templates\app\nebula_forge_tycoon.html:135
+#: .\app\templates\app\nebula_forge_tycoon.html:468
 msgid "Taste 4"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:134
-#: .\app\templates\app\nebula_forge_tycoon.html:161
-#: .\app\templates\app\nebula_forge_tycoon.html:348
+#: .\app\templates\app\nebula_forge_tycoon.html:138
+#: .\app\templates\app\nebula_forge_tycoon.html:166
+#: .\app\templates\app\nebula_forge_tycoon.html:353
 msgid "Flux-Riss"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:135
-#: .\app\templates\app\nebula_forge_tycoon.html:362
+#: .\app\templates\app\nebula_forge_tycoon.html:139
+#: .\app\templates\app\nebula_forge_tycoon.html:367
 #, fuzzy
 #| msgid "Weiterspielen"
 msgid "AFK-Boost erspielen"
 msgstr "Weiterspielen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:137
-#: .\app\templates\app\nebula_forge_tycoon.html:466
+#: .\app\templates\app\nebula_forge_tycoon.html:141
+#: .\app\templates\app\nebula_forge_tycoon.html:469
 msgid "Taste 5"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:139
-#: .\app\templates\app\nebula_forge_tycoon.html:176
-#: .\app\templates\app\nebula_forge_tycoon.html:350
+#: .\app\templates\app\nebula_forge_tycoon.html:144
+#: .\app\templates\app\nebula_forge_tycoon.html:181
+#: .\app\templates\app\nebula_forge_tycoon.html:355
 msgid "Kryo-Takt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:140
-#: .\app\templates\app\nebula_forge_tycoon.html:363
+#: .\app\templates\app\nebula_forge_tycoon.html:145
+#: .\app\templates\app\nebula_forge_tycoon.html:368
 msgid "Hitze senken + Boost"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:147
+#: .\app\templates\app\nebula_forge_tycoon.html:152
 msgid "Stoppe den Marker im zufälligen grünen Fenster."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:155
+#: .\app\templates\app\nebula_forge_tycoon.html:160
 #, fuzzy
 #| msgid "Stream stoppen"
 msgid "Jetzt stoppen"
 msgstr "Stream stoppen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:162
+#: .\app\templates\app\nebula_forge_tycoon.html:167
 msgid "Triff das zufällige violette Fenster für einen AFK-Produktionsboost."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:170
-#: .\app\templates\app\nebula_forge_tycoon.html:349
+#: .\app\templates\app\nebula_forge_tycoon.html:175
+#: .\app\templates\app\nebula_forge_tycoon.html:354
 #, fuzzy
 #| msgid "Widget verschieben"
 msgid "Riss versiegeln"
 msgstr "Widget verschieben"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:177
+#: .\app\templates\app\nebula_forge_tycoon.html:182
 msgid "Triff das zufällige blaue Fenster, um Hitze stark zu senken."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:185
-#: .\app\templates\app\nebula_forge_tycoon.html:351
+#: .\app\templates\app\nebula_forge_tycoon.html:190
+#: .\app\templates\app\nebula_forge_tycoon.html:356
 #, fuzzy
 #| msgid "Stream stoppen"
 msgid "Kryo stoppen"
 msgstr "Stream stoppen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:191
+#: .\app\templates\app\nebula_forge_tycoon.html:196
 msgid "Schichtmodus"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:192
+#: .\app\templates\app\nebula_forge_tycoon.html:197
 msgid "Wähle, wie du farmen willst"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:194
+#: .\app\templates\app\nebula_forge_tycoon.html:199
 #, fuzzy
 #| msgid "Sprache auswählen"
 msgid "Schichtmodus wählen"
 msgstr "Sprache auswählen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:195
-#: .\app\templates\app\nebula_forge_tycoon.html:467
+#: .\app\templates\app\nebula_forge_tycoon.html:200
+#: .\app\templates\app\nebula_forge_tycoon.html:470
 #, python-format
 msgid "100%% / 100%%"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:196
-#: .\app\templates\app\nebula_forge_tycoon.html:468
+#: .\app\templates\app\nebula_forge_tycoon.html:201
+#: .\app\templates\app\nebula_forge_tycoon.html:471
 #, python-format
 msgid "+25%% Klicks"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:197
+#: .\app\templates\app\nebula_forge_tycoon.html:202
 msgid "AFK"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:197
-#: .\app\templates\app\nebula_forge_tycoon.html:469
+#: .\app\templates\app\nebula_forge_tycoon.html:202
+#: .\app\templates\app\nebula_forge_tycoon.html:472
 #, python-format
 msgid "+20%% passiv"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:202
+#: .\app\templates\app\nebula_forge_tycoon.html:207
 #, fuzzy
 #| msgid "Geräteverwaltung"
 msgid "Nebula Forge Verwaltung"
 msgstr "Geräteverwaltung"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:203
+#: .\app\templates\app\nebula_forge_tycoon.html:208
 #, fuzzy
 #| msgid "Bereiche"
 msgid "Tycoon Bereiche"
 msgstr "Bereiche"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:212
+#: .\app\templates\app\nebula_forge_tycoon.html:217
 msgid "AFK-Farmen"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:213
+#: .\app\templates\app\nebula_forge_tycoon.html:218
 #, fuzzy
 #| msgid "Automatisch gespeichert"
 msgid "Automatische Anlagen"
 msgstr "Automatisch gespeichert"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:223
+#: .\app\templates\app\nebula_forge_tycoon.html:228
 #, fuzzy
 #| msgid "Aktiv"
 msgid "Aktiv + AFK"
 msgstr "Aktiv"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:224
+#: .\app\templates\app\nebula_forge_tycoon.html:229
 #, fuzzy
 #| msgid "Upgrades"
 msgid "Labor-Upgrades"
 msgstr "Upgrades"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:233
+#: .\app\templates\app\nebula_forge_tycoon.html:238
 #, fuzzy
 #| msgid "XP Fortschritt"
 msgid "Fortschritt"
 msgstr "XP Fortschritt"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:248
+#: .\app\templates\app\nebula_forge_tycoon.html:253
 msgid "Taschen-Bohrer"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:249
+#: .\app\templates\app\nebula_forge_tycoon.html:254
 msgid "Solar-Crawler"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:250
+#: .\app\templates\app\nebula_forge_tycoon.html:255
 msgid "Drohnen-Nest"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:251
+#: .\app\templates\app\nebula_forge_tycoon.html:256
 msgid "Kristall-Gewächshaus"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:252
+#: .\app\templates\app\nebula_forge_tycoon.html:257
 msgid "Orbitale Gießerei"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:253
+#: .\app\templates\app\nebula_forge_tycoon.html:258
 msgid "Singularitäts-Engine"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:254
+#: .\app\templates\app\nebula_forge_tycoon.html:259
 msgid "Naniten-Schwarm"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:255
+#: .\app\templates\app\nebula_forge_tycoon.html:260
 msgid "Mond-Harvester"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:256
+#: .\app\templates\app\nebula_forge_tycoon.html:261
 msgid "Void-Raffinerie"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:257
+#: .\app\templates\app\nebula_forge_tycoon.html:262
 msgid "Chrono-Fabrik"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:258
+#: .\app\templates\app\nebula_forge_tycoon.html:263
 msgid "Dyson-Gitter"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:259
+#: .\app\templates\app\nebula_forge_tycoon.html:264
 msgid "Galaxie-Drucker"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:260
+#: .\app\templates\app\nebula_forge_tycoon.html:265
 msgid "Plasma-Handschuhe"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:261
+#: .\app\templates\app\nebula_forge_tycoon.html:266
 #, fuzzy
 #| msgid "Protokoll"
 msgid "AFK-Protokoll"
 msgstr "Protokoll"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:262
+#: .\app\templates\app\nebula_forge_tycoon.html:267
 msgid "Kryo-Kühlkreis"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:263
+#: .\app\templates\app\nebula_forge_tycoon.html:268
 msgid "Combo-Matrix"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:264
+#: .\app\templates\app\nebula_forge_tycoon.html:269
 #, fuzzy
 #| msgid "Gespeichert"
 msgid "Tiefenspeicher"
 msgstr "Gespeichert"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:265
+#: .\app\templates\app\nebula_forge_tycoon.html:270
 msgid "Meteor-Magnet"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:266
+#: .\app\templates\app\nebula_forge_tycoon.html:271
 msgid "Sammler-Array"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:267
+#: .\app\templates\app\nebula_forge_tycoon.html:272
 msgid "Event-Relais"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:268
+#: .\app\templates\app\nebula_forge_tycoon.html:273
 #, fuzzy
 #| msgid "Zerstörer"
 msgid "Riss-Verstärker"
 msgstr "Zerstörer"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:269
+#: .\app\templates\app\nebula_forge_tycoon.html:274
 msgid "Neural-Picken"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:270
+#: .\app\templates\app\nebula_forge_tycoon.html:275
 msgid "Stellar-Logistik"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:271
+#: .\app\templates\app\nebula_forge_tycoon.html:276
 msgid "Harmonischer Kondensator"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:272
+#: .\app\templates\app\nebula_forge_tycoon.html:277
 msgid "Auto-Kalibrator"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:273
+#: .\app\templates\app\nebula_forge_tycoon.html:278
 msgid "Klick-Resonator"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:274
+#: .\app\templates\app\nebula_forge_tycoon.html:279
 msgid "Kern-Synchronisator"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:275
+#: .\app\templates\app\nebula_forge_tycoon.html:280
 msgid "Rhythmus-Extraktor"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:276
+#: .\app\templates\app\nebula_forge_tycoon.html:281
 #, fuzzy
 #| msgid "Translator"
 msgid "Takt-Kondensator"
 msgstr "Translator"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:277
+#: .\app\templates\app\nebula_forge_tycoon.html:282
 msgid "Hitze-Recycling"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:278
+#: .\app\templates\app\nebula_forge_tycoon.html:283
 msgid "Der erste kleine AFK-Bohrer am Rand des Sternenkerns."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:279
+#: .\app\templates\app\nebula_forge_tycoon.html:284
 msgid "Fährt über Asteroidenplatten und sammelt Flux-Splitter."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:280
+#: .\app\templates\app\nebula_forge_tycoon.html:285
 msgid "Schickt Schwärme los, die auch während AFK weiterarbeiten."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:281
+#: .\app\templates\app\nebula_forge_tycoon.html:286
 msgid "Züchtet Flux-Kristalle in Schwerelosigkeit."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:282
+#: .\app\templates\app\nebula_forge_tycoon.html:287
 msgid "Schmilzt Meteorstaub zu gewaltigen Flux-Barren."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:283
+#: .\app\templates\app\nebula_forge_tycoon.html:288
 msgid "Krümmt Raumzeit, damit deine Fabrik doppelt so fleißig wirkt."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:284
+#: .\app\templates\app\nebula_forge_tycoon.html:289
 msgid "Winzige Maschinen zerlegen Sternenstaub in verwertbaren Flux."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:285
+#: .\app\templates\app\nebula_forge_tycoon.html:290
 msgid "Schürft komplette Mondadern leer und liefert konstant Nachschub."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:286
+#: .\app\templates\app\nebula_forge_tycoon.html:291
 msgid "Reinigt dunkle Materie und presst sie zu hochreinem Flux."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:287
+#: .\app\templates\app\nebula_forge_tycoon.html:292
 msgid "Produziert in kleinen Zeitschleifen mehrfach denselben Flux-Barren."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:288
+#: .\app\templates\app\nebula_forge_tycoon.html:293
 msgid "Fängt Sternenenergie in riesigen Gitternetzen ein."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:289
+#: .\app\templates\app\nebula_forge_tycoon.html:294
 msgid "Druckt ganze Produktionslinien aus komprimierter Raumzeit."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:290
+#: .\app\templates\app\nebula_forge_tycoon.html:295
 msgid "+0,9 aktiver Abbau pro Level."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:291
+#: .\app\templates\app\nebula_forge_tycoon.html:296
 #, python-format
 msgid "+8%% passive Produktion und besserer Offline-Ertrag."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:292
+#: .\app\templates\app\nebula_forge_tycoon.html:297
 msgid "Mehr Hitze-Kapazität und schnellere Abkühlung."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:293
+#: .\app\templates\app\nebula_forge_tycoon.html:298
 msgid "Aktives Spielen skaliert stärker mit deiner Combo."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:294
+#: .\app\templates\app\nebula_forge_tycoon.html:299
 msgid "+2 Stunden Offline-Cap pro Level."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:295
+#: .\app\templates\app\nebula_forge_tycoon.html:300
 msgid "Mehr Meteor-Events und bessere Event-Belohnungen."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:296
+#: .\app\templates\app\nebula_forge_tycoon.html:301
 msgid ""
 "Sammelimpuls gibt einen kleinen Sofort-Schub und lädt moderat schneller nach."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:297
+#: .\app\templates\app\nebula_forge_tycoon.html:302
 msgid "Timing-Events laden schneller wieder auf."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:298
+#: .\app\templates\app\nebula_forge_tycoon.html:303
 msgid "Alle Timing-Events und Meteor-Funde geben mehr Flux."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:299
+#: .\app\templates\app\nebula_forge_tycoon.html:304
 #, python-format
 msgid "+11%% aktiver Abbau pro Level."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:300
+#: .\app\templates\app\nebula_forge_tycoon.html:305
 #, python-format
 msgid "+6,5%% passive Produktion pro Level."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:301
+#: .\app\templates\app\nebula_forge_tycoon.html:306
 msgid "Event-Boosts halten länger und passive Buffs werden stärker."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:302
+#: .\app\templates\app\nebula_forge_tycoon.html:307
 msgid "Jede freigeschaltete Anlagenart gibt einen kleinen AFK-Bonus."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:303
+#: .\app\templates\app\nebula_forge_tycoon.html:308
 msgid "Combos skalieren stärker und fallen langsamer ab."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:304
+#: .\app\templates\app\nebula_forge_tycoon.html:309
 msgid ""
 "Klicks erhalten einen Anteil deiner aktuellen AFK-Produktion als Sofort-Flux."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:305
+#: .\app\templates\app\nebula_forge_tycoon.html:310
 msgid "Hohe Combos verstärken den AFK-Anteil pro Klick deutlich."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:306
+#: .\app\templates\app\nebula_forge_tycoon.html:311
 msgid "Aktive Klickserien lösen öfter zusätzliche Takt-Bursts aus."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:307
+#: .\app\templates\app\nebula_forge_tycoon.html:312
 msgid ""
 "Hohe Reaktor-Hitze erhöht aktive Klickerträge und kühlt bei Takt-Bursts "
 "leicht ab."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:308
+#: .\app\templates\app\nebula_forge_tycoon.html:313
 msgid "Sammle 100 Flux."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:309
+#: .\app\templates\app\nebula_forge_tycoon.html:314
 msgid "Besitze 10 Anlagen."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:310
+#: .\app\templates\app\nebula_forge_tycoon.html:315
 msgid "Erreiche eine x10 Combo."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:311
+#: .\app\templates\app\nebula_forge_tycoon.html:316
 msgid "Sammle 5 Meteor-Events."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:312
+#: .\app\templates\app\nebula_forge_tycoon.html:317
 #, fuzzy
 #| msgid "Overdrive"
 msgid "Zünde 3 Overdrives."
 msgstr "Overdrive"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:313
+#: .\app\templates\app\nebula_forge_tycoon.html:318
 msgid "Treffe 5 perfekte Signal-Raids."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:314
+#: .\app\templates\app\nebula_forge_tycoon.html:319
 msgid "Versiegle 8 Flux-Risse."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:315
+#: .\app\templates\app\nebula_forge_tycoon.html:320
 msgid "Treffe 5 perfekte Kryo-Takte."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:316
+#: .\app\templates\app\nebula_forge_tycoon.html:321
 msgid "Nutze den Sammelimpuls 30 Mal."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:317
+#: .\app\templates\app\nebula_forge_tycoon.html:322
 msgid "Führe 300 aktive Kernaktionen aus."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:318
+#: .\app\templates\app\nebula_forge_tycoon.html:323
 msgid "Löse 25 aktive Takt-Bursts aus."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:319
+#: .\app\templates\app\nebula_forge_tycoon.html:324
 msgid "Besitze 75 Anlagen."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:320
+#: .\app\templates\app\nebula_forge_tycoon.html:325
 msgid "Sammle 1.000.000 Lifetime-Flux."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:321
+#: .\app\templates\app\nebula_forge_tycoon.html:326
 msgid "Führe dein erstes Prestige aus."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:322
+#: .\app\templates\app\nebula_forge_tycoon.html:327
 #, fuzzy
 #| msgid "Erster Sieg"
 msgid "Erster Funke"
 msgstr "Erster Sieg"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:323
+#: .\app\templates\app\nebula_forge_tycoon.html:328
 #, fuzzy
 #| msgid "Sortierung"
 msgid "Automatisierung"
 msgstr "Sortierung"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:324
+#: .\app\templates\app\nebula_forge_tycoon.html:329
 #, fuzzy
 #| msgid "gefunden"
 msgid "Rhythmus gefunden"
 msgstr "gefunden"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:325
+#: .\app\templates\app\nebula_forge_tycoon.html:330
 msgid "Kosmischer Fang"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:326
+#: .\app\templates\app\nebula_forge_tycoon.html:331
 #, fuzzy
 #| msgid "Abgelehnt"
 msgid "Heiß gelaufen"
 msgstr "Abgelehnt"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:327
+#: .\app\templates\app\nebula_forge_tycoon.html:332
 msgid "Signal-Profi"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:328
+#: .\app\templates\app\nebula_forge_tycoon.html:333
 msgid "Riss-Pilot"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:329
+#: .\app\templates\app\nebula_forge_tycoon.html:334
 #, fuzzy
 #| msgid "Technik"
 msgid "Kryo-Techniker"
 msgstr "Technik"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:330
+#: .\app\templates\app\nebula_forge_tycoon.html:335
 msgid "Impuls-Sammler"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:331
+#: .\app\templates\app\nebula_forge_tycoon.html:336
 #, fuzzy
 #| msgid "Aktive"
 msgid "Aktiv-Schmied"
 msgstr "Aktive"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:332
+#: .\app\templates\app\nebula_forge_tycoon.html:337
 msgid "Taktmaschine"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:333
+#: .\app\templates\app\nebula_forge_tycoon.html:338
 msgid "Großingenieur"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:334
+#: .\app\templates\app\nebula_forge_tycoon.html:339
 msgid "Millionen-Schmiede"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:335
+#: .\app\templates\app\nebula_forge_tycoon.html:340
 #, fuzzy
 #| msgid "Neue Gruppe"
 msgid "Neue Galaxie"
 msgstr "Neue Gruppe"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:338
+#: .\app\templates\app\nebula_forge_tycoon.html:343
 #, fuzzy
 #| msgid "Login bestätigen"
 msgid "Login nötig"
 msgstr "Login bestätigen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:339
+#: .\app\templates\app\nebula_forge_tycoon.html:344
 #, fuzzy, python-brace-format
 #| msgid "Speichern"
 msgid "Speichern {seconds}s"
 msgstr "Speichern"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:340
+#: .\app\templates\app\nebula_forge_tycoon.html:345
 #, fuzzy
 #| msgid "Speicher"
 msgid "Speichert..."
 msgstr "Speicher"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:342
+#: .\app\templates\app\nebula_forge_tycoon.html:347
 msgid "AFK-Shift"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:343
+#: .\app\templates\app\nebula_forge_tycoon.html:348
 #, fuzzy
 #| msgid "Aktivität"
 msgid "Aktiv-Shift"
 msgstr "Aktivität"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:344
+#: .\app\templates\app\nebula_forge_tycoon.html:349
 msgid "Schichtmodus geändert"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:346
+#: .\app\templates\app\nebula_forge_tycoon.html:351
 #, fuzzy
 #| msgid "Stream stoppen"
 msgid "Signal stoppen"
 msgstr "Stream stoppen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:347
+#: .\app\templates\app\nebula_forge_tycoon.html:352
 msgid "Marker treffen"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:352
+#: .\app\templates\app\nebula_forge_tycoon.html:357
 msgid "kaltes Fenster treffen"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:354
+#: .\app\templates\app\nebula_forge_tycoon.html:359
 #, python-brace-format
 msgid "{combo} Treffer · Takt {charge}/{required}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:355
+#: .\app\templates\app\nebula_forge_tycoon.html:360
 #, python-brace-format
 msgid "aktiv: {duration}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:356
+#: .\app\templates\app\nebula_forge_tycoon.html:361
 #, fuzzy
 #| msgid "Bereit zum Drehen"
 msgid "bereit zum Zünden"
 msgstr "Bereit zum Drehen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:357
+#: .\app\templates\app\nebula_forge_tycoon.html:362
 #, python-format, python-brace-format
 msgid "bereit ab {percent}%% Hitze"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:358
+#: .\app\templates\app\nebula_forge_tycoon.html:363
 #, python-brace-format
 msgid "bereit in {duration}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:359
+#: .\app\templates\app\nebula_forge_tycoon.html:364
 #, python-brace-format
 msgid "Bereit in {duration}."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:360
+#: .\app\templates\app\nebula_forge_tycoon.html:365
 #, python-brace-format
 msgid "kleiner Schub ca. {amount} Flux"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:361
+#: .\app\templates\app\nebula_forge_tycoon.html:366
 msgid "Timing-Bonus bereit"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:364
+#: .\app\templates\app\nebula_forge_tycoon.html:369
 #, python-format, python-brace-format
 msgid ""
 "Bereit: {reward} Splitter beim Neustart. Aktueller Bonus danach ca. +{bonus}"
 "%%."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:365
+#: .\app\templates\app\nebula_forge_tycoon.html:370
 #, python-brace-format
 msgid "{current} / {required} Lifetime-Flux bis zum nächsten Prestige."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:366
+#: .\app\templates\app\nebula_forge_tycoon.html:371
 #, python-format, python-brace-format
 msgid "Offline-Effizienz: {efficiency}%%, Offline-Cap: {hours}h."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:367
+#: .\app\templates\app\nebula_forge_tycoon.html:372
 #, python-brace-format
 msgid ""
 "Letzter AFK-Ertrag: {amount} Flux für {duration}. Offline-Cap: {hours}h."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:368
+#: .\app\templates\app\nebula_forge_tycoon.html:373
 #, fuzzy
 #| msgid "Abgelehnt"
 msgid "Kaufen"
 msgstr "Abgelehnt"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:369
-msgid "Nicht genug Flux"
-msgstr ""
-
-#: .\app\templates\app\nebula_forge_tycoon.html:370
-#, python-brace-format
-msgid "{item} kostet {cost} Flux."
-msgstr ""
-
-#: .\app\templates\app\nebula_forge_tycoon.html:371
-#, python-brace-format
-msgid "Besitz: {count}"
-msgstr ""
-
-#: .\app\templates\app\nebula_forge_tycoon.html:372
-#, python-brace-format
-msgid "+{rate}/s je Anlage"
-msgstr ""
-
-#: .\app\templates\app\nebula_forge_tycoon.html:373
-#, python-brace-format
-msgid "Es fehlen {amount} Flux"
-msgstr ""
-
 #: .\app\templates\app\nebula_forge_tycoon.html:374
-#, python-brace-format
-msgid "fehlen {amount}"
+msgid "Nicht genug Flux"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:375
 #, python-brace-format
-msgid "Level: {level}/{max}"
+msgid "{item} kostet {cost} Flux."
+msgstr ""
+
+#: .\app\templates\app\nebula_forge_tycoon.html:376
+#, python-brace-format
+msgid "Besitz: {count}"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:377
+#, python-brace-format
+msgid "+{rate}/s je Anlage"
+msgstr ""
+
+#: .\app\templates\app\nebula_forge_tycoon.html:378
+#, python-brace-format
+msgid "Es fehlen {amount} Flux"
+msgstr ""
+
+#: .\app\templates\app\nebula_forge_tycoon.html:379
+#, python-brace-format
+msgid "fehlen {amount}"
+msgstr ""
+
+#: .\app\templates\app\nebula_forge_tycoon.html:380
+#, python-brace-format
+msgid "Level: {level}/{max}"
+msgstr ""
+
+#: .\app\templates\app\nebula_forge_tycoon.html:382
 #, fuzzy
 #| msgid "Nächster Test"
 msgid "Nächster Ausbau"
 msgstr "Nächster Test"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:378
+#: .\app\templates\app\nebula_forge_tycoon.html:383
 msgid "Maximal ausgebaut"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:379
+#: .\app\templates\app\nebula_forge_tycoon.html:384
 #, fuzzy
 #| msgid "Maximal"
 msgid "Max"
 msgstr "Maximal"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:384
+#: .\app\templates\app\nebula_forge_tycoon.html:389
 #, fuzzy
 #| msgid "Meldung wurde gespeichert."
 msgid "Nebula Forge wurde lokal gespeichert."
 msgstr "Meldung wurde gespeichert."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:385
+#: .\app\templates\app\nebula_forge_tycoon.html:390
 #, fuzzy
 #| msgid "Login fehlgeschlagen"
 msgid "Speichern fehlgeschlagen"
 msgstr "Login fehlgeschlagen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:386
+#: .\app\templates\app\nebula_forge_tycoon.html:391
 msgid "Der Browser hat den lokalen Spielstand blockiert."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:387
+#: .\app\templates\app\nebula_forge_tycoon.html:392
 msgid "Datenbank-Spielstand geladen"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:388
+#: .\app\templates\app\nebula_forge_tycoon.html:393
 msgid "Dein gespeicherter Nebula-Forge-Stand wurde geladen."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:389
+#: .\app\templates\app\nebula_forge_tycoon.html:394
 #, fuzzy
 #| msgid "Melde dich an, um deine Tools zu nutzen."
 msgid "Melde dich an, um in der Datenbank zu speichern."
 msgstr "Melde dich an, um deine Tools zu nutzen."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:390
+#: .\app\templates\app\nebula_forge_tycoon.html:395
 #, fuzzy
 #| msgid "Nicht verfügbar"
 msgid "Speichern nicht verfügbar"
 msgstr "Nicht verfügbar"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:391
+#: .\app\templates\app\nebula_forge_tycoon.html:396
 msgid "Die Datenbank-Speicherroute fehlt."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:392
+#: .\app\templates\app\nebula_forge_tycoon.html:397
 #, fuzzy
 #| msgid "Speichern"
 msgid "Speichern lädt"
 msgstr "Speichern"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:393
+#: .\app\templates\app\nebula_forge_tycoon.html:398
 #, fuzzy, python-brace-format
 #| msgid "Du kannst weitere Orte auf der Wetterseite speichern."
 msgid "Du kannst in {seconds}s wieder in der Datenbank speichern."
 msgstr "Du kannst weitere Orte auf der Wetterseite speichern."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:394
+#: .\app\templates\app\nebula_forge_tycoon.html:399
 #, fuzzy
 #| msgid "Einladung wurde abgelehnt."
 msgid "Der Datenbank-Save wurde abgelehnt."
 msgstr "Einladung wurde abgelehnt."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:395
+#: .\app\templates\app\nebula_forge_tycoon.html:400
 #, fuzzy
 #| msgid "Feedback gespeichert"
 msgid "Datenbank gespeichert"
 msgstr "Feedback gespeichert"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:396
+#: .\app\templates\app\nebula_forge_tycoon.html:401
 msgid "Dein Spielstand wurde gespeichert. Nächster DB-Save in 60s."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:397
+#: .\app\templates\app\nebula_forge_tycoon.html:402
 #, fuzzy
 #| msgid "Die Meldung konnte nicht gespeichert werden."
 msgid "Der Datenbank-Save konnte nicht gesendet werden."
 msgstr "Die Meldung konnte nicht gespeichert werden."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:398
+#: .\app\templates\app\nebula_forge_tycoon.html:403
 msgid "AFK-Ertrag eingesammelt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:399
+#: .\app\templates\app\nebula_forge_tycoon.html:404
 #, python-brace-format
 msgid "{amount} Flux für {duration} Offline-Zeit."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:400
+#: .\app\templates\app\nebula_forge_tycoon.html:405
 #, python-brace-format
 msgid "Takt-Burst +{amount}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:401
+#: .\app\templates\app\nebula_forge_tycoon.html:406
 #, python-brace-format
 msgid "+{amount}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:402
+#: .\app\templates\app\nebula_forge_tycoon.html:407
 #, python-brace-format
 msgid "Impuls +{amount}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:403
+#: .\app\templates\app\nebula_forge_tycoon.html:408
 #, fuzzy, python-brace-format
 #| msgid "Overdrive"
 msgid "Overdrive +{amount}"
 msgstr "Overdrive"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:404
+#: .\app\templates\app\nebula_forge_tycoon.html:409
 #, python-brace-format
 msgid "Meteor +{amount}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:405
+#: .\app\templates\app\nebula_forge_tycoon.html:410
 #, python-brace-format
 msgid "{label} +{amount}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:406
+#: .\app\templates\app\nebula_forge_tycoon.html:411
 msgid "Sammelimpuls lädt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:407
+#: .\app\templates\app\nebula_forge_tycoon.html:412
 #, python-brace-format
 msgid "Wieder bereit in {duration}."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:409
+#: .\app\templates\app\nebula_forge_tycoon.html:414
 #, python-brace-format
 msgid "Kleiner Sofort-Schub: {duration} AFK-Produktion gesammelt."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:410
+#: .\app\templates\app\nebula_forge_tycoon.html:415
 #, fuzzy
 #| msgid "Overdrive"
 msgid "Overdrive lädt"
 msgstr "Overdrive"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:411
+#: .\app\templates\app\nebula_forge_tycoon.html:416
 #, fuzzy, python-brace-format
 #| msgid "Du brauchst mindestens 2 Spieler."
 msgid "Du brauchst mindestens {heat} Hitze."
 msgstr "Du brauchst mindestens 2 Spieler."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:412
+#: .\app\templates\app\nebula_forge_tycoon.html:417
 #, fuzzy
 #| msgid "Overdrive"
 msgid "Overdrive gezündet"
 msgstr "Overdrive"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:413
+#: .\app\templates\app\nebula_forge_tycoon.html:418
 #, python-brace-format
 msgid "Passive Produktion x2,4 für {duration}."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:414
+#: .\app\templates\app\nebula_forge_tycoon.html:419
 msgid "Signal lädt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:415
+#: .\app\templates\app\nebula_forge_tycoon.html:420
 msgid "Perfekt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:416
+#: .\app\templates\app\nebula_forge_tycoon.html:421
 msgid "Treffer"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:417
+#: .\app\templates\app\nebula_forge_tycoon.html:422
 msgid "Signal"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:418
+#: .\app\templates\app\nebula_forge_tycoon.html:423
 msgid "Perfekter Signal-Raid"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:419
+#: .\app\templates\app\nebula_forge_tycoon.html:424
 msgid "Signal getroffen"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:420
+#: .\app\templates\app\nebula_forge_tycoon.html:425
 #, fuzzy
 #| msgid "Diagonal rechts"
 msgid "Signal verfehlt"
 msgstr "Diagonal rechts"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:421
+#: .\app\templates\app\nebula_forge_tycoon.html:426
 #, python-brace-format
 msgid "{amount} Flux und aktiver Boost für {duration}."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:422
+#: .\app\templates\app\nebula_forge_tycoon.html:427
 msgid "Flux-Riss lädt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:423
+#: .\app\templates\app\nebula_forge_tycoon.html:428
 msgid "Riss perfekt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:424
+#: .\app\templates\app\nebula_forge_tycoon.html:429
 msgid "Riss"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:425
+#: .\app\templates\app\nebula_forge_tycoon.html:430
 msgid "Streifschuss"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:426
+#: .\app\templates\app\nebula_forge_tycoon.html:431
 msgid "Flux-Riss perfekt versiegelt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:427
+#: .\app\templates\app\nebula_forge_tycoon.html:432
 msgid "Flux-Riss stabilisiert"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:428
+#: .\app\templates\app\nebula_forge_tycoon.html:433
 msgid "Flux-Riss instabil"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:429
+#: .\app\templates\app\nebula_forge_tycoon.html:434
 #, python-brace-format
 msgid "{amount} Flux und AFK-Boost für {duration}."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:430
+#: .\app\templates\app\nebula_forge_tycoon.html:435
 #, python-brace-format
 msgid "{amount} Flux, aber kein AFK-Boost."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:431
+#: .\app\templates\app\nebula_forge_tycoon.html:436
 msgid "Kryo-Takt lädt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:432
+#: .\app\templates\app\nebula_forge_tycoon.html:437
 msgid "Kryo perfekt"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:433
+#: .\app\templates\app\nebula_forge_tycoon.html:438
 msgid "Kryo"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:434
+#: .\app\templates\app\nebula_forge_tycoon.html:439
 msgid "Kühlung"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:435
+#: .\app\templates\app\nebula_forge_tycoon.html:440
 #, fuzzy
 #| msgid "Erster Kontakt"
 msgid "Perfekter Kryo-Takt"
 msgstr "Erster Kontakt"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:436
+#: .\app\templates\app\nebula_forge_tycoon.html:441
 msgid "Kryo-Takt getroffen"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:437
+#: .\app\templates\app\nebula_forge_tycoon.html:442
 msgid "Kryo-Takt verpasst"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:438
+#: .\app\templates\app\nebula_forge_tycoon.html:443
 #, python-brace-format
 msgid "{amount} Flux, -{heat} Hitze{boostPart}."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:439
+#: .\app\templates\app\nebula_forge_tycoon.html:444
 #, python-brace-format
 msgid " und aktiver Boost für {duration}"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:440
+#: .\app\templates\app\nebula_forge_tycoon.html:445
 #, fuzzy
 #| msgid "Nutzer gesamt"
 msgid "Meteor eingesammelt"
 msgstr "Nutzer gesamt"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:441
+#: .\app\templates\app\nebula_forge_tycoon.html:446
 #, python-brace-format
 msgid "+{amount} Flux und +4 Combo."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:442
+#: .\app\templates\app\nebula_forge_tycoon.html:447
 #, fuzzy
 #| msgid "0 freigeschaltet"
 msgid "Erfolg freigeschaltet"
 msgstr "0 freigeschaltet"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:443
+#: .\app\templates\app\nebula_forge_tycoon.html:448
 #, fuzzy
 #| msgid "Du hast noch nichts geteilt."
 msgid "Prestige noch nicht bereit"
 msgstr "Du hast noch nichts geteilt."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:444
+#: .\app\templates\app\nebula_forge_tycoon.html:449
 #, python-brace-format
 msgid "Du brauchst {amount} Lifetime-Flux."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:445
+#: .\app\templates\app\nebula_forge_tycoon.html:450
 #, python-brace-format
 msgid ""
 "Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und "
 "Upgrades werden zurückgesetzt."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:446
+#: .\app\templates\app\nebula_forge_tycoon.html:451
 #, fuzzy
 #| msgid "Upload abgeschlossen."
 msgid "Prestige abgeschlossen"
 msgstr "Upload abgeschlossen."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:447
+#: .\app\templates\app\nebula_forge_tycoon.html:452
 #, python-format, python-brace-format
 msgid "Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%%."
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:448
+#: .\app\templates\app\nebula_forge_tycoon.html:453
 #, fuzzy
 #| msgid "Eine Notiz erstellt."
 msgid "Export erstellt"
 msgstr "Eine Notiz erstellt."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:449
+#: .\app\templates\app\nebula_forge_tycoon.html:454
 #, fuzzy
 #| msgid "Deine Feature-Idee wurde eingetragen."
 msgid "Dein Nebula Forge Save wurde heruntergeladen."
 msgstr "Deine Feature-Idee wurde eingetragen."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:450
+#: .\app\templates\app\nebula_forge_tycoon.html:455
 #, fuzzy
 #| msgid "Upload fehlgeschlagen."
 msgid "Import fehlgeschlagen"
 msgstr "Upload fehlgeschlagen."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:451
+#: .\app\templates\app\nebula_forge_tycoon.html:456
 #, fuzzy
 #| msgid "Der Code ist ungültig oder abgelaufen."
 msgid "Die Datei ist kein gültiger Nebula Forge Save."
 msgstr "Der Code ist ungültig oder abgelaufen."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:452
+#: .\app\templates\app\nebula_forge_tycoon.html:457
 msgid "Aktuellen Nebula Forge Spielstand durch diesen Import ersetzen?"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:453
+#: .\app\templates\app\nebula_forge_tycoon.html:458
 #, fuzzy
 #| msgid "Upload abgeschlossen."
 msgid "Import abgeschlossen"
 msgstr "Upload abgeschlossen."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:454
+#: .\app\templates\app\nebula_forge_tycoon.html:459
 #, fuzzy
 #| msgid "Einladung wurde abgelehnt."
 msgid "Dein Spielstand wurde geladen."
 msgstr "Einladung wurde abgelehnt."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:455
+#: .\app\templates\app\nebula_forge_tycoon.html:460
 #, fuzzy
 #| msgid "Speicherplatz konnte nicht gelesen werden."
 msgid "Die Datei konnte nicht gelesen werden."
 msgstr "Speicherplatz konnte nicht gelesen werden."
 
-#: .\app\templates\app\nebula_forge_tycoon.html:456
+#: .\app\templates\app\nebula_forge_tycoon.html:461
 msgid "Nebula Forge Tycoon wirklich komplett zurücksetzen?"
 msgstr ""
 
-#: .\app\templates\app\nebula_forge_tycoon.html:457
+#: .\app\templates\app\nebula_forge_tycoon.html:462
 #, fuzzy
 #| msgid "Zurücksetzen"
 msgid "Zurückgesetzt"
 msgstr "Zurücksetzen"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:458
+#: .\app\templates\app\nebula_forge_tycoon.html:463
 msgid "Du startest wieder mit einer frischen Schmiede."
-msgstr ""
-
-#: .\app\templates\app\nebula_forge_tycoon.html:459
-msgid "Nebula Forge bereit"
-msgstr ""
-
-#: .\app\templates\app\nebula_forge_tycoon.html:460
-msgid ""
-"Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und "
-"Takt-Bursts auslösen."
 msgstr ""
 
 #: .\app\templates\app\note_detail.html:18
@@ -10740,7 +10858,7 @@ msgstr "Eingeklappt"
 msgid "Bereich verschieben"
 msgstr "Bereich verschieben"
 
-#: .\app\templates\app\partials\home_section_card.html:43 .\app\views.py:712
+#: .\app\templates\app\partials\home_section_card.html:43 .\app\views.py:714
 msgid "Bereich bearbeiten"
 msgstr "Bereich bearbeiten"
 
@@ -12864,7 +12982,7 @@ msgstr "Einheiten tauschen"
 msgid "Nach"
 msgstr "Nach"
 
-#: .\app\templates\app\unit_converter.html:83 .\app\views.py:1935
+#: .\app\templates\app\unit_converter.html:83 .\app\views.py:1937
 msgid "Gib einen Wert ein, um die Umrechnung zu starten."
 msgstr "Gib einen Wert ein, um die Umrechnung zu starten."
 
@@ -12876,7 +12994,7 @@ msgstr "Schnellbeispiele"
 msgid "Häufige Umrechnungen"
 msgstr "Häufige Umrechnungen"
 
-#: .\app\templates\app\unit_converter.html:106 .\app\views.py:1926
+#: .\app\templates\app\unit_converter.html:106 .\app\views.py:1928
 msgid "Meilen"
 msgstr "Meilen"
 
@@ -13316,376 +13434,350 @@ msgstr "Uno-Raum wurde gelöscht."
 msgid "%(name)s fehlt in der .env."
 msgstr "%(name)s fehlt in der .env."
 
-#: .\app\views.py:193
+#: .\app\views.py:195
 msgid "Weltuhr-Ort wurde hinzugefügt."
 msgstr "Weltuhr-Ort wurde hinzugefügt."
 
-#: .\app\views.py:195
+#: .\app\views.py:197
 msgid "Bitte wähle einen gültigen Ort aus."
 msgstr "Bitte wähle einen gültigen Ort aus."
 
-#: .\app\views.py:202
+#: .\app\views.py:204
 msgid "Weltuhr-Ort wurde gelöscht."
 msgstr "Weltuhr-Ort wurde gelöscht."
 
-#: .\app\views.py:226
+#: .\app\views.py:228
 msgid "Timer wurde gespeichert."
 msgstr "Timer wurde gespeichert."
 
-#: .\app\views.py:228
+#: .\app\views.py:230
 msgid "Bitte gib einen Namen und eine Dauer größer als 0 Sekunden ein."
 msgstr "Bitte gib einen Namen und eine Dauer größer als 0 Sekunden ein."
 
-#: .\app\views.py:235
+#: .\app\views.py:237
 msgid "Timer wurde gelöscht."
 msgstr "Timer wurde gelöscht."
 
-#: .\app\views.py:253
-msgid "Der eigene Klingelton darf maximal 5 MB groß sein."
-msgstr "Der eigene Klingelton darf maximal 5 MB groß sein."
-
-#: .\app\views.py:258
+#: .\app\views.py:260
 msgid "Bitte lade eine Audio-Datei hoch."
 msgstr "Bitte lade eine Audio-Datei hoch."
 
-#: .\app\views.py:265
+#: .\app\views.py:267
 msgid "Uhr-Einstellungen wurden gespeichert."
 msgstr "Uhr-Einstellungen wurden gespeichert."
 
-#: .\app\views.py:275
+#: .\app\views.py:277
 msgid "Eigener Klingelton wurde gelöscht."
 msgstr "Eigener Klingelton wurde gelöscht."
 
-#: .\app\views.py:302
+#: .\app\views.py:304
 msgid "Registrierungen sind aktuell gesperrt."
 msgstr "Registrierungen sind aktuell gesperrt."
 
-#: .\app\views.py:315
+#: .\app\views.py:317
 msgid "Dein Account wurde erstellt."
 msgstr "Dein Account wurde erstellt."
 
-#: .\app\views.py:368 .\app\views.py:392
+#: .\app\views.py:370 .\app\views.py:394
 msgid "Wetter konnte nicht geladen werden."
 msgstr "Wetter konnte nicht geladen werden."
 
-#: .\app\views.py:379
+#: .\app\views.py:381
 msgid "Keine Beschreibung"
 msgstr "Keine Beschreibung"
 
-#: .\app\views.py:707
+#: .\app\views.py:709
 #, python-format
 msgid "für \"%(section)s\""
 msgstr "für \"%(section)s\""
 
-#: .\app\views.py:708
+#: .\app\views.py:710
 msgid "Verknüpfung bearbeiten"
 msgstr "Verknüpfung bearbeiten"
 
-#: .\app\views.py:709
+#: .\app\views.py:711
 #, python-format
 msgid "in \"%(section)s\""
 msgstr "in \"%(section)s\""
 
-#: .\app\views.py:718
+#: .\app\views.py:720
 msgid "Widget speichern"
 msgstr "Widget speichern"
 
-#: .\app\views.py:737
+#: .\app\views.py:739
 msgid "Ungültiges JSON"
 msgstr "Ungültiges JSON"
 
-#: .\app\views.py:810
+#: .\app\views.py:812
 msgid "Unbekannte Aktion"
 msgstr "Unbekannte Aktion"
 
-#: .\app\views.py:840 .\app\views.py:894
+#: .\app\views.py:842 .\app\views.py:896
 msgid "Widget"
 msgstr "Widget"
 
-#: .\app\views.py:1239 .\app\views.py:1256 .\app\views.py:1390
+#: .\app\views.py:1241 .\app\views.py:1258 .\app\views.py:1392
 msgid "Ungültige Antwort der OpenWeather API."
 msgstr "Ungültige Antwort der OpenWeather API."
 
-#: .\app\views.py:1265
+#: .\app\views.py:1267
 msgid "Wettervorhersage konnte nicht geladen werden."
 msgstr "Wettervorhersage konnte nicht geladen werden."
 
-#: .\app\views.py:1358
+#: .\app\views.py:1360
 msgid "OpenWeather API-Key ist ungültig."
 msgstr "OpenWeather API-Key ist ungültig."
 
-#: .\app\views.py:1364 .\app\views.py:1376
+#: .\app\views.py:1366 .\app\views.py:1378
 msgid "Standort nicht gefunden."
 msgstr "Standort nicht gefunden."
 
-#: .\app\views.py:1370
+#: .\app\views.py:1372
 #, python-format
 msgid "OpenWeather Fehler: %(message)s"
 msgstr "OpenWeather Fehler: %(message)s"
 
-#: .\app\views.py:1383 .\app\views.py:1397
+#: .\app\views.py:1385 .\app\views.py:1399
 #, python-format
 msgid "Verbindungsfehler: %(error)s"
 msgstr "Verbindungsfehler: %(error)s"
 
-#: .\app\views.py:1514
+#: .\app\views.py:1516
 msgid "Lade Text..."
 msgstr "Lade Text..."
 
-#: .\app\views.py:1515
+#: .\app\views.py:1517
 msgid "Übersetze..."
 msgstr "Übersetze..."
 
-#: .\app\views.py:1516
+#: .\app\views.py:1518
 msgid "Nächster Test"
 msgstr "Nächster Test"
 
-#: .\app\views.py:1517
+#: .\app\views.py:1519
 msgid "Lädt..."
 msgstr "Lädt..."
 
-#: .\app\views.py:1519
+#: .\app\views.py:1521
 msgid "Neuer Highscore!"
 msgstr "Neuer Highscore!"
 
-#: .\app\views.py:1520
+#: .\app\views.py:1522
 msgid "Ergebnis gespeichert."
 msgstr "Ergebnis gespeichert."
 
-#: .\app\views.py:1522
+#: .\app\views.py:1524
 msgid "Platz"
 msgstr "Platz"
 
-#: .\app\views.py:1540 .\app\views.py:2014 .\app\views.py:2287
+#: .\app\views.py:1542 .\app\views.py:2016 .\app\views.py:2289
 msgid "Ungültige Anfrage."
 msgstr "Ungültige Anfrage."
 
-#: .\app\views.py:1545
+#: .\app\views.py:1547
 msgid "Unbekannter Spielmodus."
 msgstr "Unbekannter Spielmodus."
 
-#: .\app\views.py:1550 .\app\views.py:1553
+#: .\app\views.py:1552 .\app\views.py:1555
 msgid "Ungültiger Score."
 msgstr "Ungültiger Score."
 
-#: .\app\views.py:1629 .\app\views.py:1695
+#: .\app\views.py:1631 .\app\views.py:1697
 msgid ""
 "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
 msgstr ""
 "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
 
-#: .\app\views.py:1639
+#: .\app\views.py:1641
 msgid "Ungültiges JSON."
 msgstr "Ungültiges JSON."
 
-#: .\app\views.py:1652
+#: .\app\views.py:1654
 msgid "Unbekannte Aktion."
 msgstr "Unbekannte Aktion."
 
-#: .\app\views.py:1666 .\app\views.py:1723
+#: .\app\views.py:1668 .\app\views.py:1725
 msgid "Name fehlt."
 msgstr "Name fehlt."
 
-#: .\app\views.py:1672 .\app\views.py:1729
+#: .\app\views.py:1674 .\app\views.py:1731
 msgid "Ungültige Nation."
 msgstr "Ungültige Nation."
 
-#: .\app\views.py:1678
+#: .\app\views.py:1680
 msgid "Bild fehlt."
 msgstr "Bild fehlt."
 
-#: .\app\views.py:1705 .\app\views.py:1752
+#: .\app\views.py:1707 .\app\views.py:1754
 msgid "Methode nicht erlaubt."
 msgstr "Methode nicht erlaubt."
 
-#: .\app\views.py:1770
+#: .\app\views.py:1772
 msgid "Suchbegriff fehlt."
 msgstr "Suchbegriff fehlt."
 
-#: .\app\views.py:1784
+#: .\app\views.py:1786
 msgid "Pagination-Parameter sind ungültig."
 msgstr "Pagination-Parameter sind ungültig."
 
-#: .\app\views.py:1805 .\app\views.py:1838
+#: .\app\views.py:1807 .\app\views.py:1840
 msgid "Ungültige Antwort der Genius API."
 msgstr "Ungültige Antwort der Genius API."
 
-#: .\app\views.py:1811
+#: .\app\views.py:1813
 msgid "Genius API Fehler."
 msgstr "Genius API Fehler."
 
-#: .\app\views.py:1833
+#: .\app\views.py:1835
 msgid "Genius API konnte nicht erreicht werden."
 msgstr "Genius API konnte nicht erreicht werden."
 
-#: .\app\views.py:1849
+#: .\app\views.py:1851
 msgid "Latitude und Longitude fehlen."
 msgstr "Latitude und Longitude fehlen."
 
-#: .\app\views.py:1858
+#: .\app\views.py:1860
 msgid "Latitude und Longitude müssen Zahlen sein."
 msgstr "Latitude und Longitude müssen Zahlen sein."
 
-#: .\app\views.py:1882 .\app\views.py:1899
+#: .\app\views.py:1884 .\app\views.py:1901
 msgid "Ungültige Antwort der Tankerkönig API."
 msgstr "Ungültige Antwort der Tankerkönig API."
 
-#: .\app\views.py:1886
+#: .\app\views.py:1888
 msgid "Tankerkönig API Fehler."
 msgstr "Tankerkönig API Fehler."
 
-#: .\app\views.py:1894
+#: .\app\views.py:1896
 msgid "Tankerkönig API konnte nicht erreicht werden."
 msgstr "Tankerkönig API konnte nicht erreicht werden."
 
-#: .\app\views.py:1910
+#: .\app\views.py:1912
 msgid "Kilobyte (KB)"
 msgstr "Kilobyte (KB)"
 
-#: .\app\views.py:1911
+#: .\app\views.py:1913
 msgid "Megabyte (MB)"
 msgstr "Megabyte (MB)"
 
-#: .\app\views.py:1912
+#: .\app\views.py:1914
 msgid "Gigabyte (GB)"
 msgstr "Gigabyte (GB)"
 
-#: .\app\views.py:1913
+#: .\app\views.py:1915
 msgid "Terabyte (TB)"
 msgstr "Terabyte (TB)"
 
-#: .\app\views.py:1919
+#: .\app\views.py:1921
 msgid "Tage"
 msgstr "Tage"
 
-#: .\app\views.py:1922
+#: .\app\views.py:1924
 msgid "Millimeter"
 msgstr "Millimeter"
 
-#: .\app\views.py:1923
+#: .\app\views.py:1925
 msgid "Zentimeter"
 msgstr "Zentimeter"
 
-#: .\app\views.py:1924
+#: .\app\views.py:1926
 msgid "Meter"
 msgstr "Meter"
 
-#: .\app\views.py:1925
+#: .\app\views.py:1927
 msgid "Kilometer"
 msgstr "Kilometer"
 
-#: .\app\views.py:1929
+#: .\app\views.py:1931
 msgid "Euro pro Tag"
 msgstr "Euro pro Tag"
 
-#: .\app\views.py:1930
+#: .\app\views.py:1932
 msgid "Euro pro Woche"
 msgstr "Euro pro Woche"
 
-#: .\app\views.py:1931
+#: .\app\views.py:1933
 msgid "Euro pro Monat"
 msgstr "Euro pro Monat"
 
-#: .\app\views.py:1932
+#: .\app\views.py:1934
 msgid "Euro pro Jahr"
 msgstr "Euro pro Jahr"
 
-#: .\app\views.py:2018 .\app\views.py:2023
+#: .\app\views.py:2020 .\app\views.py:2025
 #, fuzzy
 #| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Ungültiger Nebula-Forge-Spielstand."
 msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views.py:2026
+#: .\app\views.py:2028
 msgid "Der Nebula-Forge-Spielstand ist zu groß."
 msgstr ""
 
-#: .\app\views.py:2040 .\app\views.py:2044 .\app\views.py:2047
+#: .\app\views.py:2042 .\app\views.py:2046 .\app\views.py:2049
 #, fuzzy
 #| msgid "Ungültige Flotte."
 msgid "Ungültige Nebula-Forge-Werte."
 msgstr "Ungültige Flotte."
 
-#: .\app\views.py:2054
+#: .\app\views.py:2056
 msgid ""
 "Du kannst Nebula Forge Tycoon nur einmal pro Minute in der Datenbank "
 "speichern."
 msgstr ""
 
-#: .\app\views.py:2134 .\app\views.py:2365 .\app\views.py:2451
+#: .\app\views.py:2136 .\app\views.py:2367 .\app\views.py:2481
 msgid "Ungueltige Anfrage."
 msgstr "Ungueltige Anfrage."
 
-#: .\app\views.py:2142 .\app\views.py:2146
+#: .\app\views.py:2144 .\app\views.py:2148
 msgid "Ungueltiger 2048-Score."
 msgstr "Ungueltiger 2048-Score."
 
-#: .\app\views.py:2291 .\app\views.py:2296
+#: .\app\views.py:2293 .\app\views.py:2298
 #, fuzzy
 #| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Ungültiger Cookie-Cosmos-V2-Spielstand."
 msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views.py:2299
+#: .\app\views.py:2301
 msgid "Der Cookie-Cosmos-V2-Spielstand ist zu groß."
 msgstr ""
 
-#: .\app\views.py:2312 .\app\views.py:2316 .\app\views.py:2319
+#: .\app\views.py:2314 .\app\views.py:2318 .\app\views.py:2321
 #, fuzzy
 #| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Ungültige Cookie-Cosmos-V2-Werte."
 msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views.py:2326
+#: .\app\views.py:2328
 msgid ""
 "Du kannst Cookie Cosmos V2 nur einmal pro Minute in der Datenbank speichern."
 msgstr ""
 
-#: .\app\views.py:2377 .\app\views.py:2380
+#: .\app\views.py:2379 .\app\views.py:2382
 #, fuzzy
 #| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Ungültiger Cookie-Cosmos-Score."
 msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views.py:2456
+#: .\app\views.py:2486
 #, fuzzy
 #| msgid "Unbekannte Aktion."
 msgid "Unbekannte Voicemod Aktion."
 msgstr "Unbekannte Aktion."
 
-#: .\app\views.py:2461
+#: .\app\views.py:2491
 msgid "Voicemod Aktion unvollstaendig."
 msgstr ""
 
-#: .\app\views.py:2467
+#: .\app\views.py:2497
 msgid "Kein Voicemod API-Key verbunden."
 msgstr ""
 
-
-#: .\app\community_views.py:32
-msgid "Nebula Forge Tycoon Update"
-msgstr "Nebula Forge Tycoon Update"
-
-#: .\app\community_views.py:33
-msgid "Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt und das Leaderboard zeigt jetzt die aktuellen Spiele."
-msgstr "Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt und das Leaderboard zeigt jetzt die aktuellen Spiele."
-
-#: .\app\community_views.py:38
-msgid "Nebula Forge Tycoon wurde visuell überarbeitet und wirkt jetzt deutlich lebendiger."
-msgstr "Nebula Forge Tycoon wurde visuell überarbeitet und wirkt jetzt deutlich lebendiger."
-
-#: .\app\community_views.py:39
-msgid "Kauf-, Prestige- und Ability-Aktionen haben neue Animationen und Effekte bekommen."
-msgstr "Kauf-, Prestige- und Ability-Aktionen haben neue Animationen und Effekte bekommen."
-
-#: .\app\community_views.py:40
-msgid "Das Leaderboard wurde um aktuelle Spiele wie 2048, Cookie Cosmos V2, Nebula Forge Tycoon, Schiffe versenken, Uno, Kniffel und Pong erweitert."
-msgstr "Das Leaderboard wurde um aktuelle Spiele wie 2048, Cookie Cosmos V2, Nebula Forge Tycoon, Schiffe versenken, Uno, Kniffel und Pong erweitert."
-
-#: .\app\community_views.py:41
-msgid "Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."
-msgstr "Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."
-
+#, python-format
+#~ msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
+#~ msgstr "Cookie Cosmos Â· %(upgrades)s Upgrades"
 
 #~ msgid ""
 #~ "MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, "

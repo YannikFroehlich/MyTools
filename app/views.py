@@ -169,6 +169,8 @@ CLOCK_TIMEZONE_CHOICES = [
 @login_required
 def clock_view(request):
     settings_obj, created = ClockSettings.objects.get_or_create(user=request.user)
+    timezone_choices = [(timezone, _(label)) for timezone, label in CLOCK_TIMEZONE_CHOICES]
+    ringtone_choices = [(value, _(label)) for value, label in ClockSettings.RINGTONE_CHOICES]
     valid_timezones = {timezone for timezone, label in CLOCK_TIMEZONE_CHOICES}
     valid_ringtones = {choice[0] for choice in ClockSettings.RINGTONE_CHOICES}
 
@@ -180,7 +182,7 @@ def clock_view(request):
             timezone_name = request.POST.get("timezone", "").strip()
 
             if not label and timezone_name in valid_timezones:
-                label = dict(CLOCK_TIMEZONE_CHOICES).get(timezone_name, timezone_name)
+                label = dict(timezone_choices).get(timezone_name, timezone_name)
 
             if label and timezone_name in valid_timezones:
                 max_order = ClockWorldCity.objects.filter(user=request.user).aggregate(Max("order"))["order__max"] or 0
@@ -286,8 +288,8 @@ def clock_view(request):
         "world_cities": ClockWorldCity.objects.filter(user=request.user),
         "timer_presets": ClockTimerPreset.objects.filter(user=request.user),
         "clock_settings": settings_obj,
-        "timezone_choices": CLOCK_TIMEZONE_CHOICES,
-        "ringtone_choices": ClockSettings.RINGTONE_CHOICES,
+        "timezone_choices": timezone_choices,
+        "ringtone_choices": ringtone_choices,
     }
     return render(request, "app/clock.html", context)
 

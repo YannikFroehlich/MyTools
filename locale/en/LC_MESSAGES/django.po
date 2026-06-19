@@ -3169,9 +3169,8 @@ msgstr "Monatlich"
 
 # | msgid "Abgelehnt"
 #: .\app\models.py:3329
-#, fuzzy
 msgid "Abgelaufen"
-msgstr "Declined"
+msgstr "Expired"
 
 # | msgid "Limit Rest"
 #: .\app\models.py:3331
@@ -3198,7 +3197,7 @@ msgstr ""
 
 #: .\app\models.py:3353
 msgid "Pausiert"
-msgstr "Pausiert"
+msgstr "Paused"
 
 #: .\app\models.py:3361 .\app\templates\app\home.html:554
 msgid "Links"
@@ -14150,3 +14149,104 @@ msgstr "Cookie Cosmos, Cookie Cosmos V2, and Nebula Forge Tycoon now sort their 
 
 #~ msgid "Login und Registrierung sind aktuell gesperrt."
 #~ msgstr "Login and registration are currently blocked."
+
+#: app/templates/app/clock.html
+msgctxt "clock action"
+msgid "Start"
+msgstr "Start"
+
+#: app/templates/app/clock.html app/static/app/js/clock.js
+msgid "Stoppen"
+msgstr "Stop"
+
+#: app/templates/app/clock.html app/static/app/js/clock.js
+msgid "Läuft gerade"
+msgstr "Running"
+
+#: app/templates/app/clock.html app/static/app/js/clock.js
+msgid "Zeit einstellen"
+msgstr "Set time"
+
+#: app/templates/app/clock.html app/static/app/js/clock.js
+msgid "Bitte erst eine Zeit einstellen"
+msgstr "Please set a time first"
+
+#: app/templates/app/clock.html app/static/app/js/clock.js
+msgid "Bitte stelle erst eine Timer-Zeit ein."
+msgstr "Please set a timer time first."
+
+#: app/templates/app/clock.html app/static/app/js/clock.js
+msgid "Du hast bereits einen eigenen Klingelton gespeichert. Soll der alte Ton wirklich überschrieben werden?"
+msgstr "You already have a custom ringtone saved. Do you really want to overwrite the old sound?"
+
+#: app/templates/app/clock.html
+msgid "z.B. Zuhause, Urlaub, Server-Zeit"
+msgstr "e.g. Home, vacation, server time"
+
+#: app/templates/app/clock.html
+msgid "z.B. Tee, Pause, Fokus"
+msgstr "e.g. tea, break, focus"
+
+#: app/views.py
+msgid "Berlin / Deutschland"
+msgstr "Berlin / Germany"
+
+#: app/views.py
+msgid "London / Großbritannien"
+msgstr "London / United Kingdom"
+
+#: app/views.py
+msgid "Paris / Frankreich"
+msgstr "Paris / France"
+
+#: app/views.py
+msgid "Madrid / Spanien"
+msgstr "Madrid / Spain"
+
+#: app/views.py
+msgid "Rom / Italien"
+msgstr "Rome / Italy"
+
+#: app/views.py
+msgid "Istanbul / Türkei"
+msgstr "Istanbul / Turkey"
+
+#: app/views.py
+msgid "São Paulo / Brasilien"
+msgstr "São Paulo / Brazil"
+
+#: app/views.py
+msgid "Dubai / VAE"
+msgstr "Dubai / UAE"
+
+#: app/views.py
+msgid "Mumbai / Indien"
+msgstr "Mumbai / India"
+
+#: app/views.py
+msgid "Bangkok / Thailand"
+msgstr "Bangkok / Thailand"
+
+#: app/views.py
+msgid "Shanghai / China"
+msgstr "Shanghai / China"
+
+#: app/views.py
+msgid "Tokio / Japan"
+msgstr "Tokyo / Japan"
+
+#: app/views.py
+msgid "Seoul / Südkorea"
+msgstr "Seoul / South Korea"
+
+#: app/views.py
+msgid "Sydney / Australien"
+msgstr "Sydney / Australia"
+
+#: app/views.py
+msgid "Auckland / Neuseeland"
+msgstr "Auckland / New Zealand"
+
+#: app/models.py
+msgid "Eigener Ton"
+msgstr "Custom sound"
