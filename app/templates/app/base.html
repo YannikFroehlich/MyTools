@@ -39,7 +39,7 @@
     {% endif %}
 
     {% block extra_css %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260618-roadmap-theme">
+    <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260619-stream-deck-topbar-theme">
     {% block scripts %}
         <script src="{% static 'app/js/base.js' %}?v=20260619-access-hidden" defer></script>
     {% endblock %}
@@ -172,6 +172,19 @@
                             </div>
 
                             <div class="games-menu-grid">
+                                <a href="{% url 'werewolf_home' %}" class="game-menu-card is-violet" data-game-card data-game-name="{% translate 'Werwolf' %}" data-game-category="{% translate 'Mehrspieler Party Social Deduction Rollen Einladung' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-moon"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Werwolf' %}</strong>
+                                        <small>{% translate 'Social-Deduction' %}</small>
+                                    </span>
+                                    {% if request.user.is_authenticated %}
+                                        <span class="menu-badge js-notification-badge" data-current-value="{{ werewolf_invites_count }}" data-notification-key="werewolf_invites" data-label-singular="{% translate 'offene Werwolf-Einladung' %}" data-label-plural="{% translate 'offene Werwolf-Einladungen' %}">
+                                            {{ werewolf_invites_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+
                                 <a href="{% url 'tictactoe_home' %}" class="game-menu-card is-blue" data-game-card data-game-name="{% translate 'Tic Tac Toe' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-table-cells"></i></span>
                                     <span class="game-menu-copy">

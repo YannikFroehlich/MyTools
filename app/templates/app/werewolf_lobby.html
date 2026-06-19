@@ -1,0 +1,47 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ lobby.name }} · {% translate 'Werwolf' %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/werewolf.css' %}">{% endblock %}
+{% block scripts %}{{ block.super }}<script defer src="{% static 'app/js/werewolf.js' %}"></script>{% endblock %}
+
+{% block content %}
+<main class="ww-page ww-game-page" id="ww-game"
+      data-state-url="{% url 'werewolf_state_api' lobby.code %}"
+      data-start-url="{% url 'werewolf_start_api' lobby.code %}"
+      data-action-url="{% url 'werewolf_action_api' lobby.code %}"
+      data-advance-url="{% url 'werewolf_advance_api' lobby.code %}"
+      data-message-url="{% url 'werewolf_message_api' lobby.code %}"
+      data-reset-url="{% url 'werewolf_reset_api' lobby.code %}">
+    <header class="ww-game-header">
+        <div><a href="{% url 'werewolf_home' %}" class="ww-back"><i class="fa-solid fa-arrow-left"></i> {% translate 'Lobby-Browser' %}</a><span class="ww-eyebrow"><i class="fa-solid fa-moon"></i> {% translate 'Werwolf-Runde' %}</span><h1>{{ lobby.name }}</h1></div>
+        <div class="ww-header-actions"><button type="button" class="ww-code ww-copy-code" data-code="{{ lobby.code }}"><i class="fa-regular fa-copy"></i> {{ lobby.code }}</button><form method="post" action="{% url 'werewolf_leave' lobby.code %}">{% csrf_token %}<button class="ww-secondary"><i class="fa-solid fa-right-from-bracket"></i> {% translate 'Verlassen' %}</button></form>{% if lobby.owner_id == request.user.id %}<form method="post" action="{% url 'werewolf_delete' lobby.code %}" data-confirm="{% translate 'Lobby wirklich löschen?' %}">{% csrf_token %}<button class="ww-danger"><i class="fa-solid fa-trash"></i></button></form>{% endif %}</div>
+    </header>
+
+    <section class="ww-phase-banner is-waiting" id="ww-phase-banner"><div class="ww-phase-icon"><i class="fa-solid fa-hourglass-half"></i></div><div><span id="ww-phase-kicker">{% translate 'Vorbereitung' %}</span><h2 id="ww-phase-title">{% translate 'Warten auf Spieler' %}</h2><p id="ww-phase-text">{% translate 'Der Host startet, sobald das Dorf vollständig ist.' %}</p></div><div class="ww-day-badge" id="ww-day-badge">–</div></section>
+
+    <div class="ww-game-layout">
+        <aside class="ww-game-sidebar">
+            <section class="ww-role-card is-hidden" id="ww-role-card"><span class="ww-eyebrow">{% translate 'Deine geheime Rolle' %}</span><i class="fa-solid fa-question" id="ww-role-icon"></i><h2 id="ww-role-name">{% translate 'Noch unbekannt' %}</h2><p id="ww-role-description">{% translate 'Deine Rolle wird beim Start verdeckt verteilt.' %}</p><button class="ww-ghost" id="ww-toggle-role" type="button"><i class="fa-solid fa-eye"></i> {% translate 'Rolle zeigen/verbergen' %}</button></section>
+
+            <section class="ww-panel ww-player-panel"><div class="ww-panel-heading"><h2>{% translate 'Dorfbewohner' %}</h2><span class="ww-count" id="ww-player-count">0</span></div><div class="ww-player-list" id="ww-player-list"></div></section>
+
+            <section class="ww-panel ww-rules-summary"><div class="ww-panel-heading"><h2>{% translate 'Regeln' %}</h2><i class="fa-solid fa-scroll"></i></div><div id="ww-rules-list"></div></section>
+        </aside>
+
+        <section class="ww-center-column">
+            <section class="ww-panel ww-action-panel" id="ww-action-panel"><div class="ww-panel-heading"><div><span class="ww-eyebrow" id="ww-action-kicker">{% translate 'Aktion' %}</span><h2 id="ww-action-title">{% translate 'Versammelt das Dorf' %}</h2></div><i class="fa-solid fa-paw"></i></div><p id="ww-action-help">{% translate 'Nach dem Start erscheint hier deine persönliche Aufgabe.' %}</p><div class="ww-target-grid" id="ww-target-grid"></div><div class="ww-special-actions" id="ww-special-actions"></div><div class="ww-action-result" id="ww-action-result" hidden></div></section>
+
+            <section class="ww-panel ww-host-panel" id="ww-host-panel" hidden><div><span class="ww-eyebrow"><i class="fa-solid fa-crown"></i> {% translate 'Spielleitung' %}</span><h2>{% translate 'Host-Steuerung' %}</h2><p id="ww-host-help">{% translate 'Starte die Runde, wenn mindestens fünf Spieler bereit sind.' %}</p></div><div class="ww-host-actions"><button class="ww-primary" id="ww-start" type="button"><i class="fa-solid fa-play"></i> {% translate 'Spiel starten' %}</button><button class="ww-primary" id="ww-advance" type="button" hidden><i class="fa-solid fa-forward-step"></i> <span>{% translate 'Phase auswerten' %}</span></button><button class="ww-secondary" id="ww-reset" type="button" hidden><i class="fa-solid fa-rotate-right"></i> {% translate 'Neue Runde' %}</button></div></section>
+
+            <section class="ww-panel ww-chat-panel"><div class="ww-chat-heading"><div><span class="ww-eyebrow">{% translate 'Kommunikation' %}</span><h2>{% translate 'Dorfplatz' %}</h2></div><div class="ww-chat-tabs"><button type="button" class="active" data-channel="village"><i class="fa-solid fa-house"></i> {% translate 'Dorf' %}</button><button type="button" data-channel="wolves" id="ww-wolf-chat-tab" hidden><i class="fa-solid fa-paw"></i> {% translate 'Rudel' %}</button></div></div><div class="ww-message-list" id="ww-message-list"></div><form class="ww-chat-form" id="ww-chat-form"><input id="ww-chat-input" maxlength="500" placeholder="{% translate 'Nachricht schreiben…' %}" autocomplete="off"><button class="ww-primary"><i class="fa-solid fa-paper-plane"></i></button></form></section>
+        </section>
+
+        <aside class="ww-game-sidebar ww-lobby-sidebar">
+            <section class="ww-panel"><div class="ww-panel-heading"><div><span class="ww-eyebrow">{% translate 'Lobby' %}</span><h2>{% translate 'Freunde einladen' %}</h2></div><i class="fa-solid fa-user-plus"></i></div><div class="ww-friend-list">{% for row in friend_invite_rows %}<div class="ww-friend-row"><div class="ww-avatar">{{ row.user.username|slice:':1'|upper }}</div><div><strong>{{ row.user.get_full_name|default:row.user.username }}</strong><small>{% if row.is_invited %}{% translate 'Einladung offen' %}{% elif row.was_invited %}{% translate 'Schon beigetreten/eingeladen' %}{% else %}{% translate 'Freund' %}{% endif %}</small></div><form method="post" action="{% url 'werewolf_invite_friend' lobby.code %}">{% csrf_token %}<input type="hidden" name="friend_id" value="{{ row.user.id }}"><button class="ww-icon-button is-accept" {% if row.is_invited %}disabled{% endif %}><i class="fa-solid {% if row.is_invited %}fa-check{% else %}fa-plus{% endif %}"></i></button></form></div>{% empty %}<p class="ww-muted">{% translate 'Keine weiteren Freunde verfügbar.' %}</p>{% endfor %}</div></section>
+            <section class="ww-panel ww-howto"><span class="ww-eyebrow">{% translate 'Kurz erklärt' %}</span><h2>{% translate 'So gewinnt ihr' %}</h2><div><i class="fa-solid fa-house"></i><p><strong>{% translate 'Dorf' %}</strong><span>{% translate 'Entlarvt und verbannt alle Werwölfe.' %}</span></p></div><div><i class="fa-solid fa-paw"></i><p><strong>{% translate 'Werwölfe' %}</strong><span>{% translate 'Erreicht mindestens so viele Wölfe wie andere Bewohner.' %}</span></p></div></section>
+        </aside>
+    </div>
+    <div class="ww-toast" id="ww-toast" role="status" hidden></div>
+</main>
+{% endblock %}

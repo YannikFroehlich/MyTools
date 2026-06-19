@@ -15,6 +15,19 @@
     typeInputs.forEach((input) => input.addEventListener("change", syncPanels));
     syncPanels();
 
+    form.querySelectorAll("[data-qr-color-field]").forEach((field) => {
+        const input = field.querySelector('input[type="color"]');
+        const value = field.querySelector("[data-qr-color-value]");
+        if (!input || !value) return;
+
+        const syncColorValue = () => {
+            value.textContent = input.value.toUpperCase();
+        };
+
+        input.addEventListener("input", syncColorValue);
+        syncColorValue();
+    });
+
     const copyButton = document.getElementById("copy-qr-payload");
     if (copyButton) {
         copyButton.addEventListener("click", async () => {

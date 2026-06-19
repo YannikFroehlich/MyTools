@@ -5,12 +5,12 @@
 {% block title %}{% translate 'QR-Code Tool' %} | MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/qr_code_tool.css' %}?v=20260617-qr-theme-fix">
+    <link rel="stylesheet" href="{% static 'app/css/qr_code_tool.css' %}?v=20260619-color-field-spacing-v3">
 {% endblock %}
 
 {% block scripts %}
     {{ block.super }}
-    <script src="{% static 'app/js/qr_code_tool.js' %}" defer></script>
+    <script src="{% static 'app/js/qr_code_tool.js' %}?v=20260619-color-field-surface-v2" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -131,11 +131,17 @@
             <div class="qr-settings-grid">
                 <label>
                     <span>{% translate 'Vordergrund' %}</span>
-                    <input type="color" name="foreground" value="{{ form_data.foreground }}">
+                    <span class="qr-color-input" data-qr-color-field>
+                        <input type="color" name="foreground" value="{{ form_data.foreground }}" aria-label="{% translate 'Vordergrundfarbe auswählen' %}">
+                        <span class="qr-color-value" data-qr-color-value>{{ form_data.foreground|upper }}</span>
+                    </span>
                 </label>
                 <label>
                     <span>{% translate 'Hintergrund' %}</span>
-                    <input type="color" name="background" value="{{ form_data.background }}">
+                    <span class="qr-color-input" data-qr-color-field>
+                        <input type="color" name="background" value="{{ form_data.background }}" aria-label="{% translate 'Hintergrundfarbe auswählen' %}">
+                        <span class="qr-color-value" data-qr-color-value>{{ form_data.background|upper }}</span>
+                    </span>
                 </label>
                 <label>
                     <span>{% translate 'Fehlerkorrektur' %}</span>

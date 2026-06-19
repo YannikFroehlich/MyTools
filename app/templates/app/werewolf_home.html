@@ -1,0 +1,80 @@
+{% extends 'app/base.html' %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Werwolf' %} · MyTools{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/werewolf.css' %}">{% endblock %}
+{% block scripts %}{{ block.super }}<script defer src="{% static 'app/js/werewolf.js' %}"></script>{% endblock %}
+
+{% block content %}
+<main class="ww-page ww-home-page">
+    <section class="ww-hero">
+        <div>
+            <span class="ww-eyebrow"><i class="fa-solid fa-moon"></i> {% translate 'Social-Deduction' %}</span>
+            <h1>{% translate 'Werwolf' %}</h1>
+            <p>{% translate 'Das Dorf schläft ein. Findet die Werwölfe, bevor sie euch finden – mit geheimen Rollen, Nachtaktionen und Abstimmungen.' %}</p>
+            <div class="ww-hero-pills"><span>5–20 {% translate 'Spieler' %}</span><span>{% translate 'Geheime Rollen' %}</span><span>{% translate 'Private Chats' %}</span></div>
+        </div>
+        <div class="ww-moon" aria-hidden="true"><i class="fa-solid fa-moon"></i><span><i class="fa-solid fa-paw"></i></span></div>
+    </section>
+
+    <section class="ww-home-grid">
+        <article class="ww-panel ww-create-panel">
+            <div class="ww-panel-heading"><div><span class="ww-eyebrow">{% translate 'Eigene Runde' %}</span><h2>{% translate 'Lobby erstellen' %}</h2></div><i class="fa-solid fa-wand-sparkles"></i></div>
+            <form method="post" class="ww-form" id="ww-create-form">
+                {% csrf_token %}<input type="hidden" name="action" value="create">
+                <label class="ww-wide"><span>{% translate 'Lobby-Name' %}</span><input name="name" maxlength="80" value="{% translate 'Dorf am Silberwald' %}" required></label>
+                <label><span>{% translate 'Sichtbarkeit' %}</span><select name="visibility" id="ww-visibility"><option value="public">{% translate 'Öffentlich' %}</option><option value="friends">{% translate 'Nur Freunde' %}</option><option value="password">{% translate 'Privat mit Passwort' %}</option></select></label>
+                <label id="ww-password-field" hidden><span>{% translate 'Passwort' %}</span><input type="password" name="password" minlength="4" maxlength="80" autocomplete="new-password" placeholder="••••••••"></label>
+                <label><span>{% translate 'Maximale Spieler' %}</span><input type="number" name="max_players" min="5" max="20" value="12"></label>
+                <label><span>{% translate 'Werwölfe' %}</span><input type="number" name="werewolf_count" min="1" max="6" value="2"></label>
+
+                <fieldset class="ww-wide ww-rule-fieldset"><legend>{% translate 'Rollen & Regeln' %}</legend>
+                    <label class="ww-check"><input type="checkbox" name="include_seer" checked><span><i class="fa-solid fa-eye"></i><strong>{% translate 'Seherin' %}</strong><small>{% translate 'Prüft nachts eine Person.' %}</small></span></label>
+                    <label class="ww-check"><input type="checkbox" name="include_witch" checked><span><i class="fa-solid fa-flask"></i><strong>{% translate 'Hexe' %}</strong><small>{% translate 'Besitzt Heil- und Gifttrank.' %}</small></span></label>
+                    <label class="ww-check"><input type="checkbox" name="include_guard" checked><span><i class="fa-solid fa-shield-halved"></i><strong>{% translate 'Beschützer' %}</strong><small>{% translate 'Schützt nachts eine Person.' %}</small></span></label>
+                    <label class="ww-check"><input type="checkbox" name="reveal_roles_on_death" checked><span><i class="fa-solid fa-address-card"></i><strong>{% translate 'Rolle aufdecken' %}</strong><small>{% translate 'Zeigt die Rolle ausgeschiedener Spieler.' %}</small></span></label>
+                    <label class="ww-check"><input type="checkbox" name="anonymous_day_votes"><span><i class="fa-solid fa-user-secret"></i><strong>{% translate 'Geheime Stimmen' %}</strong><small>{% translate 'Verbirgt, wer schon abgestimmt hat.' %}</small></span></label>
+                </fieldset>
+                <button class="ww-primary ww-wide" type="submit"><i class="fa-solid fa-plus"></i> {% translate 'Lobby erstellen' %}</button>
+            </form>
+        </article>
+
+        <div class="ww-side-stack">
+            <article class="ww-panel">
+                <span class="ww-eyebrow">{% translate 'Direktzugang' %}</span><h2>{% translate 'Mit Code beitreten' %}</h2>
+                <form method="post" class="ww-form ww-join-form">
+                    {% csrf_token %}<input type="hidden" name="action" value="join">
+                    <label><span>{% translate 'Lobby-Code' %}</span><input name="code" maxlength="16" placeholder="W0LF42" value="{{ request.GET.code|default:'' }}" required autocomplete="off"></label>
+                    <label><span>{% translate 'Passwort (falls nötig)' %}</span><input type="password" name="password" maxlength="80" autocomplete="current-password"></label>
+                    <button class="ww-secondary ww-wide" type="submit"><i class="fa-solid fa-door-open"></i> {% translate 'Beitreten' %}</button>
+                </form>
+            </article>
+
+            <article class="ww-panel">
+                <span class="ww-eyebrow"><i class="fa-solid fa-envelope"></i> {% translate 'Einladungen' %}</span><h2>{% translate 'Offene Einladungen' %}</h2>
+                <div class="ww-invite-list">
+                    {% for invite in invites %}
+                        <div class="ww-invite-row"><div><strong>{{ invite.lobby.name }}</strong><small>{% blocktranslate with name=invite.from_user.username %}von {{ name }}{% endblocktranslate %}</small></div><div class="ww-inline-actions"><form method="post" action="{% url 'werewolf_invite_response' invite.id %}">{% csrf_token %}<input type="hidden" name="action" value="accept"><button class="ww-icon-button is-accept" title="{% translate 'Annehmen' %}"><i class="fa-solid fa-check"></i></button></form><form method="post" action="{% url 'werewolf_invite_response' invite.id %}">{% csrf_token %}<input type="hidden" name="action" value="decline"><button class="ww-icon-button" title="{% translate 'Ablehnen' %}"><i class="fa-solid fa-xmark"></i></button></form></div></div>
+                    {% empty %}<p class="ww-muted">{% translate 'Keine offenen Einladungen.' %}</p>{% endfor %}
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="ww-panel ww-browser">
+        <div class="ww-panel-heading"><div><span class="ww-eyebrow"><i class="fa-solid fa-earth-europe"></i> {% translate 'Lobby-Browser' %}</span><h2>{% translate 'Öffentliche Dörfer' %}</h2></div><span class="ww-count">{{ public_lobbies|length }}</span></div>
+        <div class="ww-lobby-grid">
+            {% for lobby in public_lobbies %}
+                <article class="ww-lobby-card"><div class="ww-lobby-top"><span class="ww-code">{{ lobby.code }}</span><span class="ww-status-dot"></span></div><h3>{{ lobby.name }}</h3><p><i class="fa-solid fa-crown"></i> {{ lobby.owner.username }}</p><div class="ww-lobby-meta"><span><i class="fa-solid fa-users"></i> {{ lobby.players.count }}/{{ lobby.max_players }}</span><span><i class="fa-solid fa-paw"></i> {{ lobby.werewolf_count }}</span></div><form method="post" action="{% url 'werewolf_join' lobby.code %}">{% csrf_token %}<button class="ww-primary" type="submit">{% translate 'Beitreten' %}</button></form></article>
+            {% empty %}<div class="ww-empty"><i class="fa-solid fa-cloud-moon"></i><h3>{% translate 'Noch ist das Dorf still' %}</h3><p>{% translate 'Erstelle die erste öffentliche Lobby.' %}</p></div>{% endfor %}
+        </div>
+    </section>
+
+    <section class="ww-panel">
+        <div class="ww-panel-heading"><div><span class="ww-eyebrow">{% translate 'Deine Spiele' %}</span><h2>{% translate 'Lobbys & laufende Runden' %}</h2></div></div>
+        <div class="ww-my-lobbies">
+            {% for lobby in my_lobbies %}<a href="{% url 'werewolf_lobby' lobby.code %}" class="ww-my-lobby"><span class="ww-code">{{ lobby.code }}</span><div><strong>{{ lobby.name }}</strong><small>{{ lobby.get_status_display }} · {{ lobby.players.count }}/{{ lobby.max_players }}</small></div><i class="fa-solid fa-arrow-right"></i></a>{% empty %}<p class="ww-muted">{% translate 'Du bist noch in keiner Werwolf-Lobby.' %}</p>{% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}

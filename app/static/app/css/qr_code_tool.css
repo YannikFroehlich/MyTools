@@ -171,7 +171,18 @@
 }
 
 .qr-settings-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr)
+        minmax(0, 1.3fr)
+        minmax(0, 0.8fr)
+        minmax(0, 0.8fr);
+}
+
+.qr-settings-grid > label,
+.qr-settings-grid select,
+.qr-settings-grid input {
+    min-width: 0;
 }
 
 .qr-full-width {
@@ -212,9 +223,79 @@
     background: rgba(15, 23, 42, 0.9);
 }
 
-.qr-tool-form input[type="color"] {
-    min-height: 46px;
-    padding: 4px;
+.qr-color-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 6px 12px 6px 7px;
+    border: 1px solid var(--tool-line-strong, rgba(var(--theme-accent-end-rgb), 0.34));
+    border-radius: 16px;
+    background: var(--tool-input-bg, rgba(248, 250, 252, 0.9));
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.qr-color-input:focus-within {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.72);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), 0.16);
+}
+
+.qr-tool-form .qr-color-input input[type="color"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 34px;
+    min-height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.qr-tool-form .qr-color-input input[type="color"]:focus {
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.qr-tool-form .qr-color-input input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.qr-tool-form .qr-color-input input[type="color"]::-webkit-color-swatch {
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.34);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.qr-tool-form .qr-color-input input[type="color"]::-moz-color-swatch {
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.34);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.qr-color-value {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--tool-card-text, #0f172a);
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.qr-tool-page .qr-settings-grid select,
+.qr-tool-page .qr-settings-grid input[type="number"] {
+    min-height: 48px;
+    border-color: var(--tool-line-strong, rgba(var(--theme-accent-end-rgb), 0.34)) !important;
+    background-color: var(--tool-input-bg, rgba(248, 250, 252, 0.9)) !important;
 }
 
 .qr-checkbox-label {
