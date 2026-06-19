@@ -57,6 +57,10 @@ from .models import (
     UserSuspension,
     UserTwoFactorSettings,
     WeatherLocation,
+    WerewolfInvite,
+    WerewolfLobby,
+    WerewolfMessage,
+    WerewolfPlayer,
 )
 
 
@@ -68,6 +72,39 @@ class BudgetCategoryAdmin(admin.ModelAdmin):
     list_filter = ("kind", "is_default", "created_at")
     search_fields = ("name", "user__username", "user__email")
     readonly_fields = ("created_at",)
+
+
+@admin.register(WerewolfLobby)
+class WerewolfLobbyAdmin(admin.ModelAdmin):
+    list_display = ("name", "code", "owner", "visibility", "status", "max_players", "day_number", "updated_at")
+    list_filter = ("visibility", "status", "created_at")
+    search_fields = ("name", "code", "owner__username")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(WerewolfPlayer)
+class WerewolfPlayerAdmin(admin.ModelAdmin):
+    list_display = ("display_label", "lobby", "role", "is_alive", "seat", "joined_at")
+    list_filter = ("role", "is_alive")
+    search_fields = ("user__username", "display_name", "lobby__code")
+
+
+@admin.register(WerewolfInvite)
+class WerewolfInviteAdmin(admin.ModelAdmin):
+    list_display = ("lobby", "from_user", "to_user", "status", "created_at")
+    list_filter = ("status", "created_at")
+    search_fields = ("lobby__code", "from_user__username", "to_user__username")
+
+
+@admin.register(WerewolfMessage)
+class WerewolfMessageAdmin(admin.ModelAdmin):
+    list_display = ("lobby", "sender", "channel", "short_text", "created_at")
+    list_filter = ("channel", "created_at")
+    search_fields = ("lobby__code", "sender__username", "text")
+    readonly_fields = ("created_at",)
+
+    def short_text(self, obj):
+        return obj.text[:70]
 
 
 @admin.register(BudgetMonth)

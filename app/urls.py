@@ -189,6 +189,21 @@ from .pong_views import (
     pong_reset_api,
     pong_state_api,
 )
+from .werewolf_views import (
+    werewolf_action_api,
+    werewolf_advance_api,
+    werewolf_delete,
+    werewolf_home,
+    werewolf_invite_friend,
+    werewolf_invite_response,
+    werewolf_join,
+    werewolf_leave,
+    werewolf_lobby,
+    werewolf_message_api,
+    werewolf_reset_api,
+    werewolf_start_api,
+    werewolf_state_api,
+)
 from .chat_views import (
     chat_group_leave_view,
     chat_group_member_action_view,
@@ -271,6 +286,20 @@ urlpatterns = [
     path('moderation/file-shares/<int:share_id>/delete/', moderation_file_share_delete_view, name='moderation_file_share_delete'),
     path('moderation/media/optimize/', moderation_media_optimize_view, name='moderation_media_optimize'),
     path('moderation/users/<int:user_id>/status/', moderation_user_status_view, name='moderation_user_status'),
+
+    path('werwolf/', werewolf_home, name='werewolf_home'),
+    path('werwolf/<slug:code>/', werewolf_lobby, name='werewolf_lobby'),
+    path('werwolf/<slug:code>/join/', werewolf_join, name='werewolf_join'),
+    path('werwolf/<slug:code>/invite/', werewolf_invite_friend, name='werewolf_invite_friend'),
+    path('werwolf/invite/<int:invite_id>/response/', werewolf_invite_response, name='werewolf_invite_response'),
+    path('werwolf/<slug:code>/leave/', werewolf_leave, name='werewolf_leave'),
+    path('werwolf/<slug:code>/delete/', werewolf_delete, name='werewolf_delete'),
+    path('werwolf/<slug:code>/api/state/', werewolf_state_api, name='werewolf_state_api'),
+    path('werwolf/<slug:code>/api/start/', werewolf_start_api, name='werewolf_start_api'),
+    path('werwolf/<slug:code>/api/action/', werewolf_action_api, name='werewolf_action_api'),
+    path('werwolf/<slug:code>/api/advance/', werewolf_advance_api, name='werewolf_advance_api'),
+    path('werwolf/<slug:code>/api/message/', werewolf_message_api, name='werewolf_message_api'),
+    path('werwolf/<slug:code>/api/reset/', werewolf_reset_api, name='werewolf_reset_api'),
 
     path('leaderboard/', leaderboard_view, name='leaderboard'),
     path('bild-tools/', image_tools_view, name='image_tools'),
