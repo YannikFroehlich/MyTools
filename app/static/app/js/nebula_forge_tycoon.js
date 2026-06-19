@@ -458,11 +458,6 @@
     let nextMeteorAt = nextMeteorTime();
     let dbSaveCooldownUntil = 0;
     let lastSpaceMineAt = 0;
-    const reduceMotionQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
-
-    function prefersReducedMotion() {
-        return Boolean(reduceMotionQuery && reduceMotionQuery.matches);
-    }
 
     function sanitizeNumber(value, fallback = 0) {
         const parsed = Number(value);
@@ -933,86 +928,318 @@
         window.setTimeout(() => gain.remove(), 950);
     }
 
-    function transientClass(element, className, duration = 650) {
+    function restartTemporaryClass(element, className, duration = 760) {
         if (!element) return;
         element.classList.remove(className);
         void element.offsetWidth;
         element.classList.add(className);
-        window.setTimeout(() => element.classList.remove(className), duration);
+        if (!element._nftClassTimers) element._nftClassTimers = {};
+        if (element._nftClassTimers[className]) {
+            window.clearTimeout(element._nftClassTimers[className]);
+        }
+        element._nftClassTimers[className] = window.setTimeout(() => {
+            element.classList.remove(className);
+            delete element._nftClassTimers[className];
+        }, duration);
     }
 
-    function elementCenterPoint(element) {
-        if (!element) return null;
-        const rect = element.getBoundingClientRect();
-        const rootRect = root.getBoundingClientRect();
-        return {
-            x: rect.left - rootRect.left + rect.width / 2,
-            y: rect.top - rootRect.top + rect.height / 2,
+    function transientClass(element, className, duration = 760) {
+        restartTemporaryClass(element, className, duration);
+    }
+
+    function prefersReducedMotion() {
+        return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    }
+
+    function removeLater(node, duration = 1000) {
+        window.setTimeout(() => node.remove(), duration);
+    }
+
+    function spawnShopFxNode(className, left, top, parent = root, vars = {}) {
+        const node = document.createElement("span");
+        node.className = className;
+        node.style.left = `${left}px`;
+        node.style.top = `${top}px`;
+        Object.entries(vars).forEach(([key, value]) => node.style.setProperty(key, value));
+        parent.appendChild(node);
+        return node;
+    }
+
+    function shopAnimationCardSelector(kind, id) {
+        return kind === "building" ? `[data-building-card="${id}"]` : `[data-upgrade-card="${id}"]`;
+    }
+
+    function abilityTypeFromButton(button) {
+        if (!button) return "generic";
+        if (button === elements.overdriveButton) return "overdrive";
+        if (button === elements.signalButton) return "signal";
+        if (button === elements.collectButton) return "collect";
+        if (button === elements.riftButton) return "rift";
+        if (button === elements.cryoButton) return "cryo";
+        return "generic";
+    }
+
+    function abilityVisualConfig(type, outcome = "normal") {
+        const map = {
+            overdrive: {
+                accent: "#facc15",
+                accent2: "#fff2a8",
+                glow: "rgba(250, 204, 21, 0.22)",
+                wave: "rgba(250, 204, 21, 0.38)",
+            },
+            signal: {
+                accent: "#67e8f9",
+                accent2: "#e0fbff",
+                glow: "rgba(103, 232, 249, 0.22)",
+                wave: "rgba(103, 232, 249, 0.40)",
+            },
+            collect: {
+                accent: "#86efac",
+                accent2: "#eafff1",
+                glow: "rgba(134, 239, 172, 0.20)",
+                wave: "rgba(134, 239, 172, 0.36)",
+            },
+            rift: {
+                accent: "#c084fc",
+                accent2: "#f0e0ff",
+                glow: "rgba(192, 132, 252, 0.22)",
+                wave: "rgba(192, 132, 252, 0.40)",
+            },
+            cryo: {
+                accent: "#93c5fd",
+                accent2: "#eff7ff",
+                glow: "rgba(147, 197, 253, 0.22)",
+                wave: "rgba(147, 197, 253, 0.38)",
+            },
+            generic: {
+                accent: "#7cf4ff",
+                accent2: "#f8fafc",
+                glow: "rgba(124, 244, 255, 0.22)",
+                wave: "rgba(124, 244, 255, 0.40)",
+            },
         };
+        const cfg = { ...(map[type] || map.generic) };
+        if (outcome === "perfect") {
+            cfg.sparkCount = 8;
+            cfg.rings = 2;
+            cfg.orbs = 3;
+            cfg.showTag = true;
+        } else if (outcome === "success") {
+            cfg.sparkCount = 6;
+            cfg.rings = 1;
+            cfg.orbs = 2;
+            cfg.showTag = true;
+        } else if (outcome === "start") {
+            cfg.sparkCount = 0;
+            cfg.rings = 1;
+            cfg.orbs = 0;
+            cfg.showTag = false;
+        } else {
+            cfg.sparkCount = 4;
+            cfg.rings = 1;
+            cfg.orbs = 1;
+            cfg.showTag = false;
+        }
+        return cfg;
     }
 
-    function createPurchaseParticle(x, y, kind, index, total) {
-        const particle = document.createElement("span");
-        particle.className = `nft-purchase-particle ${kind === "upgrade" ? "is-upgrade" : "is-building"}`;
-        const angle = (Math.PI * 2 * index) / total + Math.random() * 0.38;
-        const distance = 34 + Math.random() * 58;
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-        particle.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
-        particle.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
-        particle.style.setProperty("--r", `${Math.round((Math.random() - 0.5) * 220)}deg`);
-        root.appendChild(particle);
-        window.setTimeout(() => particle.remove(), 900);
+    function setAbilityState(button, stateName, enabled) {
+        if (!button) return;
+        button.classList.toggle(stateName, Boolean(enabled));
     }
 
-    function createTravelParticle(sourceElement, targetElement, kind) {
-        if (!sourceElement || !targetElement || prefersReducedMotion()) return;
-        const start = elementCenterPoint(sourceElement);
-        const end = elementCenterPoint(targetElement);
-        if (!start || !end) return;
+    function refreshAbilityCardStates() {
+        const currentTime = now();
+        const readyHeat = maxHeat() * 0.92;
+        setAbilityState(elements.overdriveButton, "is-ready", !elements.overdriveButton.disabled && state.heat >= readyHeat && state.overdriveUntil <= currentTime);
+        setAbilityState(elements.overdriveButton, "is-active", state.overdriveUntil > currentTime);
+        setAbilityState(elements.overdriveButton, "is-cooling", elements.overdriveButton.disabled && state.overdriveUntil <= currentTime);
 
-        const particle = document.createElement("span");
-        particle.className = `nft-travel-particle ${kind === "upgrade" ? "is-upgrade" : "is-building"}`;
-        particle.style.left = `${start.x}px`;
-        particle.style.top = `${start.y}px`;
-        particle.style.setProperty("--dx", `${end.x - start.x}px`);
-        particle.style.setProperty("--dy", `${end.y - start.y}px`);
-        root.appendChild(particle);
-        window.setTimeout(() => particle.remove(), 850);
+        const collectRemaining = Math.max(0, state.collectReadyAt - currentTime);
+        setAbilityState(elements.collectButton, "is-ready", collectRemaining <= 0);
+        setAbilityState(elements.collectButton, "is-active", false);
+        setAbilityState(elements.collectButton, "is-cooling", collectRemaining > 0);
+
+        const signalRemaining = Math.max(0, state.signalReadyAt - currentTime);
+        setAbilityState(elements.signalButton, "is-ready", !activeSignal && signalRemaining <= 0);
+        setAbilityState(elements.signalButton, "is-active", Boolean(activeSignal));
+        setAbilityState(elements.signalButton, "is-cooling", !activeSignal && signalRemaining > 0);
+
+        const riftRemaining = Math.max(0, state.riftReadyAt - currentTime);
+        setAbilityState(elements.riftButton, "is-ready", !activeRift && riftRemaining <= 0);
+        setAbilityState(elements.riftButton, "is-active", Boolean(activeRift));
+        setAbilityState(elements.riftButton, "is-cooling", !activeRift && riftRemaining > 0);
+
+        const cryoRemaining = Math.max(0, state.cryoReadyAt - currentTime);
+        setAbilityState(elements.cryoButton, "is-ready", !activeCryo && cryoRemaining <= 0);
+        setAbilityState(elements.cryoButton, "is-active", Boolean(activeCryo));
+        setAbilityState(elements.cryoButton, "is-cooling", !activeCryo && cryoRemaining > 0);
     }
 
-    function animatePurchaseSuccess(sourceElement, item, kind) {
-        if (!sourceElement) return;
-        const card = sourceElement.closest(".nft-shop-card");
-        const point = elementCenterPoint(sourceElement);
-        transientClass(card, "is-purchase-success", 700);
-        transientClass(sourceElement, "is-purchase-success", 700);
-        transientClass(elements.foundry, "is-purchase-active", 760);
-        transientClass(elements.mineButton, "is-upgraded", 760);
-        transientClass(elements.flux && elements.flux.closest(".nft-stat"), "is-value-pop", 620);
+    function animateAbilityActivation(button, outcome = "success") {
+        if (!button) return;
+        const type = abilityTypeFromButton(button);
+        const config = abilityVisualConfig(type, outcome);
+        const icon = button.querySelector("span");
+        const rootRect = root.getBoundingClientRect();
+        const buttonRect = button.getBoundingClientRect();
+        const iconRect = icon?.getBoundingClientRect() || buttonRect;
+        const iconX = iconRect.left - rootRect.left + iconRect.width / 2;
+        const iconY = iconRect.top - rootRect.top + iconRect.height / 2;
+        const buttonX = buttonRect.left - rootRect.left + buttonRect.width / 2;
+        const buttonY = buttonRect.top - rootRect.top + buttonRect.height / 2;
 
-        if (point && !prefersReducedMotion()) {
-            const label = document.createElement("span");
-            label.className = `nft-purchase-label ${kind === "upgrade" ? "is-upgrade" : "is-building"}`;
-            label.textContent = kind === "upgrade" ? `${item.name} ↑` : `${item.name} +1`;
-            label.style.left = `${point.x}px`;
-            label.style.top = `${point.y}px`;
-            root.appendChild(label);
-            window.setTimeout(() => label.remove(), 1050);
+        button.style.setProperty("--nft-ability-accent", config.accent);
+        button.style.setProperty("--nft-ability-glow", config.glow);
+        button.style.setProperty("--nft-ability-wave", config.wave);
+        transientClass(button, "is-ability-fired", outcome === "perfect" ? 1200 : 880);
+        transientClass(icon, "is-ability-fired", outcome === "perfect" ? 1050 : 820);
 
-            const particleCount = kind === "upgrade" ? 13 : 10;
-            for (let index = 0; index < particleCount; index += 1) {
-                window.setTimeout(() => createPurchaseParticle(point.x, point.y, kind, index, particleCount), index * 12);
+        for (let ringIndex = 0; ringIndex < (config.rings || 1); ringIndex += 1) {
+            const wave = spawnShopFxNode(
+                `nft-ability-wave ability-${type}`,
+                iconX,
+                iconY,
+                root,
+                {
+                    "--ability-wave-size": `${72 + ringIndex * 18}px`,
+                    "--ability-delay": `${ringIndex * 120}ms`,
+                    "--ability-accent": config.wave,
+                },
+            );
+            removeLater(wave, 1000 + ringIndex * 90);
+        }
+
+        if (!prefersReducedMotion() && (config.sparkCount || 0) > 0) {
+            for (let index = 0; index < config.sparkCount; index += 1) {
+                const angle = (Math.PI * 2 * index) / config.sparkCount + (Math.random() - 0.5) * 0.24;
+                const distance = 18 + Math.random() * (outcome === "perfect" ? 26 : 18);
+                const spark = spawnShopFxNode(
+                    `nft-ability-spark ability-${type}`,
+                    iconX,
+                    iconY,
+                    root,
+                    {
+                        "--spark-tx": `${Math.cos(angle) * distance}px`,
+                        "--spark-ty": `${Math.sin(angle) * distance}px`,
+                        "--spark-delay": `${Math.floor(Math.random() * 60)}ms`,
+                        "--ability-accent": config.accent,
+                        "--ability-accent-2": config.accent2,
+                    },
+                );
+                removeLater(spark, 860);
             }
         }
 
-        createTravelParticle(sourceElement, elements.flux, kind);
-        createTravelParticle(sourceElement, elements.mineButton, kind);
+        if (config.showTag) {
+            const label = spawnShopFxNode(
+                `nft-ability-tag ability-${type}`,
+                buttonX,
+                buttonY,
+                root,
+                {
+                    "--ability-accent": config.accent,
+                },
+            );
+            const labelMap = {
+                overdrive: t("Overdrive"),
+                signal: outcome === "perfect" ? t("Perfekt") : t("Treffer"),
+                collect: t("Impuls"),
+                rift: outcome === "perfect" ? t("Riss perfekt") : t("Riss"),
+                cryo: outcome === "perfect" ? t("Kryo perfekt") : t("Kryo"),
+                generic: t("Boost"),
+            };
+            label.textContent = labelMap[type] || t("Boost");
+            removeLater(label, 960);
+        }
+
+        const foundryRect = elements.foundry?.getBoundingClientRect();
+        if (foundryRect && (config.orbs || 0) > 0) {
+            const targetX = foundryRect.left - rootRect.left + foundryRect.width / 2;
+            const targetY = foundryRect.top - rootRect.top + foundryRect.height / 2;
+            for (let index = 0; index < config.orbs; index += 1) {
+                const orb = spawnShopFxNode(
+                    `nft-ability-orb ability-${type}`,
+                    buttonX + (Math.random() - 0.5) * 12,
+                    buttonY + (Math.random() - 0.5) * 10,
+                    root,
+                    {
+                        "--fly-tx": `${targetX - buttonX + (Math.random() - 0.5) * 18}px`,
+                        "--fly-ty": `${targetY - buttonY + (Math.random() - 0.5) * 18}px`,
+                        "--fly-delay": `${index * 90}ms`,
+                        "--ability-accent": config.accent,
+                    },
+                );
+                removeLater(orb, 1080 + index * 80);
+            }
+        }
     }
 
-    function animatePurchaseDenied(sourceElement) {
-        transientClass(sourceElement && sourceElement.closest(".nft-shop-card"), "is-purchase-denied", 420);
-        transientClass(sourceElement, "is-purchase-denied", 420);
+    function playDeniedPurchaseAnimation(button) {
+        if (!button) return;
+        const card = button.closest(".nft-shop-card");
+        restartTemporaryClass(button, "is-purchase-denied", 460);
+        restartTemporaryClass(card, "is-purchase-denied", 460);
+    }
+
+    function playShopPurchaseAnimation(kind, id, details = {}) {
+        const card = root.querySelector(shopAnimationCardSelector(kind, id));
+        if (!card) return;
+        const button = card.querySelector('.nft-shop-buy');
+        const icon = card.querySelector('.nft-shop-icon');
+        const metaPills = [...card.querySelectorAll('.nft-shop-meta span')];
+        const valuePill = metaPills[kind === 'building' ? 0 : 0];
+        const cardRect = card.getBoundingClientRect();
+        const iconRect = icon?.getBoundingClientRect() || cardRect;
+        const buttonRect = button?.getBoundingClientRect() || cardRect;
+        const rootRect = root.getBoundingClientRect();
+
+        restartTemporaryClass(card, 'is-purchase-success', 980);
+        restartTemporaryClass(button, 'is-purchase-success', 720);
+        restartTemporaryClass(icon, 'is-icon-burst', 900);
+        restartTemporaryClass(elements.foundry, 'is-purchase-active', 860);
+        restartTemporaryClass(elements.mineButton, 'is-upgraded', 820);
+        restartTemporaryClass(valuePill, 'is-value-pop', 760);
+
+        const buttonX = buttonRect.left - rootRect.left + buttonRect.width / 2;
+        const buttonY = buttonRect.top - rootRect.top + buttonRect.height / 2;
+
+        for (let index = 0; index < 10; index += 1) {
+            const angle = (Math.PI * 2 * index) / 10 + (Math.random() - 0.5) * 0.35;
+            const distance = 24 + Math.random() * 34;
+            const spark = spawnShopFxNode(
+                `nft-shop-spark${kind === 'upgrade' ? ' is-upgrade' : ''}`,
+                buttonX,
+                buttonY,
+                root,
+                {
+                    '--spark-tx': `${Math.cos(angle) * distance}px`,
+                    '--spark-ty': `${Math.sin(angle) * distance}px`,
+                    '--spark-delay': `${Math.floor(Math.random() * 90)}ms`,
+                },
+            );
+            removeLater(spark, 920);
+        }
+
+        const foundryRect = elements.foundry?.getBoundingClientRect();
+        if (foundryRect) {
+            const targetX = foundryRect.left - rootRect.left + foundryRect.width / 2;
+            const targetY = foundryRect.top - rootRect.top + foundryRect.height / 2;
+            for (let index = 0; index < 4; index += 1) {
+                const orb = spawnShopFxNode(
+                    `nft-shop-fly-orb${kind === 'upgrade' ? ' is-upgrade' : ''}`,
+                    buttonX + (Math.random() - 0.5) * 18,
+                    buttonY + (Math.random() - 0.5) * 12,
+                    root,
+                    {
+                        '--fly-tx': `${targetX - buttonX + (Math.random() - 0.5) * 28}px`,
+                        '--fly-ty': `${targetY - buttonY + (Math.random() - 0.5) * 28}px`,
+                        '--fly-delay': `${index * 60}ms`,
+                    },
+                );
+                removeLater(orb, 1180 + index * 80);
+            }
+        }
     }
 
     function playPrestigeAnimation(level, reward) {
@@ -1081,40 +1308,51 @@
         window.setTimeout(() => overlay.remove(), 4700);
     }
 
-    function buyBuilding(id, sourceElement = null) {
+
+    function buyBuilding(id, sourceButton = null) {
         const item = buildings.find(entry => entry.id === id);
         if (!item) return;
         const owned = buildingCount(id);
         const cost = costFor(item, owned);
         if (!spendFlux(cost)) {
-            animatePurchaseDenied(sourceElement);
+            playDeniedPurchaseAnimation(sourceButton);
             showMessage(t("Nicht genug Flux"), fmt("{item} kostet {cost} Flux.", { item: item.name, cost: format(cost) }));
             return;
         }
         state.buildings[id] = owned + 1;
         renderStats();
-        animatePurchaseSuccess(sourceElement, item, "building");
-        window.setTimeout(() => renderShopLists(true), prefersReducedMotion() ? 0 : 140);
+        renderShopLists(true);
+        window.requestAnimationFrame(() => {
+            playShopPurchaseAnimation("building", id, {
+                newValue: owned + 1,
+                label: fmt('+1 Besitz · {count}', { count: owned + 1 }),
+            });
+        });
         checkAchievements();
         saveState();
     }
 
-    function buyUpgrade(id, sourceElement = null) {
+    function buyUpgrade(id, sourceButton = null) {
         const item = upgrades.find(entry => entry.id === id);
         if (!item) return;
         const level = upgradeLevel(id);
         if (level >= item.max) return;
         const cost = costFor(item, level);
         if (!spendFlux(cost)) {
-            animatePurchaseDenied(sourceElement);
+            playDeniedPurchaseAnimation(sourceButton);
             showMessage(t("Nicht genug Flux"), fmt("{item} kostet {cost} Flux.", { item: item.name, cost: format(cost) }));
             return;
         }
         state.upgrades[id] = level + 1;
         state.heat = clamp(state.heat, 0, maxHeat());
         renderStats();
-        animatePurchaseSuccess(sourceElement, item, "upgrade");
-        window.setTimeout(() => renderShopLists(true), prefersReducedMotion() ? 0 : 140);
+        renderShopLists(true);
+        window.requestAnimationFrame(() => {
+            playShopPurchaseAnimation("upgrade", id, {
+                newValue: level + 1,
+                label: fmt('Upgrade auf Level {level}', { level: level + 1 }),
+            });
+        });
         checkAchievements();
         saveState();
     }
@@ -1154,6 +1392,7 @@
         state.heat = Math.min(maxHeat(), state.heat + 1.15);
         state.collectImpulses += 1;
         state.collectReadyAt = currentTime + collectImpulseCooldownMs();
+        animateAbilityActivation(elements.collectButton, "success");
         showMessage(t("Sammelimpuls"), fmt("Kleiner Sofort-Schub: {duration} AFK-Produktion gesammelt.", { duration: formatSeconds(preview.secondsOfAfk) }));
         checkAchievements();
         saveState();
@@ -1170,6 +1409,7 @@
         state.heat = 0;
         state.overdriveUntil = now() + duration;
         state.overdrives += 1;
+        animateAbilityActivation(elements.overdriveButton, "perfect");
         addFlux(burst, fmt("Overdrive +{amount}", { amount: format(burst) }));
         showMessage(t("Overdrive gezündet"), fmt("Passive Produktion x2,4 für {duration}.", { duration: formatSeconds(duration / 1000) }));
         checkAchievements();
@@ -1230,6 +1470,7 @@
         elements.signalPanel.hidden = false;
         elements.signalButton.querySelector("strong").textContent = t("Signal stoppen");
         elements.signalHint.textContent = t("Marker treffen");
+        animateAbilityActivation(elements.signalButton, "start");
     }
 
     function stopSignalRaid() {
@@ -1252,6 +1493,7 @@
             t(perfect ? "Perfekter Signal-Raid" : close ? "Signal getroffen" : "Signal verfehlt"),
             fmt("{amount} Flux und aktiver Boost für {duration}.", { amount: format(reward), duration: formatSeconds(boostDuration / 1000) })
         );
+        animateAbilityActivation(elements.signalButton, perfect ? "perfect" : close ? "success" : "normal");
         activeSignal = null;
         elements.signalPanel.hidden = true;
         elements.signalButton.querySelector("strong").textContent = t("Signal-Raid");
@@ -1281,6 +1523,7 @@
         elements.riftPanel.hidden = false;
         elements.riftButton.querySelector("strong").textContent = t("Riss versiegeln");
         elements.riftHint.textContent = t("Marker treffen");
+        animateAbilityActivation(elements.riftButton, "start");
     }
 
     function stopRiftEvent() {
@@ -1297,6 +1540,7 @@
         }
         state.heat = Math.min(maxHeat(), state.heat + (perfect ? 8 : close ? 13 : 19));
         state.riftReadyAt = now() + eventCooldownMs(42000, 15000);
+        animateAbilityActivation(elements.riftButton, perfect ? "perfect" : close ? "success" : "normal");
         showMessage(
             t(perfect ? "Flux-Riss perfekt versiegelt" : close ? "Flux-Riss stabilisiert" : "Flux-Riss instabil"),
             close ? fmt("{amount} Flux und AFK-Boost für {duration}.", { amount: format(reward), duration: formatSeconds(boostDuration / 1000) }) : fmt("{amount} Flux, aber kein AFK-Boost.", { amount: format(reward) })
@@ -1330,6 +1574,7 @@
         elements.cryoPanel.hidden = false;
         elements.cryoButton.querySelector("strong").textContent = t("Kryo stoppen");
         elements.cryoHint.textContent = t("kaltes Fenster treffen");
+        animateAbilityActivation(elements.cryoButton, "start");
     }
 
     function stopCryoEvent() {
@@ -1346,6 +1591,7 @@
         if (close) state.activeBoostUntil = now() + boostDuration;
         if (perfect) state.cryoPerfects += 1;
         state.cryoReadyAt = now() + eventCooldownMs(34000, 12000);
+        animateAbilityActivation(elements.cryoButton, perfect ? "perfect" : close ? "success" : "normal");
         showMessage(
             t(perfect ? "Perfekter Kryo-Takt" : close ? "Kryo-Takt getroffen" : "Kryo-Takt verpasst"),
             fmt("{amount} Flux, -{heat} Hitze{boostPart}.", { amount: format(reward), heat: Math.round(Math.min(beforeHeat, heatDrop)), boostPart: close ? fmt(" und aktiver Boost für {duration}", { duration: formatSeconds(boostDuration / 1000) }) : "" })
@@ -1487,6 +1733,7 @@
 
     function renderAll(forceShops = false) {
         renderStats();
+        refreshAbilityCardStates();
         updateNebulaAppearance();
         renderShopLists(forceShops);
         renderModes();
@@ -1601,6 +1848,8 @@
         if (elements.offlineInfo && !elements.offlineInfo.dataset.touched) {
             elements.offlineInfo.textContent = fmt("Offline-Effizienz: {efficiency}%, Offline-Cap: {hours}h.", { efficiency: Math.round(offlineEfficiency() * 100), hours: offlineCapHours() });
         }
+
+        refreshAbilityCardStates();
     }
 
     function markShopScrollActive() {
@@ -1694,7 +1943,7 @@
             const buyTitle = affordable ? t("Kaufen") : fmt("Es fehlen {amount} Flux", { amount: missing });
             const buyHint = affordable ? t("Kaufen") : fmt("fehlen {amount}", { amount: missing });
             return `
-                <article class="nft-shop-card ${affordable ? "is-affordable" : "is-unaffordable"}">
+                <article class="nft-shop-card ${affordable ? "is-affordable" : "is-unaffordable"}" data-building-card="${item.id}">
                     <span class="nft-shop-icon"><i class="${item.icon}"></i></span>
                     <div class="nft-shop-copy">
                         <strong>${escapeHtml(item.name)}</strong>
@@ -1723,7 +1972,7 @@
             const buyTitle = maxed ? t("Maximal ausgebaut") : affordable ? t("Kaufen") : fmt("Es fehlen {amount} Flux", { amount: missing });
             const buyHint = maxed ? t("Fertig") : affordable ? t("Kaufen") : fmt("fehlen {amount}", { amount: missing });
             return `
-                <article class="nft-shop-card ${maxed ? "is-locked" : affordable ? "is-affordable" : "is-unaffordable"}">
+                <article class="nft-shop-card ${maxed ? "is-locked" : affordable ? "is-affordable" : "is-unaffordable"}" data-upgrade-card="${item.id}">
                     <span class="nft-shop-icon"><i class="${item.icon}"></i></span>
                     <div class="nft-shop-copy">
                         <strong>${escapeHtml(item.name)}</strong>

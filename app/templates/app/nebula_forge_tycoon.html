@@ -5,7 +5,7 @@
 {% block title %}{% translate "Nebula Forge Tycoon" %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260619-nebula-prestige-popup-3s-fix">
+    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260619-nebula-forge-ability-fx-refined">
 {% endblock %}
 
 {% block content %}
@@ -114,27 +114,27 @@
                 </div>
 
                 <div class="nft-action-grid">
-                    <button type="button" class="nft-action-card" id="nftOverdriveButton" data-hotkey="1" aria-keyshortcuts="1" title="{% translate 'Taste 1' %}">
+                    <button type="button" class="nft-action-card" id="nftOverdriveButton" data-ability-type="overdrive" data-hotkey="1" aria-keyshortcuts="1" title="{% translate 'Taste 1' %}">
                         <span><i class="fa-solid fa-bolt-lightning"></i></span>
                         <strong>{% translate "Overdrive" %}</strong>
                         <small id="nftOverdriveHint">{% translate "ab 92% Hitze bereit" %}</small>
                     </button>
-                    <button type="button" class="nft-action-card" id="nftSignalButton" data-hotkey="2" aria-keyshortcuts="2" title="{% translate 'Taste 2' %}">
+                    <button type="button" class="nft-action-card" id="nftSignalButton" data-ability-type="signal" data-hotkey="2" aria-keyshortcuts="2" title="{% translate 'Taste 2' %}">
                         <span><i class="fa-solid fa-crosshairs"></i></span>
                         <strong>{% translate "Signal-Raid" %}</strong>
                         <small id="nftSignalHint">{% translate "aktiver Timing-Bonus" %}</small>
                     </button>
-                    <button type="button" class="nft-action-card" id="nftCollectButton" data-hotkey="3" aria-keyshortcuts="3" title="{% translate 'Taste 3' %}">
+                    <button type="button" class="nft-action-card" id="nftCollectButton" data-ability-type="collect" data-hotkey="3" aria-keyshortcuts="3" title="{% translate 'Taste 3' %}">
                         <span><i class="fa-solid fa-hand-sparkles"></i></span>
                         <strong>{% translate "Sammelimpuls" %}</strong>
                         <small id="nftCollectHint">{% translate "sofort AFK-Ertrag einsammeln" %}</small>
                     </button>
-                    <button type="button" class="nft-action-card" id="nftRiftButton" data-hotkey="4" aria-keyshortcuts="4" title="{% translate 'Taste 4' %}">
+                    <button type="button" class="nft-action-card" id="nftRiftButton" data-ability-type="rift" data-hotkey="4" aria-keyshortcuts="4" title="{% translate 'Taste 4' %}">
                         <span><i class="fa-solid fa-wand-sparkles"></i></span>
                         <strong>{% translate "Flux-Riss" %}</strong>
                         <small id="nftRiftHint">{% translate "AFK-Boost erspielen" %}</small>
                     </button>
-                    <button type="button" class="nft-action-card" id="nftCryoButton" data-hotkey="5" aria-keyshortcuts="5" title="{% translate 'Taste 5' %}">
+                    <button type="button" class="nft-action-card" id="nftCryoButton" data-ability-type="cryo" data-hotkey="5" aria-keyshortcuts="5" title="{% translate 'Taste 5' %}">
                         <span><i class="fa-solid fa-snowflake"></i></span>
                         <strong>{% translate "Kryo-Takt" %}</strong>
                         <small id="nftCryoHint">{% translate "Hitze senken + Boost" %}</small>
@@ -445,7 +445,6 @@
                 {% translate "Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt." as nft_i18n_197 %}"Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.": "{{ nft_i18n_197|escapejs }}",
                 {% translate "Prestige abgeschlossen" as nft_i18n_198 %}"Prestige abgeschlossen": "{{ nft_i18n_198|escapejs }}",
                 {% translate "Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%." as nft_i18n_199 %}"Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%.": "{{ nft_i18n_199|escapejs }}",
-                {% translate "+{reward} Splitter erhalten" as nft_i18n_199a %}"+{reward} Splitter erhalten": "{{ nft_i18n_199a|escapejs }}",
                 {% translate "Export erstellt" as nft_i18n_200 %}"Export erstellt": "{{ nft_i18n_200|escapejs }}",
                 {% translate "Dein Nebula Forge Save wurde heruntergeladen." as nft_i18n_201 %}"Dein Nebula Forge Save wurde heruntergeladen.": "{{ nft_i18n_201|escapejs }}",
                 {% translate "Import fehlgeschlagen" as nft_i18n_202 %}"Import fehlgeschlagen": "{{ nft_i18n_202|escapejs }}",
@@ -475,5 +474,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260619-nebula-prestige-popup-3s-fix" defer></script>
+    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260619-nebula-forge-ability-fx-refined" defer></script>
 {% endblock %}
