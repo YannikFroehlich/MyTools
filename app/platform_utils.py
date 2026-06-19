@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from .access_control import user_can_access_key
+from .access_control import user_can_access_key, user_can_see_key
 
 TOOL_CATALOG = [
     {"key": "home", "label": _("Start"), "icon": "fa-solid fa-house", "url_name": "home", "category": _("Alltag")},
@@ -102,17 +102,21 @@ def resolve_tools(request, favorite_keys=None, include_inaccessible=False):
     access_settings = SiteAccessSettings.get_solo()
     tools = []
     for tool in TOOL_CATALOG:
+        access_level = access_settings.get_tool_access_level(tool["key"])
         can_access = user_can_access_key(request.user, tool["key"], access_settings)
-        if not can_access and not include_inaccessible:
+        can_see = user_can_see_key(request.user, tool["key"], access_settings)
+        if not can_see or (not can_access and not include_inaccessible):
             continue
 
         item = dict(tool)
         item["url"] = reverse(item["url_name"])
         item["is_favorite"] = item["key"] in favorite_keys
         item["can_access"] = can_access
-        item["access_level"] = access_settings.get_tool_access_level(item["key"])
-        item["is_restricted"] = item["access_level"] != access_settings.TOOL_ACCESS_ALL
-        item["access_badge"] = _("Admin") if item["access_level"] == access_settings.TOOL_ACCESS_ADMIN else _("Gesperrt")
+        item["can_see"] = can_see
+        item["access_level"] = access_level
+        item["is_restricted"] = access_level != access_settings.TOOL_ACCESS_ALL
+        item["is_hidden_access"] = access_level == access_settings.TOOL_ACCESS_HIDDEN
+        item["access_badge"] = _("Versteckt") if item["is_hidden_access"] else _("Unveröffentlicht")
         tools.append(item)
     return tools
 
