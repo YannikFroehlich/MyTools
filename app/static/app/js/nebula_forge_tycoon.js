@@ -8,6 +8,10 @@
     const DB_SAVE_COOLDOWN_SECONDS = 60;
     const SPACE_MINE_REPEAT_INTERVAL_MS = 150;
     const SPACE_MINE_SPAM_INTERVAL_MS = 55;
+    const UI_RENDER_INTERVAL_MS = 180;
+    const ACHIEVEMENT_SWEEP_INTERVAL_MS = 650;
+    const IDLE_LOOP_INTERVAL_MS = 120;
+    const BACKGROUND_LOOP_INTERVAL_MS = 1000;
     const DB_LOAD_URL = root.dataset.dbLoadUrl || "";
     const DB_SAVE_URL = root.dataset.dbSaveUrl || "";
     const USER_IS_AUTHENTICATED = root.dataset.authenticated === "true";
@@ -443,14 +447,24 @@
         offlineInfo: document.getElementById("nftOfflineInfo"),
     };
 
+    const focusModeButtons = Array.from(document.querySelectorAll(".nft-focus-buttons button"));
+    const tabButtons = Array.from(document.querySelectorAll(".nft-tabs button"));
+    const tabPanels = Array.from(document.querySelectorAll(".nft-tab-panel"));
+
     let state = loadState();
     let lastFrame = now();
     let holdTimer = null;
     let renderQueued = false;
+    let lastUiRenderAt = 0;
+    let lastAchievementSweepAt = 0;
+    let loopTimer = 0;
     let shopScrollLockUntil = 0;
     let lastBuildingsRenderKey = "";
     let lastUpgradesRenderKey = "";
     let lastAchievementsRenderKey = "";
+    let lastNebulaAppearanceKey = "";
+    let lastModeRenderKey = "";
+    let lastDatabaseButtonKey = "";
     const SHOP_SCROLL_IDLE_MS = 650;
     let activeSignal = null;
     let activeRift = null;
@@ -577,16 +591,23 @@
         return upgrades.reduce((sum, item) => sum + upgradeLevel(item.id, source), 0);
     }
 
-    function updateDatabaseSaveButton() {
+    function updateDatabaseSaveButton(force = false) {
         if (!elements.saveButton || !elements.saveButtonText) return;
 
         if (!USER_IS_AUTHENTICATED) {
-            elements.saveButton.disabled = false;
-            elements.saveButtonText.textContent = t("Login nötig");
+            if (force || lastDatabaseButtonKey !== "guest") {
+                elements.saveButton.disabled = false;
+                elements.saveButtonText.textContent = t("Login nötig");
+                lastDatabaseButtonKey = "guest";
+            }
             return;
         }
 
         const remaining = Math.ceil(Math.max(0, dbSaveCooldownUntil - now()) / 1000);
+        const key = remaining > 0 ? `cooldown:${remaining}` : "ready";
+        if (!force && key === lastDatabaseButtonKey) return;
+        lastDatabaseButtonKey = key;
+
         if (remaining > 0) {
             elements.saveButton.disabled = true;
             elements.saveButtonText.textContent = fmt("Speichern {seconds}s", { seconds: remaining });
@@ -600,7 +621,7 @@
     function setDatabaseSaveCooldown(seconds) {
         const cooldownSeconds = Math.max(0, Math.ceil(Number(seconds) || 0));
         dbSaveCooldownUntil = cooldownSeconds > 0 ? now() + cooldownSeconds * 1000 : 0;
-        updateDatabaseSaveButton();
+        updateDatabaseSaveButton(true);
     }
 
     function buildDatabaseSavePayload() {
@@ -868,14 +889,14 @@
         return Math.max(1, Math.floor(Math.sqrt(state.lifetimeFlux / prestigeRequirement())));
     }
 
-    function addFlux(amount, reason = "") {
+    function addFlux(amount, reason = "", shouldRender = true) {
         amount = Math.max(0, sanitizeNumber(amount));
         if (amount <= 0) return;
         state.flux += amount;
         state.lifetimeFlux += amount;
         state.totalLifetimeFlux += amount;
         if (reason) floatingGain(amount, reason);
-        queueRender();
+        if (shouldRender) queueRender();
     }
 
     function spendFlux(amount) {
@@ -928,29 +949,418 @@
         window.setTimeout(() => gain.remove(), 950);
     }
 
-    function buyBuilding(id) {
+    function restartTemporaryClass(element, className, duration = 760) {
+        if (!element) return;
+        element.classList.remove(className);
+        void element.offsetWidth;
+        element.classList.add(className);
+        if (!element._nftClassTimers) element._nftClassTimers = {};
+        if (element._nftClassTimers[className]) {
+            window.clearTimeout(element._nftClassTimers[className]);
+        }
+        element._nftClassTimers[className] = window.setTimeout(() => {
+            element.classList.remove(className);
+            delete element._nftClassTimers[className];
+        }, duration);
+    }
+
+    function transientClass(element, className, duration = 760) {
+        restartTemporaryClass(element, className, duration);
+    }
+
+    function prefersReducedMotion() {
+        return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    }
+
+    function removeLater(node, duration = 1000) {
+        window.setTimeout(() => node.remove(), duration);
+    }
+
+    function spawnShopFxNode(className, left, top, parent = root, vars = {}) {
+        const node = document.createElement("span");
+        node.className = className;
+        node.style.left = `${left}px`;
+        node.style.top = `${top}px`;
+        Object.entries(vars).forEach(([key, value]) => node.style.setProperty(key, value));
+        parent.appendChild(node);
+        return node;
+    }
+
+    function shopAnimationCardSelector(kind, id) {
+        return kind === "building" ? `[data-building-card="${id}"]` : `[data-upgrade-card="${id}"]`;
+    }
+
+    function abilityTypeFromButton(button) {
+        if (!button) return "generic";
+        if (button === elements.overdriveButton) return "overdrive";
+        if (button === elements.signalButton) return "signal";
+        if (button === elements.collectButton) return "collect";
+        if (button === elements.riftButton) return "rift";
+        if (button === elements.cryoButton) return "cryo";
+        return "generic";
+    }
+
+    function abilityVisualConfig(type, outcome = "normal") {
+        const map = {
+            overdrive: {
+                accent: "#facc15",
+                accent2: "#fff2a8",
+                glow: "rgba(250, 204, 21, 0.22)",
+                wave: "rgba(250, 204, 21, 0.38)",
+            },
+            signal: {
+                accent: "#67e8f9",
+                accent2: "#e0fbff",
+                glow: "rgba(103, 232, 249, 0.22)",
+                wave: "rgba(103, 232, 249, 0.40)",
+            },
+            collect: {
+                accent: "#86efac",
+                accent2: "#eafff1",
+                glow: "rgba(134, 239, 172, 0.20)",
+                wave: "rgba(134, 239, 172, 0.36)",
+            },
+            rift: {
+                accent: "#c084fc",
+                accent2: "#f0e0ff",
+                glow: "rgba(192, 132, 252, 0.22)",
+                wave: "rgba(192, 132, 252, 0.40)",
+            },
+            cryo: {
+                accent: "#93c5fd",
+                accent2: "#eff7ff",
+                glow: "rgba(147, 197, 253, 0.22)",
+                wave: "rgba(147, 197, 253, 0.38)",
+            },
+            generic: {
+                accent: "#7cf4ff",
+                accent2: "#f8fafc",
+                glow: "rgba(124, 244, 255, 0.22)",
+                wave: "rgba(124, 244, 255, 0.40)",
+            },
+        };
+        const cfg = { ...(map[type] || map.generic) };
+        if (outcome === "perfect") {
+            cfg.sparkCount = 8;
+            cfg.rings = 2;
+            cfg.orbs = 3;
+            cfg.showTag = true;
+        } else if (outcome === "success") {
+            cfg.sparkCount = 6;
+            cfg.rings = 1;
+            cfg.orbs = 2;
+            cfg.showTag = true;
+        } else if (outcome === "start") {
+            cfg.sparkCount = 0;
+            cfg.rings = 1;
+            cfg.orbs = 0;
+            cfg.showTag = false;
+        } else {
+            cfg.sparkCount = 4;
+            cfg.rings = 1;
+            cfg.orbs = 1;
+            cfg.showTag = false;
+        }
+        return cfg;
+    }
+
+    function setAbilityState(button, stateName, enabled) {
+        if (!button) return;
+        button.classList.toggle(stateName, Boolean(enabled));
+    }
+
+    function refreshAbilityCardStates() {
+        const currentTime = now();
+        const readyHeat = maxHeat() * 0.92;
+        setAbilityState(elements.overdriveButton, "is-ready", !elements.overdriveButton.disabled && state.heat >= readyHeat && state.overdriveUntil <= currentTime);
+        setAbilityState(elements.overdriveButton, "is-active", state.overdriveUntil > currentTime);
+        setAbilityState(elements.overdriveButton, "is-cooling", elements.overdriveButton.disabled && state.overdriveUntil <= currentTime);
+
+        const collectRemaining = Math.max(0, state.collectReadyAt - currentTime);
+        setAbilityState(elements.collectButton, "is-ready", collectRemaining <= 0);
+        setAbilityState(elements.collectButton, "is-active", false);
+        setAbilityState(elements.collectButton, "is-cooling", collectRemaining > 0);
+
+        const signalRemaining = Math.max(0, state.signalReadyAt - currentTime);
+        setAbilityState(elements.signalButton, "is-ready", !activeSignal && signalRemaining <= 0);
+        setAbilityState(elements.signalButton, "is-active", Boolean(activeSignal));
+        setAbilityState(elements.signalButton, "is-cooling", !activeSignal && signalRemaining > 0);
+
+        const riftRemaining = Math.max(0, state.riftReadyAt - currentTime);
+        setAbilityState(elements.riftButton, "is-ready", !activeRift && riftRemaining <= 0);
+        setAbilityState(elements.riftButton, "is-active", Boolean(activeRift));
+        setAbilityState(elements.riftButton, "is-cooling", !activeRift && riftRemaining > 0);
+
+        const cryoRemaining = Math.max(0, state.cryoReadyAt - currentTime);
+        setAbilityState(elements.cryoButton, "is-ready", !activeCryo && cryoRemaining <= 0);
+        setAbilityState(elements.cryoButton, "is-active", Boolean(activeCryo));
+        setAbilityState(elements.cryoButton, "is-cooling", !activeCryo && cryoRemaining > 0);
+    }
+
+    function animateAbilityActivation(button, outcome = "success") {
+        if (!button) return;
+        const type = abilityTypeFromButton(button);
+        const config = abilityVisualConfig(type, outcome);
+        const icon = button.querySelector("span");
+        const rootRect = root.getBoundingClientRect();
+        const buttonRect = button.getBoundingClientRect();
+        const iconRect = icon?.getBoundingClientRect() || buttonRect;
+        const iconX = iconRect.left - rootRect.left + iconRect.width / 2;
+        const iconY = iconRect.top - rootRect.top + iconRect.height / 2;
+        const buttonX = buttonRect.left - rootRect.left + buttonRect.width / 2;
+        const buttonY = buttonRect.top - rootRect.top + buttonRect.height / 2;
+
+        button.style.setProperty("--nft-ability-accent", config.accent);
+        button.style.setProperty("--nft-ability-glow", config.glow);
+        button.style.setProperty("--nft-ability-wave", config.wave);
+        transientClass(button, "is-ability-fired", outcome === "perfect" ? 1200 : 880);
+        transientClass(icon, "is-ability-fired", outcome === "perfect" ? 1050 : 820);
+
+        for (let ringIndex = 0; ringIndex < (config.rings || 1); ringIndex += 1) {
+            const wave = spawnShopFxNode(
+                `nft-ability-wave ability-${type}`,
+                iconX,
+                iconY,
+                root,
+                {
+                    "--ability-wave-size": `${72 + ringIndex * 18}px`,
+                    "--ability-delay": `${ringIndex * 120}ms`,
+                    "--ability-accent": config.wave,
+                },
+            );
+            removeLater(wave, 1000 + ringIndex * 90);
+        }
+
+        if (!prefersReducedMotion() && (config.sparkCount || 0) > 0) {
+            for (let index = 0; index < config.sparkCount; index += 1) {
+                const angle = (Math.PI * 2 * index) / config.sparkCount + (Math.random() - 0.5) * 0.24;
+                const distance = 18 + Math.random() * (outcome === "perfect" ? 26 : 18);
+                const spark = spawnShopFxNode(
+                    `nft-ability-spark ability-${type}`,
+                    iconX,
+                    iconY,
+                    root,
+                    {
+                        "--spark-tx": `${Math.cos(angle) * distance}px`,
+                        "--spark-ty": `${Math.sin(angle) * distance}px`,
+                        "--spark-delay": `${Math.floor(Math.random() * 60)}ms`,
+                        "--ability-accent": config.accent,
+                        "--ability-accent-2": config.accent2,
+                    },
+                );
+                removeLater(spark, 860);
+            }
+        }
+
+        if (config.showTag) {
+            const label = spawnShopFxNode(
+                `nft-ability-tag ability-${type}`,
+                buttonX,
+                buttonY,
+                root,
+                {
+                    "--ability-accent": config.accent,
+                },
+            );
+            const labelMap = {
+                overdrive: t("Overdrive"),
+                signal: outcome === "perfect" ? t("Perfekt") : t("Treffer"),
+                collect: t("Impuls"),
+                rift: outcome === "perfect" ? t("Riss perfekt") : t("Riss"),
+                cryo: outcome === "perfect" ? t("Kryo perfekt") : t("Kryo"),
+                generic: t("Boost"),
+            };
+            label.textContent = labelMap[type] || t("Boost");
+            removeLater(label, 960);
+        }
+
+        const foundryRect = elements.foundry?.getBoundingClientRect();
+        if (foundryRect && (config.orbs || 0) > 0) {
+            const targetX = foundryRect.left - rootRect.left + foundryRect.width / 2;
+            const targetY = foundryRect.top - rootRect.top + foundryRect.height / 2;
+            for (let index = 0; index < config.orbs; index += 1) {
+                const orb = spawnShopFxNode(
+                    `nft-ability-orb ability-${type}`,
+                    buttonX + (Math.random() - 0.5) * 12,
+                    buttonY + (Math.random() - 0.5) * 10,
+                    root,
+                    {
+                        "--fly-tx": `${targetX - buttonX + (Math.random() - 0.5) * 18}px`,
+                        "--fly-ty": `${targetY - buttonY + (Math.random() - 0.5) * 18}px`,
+                        "--fly-delay": `${index * 90}ms`,
+                        "--ability-accent": config.accent,
+                    },
+                );
+                removeLater(orb, 1080 + index * 80);
+            }
+        }
+    }
+
+    function playDeniedPurchaseAnimation(button) {
+        if (!button) return;
+        const card = button.closest(".nft-shop-card");
+        restartTemporaryClass(button, "is-purchase-denied", 460);
+        restartTemporaryClass(card, "is-purchase-denied", 460);
+    }
+
+    function playShopPurchaseAnimation(kind, id, details = {}) {
+        const card = root.querySelector(shopAnimationCardSelector(kind, id));
+        if (!card) return;
+        const button = card.querySelector('.nft-shop-buy');
+        const icon = card.querySelector('.nft-shop-icon');
+        const metaPills = [...card.querySelectorAll('.nft-shop-meta span')];
+        const valuePill = metaPills[kind === 'building' ? 0 : 0];
+        const cardRect = card.getBoundingClientRect();
+        const iconRect = icon?.getBoundingClientRect() || cardRect;
+        const buttonRect = button?.getBoundingClientRect() || cardRect;
+        const rootRect = root.getBoundingClientRect();
+
+        restartTemporaryClass(card, 'is-purchase-success', 980);
+        restartTemporaryClass(button, 'is-purchase-success', 720);
+        restartTemporaryClass(icon, 'is-icon-burst', 900);
+        restartTemporaryClass(elements.foundry, 'is-purchase-active', 860);
+        restartTemporaryClass(elements.mineButton, 'is-upgraded', 820);
+        restartTemporaryClass(valuePill, 'is-value-pop', 760);
+
+        const buttonX = buttonRect.left - rootRect.left + buttonRect.width / 2;
+        const buttonY = buttonRect.top - rootRect.top + buttonRect.height / 2;
+
+        for (let index = 0; index < 10; index += 1) {
+            const angle = (Math.PI * 2 * index) / 10 + (Math.random() - 0.5) * 0.35;
+            const distance = 24 + Math.random() * 34;
+            const spark = spawnShopFxNode(
+                `nft-shop-spark${kind === 'upgrade' ? ' is-upgrade' : ''}`,
+                buttonX,
+                buttonY,
+                root,
+                {
+                    '--spark-tx': `${Math.cos(angle) * distance}px`,
+                    '--spark-ty': `${Math.sin(angle) * distance}px`,
+                    '--spark-delay': `${Math.floor(Math.random() * 90)}ms`,
+                },
+            );
+            removeLater(spark, 920);
+        }
+
+        const foundryRect = elements.foundry?.getBoundingClientRect();
+        if (foundryRect) {
+            const targetX = foundryRect.left - rootRect.left + foundryRect.width / 2;
+            const targetY = foundryRect.top - rootRect.top + foundryRect.height / 2;
+            for (let index = 0; index < 4; index += 1) {
+                const orb = spawnShopFxNode(
+                    `nft-shop-fly-orb${kind === 'upgrade' ? ' is-upgrade' : ''}`,
+                    buttonX + (Math.random() - 0.5) * 18,
+                    buttonY + (Math.random() - 0.5) * 12,
+                    root,
+                    {
+                        '--fly-tx': `${targetX - buttonX + (Math.random() - 0.5) * 28}px`,
+                        '--fly-ty': `${targetY - buttonY + (Math.random() - 0.5) * 28}px`,
+                        '--fly-delay': `${index * 60}ms`,
+                    },
+                );
+                removeLater(orb, 1180 + index * 80);
+            }
+        }
+    }
+
+    function playPrestigeAnimation(level, reward) {
+        transientClass(root, "is-prestige-flash", 1700);
+        transientClass(elements.foundry, "is-prestige-boom", 1700);
+        transientClass(elements.mineButton, "is-prestige-evolved", 1700);
+
+        const overlay = document.createElement("div");
+        overlay.className = "nft-prestige-overlay";
+        overlay.setAttribute("aria-hidden", "true");
+
+        const warp = document.createElement("div");
+        warp.className = "nft-prestige-warp";
+        overlay.appendChild(warp);
+
+        for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
+            const ring = document.createElement("span");
+            ring.className = "nft-prestige-ring";
+            ring.style.setProperty("--delay", `${ringIndex * 160}ms`);
+            overlay.appendChild(ring);
+        }
+
+        if (!prefersReducedMotion()) {
+            for (let index = 0; index < 32; index += 1) {
+                const shard = document.createElement("span");
+                shard.className = "nft-prestige-shard";
+                shard.innerHTML = '<i class="fa-solid fa-star"></i>';
+                const angle = (Math.PI * 2 * index) / 32;
+                const distance = 160 + Math.random() * 260;
+                shard.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
+                shard.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
+                shard.style.setProperty("--delay", `${Math.random() * 360}ms`);
+                shard.style.setProperty("--spin", `${Math.round(180 + Math.random() * 540)}deg`);
+                overlay.appendChild(shard);
+            }
+        }
+
+        const text = document.createElement("div");
+        text.className = "nft-prestige-text";
+
+        const icon = document.createElement("span");
+        icon.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i>';
+        text.appendChild(icon);
+
+        const title = document.createElement("strong");
+        title.textContent = t("Neue Galaxie");
+        text.appendChild(title);
+
+        const bonus = document.createElement("small");
+        bonus.textContent = fmt("Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%.", {
+            level,
+            bonus: Math.round((prestigeMultiplier() - 1) * 100),
+        });
+        text.appendChild(bonus);
+
+        const shards = document.createElement("em");
+        shards.textContent = fmt("+{reward} Splitter erhalten", { reward });
+        text.appendChild(shards);
+
+        overlay.appendChild(text);
+        root.appendChild(overlay);
+
+        // Keep the prestige result readable for a real moment. Do not shorten this for
+        // prefers-reduced-motion, otherwise the popup disappears almost instantly on
+        // systems with reduced motion enabled.
+        window.setTimeout(() => overlay.remove(), 4700);
+    }
+
+
+    function buyBuilding(id, sourceButton = null) {
         const item = buildings.find(entry => entry.id === id);
         if (!item) return;
         const owned = buildingCount(id);
         const cost = costFor(item, owned);
         if (!spendFlux(cost)) {
+            playDeniedPurchaseAnimation(sourceButton);
             showMessage(t("Nicht genug Flux"), fmt("{item} kostet {cost} Flux.", { item: item.name, cost: format(cost) }));
             return;
         }
         state.buildings[id] = owned + 1;
         renderStats();
         renderShopLists(true);
+        window.requestAnimationFrame(() => {
+            playShopPurchaseAnimation("building", id, {
+                newValue: owned + 1,
+                label: fmt('+1 Besitz · {count}', { count: owned + 1 }),
+            });
+        });
         checkAchievements();
         saveState();
     }
 
-    function buyUpgrade(id) {
+    function buyUpgrade(id, sourceButton = null) {
         const item = upgrades.find(entry => entry.id === id);
         if (!item) return;
         const level = upgradeLevel(id);
         if (level >= item.max) return;
         const cost = costFor(item, level);
         if (!spendFlux(cost)) {
+            playDeniedPurchaseAnimation(sourceButton);
             showMessage(t("Nicht genug Flux"), fmt("{item} kostet {cost} Flux.", { item: item.name, cost: format(cost) }));
             return;
         }
@@ -958,6 +1368,12 @@
         state.heat = clamp(state.heat, 0, maxHeat());
         renderStats();
         renderShopLists(true);
+        window.requestAnimationFrame(() => {
+            playShopPurchaseAnimation("upgrade", id, {
+                newValue: level + 1,
+                label: fmt('Upgrade auf Level {level}', { level: level + 1 }),
+            });
+        });
         checkAchievements();
         saveState();
     }
@@ -997,6 +1413,7 @@
         state.heat = Math.min(maxHeat(), state.heat + 1.15);
         state.collectImpulses += 1;
         state.collectReadyAt = currentTime + collectImpulseCooldownMs();
+        animateAbilityActivation(elements.collectButton, "success");
         showMessage(t("Sammelimpuls"), fmt("Kleiner Sofort-Schub: {duration} AFK-Produktion gesammelt.", { duration: formatSeconds(preview.secondsOfAfk) }));
         checkAchievements();
         saveState();
@@ -1013,6 +1430,7 @@
         state.heat = 0;
         state.overdriveUntil = now() + duration;
         state.overdrives += 1;
+        animateAbilityActivation(elements.overdriveButton, "perfect");
         addFlux(burst, fmt("Overdrive +{amount}", { amount: format(burst) }));
         showMessage(t("Overdrive gezündet"), fmt("Passive Produktion x2,4 für {duration}.", { duration: formatSeconds(duration / 1000) }));
         checkAchievements();
@@ -1073,6 +1491,7 @@
         elements.signalPanel.hidden = false;
         elements.signalButton.querySelector("strong").textContent = t("Signal stoppen");
         elements.signalHint.textContent = t("Marker treffen");
+        animateAbilityActivation(elements.signalButton, "start");
     }
 
     function stopSignalRaid() {
@@ -1095,6 +1514,7 @@
             t(perfect ? "Perfekter Signal-Raid" : close ? "Signal getroffen" : "Signal verfehlt"),
             fmt("{amount} Flux und aktiver Boost für {duration}.", { amount: format(reward), duration: formatSeconds(boostDuration / 1000) })
         );
+        animateAbilityActivation(elements.signalButton, perfect ? "perfect" : close ? "success" : "normal");
         activeSignal = null;
         elements.signalPanel.hidden = true;
         elements.signalButton.querySelector("strong").textContent = t("Signal-Raid");
@@ -1124,6 +1544,7 @@
         elements.riftPanel.hidden = false;
         elements.riftButton.querySelector("strong").textContent = t("Riss versiegeln");
         elements.riftHint.textContent = t("Marker treffen");
+        animateAbilityActivation(elements.riftButton, "start");
     }
 
     function stopRiftEvent() {
@@ -1140,6 +1561,7 @@
         }
         state.heat = Math.min(maxHeat(), state.heat + (perfect ? 8 : close ? 13 : 19));
         state.riftReadyAt = now() + eventCooldownMs(42000, 15000);
+        animateAbilityActivation(elements.riftButton, perfect ? "perfect" : close ? "success" : "normal");
         showMessage(
             t(perfect ? "Flux-Riss perfekt versiegelt" : close ? "Flux-Riss stabilisiert" : "Flux-Riss instabil"),
             close ? fmt("{amount} Flux und AFK-Boost für {duration}.", { amount: format(reward), duration: formatSeconds(boostDuration / 1000) }) : fmt("{amount} Flux, aber kein AFK-Boost.", { amount: format(reward) })
@@ -1173,6 +1595,7 @@
         elements.cryoPanel.hidden = false;
         elements.cryoButton.querySelector("strong").textContent = t("Kryo stoppen");
         elements.cryoHint.textContent = t("kaltes Fenster treffen");
+        animateAbilityActivation(elements.cryoButton, "start");
     }
 
     function stopCryoEvent() {
@@ -1189,6 +1612,7 @@
         if (close) state.activeBoostUntil = now() + boostDuration;
         if (perfect) state.cryoPerfects += 1;
         state.cryoReadyAt = now() + eventCooldownMs(34000, 12000);
+        animateAbilityActivation(elements.cryoButton, perfect ? "perfect" : close ? "success" : "normal");
         showMessage(
             t(perfect ? "Perfekter Kryo-Takt" : close ? "Kryo-Takt getroffen" : "Kryo-Takt verpasst"),
             fmt("{amount} Flux, -{heat} Hitze{boostPart}.", { amount: format(reward), heat: Math.round(Math.min(beforeHeat, heatDrop)), boostPart: close ? fmt(" und aktiver Boost für {duration}", { duration: formatSeconds(boostDuration / 1000) }) : "" })
@@ -1325,21 +1749,26 @@
         checkAchievements();
         saveState();
         renderAll(true);
+        playPrestigeAnimation(newLevel, reward);
     }
 
     function renderAll(forceShops = false) {
         renderStats();
-        updateNebulaAppearance();
+        refreshAbilityCardStates();
+        updateNebulaAppearance(forceShops);
         renderShopLists(forceShops);
         renderModes();
     }
 
-    function updateNebulaAppearance() {
+    function updateNebulaAppearance(force = false) {
         if (!elements.mineButton || !elements.foundry) return;
 
         const prestigeLevel = Math.max(1, Math.floor(state.prestigeLevel || 1));
         const intensity = Math.max(0, prestigeLevel - 1);
         const shardIntensity = Math.min(20, state.shards || 0);
+        const appearanceKey = `${prestigeLevel}:${Math.floor(shardIntensity * 100)}`;
+        if (!force && appearanceKey === lastNebulaAppearanceKey) return;
+        lastNebulaAppearanceKey = appearanceKey;
 
         const coreScale = 1 + Math.min(0.14, intensity * 0.012);
         const hueRotate = Math.min(165, intensity * 11 + shardIntensity * 1.8);
@@ -1443,6 +1872,7 @@
         if (elements.offlineInfo && !elements.offlineInfo.dataset.touched) {
             elements.offlineInfo.textContent = fmt("Offline-Effizienz: {efficiency}%, Offline-Cap: {hours}h.", { efficiency: Math.round(offlineEfficiency() * 100), hours: offlineCapHours() });
         }
+
     }
 
     function markShopScrollActive() {
@@ -1536,7 +1966,7 @@
             const buyTitle = affordable ? t("Kaufen") : fmt("Es fehlen {amount} Flux", { amount: missing });
             const buyHint = affordable ? t("Kaufen") : fmt("fehlen {amount}", { amount: missing });
             return `
-                <article class="nft-shop-card ${affordable ? "is-affordable" : "is-unaffordable"}">
+                <article class="nft-shop-card ${affordable ? "is-affordable" : "is-unaffordable"}" data-building-card="${item.id}">
                     <span class="nft-shop-icon"><i class="${item.icon}"></i></span>
                     <div class="nft-shop-copy">
                         <strong>${escapeHtml(item.name)}</strong>
@@ -1565,7 +1995,7 @@
             const buyTitle = maxed ? t("Maximal ausgebaut") : affordable ? t("Kaufen") : fmt("Es fehlen {amount} Flux", { amount: missing });
             const buyHint = maxed ? t("Fertig") : affordable ? t("Kaufen") : fmt("fehlen {amount}", { amount: missing });
             return `
-                <article class="nft-shop-card ${maxed ? "is-locked" : affordable ? "is-affordable" : "is-unaffordable"}">
+                <article class="nft-shop-card ${maxed ? "is-locked" : affordable ? "is-affordable" : "is-unaffordable"}" data-upgrade-card="${item.id}">
                     <span class="nft-shop-icon"><i class="${item.icon}"></i></span>
                     <div class="nft-shop-copy">
                         <strong>${escapeHtml(item.name)}</strong>
@@ -1603,18 +2033,22 @@
     }
 
     function renderModes() {
-        document.querySelectorAll(".nft-focus-buttons button").forEach(button => {
+        const modeKey = state.activeMode || "balanced";
+        if (modeKey === lastModeRenderKey) return;
+        lastModeRenderKey = modeKey;
+        focusModeButtons.forEach(button => {
             button.classList.toggle("is-active", button.dataset.mode === state.activeMode);
         });
         elements.modePill.textContent = t(state.activeMode === "afk" ? "AFK-Shift" : state.activeMode === "active" ? "Aktiv-Shift" : "Balanced");
     }
 
-    function queueRender() {
-        if (renderQueued) return;
+    function queueRender(forceShops = false) {
+        if (document.hidden || renderQueued) return;
         renderQueued = true;
         window.requestAnimationFrame(() => {
             renderQueued = false;
-            renderAll();
+            lastUiRenderAt = now();
+            renderAll(forceShops);
         });
     }
 
@@ -1702,13 +2136,42 @@
         showMessage(t("Zurückgesetzt"), t("Du startest wieder mit einer frischen Schmiede."));
     }
 
+    function needsRealtimeLoop() {
+        return Boolean(activeSignal || activeRift || activeCryo || holdTimer);
+    }
+
+    function scheduleNextLoop() {
+        const delay = document.hidden
+            ? BACKGROUND_LOOP_INTERVAL_MS
+            : needsRealtimeLoop()
+                ? 0
+                : IDLE_LOOP_INTERVAL_MS;
+
+        if (delay > 0) {
+            if (loopTimer) window.clearTimeout(loopTimer);
+            loopTimer = window.setTimeout(() => {
+                loopTimer = 0;
+                window.requestAnimationFrame(gameLoop);
+            }, delay);
+            return;
+        }
+
+        window.requestAnimationFrame(gameLoop);
+    }
+
+    function syncVisibleRender(currentTime) {
+        if (document.hidden || currentTime - lastUiRenderAt < UI_RENDER_INTERVAL_MS) return;
+        lastUiRenderAt = currentTime;
+        renderAll(false);
+    }
+
     function gameLoop() {
         const currentTime = now();
         const dt = Math.min(1, (currentTime - lastFrame) / 1000);
         lastFrame = currentTime;
 
         const passive = calculateCps() * dt;
-        if (passive > 0) addFlux(passive);
+        if (passive > 0) addFlux(passive, "", false);
 
         if (state.heat > 0) {
             state.heat = Math.max(0, state.heat - heatDecay() * dt);
@@ -1766,13 +2229,17 @@
             }
         }
 
-        if (currentTime >= nextMeteorAt && elements.eventLayer.childElementCount < 2) {
+        if (!document.hidden && currentTime >= nextMeteorAt && elements.eventLayer.childElementCount < 2) {
             spawnMeteor();
         }
 
-        checkAchievements();
-        queueRender();
-        window.requestAnimationFrame(gameLoop);
+        if (currentTime - lastAchievementSweepAt >= ACHIEVEMENT_SWEEP_INTERVAL_MS) {
+            lastAchievementSweepAt = currentTime;
+            checkAchievements();
+        }
+
+        syncVisibleRender(currentTime);
+        scheduleNextLoop();
     }
 
     function attachEvents() {
@@ -1874,21 +2341,21 @@
         };
 
         elements.buildings.addEventListener("pointerdown", event => {
-            handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding));
+            handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding, button));
         });
 
         elements.upgrades.addEventListener("pointerdown", event => {
-            handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade));
+            handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade, button));
         });
 
         elements.buildings.addEventListener("keydown", event => {
             if (event.key !== "Enter" && event.key !== " ") return;
-            handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding));
+            handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding, button));
         });
 
         elements.upgrades.addEventListener("keydown", event => {
             if (event.key !== "Enter" && event.key !== " ") return;
-            handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade));
+            handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade, button));
         });
 
         [elements.buildings, elements.upgrades, elements.achievements].forEach(list => {
@@ -1898,16 +2365,17 @@
             list.addEventListener("touchmove", markShopScrollActive, { passive: true });
         });
 
-        document.querySelectorAll(".nft-tabs button").forEach(button => {
+        tabButtons.forEach(button => {
             button.addEventListener("click", () => {
-                document.querySelectorAll(".nft-tabs button").forEach(item => item.classList.toggle("is-active", item === button));
-                document.querySelectorAll(".nft-tab-panel").forEach(panel => panel.classList.toggle("is-active", panel.dataset.panel === button.dataset.tab));
+                tabButtons.forEach(item => item.classList.toggle("is-active", item === button));
+                tabPanels.forEach(panel => panel.classList.toggle("is-active", panel.dataset.panel === button.dataset.tab));
             });
         });
 
-        document.querySelectorAll(".nft-focus-buttons button").forEach(button => {
+        focusModeButtons.forEach(button => {
             button.addEventListener("click", () => {
                 state.activeMode = button.dataset.mode;
+                lastModeRenderKey = "";
                 renderModes();
                 showMessage(t("Schichtmodus geändert"), elements.modePill.textContent);
                 saveState();
@@ -1919,6 +2387,20 @@
         elements.importInput?.addEventListener("change", () => importSave(elements.importInput.files[0]));
         elements.resetButton?.addEventListener("click", resetSave);
         elements.resetHeaderButton?.addEventListener("click", resetSave);
+        document.addEventListener("visibilitychange", () => {
+            root.classList.toggle("is-nft-paused", document.hidden);
+            lastFrame = now();
+            if (!document.hidden) {
+                if (loopTimer) {
+                    window.clearTimeout(loopTimer);
+                    loopTimer = 0;
+                }
+                lastUiRenderAt = 0;
+                queueRender(true);
+                scheduleNextLoop();
+            }
+        });
+
         window.addEventListener("beforeunload", () => saveState(false));
         window.setInterval(() => saveState(false), 5000);
     }
@@ -1926,6 +2408,5 @@
     attachEvents();
     renderAll(true);
     loadDatabaseSave();
-    showMessage(t("Nebula Forge bereit"), t("Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen."));
-    window.requestAnimationFrame(gameLoop);
+    scheduleNextLoop();
 })();

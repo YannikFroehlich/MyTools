@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 from datetime import timedelta
 
@@ -20,17 +21,26 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from .models import (
+    BattleshipGame,
     ConnectFourGame,
     CookieClickerHighScore,
+    CookieCosmosV2Save,
+    DrawingGameLobby,
     FileShare,
     Friendship,
+    Game2048HighScore,
     HangmanLobby,
     HangmanPlayer,
     HumanBenchmarkHighScore,
     HumanBenchmarkScore,
+    KniffelGame,
+    NebulaForgeTycoonSave,
+    PongGame,
     SkribbleStats,
+    StadtLandFlussLobby,
     StadtLandFlussPlayer,
     TicTacToeGame,
+    UnoGame,
     UserProfile,
 )
 
@@ -48,6 +58,50 @@ def _human_size(size):
         if size < 1024 or unit == "GB":
             return f"{size:.1f} {unit}" if unit != "B" else f"{int(size)} B"
         size /= 1024
+
+
+def _leaderboard_number(value):
+    try:
+        number = float(value or 0)
+    except (TypeError, ValueError):
+        return "0"
+
+    if not math.isfinite(number):
+        return "0"
+
+    abs_number = abs(number)
+    units = [
+        (1_000_000_000_000, _("Bio.")),
+        (1_000_000_000, _("Mrd.")),
+        (1_000_000, _("Mio.")),
+    ]
+    for threshold, suffix in units:
+        if abs_number >= threshold:
+            shortened = number / threshold
+            label = f"{shortened:.1f}" if abs(shortened) < 100 else f"{shortened:.0f}"
+            return f"{label.rstrip('0').rstrip('.').replace('.', ',')} {suffix}"
+
+    return f"{int(number):,}".replace(",", ".")
+
+
+def _json_number(data, *keys, default=0):
+    if not isinstance(data, dict):
+        return default
+
+    for key in keys:
+        try:
+            value = float(data.get(key) or 0)
+        except (TypeError, ValueError):
+            continue
+
+        if math.isfinite(value):
+            return max(0, value)
+
+    return default
+
+
+def _leaderboard_detail(*parts):
+    return " · ".join(str(part) for part in parts if part not in (None, ""))
 
 
 def _parse_download_limit(value):
@@ -135,12 +189,116 @@ def _human_benchmark_rows(game, title, lower_is_better=False, limit=10):
     return {"title": title, "icon": "fa-solid fa-stopwatch", "rows": rows}
 
 
+def _game_2048_rows(limit=10):
+    qs = (
+        Game2048HighScore.objects
+        .select_related("user")
+        .filter(user__profile__privacy_show_highscores=True)
+        .order_by("-score", "-best_tile", "achieved_at")[:limit]
+    )
+    rows = []
+    for index, item in enumerate(qs, start=1):
+        rows.append({
+            "rank": index,
+            "name": _display_name(item.user),
+            "score": item.display_score,
+            "detail": _("Kachel %(tile)s · %(games)s Runs") % {
+                "tile": _leaderboard_number(item.best_tile),
+                "games": item.games_played,
+            },
+        })
+    return {"title": _("2048"), "icon": "fa-solid fa-table-cells-large", "rows": rows}
+
+
+def _cookie_cosmos_v2_rows(limit=10):
+    qs = (
+        CookieCosmosV2Save.objects
+        .select_related("user")
+        .filter(user__profile__privacy_show_highscores=True)
+        .order_by("-cookies", "-lifetime_cookies", "-updated_at")[:limit]
+    )
+    rows = []
+    for index, item in enumerate(qs, start=1):
+        rows.append({
+            "rank": index,
+            "name": _display_name(item.user),
+            "score": _leaderboard_number(item.cookies),
+            "detail": _leaderboard_detail(
+                f"{_('Highscore')}: {_leaderboard_number(item.lifetime_cookies)}",
+                _("Prestige %(level)s · %(upgrades)s Upgrades") % {
+                    "level": item.prestige_level,
+                    "upgrades": item.upgrades_count,
+                },
+            ),
+        })
+    return {"title": _("Cookie Cosmos V2"), "icon": "fa-solid fa-cookie-bite", "rows": rows}
+
+
+def _nebula_forge_rows(limit=10):
+    qs = (
+        NebulaForgeTycoonSave.objects
+        .select_related("user")
+        .filter(user__profile__privacy_show_highscores=True)
+        .order_by("-flux", "-total_lifetime_flux", "-updated_at")[:limit]
+    )
+    rows = []
+    for index, item in enumerate(qs, start=1):
+        rows.append({
+            "rank": index,
+            "name": _display_name(item.user),
+            "score": _leaderboard_number(item.flux),
+            "detail": _leaderboard_detail(
+                f"{_('Highscore')}: {_leaderboard_number(item.total_lifetime_flux)}",
+                _("Prestige %(level)s · %(buildings)s Anlagen") % {
+                    "level": item.prestige_level,
+                    "buildings": item.buildings_count,
+                },
+            ),
+        })
+    return {"title": _("Nebula Forge Tycoon"), "icon": "fa-solid fa-meteor", "rows": rows}
+
+
+def _winner_user_id_rows(model, title, icon, limit=10):
+    qs = (
+        model.objects
+        .filter(status=model.STATUS_FINISHED)
+        .exclude(winner_user_id=None)
+        .values("winner_user_id")
+        .annotate(total=Count("id"))
+        .order_by("-total")
+    )
+    users = User.objects.filter(
+        id__in=[row["winner_user_id"] for row in qs],
+        profile__privacy_show_highscores=True,
+    ).in_bulk()
+    rows = []
+    for row in qs:
+        user = users.get(row["winner_user_id"])
+        if not user:
+            continue
+        rows.append({
+            "rank": len(rows) + 1,
+            "name": _display_name(user),
+            "score": row["total"],
+            "detail": _("Siege"),
+        })
+        if len(rows) >= limit:
+            break
+    return {"title": title, "icon": icon, "rows": rows}
+
+
 @login_required
 def leaderboard_view(request):
     human_total = HumanBenchmarkScore.objects.count()
     multiplayer_games = (
         TicTacToeGame.objects.filter(status=TicTacToeGame.STATUS_FINISHED).count()
         + ConnectFourGame.objects.filter(status=ConnectFourGame.STATUS_FINISHED).count()
+        + BattleshipGame.objects.filter(status=BattleshipGame.STATUS_FINISHED).count()
+        + UnoGame.objects.filter(status=UnoGame.STATUS_FINISHED).count()
+        + KniffelGame.objects.filter(status=KniffelGame.STATUS_FINISHED).count()
+        + PongGame.objects.filter(status=PongGame.STATUS_FINISHED).count()
+        + StadtLandFlussLobby.objects.filter(status=StadtLandFlussLobby.STATUS_FINISHED).count()
+        + DrawingGameLobby.objects.filter(status=DrawingGameLobby.STATUS_FINISHED).count()
         + HangmanLobby.objects.filter(status=HangmanLobby.STATUS_FINISHED).count()
     )
 
@@ -149,6 +307,7 @@ def leaderboard_view(request):
         _human_benchmark_rows(HumanBenchmarkScore.GAME_AIM, _("Aim Trainer")),
         _human_benchmark_rows(HumanBenchmarkScore.GAME_TYPING, _("Typing Test")),
         _human_benchmark_rows(HumanBenchmarkScore.GAME_VISUAL, _("Visual Memory")),
+        _game_2048_rows(),
     ]
 
     skribble_rows = []
@@ -167,21 +326,33 @@ def leaderboard_view(request):
     boards.append({"title": _("Skribble"), "icon": "fa-solid fa-pencil", "rows": skribble_rows})
 
     cookie_rows = []
-    cookie_qs = (
+    cookie_qs = list(
         CookieClickerHighScore.objects
         .select_related("user")
         .filter(user__profile__privacy_show_highscores=True)
-        .order_by("-score", "achieved_at")[:10]
     )
-    for index, item in enumerate(cookie_qs, start=1):
+    cookie_qs.sort(
+        key=lambda item: (
+            _json_number(item.details, "current_cookies", "cookies", "total_baked", default=item.score),
+            item.score,
+            item.achieved_at.timestamp() if item.achieved_at else 0,
+        ),
+        reverse=True,
+    )
+    for index, item in enumerate(cookie_qs[:10], start=1):
+        current_cookies = _json_number(item.details, "current_cookies", "cookies", "total_baked", default=item.score)
         cookie_rows.append({
             "rank": index,
             "name": _display_name(item.user),
-            "score": item.display_score,
-            "detail": _("Cookie Cosmos Â· %(upgrades)s Upgrades") % {"upgrades": item.upgrades_count},
+            "score": _leaderboard_number(current_cookies),
+            "detail": _leaderboard_detail(
+                f"{_('Highscore')}: {item.display_score or _leaderboard_number(item.score)}",
+                _("Cookie Cosmos · %(upgrades)s Upgrades") % {"upgrades": item.upgrades_count},
+            ),
         })
-        cookie_rows[-1]["detail"] = _("Cookie Cosmos \u00b7 %(upgrades)s Upgrades") % {"upgrades": item.upgrades_count}
     boards.append({"title": _("Cookie Cosmos"), "icon": "fa-solid fa-cookie-bite", "rows": cookie_rows})
+    boards.append(_cookie_cosmos_v2_rows())
+    boards.append(_nebula_forge_rows())
 
     stadt_rows = []
     stadt_qs = (
@@ -216,6 +387,19 @@ def leaderboard_view(request):
         {"winner": "player_red_id", "loser": "player_yellow_id", "finished": ConnectFourGame.STATUS_FINISHED, "win_field": "winner_disc", "win_value": ConnectFourGame.DISC_RED},
         {"winner": "player_yellow_id", "loser": "player_red_id", "finished": ConnectFourGame.STATUS_FINISHED, "win_field": "winner_disc", "win_value": ConnectFourGame.DISC_YELLOW},
     ], _("Vier gewinnt"), "fa-solid fa-circle-dot"))
+
+    boards.append(_build_win_rows(BattleshipGame, [
+        {"winner": "player_a_id", "loser": "player_b_id", "finished": BattleshipGame.STATUS_FINISHED, "win_field": "winner_side", "win_value": BattleshipGame.SIDE_A},
+        {"winner": "player_b_id", "loser": "player_a_id", "finished": BattleshipGame.STATUS_FINISHED, "win_field": "winner_side", "win_value": BattleshipGame.SIDE_B},
+    ], _("Schiffe versenken"), "fa-solid fa-anchor"))
+
+    boards.append(_winner_user_id_rows(UnoGame, _("Uno"), "fa-solid fa-layer-group"))
+    boards.append(_winner_user_id_rows(KniffelGame, _("Kniffel"), "fa-solid fa-dice"))
+
+    boards.append(_build_win_rows(PongGame, [
+        {"winner": "player_left_id", "loser": "player_right_id", "finished": PongGame.STATUS_FINISHED, "win_field": "winner_side", "win_value": PongGame.SIDE_LEFT},
+        {"winner": "player_right_id", "loser": "player_left_id", "finished": PongGame.STATUS_FINISHED, "win_field": "winner_side", "win_value": PongGame.SIDE_RIGHT},
+    ], _("Pong"), "fa-solid fa-table-tennis-paddle-ball"))
 
     context = {
         "boards": _decorate_leaderboards(boards),

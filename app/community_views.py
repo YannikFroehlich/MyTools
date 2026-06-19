@@ -27,6 +27,20 @@ STARTED_AT = timezone.now()
 def get_changelog_entries():
     return [
         {
+            "version": "2026.12",
+            "date": "19.06.2026",
+            "title": _("Nebula Forge Tycoon Update"),
+            "summary": _("Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt und das Leaderboard zeigt jetzt die aktuellen Spiele."),
+            "type": _("Games"),
+            "icon": "fa-solid fa-wand-sparkles",
+            "items": [
+                _("Nebula Forge Tycoon wurde visuell überarbeitet und wirkt jetzt deutlich lebendiger."),
+                _("Kauf-, Prestige- und Ability-Aktionen haben neue Animationen und Effekte bekommen."),
+                _("Das Leaderboard wurde um aktuelle Spiele wie 2048, Cookie Cosmos V2, Nebula Forge Tycoon, Schiffe versenken, Uno, Kniffel und Pong erweitert."),
+                _("Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."),
+            ],
+        },
+        {
             "version": "2026.11",
             "date": "18.06.2026",
             "title": _("Nebula Forge Tycoon Release"),
