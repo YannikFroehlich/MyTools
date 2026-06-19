@@ -947,20 +947,40 @@ class HomeWidget(models.Model):
     WIDGET_STADTLANDFLUSS = "stadtlandfluss"
     WIDGET_UNO = "uno"
     WIDGET_KNIFFEL = "kniffel"
+    WIDGET_CONNECTFOUR = "connectfour"
+    WIDGET_BATTLESHIP = "battleship"
+    WIDGET_HANGMAN = "hangman"
+    WIDGET_PONG = "pong"
+    WIDGET_BUDGET = "budget"
+    WIDGET_FILE_SHARE = "file_share"
+    WIDGET_COOKIE_CLICKER = "cookie_clicker"
+    WIDGET_COOKIE_COSMOS_V2 = "cookie_cosmos_v2"
+    WIDGET_NEBULA_FORGE_TYCOON = "nebula_forge_tycoon"
+    WIDGET_GAME_2048 = "game_2048"
 
     WIDGET_CHOICES = [
         (WIDGET_WEATHER, _("Wetter")),
         (WIDGET_NOTES, _("Notizen")),
-        (WIDGET_BENCHMARK, _("Human Benchmark")),
-        (WIDGET_STATS, _("Schnellstatistiken")),
         (WIDGET_CLOCK, _("Uhr")),
         (WIDGET_CHAT, _("Chats")),
         (WIDGET_FRIENDS, _("Freunde")),
+        (WIDGET_BUDGET, _("Budget")),
+        (WIDGET_FILE_SHARE, _("Datei-Share")),
+        (WIDGET_BENCHMARK, _("Human Benchmark")),
+        (WIDGET_STATS, _("Schnellstatistiken")),
+        (WIDGET_COOKIE_CLICKER, _("Cookie Cosmos")),
+        (WIDGET_COOKIE_COSMOS_V2, _("Cookie Cosmos V2")),
+        (WIDGET_NEBULA_FORGE_TYCOON, _("Nebula Forge Tycoon")),
+        (WIDGET_GAME_2048, _("2048")),
         (WIDGET_SKRIBBLE, _("Skribble")),
         (WIDGET_TICTACTOE, _("Tic Tac Toe")),
+        (WIDGET_CONNECTFOUR, _("Vier gewinnt")),
+        (WIDGET_BATTLESHIP, _("Schiffe versenken")),
+        (WIDGET_HANGMAN, _("Hangman")),
         (WIDGET_STADTLANDFLUSS, _("Stadt Land Fluss")),
         (WIDGET_UNO, _("Uno")),
         (WIDGET_KNIFFEL, _("Kniffel")),
+        (WIDGET_PONG, _("Pong")),
     ]
 
     CLOCK_DESIGN_MINIMAL = "minimal"
@@ -2808,6 +2828,45 @@ class InboxItem(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class WebPushSubscription(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="web_push_subscriptions",
+    )
+    endpoint = models.TextField(unique=True)
+    p256dh = models.TextField()
+    auth = models.TextField()
+    user_agent = models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
+    last_seen_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-last_seen_at"]
+        indexes = [
+            models.Index(fields=["user", "is_active", "-last_seen_at"]),
+            models.Index(fields=["is_active", "-last_seen_at"]),
+        ]
+        verbose_name = "Web-Push-Abo"
+        verbose_name_plural = "Web-Push-Abos"
+
+    def __str__(self):
+        status = "aktiv" if self.is_active else "inaktiv"
+        return f"{self.user} · {status}"
+
+    @property
+    def subscription_info(self):
+        return {
+            "endpoint": self.endpoint,
+            "keys": {
+                "p256dh": self.p256dh,
+                "auth": self.auth,
+            },
+        }
 
 
 class ToolFeedback(models.Model):

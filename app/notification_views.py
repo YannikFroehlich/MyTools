@@ -1,3 +1,6 @@
+import json
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.http import JsonResponse
@@ -6,13 +9,14 @@ from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import Friendship, NotificationDismissal, UserProfile
+from .models import Friendship, NotificationDismissal, UserProfile, WebPushSubscription
 from .notification_utils import (
     get_notification_counts,
     get_notification_items,
     invalidate_notification_cache,
 )
 from .presence_utils import decorate_profiles_with_presence
+from .push_utils import send_web_push_to_user, web_push_is_configured
 
 LIVE_STATUS_CACHE_SECONDS = 4
 LIVE_STATUS_CACHE_VERSION = 1
@@ -206,3 +210,92 @@ def notification_dismiss_all_api(request):
     )
     invalidate_notification_cache(request.user)
     return JsonResponse(_center_payload(request.user))
+
+
+@login_required
+@never_cache
+@require_GET
+def push_config_api(request):
+    profile, _created = UserProfile.objects.get_or_create(user=request.user)
+    active_count = WebPushSubscription.objects.filter(user=request.user, is_active=True).count()
+    return JsonResponse({
+        "ok": True,
+        "enabled": web_push_is_configured(),
+        "public_key": getattr(settings, "WEB_PUSH_VAPID_PUBLIC_KEY", ""),
+        "browser_notifications": bool(profile.browser_notifications),
+        "active_subscriptions": active_count,
+    })
+
+
+def _json_body(request):
+    try:
+        return json.loads(request.body.decode("utf-8") or "{}")
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return {}
+
+
+@login_required
+@never_cache
+@require_POST
+def push_subscribe_api(request):
+    if not web_push_is_configured():
+        return JsonResponse({"ok": False, "error": "Web-Push ist noch nicht konfiguriert."}, status=503)
+
+    data = _json_body(request)
+    endpoint = str(data.get("endpoint") or "").strip()
+    keys = data.get("keys") or {}
+    p256dh = str(keys.get("p256dh") or "").strip()
+    auth = str(keys.get("auth") or "").strip()
+
+    if not endpoint or not p256dh or not auth:
+        return JsonResponse({"ok": False, "error": "Ungültiges Push-Abo."}, status=400)
+
+    subscription, _created = WebPushSubscription.objects.update_or_create(
+        endpoint=endpoint,
+        defaults={
+            "user": request.user,
+            "p256dh": p256dh,
+            "auth": auth,
+            "user_agent": (request.META.get("HTTP_USER_AGENT") or "")[:255],
+            "is_active": True,
+        },
+    )
+
+    profile, _profile_created = UserProfile.objects.get_or_create(user=request.user)
+    if not profile.browser_notifications:
+        profile.browser_notifications = True
+        profile.save(update_fields=["browser_notifications", "updated_at"])
+
+    return JsonResponse({
+        "ok": True,
+        "active_subscriptions": WebPushSubscription.objects.filter(user=request.user, is_active=True).count(),
+        "subscription_id": subscription.pk,
+    })
+
+
+@login_required
+@never_cache
+@require_POST
+def push_unsubscribe_api(request):
+    data = _json_body(request)
+    endpoint = str(data.get("endpoint") or "").strip()
+    subscriptions = WebPushSubscription.objects.filter(user=request.user, is_active=True)
+    if endpoint:
+        subscriptions = subscriptions.filter(endpoint=endpoint)
+    updated = subscriptions.update(is_active=False)
+    return JsonResponse({"ok": True, "disabled": updated})
+
+
+@login_required
+@never_cache
+@require_POST
+def push_test_api(request):
+    result = send_web_push_to_user(
+        request.user,
+        title="MyTools Push-Test",
+        body="Web-Push funktioniert. Du bekommst Benachrichtigungen jetzt auch über die PWA.",
+        url="/",
+        tag="mytools-push-test",
+    )
+    status = 200 if result.get("configured") else 503
+    return JsonResponse({"ok": bool(result.get("configured")), **result}, status=status)

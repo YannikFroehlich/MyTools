@@ -1605,6 +1605,221 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
+    const pushConfigUrl = body.dataset.pushConfigUrl;
+    const pushSubscribeUrl = body.dataset.pushSubscribeUrl;
+    const pushUnsubscribeUrl = body.dataset.pushUnsubscribeUrl;
+    const pushTestUrl = body.dataset.pushTestUrl;
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding).replaceAll('-', '+').replaceAll('_', '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; i += 1) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+
+        return outputArray;
+    }
+
+    async function fetchJson(url, options = {}) {
+        const response = await fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                ...(options.headers || {}),
+            },
+            cache: 'no-store',
+            ...options,
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(payload.error || response.statusText || 'Request fehlgeschlagen');
+        }
+        return payload;
+    }
+
+    async function postJson(url, data = {}) {
+        return fetchJson(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify(data),
+        });
+    }
+
+    function webPushSupported() {
+        return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    }
+
+    async function ensureServiceWorkerRegistration() {
+        if (!('serviceWorker' in navigator)) {
+            throw new Error('Service Worker wird von diesem Browser nicht unterstützt.');
+        }
+
+        const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+        if (!window.isSecureContext && !isLocalhost) {
+            throw new Error('Push funktioniert nur über HTTPS oder localhost.');
+        }
+
+        const registration = await navigator.serviceWorker.getRegistration('/')
+            || await navigator.serviceWorker.register('/service-worker.js');
+        return registration;
+    }
+
+    function setPushStatus(message, state = '') {
+        document.querySelectorAll('[data-push-status]').forEach((element) => {
+            element.textContent = message;
+            element.dataset.state = state;
+        });
+    }
+
+    function setPushButtonsDisabled(disabled) {
+        document.querySelectorAll('[data-push-action]').forEach((button) => {
+            button.disabled = disabled;
+        });
+    }
+
+    async function loadPushConfig() {
+        if (!pushConfigUrl) {
+            throw new Error('Push-Endpunkte fehlen.');
+        }
+        return fetchJson(pushConfigUrl);
+    }
+
+    async function currentPushSubscription() {
+        const registration = await ensureServiceWorkerRegistration();
+        return registration.pushManager.getSubscription();
+    }
+
+    async function subscribeToWebPush() {
+        const config = await loadPushConfig();
+        if (!config.enabled || !config.public_key) {
+            throw new Error('Web-Push ist noch nicht konfiguriert.');
+        }
+
+        if (!webPushSupported()) {
+            throw new Error('Dieser Browser unterstützt Web-Push nicht.');
+        }
+
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+            throw new Error('Browser-Berechtigung wurde nicht erteilt.');
+        }
+
+        const registration = await ensureServiceWorkerRegistration();
+        let subscription = await registration.pushManager.getSubscription();
+        if (!subscription) {
+            subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(config.public_key),
+            });
+        }
+
+        const payload = await postJson(pushSubscribeUrl, subscription.toJSON());
+        setPushStatus(`Push ist aktiv · ${payload.active_subscriptions || 1} Gerät(e)`, 'ok');
+        return payload;
+    }
+
+    async function unsubscribeFromWebPush() {
+        if (!webPushSupported()) {
+            throw new Error('Dieser Browser unterstützt Web-Push nicht.');
+        }
+
+        const subscription = await currentPushSubscription();
+        if (!subscription) {
+            setPushStatus('Dieses Gerät hat kein aktives Push-Abo.', 'muted');
+            return { ok: true, disabled: 0 };
+        }
+
+        const endpoint = subscription.endpoint;
+        await subscription.unsubscribe();
+        const payload = await postJson(pushUnsubscribeUrl, { endpoint });
+        setPushStatus('Push wurde für dieses Gerät abgemeldet.', 'muted');
+        return payload;
+    }
+
+    async function sendTestWebPush() {
+        const payload = await postJson(pushTestUrl, {});
+        setPushStatus(`Test gesendet · ${payload.sent || 0}/${payload.total || 0} Gerät(e)`, payload.sent ? 'ok' : 'muted');
+        return payload;
+    }
+
+    async function refreshPushStatus() {
+        if (!pushConfigUrl || !document.querySelector('[data-push-status]')) {
+            return;
+        }
+
+        if (!webPushSupported()) {
+            setPushStatus('Dieser Browser unterstützt Web-Push nicht.', 'bad');
+            setPushButtonsDisabled(true);
+            return;
+        }
+
+        try {
+            const config = await loadPushConfig();
+            if (!config.enabled) {
+                setPushStatus('Web-Push ist noch nicht konfiguriert.', 'bad');
+            } else if (Notification.permission === 'denied') {
+                setPushStatus('Push ist im Browser blockiert.', 'bad');
+            } else {
+                const subscription = await currentPushSubscription().catch(() => null);
+                if (subscription) {
+                    setPushStatus(`Push ist auf diesem Gerät aktiv · ${config.active_subscriptions || 1} Abo(s)`, 'ok');
+                } else {
+                    setPushStatus('Push ist für dieses Gerät noch nicht aktiv.', 'muted');
+                }
+            }
+        } catch (error) {
+            setPushStatus(error.message || 'Push-Status konnte nicht geladen werden.', 'bad');
+        }
+    }
+
+    function setupWebPushControls() {
+        if (!pushConfigUrl || !pushSubscribeUrl || !pushUnsubscribeUrl || !pushTestUrl) {
+            return;
+        }
+
+        window.myToolsPush = {
+            refresh: refreshPushStatus,
+            subscribe: subscribeToWebPush,
+            unsubscribe: unsubscribeFromWebPush,
+            test: sendTestWebPush,
+        };
+
+        document.querySelectorAll('[data-push-action]').forEach((button) => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault();
+                const action = button.dataset.pushAction;
+                setPushButtonsDisabled(true);
+                setPushStatus('Push-Aktion läuft...', 'loading');
+
+                try {
+                    if (action === 'subscribe') {
+                        await subscribeToWebPush();
+                    } else if (action === 'unsubscribe') {
+                        await unsubscribeFromWebPush();
+                    } else if (action === 'test') {
+                        await sendTestWebPush();
+                    }
+                } catch (error) {
+                    setPushStatus(error.message || 'Push-Aktion fehlgeschlagen.', 'bad');
+                } finally {
+                    setPushButtonsDisabled(false);
+                    refreshPushStatus();
+                }
+            });
+        });
+
+        refreshPushStatus();
+    }
+
+    setupWebPushControls();
+
     function setupPwaInstallPrompt() {
         const installButton = document.getElementById('pwa-install-button');
         let deferredInstallPrompt = null;

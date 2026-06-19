@@ -205,7 +205,17 @@ from .chat_views import (
     set_chat_theme,
     start_direct_chat,
 )
-from .notification_views import live_status_api, notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
+from .notification_views import (
+    live_status_api,
+    notification_center_api,
+    notification_counts_api,
+    notification_dismiss_all_api,
+    notification_dismiss_api,
+    push_config_api,
+    push_subscribe_api,
+    push_test_api,
+    push_unsubscribe_api,
+)
 
 from .budget_views import (
     budget_tracker_export_csv,
@@ -229,7 +239,7 @@ from .platform_views import (
     inbox_view,
 )
 from .security_views import qr_code_tool_view, security_dashboard_view
-from .community_views import achievement_center_view, changelog_view, roadmap_view, server_status_view
+from .community_views import achievement_center_view, changelog_view, roadmap_view, server_status_view, theme_lab_view
 from .moderation_views import (
     moderation_access_toggle_view,
     moderation_dashboard_view,
@@ -263,6 +273,7 @@ urlpatterns = [
     path('changelog/', changelog_view, name='changelog'),
     path('achievements/', achievement_center_view, name='achievement_center'),
     path('server-status/', server_status_view, name='server_status'),
+    path('theme-lab/', theme_lab_view, name='theme_lab'),
     path('moderation/', moderation_dashboard_view, name='moderation'),
     path('moderation/access/', moderation_access_toggle_view, name='moderation_access_toggle'),
     path('moderation/tool-access/', moderation_tool_access_view, name='moderation_tool_access'),
@@ -312,6 +323,10 @@ urlpatterns = [
     path('api/notifications/center/', notification_center_api, name='notification_center_api'),
     path('api/notifications/dismiss/', notification_dismiss_api, name='notification_dismiss_api'),
     path('api/notifications/dismiss-all/', notification_dismiss_all_api, name='notification_dismiss_all_api'),
+    path('api/push/config/', push_config_api, name='push_config_api'),
+    path('api/push/subscribe/', push_subscribe_api, name='push_subscribe_api'),
+    path('api/push/unsubscribe/', push_unsubscribe_api, name='push_unsubscribe_api'),
+    path('api/push/test/', push_test_api, name='push_test_api'),
     path('api/users/presence/', user_presence_api, name='user_presence_api'),
 
     path('weather/', weather, name='weather'),

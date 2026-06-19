@@ -457,7 +457,23 @@
                         <label>{{ form.browser_notifications }} <span>{{ form.browser_notifications.label }}</span></label>
                         <label>{{ form.sound_notifications }} <span>{{ form.sound_notifications.label }}</span></label>
                         <label>{{ form.dnd_silence_notifications }} <span>{{ form.dnd_silence_notifications.label }}</span></label>
-                        <small>{% translate "Browser-Benachrichtigungen funktionieren, sobald du sie im Browser erlaubst und MyTools geöffnet ist." %}</small>
+                        <div class="profile-push-panel">
+                            <div>
+                                <strong>{% translate "PWA Push" %}</strong>
+                                <small data-push-status>{% translate "Push-Status wird geladen..." %}</small>
+                            </div>
+                            <div class="profile-push-actions">
+                                <button class="profile-secondary-button" type="button" data-push-action="subscribe">
+                                    <i class="fa-solid fa-bell"></i>
+                                    {% translate "Aktivieren" %}
+                                </button>
+                                <button class="profile-secondary-button" type="button" data-push-action="test">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    {% translate "Test" %}
+                                </button>
+                            </div>
+                        </div>
+                        <small>{% translate "Browser-Benachrichtigungen speichern jetzt zusätzlich ein echtes PWA-Push-Abo. Auf dem Server müssen dafür VAPID-Keys gesetzt sein." %}</small>
                     </div>
                 </div>
             </div>

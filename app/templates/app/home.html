@@ -6,7 +6,7 @@
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260614-mobile-header-toggle">
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260619-widgets-refresh">
 {% endblock %}
 
 {% block content %}
@@ -91,6 +91,32 @@
                                                         <i class="fa-solid fa-palette"></i>
                                                     {% elif widget.widget_type == "tictactoe" %}
                                                         <i class="fa-solid fa-table-cells"></i>
+                                                    {% elif widget.widget_type == "connectfour" %}
+                                                        <i class="fa-solid fa-circle-dot"></i>
+                                                    {% elif widget.widget_type == "battleship" %}
+                                                        <i class="fa-solid fa-ship"></i>
+                                                    {% elif widget.widget_type == "hangman" %}
+                                                        <i class="fa-solid fa-spell-check"></i>
+                                                    {% elif widget.widget_type == "stadtlandfluss" %}
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    {% elif widget.widget_type == "uno" %}
+                                                        <i class="fa-solid fa-layer-group"></i>
+                                                    {% elif widget.widget_type == "kniffel" %}
+                                                        <i class="fa-solid fa-dice"></i>
+                                                    {% elif widget.widget_type == "pong" %}
+                                                        <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+                                                    {% elif widget.widget_type == "budget" %}
+                                                        <i class="fa-solid fa-wallet"></i>
+                                                    {% elif widget.widget_type == "file_share" %}
+                                                        <i class="fa-regular fa-folder-open"></i>
+                                                    {% elif widget.widget_type == "cookie_clicker" %}
+                                                        <i class="fa-solid fa-cookie-bite"></i>
+                                                    {% elif widget.widget_type == "cookie_cosmos_v2" %}
+                                                        <i class="fa-solid fa-cookie"></i>
+                                                    {% elif widget.widget_type == "nebula_forge_tycoon" %}
+                                                        <i class="fa-solid fa-meteor"></i>
+                                                    {% elif widget.widget_type == "game_2048" %}
+                                                        <i class="fa-solid fa-border-all"></i>
                                                     {% else %}
                                                         <i class="fa-solid fa-gauge-high"></i>
                                                     {% endif %}
@@ -457,7 +483,7 @@
                                                         </div>
                                                         <div>
                                                             <strong>{{ data.active_count }}</strong>
-                                                            <span>R&auml;ume</span>
+                                                            <span>{% translate 'Räume' %}</span>
                                                         </div>
                                                     </div>
 
@@ -493,7 +519,7 @@
                                                     {% endif %}
 
                                                     <a href="{% url 'uno_home' %}" class="widget-link">
-                                                        Uno &ouml;ffnen
+                                                        {% translate 'Uno öffnen' %}
                                                         <i class="fa-solid fa-arrow-right"></i>
                                                     </a>
                                                 </div>
@@ -506,7 +532,7 @@
                                                         </div>
                                                         <div>
                                                             <strong>{{ data.active_count }}</strong>
-                                                            <span>R&auml;ume</span>
+                                                            <span>{% translate 'Räume' %}</span>
                                                         </div>
                                                     </div>
 
@@ -542,7 +568,104 @@
                                                     {% endif %}
 
                                                     <a href="{% url 'kniffel_home' %}" class="widget-link">
-                                                        Kniffel &ouml;ffnen
+                                                        {% translate 'Kniffel öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif data.template_name == "lobby_snapshot" %}
+                                                <div class="skribble-widget-content widget-snapshot-content">
+                                                    <div class="stats-grid mini widget-live-metrics">
+                                                        {% for metric in data.metrics %}
+                                                            <div>
+                                                                <strong>{{ metric.value }}</strong>
+                                                                <span>{{ metric.label }}</span>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+
+                                                    {% if data.primary_items %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for item in data.primary_items %}
+                                                                <a href="{% url item.url_name item.code %}">
+                                                                    <span class="widget-list-icon is-purple"><i class="{{ item.icon_class }}"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ item.title }}</strong>
+                                                                        <small>{{ item.subtitle }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% elif data.secondary_items %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for item in data.secondary_items %}
+                                                                <a href="{% url item.url_name item.code %}">
+                                                                    <span class="widget-list-icon is-purple"><i class="{{ item.icon_class }}"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ item.title }}</strong>
+                                                                        <small>{{ item.subtitle }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="{{ data.empty_icon }}"></i>
+                                                            <span>{{ data.empty_text }}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url data.home_url_name %}" class="widget-link">
+                                                        {{ widget.title }} {{ data.home_label|lower }}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif data.template_name == "metric_snapshot" %}
+                                                <div class="metric-snapshot-content widget-snapshot-content">
+                                                    <div class="stats-grid mini widget-live-metrics">
+                                                        {% for metric in data.metrics %}
+                                                            <div>
+                                                                <strong>{{ metric.value }}</strong>
+                                                                <span>{{ metric.label }}</span>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+
+                                                    {% if data.detail_label %}
+                                                        <div class="widget-detail-row">
+                                                            <span>{{ data.detail_label }}</span>
+                                                            <strong>{{ data.detail_value }}</strong>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if data.progress_label %}
+                                                        <div class="widget-progress" aria-label="{{ data.progress_label }}">
+                                                            <span style="width: {{ data.progress_percent }}%;"></span>
+                                                        </div>
+                                                        <small class="widget-progress-label">{{ data.progress_label }}</small>
+                                                    {% endif %}
+
+                                                    {% if data.items %}
+                                                        <div class="widget-mini-list">
+                                                            {% for item in data.items %}
+                                                                <div class="widget-mini-list-item">
+                                                                    <span class="widget-list-icon"><i class="{{ item.icon_class }}"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ item.title }}</strong>
+                                                                        <small>{{ item.subtitle }}</small>
+                                                                    </span>
+                                                                    <b>{{ item.value }}</b>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% elif data.show_empty_state %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="{{ data.empty_icon }}"></i>
+                                                            <span>{{ data.empty_text }}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url data.home_url_name %}" class="widget-link">
+                                                        {{ data.home_label }}
                                                         <i class="fa-solid fa-arrow-right"></i>
                                                     </a>
                                                 </div>
@@ -624,18 +747,9 @@
                 <label>
                     {% translate 'Widget-Typ' %}
                     <select name="widget_type" id="widget-type">
-                        <option value="weather">{% translate 'Wetter' %}</option>
-                        <option value="notes">{% translate 'Notizen' %}</option>
-                        <option value="clock">{% translate 'Uhr' %}</option>
-                        <option value="chat">{% translate 'Chats' %}</option>
-                        <option value="friends">{% translate 'Freunde' %}</option>
-                        <option value="skribble">{% translate 'Skribble' %}</option>
-                        <option value="tictactoe">{% translate 'Tic Tac Toe' %}</option>
-                        <option value="stadtlandfluss">{% translate 'Stadt Land Fluss' %}</option>
-                        <option value="uno">{% translate 'Uno' %}</option>
-                        <option value="kniffel">{% translate 'Kniffel' %}</option>
-                        <option value="benchmark">{% translate 'Human Benchmark' %}</option>
-                        <option value="stats">{% translate 'Schnellstatistiken' %}</option>
+                        {% for value, label in widget_types %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
                     </select>
                 </label>
 

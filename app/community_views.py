@@ -19,13 +19,27 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
 from .achievement_utils import get_achievement_summary
-from .models import ChatMessage, FeatureComment, FeatureIdea, FeatureVote, FileShare, HomeWidget, ModerationAuditLog, Note, SecurityEvent, SiteAccessSettings, ToolFeedback, UserPresence, UserReport
+from .models import ChatMessage, FeatureComment, FeatureIdea, FeatureVote, FileShare, HomeWidget, ModerationAuditLog, Note, SecurityEvent, SiteAccessSettings, ToolFeedback, UserPresence, UserReport, WebPushSubscription
 
 
 STARTED_AT = timezone.now()
 
 def get_changelog_entries():
     return [
+        {
+            "version": "2026.12",
+            "date": "19.06.2026",
+            "title": _("Theme-Labor und PWA Push"),
+            "summary": _("Admins haben jetzt eine Design-Testseite für Themes und MyTools unterstützt echte PWA Push-Benachrichtigungen."),
+            "type": _("Plattform"),
+            "icon": "fa-solid fa-palette",
+            "items": [
+                _("Theme-Labor als Admin-only Seite mit UI-Komponenten, Design-Tokens, Formularen, Alerts und Kontrast-Testfläche ergänzt."),
+                _("Web-Push-Abos werden pro Gerät gespeichert und können über Profil oder Theme-Labor aktiviert, getestet und abgemeldet werden."),
+                _("Service Worker verarbeitet Push-Events und öffnet beim Klick die passende MyTools-Seite."),
+                _("Neue Inbox- und Spieleinladungs-Benachrichtigungen können echte PWA Push-Nachrichten auslösen."),
+            ],
+        },
         {
             "version": "2026.11",
             "date": "18.06.2026",
@@ -155,6 +169,36 @@ staff_required = user_passes_test(
     lambda user: user.is_active and user.is_staff,
     login_url="login",
 )
+
+
+@login_required
+@staff_required
+def theme_lab_view(request):
+    access_settings = SiteAccessSettings.get_solo()
+    push_enabled = bool(getattr(settings, "WEB_PUSH_ENABLED", False))
+    active_push_subscriptions = WebPushSubscription.objects.filter(is_active=True).count()
+
+    context = {
+        "push_enabled": push_enabled,
+        "active_push_subscriptions": active_push_subscriptions,
+        "web_push_public_key_set": bool(getattr(settings, "WEB_PUSH_VAPID_PUBLIC_KEY", "")),
+        "web_push_private_key_set": bool(getattr(settings, "WEB_PUSH_VAPID_PRIVATE_KEY", "")),
+        "access_settings": access_settings,
+        "design_tokens": [
+            {"label": _("Navigation Start"), "var": "--theme-nav-start"},
+            {"label": _("Navigation Ende"), "var": "--theme-nav-end"},
+            {"label": _("Akzent"), "var": "--theme-accent-start"},
+            {"label": _("Seitenhintergrund"), "var": "--theme-page-bg"},
+            {"label": _("Kartenhintergrund"), "var": "--theme-card-bg"},
+            {"label": _("Text"), "var": "--theme-text"},
+        ],
+        "component_cards": [
+            {"title": _("Standard-Karte"), "text": _("Prüft Kartenfarbe, Radius, Schatten und normalen Textkontrast."), "icon": "fa-regular fa-window-maximize"},
+            {"title": _("Tool-Hero"), "text": _("Zeigt den gemeinsamen Hero-Look für Tools und Admin-Seiten."), "icon": "fa-solid fa-wand-magic-sparkles"},
+            {"title": _("Status-Karte"), "text": _("Gut für Hinweise, Warnungen, Success- und Error-Zustände."), "icon": "fa-solid fa-circle-info"},
+        ],
+    }
+    return render(request, "app/theme_lab.html", context)
 
 
 def _clean_text(value, max_length=1000):

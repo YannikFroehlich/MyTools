@@ -2240,3 +2240,33 @@ body.dark-mode .profile-spotlight-item small {
         grid-template-columns: 1fr;
     }
 }
+
+.profile-push-panel {
+    padding: 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(var(--theme-accent-rgb), .18);
+    background: rgba(var(--theme-accent-rgb), .09);
+    display: grid;
+    gap: 10px;
+}
+.profile-push-panel strong,
+.profile-push-panel small { display: block; }
+.profile-push-panel small {
+    margin-top: 3px;
+    color: #64748b;
+    font-weight: 800;
+}
+.profile-push-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.profile-push-actions .profile-secondary-button {
+    min-height: 38px;
+    padding: 8px 11px;
+}
+body.dark-mode .profile-push-panel {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(203,213,225,.14);
+}
+body.dark-mode .profile-push-panel small { color: #cbd5e1; }

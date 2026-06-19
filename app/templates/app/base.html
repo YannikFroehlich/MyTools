@@ -44,7 +44,7 @@
         <script src="{% static 'app/js/base.js' %}?v=20260618-access-state" defer></script>
     {% endblock %}
 </head>
-<body{% if request.user.is_authenticated %} class="has-mobile-bottom-nav" data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}" data-access-locked-label="{% translate 'Gesperrt' %}" data-access-locked-title="{% translate 'Kein Zugriff' %}" data-access-restricted-label="{% translate 'Admin' %}" data-access-restricted-title="{% translate 'Eingeschränkt freigegeben' %}"{% endif %}>
+<body{% if request.user.is_authenticated %} class="has-mobile-bottom-nav" data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-push-config-url="{% url 'push_config_api' %}" data-push-subscribe-url="{% url 'push_subscribe_api' %}" data-push-unsubscribe-url="{% url 'push_unsubscribe_api' %}" data-push-test-url="{% url 'push_test_api' %}" data-global-search-url="{% url 'global_search_api' %}" data-access-locked-label="{% translate 'Gesperrt' %}" data-access-locked-title="{% translate 'Kein Zugriff' %}" data-access-restricted-label="{% translate 'Admin' %}" data-access-restricted-title="{% translate 'Eingeschränkt freigegeben' %}"{% endif %}>
     {{ access_blocked_paths|json_script:"access-blocked-paths" }}
     {{ access_restricted_paths|json_script:"access-restricted-paths" }}
     <nav id="site-header">
@@ -546,6 +546,14 @@
                                             <small>{% translate 'Monitor' %}</small>
                                         </span>
                                     </a>
+
+                                    <a href="{% url 'theme_lab' %}" class="game-menu-card is-violet" data-menu-card data-menu-name="{% translate 'Theme-Labor' %}" data-menu-category="{% translate 'Admin Design Test Kontrast Theme Komponenten PWA Push' %}">
+                                        <span class="game-menu-icon"><i class="fa-solid fa-palette"></i></span>
+                                        <span class="game-menu-copy">
+                                            <strong>{% translate 'Theme-Labor' %}</strong>
+                                            <small>{% translate 'Design-Test' %}</small>
+                                        </span>
+                                    </a>
                                 {% endif %}
                             </div>
                         </section>
@@ -980,6 +988,13 @@
                             <i class="fa-solid fa-user-shield"></i>
                             {% translate 'Sicherheits-Dashboard' %}
                         </a>
+
+                        {% if request.user.is_staff %}
+                            <a href="{% url 'theme_lab' %}" class="profile-menu-item">
+                                <i class="fa-solid fa-palette"></i>
+                                {% translate 'Theme-Labor' %}
+                            </a>
+                        {% endif %}
 
                         <a href="{% url 'achievement_center' %}" class="profile-menu-item">
                             <i class="fa-solid fa-trophy"></i>

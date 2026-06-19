@@ -1,6 +1,7 @@
 import os
 import math
 import hashlib
+from decimal import Decimal
 from collections import defaultdict
 from urllib.parse import urlencode
 from io import BytesIO
@@ -19,12 +20,57 @@ from django.utils import timezone as django_timezone
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, CookieCosmosV2Save, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, NebulaForgeTycoonSave, Shortcut, \
-    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
+from app.models import (
+    AvatarCharacter,
+    BattleshipGame,
+    BattleshipInvite,
+    BudgetEntry,
+    BudgetMonth,
+    ChatMessage,
+    ChatRoom,
+    ChatRoomMember,
+    ClockSettings,
+    ClockTimerPreset,
+    ClockWorldCity,
+    ConnectFourGame,
+    ConnectFourInvite,
+    CookieClickerHighScore,
+    CookieCosmosV2Save,
+    DrawingGameInvite,
+    DrawingGameLobby,
+    DrawingGamePlayer,
+    FileShare,
+    Friendship,
+    Game2048HighScore,
+    HangmanInvite,
+    HangmanLobby,
+    HangmanPlayer,
+    HomeLayoutPreference,
+    HomeWidget,
+    HumanBenchmarkHighScore,
+    HumanBenchmarkScore,
+    KniffelGame,
+    KniffelInvite,
+    KniffelPlayer,
+    NebulaForgeTycoonSave,
+    PongGame,
+    PongInvite,
+    Shortcut,
+    ShortcutSection,
+    StadtLandFlussInvite,
+    StadtLandFlussLobby,
+    StadtLandFlussPlayer,
+    TicTacToeGame,
+    UnoGame,
+    UnoInvite,
+    UnoPlayer,
+    UserProfile,
+    WeatherLocation,
+)
 
 import json
 
-from django.db.models import Max, Prefetch
+from django.db.models import F, Max, Prefetch
 from django.db.utils import OperationalError, ProgrammingError
 from django.http import HttpResponse, JsonResponse
 
@@ -613,6 +659,385 @@ def build_home_kniffel_widget_data(user):
     }
 
 
+
+
+def format_home_metric(value, decimals=0):
+    if value in (None, ""):
+        return "0"
+
+    try:
+        numeric_value = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+
+    if numeric_value.is_integer():
+        decimals = 0
+
+    formatted = f"{numeric_value:,.{decimals}f}"
+    return formatted.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def format_home_money(value):
+    amount = value or Decimal("0")
+    return f"{format_home_metric(amount, 2)} €"
+
+
+def build_home_connectfour_widget_data(user):
+    active_statuses = [ConnectFourGame.STATUS_WAITING, ConnectFourGame.STATUS_PLAYING]
+    active_games = (
+        ConnectFourGame.objects
+        .filter(Q(owner=user) | Q(player_red=user) | Q(player_yellow=user), status__in=active_statuses)
+        .distinct()
+        .order_by("-updated_at")
+    )
+
+    invite_items = [
+        {
+            "title": invite.game.name,
+            "subtitle": _("von %(user)s") % {"user": invite.from_user.username},
+            "code": invite.game.code,
+            "url_name": "connectfour_lobby",
+            "icon_class": "fa-solid fa-circle-dot",
+        }
+        for invite in ConnectFourInvite.objects.filter(to_user=user, status=ConnectFourInvite.STATUS_PENDING).select_related("game", "from_user")[:3]
+    ]
+
+    active_items = [
+        {
+            "title": game.name,
+            "subtitle": f"{game.code} · {game.get_status_display()}",
+            "code": game.code,
+            "url_name": "connectfour_lobby",
+            "icon_class": "fa-solid fa-circle-dot",
+        }
+        for game in active_games[:3]
+    ]
+
+    return {
+        "template_name": "lobby_snapshot",
+        "metrics": [
+            {"value": ConnectFourInvite.objects.filter(to_user=user, status=ConnectFourInvite.STATUS_PENDING).count(), "label": _("Einladungen")},
+            {"value": active_games.count(), "label": _("Räume")},
+            {"value": 2, "label": _("Spieler")},
+        ],
+        "primary_items": invite_items,
+        "secondary_items": active_items,
+        "empty_icon": "fa-solid fa-circle-dot",
+        "empty_text": _("Noch kein offener Vier-gewinnt-Raum."),
+        "home_url_name": "connectfour_home",
+        "home_label": _("Öffnen"),
+    }
+
+def build_home_battleship_widget_data(user):
+    active_statuses = [BattleshipGame.STATUS_WAITING, BattleshipGame.STATUS_SETUP, BattleshipGame.STATUS_PLAYING]
+    active_games = (
+        BattleshipGame.objects
+        .filter(
+            Q(owner=user) | Q(player_a=user) | Q(player_b=user),
+            status__in=active_statuses,
+        )
+        .distinct()
+        .order_by("-updated_at")
+    )
+
+    invite_items = [
+        {
+            "title": invite.game.name,
+            "subtitle": _("von %(user)s") % {"user": invite.from_user.username},
+            "code": invite.game.code,
+            "url_name": "battleship_lobby",
+            "icon_class": "fa-solid fa-ship",
+        }
+        for invite in BattleshipInvite.objects.filter(to_user=user, status=BattleshipInvite.STATUS_PENDING).select_related("game", "from_user")[:3]
+    ]
+
+    active_items = [
+        {
+            "title": game.name,
+            "subtitle": f"{game.code} · {game.get_status_display()}",
+            "code": game.code,
+            "url_name": "battleship_lobby",
+            "icon_class": "fa-solid fa-ship",
+        }
+        for game in active_games[:3]
+    ]
+
+    return {
+        "template_name": "lobby_snapshot",
+        "metrics": [
+            {"value": BattleshipInvite.objects.filter(to_user=user, status=BattleshipInvite.STATUS_PENDING).count(), "label": _("Einladungen")},
+            {"value": active_games.count(), "label": _("Räume")},
+            {"value": 2, "label": _("Spieler")},
+        ],
+        "primary_items": invite_items,
+        "secondary_items": active_items,
+        "empty_icon": "fa-solid fa-ship",
+        "empty_text": _("Noch kein offener Schiffe-versenken-Raum."),
+        "home_url_name": "battleship_home",
+        "home_label": _("Öffnen"),
+    }
+
+
+def build_home_hangman_widget_data(user):
+    active_statuses = [HangmanLobby.STATUS_WAITING, HangmanLobby.STATUS_PLAYING]
+    active_lobbies = (
+        HangmanLobby.objects
+        .filter(Q(owner=user) | Q(players__user=user), status__in=active_statuses)
+        .distinct()
+        .order_by("-updated_at")
+    )
+
+    invite_items = [
+        {
+            "title": invite.lobby.name,
+            "subtitle": _("von %(user)s") % {"user": invite.from_user.username},
+            "code": invite.lobby.code,
+            "url_name": "hangman_lobby",
+            "icon_class": "fa-solid fa-spell-check",
+        }
+        for invite in HangmanInvite.objects.filter(to_user=user, status=HangmanInvite.STATUS_PENDING).select_related("lobby", "from_user")[:3]
+    ]
+
+    active_items = [
+        {
+            "title": lobby.name,
+            "subtitle": f"{lobby.code} · {lobby.get_status_display()}",
+            "code": lobby.code,
+            "url_name": "hangman_lobby",
+            "icon_class": "fa-solid fa-spell-check",
+        }
+        for lobby in active_lobbies[:3]
+    ]
+
+    return {
+        "template_name": "lobby_snapshot",
+        "metrics": [
+            {"value": HangmanInvite.objects.filter(to_user=user, status=HangmanInvite.STATUS_PENDING).count(), "label": _("Einladungen")},
+            {"value": HangmanPlayer.objects.filter(user=user, lobby__status__in=active_statuses).count(), "label": _("Lobbys")},
+        ],
+        "primary_items": invite_items,
+        "secondary_items": active_items,
+        "empty_icon": "fa-solid fa-spell-check",
+        "empty_text": _("Noch keine offene Hangman-Lobby."),
+        "home_url_name": "hangman_home",
+        "home_label": _("Öffnen"),
+    }
+
+
+def build_home_pong_widget_data(user):
+    active_statuses = [PongGame.STATUS_WAITING, PongGame.STATUS_PLAYING, PongGame.STATUS_PAUSED]
+    active_games = (
+        PongGame.objects
+        .filter(Q(owner=user) | Q(player_left=user) | Q(player_right=user), status__in=active_statuses)
+        .distinct()
+        .order_by("-updated_at")
+    )
+
+    invite_items = [
+        {
+            "title": invite.game.name,
+            "subtitle": _("von %(user)s") % {"user": invite.from_user.username},
+            "code": invite.game.code,
+            "url_name": "pong_lobby",
+            "icon_class": "fa-solid fa-table-tennis-paddle-ball",
+        }
+        for invite in PongInvite.objects.filter(to_user=user, status=PongInvite.STATUS_PENDING).select_related("game", "from_user")[:3]
+    ]
+
+    active_items = [
+        {
+            "title": game.name,
+            "subtitle": f"{game.score_left}:{game.score_right} · {game.get_status_display()}",
+            "code": game.code,
+            "url_name": "pong_lobby",
+            "icon_class": "fa-solid fa-table-tennis-paddle-ball",
+        }
+        for game in active_games[:3]
+    ]
+
+    return {
+        "template_name": "lobby_snapshot",
+        "metrics": [
+            {"value": PongInvite.objects.filter(to_user=user, status=PongInvite.STATUS_PENDING).count(), "label": _("Einladungen")},
+            {"value": active_games.count(), "label": _("Räume")},
+            {"value": 2, "label": _("Spieler")},
+        ],
+        "primary_items": invite_items,
+        "secondary_items": active_items,
+        "empty_icon": "fa-solid fa-table-tennis-paddle-ball",
+        "empty_text": _("Noch kein offener Pong-Raum."),
+        "home_url_name": "pong_home",
+        "home_label": _("Öffnen"),
+    }
+
+
+def build_home_budget_widget_data(user):
+    today = django_timezone.localdate()
+    month_start = today.replace(day=1)
+    if month_start.month == 12:
+        next_month_start = month_start.replace(year=month_start.year + 1, month=1)
+    else:
+        next_month_start = month_start.replace(month=month_start.month + 1)
+
+    entries = list(
+        BudgetEntry.objects
+        .filter(user=user, date__gte=month_start, date__lt=next_month_start)
+        .select_related("category")
+        .order_by("-date", "-created_at")
+    )
+    income = sum((entry.amount for entry in entries if entry.entry_type == BudgetEntry.TYPE_INCOME), Decimal("0"))
+    expenses = sum((entry.amount for entry in entries if entry.entry_type == BudgetEntry.TYPE_EXPENSE), Decimal("0"))
+    balance = income - expenses
+    budget_month = BudgetMonth.objects.filter(user=user, year=month_start.year, month=month_start.month).first()
+    expense_limit = budget_month.expense_limit if budget_month else Decimal("0")
+    usage_percent = 0
+    if expense_limit:
+        usage_percent = min(int((expenses / expense_limit) * 100), 999)
+
+    return {
+        "template_name": "metric_snapshot",
+        "metrics": [
+            {"value": format_home_money(balance), "label": _("Saldo")},
+            {"value": format_home_money(expenses), "label": _("Ausgaben")},
+            {"value": len(entries), "label": _("Buchungen")},
+        ],
+        "detail_label": _("Budgetlimit"),
+        "detail_value": format_home_money(expense_limit) if expense_limit else _("Nicht gesetzt"),
+        "progress_percent": usage_percent,
+        "progress_label": _("%(percent)s%% genutzt") % {"percent": usage_percent} if expense_limit else _("Kein Limit gesetzt"),
+        "items": [
+            {
+                "title": entry.title,
+                "subtitle": date_format(entry.date, "SHORT_DATE_FORMAT"),
+                "value": format_home_money(entry.amount),
+                "icon_class": entry.category.icon if entry.category else "fa-solid fa-wallet",
+            }
+            for entry in entries[:3]
+        ],
+        "empty_icon": "fa-solid fa-wallet",
+        "empty_text": _("Noch keine Buchungen in diesem Monat."),
+        "show_empty_state": not entries,
+        "home_url_name": "budget_tracker",
+        "home_label": _("Budget öffnen"),
+    }
+
+
+def build_home_file_share_widget_data(user):
+    now = django_timezone.now()
+    shares = FileShare.objects.filter(owner=user)
+    active_shares = (
+        shares
+        .filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now))
+        .filter(Q(max_downloads__isnull=True) | Q(download_count__lt=F("max_downloads")))
+    )
+    recent_shares = list(shares.order_by("-created_at")[:3])
+    total_downloads = sum(share.download_count for share in shares.only("download_count"))
+
+    return {
+        "template_name": "metric_snapshot",
+        "metrics": [
+            {"value": shares.count(), "label": _("Freigaben")},
+            {"value": active_shares.count(), "label": _("Aktiv")},
+            {"value": total_downloads, "label": _("Downloads")},
+        ],
+        "detail_label": _("Neueste Datei"),
+        "detail_value": recent_shares[0].original_name if recent_shares else _("Keine Datei"),
+        "items": [
+            {
+                "title": share.original_name,
+                "subtitle": share.availability_label,
+                "value": share.human_size,
+                "icon_class": share.icon_class,
+            }
+            for share in recent_shares
+        ],
+        "empty_icon": "fa-regular fa-folder-open",
+        "empty_text": _("Noch keine Dateien geteilt."),
+        "show_empty_state": not recent_shares,
+        "home_url_name": "file_share",
+        "home_label": _("Datei-Share öffnen"),
+    }
+
+
+def build_home_cookie_clicker_widget_data(user):
+    highscore = CookieClickerHighScore.objects.filter(user=user).first()
+    return {
+        "template_name": "metric_snapshot",
+        "metrics": [
+            {"value": highscore.display_score if highscore else "0", "label": _("Highscore")},
+            {"value": format_home_metric(highscore.cps, 1) if highscore else "0", "label": _("CPS")},
+            {"value": highscore.ascensions if highscore else 0, "label": _("Aufstiege")},
+        ],
+        "detail_label": _("Upgrades"),
+        "detail_value": highscore.upgrades_count if highscore else 0,
+        "items": [],
+        "empty_icon": "fa-solid fa-cookie-bite",
+        "empty_text": _("Noch kein Cookie-Cosmos-Score gespeichert."),
+        "show_empty_state": highscore is None,
+        "home_url_name": "cookie-clicker",
+        "home_label": _("Cookie Cosmos öffnen"),
+    }
+
+
+def build_home_cookie_cosmos_v2_widget_data(user):
+    save = CookieCosmosV2Save.objects.filter(user=user).first()
+    return {
+        "template_name": "metric_snapshot",
+        "metrics": [
+            {"value": format_home_metric(save.cookies, 0) if save else "0", "label": _("Cookies")},
+            {"value": format_home_metric(save.cps, 1) if save else "0", "label": _("CPS")},
+            {"value": save.prestige_level if save else 1, "label": _("Prestige")},
+        ],
+        "detail_label": _("Erfolge"),
+        "detail_value": save.achievements_count if save else 0,
+        "items": [],
+        "empty_icon": "fa-solid fa-cookie",
+        "empty_text": _("Noch kein Cookie-Cosmos-V2-Spielstand."),
+        "show_empty_state": save is None,
+        "home_url_name": "cookie-cosmos-v2",
+        "home_label": _("Cookie Cosmos V2 öffnen"),
+    }
+
+
+def build_home_nebula_forge_widget_data(user):
+    save = NebulaForgeTycoonSave.objects.filter(user=user).first()
+    return {
+        "template_name": "metric_snapshot",
+        "metrics": [
+            {"value": format_home_metric(save.flux, 0) if save else "0", "label": _("Flux")},
+            {"value": format_home_metric(save.cps, 1) if save else "0", "label": _("pro Sekunde")},
+            {"value": save.prestige_level if save else 1, "label": _("Prestige")},
+        ],
+        "detail_label": _("Shard-Speicher"),
+        "detail_value": save.shards if save else 0,
+        "items": [],
+        "empty_icon": "fa-solid fa-meteor",
+        "empty_text": _("Noch kein Nebula-Forge-Spielstand."),
+        "show_empty_state": save is None,
+        "home_url_name": "nebula-forge-tycoon",
+        "home_label": _("Nebula Forge öffnen"),
+    }
+
+
+def build_home_2048_widget_data(user):
+    highscore = Game2048HighScore.objects.filter(user=user).first()
+    return {
+        "template_name": "metric_snapshot",
+        "metrics": [
+            {"value": highscore.display_score if highscore else "0", "label": _("Highscore")},
+            {"value": highscore.best_tile if highscore else 2, "label": _("Beste Kachel")},
+            {"value": highscore.games_played if highscore else 0, "label": _("Spiele")},
+        ],
+        "detail_label": _("Beste Zeit"),
+        "detail_value": highscore.duration_label if highscore else "0:00",
+        "items": [],
+        "empty_icon": "fa-solid fa-border-all",
+        "empty_text": _("Noch kein 2048-Highscore."),
+        "show_empty_state": highscore is None,
+        "home_url_name": "game-2048",
+        "home_label": _("2048 öffnen"),
+    }
+
 def build_home_widget_data(request, user):
     widgets = list(
         HomeWidget.objects
@@ -683,6 +1108,36 @@ def build_home_widget_data(request, user):
 
         elif widget.widget_type == HomeWidget.WIDGET_KNIFFEL:
             data = build_home_kniffel_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_CONNECTFOUR:
+            data = build_home_connectfour_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_BATTLESHIP:
+            data = build_home_battleship_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_HANGMAN:
+            data = build_home_hangman_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_PONG:
+            data = build_home_pong_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_BUDGET:
+            data = build_home_budget_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_FILE_SHARE:
+            data = build_home_file_share_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_COOKIE_CLICKER:
+            data = build_home_cookie_clicker_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_COOKIE_COSMOS_V2:
+            data = build_home_cookie_cosmos_v2_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_NEBULA_FORGE_TYCOON:
+            data = build_home_nebula_forge_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_GAME_2048:
+            data = build_home_2048_widget_data(user)
 
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {

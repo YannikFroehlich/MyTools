@@ -1,0 +1,201 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Theme-Labor" %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/theme_lab.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="theme-lab-page tool-page-shell">
+    <header class="theme-lab-hero tool-hero">
+        <div>
+            <p class="tool-kicker"><i class="fa-solid fa-lock"></i> {% translate "Nur für Admins" %}</p>
+            <h1>{% translate "Theme-Labor & PWA Push-Test" %}</h1>
+            <p>
+                {% translate "Prüfe hier zentrale UI-Komponenten, Kontrast, Theme-Variablen und echte Push-Benachrichtigungen an einer Stelle." %}
+            </p>
+        </div>
+        <div class="theme-lab-hero-actions">
+            <button class="tool-button tool-button-secondary" type="button" data-open-theme-editor>
+                <i class="fa-solid fa-palette"></i>
+                {% translate "Theme-Editor öffnen" %}
+            </button>
+            <a class="tool-button" href="{% url 'server_status' %}">
+                <i class="fa-solid fa-server"></i>
+                {% translate "Serverstatus" %}
+            </a>
+        </div>
+    </header>
+
+    <div class="theme-lab-grid theme-lab-grid-top">
+        <article class="theme-lab-card theme-lab-status-card">
+            <div class="theme-lab-card-title">
+                <span><i class="fa-solid fa-bell"></i></span>
+                <div>
+                    <p class="tool-kicker">{% translate "PWA" %}</p>
+                    <h2>{% translate "Web-Push" %}</h2>
+                </div>
+            </div>
+
+            <div class="theme-lab-push-status" data-push-status>
+                {% if push_enabled %}
+                    {% blocktranslate count count=active_push_subscriptions %}{{ count }} aktives Push-Abo{% plural %}{{ count }} aktive Push-Abos{% endblocktranslate %}
+                {% else %}
+                    {% translate "Web-Push ist noch nicht konfiguriert." %}
+                {% endif %}
+            </div>
+
+            <div class="theme-lab-push-grid">
+                <div>
+                    <span>{% translate "Public Key" %}</span>
+                    <strong class="{% if web_push_public_key_set %}is-ok{% else %}is-bad{% endif %}">
+                        {% if web_push_public_key_set %}{% translate "gesetzt" %}{% else %}{% translate "fehlt" %}{% endif %}
+                    </strong>
+                </div>
+                <div>
+                    <span>{% translate "Private Key" %}</span>
+                    <strong class="{% if web_push_private_key_set %}is-ok{% else %}is-bad{% endif %}">
+                        {% if web_push_private_key_set %}{% translate "gesetzt" %}{% else %}{% translate "fehlt" %}{% endif %}
+                    </strong>
+                </div>
+                <div>
+                    <span>{% translate "Aktive Abos" %}</span>
+                    <strong>{{ active_push_subscriptions }}</strong>
+                </div>
+            </div>
+
+            <div class="theme-lab-actions">
+                <button class="tool-button" type="button" data-push-action="subscribe">
+                    <i class="fa-solid fa-bell"></i>
+                    {% translate "Push aktivieren" %}
+                </button>
+                <button class="tool-button tool-button-secondary" type="button" data-push-action="test">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    {% translate "Test senden" %}
+                </button>
+                <button class="tool-button tool-button-danger" type="button" data-push-action="unsubscribe">
+                    <i class="fa-solid fa-bell-slash"></i>
+                    {% translate "Dieses Gerät abmelden" %}
+                </button>
+            </div>
+
+            <p class="theme-lab-hint">
+                {% translate "Für den Server brauchst du WEB_PUSH_VAPID_PUBLIC_KEY und WEB_PUSH_VAPID_PRIVATE_KEY in der .env. Push funktioniert nur über HTTPS oder localhost." %}
+            </p>
+        </article>
+
+        <article class="theme-lab-card">
+            <div class="theme-lab-card-title">
+                <span><i class="fa-solid fa-shield-halved"></i></span>
+                <div>
+                    <p class="tool-kicker">{% translate "Admin" %}</p>
+                    <h2>{% translate "Zugriff & Status" %}</h2>
+                </div>
+            </div>
+
+            <div class="theme-lab-status-list">
+                <div>
+                    <span>{% translate "Login/Registrierung" %}</span>
+                    <strong>{% if access_settings.login_registration_locked %}{% translate "gesperrt" %}{% else %}{% translate "offen" %}{% endif %}</strong>
+                </div>
+                <div>
+                    <span>{% translate "Theme-Labor" %}</span>
+                    <strong>{% translate "Admin-only" %}</strong>
+                </div>
+                <div>
+                    <span>{% translate "Kontrastmodus" %}</span>
+                    <strong>{% translate "im Header testbar" %}</strong>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <section class="theme-lab-section">
+        <div class="theme-lab-section-heading">
+            <p class="tool-kicker">{% translate "Design Tokens" %}</p>
+            <h2>{% translate "Aktive Theme-Variablen" %}</h2>
+        </div>
+        <div class="theme-lab-token-grid">
+            {% for token in design_tokens %}
+                <article class="theme-lab-token" style="--token-color: var({{ token.var }});">
+                    <span class="theme-lab-token-swatch"></span>
+                    <div>
+                        <strong>{{ token.label }}</strong>
+                        <small>{{ token.var }}</small>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="theme-lab-section">
+        <div class="theme-lab-section-heading">
+            <p class="tool-kicker">{% translate "Komponenten" %}</p>
+            <h2>{% translate "UI-Testfläche" %}</h2>
+        </div>
+
+        <div class="theme-lab-component-grid">
+            {% for card in component_cards %}
+                <article class="theme-lab-card">
+                    <div class="theme-lab-card-title">
+                        <span><i class="{{ card.icon }}"></i></span>
+                        <div>
+                            <h3>{{ card.title }}</h3>
+                            <p>{{ card.text }}</p>
+                        </div>
+                    </div>
+                    <div class="theme-lab-demo-row">
+                        <button class="tool-button" type="button">{% translate "Primär" %}</button>
+                        <button class="tool-button tool-button-secondary" type="button">{% translate "Sekundär" %}</button>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="theme-lab-section theme-lab-form-demo">
+        <div class="theme-lab-section-heading">
+            <p class="tool-kicker">{% translate "Formulare" %}</p>
+            <h2>{% translate "Inputs, Alerts und Tabellen" %}</h2>
+        </div>
+
+        <div class="theme-lab-form-grid">
+            <div class="theme-lab-card">
+                <label class="theme-lab-label">
+                    {% translate "Textfeld" %}
+                    <input type="text" value="MyTools Design" aria-label="{% translate 'Textfeld' %}">
+                </label>
+                <label class="theme-lab-label">
+                    {% translate "Auswahl" %}
+                    <select aria-label="{% translate 'Auswahl' %}">
+                        <option>{% translate "Standard" %}</option>
+                        <option>{% translate "Hover" %}</option>
+                        <option>{% translate "Fokus" %}</option>
+                    </select>
+                </label>
+                <label class="theme-lab-label">
+                    {% translate "Textarea" %}
+                    <textarea rows="4">{% translate "So sieht längerer Text im aktuellen Theme aus." %}</textarea>
+                </label>
+            </div>
+
+            <div class="theme-lab-card">
+                <div class="theme-lab-alert is-success"><i class="fa-solid fa-circle-check"></i>{% translate "Erfolgsmeldung mit gutem Kontrast." %}</div>
+                <div class="theme-lab-alert is-warning"><i class="fa-solid fa-triangle-exclamation"></i>{% translate "Warnung für kritische Hinweise." %}</div>
+                <div class="theme-lab-alert is-error"><i class="fa-solid fa-circle-xmark"></i>{% translate "Fehlerzustand für Formulare und APIs." %}</div>
+
+                <div class="theme-lab-mini-table" role="table" aria-label="{% translate 'Theme-Test Tabelle' %}">
+                    <div role="row"><strong>{% translate "Element" %}</strong><strong>{% translate "Status" %}</strong></div>
+                    <div role="row"><span>{% translate "Buttons" %}</span><span>{% translate "OK" %}</span></div>
+                    <div role="row"><span>{% translate "Inputs" %}</span><span>{% translate "prüfen" %}</span></div>
+                    <div role="row"><span>{% translate "Karten" %}</span><span>{% translate "OK" %}</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+{% endblock %}

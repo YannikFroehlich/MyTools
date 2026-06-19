@@ -9,6 +9,7 @@ from .models import (
     FileShare,
     Friendship,
     HangmanInvite,
+    InboxItem,
     KniffelInvite,
     PongInvite,
     StadtLandFlussInvite,
@@ -54,8 +55,50 @@ def _invalidate_users_on_commit(user_ids):
     transaction.on_commit(invalidate_users)
 
 
-def _invite_changed(sender, instance, **kwargs):
+INVITE_PUSH_META = {
+    "DrawingGameInvite": ("Skribble-Einladung", "skribble_lobby", "lobby"),
+    "TicTacToeInvite": ("Tic-Tac-Toe-Einladung", "tictactoe_lobby", "game"),
+    "ConnectFourInvite": ("Vier-gewinnt-Einladung", "connectfour_lobby", "game"),
+    "BattleshipInvite": ("Schiffe-versenken-Einladung", "battleship_lobby", "game"),
+    "StadtLandFlussInvite": ("Stadt-Land-Fluss-Einladung", "stadtlandfluss_lobby", "lobby"),
+    "UnoInvite": ("Uno-Einladung", "uno_lobby", "game"),
+    "KniffelInvite": ("Kniffel-Einladung", "kniffel_lobby", "game"),
+    "HangmanInvite": ("Hangman-Einladung", "hangman_lobby", "lobby"),
+    "PongInvite": ("Pong-Einladung", "pong_lobby", "game"),
+}
+
+
+def _send_invite_push_on_commit(instance, title, url_name, object_attr):
+    invite_id = instance.pk
+    sender_name = getattr(instance.from_user, "username", "Jemand")
+    target_user = instance.to_user
+
+    def send_push():
+        from django.urls import reverse
+        from .push_utils import send_web_push_to_user
+
+        target = getattr(instance, object_attr, None)
+        code = getattr(target, "code", "")
+        url = reverse(url_name, args=[code]) if code else reverse("home")
+        send_web_push_to_user(
+            target_user,
+            title=title,
+            body=f"{sender_name} hat dich eingeladen.",
+            url=url,
+            tag=f"invite:{invite_id}",
+        )
+
+    transaction.on_commit(send_push)
+
+
+def _invite_changed(sender, instance, created=False, **kwargs):
     _invalidate_users_on_commit([instance.from_user_id, instance.to_user_id])
+    if not created or getattr(instance, "status", "") != getattr(instance, "STATUS_PENDING", "pending"):
+        return
+
+    meta = INVITE_PUSH_META.get(sender.__name__)
+    if meta:
+        _send_invite_push_on_commit(instance, *meta)
 
 
 def _friendship_changed(sender, instance, **kwargs):
@@ -87,6 +130,32 @@ def _file_share_deleted(sender, instance, **kwargs):
     _invalidate_users_on_commit(user_ids)
 
 
+def _send_inbox_push_on_commit(inbox_item_id):
+    def send_push():
+        from .models import InboxItem
+        from .push_utils import send_web_push_to_user
+
+        try:
+            item = InboxItem.objects.select_related("user").get(pk=inbox_item_id, is_read=False)
+        except InboxItem.DoesNotExist:
+            return
+
+        send_web_push_to_user(
+            item.user,
+            title=item.title,
+            body=item.message,
+            url=item.target_url,
+            tag=f"inbox:{item.pk}",
+        )
+
+    transaction.on_commit(send_push)
+
+
+def _inbox_item_created(sender, instance, created, **kwargs):
+    if created:
+        _send_inbox_push_on_commit(instance.pk)
+
+
 for model in INVITE_MODELS:
     post_save.connect(
         _invite_changed,
@@ -113,6 +182,11 @@ post_save.connect(
     _profile_changed,
     sender=UserProfile,
     dispatch_uid="app.live_status.user_profile.post_save",
+)
+post_save.connect(
+    _inbox_item_created,
+    sender=InboxItem,
+    dispatch_uid="app.web_push.inbox_item.post_save",
 )
 m2m_changed.connect(
     _file_share_recipients_changed,

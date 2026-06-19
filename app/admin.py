@@ -57,6 +57,7 @@ from .models import (
     UserSuspension,
     UserTwoFactorSettings,
     WeatherLocation,
+    WebPushSubscription,
 )
 
 
@@ -108,6 +109,23 @@ class NebulaForgeTycoonSaveAdmin(admin.ModelAdmin):
 class SiteAccessSettingsAdmin(admin.ModelAdmin):
     list_display = ("login_registration_locked", "updated_by", "updated_at")
     readonly_fields = ("updated_at",)
+
+@admin.register(WebPushSubscription)
+class WebPushSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("user", "is_active", "short_endpoint", "created_at", "last_seen_at")
+    list_filter = ("is_active", "created_at", "last_seen_at")
+    search_fields = ("user__username", "user__email", "endpoint", "user_agent")
+    readonly_fields = ("created_at", "updated_at", "last_seen_at")
+    actions = ("deactivate_subscriptions",)
+
+    @admin.display(description=_("Endpoint"))
+    def short_endpoint(self, obj):
+        return obj.endpoint[:72] + ("…" if len(obj.endpoint) > 72 else "")
+
+    @admin.action(description=_("Ausgewählte Push-Abos deaktivieren"))
+    def deactivate_subscriptions(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, _("%(count)s Push-Abo(s) wurden deaktiviert.") % {"count": updated}, messages.SUCCESS)
 
 
 
