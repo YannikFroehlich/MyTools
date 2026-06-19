@@ -5,7 +5,7 @@
 {% block title %}{% translate "Nebula Forge Tycoon" %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260618-nebula-forge-tycoon-focus-left">
+    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260619-nebula-forge-performance-pass">
 {% endblock %}
 
 {% block content %}
@@ -114,27 +114,32 @@
                 </div>
 
                 <div class="nft-action-grid">
-                    <button type="button" class="nft-action-card" id="nftOverdriveButton" data-hotkey="1" aria-keyshortcuts="1" title="{% translate 'Taste 1' %}">
+                    <button type="button" class="nft-action-card" id="nftOverdriveButton" data-ability-type="overdrive" data-hotkey="1" aria-keyshortcuts="1" title="{% translate 'Taste 1' %}">
+                        <b class="nft-hotkey-badge" aria-hidden="true">1</b>
                         <span><i class="fa-solid fa-bolt-lightning"></i></span>
                         <strong>{% translate "Overdrive" %}</strong>
                         <small id="nftOverdriveHint">{% translate "ab 92% Hitze bereit" %}</small>
                     </button>
-                    <button type="button" class="nft-action-card" id="nftSignalButton" data-hotkey="2" aria-keyshortcuts="2" title="{% translate 'Taste 2' %}">
+                    <button type="button" class="nft-action-card" id="nftSignalButton" data-ability-type="signal" data-hotkey="2" aria-keyshortcuts="2" title="{% translate 'Taste 2' %}">
+                        <b class="nft-hotkey-badge" aria-hidden="true">2</b>
                         <span><i class="fa-solid fa-crosshairs"></i></span>
                         <strong>{% translate "Signal-Raid" %}</strong>
                         <small id="nftSignalHint">{% translate "aktiver Timing-Bonus" %}</small>
                     </button>
-                    <button type="button" class="nft-action-card" id="nftCollectButton" data-hotkey="3" aria-keyshortcuts="3" title="{% translate 'Taste 3' %}">
+                    <button type="button" class="nft-action-card" id="nftCollectButton" data-ability-type="collect" data-hotkey="3" aria-keyshortcuts="3" title="{% translate 'Taste 3' %}">
+                        <b class="nft-hotkey-badge" aria-hidden="true">3</b>
                         <span><i class="fa-solid fa-hand-sparkles"></i></span>
                         <strong>{% translate "Sammelimpuls" %}</strong>
                         <small id="nftCollectHint">{% translate "sofort AFK-Ertrag einsammeln" %}</small>
                     </button>
-                    <button type="button" class="nft-action-card" id="nftRiftButton" data-hotkey="4" aria-keyshortcuts="4" title="{% translate 'Taste 4' %}">
+                    <button type="button" class="nft-action-card" id="nftRiftButton" data-ability-type="rift" data-hotkey="4" aria-keyshortcuts="4" title="{% translate 'Taste 4' %}">
+                        <b class="nft-hotkey-badge" aria-hidden="true">4</b>
                         <span><i class="fa-solid fa-wand-sparkles"></i></span>
                         <strong>{% translate "Flux-Riss" %}</strong>
                         <small id="nftRiftHint">{% translate "AFK-Boost erspielen" %}</small>
                     </button>
-                    <button type="button" class="nft-action-card" id="nftCryoButton" data-hotkey="5" aria-keyshortcuts="5" title="{% translate 'Taste 5' %}">
+                    <button type="button" class="nft-action-card" id="nftCryoButton" data-ability-type="cryo" data-hotkey="5" aria-keyshortcuts="5" title="{% translate 'Taste 5' %}">
+                        <b class="nft-hotkey-badge" aria-hidden="true">5</b>
                         <span><i class="fa-solid fa-snowflake"></i></span>
                         <strong>{% translate "Kryo-Takt" %}</strong>
                         <small id="nftCryoHint">{% translate "Hitze senken + Boost" %}</small>
@@ -456,8 +461,6 @@
                 {% translate "Nebula Forge Tycoon wirklich komplett zurücksetzen?" as nft_i18n_208 %}"Nebula Forge Tycoon wirklich komplett zurücksetzen?": "{{ nft_i18n_208|escapejs }}",
                 {% translate "Zurückgesetzt" as nft_i18n_209 %}"Zurückgesetzt": "{{ nft_i18n_209|escapejs }}",
                 {% translate "Du startest wieder mit einer frischen Schmiede." as nft_i18n_210 %}"Du startest wieder mit einer frischen Schmiede.": "{{ nft_i18n_210|escapejs }}",
-                {% translate "Nebula Forge bereit" as nft_i18n_211 %}"Nebula Forge bereit": "{{ nft_i18n_211|escapejs }}",
-                {% translate "Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen." as nft_i18n_212 %}"Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen.": "{{ nft_i18n_212|escapejs }}",
                 {% translate "Nebula Forge Tycoon" as nft_i18n_213 %}"Nebula Forge Tycoon": "{{ nft_i18n_213|escapejs }}",
                 {% translate "Taste 1" as nft_i18n_214 %}"Taste 1": "{{ nft_i18n_214|escapejs }}",
                 {% translate "Taste 2" as nft_i18n_215 %}"Taste 2": "{{ nft_i18n_215|escapejs }}",
@@ -476,5 +479,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260618-nebula-forge-tycoon-focus-left" defer></script>
+    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260619-nebula-forge-performance-pass" defer></script>
 {% endblock %}

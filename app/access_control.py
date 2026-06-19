@@ -281,7 +281,11 @@ ACCESS_CONTROL_ITEMS = (
         "kind": _("Spiel"),
         "category": _("Spiele"),
         "icon": "fa-solid fa-meteor",
-        "url_names": ("nebula-forge-tycoon",),
+        "url_names": (
+            "nebula-forge-tycoon",
+            "nebula-forge-tycoon-load-api",
+            "nebula-forge-tycoon-save-api",
+        ),
     },
     {
         "key": "tictactoe",
