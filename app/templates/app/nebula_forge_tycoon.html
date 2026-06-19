@@ -5,7 +5,7 @@
 {% block title %}{% translate "Nebula Forge Tycoon" %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260618-nebula-forge-tycoon-focus-left">
+    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260619-nebula-prestige-popup-3s-fix">
 {% endblock %}
 
 {% block content %}
@@ -445,6 +445,7 @@
                 {% translate "Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt." as nft_i18n_197 %}"Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.": "{{ nft_i18n_197|escapejs }}",
                 {% translate "Prestige abgeschlossen" as nft_i18n_198 %}"Prestige abgeschlossen": "{{ nft_i18n_198|escapejs }}",
                 {% translate "Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%." as nft_i18n_199 %}"Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%.": "{{ nft_i18n_199|escapejs }}",
+                {% translate "+{reward} Splitter erhalten" as nft_i18n_199a %}"+{reward} Splitter erhalten": "{{ nft_i18n_199a|escapejs }}",
                 {% translate "Export erstellt" as nft_i18n_200 %}"Export erstellt": "{{ nft_i18n_200|escapejs }}",
                 {% translate "Dein Nebula Forge Save wurde heruntergeladen." as nft_i18n_201 %}"Dein Nebula Forge Save wurde heruntergeladen.": "{{ nft_i18n_201|escapejs }}",
                 {% translate "Import fehlgeschlagen" as nft_i18n_202 %}"Import fehlgeschlagen": "{{ nft_i18n_202|escapejs }}",
@@ -456,8 +457,6 @@
                 {% translate "Nebula Forge Tycoon wirklich komplett zurücksetzen?" as nft_i18n_208 %}"Nebula Forge Tycoon wirklich komplett zurücksetzen?": "{{ nft_i18n_208|escapejs }}",
                 {% translate "Zurückgesetzt" as nft_i18n_209 %}"Zurückgesetzt": "{{ nft_i18n_209|escapejs }}",
                 {% translate "Du startest wieder mit einer frischen Schmiede." as nft_i18n_210 %}"Du startest wieder mit einer frischen Schmiede.": "{{ nft_i18n_210|escapejs }}",
-                {% translate "Nebula Forge bereit" as nft_i18n_211 %}"Nebula Forge bereit": "{{ nft_i18n_211|escapejs }}",
-                {% translate "Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen." as nft_i18n_212 %}"Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen.": "{{ nft_i18n_212|escapejs }}",
                 {% translate "Nebula Forge Tycoon" as nft_i18n_213 %}"Nebula Forge Tycoon": "{{ nft_i18n_213|escapejs }}",
                 {% translate "Taste 1" as nft_i18n_214 %}"Taste 1": "{{ nft_i18n_214|escapejs }}",
                 {% translate "Taste 2" as nft_i18n_215 %}"Taste 2": "{{ nft_i18n_215|escapejs }}",
@@ -476,5 +475,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260618-nebula-forge-tycoon-focus-left" defer></script>
+    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260619-nebula-prestige-popup-3s-fix" defer></script>
 {% endblock %}

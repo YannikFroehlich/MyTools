@@ -458,6 +458,11 @@
     let nextMeteorAt = nextMeteorTime();
     let dbSaveCooldownUntil = 0;
     let lastSpaceMineAt = 0;
+    const reduceMotionQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+
+    function prefersReducedMotion() {
+        return Boolean(reduceMotionQuery && reduceMotionQuery.matches);
+    }
 
     function sanitizeNumber(value, fallback = 0) {
         const parsed = Number(value);
@@ -928,36 +933,188 @@
         window.setTimeout(() => gain.remove(), 950);
     }
 
-    function buyBuilding(id) {
+    function transientClass(element, className, duration = 650) {
+        if (!element) return;
+        element.classList.remove(className);
+        void element.offsetWidth;
+        element.classList.add(className);
+        window.setTimeout(() => element.classList.remove(className), duration);
+    }
+
+    function elementCenterPoint(element) {
+        if (!element) return null;
+        const rect = element.getBoundingClientRect();
+        const rootRect = root.getBoundingClientRect();
+        return {
+            x: rect.left - rootRect.left + rect.width / 2,
+            y: rect.top - rootRect.top + rect.height / 2,
+        };
+    }
+
+    function createPurchaseParticle(x, y, kind, index, total) {
+        const particle = document.createElement("span");
+        particle.className = `nft-purchase-particle ${kind === "upgrade" ? "is-upgrade" : "is-building"}`;
+        const angle = (Math.PI * 2 * index) / total + Math.random() * 0.38;
+        const distance = 34 + Math.random() * 58;
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
+        particle.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
+        particle.style.setProperty("--r", `${Math.round((Math.random() - 0.5) * 220)}deg`);
+        root.appendChild(particle);
+        window.setTimeout(() => particle.remove(), 900);
+    }
+
+    function createTravelParticle(sourceElement, targetElement, kind) {
+        if (!sourceElement || !targetElement || prefersReducedMotion()) return;
+        const start = elementCenterPoint(sourceElement);
+        const end = elementCenterPoint(targetElement);
+        if (!start || !end) return;
+
+        const particle = document.createElement("span");
+        particle.className = `nft-travel-particle ${kind === "upgrade" ? "is-upgrade" : "is-building"}`;
+        particle.style.left = `${start.x}px`;
+        particle.style.top = `${start.y}px`;
+        particle.style.setProperty("--dx", `${end.x - start.x}px`);
+        particle.style.setProperty("--dy", `${end.y - start.y}px`);
+        root.appendChild(particle);
+        window.setTimeout(() => particle.remove(), 850);
+    }
+
+    function animatePurchaseSuccess(sourceElement, item, kind) {
+        if (!sourceElement) return;
+        const card = sourceElement.closest(".nft-shop-card");
+        const point = elementCenterPoint(sourceElement);
+        transientClass(card, "is-purchase-success", 700);
+        transientClass(sourceElement, "is-purchase-success", 700);
+        transientClass(elements.foundry, "is-purchase-active", 760);
+        transientClass(elements.mineButton, "is-upgraded", 760);
+        transientClass(elements.flux && elements.flux.closest(".nft-stat"), "is-value-pop", 620);
+
+        if (point && !prefersReducedMotion()) {
+            const label = document.createElement("span");
+            label.className = `nft-purchase-label ${kind === "upgrade" ? "is-upgrade" : "is-building"}`;
+            label.textContent = kind === "upgrade" ? `${item.name} ↑` : `${item.name} +1`;
+            label.style.left = `${point.x}px`;
+            label.style.top = `${point.y}px`;
+            root.appendChild(label);
+            window.setTimeout(() => label.remove(), 1050);
+
+            const particleCount = kind === "upgrade" ? 13 : 10;
+            for (let index = 0; index < particleCount; index += 1) {
+                window.setTimeout(() => createPurchaseParticle(point.x, point.y, kind, index, particleCount), index * 12);
+            }
+        }
+
+        createTravelParticle(sourceElement, elements.flux, kind);
+        createTravelParticle(sourceElement, elements.mineButton, kind);
+    }
+
+    function animatePurchaseDenied(sourceElement) {
+        transientClass(sourceElement && sourceElement.closest(".nft-shop-card"), "is-purchase-denied", 420);
+        transientClass(sourceElement, "is-purchase-denied", 420);
+    }
+
+    function playPrestigeAnimation(level, reward) {
+        transientClass(root, "is-prestige-flash", 1700);
+        transientClass(elements.foundry, "is-prestige-boom", 1700);
+        transientClass(elements.mineButton, "is-prestige-evolved", 1700);
+
+        const overlay = document.createElement("div");
+        overlay.className = "nft-prestige-overlay";
+        overlay.setAttribute("aria-hidden", "true");
+
+        const warp = document.createElement("div");
+        warp.className = "nft-prestige-warp";
+        overlay.appendChild(warp);
+
+        for (let ringIndex = 0; ringIndex < 3; ringIndex += 1) {
+            const ring = document.createElement("span");
+            ring.className = "nft-prestige-ring";
+            ring.style.setProperty("--delay", `${ringIndex * 160}ms`);
+            overlay.appendChild(ring);
+        }
+
+        if (!prefersReducedMotion()) {
+            for (let index = 0; index < 32; index += 1) {
+                const shard = document.createElement("span");
+                shard.className = "nft-prestige-shard";
+                shard.innerHTML = '<i class="fa-solid fa-star"></i>';
+                const angle = (Math.PI * 2 * index) / 32;
+                const distance = 160 + Math.random() * 260;
+                shard.style.setProperty("--x", `${Math.cos(angle) * distance}px`);
+                shard.style.setProperty("--y", `${Math.sin(angle) * distance}px`);
+                shard.style.setProperty("--delay", `${Math.random() * 360}ms`);
+                shard.style.setProperty("--spin", `${Math.round(180 + Math.random() * 540)}deg`);
+                overlay.appendChild(shard);
+            }
+        }
+
+        const text = document.createElement("div");
+        text.className = "nft-prestige-text";
+
+        const icon = document.createElement("span");
+        icon.innerHTML = '<i class="fa-solid fa-wand-sparkles"></i>';
+        text.appendChild(icon);
+
+        const title = document.createElement("strong");
+        title.textContent = t("Neue Galaxie");
+        text.appendChild(title);
+
+        const bonus = document.createElement("small");
+        bonus.textContent = fmt("Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%.", {
+            level,
+            bonus: Math.round((prestigeMultiplier() - 1) * 100),
+        });
+        text.appendChild(bonus);
+
+        const shards = document.createElement("em");
+        shards.textContent = fmt("+{reward} Splitter erhalten", { reward });
+        text.appendChild(shards);
+
+        overlay.appendChild(text);
+        root.appendChild(overlay);
+
+        // Keep the prestige result readable for a real moment. Do not shorten this for
+        // prefers-reduced-motion, otherwise the popup disappears almost instantly on
+        // systems with reduced motion enabled.
+        window.setTimeout(() => overlay.remove(), 4700);
+    }
+
+    function buyBuilding(id, sourceElement = null) {
         const item = buildings.find(entry => entry.id === id);
         if (!item) return;
         const owned = buildingCount(id);
         const cost = costFor(item, owned);
         if (!spendFlux(cost)) {
+            animatePurchaseDenied(sourceElement);
             showMessage(t("Nicht genug Flux"), fmt("{item} kostet {cost} Flux.", { item: item.name, cost: format(cost) }));
             return;
         }
         state.buildings[id] = owned + 1;
         renderStats();
-        renderShopLists(true);
+        animatePurchaseSuccess(sourceElement, item, "building");
+        window.setTimeout(() => renderShopLists(true), prefersReducedMotion() ? 0 : 140);
         checkAchievements();
         saveState();
     }
 
-    function buyUpgrade(id) {
+    function buyUpgrade(id, sourceElement = null) {
         const item = upgrades.find(entry => entry.id === id);
         if (!item) return;
         const level = upgradeLevel(id);
         if (level >= item.max) return;
         const cost = costFor(item, level);
         if (!spendFlux(cost)) {
+            animatePurchaseDenied(sourceElement);
             showMessage(t("Nicht genug Flux"), fmt("{item} kostet {cost} Flux.", { item: item.name, cost: format(cost) }));
             return;
         }
         state.upgrades[id] = level + 1;
         state.heat = clamp(state.heat, 0, maxHeat());
         renderStats();
-        renderShopLists(true);
+        animatePurchaseSuccess(sourceElement, item, "upgrade");
+        window.setTimeout(() => renderShopLists(true), prefersReducedMotion() ? 0 : 140);
         checkAchievements();
         saveState();
     }
@@ -1325,6 +1482,7 @@
         checkAchievements();
         saveState();
         renderAll(true);
+        playPrestigeAnimation(newLevel, reward);
     }
 
     function renderAll(forceShops = false) {
@@ -1874,21 +2032,21 @@
         };
 
         elements.buildings.addEventListener("pointerdown", event => {
-            handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding));
+            handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding, button));
         });
 
         elements.upgrades.addEventListener("pointerdown", event => {
-            handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade));
+            handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade, button));
         });
 
         elements.buildings.addEventListener("keydown", event => {
             if (event.key !== "Enter" && event.key !== " ") return;
-            handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding));
+            handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding, button));
         });
 
         elements.upgrades.addEventListener("keydown", event => {
             if (event.key !== "Enter" && event.key !== " ") return;
-            handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade));
+            handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade, button));
         });
 
         [elements.buildings, elements.upgrades, elements.achievements].forEach(list => {
@@ -1926,6 +2084,5 @@
     attachEvents();
     renderAll(true);
     loadDatabaseSave();
-    showMessage(t("Nebula Forge bereit"), t("Aktives Klicken skaliert jetzt mit deiner AFK-Produktion: Combos halten und Takt-Bursts auslösen."));
     window.requestAnimationFrame(gameLoop);
 })();

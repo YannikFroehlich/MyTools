@@ -1517,6 +1517,7 @@ body:not(.dark-mode) .nft-toast {
 /* Prestige is a major reset mechanic, so it sits outside the normal shop tabs. */
 .nft-prestige-hero {
     position: relative;
+    isolation: isolate;
     overflow: hidden;
     grid-template-columns: minmax(13rem, 0.85fr) minmax(0, 1.4fr) auto;
     gap: 1rem;
@@ -1533,16 +1534,78 @@ body:not(.dark-mode) .nft-toast {
         0 0 0 1px rgba(255, 255, 255, 0.04) inset,
         0 18px 46px rgba(0, 0, 0, 0.18),
         0 0 38px rgba(var(--theme-accent-rgb), 0.12);
+    animation: nftPrestigeHeroGlow 7s ease-in-out infinite;
+}
+
+.nft-prestige-hero::before,
+.nft-prestige-hero::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .nft-prestige-hero::before {
-    content: '';
-    position: absolute;
-    inset: -45% -10%;
-    background: conic-gradient(from 160deg, transparent, rgba(124, 244, 255, 0.13), transparent, rgba(250, 204, 21, 0.11), transparent);
-    opacity: 0.8;
-    animation: nftSpin 18s linear infinite;
-    pointer-events: none;
+    left: clamp(3rem, 15vw, 16rem);
+    top: 50%;
+    width: min(37rem, 68vw);
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background:
+        conic-gradient(
+            from 0deg,
+            transparent 0deg,
+            rgba(124, 244, 255, 0.04) 34deg,
+            rgba(124, 244, 255, 0.28) 58deg,
+            transparent 82deg,
+            rgba(250, 204, 21, 0.2) 132deg,
+            transparent 168deg,
+            rgba(167, 139, 250, 0.26) 228deg,
+            transparent 284deg,
+            rgba(var(--theme-accent-rgb), 0.24) 326deg,
+            transparent 360deg
+        ),
+        radial-gradient(circle, rgba(255, 255, 255, 0.16) 0 2px, transparent 3px 100%),
+        radial-gradient(circle, rgba(124, 244, 255, 0.13), transparent 58%);
+    -webkit-mask-image: radial-gradient(circle, transparent 0 18%, #000 24% 58%, transparent 69%);
+    mask-image: radial-gradient(circle, transparent 0 18%, #000 24% 58%, transparent 69%);
+    mix-blend-mode: screen;
+    opacity: 0.9;
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.95);
+    animation:
+        nftPrestigeGalaxyOrbit 15s linear infinite,
+        nftPrestigeGalaxyPulse 5.4s ease-in-out infinite;
+}
+
+.nft-prestige-hero::after {
+    inset: 0;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at 9% 28%, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.8px),
+        radial-gradient(circle at 34% 66%, rgba(124, 244, 255, 0.68) 0 1px, transparent 1.8px),
+        radial-gradient(circle at 63% 30%, rgba(250, 204, 21, 0.66) 0 1px, transparent 1.8px),
+        radial-gradient(circle at 88% 72%, rgba(255, 255, 255, 0.58) 0 1px, transparent 1.8px),
+        linear-gradient(110deg, transparent 0 35%, rgba(255, 255, 255, 0.1) 48%, transparent 62% 100%);
+    background-size: 11rem 5.5rem, 14rem 7rem, 17rem 8rem, 13rem 6.5rem, 220% 100%;
+    opacity: 0.5;
+    mix-blend-mode: screen;
+    animation:
+        nftPrestigeStarDrift 9s ease-in-out infinite alternate,
+        nftPrestigeCometSweep 4.8s ease-in-out infinite;
+}
+
+.nft-prestige-hero:has(.nft-primary-button:not(:disabled)) {
+    border-color: rgba(250, 204, 21, 0.56);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 18px 46px rgba(0, 0, 0, 0.2),
+        0 0 42px rgba(250, 204, 21, 0.18),
+        0 0 56px rgba(var(--theme-accent-rgb), 0.14);
+}
+
+.nft-prestige-hero:has(.nft-primary-button:not(:disabled))::before {
+    opacity: 1;
+    animation-duration: 8.5s, 2.8s;
 }
 
 body:not(.dark-mode) .nft-prestige-hero {
@@ -1565,11 +1628,42 @@ body:not(.dark-mode) .nft-prestige-hero {
 }
 
 .nft-prestige-title span {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     flex: 0 0 auto;
     width: 3rem;
     height: 3rem;
     border-radius: 1.1rem;
     box-shadow: 0 0 26px rgba(250, 204, 21, 0.3);
+    animation: nftPrestigeIconFloat 3.6s ease-in-out infinite;
+}
+
+.nft-prestige-title span::before,
+.nft-prestige-title span::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.nft-prestige-title span::before {
+    inset: -42%;
+    border-radius: 999px;
+    background: conic-gradient(from 0deg, rgba(250, 204, 21, 0.12), rgba(124, 244, 255, 0.65), rgba(167, 139, 250, 0.5), rgba(250, 204, 21, 0.12));
+    animation: nftPrestigeIconRing 4.8s linear infinite;
+}
+
+.nft-prestige-title span::after {
+    inset: -30% -80%;
+    background: linear-gradient(110deg, transparent 28%, rgba(255, 255, 255, 0.72) 48%, transparent 68%);
+    transform: translateX(-90%) rotate(8deg);
+    animation: nftPrestigeIconGlint 3.2s ease-in-out infinite;
+}
+
+.nft-prestige-title span i {
+    position: relative;
+    z-index: 1;
 }
 
 .nft-prestige-hero strong {
@@ -1603,6 +1697,45 @@ body:not(.dark-mode) .nft-prestige-hero {
 @keyframes nftPrestigeReadyPulse {
     0%, 100% { transform: translateY(0); filter: brightness(1); }
     50% { transform: translateY(-2px); filter: brightness(1.08); }
+}
+
+@keyframes nftPrestigeHeroGlow {
+    0%, 100% { filter: saturate(1) brightness(1); }
+    45% { filter: saturate(1.12) brightness(1.05); }
+}
+
+@keyframes nftPrestigeGalaxyOrbit {
+    to { transform: translate(-50%, -50%) rotate(360deg) scale(0.95); }
+}
+
+@keyframes nftPrestigeGalaxyPulse {
+    0%, 100% { filter: blur(0.2px) saturate(1.05); }
+    50% { filter: blur(0.7px) saturate(1.35) brightness(1.14); }
+}
+
+@keyframes nftPrestigeStarDrift {
+    from { transform: translate3d(-0.35rem, 0.15rem, 0); opacity: 0.38; }
+    to { transform: translate3d(0.45rem, -0.25rem, 0); opacity: 0.62; }
+}
+
+@keyframes nftPrestigeCometSweep {
+    0%, 42% { background-position: 0 0, 0 0, 0 0, 0 0, 185% 0; }
+    72%, 100% { background-position: 0 0, 0 0, 0 0, 0 0, -85% 0; }
+}
+
+@keyframes nftPrestigeIconFloat {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-2px) rotate(3deg); }
+}
+
+@keyframes nftPrestigeIconRing {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes nftPrestigeIconGlint {
+    0%, 38% { transform: translateX(-90%) rotate(8deg); opacity: 0; }
+    52% { opacity: 0.95; }
+    72%, 100% { transform: translateX(90%) rotate(8deg); opacity: 0; }
 }
 
 @media (max-width: 1120px) {
@@ -1793,5 +1926,362 @@ body:not(.dark-mode) .nft-prestige-hero {
         margin-top: 0.12rem;
         font-size: 0.8rem;
         line-height: 1.22;
+    }
+}
+
+/* Purchase + Prestige animation layer */
+.nft-stat.is-value-pop {
+    animation: nftValuePop 620ms ease-out both;
+}
+
+.nft-shop-card.is-purchase-success {
+    position: relative;
+    overflow: hidden;
+    animation: nftPurchaseCard 700ms ease-out both;
+    border-color: rgba(124, 244, 255, 0.78);
+}
+
+.nft-shop-card.is-purchase-success::after {
+    content: '';
+    position: absolute;
+    inset: -35% -15%;
+    background: linear-gradient(115deg, transparent 28%, rgba(255, 255, 255, 0.34) 47%, transparent 66%);
+    animation: nftPurchaseSweep 620ms ease-out both;
+    pointer-events: none;
+}
+
+.nft-shop-buy.is-purchase-success {
+    animation: nftPurchaseButton 620ms ease-out both;
+}
+
+.nft-shop-card.is-purchase-denied,
+.nft-shop-buy.is-purchase-denied {
+    animation: nftDeniedShake 420ms ease-out both;
+}
+
+.nft-foundry.is-purchase-active {
+    animation: nftFoundryPurchasePulse 760ms ease-out both;
+}
+
+.nft-core-button.is-upgraded {
+    animation: nftCoreUpgradePulse 760ms ease-out both;
+}
+
+.nft-purchase-label,
+.nft-purchase-particle,
+.nft-travel-particle,
+.nft-prestige-overlay,
+.nft-prestige-overlay * {
+    pointer-events: none;
+}
+
+.nft-purchase-label {
+    position: absolute;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    max-width: min(15rem, 70vw);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    padding: 0.38rem 0.68rem;
+    color: #08111f;
+    background: linear-gradient(135deg, var(--nft-accent), var(--nft-accent-3));
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28), 0 0 24px rgba(124, 244, 255, 0.24);
+    font-size: 0.78rem;
+    font-weight: 950;
+    line-height: 1;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    animation: nftPurchaseLabel 1050ms cubic-bezier(.19, 1, .22, 1) forwards;
+}
+
+.nft-purchase-label.is-upgrade {
+    background: linear-gradient(135deg, var(--nft-accent-2), var(--nft-good));
+}
+
+.nft-purchase-particle,
+.nft-travel-particle {
+    position: absolute;
+    z-index: 58;
+    width: 0.52rem;
+    height: 0.52rem;
+    border-radius: 999px;
+    background: var(--nft-accent-3);
+    box-shadow: 0 0 16px currentColor;
+    transform: translate(-50%, -50%);
+}
+
+.nft-purchase-particle.is-upgrade,
+.nft-travel-particle.is-upgrade {
+    background: var(--nft-accent-2);
+}
+
+.nft-purchase-particle {
+    animation: nftPurchaseParticle 820ms cubic-bezier(.19, 1, .22, 1) forwards;
+}
+
+.nft-travel-particle {
+    width: 0.78rem;
+    height: 0.78rem;
+    background: radial-gradient(circle, #fff 0 22%, var(--nft-accent) 23% 58%, transparent 60%);
+    animation: nftTravelParticle 820ms cubic-bezier(.19, 1, .22, 1) forwards;
+}
+
+.nft-page.is-prestige-flash::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 10035;
+    background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.38), transparent 24rem),
+        radial-gradient(circle at center, rgba(124, 244, 255, 0.24), transparent 42rem);
+    animation: nftPrestigePageFlash 1700ms ease-out both;
+    pointer-events: none;
+}
+
+.nft-foundry.is-prestige-boom {
+    animation: nftPrestigeFoundryBoom 1700ms cubic-bezier(.19, 1, .22, 1) both;
+}
+
+.nft-core-button.is-prestige-evolved {
+    animation: nftPrestigeCoreEvolution 1700ms cubic-bezier(.19, 1, .22, 1) both;
+}
+
+.nft-prestige-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10036;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, rgba(124, 244, 255, 0.18), transparent 20rem),
+        radial-gradient(circle at center, rgba(250, 204, 21, 0.12), transparent 34rem),
+        rgba(3, 7, 18, 0.42);
+    backdrop-filter: blur(3px);
+    animation: nftPrestigeOverlay 4500ms ease-out forwards;
+}
+
+.nft-prestige-warp {
+    position: absolute;
+    width: min(82vw, 46rem);
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background:
+        conic-gradient(from 0deg, transparent, rgba(124, 244, 255, 0.52), transparent, rgba(250, 204, 21, 0.5), transparent, rgba(167, 139, 250, 0.55), transparent),
+        radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent 58%);
+    filter: blur(1px) saturate(1.3);
+    opacity: 0;
+    animation: nftPrestigeWarp 4300ms cubic-bezier(.19, 1, .22, 1) forwards;
+}
+
+.nft-prestige-ring {
+    position: absolute;
+    width: min(52vw, 28rem);
+    aspect-ratio: 1;
+    border: 2px solid rgba(124, 244, 255, 0.55);
+    border-radius: 999px;
+    box-shadow: 0 0 32px rgba(124, 244, 255, 0.42), inset 0 0 28px rgba(250, 204, 21, 0.18);
+    opacity: 0;
+    animation: nftPrestigeRing 1750ms cubic-bezier(.19, 1, .22, 1) var(--delay, 0ms) forwards;
+}
+
+.nft-prestige-shard {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.45rem;
+    color: #facc15;
+    text-shadow: 0 0 16px rgba(250, 204, 21, 0.85);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: nftPrestigeShard 1500ms cubic-bezier(.19, 1, .22, 1) var(--delay, 0ms) forwards;
+}
+
+.nft-prestige-text {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+    width: min(32rem, calc(100vw - 2rem));
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 28px;
+    padding: clamp(1.1rem, 4vw, 1.8rem);
+    color: #fff;
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 89, 0.82));
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38), 0 0 52px rgba(124, 244, 255, 0.28);
+    text-align: center;
+    animation: nftPrestigeText 4500ms cubic-bezier(.19, 1, .22, 1) forwards;
+}
+
+.nft-prestige-text > span {
+    display: grid;
+    place-items: center;
+    width: 3.8rem;
+    height: 3.8rem;
+    border-radius: 1.4rem;
+    color: #08111f;
+    background: linear-gradient(135deg, var(--nft-accent), var(--nft-accent-3));
+    box-shadow: 0 0 34px rgba(250, 204, 21, 0.34);
+    font-size: 1.45rem;
+}
+
+.nft-prestige-text strong {
+    font-size: clamp(1.7rem, 6vw, 3rem);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+}
+
+.nft-prestige-text small {
+    color: rgba(246, 248, 255, 0.78);
+    font-weight: 850;
+    line-height: 1.35;
+}
+
+.nft-prestige-text em {
+    display: inline-flex;
+    margin-top: 0.2rem;
+    border-radius: 999px;
+    padding: 0.42rem 0.78rem;
+    color: #08111f;
+    background: linear-gradient(135deg, #fde68a, #7cf4ff);
+    box-shadow: 0 0 24px rgba(124, 244, 255, 0.24);
+    font-style: normal;
+    font-weight: 950;
+}
+
+@keyframes nftValuePop {
+    0%, 100% { transform: translateY(0) scale(1); filter: brightness(1); }
+    38% { transform: translateY(-3px) scale(1.035); filter: brightness(1.16); }
+}
+
+@keyframes nftPurchaseCard {
+    0% { transform: translateY(0) scale(1); }
+    38% { transform: translateY(-4px) scale(1.012); box-shadow: 0 0 28px rgba(124, 244, 255, 0.18); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes nftPurchaseSweep {
+    from { transform: translateX(-85%) rotate(8deg); opacity: 0; }
+    28% { opacity: 1; }
+    to { transform: translateX(85%) rotate(8deg); opacity: 0; }
+}
+
+@keyframes nftPurchaseButton {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    42% { transform: scale(1.08); filter: brightness(1.18); }
+}
+
+@keyframes nftDeniedShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    42% { transform: translateX(5px); }
+    64% { transform: translateX(-3px); }
+    82% { transform: translateX(2px); }
+}
+
+@keyframes nftFoundryPurchasePulse {
+    0%, 100% { filter: brightness(1); }
+    44% { filter: brightness(1.14) saturate(1.18); }
+}
+
+@keyframes nftCoreUpgradePulse {
+    0%, 100% { transform: scale(var(--nft-core-scale)); }
+    42% { transform: scale(calc(var(--nft-core-scale) * 1.08)); }
+}
+
+@keyframes nftPurchaseLabel {
+    0% { transform: translate(-50%, -50%) scale(0.72); opacity: 0; }
+    18% { transform: translate(-50%, -78%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -155%) scale(0.96); opacity: 0; }
+}
+
+@keyframes nftPurchaseParticle {
+    0% { transform: translate(-50%, -50%) scale(0.45) rotate(0); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(0) rotate(var(--r)); opacity: 0; }
+}
+
+@keyframes nftTravelParticle {
+    0% { transform: translate(-50%, -50%) scale(0.65); opacity: 1; }
+    55% { opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.28); opacity: 0; }
+}
+
+@keyframes nftPrestigePageFlash {
+    0% { opacity: 0; }
+    18% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes nftPrestigeFoundryBoom {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    35% { transform: scale(1.015); filter: brightness(1.35) saturate(1.35); }
+}
+
+@keyframes nftPrestigeCoreEvolution {
+    0% { transform: scale(var(--nft-core-scale)); filter: saturate(var(--nft-core-sat)) hue-rotate(var(--nft-core-hue)); }
+    28% { transform: scale(calc(var(--nft-core-scale) * 1.18)); filter: saturate(1.8) hue-rotate(calc(var(--nft-core-hue) + 70deg)) brightness(1.35); }
+    100% { transform: scale(var(--nft-core-scale)); filter: saturate(var(--nft-core-sat)) hue-rotate(var(--nft-core-hue)); }
+}
+
+@keyframes nftPrestigeOverlay {
+    0% { opacity: 0; }
+    8%, 78% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes nftPrestigeWarp {
+    0% { transform: scale(0.12) rotate(0deg); opacity: 0; }
+    18% { opacity: 1; }
+    78% { opacity: 0.85; }
+    100% { transform: scale(1.4) rotate(520deg); opacity: 0; }
+}
+
+@keyframes nftPrestigeRing {
+    0% { transform: scale(0.1) rotate(0deg); opacity: 0; }
+    18% { opacity: 1; }
+    100% { transform: scale(2.5) rotate(28deg); opacity: 0; }
+}
+
+@keyframes nftPrestigeShard {
+    0% { transform: translate(-50%, -50%) scale(0.2) rotate(0); opacity: 0; }
+    18% { opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(0.15) rotate(var(--spin)); opacity: 0; }
+}
+
+@keyframes nftPrestigeText {
+    0% { transform: translateY(18px) scale(0.82); opacity: 0; }
+    10%, 78% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-12px) scale(0.96); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nft-purchase-label,
+    .nft-purchase-particle,
+    .nft-travel-particle,
+    .nft-prestige-warp,
+    .nft-prestige-ring,
+    .nft-prestige-shard {
+        display: none;
+    }
+
+    .nft-prestige-hero,
+    .nft-prestige-hero::before,
+    .nft-prestige-hero::after,
+    .nft-prestige-title span,
+    .nft-prestige-title span::before,
+    .nft-prestige-title span::after {
+        animation: none;
+    }
+
+    .nft-prestige-overlay,
+    .nft-prestige-text {
+        animation-duration: 4500ms;
     }
 }
