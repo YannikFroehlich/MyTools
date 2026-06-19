@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
-from .access_control import ACCESS_CONTROL_ITEMS, user_can_access_key
+from .access_control import ACCESS_CONTROL_ITEMS, user_can_access_key, user_can_see_key
 from .models import SiteAccessSettings, UserProfile
 from .notification_utils import get_notification_counts
 
@@ -28,6 +28,8 @@ def access_control_status(request):
             "access_blocked_keys": {},
             "access_blocked_paths": [],
             "access_restricted_paths": [],
+            "access_hidden_paths": [],
+            "access_hidden_visible_paths": [],
         }
 
     try:
@@ -37,20 +39,36 @@ def access_control_status(request):
             "access_blocked_keys": {},
             "access_blocked_paths": [],
             "access_restricted_paths": [],
+            "access_hidden_paths": [],
+            "access_hidden_visible_paths": [],
         }
 
     blocked_keys = {}
     blocked_paths = set()
     restricted_paths = set()
+    hidden_paths = set()
+    hidden_visible_paths = set()
 
     for item in ACCESS_CONTROL_ITEMS:
         key = item["key"]
         access_level = access_settings.get_tool_access_level(key)
         is_restricted = access_level != SiteAccessSettings.TOOL_ACCESS_ALL
         is_blocked = not user_can_access_key(request.user, key, access_settings)
+        is_hidden = access_level == SiteAccessSettings.TOOL_ACCESS_HIDDEN
+        is_hidden_for_user = is_hidden and not user_can_see_key(request.user, key, access_settings)
         blocked_keys[key] = is_blocked
 
-        path_bucket = blocked_paths if is_blocked else restricted_paths if is_restricted else None
+        if is_hidden_for_user:
+            path_bucket = hidden_paths
+        elif is_hidden:
+            path_bucket = hidden_visible_paths
+        elif is_blocked:
+            path_bucket = blocked_paths
+        elif is_restricted:
+            path_bucket = restricted_paths
+        else:
+            path_bucket = None
+
         if path_bucket is None:
             continue
 
@@ -64,6 +82,8 @@ def access_control_status(request):
         "access_blocked_keys": blocked_keys,
         "access_blocked_paths": sorted(blocked_paths),
         "access_restricted_paths": sorted(restricted_paths),
+        "access_hidden_paths": sorted(hidden_paths),
+        "access_hidden_visible_paths": sorted(hidden_visible_paths),
     }
 
 

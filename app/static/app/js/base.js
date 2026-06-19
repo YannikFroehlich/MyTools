@@ -1258,13 +1258,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyAccessLockedCards() {
         const blockedElement = document.getElementById('access-blocked-paths');
         const restrictedElement = document.getElementById('access-restricted-paths');
+        const hiddenElement = document.getElementById('access-hidden-paths');
+        const hiddenVisibleElement = document.getElementById('access-hidden-visible-paths');
 
-        if (!blockedElement && !restrictedElement) {
+        if (!blockedElement && !restrictedElement && !hiddenElement && !hiddenVisibleElement) {
             return;
         }
 
         let blockedPaths = [];
         let restrictedPaths = [];
+        let hiddenPaths = [];
+        let hiddenVisiblePaths = [];
 
         try {
             blockedPaths = JSON.parse(blockedElement?.textContent || '[]');
@@ -1278,17 +1282,38 @@ document.addEventListener('DOMContentLoaded', () => {
             restrictedPaths = [];
         }
 
+        try {
+            hiddenPaths = JSON.parse(hiddenElement?.textContent || '[]');
+        } catch (error) {
+            hiddenPaths = [];
+        }
+
+        try {
+            hiddenVisiblePaths = JSON.parse(hiddenVisibleElement?.textContent || '[]');
+        } catch (error) {
+            hiddenVisiblePaths = [];
+        }
+
         const normalizedBlockedPaths = new Set(Array.isArray(blockedPaths) ? blockedPaths.map((path) => String(path || '')) : []);
         const normalizedRestrictedPaths = new Set(Array.isArray(restrictedPaths) ? restrictedPaths.map((path) => String(path || '')) : []);
+        const normalizedHiddenPaths = new Set(Array.isArray(hiddenPaths) ? hiddenPaths.map((path) => String(path || '')) : []);
+        const normalizedHiddenVisiblePaths = new Set(Array.isArray(hiddenVisiblePaths) ? hiddenVisiblePaths.map((path) => String(path || '')) : []);
 
-        if (normalizedBlockedPaths.size === 0 && normalizedRestrictedPaths.size === 0) {
+        if (
+            normalizedBlockedPaths.size === 0
+            && normalizedRestrictedPaths.size === 0
+            && normalizedHiddenPaths.size === 0
+            && normalizedHiddenVisiblePaths.size === 0
+        ) {
             return;
         }
 
-        const lockedLabel = body.dataset.accessLockedLabel || 'Gesperrt';
+        const lockedLabel = body.dataset.accessLockedLabel || 'Unveröffentlicht';
         const lockedTitle = body.dataset.accessLockedTitle || lockedLabel;
-        const restrictedLabel = body.dataset.accessRestrictedLabel || 'Admin';
+        const restrictedLabel = body.dataset.accessRestrictedLabel || 'Unveröffentlicht';
         const restrictedTitle = body.dataset.accessRestrictedTitle || restrictedLabel;
+        const hiddenLabel = body.dataset.accessHiddenLabel || 'Versteckt';
+        const hiddenTitle = body.dataset.accessHiddenTitle || hiddenLabel;
 
         document.querySelectorAll('a[href]').forEach((link) => {
             let targetPath = '';
@@ -1299,10 +1324,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const isHidden = normalizedHiddenPaths.has(targetPath);
+            const isHiddenVisible = normalizedHiddenVisiblePaths.has(targetPath);
             const isBlocked = normalizedBlockedPaths.has(targetPath);
             const isRestricted = normalizedRestrictedPaths.has(targetPath);
 
-            if (!isBlocked && !isRestricted) {
+            if (!isHidden && !isHiddenVisible && !isBlocked && !isRestricted) {
+                return;
+            }
+
+            if (isHidden) {
+                link.classList.add('is-access-hidden');
+                link.dataset.accessHidden = 'true';
+                link.hidden = true;
+                link.setAttribute('aria-hidden', 'true');
                 return;
             }
 
@@ -1317,9 +1352,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            link.setAttribute('title', restrictedTitle);
+            link.setAttribute('title', isHiddenVisible ? hiddenTitle : restrictedTitle);
             link.classList.add('is-access-restricted');
-            addAccessBadge(link, restrictedLabel, 'fa-lock-open', 'access-locked-badge access-restricted-badge');
+            addAccessBadge(
+                link,
+                isHiddenVisible ? hiddenLabel : restrictedLabel,
+                'fa-eye-slash',
+                'access-locked-badge access-restricted-badge'
+            );
         });
     }
 
@@ -1380,7 +1420,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         card.dataset.gameCategory,
                         card.textContent,
                     ].join(' '));
-                    const isVisible = !query || searchText.includes(query);
+                    const isAccessHidden = card.dataset.accessHidden === 'true' || card.classList.contains('is-access-hidden');
+                    const isVisible = !isAccessHidden && (!query || searchText.includes(query));
 
                     card.hidden = !isVisible;
 
@@ -1399,6 +1440,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             searchInput.addEventListener('input', filterMenuCards);
+            filterMenuCards();
         });
     }
 

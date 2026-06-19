@@ -14250,3 +14250,23 @@ msgstr "Auckland / New Zealand"
 #: app/models.py
 msgid "Eigener Ton"
 msgstr "Custom sound"
+
+#: app/models.py app/templates/app/base.html app/templates/app/moderation.html app/static/app/js/base.js
+msgid "Veröffentlicht"
+msgstr "Published"
+
+#: app/models.py app/templates/app/base.html app/templates/app/moderation.html app/static/app/js/base.js
+msgid "Unveröffentlicht"
+msgstr "Unpublished"
+
+#: app/models.py app/templates/app/base.html app/templates/app/moderation.html app/static/app/js/base.js
+msgid "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: nur Staff/Admins sehen und öffnen den Bereich."
+msgstr "Published means every signed-in user can open the section. Unpublished means only staff/admins can see and open the section."
+
+#: app/models.py app/templates/app/base.html app/templates/app/moderation.html app/static/app/js/base.js app/platform_utils.py
+msgid "Versteckt"
+msgstr "Hidden"
+
+#: app/templates/app/moderation.html
+msgid "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: normale Nutzer sehen den Bereich noch, können ihn aber nicht öffnen. Versteckt bedeutet: normale Nutzer sehen den Bereich gar nicht mehr."
+msgstr "Published means every signed-in user can open the section. Unpublished means normal users can still see the section, but cannot open it. Hidden means normal users cannot see the section at all."

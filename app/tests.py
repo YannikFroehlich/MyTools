@@ -4174,13 +4174,13 @@ class ModerationTests(BaseTestCase):
 
         response = self.client.post(reverse("moderation_tool_access"), {
             "access_cookie_cosmos_v2": SiteAccessSettings.TOOL_ACCESS_ADMIN,
-            "access_calculator": SiteAccessSettings.TOOL_ACCESS_NONE,
+            "access_calculator": SiteAccessSettings.TOOL_ACCESS_HIDDEN,
         })
 
         self.assertRedirects(response, reverse("moderation"))
         settings_obj = SiteAccessSettings.get_solo()
         self.assertEqual(settings_obj.get_tool_access_level("cookie_cosmos_v2"), SiteAccessSettings.TOOL_ACCESS_ADMIN)
-        self.assertEqual(settings_obj.get_tool_access_level("calculator"), SiteAccessSettings.TOOL_ACCESS_NONE)
+        self.assertEqual(settings_obj.get_tool_access_level("calculator"), SiteAccessSettings.TOOL_ACCESS_HIDDEN)
         self.assertEqual(settings_obj.get_tool_access_level("notes"), SiteAccessSettings.TOOL_ACCESS_ALL)
         self.assertTrue(
             ModerationAuditLog.objects.filter(action=ModerationAuditLog.ACTION_TOOL_ACCESS_UPDATED).exists()
@@ -4204,15 +4204,45 @@ class ModerationTests(BaseTestCase):
         response = self.client.get(reverse("calculator"))
         self.assertEqual(response.status_code, 200)
 
-    def test_tool_access_none_level_blocks_staff_too(self):
-        self.make_staff()
+    def test_tool_access_legacy_none_level_is_treated_as_unpublished(self):
         settings_obj = SiteAccessSettings.get_solo()
-        settings_obj.set_tool_access_rules({"calculator": SiteAccessSettings.TOOL_ACCESS_NONE})
+        settings_obj.tool_access_rules = {"calculator": SiteAccessSettings.TOOL_ACCESS_NONE}
         settings_obj.save(update_fields=["tool_access_rules"])
 
         response = self.client.get(reverse("calculator"))
-
         self.assertRedirects(response, reverse("favorites"))
+
+        self.make_staff()
+        response = self.client.get(reverse("calculator"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_tool_access_hidden_level_hides_tool_from_normal_user_but_allows_staff(self):
+        settings_obj = SiteAccessSettings.get_solo()
+        settings_obj.set_tool_access_rules({"calculator": SiteAccessSettings.TOOL_ACCESS_HIDDEN})
+        settings_obj.save(update_fields=["tool_access_rules"])
+
+        favorites_response = self.client.get(reverse("favorites"))
+        self.assertEqual(favorites_response.status_code, 200)
+        self.assertFalse(any(tool["key"] == "calculator" for tool in favorites_response.context["tools"]))
+
+        search_response = self.client.get(reverse("global_search_api"), {"q": "calculator"})
+        self.assertEqual(search_response.status_code, 200)
+        self.assertFalse(any(result["url"] == reverse("calculator") for result in search_response.json()["results"]))
+
+        direct_response = self.client.get(reverse("calculator"))
+        self.assertRedirects(direct_response, reverse("favorites"))
+
+        self.make_staff()
+        staff_favorites_response = self.client.get(reverse("favorites"))
+        self.assertEqual(staff_favorites_response.status_code, 200)
+        staff_calculator = next(
+            tool for tool in staff_favorites_response.context["tools"] if tool["key"] == "calculator"
+        )
+        self.assertTrue(staff_calculator["can_access"])
+        self.assertEqual(staff_calculator["access_badge"], "Versteckt")
+
+        staff_direct_response = self.client.get(reverse("calculator"))
+        self.assertEqual(staff_direct_response.status_code, 200)
 
     def test_report_action_marks_report_resolved(self):
         self.make_staff()

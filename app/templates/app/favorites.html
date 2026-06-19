@@ -29,14 +29,14 @@
                                 <span><i class="{{ tool.icon }}"></i></span>
                                 <strong>{{ tool.label }}</strong>
                                 {% if tool.is_restricted %}
-                                    <em class="access-locked-badge access-restricted-badge"><i class="fa-solid fa-lock-open"></i> {{ tool.access_badge }}</em>
+                                    <em class="access-locked-badge access-restricted-badge"><i class="fa-solid fa-eye-slash"></i> {{ tool.access_badge }}</em>
                                 {% endif %}
                             </a>
                         {% else %}
-                            <span class="tool-card-main" aria-disabled="true" title="{% translate 'Kein Zugriff' %}">
+                            <span class="tool-card-main" aria-disabled="true" title="{{ tool.access_badge }}">
                                 <span><i class="{{ tool.icon }}"></i></span>
                                 <strong>{{ tool.label }}</strong>
-                                <em class="access-locked-badge"><i class="fa-solid fa-lock"></i> {% translate 'Gesperrt' %}</em>
+                                <em class="access-locked-badge"><i class="fa-solid fa-lock"></i> {{ tool.access_badge }}</em>
                             </span>
                         {% endif %}
                         <form method="post" action="{% url 'favorite_toggle' tool.key %}">

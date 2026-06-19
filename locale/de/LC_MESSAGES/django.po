@@ -13849,3 +13849,23 @@ msgstr ""
 
 #~ msgid "Login und Registrierung sind aktuell gesperrt."
 #~ msgstr "Login und Registrierung sind aktuell gesperrt."
+
+#: app/models.py app/templates/app/base.html app/templates/app/moderation.html app/static/app/js/base.js
+msgid "Veröffentlicht"
+msgstr "Veröffentlicht"
+
+#: app/models.py app/templates/app/base.html app/templates/app/moderation.html app/static/app/js/base.js
+msgid "Unveröffentlicht"
+msgstr "Unveröffentlicht"
+
+#: app/models.py app/templates/app/base.html app/templates/app/moderation.html app/static/app/js/base.js
+msgid "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: nur Staff/Admins sehen und öffnen den Bereich."
+msgstr "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: nur Staff/Admins sehen und öffnen den Bereich."
+
+#: app/models.py app/templates/app/base.html app/templates/app/moderation.html app/static/app/js/base.js app/platform_utils.py
+msgid "Versteckt"
+msgstr "Versteckt"
+
+#: app/templates/app/moderation.html
+msgid "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: normale Nutzer sehen den Bereich noch, können ihn aber nicht öffnen. Versteckt bedeutet: normale Nutzer sehen den Bereich gar nicht mehr."
+msgstr "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: normale Nutzer sehen den Bereich noch, können ihn aber nicht öffnen. Versteckt bedeutet: normale Nutzer sehen den Bereich gar nicht mehr."

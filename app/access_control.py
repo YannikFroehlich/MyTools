@@ -494,14 +494,26 @@ def access_key_for_url_name(url_name):
     return ACCESS_URL_NAME_TO_KEY.get(url_name)
 
 
+def user_is_staff(user):
+    return bool(getattr(user, "is_active", False) and getattr(user, "is_staff", False))
+
+
 def user_can_access_key(user, key, access_settings=None):
     access_settings = access_settings or SiteAccessSettings.get_solo()
     level = access_settings.get_tool_access_level(key)
     if level == SiteAccessSettings.TOOL_ACCESS_ALL:
         return True
-    if level == SiteAccessSettings.TOOL_ACCESS_ADMIN:
-        return bool(getattr(user, "is_active", False) and getattr(user, "is_staff", False))
+    if level in {SiteAccessSettings.TOOL_ACCESS_ADMIN, SiteAccessSettings.TOOL_ACCESS_HIDDEN}:
+        return user_is_staff(user)
     return False
+
+
+def user_can_see_key(user, key, access_settings=None):
+    access_settings = access_settings or SiteAccessSettings.get_solo()
+    level = access_settings.get_tool_access_level(key)
+    if level == SiteAccessSettings.TOOL_ACCESS_HIDDEN:
+        return user_is_staff(user)
+    return True
 
 
 def get_access_control_items(access_settings=None):

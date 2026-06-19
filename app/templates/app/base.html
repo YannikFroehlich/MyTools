@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260618-access-state">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260619-access-hidden">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -41,12 +41,14 @@
     {% block extra_css %}{% endblock %}
     <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260618-roadmap-theme">
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}?v=20260618-access-state" defer></script>
+        <script src="{% static 'app/js/base.js' %}?v=20260619-access-hidden" defer></script>
     {% endblock %}
 </head>
-<body{% if request.user.is_authenticated %} class="has-mobile-bottom-nav" data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}" data-access-locked-label="{% translate 'Gesperrt' %}" data-access-locked-title="{% translate 'Kein Zugriff' %}" data-access-restricted-label="{% translate 'Admin' %}" data-access-restricted-title="{% translate 'Eingeschränkt freigegeben' %}"{% endif %}>
+<body{% if request.user.is_authenticated %} class="has-mobile-bottom-nav" data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}" data-access-locked-label="{% translate 'Unveröffentlicht' %}" data-access-locked-title="{% translate 'Unveröffentlicht' %}" data-access-restricted-label="{% translate 'Unveröffentlicht' %}" data-access-restricted-title="{% translate 'Unveröffentlicht' %}" data-access-hidden-label="{% translate 'Versteckt' %}" data-access-hidden-title="{% translate 'Versteckt' %}"{% endif %}>
     {{ access_blocked_paths|json_script:"access-blocked-paths" }}
     {{ access_restricted_paths|json_script:"access-restricted-paths" }}
+    {{ access_hidden_paths|json_script:"access-hidden-paths" }}
+    {{ access_hidden_visible_paths|json_script:"access-hidden-visible-paths" }}
     <nav id="site-header">
         <a class="logo" href="{% url 'home' %}" aria-label="{% translate 'Start' %}" title="{% translate 'Start' %}">
             <i class="fa-solid fa-cloud" style="margin-right: 10px" aria-hidden="true"></i>

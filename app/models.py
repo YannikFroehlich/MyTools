@@ -2524,11 +2524,12 @@ class UserSuspension(models.Model):
 class SiteAccessSettings(models.Model):
     TOOL_ACCESS_ALL = "all"
     TOOL_ACCESS_ADMIN = "admin"
-    TOOL_ACCESS_NONE = "none"
+    TOOL_ACCESS_HIDDEN = "hidden"
+    TOOL_ACCESS_NONE = "none"  # legacy: old stored value, no longer shown as an option
     TOOL_ACCESS_CHOICES = [
-        (TOOL_ACCESS_ALL, _("Alle")),
-        (TOOL_ACCESS_ADMIN, _("Nur Admins")),
-        (TOOL_ACCESS_NONE, _("Keiner")),
+        (TOOL_ACCESS_ALL, _("Veröffentlicht")),
+        (TOOL_ACCESS_ADMIN, _("Unveröffentlicht")),
+        (TOOL_ACCESS_HIDDEN, _("Versteckt")),
     ]
 
     login_registration_locked = models.BooleanField(default=False)
@@ -2558,6 +2559,8 @@ class SiteAccessSettings(models.Model):
     def get_tool_access_level(self, key):
         rules = self.tool_access_rules if isinstance(self.tool_access_rules, dict) else {}
         level = rules.get(key, self.TOOL_ACCESS_ALL)
+        if level == self.TOOL_ACCESS_NONE:
+            return self.TOOL_ACCESS_ADMIN
         valid_levels = {choice[0] for choice in self.TOOL_ACCESS_CHOICES}
         return level if level in valid_levels else self.TOOL_ACCESS_ALL
 
