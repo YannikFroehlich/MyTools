@@ -13661,33 +13661,31 @@ msgstr ""
 msgid "Kein Voicemod API-Key verbunden."
 msgstr ""
 
-#: app/performance_tools_views.py app/templates/app/leaderboard.html
-msgid "beendete Spiele"
-msgstr "beendete Spiele"
 
-#: app/performance_tools_views.py app/templates/app/leaderboard.html
-msgid "Kachel %(tile)s · %(games)s Runs"
-msgstr "Kachel %(tile)s · %(games)s Runs"
+#: .\app\community_views.py:32
+msgid "Nebula Forge Tycoon Update"
+msgstr "Nebula Forge Tycoon Update"
 
-#: app/performance_tools_views.py app/templates/app/leaderboard.html
-msgid "Prestige %(level)s · %(upgrades)s Upgrades"
-msgstr "Prestige %(level)s · %(upgrades)s Upgrades"
+#: .\app\community_views.py:33
+msgid "Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt und das Leaderboard zeigt jetzt die aktuellen Spiele."
+msgstr "Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt und das Leaderboard zeigt jetzt die aktuellen Spiele."
 
-#: app/performance_tools_views.py app/templates/app/leaderboard.html
-msgid "Prestige %(level)s · %(buildings)s Anlagen"
-msgstr "Prestige %(level)s · %(buildings)s Anlagen"
+#: .\app\community_views.py:38
+msgid "Nebula Forge Tycoon wurde visuell überarbeitet und wirkt jetzt deutlich lebendiger."
+msgstr "Nebula Forge Tycoon wurde visuell überarbeitet und wirkt jetzt deutlich lebendiger."
 
-#: app/performance_tools_views.py app/templates/app/leaderboard.html
-msgid "Mio."
-msgstr "Mio."
+#: .\app\community_views.py:39
+msgid "Kauf-, Prestige- und Ability-Aktionen haben neue Animationen und Effekte bekommen."
+msgstr "Kauf-, Prestige- und Ability-Aktionen haben neue Animationen und Effekte bekommen."
 
-#: app/performance_tools_views.py app/templates/app/leaderboard.html
-msgid "Mrd."
-msgstr "Mrd."
+#: .\app\community_views.py:40
+msgid "Das Leaderboard wurde um aktuelle Spiele wie 2048, Cookie Cosmos V2, Nebula Forge Tycoon, Schiffe versenken, Uno, Kniffel und Pong erweitert."
+msgstr "Das Leaderboard wurde um aktuelle Spiele wie 2048, Cookie Cosmos V2, Nebula Forge Tycoon, Schiffe versenken, Uno, Kniffel und Pong erweitert."
 
-#: app/performance_tools_views.py app/templates/app/leaderboard.html
-msgid "Bio."
-msgstr "Bio."
+#: .\app\community_views.py:41
+msgid "Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."
+msgstr "Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."
+
 
 #~ msgid ""
 #~ "MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, "
