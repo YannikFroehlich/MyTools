@@ -44,6 +44,22 @@ body:not(.dark-mode) .nft-page {
     box-sizing: border-box;
 }
 
+.nft-page.is-nft-paused *,
+.nft-page.is-nft-paused *::before,
+.nft-page.is-nft-paused *::after {
+    animation-play-state: paused !important;
+}
+
+.nft-foundry,
+.nft-action-card,
+.nft-save-card,
+.nft-shop-list,
+.nft-shop-card,
+.nft-achievement-card,
+.nft-prestige-card {
+    contain: layout style;
+}
+
 .nft-bg-orb {
     position: absolute;
     border-radius: 999px;

@@ -8,6 +8,10 @@
     const DB_SAVE_COOLDOWN_SECONDS = 60;
     const SPACE_MINE_REPEAT_INTERVAL_MS = 150;
     const SPACE_MINE_SPAM_INTERVAL_MS = 55;
+    const UI_RENDER_INTERVAL_MS = 180;
+    const ACHIEVEMENT_SWEEP_INTERVAL_MS = 650;
+    const IDLE_LOOP_INTERVAL_MS = 120;
+    const BACKGROUND_LOOP_INTERVAL_MS = 1000;
     const DB_LOAD_URL = root.dataset.dbLoadUrl || "";
     const DB_SAVE_URL = root.dataset.dbSaveUrl || "";
     const USER_IS_AUTHENTICATED = root.dataset.authenticated === "true";
@@ -443,14 +447,24 @@
         offlineInfo: document.getElementById("nftOfflineInfo"),
     };
 
+    const focusModeButtons = Array.from(document.querySelectorAll(".nft-focus-buttons button"));
+    const tabButtons = Array.from(document.querySelectorAll(".nft-tabs button"));
+    const tabPanels = Array.from(document.querySelectorAll(".nft-tab-panel"));
+
     let state = loadState();
     let lastFrame = now();
     let holdTimer = null;
     let renderQueued = false;
+    let lastUiRenderAt = 0;
+    let lastAchievementSweepAt = 0;
+    let loopTimer = 0;
     let shopScrollLockUntil = 0;
     let lastBuildingsRenderKey = "";
     let lastUpgradesRenderKey = "";
     let lastAchievementsRenderKey = "";
+    let lastNebulaAppearanceKey = "";
+    let lastModeRenderKey = "";
+    let lastDatabaseButtonKey = "";
     const SHOP_SCROLL_IDLE_MS = 650;
     let activeSignal = null;
     let activeRift = null;
@@ -577,16 +591,23 @@
         return upgrades.reduce((sum, item) => sum + upgradeLevel(item.id, source), 0);
     }
 
-    function updateDatabaseSaveButton() {
+    function updateDatabaseSaveButton(force = false) {
         if (!elements.saveButton || !elements.saveButtonText) return;
 
         if (!USER_IS_AUTHENTICATED) {
-            elements.saveButton.disabled = false;
-            elements.saveButtonText.textContent = t("Login nötig");
+            if (force || lastDatabaseButtonKey !== "guest") {
+                elements.saveButton.disabled = false;
+                elements.saveButtonText.textContent = t("Login nötig");
+                lastDatabaseButtonKey = "guest";
+            }
             return;
         }
 
         const remaining = Math.ceil(Math.max(0, dbSaveCooldownUntil - now()) / 1000);
+        const key = remaining > 0 ? `cooldown:${remaining}` : "ready";
+        if (!force && key === lastDatabaseButtonKey) return;
+        lastDatabaseButtonKey = key;
+
         if (remaining > 0) {
             elements.saveButton.disabled = true;
             elements.saveButtonText.textContent = fmt("Speichern {seconds}s", { seconds: remaining });
@@ -600,7 +621,7 @@
     function setDatabaseSaveCooldown(seconds) {
         const cooldownSeconds = Math.max(0, Math.ceil(Number(seconds) || 0));
         dbSaveCooldownUntil = cooldownSeconds > 0 ? now() + cooldownSeconds * 1000 : 0;
-        updateDatabaseSaveButton();
+        updateDatabaseSaveButton(true);
     }
 
     function buildDatabaseSavePayload() {
@@ -868,14 +889,14 @@
         return Math.max(1, Math.floor(Math.sqrt(state.lifetimeFlux / prestigeRequirement())));
     }
 
-    function addFlux(amount, reason = "") {
+    function addFlux(amount, reason = "", shouldRender = true) {
         amount = Math.max(0, sanitizeNumber(amount));
         if (amount <= 0) return;
         state.flux += amount;
         state.lifetimeFlux += amount;
         state.totalLifetimeFlux += amount;
         if (reason) floatingGain(amount, reason);
-        queueRender();
+        if (shouldRender) queueRender();
     }
 
     function spendFlux(amount) {
@@ -1734,17 +1755,20 @@
     function renderAll(forceShops = false) {
         renderStats();
         refreshAbilityCardStates();
-        updateNebulaAppearance();
+        updateNebulaAppearance(forceShops);
         renderShopLists(forceShops);
         renderModes();
     }
 
-    function updateNebulaAppearance() {
+    function updateNebulaAppearance(force = false) {
         if (!elements.mineButton || !elements.foundry) return;
 
         const prestigeLevel = Math.max(1, Math.floor(state.prestigeLevel || 1));
         const intensity = Math.max(0, prestigeLevel - 1);
         const shardIntensity = Math.min(20, state.shards || 0);
+        const appearanceKey = `${prestigeLevel}:${Math.floor(shardIntensity * 100)}`;
+        if (!force && appearanceKey === lastNebulaAppearanceKey) return;
+        lastNebulaAppearanceKey = appearanceKey;
 
         const coreScale = 1 + Math.min(0.14, intensity * 0.012);
         const hueRotate = Math.min(165, intensity * 11 + shardIntensity * 1.8);
@@ -1849,7 +1873,6 @@
             elements.offlineInfo.textContent = fmt("Offline-Effizienz: {efficiency}%, Offline-Cap: {hours}h.", { efficiency: Math.round(offlineEfficiency() * 100), hours: offlineCapHours() });
         }
 
-        refreshAbilityCardStates();
     }
 
     function markShopScrollActive() {
@@ -2010,18 +2033,22 @@
     }
 
     function renderModes() {
-        document.querySelectorAll(".nft-focus-buttons button").forEach(button => {
+        const modeKey = state.activeMode || "balanced";
+        if (modeKey === lastModeRenderKey) return;
+        lastModeRenderKey = modeKey;
+        focusModeButtons.forEach(button => {
             button.classList.toggle("is-active", button.dataset.mode === state.activeMode);
         });
         elements.modePill.textContent = t(state.activeMode === "afk" ? "AFK-Shift" : state.activeMode === "active" ? "Aktiv-Shift" : "Balanced");
     }
 
-    function queueRender() {
-        if (renderQueued) return;
+    function queueRender(forceShops = false) {
+        if (document.hidden || renderQueued) return;
         renderQueued = true;
         window.requestAnimationFrame(() => {
             renderQueued = false;
-            renderAll();
+            lastUiRenderAt = now();
+            renderAll(forceShops);
         });
     }
 
@@ -2109,13 +2136,42 @@
         showMessage(t("Zurückgesetzt"), t("Du startest wieder mit einer frischen Schmiede."));
     }
 
+    function needsRealtimeLoop() {
+        return Boolean(activeSignal || activeRift || activeCryo || holdTimer);
+    }
+
+    function scheduleNextLoop() {
+        const delay = document.hidden
+            ? BACKGROUND_LOOP_INTERVAL_MS
+            : needsRealtimeLoop()
+                ? 0
+                : IDLE_LOOP_INTERVAL_MS;
+
+        if (delay > 0) {
+            if (loopTimer) window.clearTimeout(loopTimer);
+            loopTimer = window.setTimeout(() => {
+                loopTimer = 0;
+                window.requestAnimationFrame(gameLoop);
+            }, delay);
+            return;
+        }
+
+        window.requestAnimationFrame(gameLoop);
+    }
+
+    function syncVisibleRender(currentTime) {
+        if (document.hidden || currentTime - lastUiRenderAt < UI_RENDER_INTERVAL_MS) return;
+        lastUiRenderAt = currentTime;
+        renderAll(false);
+    }
+
     function gameLoop() {
         const currentTime = now();
         const dt = Math.min(1, (currentTime - lastFrame) / 1000);
         lastFrame = currentTime;
 
         const passive = calculateCps() * dt;
-        if (passive > 0) addFlux(passive);
+        if (passive > 0) addFlux(passive, "", false);
 
         if (state.heat > 0) {
             state.heat = Math.max(0, state.heat - heatDecay() * dt);
@@ -2173,13 +2229,17 @@
             }
         }
 
-        if (currentTime >= nextMeteorAt && elements.eventLayer.childElementCount < 2) {
+        if (!document.hidden && currentTime >= nextMeteorAt && elements.eventLayer.childElementCount < 2) {
             spawnMeteor();
         }
 
-        checkAchievements();
-        queueRender();
-        window.requestAnimationFrame(gameLoop);
+        if (currentTime - lastAchievementSweepAt >= ACHIEVEMENT_SWEEP_INTERVAL_MS) {
+            lastAchievementSweepAt = currentTime;
+            checkAchievements();
+        }
+
+        syncVisibleRender(currentTime);
+        scheduleNextLoop();
     }
 
     function attachEvents() {
@@ -2305,16 +2365,17 @@
             list.addEventListener("touchmove", markShopScrollActive, { passive: true });
         });
 
-        document.querySelectorAll(".nft-tabs button").forEach(button => {
+        tabButtons.forEach(button => {
             button.addEventListener("click", () => {
-                document.querySelectorAll(".nft-tabs button").forEach(item => item.classList.toggle("is-active", item === button));
-                document.querySelectorAll(".nft-tab-panel").forEach(panel => panel.classList.toggle("is-active", panel.dataset.panel === button.dataset.tab));
+                tabButtons.forEach(item => item.classList.toggle("is-active", item === button));
+                tabPanels.forEach(panel => panel.classList.toggle("is-active", panel.dataset.panel === button.dataset.tab));
             });
         });
 
-        document.querySelectorAll(".nft-focus-buttons button").forEach(button => {
+        focusModeButtons.forEach(button => {
             button.addEventListener("click", () => {
                 state.activeMode = button.dataset.mode;
+                lastModeRenderKey = "";
                 renderModes();
                 showMessage(t("Schichtmodus geändert"), elements.modePill.textContent);
                 saveState();
@@ -2326,6 +2387,20 @@
         elements.importInput?.addEventListener("change", () => importSave(elements.importInput.files[0]));
         elements.resetButton?.addEventListener("click", resetSave);
         elements.resetHeaderButton?.addEventListener("click", resetSave);
+        document.addEventListener("visibilitychange", () => {
+            root.classList.toggle("is-nft-paused", document.hidden);
+            lastFrame = now();
+            if (!document.hidden) {
+                if (loopTimer) {
+                    window.clearTimeout(loopTimer);
+                    loopTimer = 0;
+                }
+                lastUiRenderAt = 0;
+                queueRender(true);
+                scheduleNextLoop();
+            }
+        });
+
         window.addEventListener("beforeunload", () => saveState(false));
         window.setInterval(() => saveState(false), 5000);
     }
@@ -2333,5 +2408,5 @@
     attachEvents();
     renderAll(true);
     loadDatabaseSave();
-    window.requestAnimationFrame(gameLoop);
+    scheduleNextLoop();
 })();
