@@ -93,6 +93,8 @@ body.dark-mode .converter-hero p:not(.converter-eyebrow) {
 .converter-shell {
     display: grid;
     gap: 1rem;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
 .converter-tabs {
@@ -488,6 +490,10 @@ body.dark-mode .converter-example strong {
 @media (max-width: 700px) {
     .converter-page {
         padding: 2rem 1rem 3rem;
+    }
+
+    .converter-shell {
+        padding: .75rem;
     }
 
     .converter-hero {

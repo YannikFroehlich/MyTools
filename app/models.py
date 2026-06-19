@@ -3463,3 +3463,184 @@ class PongInvite(models.Model):
 
     def __str__(self):
         return f"{self.from_user} -> {self.to_user} - {self.game}"
+
+
+class WerewolfLobby(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_NIGHT = "night"
+    STATUS_DAY = "day"
+    STATUS_FINISHED = "finished"
+    STATUS_CHOICES = [
+        (STATUS_WAITING, _("Wartet")),
+        (STATUS_NIGHT, _("Nacht")),
+        (STATUS_DAY, _("Tag")),
+        (STATUS_FINISHED, _("Beendet")),
+    ]
+
+    VISIBILITY_PUBLIC = "public"
+    VISIBILITY_FRIENDS = "friends"
+    VISIBILITY_PASSWORD = "password"
+    VISIBILITY_CHOICES = [
+        (VISIBILITY_PUBLIC, _("Öffentlich")),
+        (VISIBILITY_FRIENDS, _("Nur Freunde")),
+        (VISIBILITY_PASSWORD, _("Privat mit Passwort")),
+    ]
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_werewolf_lobbies",
+    )
+    name = models.CharField(max_length=80, default="Werwolf-Dorf")
+    code = models.SlugField(max_length=16, unique=True)
+    visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES, default=VISIBILITY_PUBLIC)
+    password_hash = models.CharField(max_length=128, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_WAITING)
+    max_players = models.PositiveSmallIntegerField(default=12)
+    werewolf_count = models.PositiveSmallIntegerField(default=2)
+    include_seer = models.BooleanField(default=True)
+    include_witch = models.BooleanField(default=True)
+    include_guard = models.BooleanField(default=True)
+    reveal_roles_on_death = models.BooleanField(default=True)
+    anonymous_day_votes = models.BooleanField(default=False)
+    day_number = models.PositiveSmallIntegerField(default=0)
+    winner = models.CharField(max_length=20, blank=True)
+    phase_started_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        indexes = [
+            models.Index(fields=["code"]),
+            models.Index(fields=["visibility", "status", "-updated_at"], name="wolf_public_status_idx"),
+            models.Index(fields=["owner", "status"], name="wolf_owner_status_idx"),
+        ]
+        verbose_name = "Werwolf Lobby"
+        verbose_name_plural = "Werwolf Lobbys"
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def is_locked(self):
+        return self.visibility == self.VISIBILITY_PASSWORD and bool(self.password_hash)
+
+
+class WerewolfPlayer(models.Model):
+    ROLE_VILLAGER = "villager"
+    ROLE_WEREWOLF = "werewolf"
+    ROLE_SEER = "seer"
+    ROLE_WITCH = "witch"
+    ROLE_GUARD = "guard"
+    ROLE_CHOICES = [
+        (ROLE_VILLAGER, _("Dorfbewohner")),
+        (ROLE_WEREWOLF, _("Werwolf")),
+        (ROLE_SEER, _("Seherin")),
+        (ROLE_WITCH, _("Hexe")),
+        (ROLE_GUARD, _("Beschützer")),
+    ]
+
+    lobby = models.ForeignKey(WerewolfLobby, on_delete=models.CASCADE, related_name="players")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="werewolf_players")
+    display_name = models.CharField(max_length=40, blank=True)
+    seat = models.PositiveSmallIntegerField(default=0)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, blank=True)
+    is_alive = models.BooleanField(default=True)
+    vote_target = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="day_votes_received"
+    )
+    night_target = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, blank=True, related_name="night_votes_received"
+    )
+    role_state = models.JSONField(default=dict, blank=True)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_seen = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["seat", "joined_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "user"], name="unique_werewolf_player_per_lobby"),
+        ]
+        indexes = [
+            models.Index(fields=["lobby", "is_alive"], name="wolfplayer_alive_idx"),
+            models.Index(fields=["user", "last_seen"], name="wolfplayer_user_seen_idx"),
+        ]
+        verbose_name = "Werwolf Spieler"
+        verbose_name_plural = "Werwolf Spieler"
+
+    def __str__(self):
+        return f"{self.display_label} - {self.lobby.code}"
+
+    @property
+    def display_label(self):
+        return self.display_name or self.user.get_full_name() or self.user.username
+
+
+class WerewolfInvite(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_DECLINED = "declined"
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _("Offen")),
+        (STATUS_ACCEPTED, _("Angenommen")),
+        (STATUS_DECLINED, _("Abgelehnt")),
+    ]
+
+    lobby = models.ForeignKey(WerewolfLobby, on_delete=models.CASCADE, related_name="invites")
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_werewolf_invites")
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_werewolf_invites")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["lobby", "to_user"], name="unique_werewolf_invite_per_lobby_user"),
+            models.CheckConstraint(condition=~models.Q(from_user=models.F("to_user")), name="werewolf_invite_prevent_self"),
+        ]
+        indexes = [
+            models.Index(fields=["to_user", "status"], name="wolfinvite_user_status_idx"),
+            models.Index(fields=["lobby", "status"], name="wolfinvite_lobby_status_idx"),
+        ]
+        verbose_name = "Werwolf Einladung"
+        verbose_name_plural = "Werwolf Einladungen"
+
+    def __str__(self):
+        return f"{self.from_user} -> {self.to_user} - {self.lobby}"
+
+
+class WerewolfMessage(models.Model):
+    CHANNEL_VILLAGE = "village"
+    CHANNEL_WOLVES = "wolves"
+    CHANNEL_SYSTEM = "system"
+    CHANNEL_CHOICES = [
+        (CHANNEL_VILLAGE, _("Dorf")),
+        (CHANNEL_WOLVES, _("Werwölfe")),
+        (CHANNEL_SYSTEM, _("System")),
+    ]
+
+    lobby = models.ForeignKey(WerewolfLobby, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="werewolf_messages",
+    )
+    channel = models.CharField(max_length=20, choices=CHANNEL_CHOICES, default=CHANNEL_VILLAGE)
+    text = models.CharField(max_length=500)
+    day_number = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=["lobby", "channel", "created_at"], name="wolfmessage_channel_idx"),
+        ]
+        verbose_name = "Werwolf Nachricht"
+        verbose_name_plural = "Werwolf Nachrichten"
+
+    def __str__(self):
+        return f"{self.lobby.code}: {self.text[:50]}"

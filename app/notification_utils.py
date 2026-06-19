@@ -31,6 +31,7 @@ from .models import (
     UnoGame,
     UnoInvite,
     UserProfile,
+    WerewolfInvite,
 )
 from .realtime import broadcast_live_status_event
 
@@ -49,6 +50,7 @@ COUNT_KEYS = (
     "kniffel_invites",
     "hangman_invites",
     "pong_invites",
+    "werewolf_invites",
 )
 
 TYPE_COUNT_KEY = {
@@ -66,6 +68,7 @@ TYPE_COUNT_KEY = {
     "kniffel": "kniffel_invites",
     "hangman": "hangman_invites",
     "pong": "pong_invites",
+    "werewolf": "werewolf_invites",
 }
 
 NOTIFICATION_CACHE_VERSION = 2
@@ -535,6 +538,18 @@ def _collect_notification_items(user, *, limit=10, include_dismissed=False):
             text_template=_("%(user)s hat dich in %(name)s eingeladen"),
             url_name="pong_lobby",
             object_attr="game",
+            dismissed_keys=dismissed_keys,
+            limit=limit,
+        )
+        _add_invite_items(
+            items,
+            WerewolfInvite.objects.filter(to_user=user, status=WerewolfInvite.STATUS_PENDING).select_related("lobby", "from_user").order_by("-created_at"),
+            item_type="werewolf",
+            icon="fa-solid fa-moon",
+            title=_("Werwolf-Einladung"),
+            text_template=_("%(user)s hat dich in %(name)s eingeladen"),
+            url_name="werewolf_lobby",
+            object_attr="lobby",
             dismissed_keys=dismissed_keys,
             limit=limit,
         )

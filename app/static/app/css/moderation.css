@@ -39,28 +39,52 @@
 }
 
 .moderation-search label {
+    position: relative;
     min-width: 0;
     flex: 1;
-    min-height: 44px;
-    padding: 0 12px;
-    border-radius: 16px;
-    border: 1px solid var(--mod-line);
-    background: rgba(255, 255, 255, .78);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--mod-muted);
+    display: block;
 }
 
-.moderation-search input {
+.moderation-search label > i {
+    position: absolute;
+    z-index: 1;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--theme-accent-start);
+    font-size: .95rem;
+    pointer-events: none;
+}
+
+.moderation-search input[type="search"] {
+    appearance: none;
+    -webkit-appearance: none;
     min-width: 0;
     width: 100%;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: var(--theme-text);
+    min-height: 48px;
+    padding: .85rem 1rem .85rem 2.85rem;
+    border: 1px solid rgba(var(--theme-accent-rgb), .2) !important;
+    border-radius: 999px;
+    outline: 0 !important;
+    background: rgba(255, 255, 255, .82) !important;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, .06) !important;
+    color: #111827;
     font: inherit;
     font-weight: 800;
+    box-sizing: border-box;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.moderation-search input[type="search"]::-webkit-search-decoration,
+.moderation-search input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+}
+
+.moderation-search input[type="search"]:focus {
+    border-color: rgba(var(--theme-accent-rgb), .58) !important;
+    box-shadow:
+        0 0 0 4px rgba(var(--theme-accent-rgb), .12),
+        0 14px 32px rgba(15, 23, 42, .08) !important;
 }
 
 .moderation-search button,
@@ -141,23 +165,29 @@
 }
 
 .moderation-meta span {
-    min-height: 36px;
-    padding: 0 12px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, .68);
-    border: 1px solid var(--mod-line);
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .78);
+    background: color-mix(in srgb, var(--theme-accent-start) 7%, rgba(255, 255, 255, .78));
+    border: 1px solid rgba(var(--theme-accent-rgb), .22);
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: var(--mod-muted);
+    color: var(--mod-ink);
     font-weight: 900;
+    box-shadow: 0 10px 24px rgba(var(--theme-accent-rgb), .07);
+}
+
+.moderation-meta span i {
+    color: var(--theme-accent-start);
 }
 
 .moderation-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
-    align-items: start;
+    align-items: stretch;
 }
 
 .moderation-panel {
@@ -167,6 +197,15 @@
     background: var(--mod-panel);
     border: 1px solid rgba(255, 255, 255, .66);
     box-shadow: 0 18px 46px rgba(15, 23, 42, .08);
+    display: flex;
+    flex-direction: column;
+}
+
+.moderation-panel > .platform-empty {
+    flex: 1;
+    min-height: 82px;
+    display: grid;
+    place-items: center;
 }
 
 .moderation-panel.is-wide {
@@ -336,8 +375,6 @@ body.dark-mode .moderation-stat {
     box-shadow: 0 24px 60px rgba(0, 0, 0, .32);
 }
 
-body.dark-mode .moderation-search label,
-body.dark-mode .moderation-meta span,
 body.dark-mode .moderation-status-form select,
 body.dark-mode .moderation-suspend-form select,
 body.dark-mode .moderation-suspend-form input,
@@ -345,6 +382,29 @@ body.dark-mode .moderation-tool-access-row select {
     background: rgba(15, 23, 42, .74);
     color: #f8fafc;
     border-color: rgba(203, 213, 225, .16);
+}
+
+body.dark-mode .moderation-meta span {
+    background: rgba(39, 39, 42, .78);
+    background: color-mix(in srgb, var(--theme-accent-start) 12%, rgba(39, 39, 42, .78));
+    color: #f8fafc;
+    border-color: rgba(var(--theme-accent-rgb), .3);
+    box-shadow: 0 12px 28px rgba(var(--theme-accent-rgb), .1);
+}
+
+body.dark-mode .moderation-meta span i {
+    color: var(--theme-accent-end);
+}
+
+body.dark-mode .moderation-search input[type="search"] {
+    background: rgba(39, 39, 42, .82) !important;
+    background: color-mix(in srgb, var(--theme-accent-start) 9%, rgba(39, 39, 42, .82)) !important;
+    border-color: rgba(var(--theme-accent-rgb), .22) !important;
+    color: #f8fafc;
+}
+
+body.dark-mode .moderation-search input[type="search"]::placeholder {
+    color: #8f8f98;
 }
 
 body.dark-mode .moderation-item {

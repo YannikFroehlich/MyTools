@@ -981,6 +981,24 @@ body.dark .roadmap-tab {
     background: linear-gradient(135deg, #2563eb, #06b6d4);
 }
 
+.server-status-page .security-event-row > .security-event-icon {
+    display: grid !important;
+    place-items: center;
+    margin: 0;
+    line-height: 1;
+}
+
+.server-status-page .security-event-icon > i {
+    position: static;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0;
+    line-height: 1;
+    text-align: center;
+    transform: none;
+}
+
 .security-event-icon.severity-success { background: linear-gradient(135deg, #16a34a, #22c55e); }
 .security-event-icon.severity-warning { background: linear-gradient(135deg, #f59e0b, #f97316); }
 .security-event-icon.severity-danger { background: linear-gradient(135deg, #ef4444, #be123c); }
@@ -1461,6 +1479,40 @@ body.dark .server-status-page {
     --status-accent-softer: var(--status-panel-bg);
     --status-accent-strong: color-mix(in srgb, var(--status-card-bg) 20%, var(--theme-accent-start) 80%);
     --status-accent-end-strong: color-mix(in srgb, var(--status-card-bg) 18%, var(--theme-accent-end) 82%);
+}
+
+/* Achievement-Center: verbleibende Blau/Cyan-Akzente an das aktive Design binden. */
+.achievement-page .mini-stat > i,
+.achievement-page .subtle-link {
+    color: var(--tool-accent-readable, var(--theme-accent-start)) !important;
+}
+
+.achievement-page .category-title i,
+.achievement-page .achievement-icon,
+.achievement-page .next-achievement-item > i {
+    color: var(--theme-accent-text) !important;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    box-shadow: 0 10px 22px rgba(var(--theme-accent-rgb), 0.22) !important;
+}
+
+.achievement-page .progress-track {
+    border: 1px solid var(--tool-line, rgba(var(--theme-accent-rgb), 0.22)) !important;
+    background: color-mix(in srgb, var(--tool-card-bg) 78%, var(--tool-card-text) 22%) !important;
+}
+
+.achievement-page .progress-track > span {
+    background: linear-gradient(90deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    box-shadow: 0 0 16px rgba(var(--theme-accent-rgb), 0.28) !important;
+}
+
+.achievement-page .leaderboard-row .rank {
+    color: var(--tool-accent-readable, var(--theme-accent-start)) !important;
+    border: 1px solid var(--tool-line, rgba(var(--theme-accent-rgb), 0.22));
+    background: color-mix(in srgb, var(--tool-card-bg) 78%, var(--theme-accent-start) 22%) !important;
+}
+
+.achievement-page .leaderboard-row.is-current {
+    background: color-mix(in srgb, var(--tool-card-bg) 82%, var(--theme-accent-start) 18%) !important;
 }
 
 body.dark-mode .server-status-page .feature-card,
