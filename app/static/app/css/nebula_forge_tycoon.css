@@ -662,15 +662,16 @@ body:not(.dark-mode) .nft-save-card {
     font-weight: 700;
 }
 
-.nft-action-card[data-hotkey]::after {
-    content: attr(data-hotkey);
+.nft-hotkey-badge {
     position: absolute;
     top: 0.55rem;
     right: 0.55rem;
+    z-index: 2;
     display: inline-grid;
     place-items: center;
     min-width: 1.45rem;
     height: 1.45rem;
+    padding: 0 0.32rem;
     border: 1px solid var(--nft-border);
     border-radius: 0.55rem;
     color: var(--nft-text);
@@ -679,6 +680,7 @@ body:not(.dark-mode) .nft-save-card {
     font-size: 0.72rem;
     font-weight: 900;
     line-height: 1;
+    pointer-events: none;
 }
 
 .nft-action-card.is-key-pressed {
@@ -1553,11 +1555,12 @@ body:not(.dark-mode) .nft-toast {
         line-height: 1.2;
     }
 
-    .nft-action-card[data-hotkey]::after {
+    .nft-hotkey-badge {
         top: 0.42rem;
         right: 0.42rem;
         min-width: 1.25rem;
         height: 1.25rem;
+        padding: 0 0.26rem;
         border-radius: 0.45rem;
         font-size: 0.64rem;
     }

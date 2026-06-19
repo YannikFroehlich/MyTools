@@ -2380,6 +2380,19 @@ def cookie_clicker_score_api(request):
         return api_error_response(_("Ung\u00fcltiger Cookie-Cosmos-Score."), status=400)
 
     details = payload.get("details") if isinstance(payload.get("details"), dict) else {}
+    try:
+        current_cookies = float(payload.get("current_cookies", details.get("current_cookies", score)) or 0)
+    except (TypeError, ValueError):
+        current_cookies = score
+
+    if not math.isfinite(current_cookies) or current_cookies < 0:
+        current_cookies = 0
+
+    details = {
+        **details,
+        "current_cookies": current_cookies,
+        "record_cookies": score,
+    }
     display_score = str(payload.get("display_score") or format_cookie_score(score))[:80]
 
     highscore, created = CookieClickerHighScore.objects.get_or_create(
@@ -2400,9 +2413,23 @@ def cookie_clicker_score_api(request):
 
     is_new_highscore = created or score > highscore.score
 
-    if is_new_highscore and not created:
-        highscore.score = score
-        highscore.display_score = display_score
+    if not created:
+        update_fields = [
+            "cps",
+            "click_power",
+            "stardust",
+            "ascensions",
+            "achievements_count",
+            "upgrades_count",
+            "buildings_count",
+            "details",
+        ]
+
+        if is_new_highscore:
+            highscore.score = score
+            highscore.display_score = display_score
+            update_fields.extend(["score", "display_score", "achieved_at"])
+
         highscore.cps = cps
         highscore.click_power = click_power
         highscore.stardust = max(0, stardust)
@@ -2410,8 +2437,9 @@ def cookie_clicker_score_api(request):
         highscore.achievements_count = max(0, min(achievements_count, 500))
         highscore.upgrades_count = max(0, min(upgrades_count, 500))
         highscore.buildings_count = max(0, buildings_count)
-        highscore.details = details
-        highscore.save()
+        saved_details = highscore.details if isinstance(highscore.details, dict) else {}
+        highscore.details = {**saved_details, **details}
+        highscore.save(update_fields=update_fields)
 
     return JsonResponse({
         "status": "ok",

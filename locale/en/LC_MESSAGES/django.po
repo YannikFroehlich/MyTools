@@ -13686,6 +13686,34 @@ msgstr ""
 msgid "Kein Voicemod API-Key verbunden."
 msgstr ""
 
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "beendete Spiele"
+msgstr "completed games"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Kachel %(tile)s · %(games)s Runs"
+msgstr "Tile %(tile)s · %(games)s runs"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Prestige %(level)s · %(upgrades)s Upgrades"
+msgstr "Prestige %(level)s · %(upgrades)s upgrades"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Prestige %(level)s · %(buildings)s Anlagen"
+msgstr "Prestige %(level)s · %(buildings)s buildings"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Mio."
+msgstr "M"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Mrd."
+msgstr "B"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Bio."
+msgstr "T"
+
 #~ msgid "Widgets"
 #~ msgstr "Widgets"
 

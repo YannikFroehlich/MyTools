@@ -13661,6 +13661,34 @@ msgstr ""
 msgid "Kein Voicemod API-Key verbunden."
 msgstr ""
 
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "beendete Spiele"
+msgstr "beendete Spiele"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Kachel %(tile)s · %(games)s Runs"
+msgstr "Kachel %(tile)s · %(games)s Runs"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Prestige %(level)s · %(upgrades)s Upgrades"
+msgstr "Prestige %(level)s · %(upgrades)s Upgrades"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Prestige %(level)s · %(buildings)s Anlagen"
+msgstr "Prestige %(level)s · %(buildings)s Anlagen"
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Mio."
+msgstr "Mio."
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Mrd."
+msgstr "Mrd."
+
+#: app/performance_tools_views.py app/templates/app/leaderboard.html
+msgid "Bio."
+msgstr "Bio."
+
 #~ msgid ""
 #~ "MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, "
 #~ "Wetter, Notizen, Dateien, Profile, Chats und Mini-Games. Statt viele "

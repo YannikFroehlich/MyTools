@@ -955,6 +955,7 @@
     function getHighscorePayload() {
         return {
             score: state.lifetimeBaked,
+            current_cookies: state.cookies,
             display_score: format(state.lifetimeBaked),
             cps: computeCps(),
             click_power: computeClickPower(),
@@ -964,6 +965,8 @@
             upgrades_count: state.upgrades.length,
             buildings_count: getTotalBuildings(state),
             details: {
+                current_cookies: state.cookies,
+                record_cookies: state.lifetimeBaked,
                 total_baked: state.totalBaked,
                 manual_cookies: state.manualCookies,
                 total_clicks: state.totalClicks,
