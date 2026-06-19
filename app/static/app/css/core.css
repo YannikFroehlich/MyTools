@@ -1214,6 +1214,11 @@ body.dark-mode .games-menu-empty {
 }
 
 
+.is-access-hidden {
+    display: none !important;
+}
+
+
 .game-menu-card.is-access-locked,
 .games-menu-leaderboard-link.is-access-locked,
 .navigation a.is-access-locked {

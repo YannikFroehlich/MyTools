@@ -12,7 +12,19 @@
 <section class="clock-page"
          data-volume="{{ clock_settings.volume }}"
          data-ringtone="{{ clock_settings.ringtone }}"
-         data-custom-sound-url="{{ clock_settings.custom_sound_url }}">
+         data-custom-sound-url="{{ clock_settings.custom_sound_url }}"
+         data-clock-text-start="{% translate 'Start' context 'clock action' %}"
+         data-clock-text-stop="{% translate 'Stoppen' %}"
+         data-clock-text-lap="{% translate 'Runde' %}"
+         data-clock-text-running="{% translate 'Läuft gerade' %}"
+         data-clock-text-paused="{% translate 'Pausiert' %}"
+         data-clock-text-ready="{% translate 'Bereit' %}"
+         data-clock-text-set-time="{% translate 'Zeit einstellen' %}"
+         data-clock-text-expired="{% translate 'Abgelaufen' %}"
+         data-clock-text-set-time-first="{% translate 'Bitte erst eine Zeit einstellen' %}"
+         data-clock-text-set-timer-alert="{% translate 'Bitte stelle erst eine Timer-Zeit ein.' %}"
+         data-clock-text-sound-size-alert="{% translate 'Der eigene Klingelton darf maximal 5 MB groß sein.' %}"
+         data-clock-text-overwrite-sound-confirm="{% translate 'Du hast bereits einen eigenen Klingelton gespeichert. Soll der alte Ton wirklich überschrieben werden?' %}">
     <div class="clock-hero">
         <div class="clock-hero-content">
             <span class="clock-eyebrow"><i class="fa-regular fa-clock"></i> {% translate 'Zeit-Zentrale' %}</span>
@@ -59,7 +71,7 @@
 
                 <label>
                     <span>{% translate 'Name' %}</span>
-                    <input type="text" name="label" maxlength="80" placeholder="z.B. Zuhause, Urlaub, Server-Zeit">
+                    <input type="text" name="label" maxlength="80" placeholder="{% translate 'z.B. Zuhause, Urlaub, Server-Zeit' %}">
                 </label>
 
                 <label>
@@ -116,7 +128,7 @@
             <div class="clock-actions">
                 <button type="button" class="clock-button clock-button-primary" data-stopwatch-start>
                     <i class="fa-solid fa-play"></i>
-                    {% translate 'Start' %}
+                    {% translate 'Start' context 'clock action' %}
                 </button>
                 <button type="button" class="clock-button" data-stopwatch-lap>
                     <i class="fa-solid fa-flag"></i>
@@ -165,7 +177,7 @@
             <div class="clock-actions timer-actions">
                 <button type="button" class="clock-button clock-button-primary timer-toggle-button" data-timer-toggle>
                     <i class="fa-solid fa-play"></i>
-                    <span>{% translate 'Start' %}</span>
+                    <span>{% translate 'Start' context 'clock action' %}</span>
                 </button>
                 <button type="button" class="clock-button" data-timer-apply>
                     <i class="fa-solid fa-check"></i>
@@ -186,7 +198,7 @@
 
                 <label>
                     <span>{% translate 'Als Vorlage speichern' %}</span>
-                    <input type="text" name="timer_name" maxlength="80" placeholder="z.B. Tee, Pause, Fokus" required>
+                    <input type="text" name="timer_name" maxlength="80" placeholder="{% translate 'z.B. Tee, Pause, Fokus' %}" required>
                 </label>
 
                 <button type="submit" class="clock-button clock-button-secondary">

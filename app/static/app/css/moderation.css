@@ -473,6 +473,7 @@ body.dark-mode .moderation-messages div {
     background: rgba(245, 158, 11, .1);
 }
 
+.moderation-tool-access-row.is-level-hidden,
 .moderation-tool-access-row.is-level-none {
     border-color: rgba(220, 38, 38, .42);
     background: rgba(220, 38, 38, .1);

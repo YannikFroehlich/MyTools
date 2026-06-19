@@ -4,6 +4,54 @@
 
     const pad = (value, length = 2) => String(value).padStart(length, '0');
 
+    const i18n = {
+        start: page.dataset.clockTextStart || 'Start',
+        stop: page.dataset.clockTextStop || 'Stoppen',
+        lap: page.dataset.clockTextLap || 'Runde',
+        running: page.dataset.clockTextRunning || 'Läuft gerade',
+        paused: page.dataset.clockTextPaused || 'Pausiert',
+        ready: page.dataset.clockTextReady || 'Bereit',
+        setTime: page.dataset.clockTextSetTime || 'Zeit einstellen',
+        expired: page.dataset.clockTextExpired || 'Abgelaufen',
+        setTimeFirst: page.dataset.clockTextSetTimeFirst || 'Bitte erst eine Zeit einstellen',
+        setTimerAlert: page.dataset.clockTextSetTimerAlert || 'Bitte stelle erst eine Timer-Zeit ein.',
+        soundSizeAlert: page.dataset.clockTextSoundSizeAlert || 'Der eigene Klingelton darf maximal 5 MB groß sein.',
+        overwriteSoundConfirm: page.dataset.clockTextOverwriteSoundConfirm || 'Du hast bereits einen eigenen Klingelton gespeichert. Soll der alte Ton wirklich überschrieben werden?',
+    };
+
+    function getIconButtonHtml(iconClass, label, spanLabel = false) {
+        const iconHtml = `<i class="${iconClass}"></i>`;
+        return spanLabel ? `${iconHtml}<span>${label}</span>` : `${iconHtml} ${label}`;
+    }
+
+    function getCurrentLocale() {
+        const htmlLang = (document.documentElement.lang || '').trim().replace('_', '-').toLowerCase();
+
+        if (htmlLang.startsWith('en')) {
+            return 'en-US';
+        }
+
+        if (htmlLang.startsWith('de')) {
+            return 'de-DE';
+        }
+
+        return navigator.language || 'de-DE';
+    }
+
+    function formatClockTime(date, options = {}) {
+        return new Intl.DateTimeFormat(getCurrentLocale(), {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hourCycle: 'h23',
+            ...options,
+        }).format(date);
+    }
+
+    function formatClockDate(date, options = {}) {
+        return new Intl.DateTimeFormat(getCurrentLocale(), options).format(date);
+    }
+
     function formatStopwatch(ms) {
         const minutes = Math.floor(ms / 60000);
         const seconds = Math.floor((ms % 60000) / 1000);
@@ -25,15 +73,13 @@
         const localDate = document.querySelector('[data-local-date]');
 
         if (localTime) {
-            localTime.textContent = new Intl.DateTimeFormat('de-DE', {
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            }).format(now);
+            localTime.textContent = formatClockTime(now);
         }
 
         if (localDate) {
-            localDate.textContent = new Intl.DateTimeFormat('de-DE', {
+            localDate.textContent = formatClockDate(now, {
                 weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
-            }).format(now);
+            });
         }
 
         document.querySelectorAll('[data-world-clock]').forEach((card) => {
@@ -43,15 +89,13 @@
 
             try {
                 if (timeTarget) {
-                    timeTarget.textContent = new Intl.DateTimeFormat('de-DE', {
-                        hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: timezone
-                    }).format(now);
+                    timeTarget.textContent = formatClockTime(now, { timeZone: timezone });
                 }
 
                 if (dateTarget) {
-                    dateTarget.textContent = new Intl.DateTimeFormat('de-DE', {
+                    dateTarget.textContent = formatClockDate(now, {
                         weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric', timeZone: timezone
-                    }).format(now);
+                    });
                 }
             } catch (error) {
                 if (timeTarget) timeTarget.textContent = '--:--:--';
@@ -185,7 +229,7 @@
         if (!file) return;
 
         if (file.size > 5 * 1024 * 1024) {
-            alert('Der eigene Klingelton darf maximal 5 MB groß sein.');
+            alert(i18n.soundSizeAlert);
             customSoundInput.value = '';
             return;
         }
@@ -202,7 +246,7 @@
         if (!file) return;
 
         if (settingsForm.dataset.hasCustomSound === 'true') {
-            const overwrite = confirm('Du hast bereits einen eigenen Klingelton gespeichert. Soll der alte Ton wirklich überschrieben werden?');
+            const overwrite = confirm(i18n.overwriteSoundConfirm);
             if (!overwrite) {
                 event.preventDefault();
             }
@@ -229,7 +273,7 @@
             stopwatchElapsed += performance.now() - stopwatchStart;
             clearInterval(stopwatchInterval);
             stopwatchInterval = null;
-            stopwatchStartButton.innerHTML = '<i class="fa-solid fa-play"></i> Start';
+            stopwatchStartButton.innerHTML = getIconButtonHtml('fa-solid fa-play', i18n.start);
             stopwatchStartButton.classList.remove('is-running');
             renderStopwatch();
             return;
@@ -237,7 +281,7 @@
 
         stopwatchStart = performance.now();
         stopwatchInterval = setInterval(renderStopwatch, 50);
-        stopwatchStartButton.innerHTML = '<i class="fa-solid fa-pause"></i> Stoppen';
+        stopwatchStartButton.innerHTML = getIconButtonHtml('fa-solid fa-pause', i18n.stop);
         stopwatchStartButton.classList.add('is-running');
     });
 
@@ -247,7 +291,11 @@
 
         lapCount += 1;
         const li = document.createElement('li');
-        li.innerHTML = `<span>Runde ${lapCount}</span><strong>${formatStopwatch(elapsed)}</strong>`;
+        const lapLabel = document.createElement('span');
+        const lapTime = document.createElement('strong');
+        lapLabel.textContent = `${i18n.lap} ${lapCount}`;
+        lapTime.textContent = formatStopwatch(elapsed);
+        li.append(lapLabel, lapTime);
         lapList.prepend(li);
         if (lapEmpty) lapEmpty.hidden = true;
     });
@@ -260,7 +308,7 @@
         if (lapList) lapList.innerHTML = '';
         if (lapEmpty) lapEmpty.hidden = false;
         if (stopwatchStartButton) {
-            stopwatchStartButton.innerHTML = '<i class="fa-solid fa-play"></i> Start';
+            stopwatchStartButton.innerHTML = getIconButtonHtml('fa-solid fa-play', i18n.start);
             stopwatchStartButton.classList.remove('is-running');
         }
         renderStopwatch();
@@ -327,9 +375,9 @@
 
         if (timerToggleButton) {
             if (running) {
-                timerToggleButton.innerHTML = '<i class="fa-solid fa-pause"></i><span>Stoppen</span>';
+                timerToggleButton.innerHTML = getIconButtonHtml('fa-solid fa-pause', i18n.stop, true);
             } else {
-                timerToggleButton.innerHTML = '<i class="fa-solid fa-play"></i><span>Start</span>';
+                timerToggleButton.innerHTML = getIconButtonHtml('fa-solid fa-play', i18n.start, true);
             }
         }
 
@@ -339,13 +387,13 @@
             if (state) {
                 timerStatus.textContent = state;
             } else if (running) {
-                timerStatus.textContent = 'Läuft gerade';
+                timerStatus.textContent = i18n.running;
             } else if (timerWasStarted && timerRemaining > 0) {
-                timerStatus.textContent = 'Pausiert';
+                timerStatus.textContent = i18n.paused;
             } else if (timerTotal > 0) {
-                timerStatus.textContent = 'Bereit';
+                timerStatus.textContent = i18n.ready;
             } else {
-                timerStatus.textContent = 'Zeit einstellen';
+                timerStatus.textContent = i18n.setTime;
             }
         }
     }
@@ -368,7 +416,7 @@
             timerRemaining = 0;
             timerWasStarted = false;
             renderTimer();
-            updateTimerControls('Abgelaufen');
+            updateTimerControls(i18n.expired);
             playSound();
             return;
         }
@@ -417,7 +465,7 @@
             renderTimer();
             clearInterval(timerInterval);
             timerInterval = null;
-            updateTimerControls('Pausiert');
+            updateTimerControls(i18n.paused);
             return;
         }
 
@@ -426,7 +474,7 @@
         }
 
         if (timerRemaining <= 0) {
-            updateTimerControls('Bitte erst eine Zeit einstellen');
+            updateTimerControls(i18n.setTimeFirst);
             return;
         }
 
@@ -443,14 +491,14 @@
         timerTotal = timerRemaining;
         timerWasStarted = false;
         renderTimer();
-        updateTimerControls('Bereit');
+        updateTimerControls(i18n.ready);
     });
 
     document.querySelector('.timer-save-form')?.addEventListener('submit', (event) => {
         updateSaveInputs();
         if (getManualSeconds() <= 0) {
             event.preventDefault();
-            alert('Bitte stelle erst eine Timer-Zeit ein.');
+            alert(i18n.setTimerAlert);
         }
     });
 

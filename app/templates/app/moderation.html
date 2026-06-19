@@ -5,7 +5,7 @@
 {% block title %}{% translate "Moderation" %} | MyTools{% endblock %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/platform.css' %}">
-    <link rel="stylesheet" href="{% static 'app/css/moderation.css' %}?v=20260617-tool-access">
+    <link rel="stylesheet" href="{% static 'app/css/moderation.css' %}?v=20260619-access-hidden">
 {% endblock %}
 
 {% block content %}
@@ -99,7 +99,7 @@
             <input type="hidden" name="next" value="{{ request.get_full_path }}">
             <div class="moderation-tool-access-copy">
                 <strong>{% translate "Zugriff pro Bereich einstellen" %}</strong>
-                <p>{% translate "Alle bedeutet: jeder eingeloggte Nutzer. Nur Admins bedeutet: Staff/Admin-Rechte. Keiner sperrt den Bereich auch fuer Admins, bis du ihn hier wieder freigibst." %}</p>
+                <p>{% translate "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: normale Nutzer sehen den Bereich noch, können ihn aber nicht öffnen. Versteckt bedeutet: normale Nutzer sehen den Bereich gar nicht mehr." %}</p>
             </div>
             <div class="moderation-tool-access-list">
                 {% for item in tool_access_items %}
