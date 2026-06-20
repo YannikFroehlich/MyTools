@@ -600,6 +600,114 @@
         </div>
     </section>
 
+    {% if show_onboarding %}
+        <div class="onboarding-overlay" id="onboarding-modal">
+            <section
+                class="onboarding-dialog"
+                id="onboarding-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="onboarding-title"
+                aria-describedby="onboarding-description"
+                tabindex="-1"
+            >
+                <div class="onboarding-header">
+                    <span class="onboarding-step">{% translate 'Erster Start' %}</span>
+                    <div class="onboarding-brand-icon" aria-hidden="true">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h2 id="onboarding-title">
+                        {% blocktranslate with username=request.user.username %}Willkommen, {{ username }}!{% endblocktranslate %}
+                    </h2>
+                    <p id="onboarding-description">
+                        {% translate 'Wähle eine Vorlage. Wir richten passende Widgets und Verknüpfungen ein – du kannst danach alles frei ändern.' %}
+                    </p>
+                </div>
+
+                <form method="post" class="onboarding-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="complete_onboarding">
+
+                    <fieldset class="onboarding-template-grid">
+                        <legend class="sr-only">{% translate 'Dashboard-Vorlage auswählen' %}</legend>
+
+                        <label class="onboarding-template-card is-everyday">
+                            <input type="radio" name="onboarding_template" value="everyday" checked>
+                            <span class="onboarding-card-content">
+                                <span class="onboarding-card-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-mug-hot"></i>
+                                </span>
+                                <strong>{% translate 'Alltag' %}</strong>
+                                <small>{% translate 'Uhr, Wetter, Notizen und deine wichtigsten täglichen Links.' %}</small>
+                                <span class="onboarding-card-preview" aria-hidden="true">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <i class="fa-solid fa-cloud-sun"></i>
+                                    <i class="fa-solid fa-note-sticky"></i>
+                                </span>
+                                <span class="onboarding-card-check" aria-hidden="true">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                            </span>
+                        </label>
+
+                        <label class="onboarding-template-card is-gaming">
+                            <input type="radio" name="onboarding_template" value="gaming">
+                            <span class="onboarding-card-content">
+                                <span class="onboarding-card-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-gamepad"></i>
+                                </span>
+                                <strong>{% translate 'Gaming' %}</strong>
+                                <small>{% translate 'Chats, Freunde, Highscores und schnelle Gaming-Links.' %}</small>
+                                <span class="onboarding-card-preview" aria-hidden="true">
+                                    <i class="fa-solid fa-comments"></i>
+                                    <i class="fa-solid fa-user-group"></i>
+                                    <i class="fa-solid fa-trophy"></i>
+                                </span>
+                                <span class="onboarding-card-check" aria-hidden="true">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                            </span>
+                        </label>
+
+                        <label class="onboarding-template-card is-homelab">
+                            <input type="radio" name="onboarding_template" value="homelab">
+                            <span class="onboarding-card-content">
+                                <span class="onboarding-card-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-server"></i>
+                                </span>
+                                <strong>{% translate 'Homelab' %}</strong>
+                                <small>{% translate 'Status, Notizen und vorbereitete Links für deine Dienste.' %}</small>
+                                <span class="onboarding-card-preview" aria-hidden="true">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                    <i class="fa-solid fa-house-signal"></i>
+                                    <i class="fa-solid fa-cloud"></i>
+                                </span>
+                                <span class="onboarding-card-check" aria-hidden="true">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                            </span>
+                        </label>
+                    </fieldset>
+
+                    <div class="onboarding-actions">
+                        <button type="submit" class="onboarding-primary-button">
+                            <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+                            {% translate 'Dashboard einrichten' %}
+                        </button>
+                        <button type="submit" class="onboarding-skip-button" name="onboarding_template" value="blank">
+                            {% translate 'Ohne Vorlage starten' %}
+                        </button>
+                    </div>
+                </form>
+
+                <p class="onboarding-footnote">
+                    <i class="fa-solid fa-pen" aria-hidden="true"></i>
+                    {% translate 'Alle Inhalte lassen sich anschließend verschieben, bearbeiten oder löschen.' %}
+                </p>
+            </section>
+        </div>
+    {% endif %}
+
     <!-- Widget Modal -->
     <div class="shortcut-modal" id="widget-modal">
         <div class="shortcut-modal-content">

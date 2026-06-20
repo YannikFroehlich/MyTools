@@ -1084,6 +1084,7 @@ class HomeLayoutPreference(models.Model):
         related_name="home_layout_preference",
     )
     widget_area_order = models.PositiveIntegerField(default=1)
+    onboarding_completed = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

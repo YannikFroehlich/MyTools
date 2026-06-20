@@ -1629,6 +1629,93 @@ class HomeViewTests(BaseTestCase):
         self.assertIn("sections", response.context)
         self.assertIn("home_labels", response.context)
 
+    def test_empty_dashboard_shows_onboarding(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertTrue(response.context["show_onboarding"])
+        self.assertContains(response, 'id="onboarding-modal"')
+        self.assertContains(response, "Alltag")
+        self.assertContains(response, "Gaming")
+        self.assertContains(response, "Homelab")
+
+    def test_dashboard_with_existing_content_does_not_show_onboarding(self):
+        section = ShortcutSection.objects.create(name="Verknüpfungen")
+        Shortcut.objects.create(
+            section=section,
+            name="Vorhanden",
+            url="https://example.com",
+        )
+
+        response = self.client.get(reverse("home"))
+
+        self.assertFalse(response.context["show_onboarding"])
+        self.assertNotContains(response, 'id="onboarding-modal"')
+
+    def test_everyday_onboarding_creates_widgets_and_shortcuts(self):
+        response = self.client.post(reverse("home"), {
+            "action": "complete_onboarding",
+            "onboarding_template": "everyday",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        preference = HomeLayoutPreference.objects.get(user=self.user)
+        self.assertTrue(preference.onboarding_completed)
+        self.assertEqual(HomeWidget.objects.filter(user=self.user).count(), 4)
+        self.assertEqual(Shortcut.objects.filter(user=self.user).count(), 3)
+        self.assertTrue(HomeWidget.objects.filter(user=self.user, widget_type=HomeWidget.WIDGET_WEATHER).exists())
+        self.assertTrue(Shortcut.objects.filter(user=self.user, name="Gmail").exists())
+
+    def test_gaming_onboarding_creates_gaming_selection(self):
+        self.client.post(reverse("home"), {
+            "action": "complete_onboarding",
+            "onboarding_template": "gaming",
+        })
+
+        widget_types = set(HomeWidget.objects.filter(user=self.user).values_list("widget_type", flat=True))
+        self.assertSetEqual(widget_types, {
+            HomeWidget.WIDGET_CHAT,
+            HomeWidget.WIDGET_FRIENDS,
+            HomeWidget.WIDGET_TICTACTOE,
+            HomeWidget.WIDGET_BENCHMARK,
+        })
+        self.assertSetEqual(
+            set(Shortcut.objects.filter(user=self.user).values_list("name", flat=True)),
+            {"Steam", "Twitch", "Discord"},
+        )
+
+    def test_homelab_onboarding_creates_service_shortcuts(self):
+        self.client.post(reverse("home"), {
+            "action": "complete_onboarding",
+            "onboarding_template": "homelab",
+        })
+
+        self.assertTrue(Shortcut.objects.filter(user=self.user, name="CasaOS").exists())
+        self.assertTrue(Shortcut.objects.filter(user=self.user, name="Home Assistant").exists())
+        self.assertTrue(Shortcut.objects.filter(user=self.user, name="Nextcloud").exists())
+        self.assertEqual(HomeWidget.objects.filter(user=self.user).count(), 3)
+
+    def test_onboarding_can_be_skipped(self):
+        response = self.client.post(reverse("home"), {
+            "action": "complete_onboarding",
+            "onboarding_template": "blank",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertTrue(HomeLayoutPreference.objects.get(user=self.user).onboarding_completed)
+        self.assertFalse(HomeWidget.objects.filter(user=self.user).exists())
+        self.assertFalse(Shortcut.objects.filter(user=self.user).exists())
+
+    def test_completed_onboarding_is_idempotent(self):
+        payload = {
+            "action": "complete_onboarding",
+            "onboarding_template": "everyday",
+        }
+        self.client.post(reverse("home"), payload)
+        self.client.post(reverse("home"), payload)
+
+        self.assertEqual(HomeWidget.objects.filter(user=self.user).count(), 4)
+        self.assertEqual(Shortcut.objects.filter(user=self.user).count(), 3)
+
     def test_home_creates_default_section(self):
         self.assertFalse(ShortcutSection.objects.filter(name="Verknüpfungen").exists())
 

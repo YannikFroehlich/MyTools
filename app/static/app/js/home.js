@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const suggestionsBox = document.getElementById("suggestions-box");
     const labelsElement = document.getElementById("home-labels");
     const labels = labelsElement ? JSON.parse(labelsElement.textContent) : {};
+    const onboardingModal = document.getElementById("onboarding-modal");
+    const onboardingDialog = document.getElementById("onboarding-dialog");
 
     const shortcutModal = document.getElementById("shortcut-modal");
     const closeShortcutModalButton = document.getElementById("close-shortcut-modal");
@@ -77,7 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
             input &&
             !shortcutModal?.classList.contains("show") &&
             !sectionModal?.classList.contains("show") &&
-            !widgetModal?.classList.contains("show")
+            !widgetModal?.classList.contains("show") &&
+            !onboardingModal
         ) {
             input.focus();
         }
@@ -94,7 +97,12 @@ document.addEventListener("DOMContentLoaded", () => {
         modal?.classList.add("show");
     }
 
-    setTimeout(focusSearchInput, 100);
+    if (onboardingModal) {
+        document.body.classList.add("onboarding-open");
+        setTimeout(() => onboardingDialog?.focus({ preventScroll: true }), 100);
+    } else {
+        setTimeout(focusSearchInput, 100);
+    }
 
     function getCurrentLocale() {
         const htmlLang = document.documentElement.lang || "de";

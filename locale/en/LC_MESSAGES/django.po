@@ -14270,3 +14270,48 @@ msgstr "Hidden"
 #: app/templates/app/moderation.html
 msgid "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: normale Nutzer sehen den Bereich noch, können ihn aber nicht öffnen. Versteckt bedeutet: normale Nutzer sehen den Bereich gar nicht mehr."
 msgstr "Published means every signed-in user can open the section. Unpublished means normal users can still see the section, but cannot open it. Hidden means normal users cannot see the section at all."
+
+#: app/templates/app/home.html
+msgid "Erster Start"
+msgstr "First start"
+
+#: app/templates/app/home.html
+#, python-format
+msgid "Willkommen, %(username)s!"
+msgstr "Welcome, %(username)s!"
+
+#: app/templates/app/home.html
+msgid "Wähle eine Vorlage. Wir richten passende Widgets und Verknüpfungen ein – du kannst danach alles frei ändern."
+msgstr "Choose a template. We'll set up matching widgets and shortcuts – you can customize everything afterwards."
+
+#: app/templates/app/home.html
+msgid "Dashboard-Vorlage auswählen"
+msgstr "Choose a dashboard template"
+
+#: app/templates/app/home.html
+msgid "Uhr, Wetter, Notizen und deine wichtigsten täglichen Links."
+msgstr "Clock, weather, notes, and your most important daily links."
+
+#: app/templates/app/home.html
+msgid "Chats, Freunde, Highscores und schnelle Gaming-Links."
+msgstr "Chats, friends, high scores, and quick gaming links."
+
+#: app/templates/app/home.html
+msgid "Homelab"
+msgstr "Homelab"
+
+#: app/templates/app/home.html
+msgid "Status, Notizen und vorbereitete Links für deine Dienste."
+msgstr "Status, notes, and prepared links for your services."
+
+#: app/templates/app/home.html
+msgid "Dashboard einrichten"
+msgstr "Set up dashboard"
+
+#: app/templates/app/home.html
+msgid "Ohne Vorlage starten"
+msgstr "Start without a template"
+
+#: app/templates/app/home.html
+msgid "Alle Inhalte lassen sich anschließend verschieben, bearbeiten oder löschen."
+msgstr "You can move, edit, or delete all content afterwards."
