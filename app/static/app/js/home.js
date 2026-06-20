@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const suggestionsBox = document.getElementById("suggestions-box");
     const labelsElement = document.getElementById("home-labels");
     const labels = labelsElement ? JSON.parse(labelsElement.textContent) : {};
+    const deleteUndoRegion = document.querySelector("[data-delete-undo-region]");
+    const deleteUndoDelay = 7000;
     const onboardingModal = document.getElementById("onboarding-modal");
     const onboardingDialog = document.getElementById("onboarding-dialog");
 
@@ -870,7 +872,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateEmptyStates() {
         document.querySelectorAll(".shortcuts-grid").forEach(grid => {
             const emptyState = grid.querySelector(".empty-shortcuts");
-            const hasShortcuts = grid.querySelectorAll(".shortcut-card").length > 0;
+            const hasShortcuts = grid.querySelectorAll(".shortcut-card:not([data-delete-pending])").length > 0;
 
             if (emptyState) {
                 emptyState.hidden = hasShortcuts;
@@ -880,13 +882,179 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function updateWidgetEmptyState() {
+        const grid = document.getElementById("widgets-grid");
+        if (!grid) return;
+
+        const emptyState = grid.querySelector(".empty-widgets");
+        const hasWidgets = grid.querySelectorAll(".home-widget:not([data-delete-pending])").length > 0;
+        if (emptyState) emptyState.hidden = hasWidgets;
+    }
+
+    function getDeleteConfig(deleteForm) {
+        if (deleteForm.matches(".delete-widget-form")) {
+            return {
+                target: deleteForm.closest(".home-widget"),
+                label: labels.widgetDeleted || "Widget gelöscht",
+            };
+        }
+
+        if (deleteForm.matches(".delete-section-form")) {
+            return {
+                target: deleteForm.closest(".shortcuts-section"),
+                label: labels.sectionDeleted || "Bereich gelöscht",
+            };
+        }
+
+        if (deleteForm.matches(".delete-shortcut-form")) {
+            return {
+                target: deleteForm.closest(".shortcut-card"),
+                label: labels.shortcutDeleted || "Verknüpfung gelöscht",
+            };
+        }
+
+        return null;
+    }
+
+    function refreshDeleteEmptyStates() {
+        updateEmptyStates();
+        updateWidgetEmptyState();
+    }
+
+    function createDeleteToast(label) {
+        if (!deleteUndoRegion) return null;
+
+        const toast = document.createElement("div");
+        toast.className = "home-undo-toast";
+        toast.style.setProperty("--delete-undo-duration", `${deleteUndoDelay}ms`);
+
+        const icon = document.createElement("span");
+        icon.className = "home-undo-toast-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.innerHTML = '<i class="fa-solid fa-trash-arrow-up"></i>';
+
+        const copy = document.createElement("span");
+        copy.className = "home-undo-toast-copy";
+
+        const title = document.createElement("strong");
+        title.textContent = label;
+
+        const detail = document.createElement("span");
+        detail.textContent = labels.deletePending || "Wird in wenigen Sekunden endgültig gelöscht.";
+
+        const undoButton = document.createElement("button");
+        undoButton.type = "button";
+        undoButton.textContent = labels.undoDelete || "Rückgängig";
+
+        const progress = document.createElement("span");
+        progress.className = "home-undo-toast-progress";
+        progress.setAttribute("aria-hidden", "true");
+
+        copy.append(title, detail);
+        toast.append(icon, copy, undoButton, progress);
+        deleteUndoRegion.append(toast);
+
+        return { toast, icon, title, detail, undoButton, progress };
+    }
+
+    function restorePendingDeletion(target, toastParts, returnFocus) {
+        target.removeAttribute("data-delete-pending");
+        target.classList.remove("home-delete-pending");
+        target.hidden = false;
+        toastParts?.toast.remove();
+        refreshDeleteEmptyStates();
+
+        if (returnFocus?.isConnected) {
+            requestAnimationFrame(() => returnFocus.focus({ preventScroll: true }));
+        }
+    }
+
+    async function commitPendingDeletion(deleteForm, target, toastParts, returnFocus) {
+        toastParts?.toast.classList.add("is-committing");
+        if (toastParts?.undoButton) toastParts.undoButton.disabled = true;
+
+        try {
+            const response = await fetch(deleteForm.action || window.location.href, {
+                method: "POST",
+                body: new FormData(deleteForm),
+                credentials: "same-origin",
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+            });
+            const payload = response.headers.get("content-type")?.includes("application/json")
+                ? await response.json()
+                : null;
+
+            if (!response.ok || payload?.success === false) {
+                throw new Error("delete_failed");
+            }
+
+            target.remove();
+            toastParts?.toast.remove();
+            refreshDeleteEmptyStates();
+        } catch (error) {
+            console.error("Löschen konnte nicht abgeschlossen werden:", error);
+            target.removeAttribute("data-delete-pending");
+            target.classList.remove("home-delete-pending");
+            target.hidden = false;
+            refreshDeleteEmptyStates();
+
+            if (!toastParts) return;
+            toastParts.toast.classList.remove("is-committing");
+            toastParts.toast.classList.add("is-error");
+            toastParts.icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            toastParts.title.textContent = labels.deleteFailed || "Löschen fehlgeschlagen";
+            toastParts.detail.textContent = labels.deleteFailedHint || "Bitte versuche es noch einmal.";
+            toastParts.undoButton.remove();
+            toastParts.progress.remove();
+            window.setTimeout(() => toastParts.toast.remove(), 5000);
+
+            if (returnFocus?.isConnected) {
+                requestAnimationFrame(() => returnFocus.focus({ preventScroll: true }));
+            }
+        }
+    }
+
+    document.addEventListener("submit", event => {
+        const deleteForm = event.target.closest?.(
+            ".delete-widget-form, .delete-section-form, .delete-shortcut-form"
+        );
+        if (!deleteForm) return;
+
+        const config = getDeleteConfig(deleteForm);
+        if (!config?.target || config.target.hasAttribute("data-delete-pending")) return;
+
+        event.preventDefault();
+
+        const target = config.target;
+        const returnFocus = target.querySelector(".shortcut-menu-toggle")
+            || deleteForm.querySelector("button[type='submit']");
+        const toastParts = createDeleteToast(config.label);
+
+        target.classList.remove("actions-open");
+        target.setAttribute("data-delete-pending", "true");
+        target.classList.add("home-delete-pending");
+        target.hidden = true;
+        refreshDeleteEmptyStates();
+
+        const timer = window.setTimeout(() => {
+            commitPendingDeletion(deleteForm, target, toastParts, returnFocus);
+        }, deleteUndoDelay);
+
+        toastParts?.undoButton.addEventListener("click", () => {
+            window.clearTimeout(timer);
+            restorePendingDeletion(target, toastParts, returnFocus);
+        }, { once: true });
+    });
+
+    updateWidgetEmptyState();
+
     function saveShortcutOrder() {
         const payload = [];
 
         document.querySelectorAll(".shortcuts-grid").forEach(grid => {
             const sectionId = grid.dataset.sectionId;
 
-            grid.querySelectorAll(".shortcut-card").forEach((card, index) => {
+            grid.querySelectorAll(".shortcut-card:not([data-delete-pending])").forEach((card, index) => {
                 card.dataset.shortcutSectionId = sectionId;
 
                 payload.push({
@@ -905,7 +1073,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function saveHomeLayoutOrder() {
         const items = [...document.querySelectorAll("#sections-wrapper > .home-layout-item")]
-            .filter(item => item.dataset.isDefaultSection !== "true")
+            .filter(item => item.dataset.isDefaultSection !== "true" && !item.hasAttribute("data-delete-pending"))
             .map((item, index) => ({
                 type: item.dataset.layoutItemType,
                 id: item.dataset.sectionId || "",
@@ -923,7 +1091,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveWidgetOrder() {
-        const widgets = [...document.querySelectorAll(".home-widget")].map((widget, index) => ({
+        const widgets = [...document.querySelectorAll(".home-widget:not([data-delete-pending])")].map((widget, index) => ({
             id: widget.dataset.widgetId,
             order: index
         }));

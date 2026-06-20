@@ -556,8 +556,6 @@ def file_share_download_view(request, token):
 @require_POST
 def file_share_delete_view(request, share_id):
     share = get_object_or_404(FileShare, id=share_id, owner=request.user)
-    if share.file:
-        share.file.delete(save=False)
-    share.delete()
-    messages.success(request, _("Datei wurde gelöscht."))
+    share.move_to_trash()
+    messages.success(request, _("Datei wurde in den Papierkorb verschoben."))
     return redirect("file_share")

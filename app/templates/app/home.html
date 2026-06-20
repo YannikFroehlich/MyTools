@@ -6,7 +6,7 @@
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260620-a11y-dialogs">
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260621-delete-undo">
 {% endblock %}
 
 {% block content %}
@@ -580,13 +580,12 @@
                                             {% endif %}
                                         </article>
                                     {% endwith %}
-                                {% empty %}
-                                    <div class="empty-widgets">
-                                        <i class="fa-solid fa-table-cells-large"></i>
-                                        <h3>{% translate 'Noch keine Widgets' %}</h3>
-                                        <p>{% translate 'Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard.' %}</p>
-                                    </div>
                                 {% endfor %}
+                                <div class="empty-widgets" {% if home_widgets %}hidden{% endif %}>
+                                    <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+                                    <h3>{% translate 'Noch keine Widgets' %}</h3>
+                                    <p>{% translate 'Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard.' %}</p>
+                                </div>
                             </div>
                         </div>
                     {% else %}
@@ -609,6 +608,13 @@
             </div>
         </div>
     </section>
+
+    <div
+        class="home-undo-region"
+        data-delete-undo-region
+        aria-live="polite"
+        aria-label="{% translate 'Löschvorgänge' %}"
+    ></div>
 
     {% if show_onboarding %}
         <div class="onboarding-overlay" id="onboarding-modal">
@@ -1058,5 +1064,5 @@
 
 {% block extra_js %}
     {{ home_labels|json_script:"home-labels" }}
-    <script src="{% static 'app/js/home.js' %}?v=20260620-a11y-dialogs" defer></script>
+    <script src="{% static 'app/js/home.js' %}?v=20260621-delete-undo" defer></script>
 {% endblock %}

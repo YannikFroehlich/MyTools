@@ -802,6 +802,13 @@ def home(request):
         "editWidget": _("Widget bearbeiten"),
         "addWidget": _("Widget hinzufügen"),
         "saveWidget": _("Widget speichern"),
+        "widgetDeleted": _("Widget gelöscht"),
+        "sectionDeleted": _("Bereich gelöscht"),
+        "shortcutDeleted": _("Verknüpfung gelöscht"),
+        "deletePending": _("Wird in wenigen Sekunden endgültig gelöscht."),
+        "undoDelete": _("Rückgängig"),
+        "deleteFailed": _("Löschen fehlgeschlagen"),
+        "deleteFailedHint": _("Bitte versuche es noch einmal."),
     }
 
     default_section, created = ShortcutSection.objects.get_or_create(
@@ -997,8 +1004,10 @@ def home(request):
         if action == "delete_widget":
             widget_id = request.POST.get("widget_id")
             widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
-            widget.delete()
+            widget.move_to_trash()
 
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True, "deleted": "widget"})
             return redirect("home")
 
         if action == "add_section":
@@ -1037,10 +1046,23 @@ def home(request):
         if action == "delete_section":
             section_id = request.POST.get("section_id")
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
+            deleted = False
 
             if section.name != "Verknüpfungen":
+                default_section, _created = ShortcutSection.objects.get_or_create(
+                    user=user,
+                    name="Verknüpfungen",
+                    defaults={"color": "blue", "order": 0},
+                )
+                Shortcut.all_objects.filter(section=section, deleted_at__isnull=True).update(
+                    deleted_at=django_timezone.now(),
+                )
+                Shortcut.all_objects.filter(section=section).update(section=default_section)
                 section.delete()
+                deleted = True
 
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": deleted, "deleted": "section"})
             return redirect("home")
 
         if action == "toggle_section_collapse":
@@ -1126,8 +1148,10 @@ def home(request):
         if action == "delete_shortcut":
             shortcut_id = request.POST.get("shortcut_id")
             shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
-            shortcut.delete()
+            shortcut.move_to_trash()
 
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True, "deleted": "shortcut"})
             return redirect("home")
 
         if action == "toggle_favorite":

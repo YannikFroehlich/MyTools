@@ -244,6 +244,7 @@ from .platform_views import (
     inbox_view,
 )
 from .security_views import qr_code_tool_view, security_dashboard_view
+from .trash_views import trash_delete_view, trash_empty_view, trash_restore_view, trash_view
 from .community_views import achievement_center_view, changelog_view, roadmap_view, server_status_view
 from .moderation_views import (
     moderation_access_toggle_view,
@@ -265,6 +266,10 @@ urlpatterns = [
     path('accounts/2fa/', two_factor_verify_view, name='two_factor_verify'),
     path('settings/security/2fa/', two_factor_settings_view, name='two_factor_settings'),
     path('security/', security_dashboard_view, name='security_dashboard'),
+    path('trash/', trash_view, name='trash'),
+    path('trash/empty/', trash_empty_view, name='trash_empty'),
+    path('trash/<slug:item_type>/<int:item_id>/restore/', trash_restore_view, name='trash_restore'),
+    path('trash/<slug:item_type>/<int:item_id>/delete/', trash_delete_view, name='trash_delete'),
     path('', home, name='home'),
     path('home/', home, name='home'),
     path('about/', about, name='about'),

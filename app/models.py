@@ -6,6 +6,33 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import get_valid_filename
 
 
+class ActiveTrashManager(models.Manager):
+    """Standardmanager für Inhalte, die nicht im Papierkorb liegen."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+
+class TrashableModel(models.Model):
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
+    objects = ActiveTrashManager()
+    all_objects = models.Manager()
+
+    class Meta:
+        abstract = True
+
+    def move_to_trash(self):
+        if self.deleted_at is None:
+            self.deleted_at = timezone.now()
+            self.save(update_fields=["deleted_at"])
+
+    def restore_from_trash(self):
+        if self.deleted_at is not None:
+            self.deleted_at = None
+            self.save(update_fields=["deleted_at"])
+
+
 class NotificationDismissal(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -604,7 +631,7 @@ class ShortcutSection(models.Model):
         return self.name
 
 
-class Shortcut(models.Model):
+class Shortcut(TrashableModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -644,6 +671,15 @@ class Shortcut(models.Model):
 
     def __str__(self):
         return self.name
+
+    def delete(self, *args, **kwargs):
+        image_storage = self.image.storage if self.image else None
+        image_name = self.image.name if self.image else None
+
+        super().delete(*args, **kwargs)
+
+        if image_storage and image_name:
+            image_storage.delete(image_name)
 
 
 class AvatarCharacter(models.Model):
@@ -685,7 +721,7 @@ class AvatarCharacter(models.Model):
             image_storage.delete(image_name)
 
 
-class Note(models.Model):
+class Note(TrashableModel):
     COLOR_CHOICES = [
         ("blue", _("Blau")),
         ("purple", _("Lila")),
@@ -934,7 +970,7 @@ class ClockSettings(models.Model):
             sound_storage.delete(sound_name)
 
 
-class HomeWidget(models.Model):
+class HomeWidget(TrashableModel):
     WIDGET_WEATHER = "weather"
     WIDGET_NOTES = "notes"
     WIDGET_BENCHMARK = "benchmark"
@@ -3244,7 +3280,7 @@ def file_share_upload_path(instance, filename):
     return f"file_shares/user_{instance.owner_id}/{instance.token}_{safe_name}"
 
 
-class FileShare(models.Model):
+class FileShare(TrashableModel):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -3282,6 +3318,15 @@ class FileShare(models.Model):
 
     def __str__(self):
         return f"{self.original_name} · {self.owner}"
+
+    def delete(self, *args, **kwargs):
+        file_storage = self.file.storage if self.file else None
+        file_name = self.file.name if self.file else None
+
+        super().delete(*args, **kwargs)
+
+        if file_storage and file_name:
+            file_storage.delete(file_name)
 
     @property
     def human_size(self):
