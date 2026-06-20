@@ -1629,6 +1629,40 @@ class HomeViewTests(BaseTestCase):
         self.assertIn("sections", response.context)
         self.assertIn("home_labels", response.context)
 
+    def test_home_has_accessible_heading_and_search_combobox(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertContains(response, '<h1 class="sr-only">MyTools Dashboard</h1>', html=True)
+        self.assertContains(response, 'role="search"')
+        self.assertContains(response, 'for="google-search-input"')
+        self.assertContains(response, 'role="combobox"')
+        self.assertContains(response, 'aria-controls="suggestions-box"')
+        self.assertContains(response, 'aria-expanded="false"')
+        self.assertContains(response, 'role="listbox"')
+
+    def test_home_modals_have_accessible_dialog_semantics(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertContains(response, 'class="shortcut-modal-content" role="dialog"', count=3)
+        self.assertContains(response, 'id="onboarding-dialog"')
+        self.assertContains(response, 'aria-modal="true"')
+        self.assertContains(response, 'id="widget-modal" aria-hidden="true"')
+        self.assertContains(response, 'aria-labelledby="widget-modal-title"')
+        self.assertContains(response, 'aria-labelledby="shortcut-modal-title"')
+        self.assertContains(response, 'aria-labelledby="section-modal-title"')
+        self.assertContains(response, 'aria-label="Widget-Dialog schließen"')
+        self.assertContains(response, 'aria-label="Verknüpfungsdialog schließen"')
+        self.assertContains(response, 'aria-label="Bereichsdialog schließen"')
+
+    def test_home_javascript_manages_focus_without_mobile_autofocus(self):
+        script = (settings.BASE_DIR / "app" / "static" / "app" / "js" / "home.js").read_text(encoding="utf-8")
+
+        self.assertIn('(pointer: fine)', script)
+        self.assertIn('modalReturnFocus', script)
+        self.assertIn('event.key !== "Tab"', script)
+        self.assertIn('returnFocus.focus({ preventScroll: true })', script)
+        self.assertNotIn('event.key === "Tab" && currentFirstSuggestion', script)
+
     def test_empty_dashboard_shows_onboarding(self):
         response = self.client.get(reverse("home"))
 

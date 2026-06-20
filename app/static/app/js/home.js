@@ -52,6 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ? [...widgetModal.querySelectorAll("[data-clock-option-target]")]
         : [];
     const widgetSubmitButton = document.getElementById("widget-submit-button");
+    const managedModals = [onboardingModal, widgetModal, shortcutModal, sectionModal].filter(Boolean);
+    const modalReturnFocus = new WeakMap();
 
     let suggestions = [];
     let currentFirstSuggestion = "";
@@ -70,31 +72,99 @@ document.addEventListener("DOMContentLoaded", () => {
             suggestionsBox.style.display = "none";
         }
 
+        input?.setAttribute("aria-expanded", "false");
+        input?.removeAttribute("aria-activedescendant");
+
         currentFirstSuggestion = "";
         activeSuggestionIndex = 0;
+    }
+
+    function canAutoFocusSearch() {
+        return window.matchMedia("(min-width: 721px) and (hover: hover) and (pointer: fine)").matches;
     }
 
     function focusSearchInput() {
         if (
             input &&
+            canAutoFocusSearch() &&
             !shortcutModal?.classList.contains("show") &&
             !sectionModal?.classList.contains("show") &&
             !widgetModal?.classList.contains("show") &&
             !onboardingModal
         ) {
-            input.focus();
+            input.focus({ preventScroll: true });
         }
     }
 
-    function closeModal(modal) {
-        modal?.classList.remove("show");
-        setTimeout(focusSearchInput, 100);
+    function isModalOpen(modal) {
+        return Boolean(modal && (modal === onboardingModal || modal.classList.contains("show")));
     }
 
-    function openModal(modal) {
+    function getModalDialog(modal) {
+        if (!modal) return null;
+        return modal.matches?.("[role='dialog']")
+            ? modal
+            : modal.querySelector("[role='dialog']");
+    }
+
+    function getFocusableElements(modal) {
+        const dialog = getModalDialog(modal);
+        if (!dialog) return [];
+
+        const selector = [
+            "a[href]",
+            "button:not([disabled])",
+            "input:not([type='hidden']):not([disabled])",
+            "select:not([disabled])",
+            "textarea:not([disabled])",
+            "[tabindex]:not([tabindex='-1'])",
+        ].join(",");
+
+        return [...dialog.querySelectorAll(selector)].filter(element => (
+            !element.hasAttribute("hidden") &&
+            element.getAttribute("aria-hidden") !== "true" &&
+            !element.closest("[hidden], [aria-hidden='true']")
+        ));
+    }
+
+    function closeModal(modal) {
+        if (!modal) return;
+
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+
+        if (!managedModals.some(isModalOpen)) {
+            document.body.classList.remove("home-modal-open");
+        }
+
+        const returnFocus = modalReturnFocus.get(modal);
+        modalReturnFocus.delete(modal);
+
+        if (returnFocus?.isConnected) {
+            setTimeout(() => returnFocus.focus({ preventScroll: true }), 0);
+        }
+    }
+
+    function openModal(modal, initialFocus = null) {
+        if (!modal) return;
+
+        const currentFocus = document.activeElement;
+        if (currentFocus instanceof HTMLElement) {
+            modalReturnFocus.set(modal, currentFocus);
+        }
+
         hideSuggestions();
         input?.blur();
-        modal?.classList.add("show");
+        modal.setAttribute("aria-hidden", "false");
+        modal.classList.add("show");
+        document.body.classList.add("home-modal-open");
+
+        const focusTarget = initialFocus || getModalDialog(modal);
+        setTimeout(() => focusTarget?.focus({ preventScroll: true }), 0);
+    }
+
+    function getActiveModal() {
+        return [...managedModals].reverse().find(isModalOpen) || null;
     }
 
     if (onboardingModal) {
@@ -103,6 +173,42 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         setTimeout(focusSearchInput, 100);
     }
+
+    document.addEventListener("keydown", event => {
+        const activeModal = getActiveModal();
+        if (!activeModal) return;
+
+        if (event.key === "Escape" && activeModal !== onboardingModal) {
+            event.preventDefault();
+            closeModal(activeModal);
+            return;
+        }
+
+        if (event.key !== "Tab") return;
+
+        const dialog = getModalDialog(activeModal);
+        const focusableElements = getFocusableElements(activeModal);
+
+        if (focusableElements.length === 0) {
+            event.preventDefault();
+            dialog?.focus({ preventScroll: true });
+            return;
+        }
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (!dialog?.contains(document.activeElement)) {
+            event.preventDefault();
+            firstElement.focus({ preventScroll: true });
+        } else if (event.shiftKey && document.activeElement === firstElement) {
+            event.preventDefault();
+            lastElement.focus({ preventScroll: true });
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+            event.preventDefault();
+            firstElement.focus({ preventScroll: true });
+        }
+    });
 
     function getCurrentLocale() {
         const htmlLang = document.documentElement.lang || "de";
@@ -217,10 +323,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const items = [...suggestionsBox.querySelectorAll(".suggestion-item")];
 
         items.forEach((item, index) => {
-            item.classList.toggle("active-suggestion", index === activeSuggestionIndex);
+            const isActive = index === activeSuggestionIndex;
+            item.classList.toggle("active-suggestion", isActive);
+            item.setAttribute("aria-selected", String(isActive));
         });
 
         currentFirstSuggestion = items[activeSuggestionIndex]?.dataset.value || "";
+        const activeItem = items[activeSuggestionIndex];
+        if (activeItem) {
+            input?.setAttribute("aria-activedescendant", activeItem.id);
+        } else {
+            input?.removeAttribute("aria-activedescendant");
+        }
     }
 
     function renderSuggestions(value) {
@@ -243,6 +357,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const suggestionItem = document.createElement("div");
             suggestionItem.classList.add("suggestion-item");
             suggestionItem.dataset.value = item;
+            suggestionItem.id = `google-suggestion-${index}`;
+            suggestionItem.setAttribute("role", "option");
+            suggestionItem.setAttribute("aria-selected", String(index === 0));
 
             if (index === 0) {
                 suggestionItem.classList.add("active-suggestion");
@@ -250,6 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const icon = document.createElement("i");
             icon.className = "fa-solid fa-magnifying-glass";
+            icon.setAttribute("aria-hidden", "true");
 
             const text = document.createElement("span");
             text.textContent = item;
@@ -268,6 +386,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         currentFirstSuggestion = filteredSuggestions[0];
         suggestionsBox.style.display = "block";
+        input?.setAttribute("aria-expanded", "true");
+        input?.setAttribute("aria-activedescendant", "google-suggestion-0");
     }
 
     function getDirectUrl(query) {
@@ -342,13 +462,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (event.key === "Tab" && currentFirstSuggestion) {
-                event.preventDefault();
-                input.value = currentFirstSuggestion;
-                hideSuggestions();
-                return;
-            }
-
             if (event.key === "Enter" && items.length > 0 && currentFirstSuggestion) {
                 event.preventDefault();
                 input.value = currentFirstSuggestion;
@@ -370,6 +483,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (input) {
                 searchGoogle(input.value);
             }
+        });
+
+        form.addEventListener("focusout", () => {
+            setTimeout(() => {
+                if (!form.contains(document.activeElement)) {
+                    hideSuggestions();
+                }
+            }, 0);
         });
     }
 
@@ -453,8 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-        openModal(shortcutModal);
-        setTimeout(() => shortcutNameInput?.focus(), 100);
+        openModal(shortcutModal, shortcutNameInput);
     }
 
     function openEditShortcutModal(card) {
@@ -494,8 +614,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (shortcutCustomIconInput) shortcutCustomIconInput.value = icon;
         }
 
-        openModal(shortcutModal);
-        setTimeout(() => shortcutNameInput?.focus(), 100);
+        openModal(shortcutModal, shortcutNameInput);
     }
 
     document.querySelectorAll(".open-shortcut-modal").forEach(button => {
@@ -624,8 +743,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openAddWidgetModal() {
         resetWidgetForm();
-        openModal(widgetModal);
-        setTimeout(() => widgetTitleInput?.focus(), 100);
+        openModal(widgetModal, widgetTitleInput);
     }
 
     function openEditWidgetModal(button) {
@@ -647,8 +765,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setCheckedRadio(widgetForm, "widget_color", widgetCard.dataset.widgetColor || "blue", "blue");
         toggleWidgetTypeFields();
 
-        openModal(widgetModal);
-        setTimeout(() => widgetTitleInput?.focus(), 100);
+        openModal(widgetModal, widgetTitleInput);
     }
 
     openWidgetModalButton?.addEventListener("click", openAddWidgetModal);
@@ -696,8 +813,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openAddSectionModal() {
         resetSectionForm();
-        openModal(sectionModal);
-        setTimeout(() => sectionNameInput?.focus(), 100);
+        openModal(sectionModal, sectionNameInput);
     }
 
     function openEditSectionModal(button) {
@@ -711,8 +827,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setCheckedRadio(sectionForm, "section_color", button.dataset.sectionColor || "blue", "blue");
 
-        openModal(sectionModal);
-        setTimeout(() => sectionNameInput?.focus(), 100);
+        openModal(sectionModal, sectionNameInput);
     }
 
     openSectionModalButton?.addEventListener("click", openAddSectionModal);

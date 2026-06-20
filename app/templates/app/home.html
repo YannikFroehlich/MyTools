@@ -6,22 +6,32 @@
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260614-mobile-header-toggle">
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260620-a11y-dialogs">
 {% endblock %}
 
 {% block content %}
     <section class="home-container">
+        <h1 class="sr-only">{% translate 'MyTools Dashboard' %}</h1>
+
         <div class="hero">
 
-            <form class="google-search-box" id="google-search-form">
+            <form class="google-search-box" id="google-search-form" role="search" aria-label="{% translate 'Websuche' %}">
                 <div class="search-wrapper">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+
+                    <label class="sr-only" for="google-search-input">{% translate 'Bei Google suchen' %}</label>
 
                     <input
                         type="text"
                         id="google-search-input"
+                        name="q"
                         placeholder="{% translate 'Bei Google suchen...' %}"
                         autocomplete="off"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-haspopup="listbox"
+                        aria-controls="suggestions-box"
+                        aria-expanded="false"
                     >
 
                     <button type="submit" class="search-button">
@@ -29,7 +39,7 @@
                     </button>
                 </div>
 
-                <div class="suggestions-box" id="suggestions-box"></div>
+                <div class="suggestions-box" id="suggestions-box" role="listbox" aria-label="{% translate 'Suchvorschläge' %}"></div>
             </form>
 
             <div class="primary-shortcuts-wrapper">
@@ -98,16 +108,16 @@
                                                 </div>
 
                                                 <div class="widget-actions">
-                                                    <button type="button" class="edit-widget-button" title="{% translate 'Widget bearbeiten' %}">
-                                                        <i class="fa-solid fa-pen"></i>
+                                                    <button type="button" class="edit-widget-button" title="{% translate 'Widget bearbeiten' %}" aria-label="{% translate 'Widget bearbeiten' %}">
+                                                        <i class="fa-solid fa-pen" aria-hidden="true"></i>
                                                     </button>
 
                                                     <form method="post" class="delete-widget-form">
                                                         {% csrf_token %}
                                                         <input type="hidden" name="action" value="delete_widget">
                                                         <input type="hidden" name="widget_id" value="{{ widget.id }}">
-                                                        <button type="submit" title="{% translate 'Widget löschen' %}">
-                                                            <i class="fa-solid fa-xmark"></i>
+                                                        <button type="submit" title="{% translate 'Widget löschen' %}" aria-label="{% translate 'Widget löschen' %}">
+                                                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                                                         </button>
                                                     </form>
                                                 </div>
@@ -586,16 +596,16 @@
                     {% endif %}
                 {% endfor %}
 
-                <div class="add-section-card" id="open-section-modal">
-                    <div class="add-section-icon">
-                        <i class="fa-solid fa-layer-group"></i>
-                    </div>
+                <button type="button" class="add-section-card" id="open-section-modal">
+                    <span class="add-section-icon">
+                        <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                    </span>
 
-                    <div>
-                        <h3>{% translate 'Bereich hinzufügen' %}</h3>
-                        <p>{% translate 'Erstelle einen neuen Bereich für weitere Verknüpfungen.' %}</p>
-                    </div>
-                </div>
+                    <span class="add-section-copy">
+                        <span class="add-section-title">{% translate 'Bereich hinzufügen' %}</span>
+                        <span class="add-section-description">{% translate 'Erstelle einen neuen Bereich für weitere Verknüpfungen.' %}</span>
+                    </span>
+                </button>
             </div>
         </div>
     </section>
@@ -709,13 +719,13 @@
     {% endif %}
 
     <!-- Widget Modal -->
-    <div class="shortcut-modal" id="widget-modal">
-        <div class="shortcut-modal-content">
+    <div class="shortcut-modal" id="widget-modal" aria-hidden="true">
+        <div class="shortcut-modal-content" role="dialog" aria-modal="true" aria-labelledby="widget-modal-title" tabindex="-1">
             <div class="shortcut-modal-header">
                 <h3 id="widget-modal-title">{% translate 'Neues Widget' %}</h3>
 
-                <button type="button" id="close-widget-modal">
-                    <i class="fa-solid fa-xmark"></i>
+                <button type="button" id="close-widget-modal" aria-label="{% translate 'Widget-Dialog schließen' %}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
 
@@ -833,16 +843,16 @@
     </div>
 
     <!-- Verknüpfung Modal -->
-    <div class="shortcut-modal" id="shortcut-modal">
-        <div class="shortcut-modal-content">
+    <div class="shortcut-modal" id="shortcut-modal" aria-hidden="true">
+        <div class="shortcut-modal-content" role="dialog" aria-modal="true" aria-labelledby="shortcut-modal-title" tabindex="-1">
             <div class="shortcut-modal-header">
                 <h3>
                     <span id="shortcut-modal-title">{% translate 'Neue Verknüpfung' %}</span>
                     <span id="shortcut-modal-section-name"></span>
                 </h3>
 
-                <button type="button" id="close-shortcut-modal">
-                    <i class="fa-solid fa-xmark"></i>
+                <button type="button" id="close-shortcut-modal" aria-label="{% translate 'Verknüpfungsdialog schließen' %}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
 
@@ -987,13 +997,13 @@
     </div>
 
     <!-- Bereich Modal -->
-    <div class="shortcut-modal" id="section-modal">
-        <div class="shortcut-modal-content">
+    <div class="shortcut-modal" id="section-modal" aria-hidden="true">
+        <div class="shortcut-modal-content" role="dialog" aria-modal="true" aria-labelledby="section-modal-title" tabindex="-1">
             <div class="shortcut-modal-header">
                 <h3 id="section-modal-title">{% translate 'Neuer Bereich' %}</h3>
 
-                <button type="button" id="close-section-modal">
-                    <i class="fa-solid fa-xmark"></i>
+                <button type="button" id="close-section-modal" aria-label="{% translate 'Bereichsdialog schließen' %}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
 
@@ -1048,5 +1058,5 @@
 
 {% block extra_js %}
     {{ home_labels|json_script:"home-labels" }}
-    <script src="{% static 'app/js/home.js' %}" defer></script>
+    <script src="{% static 'app/js/home.js' %}?v=20260620-a11y-dialogs" defer></script>
 {% endblock %}

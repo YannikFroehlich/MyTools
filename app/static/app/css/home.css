@@ -627,6 +627,7 @@ body.dark-mode .home-quick-actions button {
 
 .add-section-card {
     display: flex;
+    width: 100%;
     align-items: center;
     gap: 1rem;
 
@@ -643,6 +644,7 @@ body.dark-mode .home-quick-actions button {
         inset 0 1px 0 rgba(255, 255, 255, 0.65);
 
     cursor: pointer;
+    font: inherit;
     text-align: left;
 
     animation: homeFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
@@ -680,14 +682,20 @@ body.dark-mode .home-quick-actions button {
     font-size: 1.25rem;
 }
 
-.add-section-card h3 {
+.add-section-copy {
+    display: flex;
+    flex-direction: column;
+}
+
+.add-section-title {
     margin: 0 0 0.25rem;
 
     color: #1f2937;
     font-size: 1.05rem;
+    font-weight: 700;
 }
 
-.add-section-card p {
+.add-section-description {
     margin: 0;
 
     color: #64748b;
@@ -696,8 +704,14 @@ body.dark-mode .home-quick-actions button {
 
 /* ───────────────── ONBOARDING ───────────────── */
 
-body.onboarding-open {
+body.onboarding-open,
+body.home-modal-open {
     overflow: hidden;
+}
+
+.add-section-card:focus-visible {
+    outline: 3px solid rgba(var(--theme-accent-rgb), 0.3);
+    outline-offset: 3px;
 }
 
 .sr-only {
@@ -1464,11 +1478,11 @@ body.dark-mode .add-section-card:hover {
     border-color: rgba(var(--theme-accent-end-rgb), 0.58);
 }
 
-body.dark-mode .add-section-card h3 {
+body.dark-mode .add-section-title {
     color: #ffffff;
 }
 
-body.dark-mode .add-section-card p {
+body.dark-mode .add-section-description {
     color: #cbd5e1;
 }
 

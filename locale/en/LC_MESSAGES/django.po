@@ -14315,3 +14315,31 @@ msgstr "Start without a template"
 #: app/templates/app/home.html
 msgid "Alle Inhalte lassen sich anschließend verschieben, bearbeiten oder löschen."
 msgstr "You can move, edit, or delete all content afterwards."
+
+#: app/templates/app/home.html
+msgid "MyTools Dashboard"
+msgstr "MyTools Dashboard"
+
+#: app/templates/app/home.html
+msgid "Websuche"
+msgstr "Web search"
+
+#: app/templates/app/home.html
+msgid "Bei Google suchen"
+msgstr "Search with Google"
+
+#: app/templates/app/home.html
+msgid "Suchvorschläge"
+msgstr "Search suggestions"
+
+#: app/templates/app/home.html
+msgid "Widget-Dialog schließen"
+msgstr "Close widget dialog"
+
+#: app/templates/app/home.html
+msgid "Verknüpfungsdialog schließen"
+msgstr "Close shortcut dialog"
+
+#: app/templates/app/home.html
+msgid "Bereichsdialog schließen"
+msgstr "Close section dialog"
