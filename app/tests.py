@@ -67,6 +67,7 @@ from app.models import (
     StadtLandFlussPlayer,
     TicTacToeGame,
     TicTacToeInvite,
+    ToolFavorite,
     ToolFeedback,
     ModerationAuditLog,
     UnoGame,
@@ -80,6 +81,7 @@ from app.models import (
     WeatherLocation,
 )
 from app.notification_utils import get_notification_counts, get_notification_items, invalidate_notification_cache
+from app.trash_utils import purge_expired_trash
 from app.totp_utils import current_totp
 
 
@@ -1629,6 +1631,197 @@ class HomeViewTests(BaseTestCase):
         self.assertIn("sections", response.context)
         self.assertIn("home_labels", response.context)
 
+    def test_games_menu_has_an_individual_theme_for_every_game(self):
+        response = self.client.get(reverse("home"))
+        content = response.content.decode()
+
+        self.assertContains(response, "data-game-theme=", count=17)
+        for theme in (
+            "human", "racing", "2048", "snake", "cookie", "cookie-v2", "nebula",
+            "werewolf", "tictactoe", "battleship", "connectfour", "stadtlandfluss",
+            "uno", "kniffel", "pong", "hangman", "skribble",
+        ):
+            self.assertIn(f'data-game-theme="{theme}"', content)
+
+    def test_tools_menu_has_an_individual_theme_for_every_visible_tool(self):
+        response = self.client.get(reverse("home"))
+        content = response.content.decode()
+
+        self.assertContains(response, "data-tool-theme=", count=19)
+        for theme in (
+            "clock", "notes", "file-share", "feedback", "roadmap", "changelog",
+            "calculator", "fuel", "units", "randomizer", "qr", "genius", "images",
+            "converter", "palette", "profile-card", "avatar", "stream-deck", "obs",
+        ):
+            self.assertIn(f'data-tool-theme="{theme}"', content)
+
+        self.user.is_staff = True
+        self.user.save(update_fields=["is_staff"])
+        staff_response = self.client.get(reverse("home"))
+        self.assertContains(staff_response, "data-tool-theme=", count=21)
+        self.assertContains(staff_response, 'data-tool-theme="moderation"')
+        self.assertContains(staff_response, 'data-tool-theme="server"')
+
+    def test_home_has_accessible_heading_and_search_combobox(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertContains(response, '<h1 class="sr-only">MyTools Dashboard</h1>', html=True)
+        self.assertContains(response, 'role="search"')
+        self.assertContains(response, 'for="google-search-input"')
+        self.assertContains(response, 'role="combobox"')
+        self.assertContains(response, 'aria-controls="suggestions-box"')
+        self.assertContains(response, 'aria-expanded="false"')
+        self.assertContains(response, 'role="listbox"')
+
+    def test_home_modals_have_accessible_dialog_semantics(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertContains(response, 'class="shortcut-modal-content" role="dialog"', count=3)
+        self.assertContains(response, 'id="onboarding-dialog"')
+        self.assertContains(response, 'aria-modal="true"')
+        self.assertContains(response, 'id="widget-modal" aria-hidden="true"')
+        self.assertContains(response, 'aria-labelledby="widget-modal-title"')
+        self.assertContains(response, 'aria-labelledby="shortcut-modal-title"')
+        self.assertContains(response, 'aria-labelledby="section-modal-title"')
+        self.assertContains(response, 'aria-label="Widget-Dialog schließen"')
+        self.assertContains(response, 'aria-label="Verknüpfungsdialog schließen"')
+        self.assertContains(response, 'aria-label="Bereichsdialog schließen"')
+
+    def test_home_javascript_manages_focus_without_mobile_autofocus(self):
+        script = (settings.BASE_DIR / "app" / "static" / "app" / "js" / "home.js").read_text(encoding="utf-8")
+
+        self.assertIn('(pointer: fine)', script)
+        self.assertIn('modalReturnFocus', script)
+        self.assertIn('event.key !== "Tab"', script)
+        self.assertIn('returnFocus.focus({ preventScroll: true })', script)
+        self.assertNotIn('event.key === "Tab" && currentFirstSuggestion', script)
+
+    def test_home_delete_actions_use_accessible_undo_toasts(self):
+        response = self.client.get(reverse("home"))
+        script = (settings.BASE_DIR / "app" / "static" / "app" / "js" / "home.js").read_text(encoding="utf-8")
+
+        self.assertContains(response, "data-delete-undo-region")
+        self.assertContains(response, 'aria-live="polite"')
+        self.assertEqual(response.context["home_labels"]["undoDelete"], "Rückgängig")
+        self.assertIn("deleteUndoDelay = 7000", script)
+        self.assertIn(".delete-widget-form, .delete-section-form, .delete-shortcut-form", script)
+        self.assertIn('"X-Requested-With": "XMLHttpRequest"', script)
+
+    def test_ajax_delete_actions_return_json(self):
+        section = ShortcutSection.objects.create(name="Temporär")
+        shortcut = Shortcut.objects.create(section=section, name="Kurz", url="https://example.com")
+        widget = HomeWidget.objects.create(title="Temporär", widget_type=HomeWidget.WIDGET_STATS)
+
+        shortcut_response = self.client.post(
+            reverse("home"),
+            {"action": "delete_shortcut", "shortcut_id": shortcut.id},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        section_response = self.client.post(
+            reverse("home"),
+            {"action": "delete_section", "section_id": section.id},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        widget_response = self.client.post(
+            reverse("home"),
+            {"action": "delete_widget", "widget_id": widget.id},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(shortcut_response.json(), {"success": True, "deleted": "shortcut"})
+        self.assertEqual(section_response.json(), {"success": True, "deleted": "section"})
+        self.assertEqual(widget_response.json(), {"success": True, "deleted": "widget"})
+        self.assertFalse(Shortcut.objects.filter(id=shortcut.id).exists())
+        self.assertFalse(ShortcutSection.objects.filter(id=section.id).exists())
+        self.assertFalse(HomeWidget.objects.filter(id=widget.id).exists())
+
+    def test_empty_dashboard_shows_onboarding(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertTrue(response.context["show_onboarding"])
+        self.assertContains(response, 'id="onboarding-modal"')
+        self.assertContains(response, "Alltag")
+        self.assertContains(response, "Gaming")
+        self.assertContains(response, "Homelab")
+
+    def test_dashboard_with_existing_content_does_not_show_onboarding(self):
+        section = ShortcutSection.objects.create(name="Verknüpfungen")
+        Shortcut.objects.create(
+            section=section,
+            name="Vorhanden",
+            url="https://example.com",
+        )
+
+        response = self.client.get(reverse("home"))
+
+        self.assertFalse(response.context["show_onboarding"])
+        self.assertNotContains(response, 'id="onboarding-modal"')
+
+    def test_everyday_onboarding_creates_widgets_and_shortcuts(self):
+        response = self.client.post(reverse("home"), {
+            "action": "complete_onboarding",
+            "onboarding_template": "everyday",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        preference = HomeLayoutPreference.objects.get(user=self.user)
+        self.assertTrue(preference.onboarding_completed)
+        self.assertEqual(HomeWidget.objects.filter(user=self.user).count(), 4)
+        self.assertEqual(Shortcut.objects.filter(user=self.user).count(), 3)
+        self.assertTrue(HomeWidget.objects.filter(user=self.user, widget_type=HomeWidget.WIDGET_WEATHER).exists())
+        self.assertTrue(Shortcut.objects.filter(user=self.user, name="Gmail").exists())
+
+    def test_gaming_onboarding_creates_gaming_selection(self):
+        self.client.post(reverse("home"), {
+            "action": "complete_onboarding",
+            "onboarding_template": "gaming",
+        })
+
+        widget_types = set(HomeWidget.objects.filter(user=self.user).values_list("widget_type", flat=True))
+        self.assertSetEqual(widget_types, {
+            HomeWidget.WIDGET_CHAT,
+            HomeWidget.WIDGET_FRIENDS,
+            HomeWidget.WIDGET_TICTACTOE,
+            HomeWidget.WIDGET_BENCHMARK,
+        })
+        self.assertSetEqual(
+            set(Shortcut.objects.filter(user=self.user).values_list("name", flat=True)),
+            {"Steam", "Twitch", "Discord"},
+        )
+
+    def test_homelab_onboarding_creates_service_shortcuts(self):
+        self.client.post(reverse("home"), {
+            "action": "complete_onboarding",
+            "onboarding_template": "homelab",
+        })
+
+        self.assertTrue(Shortcut.objects.filter(user=self.user, name="CasaOS").exists())
+        self.assertTrue(Shortcut.objects.filter(user=self.user, name="Home Assistant").exists())
+        self.assertTrue(Shortcut.objects.filter(user=self.user, name="Nextcloud").exists())
+        self.assertEqual(HomeWidget.objects.filter(user=self.user).count(), 3)
+
+    def test_onboarding_can_be_skipped(self):
+        response = self.client.post(reverse("home"), {
+            "action": "complete_onboarding",
+            "onboarding_template": "blank",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertTrue(HomeLayoutPreference.objects.get(user=self.user).onboarding_completed)
+        self.assertFalse(HomeWidget.objects.filter(user=self.user).exists())
+        self.assertFalse(Shortcut.objects.filter(user=self.user).exists())
+
+    def test_completed_onboarding_is_idempotent(self):
+        payload = {
+            "action": "complete_onboarding",
+            "onboarding_template": "everyday",
+        }
+        self.client.post(reverse("home"), payload)
+        self.client.post(reverse("home"), payload)
+
+        self.assertEqual(HomeWidget.objects.filter(user=self.user).count(), 4)
+        self.assertEqual(Shortcut.objects.filter(user=self.user).count(), 3)
+
     def test_home_creates_default_section(self):
         self.assertFalse(ShortcutSection.objects.filter(name="Verknüpfungen").exists())
 
@@ -1693,6 +1886,7 @@ class HomeViewTests(BaseTestCase):
 
     def test_delete_section(self):
         section = ShortcutSection.objects.create(name="Server")
+        shortcut = Shortcut.objects.create(section=section, name="Dienst", url="https://example.com")
 
         response = self.client.post(reverse("home"), {
             "action": "delete_section",
@@ -1701,6 +1895,10 @@ class HomeViewTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("home"))
         self.assertFalse(ShortcutSection.objects.filter(id=section.id).exists())
+        self.assertFalse(Shortcut.objects.filter(id=shortcut.id).exists())
+        trashed_shortcut = Shortcut.all_objects.get(id=shortcut.id)
+        self.assertIsNotNone(trashed_shortcut.deleted_at)
+        self.assertEqual(trashed_shortcut.section.name, "Verknüpfungen")
 
     def test_default_section_cannot_be_deleted(self):
         default_section = ShortcutSection.objects.create(name="Verknüpfungen")
@@ -1853,6 +2051,7 @@ class HomeViewTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("home"))
         self.assertFalse(Shortcut.objects.filter(id=shortcut.id).exists())
+        self.assertTrue(Shortcut.all_objects.filter(id=shortcut.id, deleted_at__isnull=False).exists())
 
     def test_toggle_favorite(self):
         section = ShortcutSection.objects.create(name="Coding")
@@ -2029,6 +2228,7 @@ class HomeViewTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("home"))
         self.assertFalse(HomeWidget.objects.filter(id=widget.id).exists())
+        self.assertTrue(HomeWidget.all_objects.filter(id=widget.id, deleted_at__isnull=False).exists())
 
     def test_update_widget_order_json(self):
         widget = HomeWidget.objects.create(
@@ -2089,6 +2289,113 @@ class HomeViewTests(BaseTestCase):
 
         self.assertEqual(preference.widget_area_order, 5)
         self.assertEqual(section.order, 6)
+
+
+class TrashTests(BaseTestCase):
+    def create_deleted_items(self):
+        section = ShortcutSection.objects.create(name="Papierkorb-Test")
+        note = Note.objects.create(title="Gelöschte Notiz", content="Inhalt")
+        widget = HomeWidget.objects.create(title="Gelöschtes Widget", widget_type=HomeWidget.WIDGET_STATS)
+        shortcut = Shortcut.objects.create(section=section, name="Gelöschter Link", url="https://example.com")
+        share = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("trash.txt", b"trash", content_type="text/plain"),
+            original_name="trash.txt",
+            size=5,
+            content_type="text/plain",
+            token="trash-test-token",
+            is_public_link=True,
+        )
+        for item in (note, widget, shortcut, share):
+            item.move_to_trash()
+        return note, widget, shortcut, share
+
+    def test_trash_page_lists_all_supported_types(self):
+        self.create_deleted_items()
+
+        response = self.client.get(reverse("trash"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/trash.html")
+        self.assertEqual(response.context["trash_total"], 4)
+        self.assertContains(response, "Gelöschte Notiz")
+        self.assertContains(response, "Gelöschtes Widget")
+        self.assertContains(response, "Gelöschter Link")
+        self.assertContains(response, "trash.txt")
+
+    def test_restore_makes_all_supported_types_active_again(self):
+        note, widget, shortcut, share = self.create_deleted_items()
+
+        for item_type, item in (
+            ("note", note),
+            ("widget", widget),
+            ("shortcut", shortcut),
+            ("file", share),
+        ):
+            response = self.client.post(reverse("trash_restore", args=[item_type, item.id]))
+            self.assertRedirects(response, reverse("trash"))
+
+        self.assertTrue(Note.objects.filter(id=note.id).exists())
+        self.assertTrue(HomeWidget.objects.filter(id=widget.id).exists())
+        self.assertTrue(Shortcut.objects.filter(id=shortcut.id).exists())
+        self.assertTrue(FileShare.objects.filter(id=share.id).exists())
+
+    def test_permanent_file_delete_removes_database_row_and_storage_file(self):
+        share = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("permanent.txt", b"bye", content_type="text/plain"),
+            original_name="permanent.txt",
+            size=3,
+            content_type="text/plain",
+            token="trash-permanent-token",
+        )
+        file_name = share.file.name
+        storage = share.file.storage
+        share.move_to_trash()
+
+        response = self.client.post(reverse("trash_delete", args=["file", share.id]))
+
+        self.assertRedirects(response, reverse("trash"))
+        self.assertFalse(FileShare.all_objects.filter(id=share.id).exists())
+        self.assertFalse(storage.exists(file_name))
+
+    def test_expired_items_are_purged_after_thirty_days(self):
+        old_note = Note.objects.create(title="Alt")
+        recent_note = Note.objects.create(title="Neu")
+        now = timezone.now()
+        old_note.move_to_trash()
+        recent_note.move_to_trash()
+        Note.all_objects.filter(id=old_note.id).update(deleted_at=now - timedelta(days=31))
+        Note.all_objects.filter(id=recent_note.id).update(deleted_at=now - timedelta(days=29))
+
+        deleted_count = purge_expired_trash(user=self.user, now=now)
+
+        self.assertEqual(deleted_count, 1)
+        self.assertFalse(Note.all_objects.filter(id=old_note.id).exists())
+        self.assertTrue(Note.all_objects.filter(id=recent_note.id).exists())
+
+    def test_users_cannot_view_or_restore_other_users_trash(self):
+        other_user = get_user_model().objects.create_user(username="trash-other", password="testpass-123")
+        note = Note.objects.create(user=other_user, title="Privat")
+        note.move_to_trash()
+
+        response = self.client.get(reverse("trash"))
+        restore_response = self.client.post(reverse("trash_restore", args=["note", note.id]))
+
+        self.assertNotContains(response, "Privat")
+        self.assertEqual(restore_response.status_code, 404)
+        self.assertFalse(Note.objects.filter(id=note.id).exists())
+
+    def test_empty_trash_permanently_deletes_all_owned_items(self):
+        self.create_deleted_items()
+
+        response = self.client.post(reverse("trash_empty"))
+
+        self.assertRedirects(response, reverse("trash"))
+        self.assertFalse(Note.all_objects.filter(user=self.user, deleted_at__isnull=False).exists())
+        self.assertFalse(HomeWidget.all_objects.filter(user=self.user, deleted_at__isnull=False).exists())
+        self.assertFalse(Shortcut.all_objects.filter(user=self.user, deleted_at__isnull=False).exists())
+        self.assertFalse(FileShare.all_objects.filter(owner=self.user, deleted_at__isnull=False).exists())
 
 
 class StaticPageTests(BaseTestCase):
@@ -3416,6 +3723,7 @@ class NotesViewTests(BaseTestCase):
 
         self.assertRedirects(post_response, reverse("notes"))
         self.assertFalse(Note.objects.filter(id=note.id).exists())
+        self.assertTrue(Note.all_objects.filter(id=note.id, deleted_at__isnull=False).exists())
 
     def test_toggle_pin_note(self):
         note = Note.objects.create(title="Pin", is_pinned=False)
@@ -4069,6 +4377,25 @@ class FileShareTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("file_share"))
         self.assertEqual(FileShare.objects.filter(owner=self.user).count(), 2)
+
+    def test_owner_delete_moves_file_share_to_trash_and_keeps_file(self):
+        share = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("restore-me.txt", b"keep me", content_type="text/plain"),
+            original_name="restore-me.txt",
+            size=7,
+            content_type="text/plain",
+            token="trash-file-token",
+        )
+        stored_name = share.file.name
+
+        response = self.client.post(reverse("file_share_delete", args=[share.id]))
+
+        self.assertRedirects(response, reverse("file_share"))
+        self.assertFalse(FileShare.objects.filter(id=share.id).exists())
+        trashed_share = FileShare.all_objects.get(id=share.id)
+        self.assertIsNotNone(trashed_share.deleted_at)
+        self.assertTrue(trashed_share.file.storage.exists(stored_name))
 
     def test_public_file_share_access_states_do_not_require_login(self):
         locked = FileShare.objects.create(

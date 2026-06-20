@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260619-access-hidden">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260621-menu-cards">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -107,7 +107,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="{% url 'human-benchmark' %}" class="game-menu-card is-cyan" data-game-card data-game-name="{% translate 'Human Benchmark' %}" data-game-category="{% translate 'Solo Scores Reaktion Aim Typing Visual' %}">
+                                <a href="{% url 'human-benchmark' %}" class="game-menu-card is-cyan" data-game-card data-game-theme="human" data-game-mark="00:250" data-game-name="{% translate 'Human Benchmark' %}" data-game-category="{% translate 'Solo Scores Reaktion Aim Typing Visual' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-stopwatch"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Human Benchmark' %}</strong>
@@ -115,7 +115,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'drift-circuit' %}" class="game-menu-card is-orange" data-game-card data-game-name="{% translate 'Racing Game' %}" data-game-category="{% translate 'Solo Racing Drift Auto' %}">
+                                <a href="{% url 'drift-circuit' %}" class="game-menu-card is-orange" data-game-card data-game-theme="racing" data-game-mark="DRIFT" data-game-name="{% translate 'Racing Game' %}" data-game-category="{% translate 'Solo Racing Drift Auto' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-car-side"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Racing Game' %}</strong>
@@ -123,7 +123,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'game-2048' %}" class="game-menu-card is-violet" data-game-card data-game-name="2048" data-game-category="{% translate 'Solo Puzzle Zahlen Highscore Kacheln' %}">
+                                <a href="{% url 'game-2048' %}" class="game-menu-card is-violet" data-game-card data-game-theme="2048" data-game-mark="2ⁿ" data-game-name="2048" data-game-category="{% translate 'Solo Puzzle Zahlen Highscore Kacheln' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-table-cells-large"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>2048</strong>
@@ -131,7 +131,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'snake-powerups' %}" class="game-menu-card is-green" data-game-card data-game-name="{% translate 'Snake Powerups' %}" data-game-category="{% translate 'Solo Arcade Snake Powerups Score' %}">
+                                <a href="{% url 'snake-powerups' %}" class="game-menu-card is-green" data-game-card data-game-theme="snake" data-game-mark="SNAKE" data-game-name="{% translate 'Snake Powerups' %}" data-game-category="{% translate 'Solo Arcade Snake Powerups Score' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-staff-snake"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Snake Powerups' %}</strong>
@@ -139,7 +139,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'cookie-clicker' %}" class="game-menu-card is-amber" data-game-card data-game-name="{% translate 'Cookie Cosmos' %}" data-game-category="{% translate 'Solo Clicker Incremental Cookies Upgrades' %}">
+                                <a href="{% url 'cookie-clicker' %}" class="game-menu-card is-amber" data-game-card data-game-theme="cookie" data-game-mark="×999" data-game-name="{% translate 'Cookie Cosmos' %}" data-game-category="{% translate 'Solo Clicker Incremental Cookies Upgrades' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-cookie-bite"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Cookie Cosmos' %}</strong>
@@ -147,7 +147,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'cookie-cosmos-v2' %}" class="game-menu-card is-amber" data-game-card data-game-name="Cookie Cosmos V2" data-game-category="Solo Clicker Prestige Cookies Factory Upgrades Events">
+                                <a href="{% url 'cookie-cosmos-v2' %}" class="game-menu-card is-amber" data-game-card data-game-theme="cookie-v2" data-game-mark="ASCEND" data-game-name="Cookie Cosmos V2" data-game-category="Solo Clicker Prestige Cookies Factory Upgrades Events">
                                     <span class="game-menu-icon"><i class="fa-solid fa-cookie-bite"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>Cookie Cosmos V2</strong>
@@ -155,7 +155,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'nebula-forge-tycoon' %}" class="game-menu-card is-violet" data-game-card data-game-name="Nebula Forge Tycoon" data-game-category="Solo Tycoon AFK Incremental Factory Active Farming Prestige">
+                                <a href="{% url 'nebula-forge-tycoon' %}" class="game-menu-card is-violet" data-game-card data-game-theme="nebula" data-game-mark="AFK∞" data-game-name="Nebula Forge Tycoon" data-game-category="Solo Tycoon AFK Incremental Factory Active Farming Prestige">
                                     <span class="game-menu-icon"><i class="fa-solid fa-meteor"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>Nebula Forge Tycoon</strong>
@@ -172,7 +172,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="{% url 'werewolf_home' %}" class="game-menu-card is-violet" data-game-card data-game-name="{% translate 'Werwolf' %}" data-game-category="{% translate 'Mehrspieler Party Social Deduction Rollen Einladung' %}">
+                                <a href="{% url 'werewolf_home' %}" class="game-menu-card is-violet" data-game-card data-game-theme="werewolf" data-game-mark="NIGHT" data-game-name="{% translate 'Werwolf' %}" data-game-category="{% translate 'Mehrspieler Party Social Deduction Rollen Einladung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-moon"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Werwolf' %}</strong>
@@ -185,7 +185,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'tictactoe_home' %}" class="game-menu-card is-blue" data-game-card data-game-name="{% translate 'Tic Tac Toe' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
+                                <a href="{% url 'tictactoe_home' %}" class="game-menu-card is-blue" data-game-card data-game-theme="tictactoe" data-game-mark="X · O" data-game-name="{% translate 'Tic Tac Toe' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-table-cells"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Tic Tac Toe' %}</strong>
@@ -198,7 +198,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'battleship_home' %}" class="game-menu-card is-slate" data-game-card data-game-name="{% translate 'Schiffe versenken' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
+                                <a href="{% url 'battleship_home' %}" class="game-menu-card is-slate" data-game-card data-game-theme="battleship" data-game-mark="A3" data-game-name="{% translate 'Schiffe versenken' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-anchor"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Schiffe versenken' %}</strong>
@@ -211,7 +211,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'connectfour_home' %}" class="game-menu-card is-amber" data-game-card data-game-name="{% translate 'Vier gewinnt' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
+                                <a href="{% url 'connectfour_home' %}" class="game-menu-card is-amber" data-game-card data-game-theme="connectfour" data-game-mark="●●●●" data-game-name="{% translate 'Vier gewinnt' %}" data-game-category="{% translate 'Mehrspieler 1v1 Strategie Einladung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-grip"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Vier gewinnt' %}</strong>
@@ -224,7 +224,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'stadtlandfluss_home' %}" class="game-menu-card is-green" data-game-card data-game-name="{% translate 'Stadt Land Fluss' %}" data-game-category="{% translate 'Mehrspieler Party Wörter Einladung' %}">
+                                <a href="{% url 'stadtlandfluss_home' %}" class="game-menu-card is-green" data-game-card data-game-theme="stadtlandfluss" data-game-mark="A–Z" data-game-name="{% translate 'Stadt Land Fluss' %}" data-game-category="{% translate 'Mehrspieler Party Wörter Einladung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-pen-to-square"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Stadt Land Fluss' %}</strong>
@@ -237,7 +237,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'uno_home' %}" class="game-menu-card is-red" data-game-card data-game-name="{% translate 'Uno' %}" data-game-category="{% translate 'Mehrspieler Karten Party Einladung Beta Testphase' %}">
+                                <a href="{% url 'uno_home' %}" class="game-menu-card is-red" data-game-card data-game-theme="uno" data-game-mark="UNO!" data-game-name="{% translate 'Uno' %}" data-game-category="{% translate 'Mehrspieler Karten Party Einladung Beta Testphase' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-layer-group"></i></span>
                                     <span class="game-menu-copy">
                                         <span class="game-menu-title-row">
@@ -253,7 +253,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'kniffel_home' %}" class="game-menu-card is-orange" data-game-card data-game-name="{% translate 'Kniffel' %}" data-game-category="{% translate 'Mehrspieler Würfel Punkte Einladung' %}">
+                                <a href="{% url 'kniffel_home' %}" class="game-menu-card is-orange" data-game-card data-game-theme="kniffel" data-game-mark="6×" data-game-name="{% translate 'Kniffel' %}" data-game-category="{% translate 'Mehrspieler Würfel Punkte Einladung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-dice"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Kniffel' %}</strong>
@@ -266,7 +266,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'pong_home' %}" class="game-menu-card is-cyan" data-game-card data-game-name="{% translate 'Pong' %}" data-game-category="{% translate 'Mehrspieler 1v1 Arcade Echtzeit Einladung Beta Testphase' %}">
+                                <a href="{% url 'pong_home' %}" class="game-menu-card is-cyan" data-game-card data-game-theme="pong" data-game-mark="◀ ↔ ▶" data-game-name="{% translate 'Pong' %}" data-game-category="{% translate 'Mehrspieler 1v1 Arcade Echtzeit Einladung Beta Testphase' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Pong' %}</strong>
@@ -282,7 +282,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'hangman_home' %}" class="game-menu-card is-violet" data-game-card data-game-name="{% translate 'Hangman' %}" data-game-category="{% translate 'Mehrspieler Wörter Raten Einladung' %}">
+                                <a href="{% url 'hangman_home' %}" class="game-menu-card is-violet" data-game-card data-game-theme="hangman" data-game-mark="_ _ _" data-game-name="{% translate 'Hangman' %}" data-game-category="{% translate 'Mehrspieler Wörter Raten Einladung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-user-secret"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Hangman' %}</strong>
@@ -295,7 +295,7 @@
                                     {% endif %}
                                 </a>
 
-                                <a href="{% url 'skribble_home' %}" class="game-menu-card is-pink" data-game-card data-game-name="{% translate 'Skribble' %}" data-game-category="{% translate 'Mehrspieler Zeichnen Raten Einladung Beta Testphase' %}">
+                                <a href="{% url 'skribble_home' %}" class="game-menu-card is-pink" data-game-card data-game-theme="skribble" data-game-mark="DRAW" data-game-name="{% translate 'Skribble' %}" data-game-category="{% translate 'Mehrspieler Zeichnen Raten Einladung Beta Testphase' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-pencil"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Skribble' %}</strong>
@@ -320,7 +320,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="menu-wrapper">
                 <button class="menu-button google-apps-menu-button" id="google-apps-menu-button" type="button" aria-label="{% translate 'Google-Apps-Menü öffnen' %}">
                     <i class="fa-brands fa-google"></i>
@@ -497,7 +496,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="{% url 'clock' %}" class="game-menu-card is-blue" data-menu-card data-menu-name="{% translate 'Uhr' %}" data-menu-category="{% translate 'Timer Weltuhr Zeit Wecker' %}">
+                                <a href="{% url 'clock' %}" class="game-menu-card is-blue" data-menu-card data-tool-theme="clock" data-tool-mark="12:45" data-menu-name="{% translate 'Uhr' %}" data-menu-category="{% translate 'Timer Weltuhr Zeit Wecker' %}">
                                     <span class="game-menu-icon"><i class="fa-regular fa-clock"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Uhr' %}</strong>
@@ -505,7 +504,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'notes' %}" class="game-menu-card is-amber" data-menu-card data-menu-name="{% translate 'Notizen' %}" data-menu-category="{% translate 'Notizen Aufgaben Texte' %}">
+                                <a href="{% url 'notes' %}" class="game-menu-card is-amber" data-menu-card data-tool-theme="notes" data-tool-mark="A⁺" data-menu-name="{% translate 'Notizen' %}" data-menu-category="{% translate 'Notizen Aufgaben Texte' %}">
                                     <span class="game-menu-icon"><i class="fa-regular fa-note-sticky"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Notizen' %}</strong>
@@ -513,7 +512,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'file_share' %}" class="game-menu-card is-green" data-menu-card data-menu-name="{% translate 'Datei-Share' %}" data-menu-category="{% translate 'Dateien Teilen Upload Share' %}">
+                                <a href="{% url 'file_share' %}" class="game-menu-card is-green" data-menu-card data-tool-theme="file-share" data-tool-mark="↗ SHARE" data-menu-name="{% translate 'Datei-Share' %}" data-menu-category="{% translate 'Dateien Teilen Upload Share' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-share-nodes"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Datei-Share' %}</strong>
@@ -521,7 +520,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'feedback' %}" class="game-menu-card is-cyan" data-menu-card data-menu-name="{% translate 'Feedback' %}" data-menu-category="{% translate 'Feedback Kontakt Ideen' %}">
+                                <a href="{% url 'feedback' %}" class="game-menu-card is-cyan" data-menu-card data-tool-theme="feedback" data-tool-mark="•••" data-menu-name="{% translate 'Feedback' %}" data-menu-category="{% translate 'Feedback Kontakt Ideen' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-comment-dots"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Feedback' %}</strong>
@@ -529,7 +528,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'roadmap' %}" class="game-menu-card is-violet" data-menu-card data-menu-name="{% translate 'Roadmap' %}" data-menu-category="{% translate 'Feature Voting Ideen Vorschläge Planung' %}">
+                                <a href="{% url 'roadmap' %}" class="game-menu-card is-violet" data-menu-card data-tool-theme="roadmap" data-tool-mark="NEXT" data-menu-name="{% translate 'Roadmap' %}" data-menu-category="{% translate 'Feature Voting Ideen Vorschläge Planung' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-route"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Roadmap' %}</strong>
@@ -537,7 +536,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'changelog' %}" class="game-menu-card is-blue" data-menu-card data-menu-name="{% translate 'Was ist neu?' %}" data-menu-category="{% translate 'Changelog Updates Neuigkeiten Versionen Verlauf' %}">
+                                <a href="{% url 'changelog' %}" class="game-menu-card is-blue" data-menu-card data-tool-theme="changelog" data-tool-mark="v2.0" data-menu-name="{% translate 'Was ist neu?' %}" data-menu-category="{% translate 'Changelog Updates Neuigkeiten Versionen Verlauf' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Was ist neu?' %}</strong>
@@ -546,7 +545,7 @@
                                 </a>
 
                                 {% if request.user.is_staff %}
-                                    <a href="{% url 'moderation' %}" class="game-menu-card is-red" data-menu-card data-menu-name="{% translate 'Moderation' %}" data-menu-category="{% translate 'Admin Meldungen Feedback Dateien Nutzer' %}">
+                                    <a href="{% url 'moderation' %}" class="game-menu-card is-red" data-menu-card data-tool-theme="moderation" data-tool-mark="ADMIN" data-menu-name="{% translate 'Moderation' %}" data-menu-category="{% translate 'Admin Meldungen Feedback Dateien Nutzer' %}">
                                         <span class="game-menu-icon"><i class="fa-solid fa-shield-halved"></i></span>
                                         <span class="game-menu-copy">
                                             <strong>{% translate 'Moderation' %}</strong>
@@ -554,7 +553,7 @@
                                         </span>
                                     </a>
 
-                                    <a href="{% url 'server_status' %}" class="game-menu-card is-green" data-menu-card data-menu-name="{% translate 'Serverstatus' %}" data-menu-category="{% translate 'Admin Server System Monitor Status Datenbank Cache Speicher' %}">
+                                    <a href="{% url 'server_status' %}" class="game-menu-card is-green" data-menu-card data-tool-theme="server" data-tool-mark="200 OK" data-menu-name="{% translate 'Serverstatus' %}" data-menu-category="{% translate 'Admin Server System Monitor Status Datenbank Cache Speicher' %}">
                                         <span class="game-menu-icon"><i class="fa-solid fa-server"></i></span>
                                         <span class="game-menu-copy">
                                             <strong>{% translate 'Serverstatus' %}</strong>
@@ -572,7 +571,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="{% url 'calculator' %}" class="game-menu-card is-blue" data-menu-card data-menu-name="{% translate 'Rechner' %}" data-menu-category="{% translate 'Taschenrechner Wissenschaftlich Wurzel Potenzen Logarithmus Sinus Cosinus Casio' %}">
+                                <a href="{% url 'calculator' %}" class="game-menu-card is-blue" data-menu-card data-tool-theme="calculator" data-tool-mark="√x" data-menu-name="{% translate 'Rechner' %}" data-menu-category="{% translate 'Taschenrechner Wissenschaftlich Wurzel Potenzen Logarithmus Sinus Cosinus Casio' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-square-root-variable"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Rechner' %}</strong>
@@ -580,7 +579,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'spritkostenrechner' %}" class="game-menu-card is-orange" data-menu-card data-menu-name="{% translate 'Spritkosten' %}" data-menu-category="{% translate 'Auto Sprit Benzin Kosten Rechner' %}">
+                                <a href="{% url 'spritkostenrechner' %}" class="game-menu-card is-orange" data-menu-card data-tool-theme="fuel" data-tool-mark="€/100" data-menu-name="{% translate 'Spritkosten' %}" data-menu-category="{% translate 'Auto Sprit Benzin Kosten Rechner' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-gas-pump"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Spritkosten' %}</strong>
@@ -588,7 +587,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'unit_converter' %}" class="game-menu-card is-slate" data-menu-card data-menu-name="{% translate 'Einheitenrechner' %}" data-menu-category="{% translate 'Einheiten Rechner Umrechnen' %}">
+                                <a href="{% url 'unit_converter' %}" class="game-menu-card is-slate" data-menu-card data-tool-theme="units" data-tool-mark="↔" data-menu-name="{% translate 'Einheitenrechner' %}" data-menu-category="{% translate 'Einheiten Rechner Umrechnen' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-calculator"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Einheitenrechner' %}</strong>
@@ -596,7 +595,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'randomizer_tools' %}" class="game-menu-card is-violet" data-menu-card data-menu-name="{% translate 'Randomizer' %}" data-menu-category="{% translate 'Zufall Auslosen Entscheiden Randomizer' %}">
+                                <a href="{% url 'randomizer_tools' %}" class="game-menu-card is-violet" data-menu-card data-tool-theme="randomizer" data-tool-mark="RNG" data-menu-name="{% translate 'Randomizer' %}" data-menu-category="{% translate 'Zufall Auslosen Entscheiden Randomizer' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-shuffle"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Randomizer' %}</strong>
@@ -604,7 +603,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'qr_code_tool' %}" class="game-menu-card is-green" data-menu-card data-menu-name="{% translate 'QR-Code Tool' %}" data-menu-category="{% translate 'QR Code Generator WLAN Kontakt URL Text Download' %}">
+                                <a href="{% url 'qr_code_tool' %}" class="game-menu-card is-green" data-menu-card data-tool-theme="qr" data-tool-mark="▦" data-menu-name="{% translate 'QR-Code Tool' %}" data-menu-category="{% translate 'QR Code Generator WLAN Kontakt URL Text Download' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-qrcode"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'QR-Code Tool' %}</strong>
@@ -621,7 +620,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="{% url 'genius-search' %}" class="game-menu-card is-pink" data-menu-card data-menu-name="{% translate 'Genius Search' %}" data-menu-category="{% translate 'Musik Lyrics Song Suche' %}">
+                                <a href="{% url 'genius-search' %}" class="game-menu-card is-pink" data-menu-card data-tool-theme="genius" data-tool-mark="♪" data-menu-name="{% translate 'Genius Search' %}" data-menu-category="{% translate 'Musik Lyrics Song Suche' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-music"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Genius Search' %}</strong>
@@ -629,7 +628,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'image_tools' %}" class="game-menu-card is-green" data-menu-card data-menu-name="{% translate 'Bild Tools' %}" data-menu-category="{% translate 'Bilder Foto Medien Tools' %}">
+                                <a href="{% url 'image_tools' %}" class="game-menu-card is-green" data-menu-card data-tool-theme="images" data-tool-mark="IMG" data-menu-name="{% translate 'Bild Tools' %}" data-menu-category="{% translate 'Bilder Foto Medien Tools' %}">
                                     <span class="game-menu-icon"><i class="fa-regular fa-image"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Bild Tools' %}</strong>
@@ -637,7 +636,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'file_converter' %}" class="game-menu-card is-slate" data-menu-card data-menu-name="{% translate 'Datei-Konverter' %}" data-menu-category="{% translate 'DOCX PDF Dateien Konverter Office Umwandeln' %}">
+                                <a href="{% url 'file_converter' %}" class="game-menu-card is-slate" data-menu-card data-tool-theme="converter" data-tool-mark="→ PDF" data-menu-name="{% translate 'Datei-Konverter' %}" data-menu-category="{% translate 'DOCX PDF Dateien Konverter Office Umwandeln' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-file-arrow-down"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Datei-Konverter' %}</strong>
@@ -645,7 +644,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'color_palette_tool' %}" class="game-menu-card is-violet" data-menu-card data-menu-name="{% translate 'Color Palette Tool' %}" data-menu-category="{% translate 'Farbe Palette Design Eyedropper Bildschirm Bild Kontrast HEX RGB HSL' %}">
+                                <a href="{% url 'color_palette_tool' %}" class="game-menu-card is-violet" data-menu-card data-tool-theme="palette" data-tool-mark="#8B5C" data-menu-name="{% translate 'Color Palette Tool' %}" data-menu-category="{% translate 'Farbe Palette Design Eyedropper Bildschirm Bild Kontrast HEX RGB HSL' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-eye-dropper"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Color Palette' %}</strong>
@@ -653,7 +652,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'profile_card_designer' %}" class="game-menu-card is-red" data-menu-card data-menu-name="{% translate 'Profilkarten-Designer' %}" data-menu-category="{% translate 'Profil Design Karte Designer' %}">
+                                <a href="{% url 'profile_card_designer' %}" class="game-menu-card is-red" data-menu-card data-tool-theme="profile-card" data-tool-mark="ID" data-menu-name="{% translate 'Profilkarten-Designer' %}" data-menu-category="{% translate 'Profil Design Karte Designer' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-id-card-clip"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Profilkarten-Designer' %}</strong>
@@ -661,7 +660,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'avatar-wiki' %}" class="game-menu-card is-cyan" data-menu-card data-menu-name="{% translate 'Avatar Wiki' %}" data-menu-category="{% translate 'Avatar Wiki Figuren Übersicht' %}">
+                                <a href="{% url 'avatar-wiki' %}" class="game-menu-card is-cyan" data-menu-card data-tool-theme="avatar" data-tool-mark="四" data-menu-name="{% translate 'Avatar Wiki' %}" data-menu-category="{% translate 'Avatar Wiki Figuren Übersicht' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-wind"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Avatar Wiki' %}</strong>
@@ -678,7 +677,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="{% url 'stream-deck' %}" class="game-menu-card is-violet" data-menu-card data-menu-name="{% translate 'Stream Deck' %}" data-menu-category="{% translate 'Streaming Stream Deck Kontrolle' %}">
+                                <a href="{% url 'stream-deck' %}" class="game-menu-card is-violet" data-menu-card data-tool-theme="stream-deck" data-tool-mark="LIVE" data-menu-name="{% translate 'Stream Deck' %}" data-menu-category="{% translate 'Streaming Stream Deck Kontrolle' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-table-cells-large"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Stream Deck' %}</strong>
@@ -686,7 +685,7 @@
                                     </span>
                                 </a>
 
-                                <a href="{% url 'obs-dashboard' %}" class="game-menu-card is-slate" data-menu-card data-menu-name="{% translate 'OBS Dashboard' %}" data-menu-category="{% translate 'OBS Streaming Dashboard' %}">
+                                <a href="{% url 'obs-dashboard' %}" class="game-menu-card is-slate" data-menu-card data-tool-theme="obs" data-tool-mark="● REC" data-menu-name="{% translate 'OBS Dashboard' %}" data-menu-category="{% translate 'OBS Streaming Dashboard' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-display"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'OBS Dashboard' %}</strong>
@@ -994,6 +993,11 @@
                         <a href="{% url 'security_dashboard' %}" class="profile-menu-item">
                             <i class="fa-solid fa-user-shield"></i>
                             {% translate 'Sicherheits-Dashboard' %}
+                        </a>
+
+                        <a href="{% url 'trash' %}" class="profile-menu-item">
+                            <i class="fa-solid fa-trash-arrow-up"></i>
+                            {% translate 'Papierkorb' %}
                         </a>
 
                         <a href="{% url 'achievement_center' %}" class="profile-menu-item">

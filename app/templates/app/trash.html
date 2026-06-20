@@ -1,0 +1,101 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Papierkorb" %} | MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/trash.css' %}?v=20260621-1">
+{% endblock %}
+
+{% block content %}
+<section class="trash-page">
+    <header class="trash-hero">
+        <div>
+            <span class="trash-kicker"><i class="fa-solid fa-recycle" aria-hidden="true"></i> {% translate "Sicher aufgehoben" %}</span>
+            <h1>{% translate "Papierkorb" %}</h1>
+            <p>
+                {% blocktranslate %}Gelöschte Notizen, Dateien, Widgets und Verknüpfungen bleiben {{ retention_days }} Tage erhalten.{% endblocktranslate %}
+            </p>
+        </div>
+        <div class="trash-hero-count" aria-label="{% translate 'Einträge im Papierkorb' %}">
+            <strong>{{ trash_total }}</strong>
+            <span>{% translate "Einträge" %}</span>
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="trash-messages" aria-live="polite">
+            {% for message in messages %}<p class="{{ message.tags }}">{{ message }}</p>{% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="trash-summary" aria-label="{% translate 'Inhalte im Papierkorb' %}">
+        <span><i class="fa-regular fa-note-sticky" aria-hidden="true"></i><strong>{{ trash_counts.note }}</strong>{% translate "Notizen" %}</span>
+        <span><i class="fa-regular fa-file" aria-hidden="true"></i><strong>{{ trash_counts.file }}</strong>{% translate "Dateien" %}</span>
+        <span><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i><strong>{{ trash_counts.widget }}</strong>{% translate "Widgets" %}</span>
+        <span><i class="fa-solid fa-link" aria-hidden="true"></i><strong>{{ trash_counts.shortcut }}</strong>{% translate "Verknüpfungen" %}</span>
+    </div>
+
+    {% if trash_items %}
+        <div class="trash-toolbar">
+            <div>
+                <h2>{% translate "Gelöschte Inhalte" %}</h2>
+                <p>{% translate "Stelle Inhalte wieder her oder lösche sie sofort endgültig." %}</p>
+            </div>
+            <form method="post" action="{% url 'trash_empty' %}" data-confirm="{% translate 'Papierkorb wirklich vollständig leeren? Das kann nicht rückgängig gemacht werden.' %}">
+                {% csrf_token %}
+                <button type="submit" class="trash-empty-button">
+                    <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                    {% translate "Papierkorb leeren" %}
+                </button>
+            </form>
+        </div>
+
+        <div class="trash-list">
+            {% for item in trash_items %}
+                <article class="trash-item is-{{ item.color }}">
+                    <span class="trash-item-icon" aria-hidden="true"><i class="{{ item.icon }}"></i></span>
+                    <div class="trash-item-copy">
+                        <div class="trash-item-title-row">
+                            <span>{{ item.type_label }}</span>
+                            <small>{% blocktranslate with date=item.deleted_at|date:"d.m.Y H:i" %}Gelöscht am {{ date }}{% endblocktranslate %}</small>
+                        </div>
+                        <h2>{{ item.title }}</h2>
+                        <p>{{ item.subtitle|truncatechars:150 }}</p>
+                        <div class="trash-expiry{% if item.days_remaining <= 3 %} is-urgent{% endif %}">
+                            <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                            {% blocktranslate count days=item.days_remaining %}Noch {{ days }} Tag bis zur endgültigen Löschung{% plural %}Noch {{ days }} Tage bis zur endgültigen Löschung{% endblocktranslate %}
+                        </div>
+                    </div>
+                    <div class="trash-item-actions">
+                        <form method="post" action="{% url 'trash_restore' item.type item.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="trash-restore-button">
+                                <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                                {% translate "Wiederherstellen" %}
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'trash_delete' item.type item.id %}" data-confirm="{% translate 'Diesen Eintrag endgültig löschen? Das kann nicht rückgängig gemacht werden.' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="trash-delete-button" title="{% translate 'Endgültig löschen' %}" aria-label="{% translate 'Endgültig löschen' %}: {{ item.title }}">
+                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="trash-empty-state">
+            <span><i class="fa-regular fa-face-smile" aria-hidden="true"></i></span>
+            <h2>{% translate "Dein Papierkorb ist leer" %}</h2>
+            <p>{% translate "Gelöschte Inhalte erscheinen hier und können 30 Tage lang wiederhergestellt werden." %}</p>
+            <a href="{% url 'home' %}"><i class="fa-solid fa-house" aria-hidden="true"></i>{% translate "Zur Startseite" %}</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'app/js/trash.js' %}?v=20260621-1" defer></script>
+{% endblock %}

@@ -6,22 +6,32 @@
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260614-mobile-header-toggle">
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260621-delete-undo">
 {% endblock %}
 
 {% block content %}
     <section class="home-container">
+        <h1 class="sr-only">{% translate 'MyTools Dashboard' %}</h1>
+
         <div class="hero">
 
-            <form class="google-search-box" id="google-search-form">
+            <form class="google-search-box" id="google-search-form" role="search" aria-label="{% translate 'Websuche' %}">
                 <div class="search-wrapper">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+
+                    <label class="sr-only" for="google-search-input">{% translate 'Bei Google suchen' %}</label>
 
                     <input
                         type="text"
                         id="google-search-input"
+                        name="q"
                         placeholder="{% translate 'Bei Google suchen...' %}"
                         autocomplete="off"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-haspopup="listbox"
+                        aria-controls="suggestions-box"
+                        aria-expanded="false"
                     >
 
                     <button type="submit" class="search-button">
@@ -29,7 +39,7 @@
                     </button>
                 </div>
 
-                <div class="suggestions-box" id="suggestions-box"></div>
+                <div class="suggestions-box" id="suggestions-box" role="listbox" aria-label="{% translate 'Suchvorschläge' %}"></div>
             </form>
 
             <div class="primary-shortcuts-wrapper">
@@ -98,16 +108,16 @@
                                                 </div>
 
                                                 <div class="widget-actions">
-                                                    <button type="button" class="edit-widget-button" title="{% translate 'Widget bearbeiten' %}">
-                                                        <i class="fa-solid fa-pen"></i>
+                                                    <button type="button" class="edit-widget-button" title="{% translate 'Widget bearbeiten' %}" aria-label="{% translate 'Widget bearbeiten' %}">
+                                                        <i class="fa-solid fa-pen" aria-hidden="true"></i>
                                                     </button>
 
                                                     <form method="post" class="delete-widget-form">
                                                         {% csrf_token %}
                                                         <input type="hidden" name="action" value="delete_widget">
                                                         <input type="hidden" name="widget_id" value="{{ widget.id }}">
-                                                        <button type="submit" title="{% translate 'Widget löschen' %}">
-                                                            <i class="fa-solid fa-xmark"></i>
+                                                        <button type="submit" title="{% translate 'Widget löschen' %}" aria-label="{% translate 'Widget löschen' %}">
+                                                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                                                         </button>
                                                     </form>
                                                 </div>
@@ -570,13 +580,12 @@
                                             {% endif %}
                                         </article>
                                     {% endwith %}
-                                {% empty %}
-                                    <div class="empty-widgets">
-                                        <i class="fa-solid fa-table-cells-large"></i>
-                                        <h3>{% translate 'Noch keine Widgets' %}</h3>
-                                        <p>{% translate 'Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard.' %}</p>
-                                    </div>
                                 {% endfor %}
+                                <div class="empty-widgets" {% if home_widgets %}hidden{% endif %}>
+                                    <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+                                    <h3>{% translate 'Noch keine Widgets' %}</h3>
+                                    <p>{% translate 'Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard.' %}</p>
+                                </div>
                             </div>
                         </div>
                     {% else %}
@@ -586,28 +595,143 @@
                     {% endif %}
                 {% endfor %}
 
-                <div class="add-section-card" id="open-section-modal">
-                    <div class="add-section-icon">
-                        <i class="fa-solid fa-layer-group"></i>
-                    </div>
+                <button type="button" class="add-section-card" id="open-section-modal">
+                    <span class="add-section-icon">
+                        <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                    </span>
 
-                    <div>
-                        <h3>{% translate 'Bereich hinzufügen' %}</h3>
-                        <p>{% translate 'Erstelle einen neuen Bereich für weitere Verknüpfungen.' %}</p>
-                    </div>
-                </div>
+                    <span class="add-section-copy">
+                        <span class="add-section-title">{% translate 'Bereich hinzufügen' %}</span>
+                        <span class="add-section-description">{% translate 'Erstelle einen neuen Bereich für weitere Verknüpfungen.' %}</span>
+                    </span>
+                </button>
             </div>
         </div>
     </section>
 
+    <div
+        class="home-undo-region"
+        data-delete-undo-region
+        aria-live="polite"
+        aria-label="{% translate 'Löschvorgänge' %}"
+    ></div>
+
+    {% if show_onboarding %}
+        <div class="onboarding-overlay" id="onboarding-modal">
+            <section
+                class="onboarding-dialog"
+                id="onboarding-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="onboarding-title"
+                aria-describedby="onboarding-description"
+                tabindex="-1"
+            >
+                <div class="onboarding-header">
+                    <span class="onboarding-step">{% translate 'Erster Start' %}</span>
+                    <div class="onboarding-brand-icon" aria-hidden="true">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h2 id="onboarding-title">
+                        {% blocktranslate with username=request.user.username %}Willkommen, {{ username }}!{% endblocktranslate %}
+                    </h2>
+                    <p id="onboarding-description">
+                        {% translate 'Wähle eine Vorlage. Wir richten passende Widgets und Verknüpfungen ein – du kannst danach alles frei ändern.' %}
+                    </p>
+                </div>
+
+                <form method="post" class="onboarding-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="complete_onboarding">
+
+                    <fieldset class="onboarding-template-grid">
+                        <legend class="sr-only">{% translate 'Dashboard-Vorlage auswählen' %}</legend>
+
+                        <label class="onboarding-template-card is-everyday">
+                            <input type="radio" name="onboarding_template" value="everyday" checked>
+                            <span class="onboarding-card-content">
+                                <span class="onboarding-card-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-mug-hot"></i>
+                                </span>
+                                <strong>{% translate 'Alltag' %}</strong>
+                                <small>{% translate 'Uhr, Wetter, Notizen und deine wichtigsten täglichen Links.' %}</small>
+                                <span class="onboarding-card-preview" aria-hidden="true">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <i class="fa-solid fa-cloud-sun"></i>
+                                    <i class="fa-solid fa-note-sticky"></i>
+                                </span>
+                                <span class="onboarding-card-check" aria-hidden="true">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                            </span>
+                        </label>
+
+                        <label class="onboarding-template-card is-gaming">
+                            <input type="radio" name="onboarding_template" value="gaming">
+                            <span class="onboarding-card-content">
+                                <span class="onboarding-card-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-gamepad"></i>
+                                </span>
+                                <strong>{% translate 'Gaming' %}</strong>
+                                <small>{% translate 'Chats, Freunde, Highscores und schnelle Gaming-Links.' %}</small>
+                                <span class="onboarding-card-preview" aria-hidden="true">
+                                    <i class="fa-solid fa-comments"></i>
+                                    <i class="fa-solid fa-user-group"></i>
+                                    <i class="fa-solid fa-trophy"></i>
+                                </span>
+                                <span class="onboarding-card-check" aria-hidden="true">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                            </span>
+                        </label>
+
+                        <label class="onboarding-template-card is-homelab">
+                            <input type="radio" name="onboarding_template" value="homelab">
+                            <span class="onboarding-card-content">
+                                <span class="onboarding-card-icon" aria-hidden="true">
+                                    <i class="fa-solid fa-server"></i>
+                                </span>
+                                <strong>{% translate 'Homelab' %}</strong>
+                                <small>{% translate 'Status, Notizen und vorbereitete Links für deine Dienste.' %}</small>
+                                <span class="onboarding-card-preview" aria-hidden="true">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                    <i class="fa-solid fa-house-signal"></i>
+                                    <i class="fa-solid fa-cloud"></i>
+                                </span>
+                                <span class="onboarding-card-check" aria-hidden="true">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                            </span>
+                        </label>
+                    </fieldset>
+
+                    <div class="onboarding-actions">
+                        <button type="submit" class="onboarding-primary-button">
+                            <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+                            {% translate 'Dashboard einrichten' %}
+                        </button>
+                        <button type="submit" class="onboarding-skip-button" name="onboarding_template" value="blank">
+                            {% translate 'Ohne Vorlage starten' %}
+                        </button>
+                    </div>
+                </form>
+
+                <p class="onboarding-footnote">
+                    <i class="fa-solid fa-pen" aria-hidden="true"></i>
+                    {% translate 'Alle Inhalte lassen sich anschließend verschieben, bearbeiten oder löschen.' %}
+                </p>
+            </section>
+        </div>
+    {% endif %}
+
     <!-- Widget Modal -->
-    <div class="shortcut-modal" id="widget-modal">
-        <div class="shortcut-modal-content">
+    <div class="shortcut-modal" id="widget-modal" aria-hidden="true">
+        <div class="shortcut-modal-content" role="dialog" aria-modal="true" aria-labelledby="widget-modal-title" tabindex="-1">
             <div class="shortcut-modal-header">
                 <h3 id="widget-modal-title">{% translate 'Neues Widget' %}</h3>
 
-                <button type="button" id="close-widget-modal">
-                    <i class="fa-solid fa-xmark"></i>
+                <button type="button" id="close-widget-modal" aria-label="{% translate 'Widget-Dialog schließen' %}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
 
@@ -725,16 +849,16 @@
     </div>
 
     <!-- Verknüpfung Modal -->
-    <div class="shortcut-modal" id="shortcut-modal">
-        <div class="shortcut-modal-content">
+    <div class="shortcut-modal" id="shortcut-modal" aria-hidden="true">
+        <div class="shortcut-modal-content" role="dialog" aria-modal="true" aria-labelledby="shortcut-modal-title" tabindex="-1">
             <div class="shortcut-modal-header">
                 <h3>
                     <span id="shortcut-modal-title">{% translate 'Neue Verknüpfung' %}</span>
                     <span id="shortcut-modal-section-name"></span>
                 </h3>
 
-                <button type="button" id="close-shortcut-modal">
-                    <i class="fa-solid fa-xmark"></i>
+                <button type="button" id="close-shortcut-modal" aria-label="{% translate 'Verknüpfungsdialog schließen' %}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
 
@@ -879,13 +1003,13 @@
     </div>
 
     <!-- Bereich Modal -->
-    <div class="shortcut-modal" id="section-modal">
-        <div class="shortcut-modal-content">
+    <div class="shortcut-modal" id="section-modal" aria-hidden="true">
+        <div class="shortcut-modal-content" role="dialog" aria-modal="true" aria-labelledby="section-modal-title" tabindex="-1">
             <div class="shortcut-modal-header">
                 <h3 id="section-modal-title">{% translate 'Neuer Bereich' %}</h3>
 
-                <button type="button" id="close-section-modal">
-                    <i class="fa-solid fa-xmark"></i>
+                <button type="button" id="close-section-modal" aria-label="{% translate 'Bereichsdialog schließen' %}">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
 
@@ -940,5 +1064,5 @@
 
 {% block extra_js %}
     {{ home_labels|json_script:"home-labels" }}
-    <script src="{% static 'app/js/home.js' %}" defer></script>
+    <script src="{% static 'app/js/home.js' %}?v=20260621-delete-undo" defer></script>
 {% endblock %}
