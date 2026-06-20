@@ -4,6 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const suggestionsBox = document.getElementById("suggestions-box");
     const labelsElement = document.getElementById("home-labels");
     const labels = labelsElement ? JSON.parse(labelsElement.textContent) : {};
+    const deleteUndoRegion = document.querySelector("[data-delete-undo-region]");
+    const deleteUndoDelay = 7000;
+    const onboardingModal = document.getElementById("onboarding-modal");
+    const onboardingDialog = document.getElementById("onboarding-dialog");
 
     const shortcutModal = document.getElementById("shortcut-modal");
     const closeShortcutModalButton = document.getElementById("close-shortcut-modal");
@@ -50,6 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ? [...widgetModal.querySelectorAll("[data-clock-option-target]")]
         : [];
     const widgetSubmitButton = document.getElementById("widget-submit-button");
+    const managedModals = [onboardingModal, widgetModal, shortcutModal, sectionModal].filter(Boolean);
+    const modalReturnFocus = new WeakMap();
 
     let suggestions = [];
     let currentFirstSuggestion = "";
@@ -68,33 +74,143 @@ document.addEventListener("DOMContentLoaded", () => {
             suggestionsBox.style.display = "none";
         }
 
+        input?.setAttribute("aria-expanded", "false");
+        input?.removeAttribute("aria-activedescendant");
+
         currentFirstSuggestion = "";
         activeSuggestionIndex = 0;
+    }
+
+    function canAutoFocusSearch() {
+        return window.matchMedia("(min-width: 721px) and (hover: hover) and (pointer: fine)").matches;
     }
 
     function focusSearchInput() {
         if (
             input &&
+            canAutoFocusSearch() &&
             !shortcutModal?.classList.contains("show") &&
             !sectionModal?.classList.contains("show") &&
-            !widgetModal?.classList.contains("show")
+            !widgetModal?.classList.contains("show") &&
+            !onboardingModal
         ) {
-            input.focus();
+            input.focus({ preventScroll: true });
         }
     }
 
+    function isModalOpen(modal) {
+        return Boolean(modal && (modal === onboardingModal || modal.classList.contains("show")));
+    }
+
+    function getModalDialog(modal) {
+        if (!modal) return null;
+        return modal.matches?.("[role='dialog']")
+            ? modal
+            : modal.querySelector("[role='dialog']");
+    }
+
+    function getFocusableElements(modal) {
+        const dialog = getModalDialog(modal);
+        if (!dialog) return [];
+
+        const selector = [
+            "a[href]",
+            "button:not([disabled])",
+            "input:not([type='hidden']):not([disabled])",
+            "select:not([disabled])",
+            "textarea:not([disabled])",
+            "[tabindex]:not([tabindex='-1'])",
+        ].join(",");
+
+        return [...dialog.querySelectorAll(selector)].filter(element => (
+            !element.hasAttribute("hidden") &&
+            element.getAttribute("aria-hidden") !== "true" &&
+            !element.closest("[hidden], [aria-hidden='true']")
+        ));
+    }
+
     function closeModal(modal) {
-        modal?.classList.remove("show");
+        if (!modal) return;
+
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+
+        if (!managedModals.some(isModalOpen)) {
+            document.body.classList.remove("home-modal-open");
+        }
+
+        const returnFocus = modalReturnFocus.get(modal);
+        modalReturnFocus.delete(modal);
+
+        if (returnFocus?.isConnected) {
+            setTimeout(() => returnFocus.focus({ preventScroll: true }), 0);
+        }
+    }
+
+    function openModal(modal, initialFocus = null) {
+        if (!modal) return;
+
+        const currentFocus = document.activeElement;
+        if (currentFocus instanceof HTMLElement) {
+            modalReturnFocus.set(modal, currentFocus);
+        }
+
+        hideSuggestions();
+        input?.blur();
+        modal.setAttribute("aria-hidden", "false");
+        modal.classList.add("show");
+        document.body.classList.add("home-modal-open");
+
+        const focusTarget = initialFocus || getModalDialog(modal);
+        setTimeout(() => focusTarget?.focus({ preventScroll: true }), 0);
+    }
+
+    function getActiveModal() {
+        return [...managedModals].reverse().find(isModalOpen) || null;
+    }
+
+    if (onboardingModal) {
+        document.body.classList.add("onboarding-open");
+        setTimeout(() => onboardingDialog?.focus({ preventScroll: true }), 100);
+    } else {
         setTimeout(focusSearchInput, 100);
     }
 
-    function openModal(modal) {
-        hideSuggestions();
-        input?.blur();
-        modal?.classList.add("show");
-    }
+    document.addEventListener("keydown", event => {
+        const activeModal = getActiveModal();
+        if (!activeModal) return;
 
-    setTimeout(focusSearchInput, 100);
+        if (event.key === "Escape" && activeModal !== onboardingModal) {
+            event.preventDefault();
+            closeModal(activeModal);
+            return;
+        }
+
+        if (event.key !== "Tab") return;
+
+        const dialog = getModalDialog(activeModal);
+        const focusableElements = getFocusableElements(activeModal);
+
+        if (focusableElements.length === 0) {
+            event.preventDefault();
+            dialog?.focus({ preventScroll: true });
+            return;
+        }
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (!dialog?.contains(document.activeElement)) {
+            event.preventDefault();
+            firstElement.focus({ preventScroll: true });
+        } else if (event.shiftKey && document.activeElement === firstElement) {
+            event.preventDefault();
+            lastElement.focus({ preventScroll: true });
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+            event.preventDefault();
+            firstElement.focus({ preventScroll: true });
+        }
+    });
 
     function getCurrentLocale() {
         const htmlLang = document.documentElement.lang || "de";
@@ -209,10 +325,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const items = [...suggestionsBox.querySelectorAll(".suggestion-item")];
 
         items.forEach((item, index) => {
-            item.classList.toggle("active-suggestion", index === activeSuggestionIndex);
+            const isActive = index === activeSuggestionIndex;
+            item.classList.toggle("active-suggestion", isActive);
+            item.setAttribute("aria-selected", String(isActive));
         });
 
         currentFirstSuggestion = items[activeSuggestionIndex]?.dataset.value || "";
+        const activeItem = items[activeSuggestionIndex];
+        if (activeItem) {
+            input?.setAttribute("aria-activedescendant", activeItem.id);
+        } else {
+            input?.removeAttribute("aria-activedescendant");
+        }
     }
 
     function renderSuggestions(value) {
@@ -235,6 +359,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const suggestionItem = document.createElement("div");
             suggestionItem.classList.add("suggestion-item");
             suggestionItem.dataset.value = item;
+            suggestionItem.id = `google-suggestion-${index}`;
+            suggestionItem.setAttribute("role", "option");
+            suggestionItem.setAttribute("aria-selected", String(index === 0));
 
             if (index === 0) {
                 suggestionItem.classList.add("active-suggestion");
@@ -242,6 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const icon = document.createElement("i");
             icon.className = "fa-solid fa-magnifying-glass";
+            icon.setAttribute("aria-hidden", "true");
 
             const text = document.createElement("span");
             text.textContent = item;
@@ -260,6 +388,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         currentFirstSuggestion = filteredSuggestions[0];
         suggestionsBox.style.display = "block";
+        input?.setAttribute("aria-expanded", "true");
+        input?.setAttribute("aria-activedescendant", "google-suggestion-0");
     }
 
     function getDirectUrl(query) {
@@ -334,13 +464,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (event.key === "Tab" && currentFirstSuggestion) {
-                event.preventDefault();
-                input.value = currentFirstSuggestion;
-                hideSuggestions();
-                return;
-            }
-
             if (event.key === "Enter" && items.length > 0 && currentFirstSuggestion) {
                 event.preventDefault();
                 input.value = currentFirstSuggestion;
@@ -362,6 +485,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (input) {
                 searchGoogle(input.value);
             }
+        });
+
+        form.addEventListener("focusout", () => {
+            setTimeout(() => {
+                if (!form.contains(document.activeElement)) {
+                    hideSuggestions();
+                }
+            }, 0);
         });
     }
 
@@ -445,8 +576,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
 
-        openModal(shortcutModal);
-        setTimeout(() => shortcutNameInput?.focus(), 100);
+        openModal(shortcutModal, shortcutNameInput);
     }
 
     function openEditShortcutModal(card) {
@@ -486,8 +616,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (shortcutCustomIconInput) shortcutCustomIconInput.value = icon;
         }
 
-        openModal(shortcutModal);
-        setTimeout(() => shortcutNameInput?.focus(), 100);
+        openModal(shortcutModal, shortcutNameInput);
     }
 
     document.querySelectorAll(".open-shortcut-modal").forEach(button => {
@@ -616,8 +745,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openAddWidgetModal() {
         resetWidgetForm();
-        openModal(widgetModal);
-        setTimeout(() => widgetTitleInput?.focus(), 100);
+        openModal(widgetModal, widgetTitleInput);
     }
 
     function openEditWidgetModal(button) {
@@ -639,8 +767,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setCheckedRadio(widgetForm, "widget_color", widgetCard.dataset.widgetColor || "blue", "blue");
         toggleWidgetTypeFields();
 
-        openModal(widgetModal);
-        setTimeout(() => widgetTitleInput?.focus(), 100);
+        openModal(widgetModal, widgetTitleInput);
     }
 
     openWidgetModalButton?.addEventListener("click", openAddWidgetModal);
@@ -688,8 +815,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openAddSectionModal() {
         resetSectionForm();
-        openModal(sectionModal);
-        setTimeout(() => sectionNameInput?.focus(), 100);
+        openModal(sectionModal, sectionNameInput);
     }
 
     function openEditSectionModal(button) {
@@ -703,8 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setCheckedRadio(sectionForm, "section_color", button.dataset.sectionColor || "blue", "blue");
 
-        openModal(sectionModal);
-        setTimeout(() => sectionNameInput?.focus(), 100);
+        openModal(sectionModal, sectionNameInput);
     }
 
     openSectionModalButton?.addEventListener("click", openAddSectionModal);
@@ -747,7 +872,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateEmptyStates() {
         document.querySelectorAll(".shortcuts-grid").forEach(grid => {
             const emptyState = grid.querySelector(".empty-shortcuts");
-            const hasShortcuts = grid.querySelectorAll(".shortcut-card").length > 0;
+            const hasShortcuts = grid.querySelectorAll(".shortcut-card:not([data-delete-pending])").length > 0;
 
             if (emptyState) {
                 emptyState.hidden = hasShortcuts;
@@ -757,13 +882,179 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function updateWidgetEmptyState() {
+        const grid = document.getElementById("widgets-grid");
+        if (!grid) return;
+
+        const emptyState = grid.querySelector(".empty-widgets");
+        const hasWidgets = grid.querySelectorAll(".home-widget:not([data-delete-pending])").length > 0;
+        if (emptyState) emptyState.hidden = hasWidgets;
+    }
+
+    function getDeleteConfig(deleteForm) {
+        if (deleteForm.matches(".delete-widget-form")) {
+            return {
+                target: deleteForm.closest(".home-widget"),
+                label: labels.widgetDeleted || "Widget gelöscht",
+            };
+        }
+
+        if (deleteForm.matches(".delete-section-form")) {
+            return {
+                target: deleteForm.closest(".shortcuts-section"),
+                label: labels.sectionDeleted || "Bereich gelöscht",
+            };
+        }
+
+        if (deleteForm.matches(".delete-shortcut-form")) {
+            return {
+                target: deleteForm.closest(".shortcut-card"),
+                label: labels.shortcutDeleted || "Verknüpfung gelöscht",
+            };
+        }
+
+        return null;
+    }
+
+    function refreshDeleteEmptyStates() {
+        updateEmptyStates();
+        updateWidgetEmptyState();
+    }
+
+    function createDeleteToast(label) {
+        if (!deleteUndoRegion) return null;
+
+        const toast = document.createElement("div");
+        toast.className = "home-undo-toast";
+        toast.style.setProperty("--delete-undo-duration", `${deleteUndoDelay}ms`);
+
+        const icon = document.createElement("span");
+        icon.className = "home-undo-toast-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.innerHTML = '<i class="fa-solid fa-trash-arrow-up"></i>';
+
+        const copy = document.createElement("span");
+        copy.className = "home-undo-toast-copy";
+
+        const title = document.createElement("strong");
+        title.textContent = label;
+
+        const detail = document.createElement("span");
+        detail.textContent = labels.deletePending || "Wird in wenigen Sekunden endgültig gelöscht.";
+
+        const undoButton = document.createElement("button");
+        undoButton.type = "button";
+        undoButton.textContent = labels.undoDelete || "Rückgängig";
+
+        const progress = document.createElement("span");
+        progress.className = "home-undo-toast-progress";
+        progress.setAttribute("aria-hidden", "true");
+
+        copy.append(title, detail);
+        toast.append(icon, copy, undoButton, progress);
+        deleteUndoRegion.append(toast);
+
+        return { toast, icon, title, detail, undoButton, progress };
+    }
+
+    function restorePendingDeletion(target, toastParts, returnFocus) {
+        target.removeAttribute("data-delete-pending");
+        target.classList.remove("home-delete-pending");
+        target.hidden = false;
+        toastParts?.toast.remove();
+        refreshDeleteEmptyStates();
+
+        if (returnFocus?.isConnected) {
+            requestAnimationFrame(() => returnFocus.focus({ preventScroll: true }));
+        }
+    }
+
+    async function commitPendingDeletion(deleteForm, target, toastParts, returnFocus) {
+        toastParts?.toast.classList.add("is-committing");
+        if (toastParts?.undoButton) toastParts.undoButton.disabled = true;
+
+        try {
+            const response = await fetch(deleteForm.action || window.location.href, {
+                method: "POST",
+                body: new FormData(deleteForm),
+                credentials: "same-origin",
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+            });
+            const payload = response.headers.get("content-type")?.includes("application/json")
+                ? await response.json()
+                : null;
+
+            if (!response.ok || payload?.success === false) {
+                throw new Error("delete_failed");
+            }
+
+            target.remove();
+            toastParts?.toast.remove();
+            refreshDeleteEmptyStates();
+        } catch (error) {
+            console.error("Löschen konnte nicht abgeschlossen werden:", error);
+            target.removeAttribute("data-delete-pending");
+            target.classList.remove("home-delete-pending");
+            target.hidden = false;
+            refreshDeleteEmptyStates();
+
+            if (!toastParts) return;
+            toastParts.toast.classList.remove("is-committing");
+            toastParts.toast.classList.add("is-error");
+            toastParts.icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            toastParts.title.textContent = labels.deleteFailed || "Löschen fehlgeschlagen";
+            toastParts.detail.textContent = labels.deleteFailedHint || "Bitte versuche es noch einmal.";
+            toastParts.undoButton.remove();
+            toastParts.progress.remove();
+            window.setTimeout(() => toastParts.toast.remove(), 5000);
+
+            if (returnFocus?.isConnected) {
+                requestAnimationFrame(() => returnFocus.focus({ preventScroll: true }));
+            }
+        }
+    }
+
+    document.addEventListener("submit", event => {
+        const deleteForm = event.target.closest?.(
+            ".delete-widget-form, .delete-section-form, .delete-shortcut-form"
+        );
+        if (!deleteForm) return;
+
+        const config = getDeleteConfig(deleteForm);
+        if (!config?.target || config.target.hasAttribute("data-delete-pending")) return;
+
+        event.preventDefault();
+
+        const target = config.target;
+        const returnFocus = target.querySelector(".shortcut-menu-toggle")
+            || deleteForm.querySelector("button[type='submit']");
+        const toastParts = createDeleteToast(config.label);
+
+        target.classList.remove("actions-open");
+        target.setAttribute("data-delete-pending", "true");
+        target.classList.add("home-delete-pending");
+        target.hidden = true;
+        refreshDeleteEmptyStates();
+
+        const timer = window.setTimeout(() => {
+            commitPendingDeletion(deleteForm, target, toastParts, returnFocus);
+        }, deleteUndoDelay);
+
+        toastParts?.undoButton.addEventListener("click", () => {
+            window.clearTimeout(timer);
+            restorePendingDeletion(target, toastParts, returnFocus);
+        }, { once: true });
+    });
+
+    updateWidgetEmptyState();
+
     function saveShortcutOrder() {
         const payload = [];
 
         document.querySelectorAll(".shortcuts-grid").forEach(grid => {
             const sectionId = grid.dataset.sectionId;
 
-            grid.querySelectorAll(".shortcut-card").forEach((card, index) => {
+            grid.querySelectorAll(".shortcut-card:not([data-delete-pending])").forEach((card, index) => {
                 card.dataset.shortcutSectionId = sectionId;
 
                 payload.push({
@@ -782,7 +1073,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function saveHomeLayoutOrder() {
         const items = [...document.querySelectorAll("#sections-wrapper > .home-layout-item")]
-            .filter(item => item.dataset.isDefaultSection !== "true")
+            .filter(item => item.dataset.isDefaultSection !== "true" && !item.hasAttribute("data-delete-pending"))
             .map((item, index) => ({
                 type: item.dataset.layoutItemType,
                 id: item.dataset.sectionId || "",
@@ -800,7 +1091,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveWidgetOrder() {
-        const widgets = [...document.querySelectorAll(".home-widget")].map((widget, index) => ({
+        const widgets = [...document.querySelectorAll(".home-widget:not([data-delete-pending])")].map((widget, index) => ({
             id: widget.dataset.widgetId,
             order: index
         }));

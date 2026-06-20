@@ -4,6 +4,304 @@
 /* ==== Basislayout: base.css ==== */
 *, *::before, *::after { box-sizing: border-box; }
 
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Individuelle Spielkarten im Spielemenü */
+#games-menu-dropdown .game-menu-card {
+    --game-card-rgb: 37, 99, 235;
+    --game-card-start: #2563eb;
+    --game-card-end: #06b6d4;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-color: rgba(var(--game-card-rgb), 0.25);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(var(--game-card-rgb), 0.2), transparent 40%),
+        linear-gradient(120deg, rgba(var(--game-card-rgb), 0.12), rgba(255, 255, 255, 0.94) 55%);
+    box-shadow:
+        0 12px 28px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+#games-menu-dropdown .game-menu-card::before {
+    position: absolute;
+    z-index: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--game-card-start), var(--game-card-end));
+    box-shadow: 0 -6px 18px rgba(var(--game-card-rgb), 0.2);
+    content: "";
+}
+
+#games-menu-dropdown .game-menu-card::after {
+    position: absolute;
+    z-index: 0;
+    right: 12px;
+    bottom: 4px;
+    color: rgb(var(--game-card-rgb));
+    content: attr(data-game-mark);
+    font-size: 1.15rem;
+    font-weight: 1000;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    opacity: 0.1;
+    pointer-events: none;
+    transform: rotate(-4deg);
+    white-space: nowrap;
+}
+
+#games-menu-dropdown .game-menu-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+#games-menu-dropdown .game-menu-card .game-menu-icon {
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 13px;
+    box-shadow:
+        0 12px 24px rgba(var(--game-card-rgb), 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+#games-menu-dropdown .game-menu-card .game-menu-copy small {
+    color: rgba(var(--game-card-rgb), 0.88);
+}
+
+#games-menu-dropdown .game-menu-card:hover,
+#games-menu-dropdown .game-menu-card:focus-visible {
+    border-color: rgba(var(--game-card-rgb), 0.55);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(var(--game-card-rgb), 0.26), transparent 43%),
+        linear-gradient(120deg, rgba(var(--game-card-rgb), 0.18), #ffffff 58%);
+    box-shadow:
+        0 18px 36px rgba(var(--game-card-rgb), 0.16),
+        0 8px 22px rgba(15, 23, 42, 0.09);
+    transform: translateY(-2px);
+}
+
+#games-menu-dropdown .game-menu-card:hover .game-menu-icon,
+#games-menu-dropdown .game-menu-card:focus-visible .game-menu-icon {
+    box-shadow:
+        0 15px 28px rgba(var(--game-card-rgb), 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34);
+    transform: translateY(-1px) rotate(-3deg) scale(1.04);
+}
+
+#games-menu-dropdown [data-game-theme="human"] { --game-card-rgb: 6, 182, 212; --game-card-start: #0891b2; --game-card-end: #22d3ee; }
+#games-menu-dropdown [data-game-theme="racing"] { --game-card-rgb: 249, 115, 22; --game-card-start: #ea580c; --game-card-end: #fb923c; }
+#games-menu-dropdown [data-game-theme="2048"] { --game-card-rgb: 139, 92, 246; --game-card-start: #6d28d9; --game-card-end: #a78bfa; }
+#games-menu-dropdown [data-game-theme="snake"] { --game-card-rgb: 34, 197, 94; --game-card-start: #15803d; --game-card-end: #84cc16; }
+#games-menu-dropdown [data-game-theme="cookie"] { --game-card-rgb: 245, 158, 11; --game-card-start: #d97706; --game-card-end: #facc15; }
+#games-menu-dropdown [data-game-theme="cookie-v2"] { --game-card-rgb: 217, 70, 239; --game-card-start: #f59e0b; --game-card-end: #d946ef; }
+#games-menu-dropdown [data-game-theme="nebula"] { --game-card-rgb: 168, 85, 247; --game-card-start: #7c3aed; --game-card-end: #ec4899; }
+#games-menu-dropdown [data-game-theme="werewolf"] { --game-card-rgb: 99, 102, 241; --game-card-start: #312e81; --game-card-end: #8b5cf6; }
+#games-menu-dropdown [data-game-theme="tictactoe"] { --game-card-rgb: 14, 165, 233; --game-card-start: #0284c7; --game-card-end: #2563eb; }
+#games-menu-dropdown [data-game-theme="battleship"] { --game-card-rgb: 20, 184, 166; --game-card-start: #0f766e; --game-card-end: #475569; }
+#games-menu-dropdown [data-game-theme="connectfour"] { --game-card-rgb: 239, 68, 68; --game-card-start: #f59e0b; --game-card-end: #ef4444; }
+#games-menu-dropdown [data-game-theme="stadtlandfluss"] { --game-card-rgb: 16, 185, 129; --game-card-start: #059669; --game-card-end: #14b8a6; }
+#games-menu-dropdown [data-game-theme="uno"] { --game-card-rgb: 244, 63, 94; --game-card-start: #dc2626; --game-card-end: #7c3aed; }
+#games-menu-dropdown [data-game-theme="kniffel"] { --game-card-rgb: 249, 115, 22; --game-card-start: #f97316; --game-card-end: #dc2626; }
+#games-menu-dropdown [data-game-theme="pong"] { --game-card-rgb: 6, 182, 212; --game-card-start: #06b6d4; --game-card-end: #2563eb; }
+#games-menu-dropdown [data-game-theme="hangman"] { --game-card-rgb: 100, 116, 139; --game-card-start: #475569; --game-card-end: #8b5cf6; }
+#games-menu-dropdown [data-game-theme="skribble"] { --game-card-rgb: 236, 72, 153; --game-card-start: #ec4899; --game-card-end: #8b5cf6; }
+
+body.dark-mode #games-menu-dropdown .game-menu-card {
+    border-color: rgba(var(--game-card-rgb), 0.28);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(var(--game-card-rgb), 0.24), transparent 42%),
+        linear-gradient(120deg, rgba(var(--game-card-rgb), 0.16), rgba(15, 23, 42, 0.88) 58%);
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode #games-menu-dropdown .game-menu-card .game-menu-copy small {
+    color: rgba(226, 232, 240, 0.78);
+}
+
+body.dark-mode #games-menu-dropdown .game-menu-card:hover,
+body.dark-mode #games-menu-dropdown .game-menu-card:focus-visible {
+    border-color: rgba(var(--game-card-rgb), 0.62);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(var(--game-card-rgb), 0.34), transparent 44%),
+        linear-gradient(120deg, rgba(var(--game-card-rgb), 0.24), rgba(30, 41, 59, 0.94) 62%);
+    box-shadow:
+        0 18px 38px rgba(var(--game-card-rgb), 0.16),
+        0 12px 30px rgba(0, 0, 0, 0.28);
+}
+
+body.dark-mode #games-menu-dropdown .game-menu-card::after {
+    color: #ffffff;
+    opacity: 0.08;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #games-menu-dropdown .game-menu-card,
+    #games-menu-dropdown .game-menu-card .game-menu-icon {
+        transition: none;
+    }
+}
+
+/* Individuelle Karten im Tools-Menü */
+#menu-dropdown [data-tool-theme] {
+    --tool-card-rgb: 37, 99, 235;
+    --game-card-start: #2563eb;
+    --game-card-end: #06b6d4;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-color: rgba(var(--tool-card-rgb), 0.25);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(var(--tool-card-rgb), 0.2), transparent 40%),
+        linear-gradient(120deg, rgba(var(--tool-card-rgb), 0.12), rgba(255, 255, 255, 0.94) 55%);
+    box-shadow:
+        0 12px 28px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+#menu-dropdown [data-tool-theme]::before {
+    position: absolute;
+    z-index: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--game-card-start), var(--game-card-end));
+    box-shadow: 0 -6px 18px rgba(var(--tool-card-rgb), 0.2);
+    content: "";
+}
+
+#menu-dropdown [data-tool-theme]::after {
+    position: absolute;
+    z-index: 0;
+    right: 12px;
+    bottom: 4px;
+    color: rgb(var(--tool-card-rgb));
+    content: attr(data-tool-mark);
+    font-size: 1.15rem;
+    font-weight: 1000;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    opacity: 0.1;
+    pointer-events: none;
+    transform: rotate(-4deg);
+    white-space: nowrap;
+}
+
+#menu-dropdown [data-tool-theme] > * {
+    position: relative;
+    z-index: 1;
+}
+
+#menu-dropdown [data-tool-theme] .game-menu-icon {
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 13px;
+    box-shadow:
+        0 12px 24px rgba(var(--tool-card-rgb), 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+#menu-dropdown [data-tool-theme] .game-menu-copy small {
+    color: rgba(var(--tool-card-rgb), 0.88);
+}
+
+#menu-dropdown [data-tool-theme]:hover,
+#menu-dropdown [data-tool-theme]:focus-visible {
+    border-color: rgba(var(--tool-card-rgb), 0.55);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(var(--tool-card-rgb), 0.26), transparent 43%),
+        linear-gradient(120deg, rgba(var(--tool-card-rgb), 0.18), #ffffff 58%);
+    box-shadow:
+        0 18px 36px rgba(var(--tool-card-rgb), 0.16),
+        0 8px 22px rgba(15, 23, 42, 0.09);
+    transform: translateY(-2px);
+}
+
+#menu-dropdown [data-tool-theme]:hover .game-menu-icon,
+#menu-dropdown [data-tool-theme]:focus-visible .game-menu-icon {
+    box-shadow:
+        0 15px 28px rgba(var(--tool-card-rgb), 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34);
+    transform: translateY(-1px) rotate(-3deg) scale(1.04);
+}
+
+#menu-dropdown [data-tool-theme="clock"] { --tool-card-rgb: 14, 165, 233; --game-card-start: #0284c7; --game-card-end: #22d3ee; }
+#menu-dropdown [data-tool-theme="notes"] { --tool-card-rgb: 245, 158, 11; --game-card-start: #d97706; --game-card-end: #facc15; }
+#menu-dropdown [data-tool-theme="file-share"] { --tool-card-rgb: 34, 197, 94; --game-card-start: #16a34a; --game-card-end: #84cc16; }
+#menu-dropdown [data-tool-theme="feedback"] { --tool-card-rgb: 6, 182, 212; --game-card-start: #0891b2; --game-card-end: #38bdf8; }
+#menu-dropdown [data-tool-theme="roadmap"] { --tool-card-rgb: 168, 85, 247; --game-card-start: #7c3aed; --game-card-end: #d946ef; }
+#menu-dropdown [data-tool-theme="changelog"] { --tool-card-rgb: 14, 165, 233; --game-card-start: #2563eb; --game-card-end: #06b6d4; }
+#menu-dropdown [data-tool-theme="moderation"] { --tool-card-rgb: 244, 63, 94; --game-card-start: #dc2626; --game-card-end: #fb7185; }
+#menu-dropdown [data-tool-theme="server"] { --tool-card-rgb: 34, 197, 94; --game-card-start: #15803d; --game-card-end: #65a30d; }
+#menu-dropdown [data-tool-theme="calculator"] { --tool-card-rgb: 59, 130, 246; --game-card-start: #4f46e5; --game-card-end: #06b6d4; }
+#menu-dropdown [data-tool-theme="fuel"] { --tool-card-rgb: 249, 115, 22; --game-card-start: #ea580c; --game-card-end: #fb923c; }
+#menu-dropdown [data-tool-theme="units"] { --tool-card-rgb: 100, 116, 139; --game-card-start: #475569; --game-card-end: #3b82f6; }
+#menu-dropdown [data-tool-theme="randomizer"] { --tool-card-rgb: 168, 85, 247; --game-card-start: #7c3aed; --game-card-end: #ec4899; }
+#menu-dropdown [data-tool-theme="qr"] { --tool-card-rgb: 16, 185, 129; --game-card-start: #047857; --game-card-end: #14b8a6; }
+#menu-dropdown [data-tool-theme="genius"] { --tool-card-rgb: 236, 72, 153; --game-card-start: #db2777; --game-card-end: #ef4444; }
+#menu-dropdown [data-tool-theme="images"] { --tool-card-rgb: 20, 184, 166; --game-card-start: #0f766e; --game-card-end: #22c55e; }
+#menu-dropdown [data-tool-theme="converter"] { --tool-card-rgb: 100, 116, 139; --game-card-start: #475569; --game-card-end: #8b5cf6; }
+#menu-dropdown [data-tool-theme="palette"] { --tool-card-rgb: 217, 70, 239; --game-card-start: #d946ef; --game-card-end: #06b6d4; }
+#menu-dropdown [data-tool-theme="profile-card"] { --tool-card-rgb: 244, 63, 94; --game-card-start: #e11d48; --game-card-end: #f97316; }
+#menu-dropdown [data-tool-theme="avatar"] { --tool-card-rgb: 14, 165, 233; --game-card-start: #0284c7; --game-card-end: #6366f1; }
+#menu-dropdown [data-tool-theme="stream-deck"] { --tool-card-rgb: 168, 85, 247; --game-card-start: #7c3aed; --game-card-end: #ec4899; }
+#menu-dropdown [data-tool-theme="obs"] { --tool-card-rgb: 239, 68, 68; --game-card-start: #334155; --game-card-end: #ef4444; }
+
+body.dark-mode #menu-dropdown [data-tool-theme] {
+    border-color: rgba(var(--tool-card-rgb), 0.28);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(var(--tool-card-rgb), 0.24), transparent 42%),
+        linear-gradient(120deg, rgba(var(--tool-card-rgb), 0.16), rgba(15, 23, 42, 0.88) 58%);
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode #menu-dropdown [data-tool-theme] .game-menu-copy small {
+    color: rgba(226, 232, 240, 0.78);
+}
+
+body.dark-mode #menu-dropdown [data-tool-theme]:hover,
+body.dark-mode #menu-dropdown [data-tool-theme]:focus-visible {
+    border-color: rgba(var(--tool-card-rgb), 0.62);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(var(--tool-card-rgb), 0.34), transparent 44%),
+        linear-gradient(120deg, rgba(var(--tool-card-rgb), 0.24), rgba(30, 41, 59, 0.94) 62%);
+    box-shadow:
+        0 18px 38px rgba(var(--tool-card-rgb), 0.16),
+        0 12px 30px rgba(0, 0, 0, 0.28);
+}
+
+body.dark-mode #menu-dropdown [data-tool-theme]::after {
+    color: #ffffff;
+    opacity: 0.08;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #menu-dropdown [data-tool-theme],
+    #menu-dropdown [data-tool-theme] .game-menu-icon {
+        transition: none;
+    }
+}
+
+
+
 html {
     scroll-padding-top: calc(var(--nav-height) + 1rem);
     overflow-x: hidden;

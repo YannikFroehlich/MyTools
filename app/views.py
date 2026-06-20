@@ -24,6 +24,7 @@ from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, C
 
 import json
 
+from django.db import transaction
 from django.db.models import Max, Prefetch
 from django.db.utils import OperationalError, ProgrammingError
 from django.http import HttpResponse, JsonResponse
@@ -702,6 +703,89 @@ def build_home_widget_data(request, user):
     return widget_context
 
 
+def home_onboarding_templates():
+    return {
+        "everyday": {
+            "widgets": [
+                {"title": _("Uhr"), "widget_type": HomeWidget.WIDGET_CLOCK, "color": "blue"},
+                {"title": _("Wetter"), "widget_type": HomeWidget.WIDGET_WEATHER, "color": "green"},
+                {"title": _("Notizen"), "widget_type": HomeWidget.WIDGET_NOTES, "color": "orange"},
+                {"title": _("Schnellstatistiken"), "widget_type": HomeWidget.WIDGET_STATS, "color": "purple"},
+            ],
+            "shortcuts": [
+                {"name": "Gmail", "url": "https://mail.google.com", "icon": "fa-solid fa-envelope"},
+                {"name": _("Kalender"), "url": "https://calendar.google.com", "icon": "fa-solid fa-calendar-days"},
+                {"name": "YouTube", "url": "https://www.youtube.com", "icon": "fa-brands fa-youtube"},
+            ],
+        },
+        "gaming": {
+            "widgets": [
+                {"title": _("Chats"), "widget_type": HomeWidget.WIDGET_CHAT, "color": "blue"},
+                {"title": _("Freunde"), "widget_type": HomeWidget.WIDGET_FRIENDS, "color": "green"},
+                {"title": _("Tic Tac Toe"), "widget_type": HomeWidget.WIDGET_TICTACTOE, "color": "purple"},
+                {"title": _("Human Benchmark"), "widget_type": HomeWidget.WIDGET_BENCHMARK, "color": "orange"},
+            ],
+            "shortcuts": [
+                {"name": "Steam", "url": "https://store.steampowered.com", "icon": "fa-brands fa-steam"},
+                {"name": "Twitch", "url": "https://www.twitch.tv", "icon": "fa-brands fa-twitch"},
+                {"name": "Discord", "url": "https://discord.com/app", "icon": "fa-brands fa-discord"},
+            ],
+        },
+        "homelab": {
+            "widgets": [
+                {"title": _("Schnellstatistiken"), "widget_type": HomeWidget.WIDGET_STATS, "color": "blue"},
+                {"title": _("Notizen"), "widget_type": HomeWidget.WIDGET_NOTES, "color": "green"},
+                {"title": _("Uhr"), "widget_type": HomeWidget.WIDGET_CLOCK, "color": "purple"},
+            ],
+            "shortcuts": [
+                {"name": "CasaOS", "url": "http://casaos.local", "icon": "fa-solid fa-server"},
+                {"name": "Home Assistant", "url": "http://homeassistant.local:8123", "icon": "fa-solid fa-house-signal"},
+                {"name": "Nextcloud", "url": "http://nextcloud.local", "icon": "fa-solid fa-cloud"},
+            ],
+        },
+    }
+
+
+def apply_home_onboarding_template(user, template_key):
+    templates = home_onboarding_templates()
+    if template_key not in {*templates, "blank"}:
+        return False
+
+    with transaction.atomic():
+        layout_preference, _ = (
+            HomeLayoutPreference.objects
+            .select_for_update()
+            .get_or_create(user=user)
+        )
+
+        if layout_preference.onboarding_completed:
+            return False
+
+        template = templates.get(template_key)
+        if template:
+            if not HomeWidget.objects.filter(user=user).exists():
+                HomeWidget.objects.bulk_create([
+                    HomeWidget(user=user, order=order, **widget)
+                    for order, widget in enumerate(template["widgets"], start=1)
+                ])
+
+            if not Shortcut.objects.filter(user=user).exists():
+                default_section, _ = ShortcutSection.objects.get_or_create(
+                    user=user,
+                    name="Verknüpfungen",
+                    defaults={"color": "blue", "order": 0},
+                )
+                Shortcut.objects.bulk_create([
+                    Shortcut(user=user, section=default_section, order=order, **shortcut)
+                    for order, shortcut in enumerate(template["shortcuts"], start=1)
+                ])
+
+        layout_preference.onboarding_completed = True
+        layout_preference.save(update_fields=["onboarding_completed", "updated_at"])
+
+    return True
+
+
 def home(request):
     user = request.user
     home_labels = {
@@ -718,6 +802,13 @@ def home(request):
         "editWidget": _("Widget bearbeiten"),
         "addWidget": _("Widget hinzufügen"),
         "saveWidget": _("Widget speichern"),
+        "widgetDeleted": _("Widget gelöscht"),
+        "sectionDeleted": _("Bereich gelöscht"),
+        "shortcutDeleted": _("Verknüpfung gelöscht"),
+        "deletePending": _("Wird in wenigen Sekunden endgültig gelöscht."),
+        "undoDelete": _("Rückgängig"),
+        "deleteFailed": _("Löschen fehlgeschlagen"),
+        "deleteFailedHint": _("Bitte versuche es noch einmal."),
     }
 
     default_section, created = ShortcutSection.objects.get_or_create(
@@ -812,6 +903,11 @@ def home(request):
             return JsonResponse({"success": False, "error": _("Unbekannte Aktion")}, status=400)
 
         action = request.POST.get("action")
+
+        if action == "complete_onboarding":
+            template_key = request.POST.get("onboarding_template", "everyday").strip()
+            apply_home_onboarding_template(user, template_key)
+            return redirect("home")
 
         if action == "add_widget":
             title = request.POST.get("widget_title", "").strip()
@@ -908,8 +1004,10 @@ def home(request):
         if action == "delete_widget":
             widget_id = request.POST.get("widget_id")
             widget = get_object_or_404(HomeWidget, id=widget_id, user=user)
-            widget.delete()
+            widget.move_to_trash()
 
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True, "deleted": "widget"})
             return redirect("home")
 
         if action == "add_section":
@@ -948,10 +1046,23 @@ def home(request):
         if action == "delete_section":
             section_id = request.POST.get("section_id")
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
+            deleted = False
 
             if section.name != "Verknüpfungen":
+                default_section, _created = ShortcutSection.objects.get_or_create(
+                    user=user,
+                    name="Verknüpfungen",
+                    defaults={"color": "blue", "order": 0},
+                )
+                Shortcut.all_objects.filter(section=section, deleted_at__isnull=True).update(
+                    deleted_at=django_timezone.now(),
+                )
+                Shortcut.all_objects.filter(section=section).update(section=default_section)
                 section.delete()
+                deleted = True
 
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": deleted, "deleted": "section"})
             return redirect("home")
 
         if action == "toggle_section_collapse":
@@ -1037,8 +1148,10 @@ def home(request):
         if action == "delete_shortcut":
             shortcut_id = request.POST.get("shortcut_id")
             shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
-            shortcut.delete()
+            shortcut.move_to_trash()
 
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True, "deleted": "shortcut"})
             return redirect("home")
 
         if action == "toggle_favorite":
@@ -1063,6 +1176,12 @@ def home(request):
     layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
     home_widgets = build_home_widget_data(request, user)
     weather_locations = WeatherLocation.objects.filter(user=user)
+    show_onboarding = (
+        not layout_preference.onboarding_completed
+        and not custom_sections
+        and not Shortcut.objects.filter(user=user).exists()
+        and not HomeWidget.objects.filter(user=user).exists()
+    )
 
     movable_home_items = [
         {
@@ -1093,6 +1212,7 @@ def home(request):
         "clock_designs": [(value, _(label)) for value, label in HomeWidget.CLOCK_DESIGN_CHOICES],
         "clock_styles": [(value, _(label)) for value, label in HomeWidget.CLOCK_STYLE_CHOICES],
         "home_labels": home_labels,
+        "show_onboarding": show_onboarding,
     })
 
 

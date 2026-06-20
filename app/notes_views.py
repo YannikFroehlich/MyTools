@@ -175,9 +175,9 @@ def note_detail_view(request, pk):
 @require_POST
 def note_delete_view(request, pk):
     note = get_object_or_404(Note, pk=pk, user=request.user)
-    note.delete()
+    note.move_to_trash()
 
-    messages.success(request, _("Notiz wurde gelöscht."), extra_tags="notes")
+    messages.success(request, _("Notiz wurde in den Papierkorb verschoben."), extra_tags="notes")
     return redirect("notes")
 
 

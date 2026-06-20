@@ -14270,3 +14270,210 @@ msgstr "Hidden"
 #: app/templates/app/moderation.html
 msgid "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: normale Nutzer sehen den Bereich noch, können ihn aber nicht öffnen. Versteckt bedeutet: normale Nutzer sehen den Bereich gar nicht mehr."
 msgstr "Published means every signed-in user can open the section. Unpublished means normal users can still see the section, but cannot open it. Hidden means normal users cannot see the section at all."
+
+#: app/templates/app/home.html
+msgid "Erster Start"
+msgstr "First start"
+
+#: app/templates/app/home.html
+#, python-format
+msgid "Willkommen, %(username)s!"
+msgstr "Welcome, %(username)s!"
+
+#: app/templates/app/home.html
+msgid "Wähle eine Vorlage. Wir richten passende Widgets und Verknüpfungen ein – du kannst danach alles frei ändern."
+msgstr "Choose a template. We'll set up matching widgets and shortcuts – you can customize everything afterwards."
+
+#: app/templates/app/home.html
+msgid "Dashboard-Vorlage auswählen"
+msgstr "Choose a dashboard template"
+
+#: app/templates/app/home.html
+msgid "Uhr, Wetter, Notizen und deine wichtigsten täglichen Links."
+msgstr "Clock, weather, notes, and your most important daily links."
+
+#: app/templates/app/home.html
+msgid "Chats, Freunde, Highscores und schnelle Gaming-Links."
+msgstr "Chats, friends, high scores, and quick gaming links."
+
+#: app/templates/app/home.html
+msgid "Homelab"
+msgstr "Homelab"
+
+#: app/templates/app/home.html
+msgid "Status, Notizen und vorbereitete Links für deine Dienste."
+msgstr "Status, notes, and prepared links for your services."
+
+#: app/templates/app/home.html
+msgid "Dashboard einrichten"
+msgstr "Set up dashboard"
+
+#: app/templates/app/home.html
+msgid "Ohne Vorlage starten"
+msgstr "Start without a template"
+
+#: app/templates/app/home.html
+msgid "Alle Inhalte lassen sich anschließend verschieben, bearbeiten oder löschen."
+msgstr "You can move, edit, or delete all content afterwards."
+
+#: app/templates/app/home.html
+msgid "MyTools Dashboard"
+msgstr "MyTools Dashboard"
+
+#: app/templates/app/home.html
+msgid "Websuche"
+msgstr "Web search"
+
+#: app/templates/app/home.html
+msgid "Bei Google suchen"
+msgstr "Search with Google"
+
+#: app/templates/app/home.html
+msgid "Suchvorschläge"
+msgstr "Search suggestions"
+
+#: app/templates/app/home.html
+msgid "Widget-Dialog schließen"
+msgstr "Close widget dialog"
+
+#: app/templates/app/home.html
+msgid "Verknüpfungsdialog schließen"
+msgstr "Close shortcut dialog"
+
+#: app/templates/app/home.html
+msgid "Bereichsdialog schließen"
+msgstr "Close section dialog"
+
+#: app/views.py
+msgid "Widget gelöscht"
+msgstr "Widget deleted"
+
+#: app/views.py
+msgid "Bereich gelöscht"
+msgstr "Section deleted"
+
+#: app/views.py
+msgid "Verknüpfung gelöscht"
+msgstr "Shortcut deleted"
+
+#: app/views.py
+msgid "Wird in wenigen Sekunden endgültig gelöscht."
+msgstr "Will be permanently deleted in a few seconds."
+
+#: app/views.py
+msgid "Rückgängig"
+msgstr "Undo"
+
+#: app/views.py
+msgid "Löschen fehlgeschlagen"
+msgstr "Delete failed"
+
+#: app/views.py
+msgid "Bitte versuche es noch einmal."
+msgstr "Please try again."
+
+#: app/templates/app/home.html
+msgid "Löschvorgänge"
+msgstr "Delete actions"
+
+#: app/templates/app/base.html app/templates/app/trash.html
+msgid "Papierkorb"
+msgstr "Trash"
+
+#: app/templates/app/trash.html
+msgid "Sicher aufgehoben"
+msgstr "Safely stored"
+
+#: app/templates/app/trash.html
+#, python-format
+msgid "Gelöschte Notizen, Dateien, Widgets und Verknüpfungen bleiben %(retention_days)s Tage erhalten."
+msgstr "Deleted notes, files, widgets, and shortcuts are kept for %(retention_days)s days."
+
+#: app/templates/app/trash.html
+msgid "Einträge im Papierkorb"
+msgstr "Items in trash"
+
+#: app/templates/app/trash.html
+msgid "Einträge"
+msgstr "Items"
+
+#: app/templates/app/trash.html
+msgid "Inhalte im Papierkorb"
+msgstr "Contents in trash"
+
+#: app/templates/app/trash.html
+msgid "Gelöschte Inhalte"
+msgstr "Deleted content"
+
+#: app/templates/app/trash.html
+msgid "Stelle Inhalte wieder her oder lösche sie sofort endgültig."
+msgstr "Restore content or permanently delete it immediately."
+
+#: app/templates/app/trash.html
+msgid "Papierkorb wirklich vollständig leeren? Das kann nicht rückgängig gemacht werden."
+msgstr "Really empty the entire trash? This cannot be undone."
+
+#: app/templates/app/trash.html
+msgid "Papierkorb leeren"
+msgstr "Empty trash"
+
+#: app/templates/app/trash.html
+#, python-format
+msgid "Gelöscht am %(date)s"
+msgstr "Deleted on %(date)s"
+
+#: app/templates/app/trash.html
+#, python-format
+msgid "Noch %(days)s Tag bis zur endgültigen Löschung"
+msgid_plural "Noch %(days)s Tage bis zur endgültigen Löschung"
+msgstr[0] "%(days)s day until permanent deletion"
+msgstr[1] "%(days)s days until permanent deletion"
+
+#: app/templates/app/trash.html
+msgid "Diesen Eintrag endgültig löschen? Das kann nicht rückgängig gemacht werden."
+msgstr "Permanently delete this item? This cannot be undone."
+
+#: app/templates/app/trash.html
+msgid "Dein Papierkorb ist leer"
+msgstr "Your trash is empty"
+
+#: app/templates/app/trash.html
+msgid "Gelöschte Inhalte erscheinen hier und können 30 Tage lang wiederhergestellt werden."
+msgstr "Deleted content appears here and can be restored for 30 days."
+
+#: app/notes_views.py
+msgid "Notiz wurde in den Papierkorb verschoben."
+msgstr "Note was moved to trash."
+
+#: app/performance_tools_views.py
+msgid "Datei wurde in den Papierkorb verschoben."
+msgstr "File was moved to trash."
+
+#: app/trash_views.py
+msgid "Unbekannter Papierkorb-Eintrag."
+msgstr "Unknown trash item."
+
+#: app/trash_views.py
+msgid "Eintrag wurde wiederhergestellt."
+msgstr "Item was restored."
+
+#: app/trash_views.py
+msgid "Eintrag wurde endgültig gelöscht."
+msgstr "Item was permanently deleted."
+
+#: app/trash_views.py
+msgid "Papierkorb wurde geleert."
+msgstr "Trash was emptied."
+
+#: app/trash_views.py
+msgid "Der Papierkorb ist bereits leer."
+msgstr "The trash is already empty."
+
+#: app/trash_views.py
+msgid "Ohne Inhalt"
+msgstr "No content"
+
+#: app/trash_views.py
+#, python-format
+msgid "%(size)s · %(downloads)s Downloads"
+msgstr "%(size)s · %(downloads)s downloads"
