@@ -58,7 +58,7 @@ def _search_match(query, *values):
     return query in haystack
 
 
-def _result(kind, title, subtitle, url, icon, badge=""):
+def _result(kind, title, subtitle, url, icon, badge="", theme="default"):
     return {
         "kind": kind,
         "title": str(title),
@@ -66,6 +66,7 @@ def _result(kind, title, subtitle, url, icon, badge=""):
         "url": url,
         "icon": icon,
         "badge": str(badge or ""),
+        "theme": theme,
     }
 
 
@@ -86,6 +87,7 @@ def global_search_api(request):
                 tool["url"],
                 tool["icon"],
                 _("Favorit") if tool.get("is_favorite") else "",
+                tool["key"],
             ))
 
     if query:
@@ -103,6 +105,7 @@ def global_search_api(request):
                 note.updated_at.strftime("%d.%m.%Y %H:%M"),
                 reverse("note_detail", args=[note.pk]),
                 "fa-regular fa-note-sticky",
+                theme="note-result",
             ))
 
         share_qs = (
@@ -120,6 +123,7 @@ def global_search_api(request):
                 reverse("file_share_download", args=[share.token]),
                 share.icon_class,
                 _("Link") if share.is_public_link else "",
+                "file-result",
             ))
 
         user_qs = (
@@ -136,6 +140,7 @@ def global_search_api(request):
                 f"@{profile.user.username}",
                 reverse("public_profile", args=[profile.user_id]),
                 "fa-solid fa-user",
+                theme="user-result",
             ))
 
         idea_qs = (
@@ -151,6 +156,7 @@ def global_search_api(request):
                 f"{reverse('roadmap')}?q={query}",
                 "fa-solid fa-route",
                 idea.get_priority_display(),
+                "roadmap-result",
             ))
 
     return JsonResponse({"results": results[:18]})

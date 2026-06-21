@@ -44,7 +44,6 @@ from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
 from .image_optimization import (
     GALLERY_IMAGE_MAX_SIZE,
     PROFILE_AVATAR_MAX_SIZE,
-    PROFILE_BANNER_MAX_SIZE,
     optimize_uploaded_image,
 )
 from .notification_utils import invalidate_notification_cache
@@ -122,19 +121,23 @@ def _display_number(value, default="0"):
 
 
 def get_profile_spotlight_stats(user, achievement_summary, *, friends_count=0, highscore_count=0, include_private=False):
-    stats = [
-        {
-            "label": _("Level"),
-            "value": _display_number(achievement_summary["level"]["level"]),
-            "hint": _("%(xp)s XP") % {"xp": _display_number(achievement_summary["total_xp"])},
-            "icon": "fa-solid fa-ranking-star",
-        },
-        {
-            "label": _("Achievements"),
-            "value": _display_number(achievement_summary["unlocked_count"]),
-            "hint": _("%(total)s gesamt") % {"total": _display_number(achievement_summary["total_count"])},
-            "icon": "fa-solid fa-trophy",
-        },
+    stats = []
+    if achievement_summary is not None:
+        stats.extend([
+            {
+                "label": _("Level"),
+                "value": _display_number(achievement_summary["level"]["level"]),
+                "hint": _("%(xp)s XP") % {"xp": _display_number(achievement_summary["total_xp"])},
+                "icon": "fa-solid fa-ranking-star",
+            },
+            {
+                "label": _("Achievements"),
+                "value": _display_number(achievement_summary["unlocked_count"]),
+                "hint": _("%(total)s gesamt") % {"total": _display_number(achievement_summary["total_count"])},
+                "icon": "fa-solid fa-trophy",
+            },
+        ])
+    stats.extend([
         {
             "label": _("Freunde"),
             "value": _display_number(friends_count),
@@ -147,7 +150,7 @@ def get_profile_spotlight_stats(user, achievement_summary, *, friends_count=0, h
             "hint": _("sichtbar im Profil"),
             "icon": "fa-solid fa-chart-simple",
         },
-    ]
+    ])
 
     if include_private:
         stats.extend([
@@ -666,7 +669,6 @@ def profile_view(request):
 
         if form.is_valid():
             old_avatar = profile.avatar
-            old_profile_banner = profile.profile_banner
             profile = form.save(commit=False)
 
             cropped_avatar = request.POST.get("avatar_cropped", "").strip()
@@ -716,28 +718,6 @@ def profile_view(request):
                     messages.error(request, _("Das Profilbild konnte nicht verarbeitet werden."))
                     return redirect("profile")
 
-            if request.FILES.get("profile_banner"):
-                try:
-                    optimized_banner = optimize_uploaded_image(
-                        request.FILES["profile_banner"],
-                        prefix=f"profile_banner_{request.user.id}",
-                        max_size=PROFILE_BANNER_MAX_SIZE,
-                        quality=84,
-                        target_bytes=280 * 1024,
-                    )
-
-                    if old_profile_banner:
-                        old_profile_banner.delete(save=False)
-
-                    profile.profile_banner.save(
-                        optimized_banner.filename,
-                        optimized_banner.file,
-                        save=False,
-                    )
-                except Exception:
-                    messages.error(request, _("Das Profilbanner konnte nicht verarbeitet werden."))
-                    return redirect("profile")
-
             # Profil speichern
             profile.save()
             invalidate_notification_cache(request.user)
@@ -782,18 +762,13 @@ def profile_view(request):
     return render(request, "app/profile.html", {
         "form": form,
         "profile": profile,
-        "benchmark_highscores": get_profile_human_benchmark_highscores(request.user),
-        "cookie_highscore": get_profile_cookie_highscore(request.user),
-        "game_2048_highscore": get_profile_2048_highscore(request.user),
         "profile_game_card_settings": get_profile_game_card_settings(profile),
-        "profile_game_cards": get_profile_game_cards(request.user, profile),
         "incoming_friend_requests": incoming_requests,
         "outgoing_friend_requests": outgoing_requests,
         "friends_preview": get_friend_profiles(request.user, limit=6),
         "friends_count": friends_count,
         "chat_rooms_count": chat_rooms_count,
         "total_highscores_count": total_highscores_count,
-        "achievement_summary": achievement_summary,
         "profile_spotlight_stats": get_profile_spotlight_stats(
             request.user,
             achievement_summary,
@@ -879,12 +854,15 @@ def public_profile_view(request, user_id):
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
     total_highscores_count = get_total_profile_highscores(profile_user)
     can_view_highscores = profile.privacy_show_highscores or can_view_private_profile_area(request.user, profile_user)
+    can_view_achievements = profile.privacy_show_achievements or can_view_private_profile_area(request.user, profile_user)
     can_view_private_achievements = can_view_private_profile_area(request.user, profile_user)
-    achievement_summary = get_achievement_summary(
-        profile_user,
-        include_private=can_view_private_achievements,
-        include_games=can_view_highscores,
-    )
+    achievement_summary = None
+    if can_view_achievements:
+        achievement_summary = get_achievement_summary(
+            profile_user,
+            include_private=can_view_private_achievements,
+            include_games=can_view_highscores,
+        )
 
     return render(request, "app/public_profile.html", {
         "profile_user": profile_user,
@@ -907,6 +885,7 @@ def public_profile_view(request, user_id):
             include_private=False,
         ),
         "can_view_private_achievements": can_view_private_achievements,
+        "can_view_achievements": can_view_achievements,
         "friends_count": friends_count,
         "chat_rooms_count": chat_rooms_count,
         "total_highscores_count": total_highscores_count,

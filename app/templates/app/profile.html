@@ -11,10 +11,7 @@
 
 {% block content %}
 <section class="profile-page">
-    <div
-        class="profile-hero {% if profile.profile_banner %}has-profile-banner{% endif %}"
-        {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner|media_thumb:'banner' }}');"{% endif %}
-    >
+    <div class="profile-hero">
         <div class="profile-hero-content">
             <div class="profile-avatar-preview">
                 {% if profile.avatar %}
@@ -90,21 +87,6 @@
                 </div>
             </div>
 
-            <div class="profile-quick-actions">
-                <a href="{% url 'chat' %}">
-                    <i class="fa-solid fa-comments"></i>
-                    {% translate "Chat öffnen" %}
-                </a>
-                <a href="{% url 'users' %}">
-                    <i class="fa-solid fa-user-plus"></i>
-                    {% translate "Nutzer finden" %}
-                </a>
-                <a href="{% url 'profile_card_designer' %}">
-                    <i class="fa-solid fa-id-card-clip"></i>
-                    {% translate "Profilkarte designen" %}
-                </a>
-            </div>
-
             <div class="profile-spotlight-grid">
                 {% for item in profile_spotlight_stats %}
                     <div class="profile-spotlight-item">
@@ -151,11 +133,6 @@
                     <span>{% translate "Freunde" %}</span>
                     <strong>{{ friends_count }}</strong>
                 </div>
-
-                <a href="{% url 'friends_list' request.user.id %}" class="profile-friends-link">
-                    <i class="fa-solid fa-user-group"></i>
-                    {% translate "Freundesliste öffnen" %}
-                </a>
 
                 {% if incoming_friend_requests %}
                     <div class="profile-friend-requests">
@@ -273,7 +250,7 @@
                         <span class="profile-section-icon"><i class="fa-solid fa-image"></i></span>
                         <div>
                             <p class="profile-kicker">{% translate "Medien" %}</p>
-                            <h3>{% translate "Avatar & Banner" %}</h3>
+                            <h3>{% translate "Profilbild" %}</h3>
                         </div>
                     </div>
 
@@ -333,54 +310,6 @@
                     {{ form.avatar.errors }}
                 </div>
 
-                <div class="profile-field">
-                    <label for="id_profile_banner">{{ form.profile_banner.label }}</label>
-
-                    <div class="profile-avatar-upload-card profile-banner-upload-card">
-                        <div class="profile-banner-upload-preview">
-                            {% if profile.profile_banner %}
-                                <img src="{{ profile.profile_banner|media_thumb:'banner' }}" srcset="{{ profile.profile_banner|media_srcset:'banner-small 720w, banner 1280w, banner-large 1920w' }}" sizes="(max-width: 800px) 96vw, 1280px" alt="{% translate 'Aktuelles Profilbanner' %}" loading="lazy" decoding="async">
-                            {% else %}
-                                <i class="fa-solid fa-image"></i>
-                            {% endif %}
-                        </div>
-
-                        <div class="profile-avatar-upload-content">
-                            {% if profile.profile_banner %}
-                                <div class="profile-current-file">
-                                    <span>{% translate "Aktuelles Banner" %}</span>
-                                    <a href="{{ profile.profile_banner.url }}" target="_blank" rel="noopener">
-                                        {{ profile.profile_banner.name }}
-                                    </a>
-                                </div>
-                            {% else %}
-                                <div class="profile-current-file">
-                                    <span>{% translate "Noch kein Banner" %}</span>
-                                    <strong>{% translate "Wähle ein breites Bild aus, das oben in deinem Profil angezeigt wird." %}</strong>
-                                </div>
-                            {% endif %}
-
-                            <label class="profile-file-picker" for="id_profile_banner">
-                                <i class="fa-solid fa-image"></i>
-                                {% translate "Banner auswählen" %}
-                            </label>
-
-                            <input
-                                type="file"
-                                name="profile_banner"
-                                accept="image/*"
-                                id="id_profile_banner"
-                                class="profile-file-input-hidden"
-                            >
-
-                            <small class="profile-avatar-hint">
-                                {% translate "Maximal 5 MB. Dein bestehendes Banner bleibt erhalten, solange du kein neues Bild hochlädst." %}
-                            </small>
-                        </div>
-                    </div>
-
-                    {{ form.profile_banner.errors }}
-                </div>
                     </div>
                 </section>
 
@@ -435,6 +364,7 @@
                         <label>{{ form.privacy_show_online }} <span>{{ form.privacy_show_online.label }}</span></label>
                         <label>{{ form.privacy_show_friends }} <span>{{ form.privacy_show_friends.label }}</span></label>
                         <label>{{ form.privacy_show_highscores }} <span>{{ form.privacy_show_highscores.label }}</span></label>
+                        <label>{{ form.privacy_show_achievements }} <span>{{ form.privacy_show_achievements.label }}</span></label>
                         <label>{{ form.privacy_show_chat_button }} <span>{{ form.privacy_show_chat_button.label }}</span></label>
                     </div>
                 </div>
@@ -478,8 +408,6 @@
         </form>
     </div>
 
-    {% include "app/includes/achievement_panel.html" with achievement_summary=achievement_summary card_shell_class="profile-card" %}
-
     <article class="profile-card profile-game-settings-card">
         <form method="post" class="profile-game-settings-form" data-profile-game-cards-form>
             {% csrf_token %}
@@ -520,9 +448,6 @@
             </div>
         </form>
     </article>
-
-    {% include "app/includes/profile_game_cards.html" with profile_game_cards=profile_game_cards card_shell_class="profile-card" %}
-
 
     {% if blocked_users %}
         <div class="profile-card profile-blocked-card">

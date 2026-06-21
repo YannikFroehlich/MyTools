@@ -502,7 +502,6 @@ body.dark-mode :where(
 }
 
 /* Changelog: Verlauf/Topics sollen die gewählten Theme-Farben übernehmen. */
-.changelog-page .changelog-latest-pill,
 .changelog-page .changelog-mini-list a,
 .changelog-page .changelog-item-list li {
     border: 1px solid rgba(var(--theme-accent-rgb), 0.18) !important;
@@ -534,10 +533,8 @@ body.dark-mode :where(
     color: color-mix(in srgb, var(--theme-accent-start) 38%, var(--tool-card-text, var(--theme-text)) 62%) !important;
 }
 
-body.dark-mode .changelog-page .changelog-latest-pill,
 body.dark-mode .changelog-page .changelog-mini-list a,
 body.dark-mode .changelog-page .changelog-item-list li,
-body.dark .changelog-page .changelog-latest-pill,
 body.dark .changelog-page .changelog-mini-list a,
 body.dark .changelog-page .changelog-item-list li {
     background: color-mix(in srgb, var(--tool-card-bg, var(--theme-card-bg, #0f172a)) 72%, var(--theme-accent-end) 28%) !important;
