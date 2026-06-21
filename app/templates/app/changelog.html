@@ -4,7 +4,7 @@
 {% block title %}{% translate "Was ist neu?" %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}?v=20260621-changelog-refresh">
 {% endblock %}
 
 {% block content %}
@@ -16,17 +16,27 @@
             <p>{% translate "Alle sichtbaren Neuerungen, Bedienkomfort-Updates und größeren Plattform-Verbesserungen an einem Ort." %}</p>
         </div>
 
-        {% if latest_entry %}
-            <div class="changelog-latest-pill">
-                <i class="{{ latest_entry.icon }}"></i>
-                <span>{% translate "Aktuell" %}</span>
-                <strong>{{ latest_entry.version }}</strong>
+        <div class="changelog-hero-side">
+            {% if latest_entry %}
+                <a class="changelog-latest-pill" href="#release-{{ latest_entry.version|slugify }}">
+                    <span class="changelog-latest-icon"><i class="{{ latest_entry.icon }}"></i></span>
+                    <span>
+                        <small>{% translate "Aktuelle Version" %}</small>
+                        <strong>{{ latest_entry.version }}</strong>
+                    </span>
+                    <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
+                </a>
+            {% endif %}
+
+            <div class="changelog-hero-stats" aria-label="{% translate 'Changelog-Übersicht' %}">
+                <span><strong>{{ release_count }}</strong> {% translate "Releases" %}</span>
+                <span><strong>{{ change_count }}</strong> {% translate "Änderungen" %}</span>
             </div>
-        {% endif %}
+        </div>
     </div>
 
     <div class="changelog-layout">
-        <aside class="feature-card changelog-summary-card">
+        <aside class="feature-card changelog-summary-card" aria-label="{% translate 'Versionsverlauf' %}">
             <div class="feature-card-heading">
                 <i class="fa-solid fa-route"></i>
                 <div>
@@ -38,7 +48,7 @@
             <div class="changelog-mini-list">
                 {% for entry in changelog_entries %}
                     <a href="#release-{{ entry.version|slugify }}">
-                        <span>{{ entry.date }}</span>
+                        <span>{{ entry.version }} · {{ entry.date }}</span>
                         <strong>{{ entry.title }}</strong>
                     </a>
                 {% endfor %}
@@ -47,7 +57,11 @@
 
         <div class="changelog-timeline">
             {% for entry in changelog_entries %}
-                <article class="feature-card changelog-entry" id="release-{{ entry.version|slugify }}">
+                <article
+                    class="feature-card changelog-entry{% if forloop.first %} is-latest{% endif %}"
+                    id="release-{{ entry.version|slugify }}"
+                    data-release-type="{{ entry.type|slugify }}"
+                >
                     <div class="changelog-entry-icon">
                         <i class="{{ entry.icon }}"></i>
                     </div>
@@ -55,7 +69,11 @@
                     <div class="changelog-entry-main">
                         <div class="changelog-entry-top">
                             <div>
-                                <span class="changelog-date">{{ entry.date }}</span>
+                                <div class="changelog-entry-meta">
+                                    <span class="changelog-version">{{ entry.version }}</span>
+                                    <span class="changelog-date">{{ entry.date }}</span>
+                                    {% if forloop.first %}<span class="changelog-new-badge">{% translate "Neu" %}</span>{% endif %}
+                                </div>
                                 <h2>{{ entry.title }}</h2>
                             </div>
                             <span class="changelog-type">{{ entry.type }}</span>

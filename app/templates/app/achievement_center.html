@@ -39,7 +39,7 @@
         <div>
             <div class="section-heading-row">
                 <h2>{% translate "Kategorien" %}</h2>
-                <a href="{% url 'profile' %}" class="subtle-link">{% translate "Profil öffnen" %}</a>
+                <a href="{% url 'public_profile' request.user.id %}" class="subtle-link">{% translate "Profil öffnen" %}</a>
             </div>
             <div class="category-progress-grid">
                 {% for category in achievement_summary.categories %}

@@ -58,10 +58,10 @@ def achievement_definitions():
             "key": "profile_complete",
             "category": "profile",
             "label": _("Profil komplett"),
-            "description": _("Avatar, Banner, Bio und Name sind gepflegt."),
+            "description": _("Avatar, Bio und Name sind gepflegt."),
             "icon": "fa-solid fa-user-check",
             "metric": "profile_fields",
-            "target": 4,
+            "target": 3,
             "xp": 90,
         },
         {
@@ -468,7 +468,6 @@ def _profile_field_count(user):
 
     return sum([
         bool(profile.avatar),
-        bool(profile.profile_banner),
         bool((profile.bio or "").strip()),
         bool(user.get_full_name()),
     ])

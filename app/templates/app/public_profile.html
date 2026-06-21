@@ -120,8 +120,8 @@
             <div class="public-profile-actions">
                 {% if friendship_state == "self" %}
                     <a href="{% url 'profile' %}" class="public-profile-edit-button">
-                        <i class="fa-solid fa-user-gear"></i>
-                        {% translate "Mein Profil bearbeiten" %}
+                        <i class="fa-solid fa-gear"></i>
+                        {% translate "Profileinstellungen" %}
                     </a>
                 {% elif friendship_state == "friends" and can_use_chat_button %}
                     <form method="post" action="{% url 'chat_direct' profile_user.id %}">
@@ -246,7 +246,9 @@
         </article>
         {% endif %}
 
-        {% include "app/includes/achievement_panel.html" with achievement_summary=achievement_summary card_shell_class="public-profile-card" %}
+        {% if can_view_achievements %}
+            {% include "app/includes/achievement_panel.html" with achievement_summary=achievement_summary card_shell_class="public-profile-card" %}
+        {% endif %}
 
         {% include "app/includes/profile_game_cards.html" with profile_game_cards=profile_game_cards card_shell_class="public-profile-card" %}
 

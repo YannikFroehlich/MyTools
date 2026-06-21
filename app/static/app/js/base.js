@@ -1513,6 +1513,47 @@ document.addEventListener('DOMContentLoaded', () => {
     let globalSearchController = null;
     let globalSearchItems = [];
 
+    const globalSearchThemeMap = {
+        home: ['194, 65, 12', '#c2410c', '#f97316'],
+        weather: ['8, 145, 178', '#0891b2', '#38bdf8'],
+        chat: ['22, 163, 74', '#15803d', '#4ade80'],
+        users: ['124, 58, 237', '#6d28d9', '#a78bfa'],
+        notes: ['217, 119, 6', '#d97706', '#facc15'],
+        clock: ['2, 132, 199', '#0284c7', '#22d3ee'],
+        skribble: ['219, 39, 119', '#db2777', '#a855f7'],
+        uno: ['220, 38, 38', '#dc2626', '#7c3aed'],
+        kniffel: ['234, 88, 12', '#ea580c', '#fb923c'],
+        hangman: ['100, 116, 139', '#475569', '#8b5cf6'],
+        werewolf: ['79, 70, 229', '#312e81', '#8b5cf6'],
+        tictactoe: ['14, 165, 233', '#0284c7', '#2563eb'],
+        connectfour: ['239, 68, 68', '#f59e0b', '#ef4444'],
+        battleship: ['13, 148, 136', '#0f766e', '#475569'],
+        stadtlandfluss: ['5, 150, 105', '#059669', '#14b8a6'],
+        pong: ['6, 182, 212', '#06b6d4', '#2563eb'],
+        human_benchmark: ['6, 182, 212', '#0891b2', '#22d3ee'],
+        game_2048: ['124, 58, 237', '#6d28d9', '#a78bfa'],
+        leaderboard: ['217, 119, 6', '#d97706', '#facc15'],
+        drift_circuit: ['234, 88, 12', '#ea580c', '#fb923c'],
+        snake_powerups: ['22, 163, 74', '#15803d', '#84cc16'],
+        cookie_clicker: ['217, 119, 6', '#d97706', '#facc15'],
+        cookie_cosmos_v2: ['217, 70, 239', '#f59e0b', '#d946ef'],
+        nebula_forge_tycoon: ['168, 85, 247', '#7c3aed', '#ec4899'],
+        'note-result': ['217, 119, 6', '#d97706', '#facc15'],
+        'file-result': ['22, 163, 74', '#15803d', '#4ade80'],
+        'user-result': ['124, 58, 237', '#6d28d9', '#a78bfa'],
+        'roadmap-result': ['168, 85, 247', '#7c3aed', '#d946ef'],
+    };
+    const globalSearchFallbackThemes = [
+        ['37, 99, 235', '#2563eb', '#06b6d4'],
+        ['22, 163, 74', '#15803d', '#84cc16'],
+        ['217, 119, 6', '#d97706', '#facc15'],
+        ['124, 58, 237', '#6d28d9', '#c084fc'],
+        ['219, 39, 119', '#db2777', '#f472b6'],
+        ['234, 88, 12', '#ea580c', '#fb923c'],
+        ['8, 145, 178', '#0891b2', '#22d3ee'],
+        ['71, 85, 105', '#334155', '#64748b'],
+    ];
+
     function escapeHtml(value) {
         return String(value || '')
             .replace(/&/g, '&amp;')
@@ -1520,6 +1561,16 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
+    }
+
+    function resolveGlobalSearchTheme(value) {
+        const key = String(value || 'default').toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'default';
+        let colors = globalSearchThemeMap[key];
+        if (!colors) {
+            const hash = [...key].reduce((sum, character) => sum + character.charCodeAt(0), 0);
+            colors = globalSearchFallbackThemes[hash % globalSearchFallbackThemes.length];
+        }
+        return { key, rgb: colors[0], start: colors[1], end: colors[2] };
     }
 
     function renderGlobalSearchResults(results) {
@@ -1537,8 +1588,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        globalSearchResults.innerHTML = globalSearchItems.map((item, index) => `
-            <a class="global-search-result${index === 0 ? ' is-active' : ''}" href="${escapeHtml(item.url)}" data-search-index="${index}">
+        globalSearchResults.innerHTML = globalSearchItems.map((item, index) => {
+            const theme = resolveGlobalSearchTheme(item.theme || item.kind);
+            return `
+            <a class="global-search-result${index === 0 ? ' is-active' : ''}" href="${escapeHtml(item.url)}" data-search-index="${index}" data-search-theme="${escapeHtml(theme.key)}" style="--search-result-rgb:${theme.rgb};--search-result-start:${theme.start};--search-result-end:${theme.end}">
                 <span class="global-search-result-icon"><i class="${escapeHtml(item.icon || 'fa-solid fa-link')}"></i></span>
                 <span class="global-search-result-copy">
                     <strong>${escapeHtml(item.title)}</strong>
@@ -1546,7 +1599,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </span>
                 <span class="global-search-result-kind">${escapeHtml(item.badge || item.kind)}</span>
             </a>
-        `).join('');
+        `;
+        }).join('');
     }
 
     function runGlobalSearch(query = '') {

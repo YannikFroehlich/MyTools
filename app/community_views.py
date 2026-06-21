@@ -27,6 +27,21 @@ STARTED_AT = timezone.now()
 def get_changelog_entries():
     return [
         {
+            "version": "2026.13",
+            "date": "21.06.2026",
+            "title": _("Dashboard, Navigation und Profile"),
+            "summary": _("MyTools ist übersichtlicher, sicherer bedienbar und lässt sich schneller an den eigenen Alltag anpassen."),
+            "type": _("Plattform"),
+            "icon": "fa-solid fa-sparkles",
+            "items": [
+                _("Einsteiger-Modus mit Dashboard-Vorlagen für Alltag, Gaming und Homelab ergänzt."),
+                _("Papierkorb mit 30 Tagen Wiederherstellung für Notizen, Dateien, Widgets und Shortcuts eingebaut."),
+                _("Spiele, Tools, Google-Apps und die globale Suche haben klar unterscheidbare Designs erhalten."),
+                _("Header, Profilansicht und Profileinstellungen wurden optisch und funktional voneinander getrennt."),
+                _("Barrierefreiheit, Dialog-Fokus, mobile Suche und Rückgängig-Aktionen wurden verbessert."),
+            ],
+        },
+        {
             "version": "2026.12",
             "date": "19.06.2026",
             "title": _("Nebula Forge Tycoon Update"),
@@ -363,6 +378,8 @@ def changelog_view(request):
     context = {
         "changelog_entries": changelog_entries,
         "latest_entry": changelog_entries[0] if changelog_entries else None,
+        "release_count": len(changelog_entries),
+        "change_count": sum(len(entry["items"]) for entry in changelog_entries),
     }
     return render(request, "app/changelog.html", context)
 

@@ -47,16 +47,16 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ["avatar", "profile_banner", "bio", "status", "status_text", "privacy_show_online", "privacy_show_friends", "privacy_show_highscores", "privacy_show_chat_button", "notify_chat", "notify_friend_requests", "notify_skribble", "notify_game_invites", "notify_game_turns", "notify_file_shares", "notify_note_reminders", "notify_roadmap", "notify_achievements", "browser_notifications", "sound_notifications", "dnd_silence_notifications"]
+        fields = ["avatar", "bio", "status", "status_text", "privacy_show_online", "privacy_show_friends", "privacy_show_highscores", "privacy_show_achievements", "privacy_show_chat_button", "notify_chat", "notify_friend_requests", "notify_skribble", "notify_game_invites", "notify_game_turns", "notify_file_shares", "notify_note_reminders", "notify_roadmap", "notify_achievements", "browser_notifications", "sound_notifications", "dnd_silence_notifications"]
         labels = {
             "avatar": _("Profilbild"),
-            "profile_banner": _("Profilbanner"),
             "bio": _("Über mich"),
             "status": _("Status"),
             "status_text": _("Statustext"),
             "privacy_show_online": _("Online-Status öffentlich anzeigen"),
             "privacy_show_friends": _("Freundesliste öffentlich anzeigen"),
             "privacy_show_highscores": _("Highscores öffentlich anzeigen"),
+            "privacy_show_achievements": _("Achievements öffentlich anzeigen"),
             "privacy_show_chat_button": _("Chat-Button im Profil anzeigen"),
             "notify_chat": _("Chat-Benachrichtigungen"),
             "notify_friend_requests": _("Freundschaftsanfragen"),
@@ -76,10 +76,6 @@ class ProfileForm(forms.ModelForm):
                 "class": "profile-file-input",
                 "accept": "image/*",
             }),
-            "profile_banner": forms.ClearableFileInput(attrs={
-                "class": "profile-file-input",
-                "accept": "image/*",
-            }),
             "bio": forms.Textarea(attrs={
                 "class": "profile-textarea",
                 "rows": 5,
@@ -93,6 +89,7 @@ class ProfileForm(forms.ModelForm):
             "privacy_show_online": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "privacy_show_friends": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "privacy_show_highscores": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
+            "privacy_show_achievements": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "privacy_show_chat_button": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "notify_chat": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
             "notify_friend_requests": forms.CheckboxInput(attrs={"class": "profile-checkbox"}),
@@ -139,9 +136,6 @@ class ProfileForm(forms.ModelForm):
 
     def clean_avatar(self):
         return self.clean_profile_image("avatar", _("Das Profilbild"))
-
-    def clean_profile_banner(self):
-        return self.clean_profile_image("profile_banner", _("Das Profilbanner"))
 
     def clean_profile_image(self, field_name, label):
         image = self.cleaned_data.get(field_name)

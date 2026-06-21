@@ -67,12 +67,6 @@ class UserProfile(models.Model):
         blank=True,
         verbose_name="Profilbild",
     )
-    profile_banner = models.ImageField(
-        upload_to="profile_banners/",
-        null=True,
-        blank=True,
-        verbose_name="Profilbanner",
-    )
     bio = models.TextField(
         max_length=500,
         blank=True,
@@ -97,6 +91,7 @@ class UserProfile(models.Model):
     privacy_show_online = models.BooleanField(default=True)
     privacy_show_friends = models.BooleanField(default=True)
     privacy_show_highscores = models.BooleanField(default=True)
+    privacy_show_achievements = models.BooleanField(default=True)
     privacy_show_chat_button = models.BooleanField(default=True)
     notify_chat = models.BooleanField(default=True)
     notify_friend_requests = models.BooleanField(default=True)
