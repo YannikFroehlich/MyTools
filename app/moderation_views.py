@@ -19,7 +19,6 @@ from .image_optimization import (
     FILE_SHARE_IMAGE_MAX_SIZE,
     GALLERY_IMAGE_MAX_SIZE,
     PROFILE_AVATAR_MAX_SIZE,
-    PROFILE_BANNER_MAX_SIZE,
     SHORTCUT_ICON_MAX_SIZE,
     WIKI_IMAGE_MAX_SIZE,
     optimize_existing_image_field,
@@ -182,14 +181,6 @@ def _optimize_existing_media_files():
         quality=82,
         stats=stats,
         label="Profilbild",
-    )
-    _optimize_model_image_fields(
-        UserProfile.objects.exclude(profile_banner=""),
-        "profile_banner",
-        max_size=PROFILE_BANNER_MAX_SIZE,
-        quality=82,
-        stats=stats,
-        label="Profilbanner",
     )
     _optimize_model_image_fields(
         ProfileGalleryImage.objects.exclude(image=""),
@@ -374,7 +365,6 @@ def moderation_dashboard_view(request):
             "label": _("Bild-Medien"),
             "value": (
                 UserProfile.objects.exclude(avatar="").count()
-                + UserProfile.objects.exclude(profile_banner="").count()
                 + ProfileGalleryImage.objects.exclude(image="").count()
                 + Shortcut.objects.exclude(image="").count()
                 + ChatRoom.objects.exclude(avatar="").count()

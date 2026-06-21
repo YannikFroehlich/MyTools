@@ -19,14 +19,6 @@
     box-shadow: 0 24px 70px rgba(var(--theme-accent-rgb), 0.24);
 }
 
-.public-profile-hero.has-profile-banner {
-    background-image:
-        linear-gradient(90deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.28)),
-        var(--profile-banner-url);
-    background-position: center;
-    background-size: cover;
-}
-
 .users-hero {
     display: flex;
     align-items: center;
@@ -198,26 +190,6 @@
         border-color 0.2s ease;
 }
 
-.user-card.has-profile-banner {
-    background-image:
-        linear-gradient(90deg, rgba(6, 10, 20, 0.95), rgba(6, 10, 20, 0.74)),
-        var(--profile-banner-url);
-    background-position: center;
-    background-size: cover;
-    border-color: rgba(255, 255, 255, 0.14);
-    color: #ffffff;
-}
-
-.user-card.has-profile-banner::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(6, 10, 20, 0.18) 48%, rgba(6, 10, 20, 0.28)),
-        radial-gradient(circle at top right, rgba(var(--theme-accent-rgb), 0.1), transparent 44%);
-    pointer-events: none;
-}
-
 .user-card > * {
     position: relative;
     z-index: 1;
@@ -326,29 +298,6 @@
 
 .user-open {
     color: var(--theme-accent-start);
-}
-
-.user-card.has-profile-banner .user-title-row h2,
-.user-card.has-profile-banner .user-username,
-.user-card.has-profile-banner .user-bio,
-.user-card.has-profile-banner .user-meta,
-.user-card.has-profile-banner .user-open {
-    color: #ffffff;
-}
-
-.user-card.has-profile-banner .user-username,
-.user-card.has-profile-banner .user-bio,
-.user-card.has-profile-banner .user-meta {
-    color: rgba(255, 255, 255, 0.82);
-}
-
-.user-card.has-profile-banner .user-bio-empty {
-    color: rgba(255, 255, 255, 0.68);
-}
-
-.user-card.has-profile-banner .user-own-badge {
-    background: rgba(255, 255, 255, 0.16);
-    color: #ffffff;
 }
 
 .users-empty {
@@ -712,15 +661,6 @@ body.dark-mode .public-profile-card {
     border-color: rgba(255, 255, 255, 0.08);
 }
 
-body.dark-mode .user-card.has-profile-banner {
-    background-image:
-        linear-gradient(90deg, rgba(6, 10, 20, 0.95), rgba(6, 10, 20, 0.74)),
-        var(--profile-banner-url);
-    background-position: center;
-    background-size: cover;
-    border-color: rgba(255, 255, 255, 0.14);
-}
-
 body.dark-mode .user-username,
 body.dark-mode .user-bio,
 body.dark-mode .users-counter small,
@@ -1049,14 +989,6 @@ body.dark-mode .users-search {
     border-color: rgba(96, 165, 250, 0.26);
 }
 
-body.dark-mode .user-card.has-profile-banner {
-    background-image:
-        linear-gradient(90deg, rgba(6, 10, 20, 0.95), rgba(6, 10, 20, 0.74)),
-        var(--profile-banner-url);
-    background-position: center;
-    background-size: cover;
-}
-
 body.dark-mode .user-card:hover,
 body.dark-mode .friend-preview-card:hover {
     border-color: rgba(var(--theme-accent-rgb), 0.38);
@@ -1154,27 +1086,6 @@ body.dark-mode .user-pending-badge {
 
 body.dark-mode .public-profile-benchmark-link {
     background: rgba(var(--theme-accent-rgb), 0.14);
-}
-
-body.dark-mode .user-card.has-profile-banner .user-title-row h2,
-body.dark-mode .user-card.has-profile-banner .user-username,
-body.dark-mode .user-card.has-profile-banner .user-bio,
-body.dark-mode .user-card.has-profile-banner .user-meta,
-body.dark-mode .user-card.has-profile-banner .user-open {
-    color: #ffffff;
-}
-
-.user-card.has-profile-banner .user-status-line,
-.user-card.has-profile-banner .user-status-text {
-    color: rgba(255, 255, 255, 0.92);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-}
-
-.user-card.has-profile-banner .user-activity-row span {
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 /* ── Freunde-Seite: Karten luftiger darstellen ── */

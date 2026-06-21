@@ -50,8 +50,7 @@
             {% for profile in friends %}
                 <a
                     href="{% url 'public_profile' profile.user.id %}"
-                    class="user-card {% if profile.profile_banner %}has-profile-banner{% endif %}"
-                    {% if profile.profile_banner %}style="--profile-banner-url: url('{{ profile.profile_banner|media_thumb:'banner' }}');"{% endif %}
+                    class="user-card"
                 >
                     <div class="user-avatar">
                         {% if profile.avatar %}

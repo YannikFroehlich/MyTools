@@ -984,8 +984,7 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "app/profile.html")
         self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
-        self.assertIn("achievement_summary", response.context)
-        self.assertContains(response, "Achievements")
+        self.assertContains(response, "Achievements öffentlich anzeigen")
 
     def test_achievement_summary_unlocks_cross_app_badges(self):
         friend = get_user_model().objects.create_user(
@@ -1098,42 +1097,29 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(self.user.email, "yannik@example.com")
         self.assertEqual(profile.bio, "Meine Bio")
 
-    def test_profile_post_keeps_existing_banner_without_new_upload(self):
-        profile = UserProfile.objects.create(
-            user=self.user,
-            profile_banner=self.get_test_image("banner.png"),
-        )
-        original_banner_name = profile.profile_banner.name
+    def test_profile_settings_hide_navigation_shortcuts_and_banner(self):
+        response = self.client.get(reverse("profile"))
 
-        response = self.client.post(reverse("profile"), {
-            "username": self.user.username,
-            "first_name": "",
-            "last_name": "",
-            "email": "",
-            "bio": "Banner bleibt",
-        })
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Chat öffnen")
+        self.assertNotContains(response, "Nutzer finden")
+        self.assertNotContains(response, "Freundesliste öffnen")
+        self.assertNotContains(response, "Banner auswählen")
+        self.assertNotIn("profile_banner", response.context["form"].fields)
+        self.assertTemplateNotUsed(response, "app/includes/achievement_panel.html")
+        self.assertTemplateNotUsed(response, "app/includes/profile_game_cards.html")
 
-        self.assertRedirects(response, reverse("profile"))
-
-        profile.refresh_from_db()
-        self.assertEqual(profile.profile_banner.name, original_banner_name)
-
-    def test_profile_banner_rejects_files_larger_than_five_mb(self):
+    def test_profile_settings_save_achievement_visibility(self):
         response = self.client.post(reverse("profile"), {
             "username": self.user.username,
             "first_name": "",
             "last_name": "",
             "email": "",
             "bio": "",
-            "profile_banner": self.get_large_test_image(),
         })
 
-        self.assertEqual(response.status_code, 200)
-        self.assertFormError(
-            response.context["form"],
-            "profile_banner",
-            "Das Profilbanner darf maximal 5 MB groß sein.",
-        )
+        self.assertRedirects(response, reverse("profile"))
+        self.assertFalse(UserProfile.objects.get(user=self.user).privacy_show_achievements)
 
     def test_profile_rejects_duplicate_username(self):
         get_user_model().objects.create_user(
@@ -1224,6 +1210,24 @@ class ProfileViewTests(BaseTestCase):
         self.assertTrue(UserProfile.objects.filter(user=other_user).exists())
         self.assertIn("achievement_summary", response.context)
 
+    def test_own_public_profile_shows_profile_settings_button(self):
+        response = self.client.get(reverse("public_profile", args=[self.user.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["friendship_state"], "self")
+        self.assertContains(response, reverse("profile"))
+        self.assertContains(response, "Profileinstellungen")
+
+    def test_header_profile_link_opens_own_public_profile(self):
+        response = self.client.get(reverse("home"))
+        public_profile_url = reverse("public_profile", args=[self.user.id])
+
+        self.assertContains(response, f'href="{public_profile_url}"')
+        self.assertNotContains(
+            response,
+            f'href="{reverse("profile")}" class="profile-menu-item"',
+        )
+
     def test_public_profile_hides_private_achievement_categories_from_strangers(self):
         other_user = get_user_model().objects.create_user(
             username="privatebadges",
@@ -1247,6 +1251,20 @@ class ProfileViewTests(BaseTestCase):
         self.assertNotIn("notes", category_keys)
         self.assertNotIn("chat", category_keys)
         self.assertNotIn("uploads", category_keys)
+
+    def test_public_profile_hides_achievements_when_disabled(self):
+        other_user = get_user_model().objects.create_user(
+            username="hiddenachievements",
+            password="testpass-123",
+        )
+        UserProfile.objects.create(user=other_user, privacy_show_achievements=False)
+
+        response = self.client.get(reverse("public_profile", args=[other_user.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["can_view_achievements"])
+        self.assertIsNone(response.context["achievement_summary"])
+        self.assertTemplateNotUsed(response, "app/includes/achievement_panel.html")
 
     def test_send_friend_request_from_public_profile(self):
         other_user = get_user_model().objects.create_user(
@@ -1521,7 +1539,7 @@ class ProfileViewTests(BaseTestCase):
         self.assertEqual(response.json()["save_data"]["prestigeLevel"], 3)
         self.assertEqual(response.json()["save"]["prestige_level"], 3)
 
-    def test_profile_page_shows_cookie_clicker_highscore(self):
+    def test_profile_settings_hide_cookie_highscore_but_public_profile_shows_it(self):
         CookieClickerHighScore.objects.create(
             user=self.user,
             score=987654,
@@ -1535,11 +1553,13 @@ class ProfileViewTests(BaseTestCase):
             buildings_count=44,
         )
 
-        response = self.client.get(reverse("profile"))
+        settings_response = self.client.get(reverse("profile"))
+        public_response = self.client.get(reverse("public_profile", args=[self.user.id]))
 
-        self.assertContains(response, "Cookie Cosmos")
-        self.assertContains(response, "987.7K")
-        self.assertEqual(response.context["cookie_highscore"].display_score, "987.7K")
+        self.assertNotContains(settings_response, "987.7K")
+        self.assertNotIn("cookie_highscore", settings_response.context)
+        self.assertContains(public_response, "987.7K")
+        self.assertEqual(public_response.context["cookie_highscore"].display_score, "987.7K")
 
     def test_profile_game_card_settings_can_be_reordered_and_hidden(self):
         response = self.client.post(reverse("profile"), {
@@ -1631,6 +1651,24 @@ class HomeViewTests(BaseTestCase):
         self.assertIn("sections", response.context)
         self.assertIn("home_labels", response.context)
 
+    def test_header_has_visual_identity_and_current_page_state(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertContains(response, 'class="header-brand-slot"')
+        self.assertContains(response, 'class="logo-mark"')
+        self.assertContains(response, 'class="logo-wordmark"')
+        self.assertContains(response, 'id="header-language-select"')
+        self.assertContains(response, 'class="nav-primary-link active" aria-current="page"')
+        self.assertContains(response, 'aria-controls="games-menu-dropdown"')
+        self.assertContains(response, 'aria-controls="google-apps-menu-dropdown"')
+        self.assertContains(response, 'aria-controls="menu-dropdown"')
+
+        stylesheet = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "core.css").read_text(encoding="utf-8")
+        self.assertIn("Verfeinerter, mit den Menüs abgestimmter Header", stylesheet)
+        self.assertIn("nav#site-header .header-brand-slot", stylesheet)
+        self.assertRegex(stylesheet, r"nav#site-header \.logo\s*\{[^}]*flex: 0 0 auto")
+        self.assertIn("nav#site-header .navigation > a.active", stylesheet)
+
     def test_games_menu_has_an_individual_theme_for_every_game(self):
         response = self.client.get(reverse("home"))
         content = response.content.decode()
@@ -1661,6 +1699,43 @@ class HomeViewTests(BaseTestCase):
         self.assertContains(staff_response, "data-tool-theme=", count=21)
         self.assertContains(staff_response, 'data-tool-theme="moderation"')
         self.assertContains(staff_response, 'data-tool-theme="server"')
+
+    def test_google_menu_has_an_individual_theme_for_every_app(self):
+        response = self.client.get(reverse("home"))
+        content = response.content.decode()
+
+        self.assertContains(response, "data-google-theme=", count=11)
+        for theme in (
+            "search", "maps", "youtube", "news", "photos", "gmail", "drive",
+            "calendar", "translate", "play", "gemini",
+        ):
+            self.assertIn(f'data-google-theme="{theme}"', content)
+
+    def test_global_search_results_include_visual_theme_keys(self):
+        response = self.client.get(reverse("global_search_api"))
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertTrue(results)
+        self.assertTrue(all(result.get("theme") for result in results))
+        self.assertEqual(results[0]["theme"], "home")
+        self.assertIn("weather", {result["theme"] for result in results})
+
+    def test_global_search_uses_content_theme_for_note_results(self):
+        Note.objects.create(user=self.user, title="Visuelle Suche", content="Farbiges Ergebnis")
+
+        response = self.client.get(reverse("global_search_api"), {"q": "Visuelle Suche"})
+
+        self.assertEqual(response.status_code, 200)
+        note_result = next(result for result in response.json()["results"] if result["kind"] == "Notiz")
+        self.assertEqual(note_result["theme"], "note-result")
+
+    def test_global_search_frontend_renders_individual_result_themes(self):
+        script = (settings.BASE_DIR / "app" / "static" / "app" / "js" / "base.js").read_text(encoding="utf-8")
+
+        self.assertIn("resolveGlobalSearchTheme", script)
+        self.assertIn('data-search-theme="${escapeHtml(theme.key)}"', script)
+        self.assertIn("--search-result-start:${theme.start}", script)
 
     def test_home_has_accessible_heading_and_search_combobox(self):
         response = self.client.get(reverse("home"))

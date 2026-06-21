@@ -32,7 +32,7 @@
                         {% translate 'Dashboard öffnen' %}
                     </a>
 
-                    <a href="{% url 'profile' %}" class="about-action about-action-secondary">
+                    <a href="{% url 'public_profile' request.user.id %}" class="about-action about-action-secondary">
                         <i class="fa-solid fa-id-card"></i>
                         {% translate 'Profil ansehen' %}
                     </a>

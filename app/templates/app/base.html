@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260621-menu-cards">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260621-header-hit-area">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -50,29 +50,31 @@
     {{ access_hidden_paths|json_script:"access-hidden-paths" }}
     {{ access_hidden_visible_paths|json_script:"access-hidden-visible-paths" }}
     <nav id="site-header">
-        <a class="logo" href="{% url 'home' %}" aria-label="{% translate 'Start' %}" title="{% translate 'Start' %}">
-            <i class="fa-solid fa-cloud" style="margin-right: 10px" aria-hidden="true"></i>
-            <span>MyTools</span>
-        </a>
+        <div class="header-brand-slot">
+            <a class="logo" href="{% url 'home' %}" aria-label="{% translate 'Start' %}" title="{% translate 'Start' %}">
+                <span class="logo-mark" aria-hidden="true"><i class="fa-solid fa-cloud"></i></span>
+                <span class="logo-wordmark">MyTools</span>
+            </a>
+        </div>
 
         <div class="navigation">
-            <a href="{% url 'home' %}">
+            <a href="{% url 'home' %}" class="nav-primary-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}"{% if request.resolver_match.url_name == 'home' %} aria-current="page"{% endif %}>
                 <i class="fa-solid fa-house"></i>
                 {% translate 'Start' %}
             </a>
 
-            <a href="{% url 'weather' %}">
+            <a href="{% url 'weather' %}" class="nav-primary-link{% if request.resolver_match.url_name == 'weather' %} active{% endif %}"{% if request.resolver_match.url_name == 'weather' %} aria-current="page"{% endif %}>
                 <i class="fa-solid fa-cloud-sun"></i>
                 {% translate 'Wetter' %}
             </a>
 
-            <a href="{% url 'about' %}">
+            <a href="{% url 'about' %}" class="nav-primary-link{% if request.resolver_match.url_name == 'about' %} active{% endif %}"{% if request.resolver_match.url_name == 'about' %} aria-current="page"{% endif %}>
                 <i class="fa-solid fa-circle-info"></i>
                 {% translate 'Über' %}
             </a>
 
             <div class="menu-wrapper">
-                <button class="menu-button games-menu-button" id="games-menu-button" type="button" aria-label="{% translate 'Spiele-Menü öffnen' %}">
+                <button class="menu-button games-menu-button" id="games-menu-button" type="button" aria-label="{% translate 'Spiele-Menü öffnen' %}" aria-expanded="false" aria-controls="games-menu-dropdown">
                     <i class="fa-solid fa-gamepad"></i>
                     <span>{% translate 'Spiele' %}</span>
                     <i class="fa-solid fa-chevron-down games-menu-chevron"></i>
@@ -321,7 +323,7 @@
                 </div>
             </div>
             <div class="menu-wrapper">
-                <button class="menu-button google-apps-menu-button" id="google-apps-menu-button" type="button" aria-label="{% translate 'Google-Apps-Menü öffnen' %}">
+                <button class="menu-button google-apps-menu-button" id="google-apps-menu-button" type="button" aria-label="{% translate 'Google-Apps-Menü öffnen' %}" aria-expanded="false" aria-controls="google-apps-menu-dropdown">
                     <i class="fa-brands fa-google"></i>
                     <span>{% translate 'Google' %}</span>
                     <i class="fa-solid fa-chevron-down google-apps-menu-chevron"></i>
@@ -351,7 +353,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="https://google.com" class="game-menu-card is-blue" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Suche' %}" data-menu-category="{% translate 'Google Suche Web Recherche' %}">
+                                <a href="https://google.com" class="game-menu-card is-blue" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="search" data-google-mark="G" data-menu-name="{% translate 'Suche' %}" data-menu-category="{% translate 'Google Suche Web Recherche' %}">
                                     <span class="game-menu-icon"><i class="fa-brands fa-google"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Suche' %}</strong>
@@ -359,7 +361,7 @@
                                     </span>
                                 </a>
 
-                                <a href="https://www.google.com/maps/" class="game-menu-card is-green" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Maps' %}" data-menu-category="{% translate 'Karten Navigation Orte Routen' %}">
+                                <a href="https://www.google.com/maps/" class="game-menu-card is-green" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="maps" data-google-mark="PIN" data-menu-name="{% translate 'Maps' %}" data-menu-category="{% translate 'Karten Navigation Orte Routen' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-map-location-dot"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Maps' %}</strong>
@@ -367,7 +369,7 @@
                                     </span>
                                 </a>
 
-                                <a href="https://www.youtube.com/" class="game-menu-card is-red" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Youtube' %}" data-menu-category="{% translate 'Video Musik Medien' %}">
+                                <a href="https://www.youtube.com/" class="game-menu-card is-red" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="youtube" data-google-mark="▶" data-menu-name="{% translate 'Youtube' %}" data-menu-category="{% translate 'Video Musik Medien' %}">
                                     <span class="game-menu-icon"><i class="fa-brands fa-youtube"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Youtube' %}</strong>
@@ -375,7 +377,7 @@
                                     </span>
                                 </a>
 
-                                <a href="https://news.google.com/" class="game-menu-card is-slate" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'News' %}" data-menu-category="{% translate 'Nachrichten News Artikel' %}">
+                                <a href="https://news.google.com/" class="game-menu-card is-slate" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="news" data-google-mark="24H" data-menu-name="{% translate 'News' %}" data-menu-category="{% translate 'Nachrichten News Artikel' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-newspaper"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'News' %}</strong>
@@ -383,7 +385,7 @@
                                     </span>
                                 </a>
 
-                                <a href="https://photos.google.com/" class="game-menu-card is-pink" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Fotos' %}" data-menu-category="{% translate 'Bilder Fotos Galerie' %}">
+                                <a href="https://photos.google.com/" class="game-menu-card is-pink" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="photos" data-google-mark="RGB" data-menu-name="{% translate 'Fotos' %}" data-menu-category="{% translate 'Bilder Fotos Galerie' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-photo-film"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Fotos' %}</strong>
@@ -400,7 +402,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="https://mail.google.com/" class="game-menu-card is-red" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Gmail' %}" data-menu-category="{% translate 'Mail E-Mail Postfach' %}">
+                                <a href="https://mail.google.com/" class="game-menu-card is-red" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="gmail" data-google-mark="@" data-menu-name="{% translate 'Gmail' %}" data-menu-category="{% translate 'Mail E-Mail Postfach' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-envelope"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Gmail' %}</strong>
@@ -408,7 +410,7 @@
                                     </span>
                                 </a>
 
-                                <a href="https://drive.google.com/" class="game-menu-card is-amber" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Drive' %}" data-menu-category="{% translate 'Dateien Cloud Speicher' %}">
+                                <a href="https://drive.google.com/" class="game-menu-card is-amber" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="drive" data-google-mark="CLOUD" data-menu-name="{% translate 'Drive' %}" data-menu-category="{% translate 'Dateien Cloud Speicher' %}">
                                     <span class="game-menu-icon"><i class="fa-brands fa-google-drive"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Drive' %}</strong>
@@ -416,7 +418,7 @@
                                     </span>
                                 </a>
 
-                                <a href="https://calendar.google.com/" class="game-menu-card is-blue" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Kalender' %}" data-menu-category="{% translate 'Termine Kalender Events' %}">
+                                <a href="https://calendar.google.com/" class="game-menu-card is-blue" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="calendar" data-google-mark="31" data-menu-name="{% translate 'Kalender' %}" data-menu-category="{% translate 'Termine Kalender Events' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-calendar-days"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Kalender' %}</strong>
@@ -424,7 +426,7 @@
                                     </span>
                                 </a>
 
-                                <a href="https://translate.google.com/" class="game-menu-card is-cyan" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Translator' %}" data-menu-category="{% translate 'Übersetzen Sprache Translator' %}">
+                                <a href="https://translate.google.com/" class="game-menu-card is-cyan" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="translate" data-google-mark="A↔文" data-menu-name="{% translate 'Translator' %}" data-menu-category="{% translate 'Übersetzen Sprache Translator' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-language"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Translator' %}</strong>
@@ -441,7 +443,7 @@
                             </div>
 
                             <div class="games-menu-grid">
-                                <a href="https://play.google.com/" class="game-menu-card is-green" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Play' %}" data-menu-category="{% translate 'Store Apps Play' %}">
+                                <a href="https://play.google.com/" class="game-menu-card is-green" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="play" data-google-mark="PLAY" data-menu-name="{% translate 'Play' %}" data-menu-category="{% translate 'Store Apps Play' %}">
                                     <span class="game-menu-icon"><i class="fa-brands fa-google-play"></i></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Play' %}</strong>
@@ -449,7 +451,7 @@
                                     </span>
                                 </a>
 
-                                <a href="https://gemini.google.com/" class="game-menu-card is-violet" target="_blank" rel="noopener noreferrer" data-menu-card data-menu-name="{% translate 'Gemini' %}" data-menu-category="{% translate 'KI AI Chat Gemini' %}">
+                                <a href="https://gemini.google.com/" class="game-menu-card is-violet" target="_blank" rel="noopener noreferrer" data-menu-card data-google-theme="gemini" data-google-mark="✦ AI" data-menu-name="{% translate 'Gemini' %}" data-menu-category="{% translate 'KI AI Chat Gemini' %}">
                                     <span class="game-menu-icon"><span class="gemini-icon"></span></span>
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Gemini' %}</strong>
@@ -468,7 +470,7 @@
             </div>
 
             <div class="menu-wrapper">
-                <button class="menu-button" id="menu-button" type="button" aria-label="{% translate 'Weitere Seiten' %}">
+                <button class="menu-button" id="menu-button" type="button" aria-label="{% translate 'Weitere Seiten' %}" aria-expanded="false" aria-controls="menu-dropdown">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
 
@@ -705,7 +707,7 @@
         </div>
 
         <div class="user-actions">
-            <form action="{% url 'set_language' %}" method="post">
+            <form action="{% url 'set_language' %}" method="post" class="header-language-form">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}">
 
@@ -713,7 +715,8 @@
                 {% get_available_languages as LANGUAGES %}
                 {% get_language_info_list for LANGUAGES as languages %}
 
-                <select name="language" onchange="this.form.submit()">
+                <label class="sr-only" for="header-language-select">{% translate 'Sprache' %}</label>
+                <select id="header-language-select" name="language" onchange="this.form.submit()" aria-label="{% translate 'Sprache' %}">
                     {% for language in languages %}
                         <option value="{{ language.code }}"
                             {% if language.code == CURRENT_LANGUAGE %}selected{% endif %}>
@@ -980,8 +983,8 @@
                             </div>
                         </div>
 
-                        <a href="{% url 'profile' %}" class="profile-menu-item">
-                            <i class="fa-solid fa-user-gear"></i>
+                        <a href="{% url 'public_profile' request.user.id %}" class="profile-menu-item">
+                            <i class="fa-solid fa-user"></i>
                             {% translate 'Profil öffnen' %}
                         </a>
 
@@ -1092,7 +1095,7 @@
                 <span>{% translate 'Header' %}</span>
             </button>
             <a href="{% url 'chat' %}"><i class="fa-solid fa-comments"></i><span>{% translate 'Chat' %}</span></a>
-            <a href="{% url 'profile' %}"><i class="fa-solid fa-user"></i><span>{% translate 'Profil' %}</span></a>
+            <a href="{% url 'public_profile' request.user.id %}"><i class="fa-solid fa-user"></i><span>{% translate 'Profil' %}</span></a>
         </nav>
     {% endif %}
 
