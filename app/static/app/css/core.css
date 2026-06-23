@@ -4701,3 +4701,259 @@ body.dark-mode nav#site-header {
         transition-duration: 0.001ms !important;
     }
 }
+
+/* Mobile navigation polish */
+.tools-sheet-close {
+    display: none;
+}
+
+@media (max-width: 980px) {
+    body.has-mobile-bottom-nav nav#site-header > .header-brand-slot {
+        display: none !important;
+    }
+}
+
+@media (max-width: 820px) {
+    body.tools-sheet-open {
+        overflow: hidden;
+    }
+
+    body.tools-sheet-open::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9050;
+        background: rgba(15, 23, 42, 0.56);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "actions";
+        gap: 0;
+        min-height: 0;
+        padding: calc(8px + env(safe-area-inset-top)) 10px 8px;
+    }
+
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header > .header-brand-slot {
+        display: none;
+    }
+
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .user-actions {
+        display: flex;
+        width: 100%;
+        max-width: 100%;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 0;
+        overflow: visible;
+    }
+
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .header-language-form,
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .user-actions .global-search-trigger,
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .navigation {
+        display: none;
+    }
+
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .user-actions > * {
+        flex: 0 0 auto;
+    }
+
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .theme-editor-btn,
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .pwa-install-btn,
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .dark-mode-btn,
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .notification-center-button {
+        width: 44px;
+        height: 44px;
+        border-radius: 15px;
+    }
+
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .profile-menu-button {
+        height: 44px;
+        padding: 4px 10px 4px 4px;
+    }
+
+    body.has-mobile-bottom-nav.mobile-header-visible nav#site-header .profile-menu-avatar {
+        width: 36px;
+        height: 36px;
+    }
+
+    nav.mobile-bottom-nav {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 5px;
+        min-height: 64px;
+        padding: 7px;
+        border-radius: 22px;
+    }
+
+    nav.mobile-bottom-nav a,
+    nav.mobile-bottom-nav button {
+        min-height: 52px;
+        border-radius: 17px;
+        touch-action: manipulation;
+    }
+
+    nav.mobile-bottom-nav i {
+        font-size: 1.08rem;
+    }
+
+    body.tools-sheet-open nav.mobile-bottom-nav [data-open-tools-menu] {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.16);
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel {
+        position: fixed;
+        inset: auto 0 0 0;
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 9100;
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        max-height: min(86dvh, 760px);
+        padding: 10px 12px calc(16px + env(safe-area-inset-bottom));
+        gap: 12px;
+        overflow: hidden;
+        border-radius: 28px 28px 0 0;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-bottom: 0;
+        box-shadow:
+            0 -24px 70px rgba(15, 23, 42, 0.32),
+            inset 0 1px 0 rgba(255, 255, 255, 0.86);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(105%);
+        transform-origin: bottom center;
+        transition:
+            opacity 0.18s ease,
+            visibility 0.18s ease,
+            transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel.open {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel::before {
+        content: "";
+        width: 46px;
+        height: 5px;
+        justify-self: center;
+        border-radius: 999px;
+        background: rgba(100, 116, 139, 0.38);
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .games-menu-top {
+        grid-template-columns: minmax(0, 1fr) 44px;
+        gap: 10px;
+        align-items: center;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .games-menu-title strong {
+        font-size: 1.18rem;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .tools-sheet-close {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border: 0;
+        border-radius: 15px;
+        color: #475569;
+        background: rgba(148, 163, 184, 0.14);
+        cursor: pointer;
+        font: inherit;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .games-menu-search input {
+        height: 50px;
+        border-radius: 17px;
+        font-size: 16px;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .games-menu-content {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 2px 2px 10px;
+        scrollbar-width: thin;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .games-menu-section {
+        gap: 9px;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .games-menu-section-title {
+        min-height: 32px;
+        font-size: 0.8rem;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .games-menu-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .game-menu-card {
+        min-height: 68px;
+        grid-template-columns: 50px minmax(0, 1fr) auto;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 18px;
+        touch-action: manipulation;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .game-menu-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .game-menu-copy strong {
+        font-size: 0.96rem;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .game-menu-copy small {
+        font-size: 0.8rem;
+    }
+
+    body.dark-mode.has-mobile-bottom-nav #menu-dropdown.tools-library-panel .tools-sheet-close {
+        color: #cbd5e1;
+        background: rgba(148, 163, 184, 0.16);
+    }
+
+    body.dark-mode.has-mobile-bottom-nav #menu-dropdown.tools-library-panel::before {
+        background: rgba(203, 213, 225, 0.32);
+    }
+}
+
+@media (max-width: 420px) {
+    nav.mobile-bottom-nav {
+        left: 8px;
+        right: 8px;
+        gap: 3px;
+        padding: 6px;
+    }
+
+    nav.mobile-bottom-nav a,
+    nav.mobile-bottom-nav button {
+        min-height: 50px;
+        font-size: 0.68rem;
+    }
+
+    body.has-mobile-bottom-nav #menu-dropdown.tools-library-panel {
+        max-height: 88dvh;
+        padding-inline: 10px;
+        border-radius: 24px 24px 0 0;
+    }
+}

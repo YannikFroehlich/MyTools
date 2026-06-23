@@ -47,7 +47,11 @@
                     <p>{{ item.message|truncatechars:140 }}</p>
                 </div>
             {% empty %}
-                <div class="platform-empty"><p>{% translate "Noch kein Feedback." %}</p></div>
+                <div class="platform-empty">
+                    <i class="fa-regular fa-message"></i>
+                    <h3>{% translate "Noch kein Feedback" %}</h3>
+                    <p>{% translate "Deine gesendeten Bugs, Ideen und Rückmeldungen erscheinen hier mit ihrem aktuellen Status." %}</p>
+                </div>
             {% endfor %}
         </aside>
     </div>

@@ -324,8 +324,8 @@ class AvatarCharacterAdmin(admin.ModelAdmin):
 
 @admin.register(Shortcut)
 class ShortcutAdmin(admin.ModelAdmin):
-    list_display = ("name", "user", "section", "is_favorite", "order", "created_at")
-    list_filter = ("user", "is_favorite")
+    list_display = ("name", "user", "section", "color", "is_favorite", "order", "created_at")
+    list_filter = ("user", "section", "color", "is_favorite")
     search_fields = ("name", "url", "user__username")
 
 

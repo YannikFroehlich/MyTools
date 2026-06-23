@@ -89,11 +89,12 @@
         <div class="shortcuts-grid" data-section-id="{{ section.id }}">
             {% for shortcut in section.shortcuts.all %}
                 <div
-                    class="shortcut-card {% if shortcut.is_favorite %}shortcut-favorite{% endif %}"
+                    class="shortcut-card shortcut-color-{{ shortcut.color }} {% if shortcut.is_favorite %}shortcut-favorite{% endif %}"
                     data-shortcut-id="{{ shortcut.id }}"
                     data-shortcut-name="{{ shortcut.name|escape }}"
                     data-shortcut-url="{{ shortcut.url|escape }}"
                     data-shortcut-icon="{{ shortcut.icon|escape }}"
+                    data-shortcut-color="{{ shortcut.color }}"
                     data-shortcut-section-id="{{ section.id }}"
                     data-shortcut-has-image="{% if shortcut.image %}true{% else %}false{% endif %}"
                 >
@@ -169,6 +170,15 @@
                     </div>
                     <h3>{% translate 'Noch keine Verknüpfungen' %}</h3>
                     <p>{% translate 'Erstelle deine erste Schnellverknüpfung für diesen Bereich.' %}</p>
+                    <button
+                        type="button"
+                        class="add-shortcut-button open-shortcut-modal"
+                        data-section-id="{{ section.id }}"
+                        data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                        {% translate 'Verknüpfung hinzufügen' %}
+                    </button>
                 </div>
             {% endfor %}
         </div>
