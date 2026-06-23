@@ -6,6 +6,7 @@ from .models import UserPresence
 
 ONLINE_WINDOW_MINUTES = 3
 TOUCH_THROTTLE_SECONDS = 45
+GAME_ACTIVITY_WINDOW_SECONDS = 90
 
 
 GAME_ACTIVITY_LABELS = {
@@ -64,6 +65,27 @@ def mark_active_game(user, game_key, label=None):
                 "active_game_updated_at": now,
             },
         )
+    except Exception:
+        pass
+
+
+def clear_active_game(user, game_key=None):
+    if not getattr(user, "is_authenticated", False):
+        return
+
+    try:
+        presence = UserPresence.objects.filter(user=user).first()
+        if not presence:
+            return
+
+        if game_key and presence.active_game and presence.active_game != game_key:
+            return
+
+        presence.active_game = ""
+        presence.active_game_label = ""
+        presence.active_game_updated_at = None
+        presence.last_seen = timezone.now()
+        presence.save(update_fields=["active_game", "active_game_label", "active_game_updated_at", "last_seen"])
     except Exception:
         pass
 
@@ -174,7 +196,7 @@ def _collect_game_activity_for_users(user_ids):
             if user_id in user_ids:
                 _set_activity(activity_by_user_id, user_id, GAME_ACTIVITY_LABELS["pong"], game.updated_at)
 
-    recent_activity_cutoff = timezone.now() - timezone.timedelta(minutes=5)
+    recent_activity_cutoff = timezone.now() - timezone.timedelta(seconds=GAME_ACTIVITY_WINDOW_SECONDS)
     for presence in UserPresence.objects.filter(
         user_id__in=user_ids,
         active_game__isnull=False,

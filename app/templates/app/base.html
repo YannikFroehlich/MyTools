@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260621-header-hit-area">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260623-header-gap-fix">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -39,7 +39,7 @@
     {% endif %}
 
     {% block extra_css %}{% endblock %}
-    <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260619-stream-deck-topbar-theme">
+    <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260623-notes-style-fix">
     {% block scripts %}
         <script src="{% static 'app/js/base.js' %}?v=20260619-access-hidden" defer></script>
     {% endblock %}

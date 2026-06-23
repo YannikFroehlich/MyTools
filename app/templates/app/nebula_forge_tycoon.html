@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="nft-page" data-nebula-tycoon data-save-key="mytools-nebula-forge-tycoon-v1" data-db-load-url="{% url 'nebula-forge-tycoon-load-api' %}" data-db-save-url="{% url 'nebula-forge-tycoon-save-api' %}" data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
+<section class="nft-page" data-nebula-tycoon data-save-key="mytools-nebula-forge-tycoon-v1" data-db-load-url="{% url 'nebula-forge-tycoon-load-api' %}" data-db-save-url="{% url 'nebula-forge-tycoon-save-api' %}" data-activity-url="{% url 'nebula-forge-tycoon-activity-api' %}" data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
     <div class="nft-bg-orb nft-bg-orb-one" aria-hidden="true"></div>
     <div class="nft-bg-orb nft-bg-orb-two" aria-hidden="true"></div>
 
@@ -479,5 +479,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260619-nebula-forge-performance-pass" defer></script>
+    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260623-presence-fix" defer></script>
 {% endblock %}
