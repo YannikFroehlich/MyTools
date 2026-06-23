@@ -906,6 +906,7 @@ def friends_list_view(request, user_id):
         return redirect("public_profile", user_id=profile_user.id)
     friends = get_friend_profiles(profile_user)
     for friend_profile in friends:
+        friend_profile.friendship_state = get_friendship_state(request.user, friend_profile.user)
         apply_profile_privacy(friend_profile, request.user)
         friend_profile.activity_summary = get_friend_activity(friend_profile.user, request.user)
 

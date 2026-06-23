@@ -6,7 +6,7 @@
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260621-delete-undo">
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260623-shortcut-colors">
 {% endblock %}
 
 {% block content %}
@@ -1212,6 +1212,19 @@
                     <input type="text" name="custom_icon" id="shortcut-custom-icon" placeholder="{% translate 'z.B. fa-solid fa-server' %}">
                 </label>
 
+                <div class="section-color-picker shortcut-color-picker">
+                    <span>{% translate 'Verknüpfungsfarbe' %}</span>
+
+                    <div class="section-color-options">
+                        {% for value, label in shortcut_colors %}
+                            <label class="section-color-option {{ value }}">
+                                <input type="radio" name="shortcut_color" value="{{ value }}" {% if value == 'blue' %}checked{% endif %}>
+                                <span>{{ label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
                 <label>
                     {% translate 'Eigenes Bild, falls du kein Icon nutzen möchtest' %}
                     <span class="shortcut-file-picker">
@@ -1306,5 +1319,5 @@
 
 {% block extra_js %}
     {{ home_labels|json_script:"home-labels" }}
-    <script src="{% static 'app/js/home.js' %}?v=20260621-delete-undo" defer></script>
+    <script src="{% static 'app/js/home.js' %}?v=20260623-shortcut-colors" defer></script>
 {% endblock %}

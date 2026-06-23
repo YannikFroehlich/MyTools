@@ -7,7 +7,7 @@
 
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/users.css' %}?v=20260623-6">
 {% endblock %}
 
 
@@ -50,8 +50,10 @@
             {% for profile in friends %}
                 <a
                     href="{% url 'public_profile' profile.user.id %}"
-                    class="user-card"
+                    class="user-card user-card-profile-showcase {{ profile.profile_card_classes }}"
+                    style="{{ profile.profile_card_style_vars }}"
                 >
+                    <div class="user-card-pattern"></div>
                     <div class="user-avatar">
                         {% if profile.avatar %}
                             <img src="{{ profile.avatar|media_thumb:'avatar' }}" srcset="{{ profile.avatar|media_srcset:'avatar-small 96w, avatar 192w, avatar-large 384w' }}" sizes="96px" alt="{% translate 'Profilbild' %}" width="192" height="192" loading="lazy" decoding="async">
@@ -70,9 +72,27 @@
                                     {{ profile.user.username }}
                                 {% endif %}
                             </h2>
+
+                            {% if profile.user == request.user %}
+                                <span class="user-own-badge">{% translate "Du" %}</span>
+                            {% elif profile.friendship_state == "friends" %}
+                                <span class="user-own-badge user-friend-badge">{% translate "Freund" %}</span>
+                            {% elif profile.friendship_state == "pending_sent" %}
+                                <span class="user-own-badge user-pending-badge">{% translate "Angefragt" %}</span>
+                            {% elif profile.friendship_state == "pending_received" %}
+                                <span class="user-own-badge user-pending-badge">{% translate "Offen" %}</span>
+                            {% endif %}
                         </div>
 
                         <p class="user-username">@{{ profile.user.username }}</p>
+
+                        {% if profile.profile_card_badge_text %}
+                            <span class="user-profile-card-badge">
+                                <i class="{{ profile.profile_card_badge_icon }}"></i>
+                                {{ profile.profile_card_badge_text }}
+                            </span>
+                        {% endif %}
+
                         <span class="user-status-line {% if profile.is_online %}is-online{% endif %}" data-presence-target="status" data-presence-user-id="{{ profile.user.id }}">
                             {% if profile.activity_status %}
                                 {{ profile.activity_status }}
@@ -108,7 +128,7 @@
                         <div class="user-meta">
                             <span>
                                 <i class="fa-solid fa-calendar-days"></i>
-                                {% translate "Registriert seit" %} {{ profile.user.date_joined|date:"d.m.Y" }}
+                                {% translate "Seit" %} {{ profile.user.date_joined|date:"d.m.Y" }}
                             </span>
 
                             {% if profile.friendship_since %}

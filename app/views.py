@@ -40,7 +40,7 @@ from django.views.decorators.http import require_POST
 from .models import Note, SiteAccessSettings
 from .forms import SignUpForm
 from .platform_utils import resolve_tools
-from .presence_utils import mark_active_game
+from .presence_utils import clear_active_game, mark_active_game
 from .voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
 
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -957,6 +957,7 @@ def home(request):
         "editSection": _("Bereich bearbeiten"),
         "saveChanges": _("Änderungen speichern"),
         "noFileSelected": _("Keine Datei ausgewählt"),
+        "currentImage": _("Aktuelles Bild vorhanden"),
         "newWidget": _("Neues Widget"),
         "editWidget": _("Widget bearbeiten"),
         "addWidget": _("Widget hinzufügen"),
@@ -1241,6 +1242,11 @@ def home(request):
             custom_icon = request.POST.get("custom_icon", "").strip()
             image = request.FILES.get("image")
             remove_image = request.POST.get("remove_image") == "1"
+            color = request.POST.get("shortcut_color", "blue").strip()
+            valid_shortcut_colors = {choice[0] for choice in ShortcutSection.COLOR_CHOICES}
+
+            if color not in valid_shortcut_colors:
+                color = "blue"
 
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
 
@@ -1261,6 +1267,7 @@ def home(request):
                     url=url,
                     icon=icon or "fa-solid fa-link",
                     image=image,
+                    color=color,
                     order=max_order + 1
                 )
 
@@ -1275,6 +1282,11 @@ def home(request):
             custom_icon = request.POST.get("custom_icon", "").strip()
             image = request.FILES.get("image")
             remove_image = request.POST.get("remove_image") == "1"
+            color = request.POST.get("shortcut_color", "blue").strip()
+            valid_shortcut_colors = {choice[0] for choice in ShortcutSection.COLOR_CHOICES}
+
+            if color not in valid_shortcut_colors:
+                color = "blue"
 
             shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
@@ -1290,6 +1302,7 @@ def home(request):
                 shortcut.name = name
                 shortcut.url = url
                 shortcut.icon = icon or "fa-solid fa-link"
+                shortcut.color = color
 
                 if remove_image and shortcut.image:
                     shortcut.image.delete(save=False)
@@ -1368,6 +1381,7 @@ def home(request):
         "weather_locations": weather_locations,
         "widget_types": [(value, _(label)) for value, label in HomeWidget.WIDGET_CHOICES],
         "widget_colors": [(value, _(label)) for value, label in HomeWidget.COLOR_CHOICES],
+        "shortcut_colors": [(value, _(label)) for value, label in ShortcutSection.COLOR_CHOICES],
         "clock_designs": [(value, _(label)) for value, label in HomeWidget.CLOCK_DESIGN_CHOICES],
         "clock_styles": [(value, _(label)) for value, label in HomeWidget.CLOCK_STYLE_CHOICES],
         "home_labels": home_labels,
@@ -2269,6 +2283,19 @@ def nebula_forge_save_countdown(save):
 def nebula_forge_tycoon(request):
     mark_active_game(request.user, "nebula_forge_tycoon")
     return render(request, "app/nebula_forge_tycoon.html")
+
+
+@login_required
+@require_POST
+def nebula_forge_tycoon_activity_api(request):
+    action = request.POST.get("action", "mark")
+
+    if action == "clear":
+        clear_active_game(request.user, "nebula_forge_tycoon")
+    else:
+        mark_active_game(request.user, "nebula_forge_tycoon")
+
+    return JsonResponse({"status": "ok"})
 
 
 @login_required

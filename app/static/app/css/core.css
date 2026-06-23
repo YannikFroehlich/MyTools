@@ -4560,9 +4560,14 @@ body.dark-mode nav#site-header {
 }
 
 @media (min-width: 981px) {
+    nav#site-header {
+        gap: clamp(10px, 1.1vw, 18px);
+    }
+
     nav#site-header .navigation {
         flex: 0 1 auto;
         gap: 2px;
+        min-width: 0;
         padding: 4px;
         border: 1px solid rgba(255, 255, 255, 0.13);
         border-radius: 16px;
@@ -4575,6 +4580,28 @@ body.dark-mode nav#site-header {
     nav#site-header .user-actions {
         flex: 1;
         gap: 5px;
+        padding-left: clamp(12px, 1vw, 18px);
+    }
+}
+
+@media (min-width: 981px) and (max-width: 1500px) {
+    nav#site-header .user-actions {
+        padding-left: clamp(16px, 1.6vw, 26px);
+    }
+
+    nav#site-header .user-actions .global-search-trigger {
+        width: 38px;
+        min-width: 38px;
+        padding: 0;
+    }
+
+    nav#site-header .user-actions .global-search-trigger span {
+        display: none;
+    }
+
+    nav#site-header .user-actions select {
+        width: 106px;
+        min-width: 106px;
     }
 }
 

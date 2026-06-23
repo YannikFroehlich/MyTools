@@ -89,11 +89,12 @@
         <div class="shortcuts-grid" data-section-id="{{ section.id }}">
             {% for shortcut in section.shortcuts.all %}
                 <div
-                    class="shortcut-card {% if shortcut.is_favorite %}shortcut-favorite{% endif %}"
+                    class="shortcut-card shortcut-color-{{ shortcut.color }} {% if shortcut.is_favorite %}shortcut-favorite{% endif %}"
                     data-shortcut-id="{{ shortcut.id }}"
                     data-shortcut-name="{{ shortcut.name|escape }}"
                     data-shortcut-url="{{ shortcut.url|escape }}"
                     data-shortcut-icon="{{ shortcut.icon|escape }}"
+                    data-shortcut-color="{{ shortcut.color }}"
                     data-shortcut-section-id="{{ section.id }}"
                     data-shortcut-has-image="{% if shortcut.image %}true{% else %}false{% endif %}"
                 >
