@@ -38,7 +38,7 @@ from django.views.decorators.http import require_POST
 
 from .models import Note, SiteAccessSettings
 from .forms import SignUpForm
-from .presence_utils import mark_active_game
+from .presence_utils import clear_active_game, mark_active_game
 from .voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
 
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -2110,6 +2110,19 @@ def nebula_forge_save_countdown(save):
 def nebula_forge_tycoon(request):
     mark_active_game(request.user, "nebula_forge_tycoon")
     return render(request, "app/nebula_forge_tycoon.html")
+
+
+@login_required
+@require_POST
+def nebula_forge_tycoon_activity_api(request):
+    action = request.POST.get("action", "mark")
+
+    if action == "clear":
+        clear_active_game(request.user, "nebula_forge_tycoon")
+    else:
+        mark_active_game(request.user, "nebula_forge_tycoon")
+
+    return JsonResponse({"status": "ok"})
 
 
 @login_required
