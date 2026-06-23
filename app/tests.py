@@ -1651,6 +1651,30 @@ class HomeViewTests(BaseTestCase):
         self.assertIn("sections", response.context)
         self.assertIn("home_labels", response.context)
 
+    def test_home_renders_new_dashboard_widget_types(self):
+        widget_types = [
+            HomeWidget.WIDGET_FILE_SHARE,
+            HomeWidget.WIDGET_BUDGET,
+            HomeWidget.WIDGET_FAVORITES,
+            HomeWidget.WIDGET_ROADMAP,
+            HomeWidget.WIDGET_INBOX,
+            HomeWidget.WIDGET_CHANGELOG,
+        ]
+        for order, widget_type in enumerate(widget_types, start=1):
+            HomeWidget.objects.create(
+                user=self.user,
+                title=dict(HomeWidget.WIDGET_CHOICES)[widget_type],
+                widget_type=widget_type,
+                order=order,
+            )
+
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        for widget_type in widget_types:
+            self.assertContains(response, f'data-widget-type="{widget_type}"')
+            self.assertContains(response, f'<option value="{widget_type}">')
+
     def test_header_has_visual_identity_and_current_page_state(self):
         response = self.client.get(reverse("home"))
 

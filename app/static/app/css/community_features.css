@@ -465,12 +465,58 @@ body.dark .roadmap-tab {
     place-items: center;
     gap: 10px;
     padding: 44px;
+    border-style: dashed;
+    border-color: rgba(37, 99, 235, 0.24);
+    background:
+        radial-gradient(circle at top, rgba(37, 99, 235, 0.12), transparent 42%),
+        rgba(255, 255, 255, 0.78);
     text-align: center;
 }
 
 .empty-state-card > i {
+    display: grid;
+    place-items: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 22px;
+    background: rgba(37, 99, 235, 0.1);
     font-size: 2.4rem;
     color: #2563eb;
+}
+
+.empty-state-card h2,
+.empty-state-card p {
+    margin: 0;
+}
+
+.empty-state-card p {
+    max-width: 430px;
+    color: #64748b;
+    line-height: 1.55;
+}
+
+.empty-state-card .feature-primary-btn {
+    margin-top: 8px;
+    text-decoration: none;
+}
+
+body.dark-mode .empty-state-card,
+body.dark .empty-state-card {
+    border-color: rgba(96, 165, 250, 0.26);
+    background:
+        radial-gradient(circle at top, rgba(96, 165, 250, 0.14), transparent 42%),
+        rgba(15, 23, 42, 0.72);
+}
+
+body.dark-mode .empty-state-card p,
+body.dark .empty-state-card p {
+    color: #94a3b8;
+}
+
+body.dark-mode .empty-state-card > i,
+body.dark .empty-state-card > i {
+    background: rgba(96, 165, 250, 0.12);
+    color: #93c5fd;
 }
 
 /* Achievement Center */

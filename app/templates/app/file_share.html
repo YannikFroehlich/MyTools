@@ -20,7 +20,7 @@
     </div>
 
     <div class="share-layout">
-        <form class="share-upload-card share-upload-panel" method="post" action="{% url 'file_share_upload' %}" enctype="multipart/form-data" data-share-upload-panel data-share-success-url="{% url 'file_share' %}" data-share-max-size="{{ max_share_bytes }}" data-share-max-label="{{ max_share_mb }}" data-label-selected-one="{% translate 'Ausgewählte Datei' %}" data-label-selected-many="{% translate 'ausgewählte Dateien' %}" data-label-file-generic="{% translate 'Datei' %}" data-label-too-large="{% translate 'zu groß' %}" data-label-max-short="{% translate 'max.' %}" data-label-upload-preparing="{% translate 'Upload wird vorbereitet...' %}" data-label-upload-running="{% translate 'Upload läuft...' %}" data-label-upload-complete="{% translate 'Upload abgeschlossen.' %}" data-label-upload-failed="{% translate 'Upload fehlgeschlagen.' %}" data-label-oversized="{% translate 'Mindestens eine Datei ist zu groß. Maximal erlaubt:' %}">
+        <form id="file-share-upload" class="share-upload-card share-upload-panel" method="post" action="{% url 'file_share_upload' %}" enctype="multipart/form-data" data-share-upload-panel data-share-success-url="{% url 'file_share' %}" data-share-max-size="{{ max_share_bytes }}" data-share-max-label="{{ max_share_mb }}" data-label-selected-one="{% translate 'Ausgewählte Datei' %}" data-label-selected-many="{% translate 'ausgewählte Dateien' %}" data-label-file-generic="{% translate 'Datei' %}" data-label-too-large="{% translate 'zu groß' %}" data-label-max-short="{% translate 'max.' %}" data-label-upload-preparing="{% translate 'Upload wird vorbereitet...' %}" data-label-upload-running="{% translate 'Upload läuft...' %}" data-label-upload-complete="{% translate 'Upload abgeschlossen.' %}" data-label-upload-failed="{% translate 'Upload fehlgeschlagen.' %}" data-label-oversized="{% translate 'Mindestens eine Datei ist zu groß. Maximal erlaubt:' %}">
             {% csrf_token %}
             <div class="share-section-title">
                 <span><i class="fa-solid fa-cloud-arrow-up"></i></span>
@@ -156,7 +156,12 @@
                         </div>
                     </article>
                 {% empty %}
-                    <div class="empty-state"><p>{% translate "Du hast noch nichts geteilt." %}</p></div>
+                    <div class="empty-state share-empty-state">
+                        <span><i class="fa-solid fa-cloud-arrow-up"></i></span>
+                        <strong>{% translate "Noch keine Uploads" %}</strong>
+                        <p>{% translate "Teile eine Datei mit Freunden oder erstelle einen privaten Link für den schnellen Zugriff." %}</p>
+                        <a href="#file-share-upload"><i class="fa-solid fa-plus"></i>{% translate "Datei auswählen" %}</a>
+                    </div>
                 {% endfor %}
             </section>
 
@@ -195,7 +200,11 @@
                         </div>
                     </article>
                 {% empty %}
-                    <div class="empty-state"><p>{% translate "Noch keine Dateien erhalten." %}</p></div>
+                    <div class="empty-state share-empty-state">
+                        <span><i class="fa-solid fa-user-group"></i></span>
+                        <strong>{% translate "Noch nichts freigegeben" %}</strong>
+                        <p>{% translate "Sobald Freunde Dateien mit dir teilen, erscheinen sie hier mit Vorschau, Ablauf und Download-Status." %}</p>
+                    </div>
                 {% endfor %}
             </section>
         </div>

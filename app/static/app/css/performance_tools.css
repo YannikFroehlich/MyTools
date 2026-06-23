@@ -71,8 +71,18 @@ body.dark-mode .perf-stats-grid span,
 body.dark-mode .leaderboard-champion small,
 body.dark-mode .share-row span,
 body.dark-mode .share-row small,
-body.dark-mode .friend-picker p {
+body.dark-mode .friend-picker p,
+body.dark-mode .share-empty-state p {
     color: #94a3b8;
+}
+
+body.dark-mode .share-empty-state {
+    border-color: rgba(79, 140, 255, 0.28);
+    background: rgba(79, 140, 255, 0.08);
+}
+
+body.dark-mode .share-empty-state strong {
+    color: #e5edf7;
 }
 
 .perf-hero-icon {
@@ -1182,6 +1192,52 @@ body.dark-mode .share-upload-progress-head {
 .share-list-card .empty-state {
     border-radius: 18px;
     background: rgba(79, 140, 255, 0.06);
+}
+
+.share-empty-state {
+    display: grid;
+    justify-items: center;
+    gap: 0.65rem;
+    padding: 28px;
+    text-align: center;
+    border: 1px dashed rgba(79, 140, 255, 0.26);
+}
+
+.share-empty-state > span {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 20px;
+    color: #4f8cff;
+    background: rgba(79, 140, 255, 0.12);
+    font-size: 1.45rem;
+}
+
+.share-empty-state strong {
+    color: var(--theme-text);
+    font-size: 1rem;
+}
+
+.share-empty-state p {
+    max-width: 360px;
+    margin: 0;
+    color: #64748b;
+    line-height: 1.45;
+}
+
+.share-empty-state a {
+    min-height: 38px;
+    margin-top: 0.25rem;
+    padding: 0 0.9rem;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #fff;
+    background: linear-gradient(135deg, #4f8cff, #22c55e);
+    text-decoration: none;
+    font-weight: 900;
 }
 
 .share-row {
