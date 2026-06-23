@@ -2641,3 +2641,13 @@ body.dark-mode .public-report-box { background: rgba(255,255,255,.07); border-co
         justify-content: flex-start;
     }
 }
+
+/* Freunde-Seite: Nutzerkarten exakt wie in der Nutzerübersicht anzeigen */
+.friends-page .user-card-profile-showcase .user-meta {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.friends-page .user-card-profile-showcase .user-open {
+    margin-left: auto;
+}

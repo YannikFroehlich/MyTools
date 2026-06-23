@@ -5,7 +5,6 @@
 
 :where(
     .clock-page,
-    .notes-page,
     .perf-page,
     .platform-page,
     .feature-page,
@@ -40,7 +39,6 @@
 
 body.dark-mode :where(
     .clock-page,
-    .notes-page,
     .perf-page,
     .platform-page,
     .feature-page,
@@ -67,7 +65,6 @@ body.dark-mode :where(
 /* Großer Hero wie beim Datei-Konverter */
 :where(
     .clock-hero,
-    .notes-dashboard-header,
     .perf-hero,
     .platform-hero,
     .feature-hero,
@@ -94,7 +91,6 @@ body.dark-mode :where(
 
 :where(
     .clock-hero,
-    .notes-dashboard-header,
     .perf-hero,
     .platform-hero,
     .feature-hero,
@@ -122,7 +118,6 @@ body.dark-mode :where(
 
 :where(
     .clock-hero > *,
-    .notes-dashboard-header > *,
     .perf-hero > *,
     .platform-hero > *,
     .feature-hero > *,
@@ -146,12 +141,6 @@ body.dark-mode :where(
     .clock-panel,
     .clock-now-card,
     .timer-preset-card,
-    .notes-control-panel,
-    .notes-scope-panel,
-    .notes-tag-filter,
-    .notes-stat-card,
-    .notes-section,
-    .note-card,
     .perf-stats-grid > *,
     .share-card,
     .share-drop-card,
@@ -238,7 +227,6 @@ body.dark-mode :where(
     .perf-kicker,
     .platform-kicker,
     .feature-kicker,
-    .notes-eyebrow,
     .clock-panel-kicker,
     .calculator-kicker,
     .converter-kicker,
@@ -258,7 +246,6 @@ body.dark-mode :where(
 
 :where(
     .clock-hero h1,
-    .notes-dashboard-header h1,
     .perf-hero h1,
     .platform-hero h1,
     .feature-hero h1,
@@ -286,7 +273,6 @@ body.dark-mode :where(
 
 :where(
     .clock-hero p,
-    .notes-subtitle,
     .perf-hero p,
     .platform-hero p,
     .feature-hero p,
@@ -313,7 +299,6 @@ body.dark-mode :where(
 /* Formularfelder im selben Look wie beim Datei-Konverter */
 :where(
     .clock-page,
-    .notes-page,
     .perf-page,
     .platform-page,
     .feature-page,
@@ -339,7 +324,6 @@ body.dark-mode :where(
 
 :where(
     .clock-page,
-    .notes-page,
     .perf-page,
     .platform-page,
     .feature-page,
@@ -365,7 +349,6 @@ body.dark-mode :where(
 /* Primäre Actions übernehmen die Theme-Buttonfarbe */
 :where(
     .clock-button-primary,
-    .notes-primary-btn,
     .perf-primary,
     .platform-primary,
     .feature-primary-btn,
@@ -391,7 +374,6 @@ body.dark-mode :where(
 
 :where(
     .clock-button-primary,
-    .notes-primary-btn,
     .perf-primary,
     .platform-primary,
     .feature-primary-btn,
@@ -414,8 +396,6 @@ body.dark-mode :where(
 /* Sekundäre Buttons, Tabs und Filter wirken wie die Format-Chips des Datei-Konverters. */
 :where(
     .clock-button:not(.clock-button-primary),
-    .notes-secondary-btn,
-    .notes-ghost-btn,
     .btn-secondary,
     .qr-secondary-button,
     .color-btn-soft,
@@ -426,8 +406,6 @@ body.dark-mode :where(
     .roadmap-tab,
     .converter-tab,
     .randomizer-tab,
-    .notes-scope-panel a,
-    .notes-tag-filter a,
     .qr-type-option span,
     .calculator-hero-chips span,
     .format-chip-list span,
@@ -443,8 +421,6 @@ body.dark-mode :where(
 
 body.dark-mode :where(
     .clock-button:not(.clock-button-primary),
-    .notes-secondary-btn,
-    .notes-ghost-btn,
     .btn-secondary,
     .qr-secondary-button,
     .color-btn-soft,
@@ -455,8 +431,6 @@ body.dark-mode :where(
     .roadmap-tab,
     .converter-tab,
     .randomizer-tab,
-    .notes-scope-panel a,
-    .notes-tag-filter a,
     .qr-type-option span,
     .calculator-hero-chips span,
     .format-chip-list span,
@@ -471,8 +445,6 @@ body.dark-mode :where(
     .roadmap-tab.active,
     .converter-tab.active,
     .randomizer-tab.active,
-    .notes-scope-panel a.is-active,
-    .notes-tag-filter a.is-active,
     .qr-type-option input:checked + span,
     .vote-button.voted
 ) {
@@ -483,7 +455,6 @@ body.dark-mode :where(
 
 /* Icon-Kacheln wie beim Datei-Konverter-Drop-Icon */
 :where(
-    .notes-header-icon,
     .perf-hero-icon,
     .calculator-hero-icon,
     .converter-hero-icon,
@@ -549,8 +520,6 @@ body.dark .changelog-page .changelog-type {
 /* Menü-Seiten sollen Karteninhalte nicht zentrieren, außer bei echten Previews. */
 :where(
     .clock-panel,
-    .notes-section,
-    .note-card,
     .share-card,
     .platform-card,
     .feature-card,
@@ -571,7 +540,6 @@ body.dark .changelog-page .changelog-type {
 /* Kontrastmodus: deutlichere Linien, weniger Transparenz, kräftigere Schrift. */
 body.theme-high-contrast-mode :where(
     .clock-page,
-    .notes-page,
     .perf-page,
     .platform-page,
     .feature-page,
@@ -600,7 +568,6 @@ body.theme-high-contrast-mode :where(
 
 body.theme-high-contrast-mode :where(
     .clock-hero,
-    .notes-dashboard-header,
     .perf-hero,
     .platform-hero,
     .feature-hero,
@@ -617,12 +584,6 @@ body.theme-high-contrast-mode :where(
     .clock-panel,
     .clock-now-card,
     .timer-preset-card,
-    .notes-control-panel,
-    .notes-scope-panel,
-    .notes-tag-filter,
-    .notes-stat-card,
-    .notes-section,
-    .note-card,
     .share-card,
     .image-drop,
     .image-options-card,
@@ -660,7 +621,6 @@ body.theme-high-contrast-mode :where(
 
 body.theme-high-contrast-mode :where(
     .clock-page,
-    .notes-page,
     .perf-page,
     .platform-page,
     .feature-page,
@@ -684,8 +644,7 @@ body.theme-high-contrast-mode :where(
 @media (max-width: 640px) {
     :where(
         .clock-hero,
-        .notes-dashboard-header,
-        .perf-hero,
+            .perf-hero,
         .platform-hero,
         .feature-hero,
         .moderation-header,

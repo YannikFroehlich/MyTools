@@ -329,6 +329,11 @@ body.dark-mode .notes-stat-card small {
 
 .notes-section {
     margin-top: 2.4rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .notes-section-title {
@@ -1332,20 +1337,12 @@ body.dark-mode .notes-rich-editor:empty::before {
     text-align: left;
 }
 
-.note-preview::after {
-    content: "";
-    display: block;
-    height: 22px;
-    margin-top: -22px;
-    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.74));
+.note-preview > :last-child {
+    margin-bottom: 0;
 }
 
 body.dark-mode .note-preview {
     color: #d4d4d8;
-}
-
-body.dark-mode .note-preview::after {
-    background: linear-gradient(to bottom, transparent, rgba(24, 24, 27, 0.74));
 }
 
 /* ───────────────── EDITOR ALIGNMENT FIX ───────────────── */

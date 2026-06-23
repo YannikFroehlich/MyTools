@@ -12,8 +12,10 @@
     const ACHIEVEMENT_SWEEP_INTERVAL_MS = 650;
     const IDLE_LOOP_INTERVAL_MS = 120;
     const BACKGROUND_LOOP_INTERVAL_MS = 1000;
+    const ACTIVITY_HEARTBEAT_INTERVAL_MS = 30000;
     const DB_LOAD_URL = root.dataset.dbLoadUrl || "";
     const DB_SAVE_URL = root.dataset.dbSaveUrl || "";
+    const ACTIVITY_URL = root.dataset.activityUrl || "";
     const USER_IS_AUTHENTICATED = root.dataset.authenticated === "true";
     const hadLocalSaveAtStartup = Boolean(localStorage.getItem(SAVE_KEY));
     const now = () => Date.now();
@@ -581,6 +583,53 @@
             .map(part => part.trim())
             .find(part => part.startsWith(`${name}=`));
         return cookieValue ? decodeURIComponent(cookieValue.slice(name.length + 1)) : "";
+    }
+
+    function buildActivityFormData(action) {
+        const formData = new FormData();
+        formData.append("action", action);
+        formData.append("csrfmiddlewaretoken", getCookie("csrftoken"));
+        return formData;
+    }
+
+    async function sendActivity(action, options = {}) {
+        if (!USER_IS_AUTHENTICATED || !ACTIVITY_URL) return;
+
+        const formData = buildActivityFormData(action);
+
+        if (options.beacon && navigator.sendBeacon) {
+            try {
+                navigator.sendBeacon(ACTIVITY_URL, formData);
+                return;
+            } catch (error) {
+                // Fallback to fetch with keepalive below.
+            }
+        }
+
+        try {
+            await fetch(ACTIVITY_URL, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: formData,
+                keepalive: Boolean(options.keepalive),
+            });
+        } catch (error) {
+            if (!options.silent) {
+                console.warn("Nebula Forge Aktivitaet konnte nicht aktualisiert werden.", error);
+            }
+        }
+    }
+
+    function markGameActivity(options = {}) {
+        if (document.hidden) return;
+        sendActivity("mark", { silent: true, ...options });
+    }
+
+    function clearGameActivity() {
+        sendActivity("clear", { beacon: true, keepalive: true, silent: true });
     }
 
     function countAchievementUnlocks(source = state) {
@@ -2390,19 +2439,31 @@
         document.addEventListener("visibilitychange", () => {
             root.classList.toggle("is-nft-paused", document.hidden);
             lastFrame = now();
-            if (!document.hidden) {
-                if (loopTimer) {
-                    window.clearTimeout(loopTimer);
-                    loopTimer = 0;
-                }
-                lastUiRenderAt = 0;
-                queueRender(true);
-                scheduleNextLoop();
+
+            if (document.hidden) {
+                clearGameActivity();
+                return;
             }
+
+            markGameActivity();
+            if (loopTimer) {
+                window.clearTimeout(loopTimer);
+                loopTimer = 0;
+            }
+            lastUiRenderAt = 0;
+            queueRender(true);
+            scheduleNextLoop();
         });
 
-        window.addEventListener("beforeunload", () => saveState(false));
+        window.addEventListener("pagehide", clearGameActivity);
+        window.addEventListener("beforeunload", () => {
+            saveState(false);
+            clearGameActivity();
+        });
+        window.addEventListener("pageshow", () => markGameActivity());
         window.setInterval(() => saveState(false), 5000);
+        window.setInterval(() => markGameActivity(), ACTIVITY_HEARTBEAT_INTERVAL_MS);
+        markGameActivity();
     }
 
     attachEvents();

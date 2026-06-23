@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import Max
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
@@ -36,7 +37,7 @@ def _trash_card(item_type, item, now):
 
     if item_type == "note":
         title = item.title or _("Unbenannte Notiz")
-        subtitle = (item.content or _("Ohne Inhalt")).strip()[:140]
+        subtitle = strip_tags(item.content or _("Ohne Inhalt")).strip()[:140]
     elif item_type == "file":
         title = item.original_name
         subtitle = _("%(size)s · %(downloads)s Downloads") % {
