@@ -3337,7 +3337,9 @@ body.dark-mode .shortcuts-grid.drag-over {
 
 .chat-widget-content,
 .friends-widget-content,
-.skribble-widget-content {
+.skribble-widget-content,
+.budget-widget-content,
+.changelog-widget-content {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -3413,6 +3415,18 @@ body.dark-mode .shortcuts-grid.drag-over {
     background: linear-gradient(135deg, #8b5cf6, #ec4899);
 }
 
+.widget-list-icon.is-blue {
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+}
+
+.widget-list-icon.is-green {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.widget-list-icon.is-orange {
+    background: linear-gradient(135deg, #f97316, #f59e0b);
+}
+
 .widget-list a span:not(.widget-list-icon) {
     min-width: 0;
     display: grid;
@@ -3461,6 +3475,143 @@ body.dark-mode .shortcuts-grid.drag-over {
 
 .stats-grid.mini strong {
     font-size: 1.75rem;
+}
+
+.widget-money-number {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.widget-money-number strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.55rem, 4vw, 2.15rem) !important;
+}
+
+.widget-money-grid strong {
+    overflow-wrap: anywhere;
+    font-size: clamp(1rem, 2.8vw, 1.35rem) !important;
+}
+
+.widget-kicker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: #64748b;
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+.widget-kicker-row strong {
+    flex: 0 0 auto;
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+    color: rgb(var(--widget-rgb));
+    background: rgba(var(--widget-rgb), 0.1);
+    font-size: 0.74rem;
+}
+
+.widget-progress {
+    display: grid;
+    gap: 0.42rem;
+    padding: 0.7rem;
+    border-radius: 16px;
+    background: rgba(var(--widget-rgb), 0.08);
+}
+
+.widget-progress > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: #64748b;
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+.widget-progress > div strong {
+    color: var(--theme-text);
+}
+
+.widget-progress-track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(var(--widget-rgb), 0.14);
+}
+
+.widget-progress-track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--theme-accent-start), var(--theme-accent-end));
+}
+
+.widget-progress small {
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.widget-feature-note {
+    display: grid;
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.8rem;
+    border-radius: 18px;
+    background: rgba(var(--widget-rgb), 0.08);
+}
+
+.widget-feature-note > i {
+    display: grid;
+    width: 2.4rem;
+    height: 2.4rem;
+    place-items: center;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+}
+
+.widget-feature-note div {
+    min-width: 0;
+    display: grid;
+    gap: 0.18rem;
+}
+
+.widget-feature-note strong {
+    color: var(--theme-text);
+    font-size: 0.92rem;
+}
+
+.widget-feature-note span {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.widget-note-list {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.widget-note-list span {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    gap: 0.45rem;
+    color: #475569;
+    font-size: 0.8rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.widget-note-list i {
+    color: rgb(var(--widget-rgb));
+    font-size: 0.74rem;
+    line-height: 1.35;
 }
 
 .widget-avatar-row {
@@ -3518,7 +3669,12 @@ body.dark-mode .widget-clock-design-field small,
 body.dark-mode .clock-option-heading small,
 body.dark-mode .clock-date,
 body.dark-mode .clock-meta-row,
-body.dark-mode .widget-list a small {
+body.dark-mode .widget-list a small,
+body.dark-mode .widget-kicker-row,
+body.dark-mode .widget-progress > div,
+body.dark-mode .widget-progress small,
+body.dark-mode .widget-feature-note span,
+body.dark-mode .widget-note-list span {
     color: #cbd5e1;
 }
 
@@ -3573,6 +3729,8 @@ body.dark-mode .weather-mini-stats span,
 body.dark-mode .widget-empty-state.compact,
 body.dark-mode .widget-list a,
 body.dark-mode .widget-soft-pill,
+body.dark-mode .widget-progress,
+body.dark-mode .widget-feature-note,
 body.dark-mode .clock-design-minimal {
     background:
         radial-gradient(circle at 92% 8%, rgba(var(--widget-rgb), 0.18), transparent 34%),

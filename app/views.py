@@ -2,6 +2,7 @@ import os
 import math
 import hashlib
 from collections import defaultdict
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from urllib.parse import urlencode
 from io import BytesIO
 import re
@@ -19,13 +20,13 @@ from django.utils import timezone as django_timezone
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, CookieCosmosV2Save, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, KniffelGame, KniffelInvite, KniffelPlayer, NebulaForgeTycoonSave, Shortcut, \
-    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
+from app.models import AvatarCharacter, BudgetEntry, BudgetMonth, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, CookieCosmosV2Save, FeatureIdea, FeatureVote, FileShare, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, KniffelGame, KniffelInvite, KniffelPlayer, NebulaForgeTycoonSave, Shortcut, \
+    ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, ToolFavorite, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
 
 import json
 
 from django.db import transaction
-from django.db.models import Max, Prefetch
+from django.db.models import Count, Max, Prefetch, Sum
 from django.db.utils import OperationalError, ProgrammingError
 from django.http import HttpResponse, JsonResponse
 
@@ -38,6 +39,7 @@ from django.views.decorators.http import require_POST
 
 from .models import Note, SiteAccessSettings
 from .forms import SignUpForm
+from .platform_utils import resolve_tools
 from .presence_utils import mark_active_game
 from .voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
 
@@ -616,6 +618,145 @@ def build_home_kniffel_widget_data(user):
     }
 
 
+def format_home_money(value):
+    try:
+        amount = Decimal(value or 0).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    except (InvalidOperation, TypeError, ValueError):
+        amount = Decimal("0.00")
+
+    formatted = f"{amount:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    return f"{formatted} €"
+
+
+def build_home_file_share_widget_data(user):
+    own_shares = FileShare.objects.filter(owner=user)
+    received_shares = (
+        FileShare.objects
+        .filter(recipients=user)
+        .exclude(owner=user)
+        .select_related("owner")
+        .distinct()
+    )
+    own_size = own_shares.aggregate(total=Sum("size"))["total"] or 0
+
+    return {
+        "own_count": own_shares.count(),
+        "received_count": received_shares.count(),
+        "public_link_count": own_shares.filter(is_public_link=True).count(),
+        "own_size_label": FileShare(size=own_size).human_size,
+        "recent_received": received_shares.order_by("-created_at")[:3],
+        "recent_own": own_shares.order_by("-created_at")[:3],
+    }
+
+
+def build_home_budget_widget_data(user):
+    today = django_timezone.localdate()
+    month_start = today.replace(day=1)
+    if month_start.month == 12:
+        next_month_start = month_start.replace(year=month_start.year + 1, month=1)
+    else:
+        next_month_start = month_start.replace(month=month_start.month + 1)
+
+    budget_month = BudgetMonth.objects.filter(
+        user=user,
+        year=month_start.year,
+        month=month_start.month,
+    ).first()
+    entries = BudgetEntry.objects.filter(user=user, date__gte=month_start, date__lt=next_month_start)
+    total_income = entries.filter(entry_type=BudgetEntry.TYPE_INCOME).aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
+    total_expenses = entries.filter(entry_type=BudgetEntry.TYPE_EXPENSE).aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
+    balance = total_income - total_expenses
+    expense_limit = budget_month.expense_limit if budget_month else Decimal("0.00")
+    savings_goal = budget_month.savings_goal if budget_month else Decimal("0.00")
+
+    if expense_limit and expense_limit > 0:
+        expense_usage_percent = int(min(100, max(0, (total_expenses / expense_limit) * Decimal("100"))))
+        limit_remaining = expense_limit - total_expenses
+    else:
+        expense_usage_percent = 0
+        limit_remaining = Decimal("0.00")
+
+    return {
+        "month_label": date_format(month_start, "F Y"),
+        "total_income": total_income,
+        "total_expenses": total_expenses,
+        "balance": balance,
+        "total_income_label": format_home_money(total_income),
+        "total_expenses_label": format_home_money(total_expenses),
+        "balance_label": format_home_money(balance),
+        "expense_limit_label": format_home_money(expense_limit),
+        "limit_remaining_label": format_home_money(limit_remaining),
+        "savings_goal_label": format_home_money(savings_goal),
+        "expense_usage_percent": expense_usage_percent,
+        "has_plan": bool(budget_month and (budget_month.planned_income or budget_month.expense_limit or budget_month.savings_goal)),
+        "recent_entries": entries.select_related("category").order_by("-date", "-created_at")[:3],
+    }
+
+
+def build_home_favorites_widget_data(request, user):
+    favorite_keys = list(ToolFavorite.objects.filter(user=user).values_list("tool_key", flat=True))
+    favorite_key_set = set(favorite_keys)
+    tools_by_key = {
+        tool["key"]: tool
+        for tool in resolve_tools(request, favorite_key_set)
+        if tool.get("is_favorite")
+    }
+    favorite_tools = [tools_by_key[key] for key in favorite_keys if key in tools_by_key]
+    categories = sorted({str(tool["category"]) for tool in favorite_tools})
+
+    return {
+        "favorite_count": len(favorite_tools),
+        "category_count": len(categories),
+        "favorite_tools": favorite_tools[:4],
+    }
+
+
+def build_home_roadmap_widget_data(user):
+    open_statuses = [
+        FeatureIdea.STATUS_SUGGESTED,
+        FeatureIdea.STATUS_PLANNED,
+        FeatureIdea.STATUS_IN_PROGRESS,
+    ]
+    popular_ideas = (
+        FeatureIdea.objects
+        .select_related("author")
+        .annotate(vote_total=Count("votes"))
+        .order_by("-vote_total", "-updated_at", "-created_at")[:3]
+    )
+
+    return {
+        "total_ideas": FeatureIdea.objects.count(),
+        "open_count": FeatureIdea.objects.filter(status__in=open_statuses).count(),
+        "in_progress_count": FeatureIdea.objects.filter(status=FeatureIdea.STATUS_IN_PROGRESS).count(),
+        "done_count": FeatureIdea.objects.filter(status=FeatureIdea.STATUS_DONE).count(),
+        "user_votes": FeatureVote.objects.filter(user=user).count(),
+        "popular_ideas": popular_ideas,
+    }
+
+
+def build_home_inbox_widget_data(user):
+    inbox_items = InboxItem.objects.filter(user=user)
+
+    return {
+        "unread_count": inbox_items.filter(is_read=False).count(),
+        "total_count": inbox_items.count(),
+        "recent_items": inbox_items.order_by("-created_at")[:3],
+    }
+
+
+def build_home_changelog_widget_data():
+    from .community_views import get_changelog_entries
+
+    entries = get_changelog_entries()
+    latest_entry = entries[0] if entries else None
+
+    return {
+        "latest_entry": latest_entry,
+        "release_count": len(entries),
+        "change_count": sum(len(entry.get("items", [])) for entry in entries),
+    }
+
+
 def build_home_widget_data(request, user):
     widgets = list(
         HomeWidget.objects
@@ -686,6 +827,24 @@ def build_home_widget_data(request, user):
 
         elif widget.widget_type == HomeWidget.WIDGET_KNIFFEL:
             data = build_home_kniffel_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_FILE_SHARE:
+            data = build_home_file_share_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_BUDGET:
+            data = build_home_budget_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_FAVORITES:
+            data = build_home_favorites_widget_data(request, user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_ROADMAP:
+            data = build_home_roadmap_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_INBOX:
+            data = build_home_inbox_widget_data(user)
+
+        elif widget.widget_type == HomeWidget.WIDGET_CHANGELOG:
+            data = build_home_changelog_widget_data()
 
         elif widget.widget_type == HomeWidget.WIDGET_STATS:
             data = {

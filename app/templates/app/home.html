@@ -101,6 +101,18 @@
                                                         <i class="fa-solid fa-palette"></i>
                                                     {% elif widget.widget_type == "tictactoe" %}
                                                         <i class="fa-solid fa-table-cells"></i>
+                                                    {% elif widget.widget_type == "file_share" %}
+                                                        <i class="fa-solid fa-share-nodes"></i>
+                                                    {% elif widget.widget_type == "budget" %}
+                                                        <i class="fa-solid fa-wallet"></i>
+                                                    {% elif widget.widget_type == "favorites" %}
+                                                        <i class="fa-solid fa-star"></i>
+                                                    {% elif widget.widget_type == "roadmap" %}
+                                                        <i class="fa-solid fa-route"></i>
+                                                    {% elif widget.widget_type == "inbox" %}
+                                                        <i class="fa-solid fa-inbox"></i>
+                                                    {% elif widget.widget_type == "changelog" %}
+                                                        <i class="fa-solid fa-wand-magic-sparkles"></i>
                                                     {% else %}
                                                         <i class="fa-solid fa-gauge-high"></i>
                                                     {% endif %}
@@ -556,6 +568,245 @@
                                                         <i class="fa-solid fa-arrow-right"></i>
                                                     </a>
                                                 </div>
+                                            {% elif widget.widget_type == "file_share" %}
+                                                <div class="skribble-widget-content">
+                                                    <div class="stats-grid mini">
+                                                        <div>
+                                                            <strong>{{ data.received_count }}</strong>
+                                                            <span>{% translate 'Erhalten' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.own_count }}</strong>
+                                                            <span>{% translate 'Geteilt' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.recent_received %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for share in data.recent_received %}
+                                                                <a href="{% url 'file_share_download' share.token %}">
+                                                                    <span class="widget-list-icon is-blue"><i class="{{ share.icon_class }}"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ share.original_name }}</strong>
+                                                                        <small>{{ share.owner.username }} · {{ share.human_size }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% elif data.recent_own %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for share in data.recent_own %}
+                                                                <a href="{% url 'file_share' %}">
+                                                                    <span class="widget-list-icon is-blue"><i class="{{ share.icon_class }}"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ share.original_name }}</strong>
+                                                                        <small>{{ share.human_size }} · {{ share.availability_label }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-solid fa-share-nodes"></i>
+                                                            <span>{% translate 'Noch keine Dateifreigaben.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'file_share' %}" class="widget-link">
+                                                        {% translate 'Datei-Share öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "budget" %}
+                                                <div class="budget-widget-content">
+                                                    <div class="widget-kicker-row">
+                                                        <span>{{ data.month_label }}</span>
+                                                        {% if data.has_plan %}
+                                                            <strong>{% translate 'Plan aktiv' %}</strong>
+                                                        {% else %}
+                                                            <strong>{% translate 'Ohne Plan' %}</strong>
+                                                        {% endif %}
+                                                    </div>
+
+                                                    <div class="widget-big-number compact widget-money-number">
+                                                        <strong>{{ data.balance_label }}</strong>
+                                                        <span>{% translate 'Saldo' %}</span>
+                                                    </div>
+
+                                                    <div class="stats-grid mini widget-money-grid">
+                                                        <div>
+                                                            <strong>{{ data.total_income_label }}</strong>
+                                                            <span>{% translate 'Einnahmen' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.total_expenses_label }}</strong>
+                                                            <span>{% translate 'Ausgaben' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="widget-progress">
+                                                        <div>
+                                                            <span>{% translate 'Ausgabenlimit' %}</span>
+                                                            <strong>{{ data.expense_usage_percent }}%</strong>
+                                                        </div>
+                                                        <span class="widget-progress-track">
+                                                            <span style="width: {{ data.expense_usage_percent }}%"></span>
+                                                        </span>
+                                                        <small>{% translate 'Übrig' %}: {{ data.limit_remaining_label }}</small>
+                                                    </div>
+
+                                                    <a href="{% url 'budget_tracker' %}" class="widget-link">
+                                                        {% translate 'Budget öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "favorites" %}
+                                                <div class="skribble-widget-content">
+                                                    <div class="stats-grid mini">
+                                                        <div>
+                                                            <strong>{{ data.favorite_count }}</strong>
+                                                            <span>{% translate 'Favoriten' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.category_count }}</strong>
+                                                            <span>{% translate 'Kategorien' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.favorite_tools %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for tool in data.favorite_tools %}
+                                                                <a href="{{ tool.url }}">
+                                                                    <span class="widget-list-icon is-orange"><i class="{{ tool.icon }}"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ tool.label }}</strong>
+                                                                        <small>{{ tool.category }}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-regular fa-star"></i>
+                                                            <span>{% translate 'Noch keine Tool-Favoriten.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'favorites' %}" class="widget-link">
+                                                        {% translate 'Favoriten öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "roadmap" %}
+                                                <div class="skribble-widget-content">
+                                                    <div class="stats-grid mini">
+                                                        <div>
+                                                            <strong>{{ data.open_count }}</strong>
+                                                            <span>{% translate 'Offen' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.in_progress_count }}</strong>
+                                                            <span>{% translate 'In Arbeit' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.popular_ideas %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for idea in data.popular_ideas %}
+                                                                <a href="{% url 'roadmap' %}?q={{ idea.title|urlencode }}">
+                                                                    <span class="widget-list-icon is-green"><i class="fa-regular fa-lightbulb"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ idea.title }}</strong>
+                                                                        <small>{{ idea.get_status_display }} · {{ idea.vote_total }} {% translate 'Votes' %}</small>
+                                                                    </span>
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-regular fa-lightbulb"></i>
+                                                            <span>{% translate 'Noch keine Roadmap-Ideen.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'roadmap' %}" class="widget-link">
+                                                        {% translate 'Roadmap öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "inbox" %}
+                                                <div class="skribble-widget-content">
+                                                    <div class="stats-grid mini">
+                                                        <div>
+                                                            <strong>{{ data.unread_count }}</strong>
+                                                            <span>{% translate 'Ungelesen' %}</span>
+                                                        </div>
+                                                        <div>
+                                                            <strong>{{ data.total_count }}</strong>
+                                                            <span>{% translate 'Gesamt' %}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {% if data.recent_items %}
+                                                        <div class="widget-list compact-list">
+                                                            {% for item in data.recent_items %}
+                                                                <a href="{% if item.target_url %}{{ item.target_url }}{% else %}{% url 'inbox' %}{% endif %}">
+                                                                    <span class="widget-list-icon is-blue"><i class="{{ item.icon }}"></i></span>
+                                                                    <span>
+                                                                        <strong>{{ item.title }}</strong>
+                                                                        <small>{{ item.get_item_type_display }} · {{ item.created_at|date:"d.m.Y H:i" }}</small>
+                                                                    </span>
+                                                                    {% if not item.is_read %}
+                                                                        <b>{% translate 'Neu' %}</b>
+                                                                    {% endif %}
+                                                                </a>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-regular fa-bell"></i>
+                                                            <span>{% translate 'Deine Inbox ist leer.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'inbox' %}" class="widget-link">
+                                                        {% translate 'Inbox öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                            {% elif widget.widget_type == "changelog" %}
+                                                <div class="changelog-widget-content">
+                                                    {% if data.latest_entry %}
+                                                        <div class="widget-kicker-row">
+                                                            <span>{{ data.latest_entry.date }}</span>
+                                                            <strong>{{ data.latest_entry.version }}</strong>
+                                                        </div>
+
+                                                        <div class="widget-feature-note">
+                                                            <i class="{{ data.latest_entry.icon }}"></i>
+                                                            <div>
+                                                                <strong>{{ data.latest_entry.title }}</strong>
+                                                                <span>{{ data.latest_entry.summary }}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="widget-note-list">
+                                                            {% for change in data.latest_entry.items|slice:":3" %}
+                                                                <span><i class="fa-solid fa-check"></i>{{ change }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="widget-empty-state compact">
+                                                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                                            <span>{% translate 'Noch keine Changelog-Einträge.' %}</span>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <a href="{% url 'changelog' %}" class="widget-link">
+                                                        {% translate 'Changelog öffnen' %}
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </a>
+                                                </div>
                                             {% else %}
                                                 <div class="stats-widget-content">
                                                     <div class="stats-grid">
@@ -748,18 +999,9 @@
                 <label>
                     {% translate 'Widget-Typ' %}
                     <select name="widget_type" id="widget-type">
-                        <option value="weather">{% translate 'Wetter' %}</option>
-                        <option value="notes">{% translate 'Notizen' %}</option>
-                        <option value="clock">{% translate 'Uhr' %}</option>
-                        <option value="chat">{% translate 'Chats' %}</option>
-                        <option value="friends">{% translate 'Freunde' %}</option>
-                        <option value="skribble">{% translate 'Skribble' %}</option>
-                        <option value="tictactoe">{% translate 'Tic Tac Toe' %}</option>
-                        <option value="stadtlandfluss">{% translate 'Stadt Land Fluss' %}</option>
-                        <option value="uno">{% translate 'Uno' %}</option>
-                        <option value="kniffel">{% translate 'Kniffel' %}</option>
-                        <option value="benchmark">{% translate 'Human Benchmark' %}</option>
-                        <option value="stats">{% translate 'Schnellstatistiken' %}</option>
+                        {% for value, label in widget_types %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
                     </select>
                 </label>
 

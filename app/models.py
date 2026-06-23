@@ -978,6 +978,12 @@ class HomeWidget(TrashableModel):
     WIDGET_STADTLANDFLUSS = "stadtlandfluss"
     WIDGET_UNO = "uno"
     WIDGET_KNIFFEL = "kniffel"
+    WIDGET_FILE_SHARE = "file_share"
+    WIDGET_BUDGET = "budget"
+    WIDGET_FAVORITES = "favorites"
+    WIDGET_ROADMAP = "roadmap"
+    WIDGET_INBOX = "inbox"
+    WIDGET_CHANGELOG = "changelog"
 
     WIDGET_CHOICES = [
         (WIDGET_WEATHER, _("Wetter")),
@@ -992,6 +998,12 @@ class HomeWidget(TrashableModel):
         (WIDGET_STADTLANDFLUSS, _("Stadt Land Fluss")),
         (WIDGET_UNO, _("Uno")),
         (WIDGET_KNIFFEL, _("Kniffel")),
+        (WIDGET_FILE_SHARE, _("Datei-Share")),
+        (WIDGET_BUDGET, _("Budget")),
+        (WIDGET_FAVORITES, _("Favoriten")),
+        (WIDGET_ROADMAP, _("Roadmap")),
+        (WIDGET_INBOX, _("Inbox")),
+        (WIDGET_CHANGELOG, _("Changelog")),
     ]
 
     CLOCK_DESIGN_MINIMAL = "minimal"
