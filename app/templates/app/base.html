@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260623-header-gap-fix">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260623-mobile-header-clean">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -483,6 +483,9 @@
                             </span>
                             <strong>{% translate 'Weitere Seiten' %}</strong>
                         </div>
+                        <button class="tools-sheet-close" type="button" data-close-tools-menu aria-label="{% translate 'Tool-Katalog schließen' %}">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
 
                     <label class="games-menu-search">

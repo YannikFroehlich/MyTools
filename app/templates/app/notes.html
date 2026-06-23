@@ -200,19 +200,64 @@
                     {% endif %}
                 </div>
 
-                {% if query %}
+                {% if query or tag_filter %}
                     <h3>{% translate "Keine Treffer gefunden" %}</h3>
-                    <p>{% translate "Versuch es mit einem anderen Suchbegriff oder entferne den Filter." %}</p>
+                    <p>{% translate "Versuch es mit einem anderen Suchbegriff oder setze die aktiven Filter zurück." %}</p>
+                    <div class="notes-empty-actions">
+                        <a href="{% url 'notes' %}" class="notes-secondary-btn">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            {% translate "Filter zurücksetzen" %}
+                        </a>
+                        <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            {% translate "Neue Notiz" %}
+                        </a>
+                    </div>
                 {% elif show_archived %}
                     <h3>{% translate "Archiv ist leer" %}</h3>
                     <p>{% translate "Wenn du Notizen archivierst, erscheinen sie hier." %}</p>
+                    <div class="notes-empty-actions">
+                        <a href="{% url 'notes' %}" class="notes-secondary-btn">
+                            <i class="fa-solid fa-layer-group"></i>
+                            {% translate "Aktive Notizen ansehen" %}
+                        </a>
+                    </div>
+                {% elif scope == "shared" %}
+                    <h3>{% translate "Noch keine geteilten Notizen" %}</h3>
+                    <p>{% translate "Wenn jemand eine Notiz mit dir teilt, erscheint sie hier. Eigene Notizen kannst du beim Erstellen direkt freigeben." %}</p>
+                    <div class="notes-empty-actions">
+                        <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            {% translate "Notiz zum Teilen erstellen" %}
+                        </a>
+                    </div>
+                {% elif scope == "reminders" %}
+                    <h3>{% translate "Keine Erinnerungen gesetzt" %}</h3>
+                    <p>{% translate "Erstelle eine Notiz mit Erinnerung, damit wichtige Gedanken später wieder auftauchen." %}</p>
+                    <div class="notes-empty-actions">
+                        <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            {% translate "Notiz mit Erinnerung erstellen" %}
+                        </a>
+                    </div>
+                {% elif scope == "mine" %}
+                    <h3>{% translate "Noch keine eigenen Notizen" %}</h3>
+                    <p>{% translate "Starte mit einer privaten Notiz und pinne sie später, wenn sie wichtig bleibt." %}</p>
+                    <div class="notes-empty-actions">
+                        <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            {% translate "Eigene Notiz erstellen" %}
+                        </a>
+                    </div>
                 {% else %}
                     <h3>{% translate "Noch keine Notizen vorhanden" %}</h3>
                     <p>{% translate "Erstelle deine erste Notiz und speichere sie direkt auf deinem Server." %}</p>
-                    <a href="{% url 'note_create' %}" class="notes-primary-btn">
-                        <i class="fa-solid fa-plus"></i>
-                        {% translate "Erste Notiz erstellen" %}
-                    </a>
+                    <div class="notes-empty-actions">
+                        <a href="{% url 'note_create' %}" class="notes-primary-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            {% translate "Erste Notiz erstellen" %}
+                        </a>
+                    </div>
                 {% endif %}
             </div>
         {% endif %}

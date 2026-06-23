@@ -30,7 +30,7 @@
     {% endif %}
 
     <div class="feature-layout two-columns">
-        <aside class="feature-card idea-form-card">
+        <aside id="roadmap-new-idea" class="feature-card idea-form-card">
             <div class="feature-card-heading">
                 <i class="fa-regular fa-lightbulb"></i>
                 <div>
@@ -200,6 +200,10 @@
                         <i class="fa-regular fa-lightbulb"></i>
                         <h2>{% translate "Noch keine Ideen gefunden" %}</h2>
                         <p>{% translate "Erstelle links deine erste Feature-Idee oder ändere die Filter." %}</p>
+                        <a href="#roadmap-new-idea" class="feature-primary-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            {% translate "Idee einreichen" %}
+                        </a>
                     </div>
                 {% endfor %}
             </div>

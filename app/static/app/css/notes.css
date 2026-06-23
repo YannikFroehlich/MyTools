@@ -760,6 +760,14 @@ body.dark-mode .notes-empty {
     line-height: 1.65;
 }
 
+.notes-empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+}
+
 body.dark-mode .notes-empty h3 {
     color: #f9fafb;
 }

@@ -775,6 +775,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     openWidgetModalButton?.addEventListener("click", openAddWidgetModal);
+    document.querySelectorAll("[data-open-widget-modal]").forEach(button => {
+        button.addEventListener("click", openAddWidgetModal);
+    });
     widgetTypeInput?.addEventListener("change", toggleWidgetTypeFields);
 
     widgetClockOptionButtons.forEach(button => {

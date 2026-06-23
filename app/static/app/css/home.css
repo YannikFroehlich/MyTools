@@ -623,6 +623,14 @@ body.dark-mode .home-quick-actions button {
     line-height: 1.5;
 }
 
+.empty-shortcuts .add-shortcut-button {
+    margin-top: 0.35rem;
+    padding-inline: 1rem;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text);
+    box-shadow: 0 12px 26px rgba(var(--theme-accent-rgb), 0.18);
+}
+
 /* ───────────────── ADD SECTION CARD ───────────────── */
 
 .add-section-card {
@@ -3310,6 +3318,35 @@ body.dark-mode .shortcuts-grid.drag-over {
 .empty-widgets h3,
 .empty-widgets p {
     margin: 0;
+}
+
+.widget-empty-action {
+    min-height: 40px;
+    margin-top: 0.4rem;
+    padding: 0 0.95rem;
+    border: 0;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 14px 28px rgba(var(--theme-accent-rgb), 0.2);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 900;
+}
+
+.widget-empty-action:hover,
+.widget-empty-action:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 34px rgba(var(--theme-accent-rgb), 0.25);
+}
+
+.widget-empty-action:focus-visible {
+    outline: 3px solid rgba(var(--theme-accent-rgb), 0.24);
+    outline-offset: 3px;
 }
 
 .widget-weather-location-field small {

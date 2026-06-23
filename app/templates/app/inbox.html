@@ -75,7 +75,12 @@
                 </div>
             {% empty %}
                 {% if not unread_rooms and not pending_friendships and not pending_skribble_invites %}
-                    <div class="platform-empty"><i class="fa-regular fa-bell"></i><p>{% translate "Deine Inbox ist leer." %}</p></div>
+                    <div class="platform-empty">
+                        <i class="fa-regular fa-bell"></i>
+                        <h3>{% translate "Alles ruhig" %}</h3>
+                        <p>{% translate "Neue Chat-Hinweise, Freundschaftsanfragen und Spieleinladungen landen hier, sobald etwas passiert." %}</p>
+                        <a href="{% url 'home' %}"><i class="fa-solid fa-house"></i>{% translate "Zur Startseite" %}</a>
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>

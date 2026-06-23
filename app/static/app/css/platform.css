@@ -145,7 +145,59 @@ body.dark-mode .tool-card.is-access-restricted .tool-card-main em {
 .feedback-item { padding:14px; border-radius:18px; background:rgba(148,163,184,.1); border:1px solid rgba(148,163,184,.14); margin-bottom:10px; display:grid; gap:6px; }
 .feedback-item small { color:#64748b; font-weight:800; }
 .feedback-item p { margin:0; color:#64748b; font-weight:700; }
-.platform-empty { padding:28px; text-align:center; color:#64748b; font-weight:800; }
+.platform-empty {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    min-height: 190px;
+    padding: 34px 24px;
+    border: 1px dashed rgba(var(--theme-accent-rgb), 0.26);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top, rgba(var(--theme-accent-rgb), 0.12), transparent 42%),
+        rgba(148, 163, 184, 0.08);
+    text-align: center;
+    color: #64748b;
+    font-weight: 800;
+}
+.platform-empty > i {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    border-radius: 20px;
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 16px 34px rgba(var(--theme-accent-rgb), 0.2);
+    font-size: 1.35rem;
+}
+.platform-empty h2,
+.platform-empty h3,
+.platform-empty p {
+    margin: 0;
+}
+.platform-empty h2,
+.platform-empty h3 {
+    color: var(--theme-text);
+    letter-spacing: -0.03em;
+}
+.platform-empty p {
+    max-width: 420px;
+    line-height: 1.5;
+}
+.platform-empty a {
+    min-height: 38px;
+    margin-top: 4px;
+    padding: 0 14px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    text-decoration: none;
+    font-weight: 950;
+}
 .platform-messages div { margin-bottom:14px; padding:12px 14px; border-radius:16px; background:rgba(34,197,94,.12); color:#166534; font-weight:900; }
 body.dark-mode .platform-hero,
 body.dark-mode .platform-card { background: linear-gradient(145deg, rgba(28,34,49,.94), rgba(18,21,31,.78)); border-color:rgba(255,255,255,.08); color:#e2e8f0; box-shadow:0 24px 60px rgba(0,0,0,.34); }
@@ -154,6 +206,16 @@ body.dark-mode .inbox-item small,
 body.dark-mode .feedback-item small,
 body.dark-mode .feedback-item p,
 body.dark-mode .platform-empty { color:#cbd5e1; }
+body.dark-mode .platform-empty {
+    border-color: rgba(var(--theme-accent-rgb), 0.28);
+    background:
+        radial-gradient(circle at top, rgba(var(--theme-accent-rgb), 0.16), transparent 42%),
+        rgba(255, 255, 255, 0.06);
+}
+body.dark-mode .platform-empty h2,
+body.dark-mode .platform-empty h3 {
+    color: #f8fafc;
+}
 body.dark-mode .tool-card,
 body.dark-mode .inbox-item,
 body.dark-mode .feedback-item { background:rgba(255,255,255,.07); border-color:rgba(203,213,225,.12); }

@@ -50,6 +50,15 @@
                 {% endfor %}
             </div>
         </section>
+    {% empty %}
+        <section class="platform-card">
+            <div class="platform-empty">
+                <i class="fa-regular fa-star"></i>
+                <h3>{% translate "Noch keine Tools sichtbar" %}</h3>
+                <p>{% translate "Sobald Tools freigeschaltet sind, kannst du sie hier öffnen und als Favoriten markieren." %}</p>
+                <a href="{% url 'home' %}"><i class="fa-solid fa-house"></i>{% translate "Zur Startseite" %}</a>
+            </div>
+        </section>
     {% endfor %}
 </section>
 {% endblock %}

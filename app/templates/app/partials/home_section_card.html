@@ -170,6 +170,15 @@
                     </div>
                     <h3>{% translate 'Noch keine Verknüpfungen' %}</h3>
                     <p>{% translate 'Erstelle deine erste Schnellverknüpfung für diesen Bereich.' %}</p>
+                    <button
+                        type="button"
+                        class="add-shortcut-button open-shortcut-modal"
+                        data-section-id="{{ section.id }}"
+                        data-section-name="{% if section.name == 'Verknüpfungen' %}{% translate 'Verknüpfungen' %}{% else %}{{ section.name|escape }}{% endif %}"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                        {% translate 'Verknüpfung hinzufügen' %}
+                    </button>
                 </div>
             {% endfor %}
         </div>
