@@ -656,6 +656,12 @@ class Shortcut(TrashableModel):
         blank=True,
     )
 
+    color = models.CharField(
+        max_length=20,
+        choices=ShortcutSection.COLOR_CHOICES,
+        default="blue",
+    )
+
     is_favorite = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
 

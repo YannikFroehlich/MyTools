@@ -546,6 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (shortcutFileName) shortcutFileName.textContent = labels.noFileSelected || "Keine Datei ausgewählt";
         if (shortcutModalTitle) shortcutModalTitle.textContent = labels.newShortcut || "Neue Verknüpfung";
         setCheckedRadio(shortcutForm, "icon", "fa-brands fa-youtube");
+        setCheckedRadio(shortcutForm, "shortcut_color", "blue", "blue");
     }
 
     shortcutImageInput?.addEventListener("change", () => {
@@ -588,6 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = card.dataset.shortcutName || card.querySelector("a span")?.textContent?.trim() || "";
         const url = card.dataset.shortcutUrl || card.querySelector("a")?.getAttribute("href") || "";
         const icon = card.dataset.shortcutIcon || "";
+        const color = card.dataset.shortcutColor || "blue";
         const hasImage = card.dataset.shortcutHasImage === "true";
 
         if (shortcutFormActionInput) shortcutFormActionInput.value = "edit_shortcut";
@@ -615,6 +617,8 @@ document.addEventListener("DOMContentLoaded", () => {
             setCheckedRadio(shortcutForm, "icon", "fa-solid fa-link");
             if (shortcutCustomIconInput) shortcutCustomIconInput.value = icon;
         }
+
+        setCheckedRadio(shortcutForm, "shortcut_color", color, "blue");
 
         openModal(shortcutModal, shortcutNameInput);
     }
