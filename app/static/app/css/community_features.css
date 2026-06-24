@@ -1842,3 +1842,338 @@ body.dark .server-status-page .security-event-row,
 body.dark .server-status-page .admin-mini-card {
     background: var(--status-panel-bg) !important;
 }
+
+/* Git-only changelog refinements */
+.changelog-layout-git-only .git-changelog-card {
+    min-height: 100%;
+}
+
+.changelog-empty-mini {
+    display: grid;
+    gap: 3px;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.changelog-empty-mini span {
+    color: #64748b;
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
+.changelog-empty-mini strong {
+    color: #0f172a;
+}
+
+.git-changelog-empty {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    padding: 18px;
+    border: 1px dashed rgba(37, 99, 235, 0.28);
+    border-radius: 20px;
+    background: rgba(37, 99, 235, 0.06);
+}
+
+.git-changelog-empty-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    color: #fff;
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+}
+
+.git-changelog-empty h3 {
+    margin: 0 0 6px;
+    color: #0f172a;
+}
+
+.git-changelog-empty p {
+    margin: 0 0 12px;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.git-changelog-empty code {
+    display: inline-block;
+    max-width: 100%;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.08);
+    color: #1d4ed8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.82rem;
+    font-weight: 800;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.changelog-hero-stats strong {
+    word-break: break-word;
+}
+
+body.dark-mode .changelog-empty-mini,
+body.dark .changelog-empty-mini {
+    background: rgba(30, 41, 59, 0.72);
+}
+
+body.dark-mode .changelog-empty-mini strong,
+body.dark .changelog-empty-mini strong,
+body.dark-mode .git-changelog-empty h3,
+body.dark .git-changelog-empty h3 {
+    color: #e2e8f0;
+}
+
+body.dark-mode .changelog-empty-mini span,
+body.dark .changelog-empty-mini span,
+body.dark-mode .git-changelog-empty p,
+body.dark .git-changelog-empty p {
+    color: #94a3b8;
+}
+
+body.dark-mode .git-changelog-empty,
+body.dark .git-changelog-empty {
+    border-color: rgba(96, 165, 250, 0.24);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+body.dark-mode .git-changelog-empty code,
+body.dark .git-changelog-empty code {
+    background: rgba(148, 163, 184, 0.12);
+    color: #93c5fd;
+}
+
+@media (max-width: 640px) {
+    .git-changelog-empty {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Git changelog pagination */
+.git-changelog-pagination {
+    position: static !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    z-index: auto !important;
+    overflow: visible !important;
+}
+
+.git-changelog-pagination::before,
+.git-changelog-pagination::after {
+    content: none !important;
+    display: none !important;
+}
+
+.git-changelog-page-status {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.05);
+}
+
+.git-changelog-page-status span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.git-changelog-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 2px;
+}
+
+.git-changelog-pagination-footer {
+    margin-top: 4px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(37, 99, 235, 0.12);
+}
+
+.git-changelog-page-numbers {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.git-changelog-pagination a,
+.git-changelog-pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.84);
+    color: #1d4ed8;
+    font-size: 0.84rem;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.git-changelog-pagination a:hover {
+    transform: translateY(-1px);
+    border-color: rgba(37, 99, 235, 0.34);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+.git-changelog-pagination .git-changelog-pagination-current,
+.git-changelog-pagination .git-changelog-page-number.is-current {
+    min-width: 42px;
+    border-color: transparent;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(6, 182, 212, 0.14));
+    color: #0f172a;
+}
+
+.git-changelog-pagination .git-changelog-page-number {
+    min-width: 42px;
+    padding-inline: 12px;
+}
+
+.git-changelog-pagination .is-disabled {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
+.git-changelog-pagination .is-ellipsis {
+    min-width: 34px;
+    padding-inline: 10px;
+    border-color: transparent;
+    background: transparent;
+    color: #64748b;
+}
+
+body.dark-mode .git-changelog-page-status,
+body.dark .git-changelog-page-status {
+    background: rgba(148, 163, 184, 0.1);
+}
+
+body.dark-mode .git-changelog-page-status span,
+body.dark .git-changelog-page-status span {
+    color: #cbd5e1;
+}
+
+body.dark-mode .git-changelog-pagination a,
+body.dark-mode .git-changelog-pagination span,
+body.dark .git-changelog-pagination a,
+body.dark .git-changelog-pagination span {
+    border-color: rgba(96, 165, 250, 0.2);
+    background: rgba(30, 41, 59, 0.74);
+    color: #bfdbfe;
+}
+
+body.dark-mode .git-changelog-pagination a:hover,
+body.dark .git-changelog-pagination a:hover {
+    border-color: rgba(96, 165, 250, 0.38);
+    background: rgba(37, 99, 235, 0.22);
+}
+
+body.dark-mode .git-changelog-pagination-footer,
+body.dark .git-changelog-pagination-footer {
+    border-top-color: rgba(96, 165, 250, 0.16);
+}
+
+body.dark-mode .git-changelog-pagination .git-changelog-pagination-current,
+body.dark-mode .git-changelog-pagination .git-changelog-page-number.is-current,
+body.dark .git-changelog-pagination .git-changelog-pagination-current,
+body.dark .git-changelog-pagination .git-changelog-page-number.is-current {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(6, 182, 212, 0.2));
+    color: #e2e8f0;
+}
+
+body.dark-mode .git-changelog-pagination .is-ellipsis,
+body.dark .git-changelog-pagination .is-ellipsis {
+    background: transparent;
+    color: #94a3b8;
+}
+
+@media (max-width: 640px) {
+    .git-changelog-page-status {
+        justify-content: flex-start;
+    }
+
+    .git-changelog-pagination {
+        justify-content: flex-start;
+    }
+
+    .git-changelog-pagination a,
+    .git-changelog-pagination span {
+        flex: 1 1 auto;
+    }
+
+    .git-changelog-page-numbers {
+        order: -1;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .git-changelog-pagination .git-changelog-pagination-current {
+        flex-basis: 100%;
+        order: -1;
+    }
+}
+
+
+/* Git changelog: clean layout without header pagination/navigation */
+.changelog-hero-clean {
+    display: block;
+}
+
+.changelog-hero-clean .feature-hero-copy {
+    max-width: 820px;
+}
+
+.changelog-layout-clean,
+.changelog-layout-git-only.changelog-layout-clean {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+}
+
+.changelog-layout-clean .changelog-timeline {
+    min-width: 0;
+}
+
+.git-changelog-footer-nav {
+    display: grid;
+    gap: 14px;
+    margin-top: 4px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(37, 99, 235, 0.12);
+}
+
+.git-changelog-footer-nav .git-changelog-pagination-footer {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
+body.dark-mode .git-changelog-footer-nav,
+body.dark .git-changelog-footer-nav {
+    border-top-color: rgba(96, 165, 250, 0.16);
+}

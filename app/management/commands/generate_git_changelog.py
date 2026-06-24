@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = "Generate the JSON file used by the Was-ist-neu Git changelog section."
 
     def add_arguments(self, parser):
-        parser.add_argument("--limit", type=int, default=20, help="Number of non-merge commits to include.")
+        parser.add_argument("--limit", type=int, default=0, help="Number of non-merge commits to include. Use 0 for all commits.")
         parser.add_argument(
             "--output",
             type=Path,

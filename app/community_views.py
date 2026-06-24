@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.cache import cache
+from django.core.paginator import Paginator
 from django.db import connection
 from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
@@ -24,162 +25,6 @@ from .models import ChatMessage, FeatureComment, FeatureIdea, FeatureVote, FileS
 
 
 STARTED_AT = timezone.now()
-
-def get_changelog_entries():
-    return [
-        {
-            "version": "2026.13",
-            "date": "21.06.2026",
-            "title": _("Dashboard, Navigation und Profile"),
-            "summary": _("MyTools ist übersichtlicher, sicherer bedienbar und lässt sich schneller an den eigenen Alltag anpassen."),
-            "type": _("Plattform"),
-            "icon": "fa-solid fa-sparkles",
-            "items": [
-                _("Einsteiger-Modus mit Dashboard-Vorlagen für Alltag, Gaming und Homelab ergänzt."),
-                _("Papierkorb mit 30 Tagen Wiederherstellung für Notizen, Dateien, Widgets und Shortcuts eingebaut."),
-                _("Spiele, Tools, Google-Apps und die globale Suche haben klar unterscheidbare Designs erhalten."),
-                _("Header, Profilansicht und Profileinstellungen wurden optisch und funktional voneinander getrennt."),
-                _("Barrierefreiheit, Dialog-Fokus, mobile Suche und Rückgängig-Aktionen wurden verbessert."),
-            ],
-        },
-        {
-            "version": "2026.12",
-            "date": "19.06.2026",
-            "title": _("Nebula Forge Tycoon Update"),
-            "summary": _("Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt und das Leaderboard zeigt jetzt die aktuellen Spiele."),
-            "type": _("Games"),
-            "icon": "fa-solid fa-wand-sparkles",
-            "items": [
-                _("Nebula Forge Tycoon wurde visuell überarbeitet und wirkt jetzt deutlich lebendiger."),
-                _("Kauf-, Prestige- und Ability-Aktionen haben neue Animationen und Effekte bekommen."),
-                _("Das Leaderboard wurde um aktuelle Spiele wie 2048, Cookie Cosmos V2, Nebula Forge Tycoon, Schiffe versenken, Uno, Kniffel und Pong erweitert."),
-                _("Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."),
-            ],
-        },
-        {
-            "version": "2026.11",
-            "date": "18.06.2026",
-            "title": _("Nebula Forge Tycoon Release"),
-            "summary": _("Nebula Forge Tycoon wurde hinzugefügt, ähnlich wie Cookie Cosmos und man kann als Admin nun kontrollieren wer auf welches tool oder game zugreifen kann"),
-            "type": _("Games"),
-            "icon": "fa-solid fa-meteor",
-            "items": [
-                _("Nebula Forge Tycoon wurde hinzugefügt."),
-                _("Kontrolle wer auf welches tool zugreifen kann."),
-                _("Kleinere Style Anpassungen"),
-            ],
-        },
-        {
-            "version": "2026.10",
-            "date": "17.06.2026",
-            "title": _("Datei-Konverter und einheitliches Tool-Design"),
-            "summary": _("Der neue Datei-Konverter, ein gemeinsamer Tool-Seiten-Look und gezielte Kontrastkorrekturen machen die Werkzeugbereiche einheitlicher und besser lesbar."),
-            "type": _("Tools"),
-            "icon": "fa-solid fa-file-arrow-down",
-            "items": [
-                _("Datei-Konverter für DOCX, Tabellen, Präsentationen, Textdateien und Bilder ergänzt."),
-                _("Office-zu-PDF läuft serverseitig über LibreOffice und verarbeitet Uploads nur temporär."),
-                _("Toolbox-Seiten übernehmen jetzt gemeinsame Theme-Farben, Karten, Buttons, Inputs und Kontrastmodus-Regeln."),
-                _("Bild Tools, Datei-Konverter, Einheitenrechner, Spritkosten und QR-Code Tool wurden farblich nachjustiert."),
-                _("Der Quality-Workflow startet nicht mehr automatisch bei jedem Push oder Merge, sondern nur noch manuell."),
-            ],
-        },
-        {
-            "version": "2026.09",
-            "date": "15.06.2026",
-            "title": _("Stream Deck mit Voicemod-Steuerung"),
-            "summary": _("Das Stream Deck kann Voicemod jetzt direkt steuern und nutzt dafuer einen lokal gespeicherten API-Key pro Browser."),
-            "type": _("Integration"),
-            "icon": "fa-solid fa-wand-magic-sparkles",
-            "items": [
-                _("Voicemod-Aktionen fuer Voice Changer, Hear Myself, Mikrofon-Mute, Zufalls-Voice und Voice-Wechsel ergaenzt."),
-                _("Voices lassen sich aus Voicemod laden und im Button-Editor per Dropdown auswaehlen."),
-                _("Der Voicemod API-Key wird im Stream Deck gespeichert und bei fehlender Verbindung klar als Hinweis angezeigt."),
-            ],
-        },
-        {
-            "version": "2026.08",
-            "date": "14.06.2026",
-            "title": _("Mobile Bedienung, Realtime und Qualität"),
-            "summary": _("Die mobile Navigation ist flexibler, Benachrichtigungen aktualisieren sich direkter und die Codebasis ist besser für weitere Updates vorbereitet."),
-            "type": _("Update"),
-            "icon": "fa-solid fa-mobile-screen-button",
-            "items": [
-                _("Mobile Ansicht blendet den oberen Header standardmäßig aus und bietet einen Button zum Ein- und Ausblenden."),
-                _("Google-Suche auf der Startseite wurde auf kleinen Displays optisch nachjustiert."),
-                _("Live-Status und Benachrichtigungszähler nutzen WebSocket-Updates mit HTTP-Fallback."),
-                _("Notes- und PWA-Views wurden aus der großen View-Datei herausgelöst."),
-                _("Neuer Qualitätslauf bündelt Systemcheck, Migration-Check, Tests, collectstatic-Dry-Run und JavaScript-Syntaxprüfung."),
-            ],
-        },
-        {
-            "version": "2026.07",
-            "date": "14.06.2026",
-            "title": _("Suche, Mobile, Datei-Share und Profile"),
-            "summary": _("Globale Suche, Quick Actions, mobile Navigation und bessere Freigaben machen MyTools schneller bedienbar und sichtbarer vernetzt."),
-            "type": _("Plattform"),
-            "icon": "fa-solid fa-magnifying-glass",
-            "items": [
-                _("Globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen ergänzt."),
-                _("Startseite mit Quick Actions für Suche, Widgets, Favoriten, Design und Changelog erweitert."),
-                _("Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil eingebaut."),
-                _("Datei-Share mit Passwortschutz, Ablaufdatum, Download-Limit sowie Bild- und PDF-Vorschau ausgebaut."),
-                _("Profilseite mit Spotlight-Statistiken und feineren Benachrichtigungseinstellungen erweitert."),
-            ],
-        },
-        {
-            "version": "2026.06",
-            "date": "14.06.2026",
-            "title": _("Design, Status und Transparenz"),
-            "summary": _("Neue Design-Modi, ein ausgebauter System-Monitor und diese Changelog-Seite machen MyTools leichter anpassbar und besser nachvollziehbar."),
-            "type": _("Update"),
-            "icon": "fa-solid fa-wand-magic-sparkles",
-            "items": [
-                _("Design-Editor fokussiert: eigene Farben, hoher Kontrast, weniger Bewegung und verbesserter Hintergrundeffekt."),
-                _("Serverstatus mit Admin-Karten, App-Aktivität, Mediengröße, Datenbankgröße und letzten Security-Events ausgebaut."),
-                _("Neue Was-ist-neu-Seite als zentraler Verlauf für sichtbare Änderungen ergänzt."),
-            ],
-        },
-        {
-            "version": "2026.05",
-            "date": "12.06.2026",
-            "title": _("Community und Sicherheit"),
-            "summary": _("Roadmap, Achievement-Center, Moderation und Security-Dashboard geben der Plattform mehr Struktur."),
-            "type": _("Plattform"),
-            "icon": "fa-solid fa-shield-halved",
-            "items": [
-                _("Feature-Ideen können gesammelt, gevotet und kommentiert werden."),
-                _("Admins erhalten Moderations- und Sicherheitswerkzeuge."),
-                _("Benachrichtigungen, 2FA und Security-Events runden den Kontobereich ab."),
-            ],
-        },
-        {
-            "version": "2026.04",
-            "date": "04.06.2026",
-            "title": _("Mehr Tools für den Alltag"),
-            "summary": _("Notizen, Datei-Share, Budget-Tracker, Medienwerkzeuge und Widgets wachsen stärker zusammen."),
-            "type": _("Tools"),
-            "icon": "fa-solid fa-screwdriver-wrench",
-            "items": [
-                _("Startseiten-Widgets zeigen wichtige Daten schneller an."),
-                _("Notizen unterstützen Pins, Erinnerungen und Teilen."),
-                _("Dateien, Bilder und Budgetdaten bekommen eigene Arbeitsbereiche."),
-            ],
-        },
-        {
-            "version": "2026.03",
-            "date": "24.05.2026",
-            "title": _("Spielebibliothek"),
-            "summary": _("Solo- und Mehrspielerbereiche wurden zu einer kleinen Spieleplattform erweitert."),
-            "type": _("Games"),
-            "icon": "fa-solid fa-gamepad",
-            "items": [
-                _("Mehrspieler-Lobbys, Einladungen und Live-Status für mehrere Spiele."),
-                _("Highscores und Leaderboards für Solo-Spiele."),
-                _("Profilkarten und Achievements geben Spielern mehr Identität."),
-            ],
-        },
-    ]
 
 
 def get_git_changelog():
@@ -207,7 +52,7 @@ def get_git_changelog():
         }
 
     items = []
-    for item in data.get("entries", [])[:20]:
+    for item in data.get("entries", []):
         message = _clean_text(item.get("message"), 180)
         if not message:
             continue
@@ -230,14 +75,68 @@ def get_git_changelog():
     }
 
 
+def get_changelog_entries():
+    """Return Git changelog entries in the compact format used by home widgets.
+
+    The changelog page itself is now generated only from Git commits. Older
+    dashboard widgets still expect the previous release-entry shape
+    (date/version/title/summary/items/icon). This adapter keeps that widget
+    working without reintroducing the old manually maintained changelog list.
+    """
+
+    git_changelog = get_git_changelog()
+    entries = []
+
+    for commit in git_changelog.get("items", []):
+        short_hash = commit.get("short_hash") or "Git"
+        commit_type = commit.get("type") or _("Commit")
+        author = commit.get("author")
+        details = [commit_type]
+        if author:
+            details.append(_("Autor: %(author)s") % {"author": author})
+
+        entries.append({
+            "date": commit.get("date_display", ""),
+            "version": short_hash,
+            "title": commit.get("message") or _("Git-Änderung"),
+            "summary": _("Automatisch aus dem Git-Repository übernommen."),
+            "items": details,
+            "icon": commit.get("icon") or "fa-solid fa-code-commit",
+        })
+
+    return entries
+
+
 staff_required = user_passes_test(
     lambda user: user.is_active and user.is_staff,
     login_url="login",
 )
 
 
+MOJIBAKE_MARKERS = ("Ã", "Â", "â€")
+
+
+def _repair_mojibake(value):
+    text = str(value or "")
+    if not text or not any(marker in text for marker in MOJIBAKE_MARKERS):
+        return text
+
+    marker_count = sum(text.count(marker) for marker in MOJIBAKE_MARKERS)
+    for source_encoding in ("latin1", "cp1252"):
+        try:
+            repaired = text.encode(source_encoding).decode("utf-8")
+        except UnicodeError:
+            continue
+
+        repaired_marker_count = sum(repaired.count(marker) for marker in MOJIBAKE_MARKERS)
+        if repaired_marker_count < marker_count:
+            return repaired
+
+    return text
+
+
 def _clean_text(value, max_length=1000):
-    return " ".join(str(value or "").strip().split())[:max_length]
+    return " ".join(_repair_mojibake(value).strip().split())[:max_length]
 
 
 def _human_bytes(size):
@@ -424,15 +323,22 @@ def achievement_center_view(request):
 
 
 def changelog_view(request):
-    changelog_entries = get_changelog_entries()
     git_changelog = get_git_changelog()
+    git_items = git_changelog["items"]
+    paginator = Paginator(git_items, 20)
+    git_page_obj = paginator.get_page(request.GET.get("page"))
+    git_page_range = paginator.get_elided_page_range(
+        number=git_page_obj.number,
+        on_each_side=1,
+        on_ends=1,
+    )
+
     context = {
-        "changelog_entries": changelog_entries,
-        "latest_entry": changelog_entries[0] if changelog_entries else None,
-        "release_count": len(changelog_entries),
-        "change_count": sum(len(entry["items"]) for entry in changelog_entries),
         "git_changelog": git_changelog,
-        "git_change_count": len(git_changelog["items"]),
+        "git_page_obj": git_page_obj,
+        "git_page_range": git_page_range,
+        "git_change_count": len(git_items),
+        "latest_commit": git_items[0] if git_items else None,
     }
     return render(request, "app/changelog.html", context)
 
