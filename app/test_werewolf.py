@@ -74,7 +74,7 @@ class WerewolfGameTests(TestCase):
         self.client.post(reverse("werewolf_join", args=[lobby.code]))
         self.assertFalse(lobby.players.filter(user=self.users[2]).exists())
 
-    @patch("app.werewolf_views.random.SystemRandom.shuffle", side_effect=lambda roles: None)
+    @patch("app.views.werewolf.random.SystemRandom.shuffle", side_effect=lambda roles: None)
     def test_start_assigns_roles_and_keeps_opponents_secret(self, _shuffle):
         lobby = self.create_lobby()
         self.add_players(lobby)

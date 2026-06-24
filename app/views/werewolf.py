@@ -16,8 +16,8 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import Friendship, WerewolfInvite, WerewolfLobby, WerewolfMessage, WerewolfPlayer
-from .notification_utils import invalidate_notification_cache
+from ..models import Friendship, WerewolfInvite, WerewolfLobby, WerewolfMessage, WerewolfPlayer
+from ..notification_utils import invalidate_notification_cache
 
 
 MIN_PLAYERS = 5

@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .auth_views import two_factor_settings_view, two_factor_verify_view
+from .views.auth import two_factor_settings_view, two_factor_verify_view
 
-from .views import (
+from .views.core import (
     about,
     avatar_character_detail_api,
     avatar_characters_api,
@@ -40,7 +40,7 @@ from .views import (
     weather,
     weather_icon_view,
 )
-from .notes_views import (
+from .views.notes import (
     note_create_view,
     note_delete_view,
     note_detail_view,
@@ -49,8 +49,8 @@ from .notes_views import (
     note_toggle_pin_view,
     notes_view,
 )
-from .pwa_views import offline_view, pwa_manifest_view, pwa_service_worker_view
-from .profile_views import (
+from .views.pwa import offline_view, pwa_manifest_view, pwa_service_worker_view
+from .views.profile import (
     block_user_view,
     delete_gallery_image_view,
     friends_list_view,
@@ -63,7 +63,7 @@ from .profile_views import (
     user_presence_api,
     users_view,
 )
-from .skribble_views import (
+from .views.skribble import (
     skribble_choose_word_api,
     skribble_continue_round,
     skribble_delete_lobby,
@@ -79,7 +79,7 @@ from .skribble_views import (
     skribble_state_api,
     skribble_update_avatar,
 )
-from .tictactoe_views import (
+from .views.tictactoe import (
     tictactoe_home,
     tictactoe_delete,
     tictactoe_invite_friend,
@@ -91,7 +91,7 @@ from .tictactoe_views import (
     tictactoe_reset_api,
     tictactoe_state_api,
 )
-from .connectfour_views import (
+from .views.connectfour import (
     connectfour_delete,
     connectfour_home,
     connectfour_home_state_api,
@@ -103,7 +103,7 @@ from .connectfour_views import (
     connectfour_reset_api,
     connectfour_state_api,
 )
-from .battleship_views import (
+from .views.battleship import (
     battleship_attack_api,
     battleship_delete,
     battleship_home,
@@ -116,7 +116,7 @@ from .battleship_views import (
     battleship_reset_api,
     battleship_state_api,
 )
-from .stadtlandfluss_views import (
+from .views.stadtlandfluss import (
     stadtlandfluss_continue,
     stadtlandfluss_delete,
     stadtlandfluss_draft_api,
@@ -132,7 +132,7 @@ from .stadtlandfluss_views import (
     stadtlandfluss_submit_api,
     stadtlandfluss_vote_api,
 )
-from .hangman_views import (
+from .views.hangman import (
     hangman_delete,
     hangman_guess_api,
     hangman_home,
@@ -147,7 +147,7 @@ from .hangman_views import (
     hangman_state_api,
     hangman_word_api,
 )
-from .uno_views import (
+from .views.uno import (
     uno_call_api,
     uno_catch_api,
     uno_delete,
@@ -164,7 +164,7 @@ from .uno_views import (
     uno_start_api,
     uno_state_api,
 )
-from .kniffel_views import (
+from .views.kniffel import (
     kniffel_delete,
     kniffel_home,
     kniffel_home_state_api,
@@ -178,7 +178,7 @@ from .kniffel_views import (
     kniffel_start_api,
     kniffel_state_api,
 )
-from .pong_views import (
+from .views.pong import (
     pong_delete,
     pong_home,
     pong_home_state_api,
@@ -190,7 +190,7 @@ from .pong_views import (
     pong_reset_api,
     pong_state_api,
 )
-from .werewolf_views import (
+from .views.werewolf import (
     werewolf_action_api,
     werewolf_advance_api,
     werewolf_delete,
@@ -205,7 +205,7 @@ from .werewolf_views import (
     werewolf_start_api,
     werewolf_state_api,
 )
-from .chat_views import (
+from .views.chat import (
     chat_group_leave_view,
     chat_group_member_action_view,
     chat_group_settings_view,
@@ -221,14 +221,14 @@ from .chat_views import (
     set_chat_theme,
     start_direct_chat,
 )
-from .notification_views import live_status_api, notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
+from .views.notification import live_status_api, notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
 
-from .budget_views import (
+from .views.budget import (
     budget_tracker_export_csv,
     budget_tracker_view,
 )
-from .file_converter_views import file_converter_view
-from .performance_tools_views import (
+from .views.file_converter import file_converter_view
+from .views.performance_tools import (
     file_share_delete_view,
     file_share_download_view,
     file_share_upload_view,
@@ -236,7 +236,7 @@ from .performance_tools_views import (
     image_tools_view,
     leaderboard_view,
 )
-from .platform_views import (
+from .views.platform import (
     favorite_toggle_view,
     favorites_view,
     feedback_view,
@@ -244,10 +244,10 @@ from .platform_views import (
     inbox_mark_read_view,
     inbox_view,
 )
-from .security_views import qr_code_tool_view, security_dashboard_view
-from .trash_views import trash_delete_view, trash_empty_view, trash_restore_view, trash_view
-from .community_views import achievement_center_view, changelog_view, roadmap_view, server_status_view
-from .moderation_views import (
+from .views.security import qr_code_tool_view, security_dashboard_view
+from .views.trash import trash_delete_view, trash_empty_view, trash_restore_view, trash_view
+from .views.community import achievement_center_view, changelog_view, roadmap_view, server_status_view
+from .views.moderation import (
     moderation_access_toggle_view,
     moderation_dashboard_view,
     moderation_feedback_status_view,

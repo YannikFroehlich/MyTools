@@ -6,13 +6,13 @@ from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import Friendship, NotificationDismissal, UserProfile
-from .notification_utils import (
+from ..models import Friendship, NotificationDismissal, UserProfile
+from ..notification_utils import (
     get_notification_counts,
     get_notification_items,
     invalidate_notification_cache,
 )
-from .presence_utils import decorate_profiles_with_presence
+from ..presence_utils import decorate_profiles_with_presence
 
 LIVE_STATUS_CACHE_SECONDS = 4
 LIVE_STATUS_CACHE_VERSION = 1

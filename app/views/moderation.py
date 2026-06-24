@@ -13,8 +13,8 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from django.contrib.staticfiles import finders
 
-from .access_control import ACCESS_CONTROL_KEYS, get_access_control_items
-from .image_optimization import (
+from ..access_control import ACCESS_CONTROL_KEYS, get_access_control_items
+from ..image_optimization import (
     CHAT_AVATAR_MAX_SIZE,
     FILE_SHARE_IMAGE_MAX_SIZE,
     GALLERY_IMAGE_MAX_SIZE,
@@ -24,7 +24,7 @@ from .image_optimization import (
     optimize_existing_image_field,
     optimize_static_image_path,
 )
-from .models import (
+from ..models import (
     AvatarCharacter,
     ChatRoom,
     FileShare,

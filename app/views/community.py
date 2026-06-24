@@ -20,8 +20,8 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
-from .achievement_utils import get_achievement_summary
-from .models import ChatMessage, FeatureComment, FeatureIdea, FeatureVote, FileShare, HomeWidget, ModerationAuditLog, Note, SecurityEvent, SiteAccessSettings, ToolFeedback, UserPresence, UserReport
+from ..achievement_utils import get_achievement_summary
+from ..models import ChatMessage, FeatureComment, FeatureIdea, FeatureVote, FileShare, HomeWidget, ModerationAuditLog, Note, SecurityEvent, SiteAccessSettings, ToolFeedback, UserPresence, UserReport
 
 
 STARTED_AT = timezone.now()

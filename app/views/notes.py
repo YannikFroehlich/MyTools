@@ -7,8 +7,8 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from .forms import NoteForm
-from .models import InboxItem, Note
+from ..forms import NoteForm
+from ..models import InboxItem, Note
 
 
 def _accessible_notes_for(user):

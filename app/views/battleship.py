@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import BattleshipGame, BattleshipInvite, Friendship, UserProfile
+from ..models import BattleshipGame, BattleshipInvite, Friendship, UserProfile
 
 
 GAME_PLAYER_TIMEOUT = timedelta(seconds=30)

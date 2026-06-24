@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import Friendship, HangmanInvite, HangmanLobby, HangmanPlayer, UserProfile
+from ..models import Friendship, HangmanInvite, HangmanLobby, HangmanPlayer, UserProfile
 
 
 PLAYER_TIMEOUT = timedelta(seconds=35)

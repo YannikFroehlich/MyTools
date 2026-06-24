@@ -23,8 +23,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve as media_serve
 from django.contrib.staticfiles.views import serve as staticfiles_serve
-from app.media_views import media_thumbnail
-from app.auth_views import AccessAwareLoginView
+from app.views.media import media_thumbnail
+from app.views.auth import AccessAwareLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),

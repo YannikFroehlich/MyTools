@@ -300,7 +300,7 @@ Unterstützt:
 - PPT, PPTX und ODP zu PDF
 - PNG, JPG, WEBP, BMP und GIF zu PNG, JPG, WEBP oder PDF
 
-Office-Dateien werden über **LibreOffice** verarbeitet. Die nötigen Pakete sind im Dockerfile installiert.
+Office-Dateien werden serverseitig über LibreOffice verarbeitet. Die nötigen Pakete sind im Dockerfile installiert.
 
 ---
 
@@ -360,10 +360,11 @@ Geeignet als lokales Tablet-Control-Panel.
 
 ### 🎚️ Stream Deck
 
-- Button-Dashboard für Medien und eigene Aktionen
+- Button-Dashboard für Spotify, Voicemod und eigene Aktionen
 - Spotify-Anbindung
 - Voicemod-Steuerung mit lokal gespeichertem API-Key
 - Voicemod-Voices laden
+- Voice-Auswahl aus der geladenen Voicemod-Liste
 - Voice Changer, Hear Myself, Mikrofon-Mute und Zufalls-Voice
 - eigene Buttons und Aktionen
 - Toast-Hinweise bei fehlender Verbindung
@@ -467,7 +468,7 @@ Aktuell über den Papierkorb geführt werden unter anderem Shortcuts, Notizen, D
 - mobile Bottom-Navigation
 - sticky Header
 - überarbeiteter Footer
-- gemeinsames Tool-Design über `app/static/app/css/tool_pages.css`
+- Einheitliches Tool-Design über `app/static/app/css/tool_pages.css`
 - linkslastige, kompakte UI-Ausrichtung
 
 Gemeinsame Tool-Styles gelten unter anderem für:
@@ -738,7 +739,7 @@ python manage.py collectstatic --noinput --dry-run
 
 GitHub Actions:
 
-- `quality.yml`: manueller Qualitätslauf über `workflow_dispatch`
+- `quality.yml`: GitHub-Actions-Workflow läuft nur manuell über `workflow_dispatch`
 - `deploy.yml`: Tests/Security-Scan für Feature-Branches, Build/Deploy bei Push/Merge auf `main`
 - OSV-Scan blockiert den Workflow nicht, sondern gibt nur Hinweise aus
 
@@ -764,20 +765,28 @@ MyTools/
 │   ├── static/app/data/
 │   ├── management/commands/
 │   ├── migrations/
+│   ├── forms/
+│   │   ├── chat.py
+│   │   ├── core.py
+│   │   ├── platform.py
+│   │   └── profile.py
+│   ├── views/
+│   │   ├── auth.py
+│   │   ├── budget.py
+│   │   ├── chat.py
+│   │   ├── community.py
+│   │   ├── core.py
+│   │   ├── moderation.py
+│   │   ├── performance_tools.py
+│   │   ├── profile.py
+│   │   ├── pwa.py
+│   │   ├── security.py
+│   │   └── ...
 │   ├── access_control.py
 │   ├── achievement_utils.py
-│   ├── auth_views.py
-│   ├── budget_views.py
-│   ├── chat_views.py
-│   ├── community_views.py
-│   ├── moderation_views.py
-│   ├── performance_tools_views.py
-│   ├── profile_views.py
-│   ├── pwa_views.py
-│   ├── security_views.py
-│   ├── trash_views.py
-│   ├── views.py
-│   └── *_views.py
+│   ├── models.py
+│   ├── urls.py
+│   └── *_utils.py
 ├── locale/
 ├── media/
 ├── scripts/
