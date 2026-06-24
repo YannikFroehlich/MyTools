@@ -3994,18 +3994,24 @@ nav .user-actions .global-search-trigger:hover {
 
 .global-search-input-row {
     display: grid;
-    grid-template-columns: 22px minmax(0, 1fr) 38px;
+    grid-template-columns: 40px minmax(0, 1fr) 42px;
     align-items: center;
-    gap: 10px;
-    padding: 14px;
+    gap: 12px;
+    padding: 12px 16px;
     border-bottom: 1px solid rgba(148, 163, 184, 0.18);
 }
 
 .global-search-input-row > i {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    justify-self: center;
     color: var(--theme-accent-start);
 }
 
 .global-search-input-row input {
+    min-width: 0;
     width: 100%;
     border: 0;
     background: transparent;
@@ -4299,6 +4305,17 @@ body.dark-mode .global-search-input-row button {
         width: 100%;
         max-height: calc(100vh - 96px);
         border-radius: 18px;
+    }
+
+    .global-search-input-row {
+        grid-template-columns: 36px minmax(0, 1fr) 38px;
+        gap: 10px;
+        padding: 10px 12px;
+    }
+
+    .global-search-input-row > i {
+        width: 34px;
+        height: 34px;
     }
 
     .global-search-meta {

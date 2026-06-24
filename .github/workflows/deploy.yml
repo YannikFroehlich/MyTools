@@ -209,6 +209,9 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
+          echo "Erzeuge Git-Changelog für die Was-ist-neu-Seite..."
+          python3 scripts/generate_git_changelog.py --limit 20 || echo "Git-Changelog konnte nicht erzeugt werden. Deployment läuft weiter."
+
           echo "Starte Docker Deployment..."
           docker compose pull db redis caddy cloudflared || true
           docker compose up -d --build --remove-orphans
