@@ -2532,16 +2532,17 @@ class StaticPageTests(BaseTestCase):
         response = self.client.get(reverse("changelog"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Stream Deck mit Voicemod-Steuerung")
-        self.assertContains(response, "Voices lassen sich aus Voicemod laden")
+        self.assertContains(response, "Git-Changelog")
+        self.assertContains(response, "Änderungen aus Git")
+        self.assertContains(response, "python manage.py generate_git_changelog --limit 0")
 
     def test_changelog_mentions_file_converter_and_tool_design_update(self):
         response = self.client.get(reverse("changelog"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Datei-Konverter und einheitliches Tool-Design")
-        self.assertContains(response, "Toolbox-Seiten übernehmen jetzt gemeinsame Theme-Farben")
-        self.assertContains(response, "Quality-Workflow startet nicht mehr automatisch")
+        self.assertContains(response, "Diese Seite zeigt nur noch Änderungen aus deinem Git-Repository")
+        self.assertContains(response, "Wird aus den Commit-Nachrichten deines Repos generiert")
+        self.assertContains(response, "Pro Seite werden 20 Änderungen angezeigt")
 
     def test_about_page_mentions_file_converter_and_image_tools(self):
         response = self.client.get(reverse("about"))

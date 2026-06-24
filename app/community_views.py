@@ -75,6 +75,38 @@ def get_git_changelog():
     }
 
 
+def get_changelog_entries():
+    """Return Git changelog entries in the compact format used by home widgets.
+
+    The changelog page itself is now generated only from Git commits. Older
+    dashboard widgets still expect the previous release-entry shape
+    (date/version/title/summary/items/icon). This adapter keeps that widget
+    working without reintroducing the old manually maintained changelog list.
+    """
+
+    git_changelog = get_git_changelog()
+    entries = []
+
+    for commit in git_changelog.get("items", []):
+        short_hash = commit.get("short_hash") or "Git"
+        commit_type = commit.get("type") or _("Commit")
+        author = commit.get("author")
+        details = [commit_type]
+        if author:
+            details.append(_("Autor: %(author)s") % {"author": author})
+
+        entries.append({
+            "date": commit.get("date_display", ""),
+            "version": short_hash,
+            "title": commit.get("message") or _("Git-Änderung"),
+            "summary": _("Automatisch aus dem Git-Repository übernommen."),
+            "items": details,
+            "icon": commit.get("icon") or "fa-solid fa-code-commit",
+        })
+
+    return entries
+
+
 staff_required = user_passes_test(
     lambda user: user.is_active and user.is_staff,
     login_url="login",
