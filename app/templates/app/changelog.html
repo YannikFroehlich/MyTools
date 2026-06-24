@@ -4,7 +4,7 @@
 {% block title %}{% translate "Was ist neu?" %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}?v=20260621-changelog-refresh">
+    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}?v=20260624-git-changelog">
 {% endblock %}
 
 {% block content %}
@@ -46,6 +46,13 @@
             </div>
 
             <div class="changelog-mini-list">
+                {% if git_changelog.available %}
+                    <a href="#git-changelog" class="is-git-link">
+                        <span>{% translate "Automatisch" %} · {{ git_change_count }} {% translate "Commits" %}</span>
+                        <strong>{% translate "Letzte Änderungen aus Git" %}</strong>
+                    </a>
+                {% endif %}
+
                 {% for entry in changelog_entries %}
                     <a href="#release-{{ entry.version|slugify }}">
                         <span>{{ entry.version }} · {{ entry.date }}</span>
@@ -56,6 +63,49 @@
         </aside>
 
         <div class="changelog-timeline">
+            {% if git_changelog.available %}
+                <section class="feature-card git-changelog-card" id="git-changelog">
+                    <div class="feature-card-heading">
+                        <i class="fa-solid fa-code-branch"></i>
+                        <div>
+                            <h2>{% translate "Letzte Änderungen aus Git" %}</h2>
+                            <p>{% translate "Diese Liste wird beim Deploy automatisch aus den letzten Commits erzeugt." %}</p>
+                        </div>
+                    </div>
+
+                    <div class="git-changelog-meta">
+                        {% if git_changelog.branch %}
+                            <span><i class="fa-solid fa-code-branch"></i> {{ git_changelog.branch }}</span>
+                        {% endif %}
+                        {% if git_changelog.current_commit %}
+                            <span><i class="fa-solid fa-code-commit"></i> {{ git_changelog.current_commit }}</span>
+                        {% endif %}
+                        {% if git_changelog.generated_at_display %}
+                            <span><i class="fa-regular fa-clock"></i> {{ git_changelog.generated_at_display }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="git-changelog-list">
+                        {% for commit in git_changelog.items %}
+                            <article class="git-changelog-item">
+                                <span class="git-changelog-icon"><i class="{{ commit.icon }}"></i></span>
+                                <div class="git-changelog-item-main">
+                                    <div class="git-changelog-item-top">
+                                        <strong>{{ commit.message }}</strong>
+                                        {% if commit.date_display %}<span>{{ commit.date_display }}</span>{% endif %}
+                                    </div>
+                                    <div class="git-changelog-commit-meta">
+                                        {% if commit.short_hash %}<code>{{ commit.short_hash }}</code>{% endif %}
+                                        {% if commit.type %}<span>{{ commit.type }}</span>{% endif %}
+                                        {% if commit.author %}<span>{{ commit.author }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+
             {% for entry in changelog_entries %}
                 <article
                     class="feature-card changelog-entry{% if forloop.first %} is-latest{% endif %}"

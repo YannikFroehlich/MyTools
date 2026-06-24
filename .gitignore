@@ -76,3 +76,6 @@ pnpm-debug.log*
 # Uploaded/static user files, falls im Projekt erzeugt
 uploads/
 .ai/mcp/mcp.json
+
+# Automatically generated from local Git history during deploy
+/app/static/app/data/changelog_git.json

@@ -1,3 +1,4 @@
+import json
 import os
 import platform
 import shutil
@@ -179,6 +180,55 @@ def get_changelog_entries():
             ],
         },
     ]
+
+
+def get_git_changelog():
+    changelog_path = Path(settings.BASE_DIR) / "app" / "static" / "app" / "data" / "changelog_git.json"
+    if not changelog_path.exists():
+        return {
+            "available": False,
+            "items": [],
+            "generated_at_display": "",
+            "branch": "",
+            "current_commit": "",
+            "reason": "missing",
+        }
+
+    try:
+        data = json.loads(changelog_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {
+            "available": False,
+            "items": [],
+            "generated_at_display": "",
+            "branch": "",
+            "current_commit": "",
+            "reason": "invalid",
+        }
+
+    items = []
+    for item in data.get("entries", [])[:20]:
+        message = _clean_text(item.get("message"), 180)
+        if not message:
+            continue
+        items.append({
+            "message": message,
+            "short_hash": _clean_text(item.get("short_hash"), 20),
+            "date_display": _clean_text(item.get("date_display"), 20),
+            "type": _clean_text(item.get("type"), 40) or _("Commit"),
+            "icon": _clean_text(item.get("icon"), 80) or "fa-solid fa-code-commit",
+            "author": _clean_text(item.get("author"), 80),
+        })
+
+    return {
+        "available": bool(data.get("available") and items),
+        "items": items,
+        "generated_at_display": _clean_text(data.get("generated_at_display"), 40),
+        "branch": _clean_text(data.get("branch"), 80),
+        "current_commit": _clean_text(data.get("current_commit"), 20),
+        "reason": _clean_text(data.get("reason"), 180),
+    }
+
 
 staff_required = user_passes_test(
     lambda user: user.is_active and user.is_staff,
@@ -375,11 +425,14 @@ def achievement_center_view(request):
 
 def changelog_view(request):
     changelog_entries = get_changelog_entries()
+    git_changelog = get_git_changelog()
     context = {
         "changelog_entries": changelog_entries,
         "latest_entry": changelog_entries[0] if changelog_entries else None,
         "release_count": len(changelog_entries),
         "change_count": sum(len(entry["items"]) for entry in changelog_entries),
+        "git_changelog": git_changelog,
+        "git_change_count": len(git_changelog["items"]),
     }
     return render(request, "app/changelog.html", context)
 
