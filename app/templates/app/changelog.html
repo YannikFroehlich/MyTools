@@ -4,76 +4,33 @@
 {% block title %}{% translate "Was ist neu?" %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}?v=20260624-git-changelog">
+    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}?v=20260624-git-umlaut-fix">
 {% endblock %}
 
 {% block content %}
 <section class="feature-page changelog-page">
-    <div class="feature-hero changelog-hero">
+    <div class="feature-hero changelog-hero changelog-hero-clean">
         <div class="feature-hero-copy">
-            <span class="feature-kicker"><i class="fa-solid fa-wand-magic-sparkles"></i> {% translate "Was ist neu?" %}</span>
-            <h1>{% translate "Changelog" %}</h1>
-            <p>{% translate "Alle sichtbaren Neuerungen, Bedienkomfort-Updates und größeren Plattform-Verbesserungen an einem Ort." %}</p>
-        </div>
-
-        <div class="changelog-hero-side">
-            {% if latest_entry %}
-                <a class="changelog-latest-pill" href="#release-{{ latest_entry.version|slugify }}">
-                    <span class="changelog-latest-icon"><i class="{{ latest_entry.icon }}"></i></span>
-                    <span>
-                        <small>{% translate "Aktuelle Version" %}</small>
-                        <strong>{{ latest_entry.version }}</strong>
-                    </span>
-                    <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
-                </a>
-            {% endif %}
-
-            <div class="changelog-hero-stats" aria-label="{% translate 'Changelog-Übersicht' %}">
-                <span><strong>{{ release_count }}</strong> {% translate "Releases" %}</span>
-                <span><strong>{{ change_count }}</strong> {% translate "Änderungen" %}</span>
-            </div>
+            <span class="feature-kicker"><i class="fa-solid fa-code-branch"></i> {% translate "Was ist neu?" %}</span>
+            <h1>{% translate "Git-Changelog" %}</h1>
+            <p>{% translate "Diese Seite zeigt nur noch Änderungen aus deinem Git-Repository. Die Liste wird beim Deploy automatisch aus allen Commits erzeugt und in Seiten aufgeteilt." %}</p>
         </div>
     </div>
 
-    <div class="changelog-layout">
-        <aside class="feature-card changelog-summary-card" aria-label="{% translate 'Versionsverlauf' %}">
-            <div class="feature-card-heading">
-                <i class="fa-solid fa-route"></i>
-                <div>
-                    <h2>{% translate "Verlauf" %}</h2>
-                    <p>{% translate "Kurzer Blick auf die letzten Update-Pakete und Bedienungsverbesserungen." %}</p>
-                </div>
-            </div>
-
-            <div class="changelog-mini-list">
-                {% if git_changelog.available %}
-                    <a href="#git-changelog" class="is-git-link">
-                        <span>{% translate "Automatisch" %} · {{ git_change_count }} {% translate "Commits" %}</span>
-                        <strong>{% translate "Letzte Änderungen aus Git" %}</strong>
-                    </a>
-                {% endif %}
-
-                {% for entry in changelog_entries %}
-                    <a href="#release-{{ entry.version|slugify }}">
-                        <span>{{ entry.version }} · {{ entry.date }}</span>
-                        <strong>{{ entry.title }}</strong>
-                    </a>
-                {% endfor %}
-            </div>
-        </aside>
-
+    <div class="changelog-layout changelog-layout-git-only changelog-layout-clean">
         <div class="changelog-timeline">
-            {% if git_changelog.available %}
-                <section class="feature-card git-changelog-card" id="git-changelog">
-                    <div class="feature-card-heading">
-                        <i class="fa-solid fa-code-branch"></i>
-                        <div>
-                            <h2>{% translate "Letzte Änderungen aus Git" %}</h2>
-                            <p>{% translate "Diese Liste wird beim Deploy automatisch aus den letzten Commits erzeugt." %}</p>
-                        </div>
+            <section class="feature-card git-changelog-card" id="git-changelog">
+                <div class="feature-card-heading">
+                    <i class="fa-solid fa-code-branch"></i>
+                    <div>
+                        <h2>{% translate "Änderungen aus Git" %}</h2>
+                        <p>{% translate "Wird aus den Commit-Nachrichten deines Repos generiert. Pro Seite werden 20 Änderungen angezeigt." %}</p>
                     </div>
+                </div>
 
+                {% if git_changelog.available %}
                     <div class="git-changelog-meta">
+                        <span><i class="fa-solid fa-list-check"></i> {{ git_change_count }} {% translate "Commits" %}</span>
                         {% if git_changelog.branch %}
                             <span><i class="fa-solid fa-code-branch"></i> {{ git_changelog.branch }}</span>
                         {% endif %}
@@ -86,7 +43,7 @@
                     </div>
 
                     <div class="git-changelog-list">
-                        {% for commit in git_changelog.items %}
+                        {% for commit in git_page_obj.object_list %}
                             <article class="git-changelog-item">
                                 <span class="git-changelog-icon"><i class="{{ commit.icon }}"></i></span>
                                 <div class="git-changelog-item-main">
@@ -103,45 +60,56 @@
                             </article>
                         {% endfor %}
                     </div>
-                </section>
-            {% endif %}
 
-            {% for entry in changelog_entries %}
-                <article
-                    class="feature-card changelog-entry{% if forloop.first %} is-latest{% endif %}"
-                    id="release-{{ entry.version|slugify }}"
-                    data-release-type="{{ entry.type|slugify }}"
-                >
-                    <div class="changelog-entry-icon">
-                        <i class="{{ entry.icon }}"></i>
-                    </div>
-
-                    <div class="changelog-entry-main">
-                        <div class="changelog-entry-top">
-                            <div>
-                                <div class="changelog-entry-meta">
-                                    <span class="changelog-version">{{ entry.version }}</span>
-                                    <span class="changelog-date">{{ entry.date }}</span>
-                                    {% if forloop.first %}<span class="changelog-new-badge">{% translate "Neu" %}</span>{% endif %}
-                                </div>
-                                <h2>{{ entry.title }}</h2>
+                    {% if git_page_obj.paginator.num_pages > 1 %}
+                        <footer class="git-changelog-footer-nav">
+                            <div class="git-changelog-page-status">
+                                <span>
+                                    {% translate "Seite" %} {{ git_page_obj.number }} {% translate "von" %} {{ git_page_obj.paginator.num_pages }}
+                                </span>
+                                <span>{{ git_change_count }} {% translate "Commits insgesamt" %}</span>
                             </div>
-                            <span class="changelog-type">{{ entry.type }}</span>
+
+                            <div class="git-changelog-pagination git-changelog-pagination-footer" role="navigation" aria-label="{% translate 'Git-Changelog-Seiten' %}">
+                                {% if git_page_obj.has_previous %}
+                                    <a href="?page=1#git-changelog"><i class="fa-solid fa-angles-left"></i> {% translate "Erste" %}</a>
+                                    <a href="?page={{ git_page_obj.previous_page_number }}#git-changelog"><i class="fa-solid fa-angle-left"></i> {% translate "Zurück" %}</a>
+                                {% else %}
+                                    <span class="is-disabled"><i class="fa-solid fa-angle-left"></i> {% translate "Zurück" %}</span>
+                                {% endif %}
+
+                                <div class="git-changelog-page-numbers" aria-label="{% translate 'Seitennummern' %}">
+                                    {% for page_number in git_page_range %}
+                                        {% if page_number == git_page_obj.paginator.ELLIPSIS %}
+                                            <span class="is-ellipsis">{{ page_number }}</span>
+                                        {% elif page_number == git_page_obj.number %}
+                                            <span class="git-changelog-page-number is-current" aria-current="page">{{ page_number }}</span>
+                                        {% else %}
+                                            <a class="git-changelog-page-number" href="?page={{ page_number }}#git-changelog">{{ page_number }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+
+                                {% if git_page_obj.has_next %}
+                                    <a href="?page={{ git_page_obj.next_page_number }}#git-changelog">{% translate "Weiter" %} <i class="fa-solid fa-angle-right"></i></a>
+                                    <a href="?page={{ git_page_obj.paginator.num_pages }}#git-changelog">{% translate "Letzte" %} <i class="fa-solid fa-angles-right"></i></a>
+                                {% else %}
+                                    <span class="is-disabled">{% translate "Weiter" %} <i class="fa-solid fa-angle-right"></i></span>
+                                {% endif %}
+                            </div>
+                        </footer>
+                    {% endif %}
+                {% else %}
+                    <div class="git-changelog-empty">
+                        <span class="git-changelog-empty-icon"><i class="fa-solid fa-code-branch"></i></span>
+                        <div>
+                            <h3>{% translate "Keine Git-Änderungen gefunden" %}</h3>
+                            <p>{% translate "Erzeuge die Datei einmal beim Deploy oder lokal, dann erscheinen hier automatisch deine letzten Commits." %}</p>
+                            <code>python manage.py generate_git_changelog --limit 0</code>
                         </div>
-
-                        <p>{{ entry.summary }}</p>
-
-                        <ul class="changelog-item-list">
-                            {% for item in entry.items %}
-                                <li>
-                                    <i class="fa-solid fa-check"></i>
-                                    <span>{{ item }}</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
                     </div>
-                </article>
-            {% endfor %}
+                {% endif %}
+            </section>
         </div>
     </div>
 </section>

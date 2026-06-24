@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,13 +30,20 @@ TYPE_RULES = (
 
 
 def _run_git(repo_root: Path, *args: str) -> str:
+    env = os.environ.copy()
+    env.setdefault("LANG", "C.UTF-8")
+    env.setdefault("LC_ALL", "C.UTF-8")
+
     completed = subprocess.run(
-        ["git", *args],
+        ["git", "-c", "i18n.logOutputEncoding=utf-8", *args],
         cwd=repo_root,
         check=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        env=env,
     )
     return completed.stdout.strip()
 
@@ -101,7 +109,7 @@ def _unavailable_payload(reason: str) -> dict[str, Any]:
     }
 
 
-def generate_git_changelog(repo_root: Path, output_path: Path, limit: int = 20) -> dict[str, Any]:
+def generate_git_changelog(repo_root: Path, output_path: Path, limit: int = 0) -> dict[str, Any]:
     repo_root = Path(repo_root).resolve()
     output_path = Path(output_path)
     if not output_path.is_absolute():
@@ -109,15 +117,12 @@ def generate_git_changelog(repo_root: Path, output_path: Path, limit: int = 20) 
 
     try:
         actual_repo_root = _resolve_repo_root(repo_root)
-        limit = max(1, min(int(limit), 100))
+        limit = int(limit or 0)
         pretty_format = f"%H{FIELD_SEPARATOR}%h{FIELD_SEPARATOR}%cI{FIELD_SEPARATOR}%s{FIELD_SEPARATOR}%an"
-        raw_log = _run_git(
-            actual_repo_root,
-            "log",
-            f"--max-count={limit}",
-            "--no-merges",
-            f"--pretty=format:{pretty_format}",
-        )
+        log_args = ["log", "--no-merges", f"--pretty=format:{pretty_format}"]
+        if limit > 0:
+            log_args.insert(1, f"--max-count={limit}")
+        raw_log = _run_git(actual_repo_root, *log_args)
         branch = _run_git(actual_repo_root, "rev-parse", "--abbrev-ref", "HEAD")
         current_commit = _run_git(actual_repo_root, "rev-parse", "--short", "HEAD")
         try:
@@ -148,7 +153,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate app/static/app/data/changelog_git.json from Git commits.")
     parser.add_argument("--repo", default=Path(__file__).resolve().parents[1], type=Path, help="Path inside the Git repository.")
     parser.add_argument("--output", default=DEFAULT_OUTPUT, type=Path, help="Output JSON path. Relative paths are resolved from the repo root.")
-    parser.add_argument("--limit", default=20, type=int, help="Number of non-merge commits to include.")
+    parser.add_argument("--limit", default=0, type=int, help="Number of non-merge commits to include. Use 0 for all commits.")
     args = parser.parse_args()
 
     payload = generate_git_changelog(args.repo, args.output, args.limit)
