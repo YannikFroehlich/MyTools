@@ -674,7 +674,6 @@ def set_chat_theme(request, room_id):
 
     room.theme = theme
     room.save(update_fields=["theme", "updated_at"])
-    messages.success(request, _("Chat-Theme gespeichert."))
     return redirect("chat_room", room_id=room.id)
 
 
