@@ -1096,7 +1096,7 @@ body.dark-mode .onboarding-skip-button {
     z-index: 10000;
     padding: 1rem;
 
-    overflow-y: auto;
+    overflow: hidden;
 
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
@@ -1118,15 +1118,40 @@ body.dark-mode .onboarding-skip-button {
 
     padding: 1.3rem;
 
+    max-height: min(86vh, calc(100dvh - 2rem));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: rgba(var(--theme-accent-rgb), 0.72) rgba(var(--theme-accent-rgb), 0.12);
+    scrollbar-width: thin;
+
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
 
     animation: modalPop 0.25s ease both;
 }
 
+.shortcut-modal-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.shortcut-modal-content::-webkit-scrollbar-track {
+    background: rgba(var(--theme-accent-rgb), 0.1);
+    border-radius: 999px;
+}
+
+.shortcut-modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--theme-accent-start), var(--theme-accent-end));
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+}
+
+.shortcut-modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--theme-accent-end), var(--theme-accent-start));
+    background-clip: content-box;
+}
+
 .shortcut-modal-header {
-    position: sticky;
-    top: -1.3rem;
-    z-index: 5;
+    position: relative;
 
     display: flex;
     align-items: center;
@@ -1512,6 +1537,11 @@ body.dark-mode .shortcut-modal-content {
     background: rgba(17, 24, 39, 0.98);
     border-color: rgba(255, 255, 255, 0.08);
     color: #ffffff;
+    scrollbar-color: rgba(var(--theme-accent-end-rgb), 0.78) rgba(var(--theme-accent-rgb), 0.16);
+}
+
+body.dark-mode .shortcut-modal-content::-webkit-scrollbar-track {
+    background: rgba(var(--theme-accent-rgb), 0.14);
 }
 
 body.dark-mode .shortcut-modal-header h3 {

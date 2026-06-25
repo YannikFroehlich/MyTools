@@ -2318,3 +2318,144 @@ body.theme-high-contrast-mode .image-tool-page .image-preset.active:hover {
     box-shadow: 0 16px 38px rgba(var(--theme-accent-rgb), 0.10) !important;
 }
 
+/* Datei-Share: feste Blau-/Grün-Akzente an das aktive Theme koppeln. */
+.file-share-page {
+    --share-accent-start: var(--theme-accent-start, #4f8cff);
+    --share-accent-end: var(--theme-accent-end, #a855f7);
+    --share-accent-text: var(--theme-accent-text, #ffffff);
+    --share-accent-rgb: var(--theme-accent-rgb, 79, 140, 255);
+    --share-accent-end-rgb: var(--theme-accent-end-rgb, 168, 85, 247);
+    --share-accent-soft: rgba(var(--share-accent-rgb), 0.12);
+    --share-accent-soft-strong: rgba(var(--share-accent-rgb), 0.18);
+    --share-accent-line: rgba(var(--share-accent-rgb), 0.28);
+}
+
+.file-share-page .perf-kicker,
+.file-share-page .share-upload-progress-head strong {
+    color: var(--share-accent-start);
+}
+
+.file-share-page .perf-hero,
+.file-share-page .share-upload-card,
+.file-share-page .share-card {
+    border-color: rgba(var(--share-accent-rgb), 0.20);
+    background:
+        radial-gradient(circle at 10% 0%, rgba(var(--share-accent-rgb), 0.12), transparent 36%),
+        radial-gradient(circle at 100% 12%, rgba(var(--share-accent-end-rgb), 0.10), transparent 34%),
+        rgba(255, 255, 255, 0.82);
+    box-shadow: 0 22px 70px rgba(var(--share-accent-rgb), 0.10);
+}
+
+body.dark-mode .file-share-page .perf-hero,
+body.dark-mode .file-share-page .share-upload-card,
+body.dark-mode .file-share-page .share-card {
+    border-color: rgba(var(--share-accent-rgb), 0.28);
+    background:
+        radial-gradient(circle at 10% 0%, rgba(var(--share-accent-rgb), 0.18), transparent 36%),
+        radial-gradient(circle at 100% 12%, rgba(var(--share-accent-end-rgb), 0.14), transparent 34%),
+        rgba(15, 23, 42, 0.86);
+}
+
+.file-share-page .perf-hero-icon,
+.file-share-page .share-section-title > span,
+.file-share-page .share-drop-icon,
+.file-share-page .share-access-icon,
+.file-share-page .perf-primary,
+.file-share-page .share-empty-state a {
+    color: var(--share-accent-text);
+    background: linear-gradient(135deg, var(--share-accent-start), var(--share-accent-end));
+    box-shadow: 0 16px 34px rgba(var(--share-accent-rgb), 0.26);
+}
+
+.file-share-page .share-drop-card {
+    border-color: rgba(var(--share-accent-rgb), 0.40);
+    background:
+        radial-gradient(circle at top, rgba(var(--share-accent-rgb), 0.16), transparent 60%),
+        rgba(var(--share-accent-rgb), 0.07);
+}
+
+.file-share-page .share-drop-card:hover,
+.file-share-page .share-drop-card.is-dragover,
+.file-share-page .share-drop-card.has-file {
+    border-color: rgba(var(--share-accent-end-rgb), 0.55);
+    background:
+        radial-gradient(circle at top, rgba(var(--share-accent-end-rgb), 0.18), transparent 60%),
+        rgba(var(--share-accent-rgb), 0.10);
+}
+
+.file-share-page .share-toggle-box,
+.file-share-page .friend-picker,
+.file-share-page .share-upload-progress,
+.file-share-page .share-list-card .empty-state {
+    background: rgba(var(--share-accent-rgb), 0.07);
+}
+
+.file-share-page .friend-picker {
+    border-color: rgba(var(--share-accent-rgb), 0.18);
+    background: linear-gradient(135deg, rgba(var(--share-accent-rgb), 0.08), rgba(var(--share-accent-end-rgb), 0.06));
+}
+
+.file-share-page .friend-grid label:has(input:checked) {
+    outline-color: rgba(var(--share-accent-rgb), 0.45);
+    background: rgba(var(--share-accent-rgb), 0.14);
+}
+
+.file-share-page .share-security-grid input:focus,
+.file-share-page .share-security-grid select:focus,
+.file-share-page .share-access-form input:focus {
+    border-color: rgba(var(--share-accent-rgb), 0.58);
+    box-shadow: 0 0 0 4px rgba(var(--share-accent-rgb), 0.10);
+}
+
+.file-share-page .share-empty-state {
+    border-color: rgba(var(--share-accent-rgb), 0.28);
+    background: rgba(var(--share-accent-rgb), 0.06);
+}
+
+body.dark-mode .file-share-page .share-empty-state {
+    border-color: rgba(var(--share-accent-rgb), 0.34);
+    background: rgba(var(--share-accent-rgb), 0.10);
+}
+
+.file-share-page .share-empty-state > span,
+.file-share-page .share-file-icon {
+    color: var(--share-accent-text);
+    background: linear-gradient(135deg, var(--share-accent-start), var(--share-accent-end));
+    box-shadow: 0 14px 30px rgba(var(--share-accent-rgb), 0.22);
+}
+
+.file-share-page .share-empty-state a:hover,
+.file-share-page .perf-primary:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+}
+
+.file-share-page .share-row,
+.file-share-page .share-preview-thumb {
+    border-color: rgba(var(--share-accent-rgb), 0.18);
+    background: rgba(var(--share-accent-rgb), 0.045);
+}
+
+.file-share-page .share-row:hover {
+    border-color: rgba(var(--share-accent-rgb), 0.30);
+    background: rgba(var(--share-accent-rgb), 0.08);
+}
+
+.file-share-page .share-row-actions a,
+.file-share-page .share-row-actions button {
+    background: rgba(var(--share-accent-rgb), 0.10);
+}
+
+.file-share-page .share-row-actions a:hover,
+.file-share-page .share-row-actions button:hover {
+    background: rgba(var(--share-accent-rgb), 0.18);
+}
+
+.file-share-page .share-upload-progress {
+    border-color: rgba(var(--share-accent-rgb), 0.22);
+}
+
+.file-share-page .share-upload-progress-track span {
+    background: linear-gradient(90deg, var(--share-accent-start), var(--share-accent-end));
+}
+
