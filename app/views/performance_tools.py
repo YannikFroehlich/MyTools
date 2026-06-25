@@ -20,7 +20,7 @@ from django.utils.text import get_valid_filename
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from .models import (
+from ..models import (
     BattleshipGame,
     ConnectFourGame,
     CookieClickerHighScore,

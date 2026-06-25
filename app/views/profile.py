@@ -12,7 +12,7 @@ from django.utils.timesince import timesince
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import (
+from ..models import (
     BattleshipGame,
     ChatRoom,
     ConnectFourGame,
@@ -39,15 +39,15 @@ from .models import (
     UserProfile,
     UserReport,
 )
-from .achievement_utils import get_achievement_summary
-from .profile_forms import ProfileForm, ProfileGalleryImageForm, UserReportForm
-from .image_optimization import (
+from ..achievement_utils import get_achievement_summary
+from ..forms.profile import ProfileForm, ProfileGalleryImageForm, UserReportForm
+from ..image_optimization import (
     GALLERY_IMAGE_MAX_SIZE,
     PROFILE_AVATAR_MAX_SIZE,
     optimize_uploaded_image,
 )
-from .notification_utils import invalidate_notification_cache
-from .presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
+from ..notification_utils import invalidate_notification_cache
+from ..presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
 
 User = get_user_model()
 

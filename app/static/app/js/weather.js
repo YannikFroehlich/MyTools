@@ -27,10 +27,41 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedLocationsCard = document.querySelector(".saved-locations-card");
     const savedLocationButtons = document.querySelectorAll(".saved-location-button, .compact-location-button");
     const deleteLocationButtons = document.querySelectorAll(".saved-location-delete, .compact-location-delete");
-    const defaultLocationButtons = document.querySelectorAll(".compact-location-default");
+    const defaultLocationForms = document.querySelectorAll(".compact-location-default-form");
     const addLocationForm = document.querySelector(".saved-location-add-form");
     const addLocationInput = document.querySelector(".saved-location-add-input");
     const saveCurrentLocationForms = document.querySelectorAll(".save-current-location-form, .compact-save-current-form");
+
+    const submitWeatherFormWithSpinner = (form, button, options = {}) => {
+        if (!form) {
+            return;
+        }
+
+        if (form.dataset.weatherSubmitting === "true") {
+            return;
+        }
+
+        form.dataset.weatherSubmitting = "true";
+
+        if (button) {
+            button.classList.add(options.loadingClass || "is-loading");
+            button.setAttribute("aria-disabled", "true");
+            button.style.pointerEvents = "none";
+
+            if (options.html) {
+                button.innerHTML = options.html;
+            } else {
+                const icon = button.querySelector("i");
+                if (icon) {
+                    icon.className = "fa-solid fa-spinner fa-spin";
+                }
+            }
+        }
+
+        window.setTimeout(() => {
+            HTMLFormElement.prototype.submit.call(form);
+        }, 40);
+    };
 
     /*
         Erwartete HTML-Struktur ungefähr:
@@ -108,30 +139,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     deleteLocationButtons.forEach((button) => {
         button.addEventListener("click", (event) => {
+            event.preventDefault();
+
             const locationName = button.dataset.locationName || "diesen Ort";
             const confirmed = confirm(`Möchtest du ${locationName} wirklich löschen?`);
 
             if (!confirmed) {
-                event.preventDefault();
                 return;
             }
 
-            button.classList.add("is-deleting");
-            button.disabled = true;
-
-            const icon = button.querySelector("i");
-            if (icon) {
-                icon.className = "fa-solid fa-spinner fa-spin";
-            }
+            submitWeatherFormWithSpinner(button.closest("form"), button, {
+                loadingClass: "is-deleting"
+            });
         });
     });
 
     if (addLocationForm && addLocationInput) {
         addLocationForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
             const value = addLocationInput.value.trim();
 
             if (!value) {
-                event.preventDefault();
                 addLocationInput.focus();
                 addLocationInput.classList.add("input-shake");
 
@@ -143,38 +172,39 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const submitButton = addLocationForm.querySelector("button[type='submit']");
-            if (submitButton) {
-                submitButton.disabled = true;
-                submitButton.classList.add("is-loading");
-                submitButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
-            }
+            submitWeatherFormWithSpinner(addLocationForm, submitButton, {
+                html: `<i class="fa-solid fa-spinner fa-spin"></i>`
+            });
         });
     }
 
     saveCurrentLocationForms.forEach((form) => {
-        form.addEventListener("submit", () => {
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+
             const button = form.querySelector("button[type='submit']");
             if (!button) {
                 return;
             }
 
-            button.disabled = true;
-            button.classList.add("is-loading");
-            button.innerHTML = button.classList.contains("compact-save-current-button")
-                ? `<i class="fa-solid fa-spinner fa-spin"></i>`
-                : `<i class="fa-solid fa-spinner fa-spin"></i><span>Speichern...</span>`;
+            submitWeatherFormWithSpinner(form, button, {
+                html: button.classList.contains("compact-save-current-button")
+                    ? `<i class="fa-solid fa-spinner fa-spin"></i>`
+                    : `<i class="fa-solid fa-spinner fa-spin"></i><span>Speichern...</span>`
+            });
         });
     });
 
-    defaultLocationButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            button.disabled = true;
-            button.classList.add("is-loading");
+    defaultLocationForms.forEach((form) => {
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
 
-            const icon = button.querySelector("i");
-            if (icon) {
-                icon.className = "fa-solid fa-spinner fa-spin";
+            const button = form.querySelector(".compact-location-default");
+            if (!button) {
+                return;
             }
+
+            submitWeatherFormWithSpinner(form, button);
         });
     });
 

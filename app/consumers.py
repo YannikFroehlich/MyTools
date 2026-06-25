@@ -12,11 +12,11 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from .models import ChatMessage, ChatRoom, ChatRoomMember, ChatTypingStatus, PongGame
-from .chat_views import mark_room_messages_read, message_payload, pinned_message_for, typing_payload
+from .views.chat import mark_room_messages_read, message_payload, pinned_message_for, typing_payload
 from .notification_utils import invalidate_notification_cache
-from .notification_views import _notification_payload, _presence_payload
+from .views.notification import _notification_payload, _presence_payload
 from .presence_utils import touch_user_presence
-from .pong_views import (
+from .views.pong import (
     FIELD_H,
     PADDLE_H,
     _clamp,

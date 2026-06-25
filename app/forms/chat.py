@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from .models import ChatRoom, Friendship
+from ..models import ChatRoom, Friendship
 
 User = get_user_model()
 
