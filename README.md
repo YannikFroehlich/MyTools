@@ -1,139 +1,194 @@
 # 🧰 MyTools
 
-**MyTools** ist ein persönliches Django-Dashboard für Alltag, Homelab, Medien, Streaming und kleine Web-Tools.
+**MyTools** ist ein persönliches Django-Dashboard für Alltag, Homelab, Medien, Streaming, kleine Web-Tools und Multiplayer-Mini-Games.
 
-Die App bündelt eigene Schnellzugriffe, Startseiten-Widgets, Wetterdaten, Notizen, Profile, Freunde, Chats, Rechner, Timer, Mini-Games und API-basierte Helfer in einer modernen Oberfläche mit Dark Mode, Theme-Anpassung und deutscher/englischer Oberfläche.
+Die App bündelt eigene Startseiten-Verknüpfungen, Widgets, Profile, Freunde, Chats, Notizen, Datei-Share, Rechner, Konverter, API-Tools, Spiele, Roadmap, Achievements, Moderation und Admin-/Security-Funktionen in einer modernen Oberfläche mit **Dark Mode**, **Theme-Anpassung**, **PWA-Support** und **deutscher/englischer Oberfläche**.
 
-Das Projekt kann lokal in der Entwicklung laufen oder produktiv per Docker Compose mit **Django/Gunicorn**, **PostgreSQL**, **Redis** und **Caddy** betrieben werden.
-
----
-
-## ✨ Aktueller Stand
-
-MyTools ist inzwischen mehr als nur eine Startseite. Aktuell enthalten sind unter anderem:
-
-- personalisierbare Startseite mit Shortcut-Bereichen
-- eigene Verknüpfungen mit FontAwesome-Icons oder hochgeladenen Bildern
-- Favoriten, Drag & Drop Sortierung, einklappbare Bereiche und Startseiten-Quick-Actions
-- Startseiten-Widgets, z. B. Uhr, Wetter, Notizen, Dateien, Budget und Statistik-Karten
-- Widget-Designs, Farbstile, Layout-Optionen und globale Design-Modi
-- Wetterseite mit OpenWeather API und gespeicherten Orten
-- Uhr-Seite mit lokaler Uhrzeit, Weltuhr, Stoppuhr, gespeicherten Timern und eigenen Timer-Sounds
-- dezenter Weltkarten-Hintergrund auf der Uhr-Seite über `app/static/app/img/worldmap.webp`
-- Profilseite mit Avatar, Banner, Namen, Spotlight-Statistiken und öffentlicher Profilansicht
-- Nutzerübersicht mit öffentlichen Profilen
-- Freundschaftssystem mit Anfragen, Freundesliste und befreundet-seit Anzeige
-- Chat-System mit Direktchats, Gruppenchats, Emoji-Reaktionen und Löschen eigener Nachrichten
-- Datei-Share mit Freunden, privaten Links, Passwortschutz, Ablaufdatum, Download-Limit, Vorschau, Mehrfachupload, Fortschrittsanzeige und Admin-Limits pro Nutzer
-- Skribble-Zeichenspiel mit Lobby, Einladungen, Zeichnen, Raten, Punktestand und Rundenübersicht
-- Tic Tac Toe mit privaten Räumen, Freunde-Einladungen, Live-Übersicht und Host-/Löschlogik
-- Vier gewinnt mit animiertem Spielfeld, privaten Räumen, Einladungen, Live-Zügen und Gewinn-Popup
-- Schiffe versenken mit privaten Räumen, manueller Flottenplatzierung, Sounds, Effekten und serverseitig geprüften Spielregeln
-- Stadt Land Fluss mit Live-Runden, Stopp-Regel, manueller Auswertung, Voting und Endplatzierungen
-- Notizen-App mit Pins, Archiv, Farben und Tags
-- Human Benchmark mit gespeicherten Ergebnissen, Highscores und Bestenliste pro Nutzer
-- Nebula Forge Tycoon als AFK-Tycoon mit Anlagen, Upgrades, Erfolgen, Datenbank-Speichern, Export/Import und übersetzbaren Spieltexten
-- OBS Dashboard für lokale OBS-WebSocket-Steuerung
-- Stream-Deck-Seite als Button-Dashboard für Medien, Spotify, Voicemod und eigene Aktionen
-- Spritkostenrechner mit Tankerkönig API
-- wissenschaftlicher Rechner mit Wurzeln, Potenzen, Trigonometrie, Logarithmen, Speicher und Verlauf
-- Genius Search mit Genius API
-- Einheitenrechner
-- Datei-Konverter für DOCX/XLSX/PPTX/Text/Bilder zu PDF und Bildformate
-- Bild Tools zum Komprimieren und Konvertieren von Bildern
-- Avatar Wiki mit Charakterverwaltung
-- Drift Circuit Pro als browserbasiertes Racing-Game
-- Google-Apps-Menü mit externen Links
-- Theme-Editor mit Farbvorgaben, eigener Farbwahl, Kompaktmodus, großer Schrift, Kontrastmodus und reduzierten Animationen
-- einheitliches Tool-Seiten-Design mit Theme-Buttons, Karten, Inputs und Kontrastmodus-Unterstützung
-- Dark Mode
-- globale MyTools-Suche mit Ctrl+K für Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen
-- mobile Bottom-Navigation mit optional einblendbarem Header für schnelle Bedienung auf Smartphone und Tablet
-- Benachrichtigungseinstellungen pro Bereich, Browser-Benachrichtigungen, Sounds und Nicht-stören-Verhalten
-- Changelog-Seite unter `/changelog/`
-- Deutsch/Englisch über Django i18n
-- Docker-Setup für produktiven Betrieb
+Stand dieser README: **24.06.2026**
 
 ---
 
-## 🆕 Neueste Verbesserungen
+## ✅ Aktueller technischer Stand
 
-Die letzten Updates verbinden bestehende Bereiche stärker miteinander und verbessern die Bedienung auf Desktop und Mobile:
+| Bereich | Stand |
+|---|---|
+| Backend | Django **5.2.15** |
+| Realtime | Django Channels + Daphne |
+| Datenbank | PostgreSQL produktiv, SQLite optional lokal/Tests |
+| Cache / WebSockets | Redis / channels-redis |
+| Reverse Proxy | Caddy |
+| Deployment | Docker Compose + optional Cloudflare Tunnel |
+| CI/CD | GitHub Actions, Self-hosted Runner, Tests/Build/Deploy |
+| Sprachen | Deutsch / Englisch über Django i18n |
+| PWA | Manifest, Service Worker und Offline-Seite |
 
-- **Nebula Forge Tycoon Polish**: Reset heißt jetzt Zurücksetzen, das Meteor-Icon wurde vereinheitlicht, der Sichern-Reiter entfernt und Anlagen, Upgrades sowie Schichtmodus sind linksbündig ausgerichtet.
-- **Nebula Forge Tycoon i18n**: Template- und JavaScript-Texte wurden für Django-Übersetzungen vorbereitet, damit `makemessages -l en` sie in die PO-Dateien übernehmen kann.
-- **Datei-Konverter**: DOCX, Tabellen, Präsentationen, Textdateien und Bilder lassen sich zu PDF oder Bildformaten umwandeln; Office-Dateien laufen serverseitig über LibreOffice.
-- **Einheitliches Tool-Design**: Toolbox-Seiten nutzen gemeinsame Theme-Farben für Karten, Buttons, Inputs, Hover-Zustände und Kontrastmodus.
-- **Kontrast-Polish**: Datei-Konverter, Bild Tools, Einheitenrechner, Spritkosten und QR-Code Tool wurden auf bessere Lesbarkeit angepasst.
-- **Quality Checks entschärft**: der GitHub-Actions-Workflow startet nicht mehr automatisch bei jedem Push/Merge, sondern nur noch manuell; lokal bleibt `scripts/verify.py` verfügbar.
-- **Globale Suche / Tool-Launcher**: per Suchbutton oder `Ctrl + K` Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen finden.
-- **Startseiten-Quick-Actions**: direkte Buttons für MyTools-Suche, Widgets, Favoriten, Design und Changelog.
-- **Mobile Bedienung**: Bottom-Navigation für Start, Suche, Tools, Header, Chat und Profil; der obere Header lässt sich auf kleinen Displays ein- und ausblenden.
-- **Realtime-Status**: Benachrichtigungszähler, Profil-Präsenz und relevante Änderungen werden per WebSocket aktualisiert, mit HTTP-Fallback.
-- **Design-Optionen**: Kompaktmodus, größere Schrift, hoher Kontrast, weniger Bewegung und Hintergrundeffekt werden im Browser gespeichert.
-- **Datei-Share-Sicherheit**: private Links können Passwort, Ablaufdatum und Download-Limit bekommen; Bilder und PDFs lassen sich als Vorschau öffnen.
-- **Profile & Benachrichtigungen**: Spotlight-Statistiken, Profilkarte und detaillierte Benachrichtigungsoptionen pro Bereich.
-- **Projektqualität**: `scripts/verify.py` bündelt Systemcheck, Migration-Check, Tests, collectstatic-Dry-Run und JavaScript-Syntaxprüfung; der GitHub-Actions-Workflow läuft nur manuell.
-- **Admin-Komfort**: Serverstatus zeigt zusätzlich Mediengröße, Datenbankgröße, aktive Nutzer, App-Aktivität und letzte Security-Events.
-- **Changelog**: `/changelog/` fasst sichtbare Änderungen als Timeline zusammen.
+Produktiv läuft der Web-Container aktuell über **Daphne** (`MyTools.asgi:application`), damit normale Django-Views und WebSocket-/Realtime-Funktionen zusammen funktionieren.
 
 ---
 
-## 🏠 Startseite, Shortcuts & Widgets
+## 🆕 Neueste größere Änderungen
 
-Die Startseite ist die zentrale Oberfläche für eigene Links, lokale Dienste und kleine Widgets.
+- **Git-Changelog statt manueller Einträge**: Die Seite `/changelog/` zeigt nur noch Änderungen aus dem Git-Repository. Die JSON-Datei wird über `scripts/generate_git_changelog.py` erzeugt.
+- **Changelog-Paginierung**: Git-Änderungen werden mit **20 Commits pro Seite** angezeigt. Die Seitennavigation sitzt unten im Changelog-Bereich und nicht im normalen Header.
+- **Umlaut-/Mojibake-Fix**: Git-Commit-Texte werden beim Anzeigen bereinigt, damit kaputte Zeichen wie `Ã¼` nicht mehr sichtbar sind.
+- **Shortcut-Farben**: Jede Home-Verknüpfung kann eine eigene Farbe bekommen, unabhängig von der Bereichsfarbe.
+- **Erweiterte Home-Widgets**: Neben Wetter, Uhr, Notizen und Statistik gibt es Widgets für Chat, Freunde, Skribble, Tic Tac Toe, Stadt Land Fluss, Uno, Kniffel, Datei-Share, Budget, Favoriten, Roadmap, Inbox und Changelog.
+- **Home-Onboarding**: Neue Nutzer können beim ersten Start eine Vorlage wählen, z. B. Alltag, Gaming oder Homelab.
+- **Access-Control überarbeitet**: Tools und Spiele können als **Veröffentlicht**, **Unveröffentlicht** oder **Versteckt** markiert werden. `Niemand` bleibt nur noch als Legacy-Wert erhalten und wird intern wie unveröffentlicht behandelt.
+- **Papierkorb**: Gelöschte unterstützte Inhalte werden erst in den Papierkorb verschoben und können wiederhergestellt oder endgültig gelöscht werden.
+- **Neue/erweiterte Spiele**: Werwolf, Hangman, Uno, Kniffel, Pong, Cookie Cosmos V2 und Nebula Forge Tycoon sind in der Plattform integriert.
+- **Deployment-Workflow**: Beim Deploy auf `main` wird der Git-Changelog erzeugt, danach werden Container neu gebaut/gestartet.
 
-Funktionen:
+---
 
-- eigene Verknüpfungen mit Name, URL und Icon
-- optional eigene Bilder für Shortcuts
-- transparente Shortcut-Bilder behalten ihre Transparenz in Thumbnails und nutzen die Bereichsfarbe als Hintergrund
-- eigene Bereiche/Kategorien
-- Bereiche farblich markieren
-- Bereiche ein- und ausklappen
-- Favoriten markieren
-- Drag & Drop Sortierung für Shortcuts
-- Drag & Drop Sortierung für Bereiche
-- Suchleiste mit Vorschlägen
-- globale MyTools-Suche über Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen
+## ✨ Hauptfunktionen
+
+### 🏠 Startseite & Shortcuts
+
+Die Startseite ist die zentrale Oberfläche für eigene Links, lokale Dienste und kleine Status-Karten.
+
+- eigene Shortcut-Bereiche/Kategorien
+- eigene Verknüpfungen mit URL, FontAwesome-Icon oder Bild
+- eigene Farbe pro Bereich und pro Shortcut
+- Favoriten
+- Drag-and-drop-Sortierung für Bereiche und Shortcuts
+- einklappbare Bereiche
 - Quick-Actions für Suche, Widgets, Favoriten, Design und Changelog
-- mobile Bottom-Navigation für Start, Suche, Tools, Header, Chat und Profil
-- mobiler Header lässt sich bei Bedarf ein- und ausblenden
-- Startseiten-Widgets hinzufügen, bearbeiten und löschen
-- Widget-Farbstile und Layouts
-- Dark Mode, Theme-Anpassung und gespeicherte Bedienoptionen
+- Onboarding-Vorlagen für Alltag, Gaming und Homelab
+- mobile Bottom-Navigation mit Header-Toggle
+- globale Suche per Button oder `Ctrl + K`
 
-Beispiele für typische Shortcuts:
+Typische Links:
 
 - CasaOS
+- Home Assistant
 - Nextcloud
 - Crafty
-- GitHub
-- Django Docs
-- lokale Serverdienste im Heimnetz
+- GitHub / GitLab
+- interne Homelab-Dienste
+- Dokumentationen
 
 ---
 
-## 🌦️ Wetter
+### 🧩 Home-Widgets
+
+Unterstützte Widget-Typen:
+
+- Wetter
+- Notizen
+- Human Benchmark
+- Schnellstatistiken
+- Uhr
+- Chats
+- Freunde
+- Skribble
+- Tic Tac Toe
+- Stadt Land Fluss
+- Uno
+- Kniffel
+- Datei-Share
+- Budget
+- Favoriten
+- Roadmap
+- Inbox
+- Changelog
+
+Widgets können aktiviert/deaktiviert, sortiert und farblich angepasst werden. Uhr- und Wetter-Widgets besitzen zusätzlich eigene Design-/Layoutvarianten.
+
+---
+
+### 🔎 Globale Suche & Plattformfunktionen
+
+- globale Suche über Tools, Notizen, Dateien, Nutzer und Roadmap-Ideen
+- Favoriten-System für Tools und Spiele
+- Inbox für System-/Plattformmeldungen
+- Feedback-Seite
+- Roadmap mit Feature-Ideen, Votes, Kommentaren und Admin-Status
+- Achievement-Center mit XP, Leveln, Kategorien und Ranking
+- automatische Benachrichtigungszähler
+- HTTP-Fallback und Realtime-Infrastruktur über Channels
+
+---
+
+### 👤 Profile, Freunde & Community
+
+- Profilseite mit Avatar, Bio, Status und Datenschutzoptionen
+- öffentlicher Profilbereich
+- Profilkarten-Designer mit Styles, Farben, Mustern, Glow, Shine, Badge und Avatar-Form
+- Galerie-Upload im Profil
+- Nutzerübersicht
+- Freundschaftsanfragen
+- Freundesliste
+- Nutzer blockieren und melden
+- Sichtbarkeit von Online-Status, Freunden, Highscores und Achievements steuerbar
+
+---
+
+### 💬 Chats
+
+- Direktchats mit Freunden
+- Gruppenchats
+- Gruppeneinstellungen
+- Mitgliederverwaltung
+- Chat-Themes
+- Nachrichten senden, bearbeiten, löschen und anpinnen
+- Emoji-Reaktionen
+- Typing-Status
+- Attachments
+- ungelesene Nachrichten und Benachrichtigungen
+
+---
+
+### 📝 Notizen
+
+- Notizen erstellen, bearbeiten und löschen
+- Pins
+- Archiv
+- Farben
+- Tags
+- Suche und Filter
+- Erinnerungstermine
+- nutzerbezogene Speicherung
+- Papierkorb-Unterstützung
+
+---
+
+### 📤 Datei-Share
+
+- Dateien mit Freunden teilen
+- private Download-Links
+- optionaler Passwortschutz
+- Ablaufdatum
+- Download-Limit
+- Mehrfachupload
+- Drag-and-drop-Upload
+- Upload-Fortschritt
+- Bild-/PDF-Vorschau
+- Download-Zähler
+- pro Nutzer konfigurierbare Upload-Limits im Adminbereich
+- Papierkorb-Unterstützung
+
+Standardlimit: **50 MB pro Datei**  
+Optionale Limits: **100 MB**, **500 MB** oder **unbegrenzt**
+
+---
+
+## 🧰 Tools
+
+### 🌦️ Wetter
 
 Die Wetterseite nutzt die **OpenWeather API**.
 
-Funktionen:
-
 - aktuelles Wetter
-- Temperatur und Beschreibung
-- Wetter-Icons
+- Wetterbeschreibung und Icon
 - Tagesdaten
 - Vorhersage
 - Sonnenaufgang und Sonnenuntergang
 - Suche nach Städten
-- Nutzung von Koordinaten über `lat` und `lon`
-- gespeicherte Wetter-Orte über Django-Model
-- kompakte Anzeige der gespeicherten Orte neben der Suche
-- Wetter-Widget auf der Startseite mit eigenen Designs und Layouts
-- Fehlerhinweise, wenn API-Key, Stadt oder API-Antwort fehlerhaft sind
+- gespeicherte Orte
+- Wetter-Widget für die Startseite
 
-Benötigter `.env` Wert:
+Benötigter `.env`-Wert:
 
 ```env
 OPENWEATHER_API_KEY=dein_openweather_api_key
@@ -141,340 +196,58 @@ OPENWEATHER_API_KEY=dein_openweather_api_key
 
 ---
 
-## 🕒 Uhr, Timer & Weltuhr
-
-Die Uhr-Seite ist als kleine Zeit-Zentrale gedacht.
-
-Funktionen:
+### 🕒 Uhr, Timer & Weltuhr
 
 - lokale Uhrzeit
 - Weltuhr mit gespeicherten Orten
 - Stoppuhr mit Runden
-- Timer mit Stunden, Minuten und Sekunden
-- Timer-Vorlagen speichern und löschen
+- Timer mit Vorlagen
 - eigene Timer-Sounds
-- Einstellungsdialog für Timer-Sounds und Lautstärke
-- dezenter Weltkarten-Hintergrund im Hero-Bereich
-
-Das lokale Weltkartenbild liegt hier:
-
-```text
-app/static/app/img/worldmap.webp
-```
+- Lautstärkeeinstellungen
+- Weltkarten-Hintergrund über `app/static/app/img/worldmap.webp`
 
 ---
 
-## 🧮 Wissenschaftlicher Rechner
+### 🧮 Wissenschaftlicher Rechner
 
-Der Rechner ist als eigenes Tool unter `/rechner/` eingebaut und orientiert sich an einem klassischen wissenschaftlichen Taschenrechner.
-
-Funktionen:
-
-- Grundrechenarten mit Klammern und Live-Vorschau
-- Wurzelrechnung über `sqrt(16)`, `cbrt(27)` und `root(27,3)`
-- Hochrechnung über `^`, `x²` und `x³`
-- Trigonometrie mit umschaltbarem DEG/RAD-Modus
-- `log`, `ln`, `abs`, Fakultät, Prozent, `π`, `e` und `Ans`
-- Speicherfunktionen `MC`, `MR`, `M+` und `M-`
-- Verlauf der letzten Rechnungen lokal im Browser
-- Tastaturbedienung mit Enter, Escape und Backspace
-- eigene Styles unter `app/static/app/css/calculator.css` und Logik unter `app/static/app/js/calculator.js`
+- Grundrechenarten
+- Klammern
+- Wurzeln
+- Potenzen
+- Trigonometrie mit DEG/RAD
+- Logarithmen
+- `π`, `e`, `Ans`
+- Speicherfunktionen
+- Verlauf im Browser
+- Tastaturbedienung
 
 ---
 
-## 👤 Profile, Nutzer & Freunde
+### 💸 Budget-Tracker
 
-MyTools enthält Profil- und Community-Funktionen für registrierte Nutzer.
-
-Funktionen:
-
-- eigene Profilseite
-- Vorname und Nachname speichern
-- Profilbild/Avatar mit Vorschau und Zuschnitt
-- Profilbanner
-- öffentliche Profilansicht
-- Nutzerübersicht
-- Freundschaftsanfragen senden, annehmen und ablehnen
-- Freundesliste mit Anzeige, seit wann man befreundet ist
-- Schnellzugriff auf Freunde und Freundschaftsanfragen im Profilmenü
-- Account-Informationen wie Mitglied seit und letzte Aktivität
-- Profil-Statistiken und Spotlight-Karten, z. B. Freunde, Chats, Highscores, Uploads und Achievements
-- Datei-Share Upload-Limit pro Nutzer im Admin einstellbar: 50 MB, 100 MB, 500 MB oder unbegrenzt
-- Benachrichtigungseinstellungen für Chat, Freunde, Spiele, Dateien, Notizen, Roadmap und Achievements
-- Browser-Benachrichtigungen, Sounds und Nicht-stören-Stummschaltung konfigurierbar
+- Monatsbudget
+- geplante Einnahmen
+- Ausgabenlimit
+- Sparziel
+- Einnahmen/Ausgaben mit Kategorien
+- wiederkehrende monatliche Einträge
+- Monatsnavigation
+- Summen, Restbudget und Fortschritt
+- CSV-Export
+- Budget-Widget auf der Startseite
 
 ---
 
-## 💬 Chats
-
-Das Chat-System ist für direkte Unterhaltungen und kleine Gruppen innerhalb von MyTools gedacht.
-
-Funktionen:
-
-- Direktchats mit befreundeten Nutzern
-- Gruppenchats mit mehreren Freunden
-- Chatliste mit Direktchat-Startbereich
-- Nachrichten senden per Enter
-- neue Zeile per Shift + Enter
-- automatische Aktualisierung über Polling
-- ungelesene Chat-Anzahl im Profilmenü
-- eigene Nachrichten löschen
-- auf empfangene Nachrichten mit Emojis reagieren
-- Reaktionen erneut anklicken, um sie wieder zu entfernen
-
----
-
-## 📤 Datei-Share
-
-Der Datei-Share erlaubt private Dateifreigaben innerhalb von MyTools.
-
-Funktionen:
-
-- Dateien mit Freunden teilen
-- privaten Link für einzelne Freigaben erstellen
-- private Links optional mit Passwort schützen
-- Ablaufdatum für 1, 7 oder 30 Tage setzen
-- Download-Limit pro Freigabe festlegen
-- Bilder als Thumbnail und Vorschau anzeigen
-- PDFs direkt als Vorschau öffnen
-- Download-Zähler und letzte Verfügbarkeit pro Freigabe anzeigen
-- mehrere Dateien auf einmal auswählen oder per Drag & Drop ablegen
-- ausgewählte Dateien mit Name, Typ und Größe anzeigen
-- Upload-Fortschritt mit Prozentanzeige
-- pro Nutzer konfigurierbares Upload-Limit im Django-Admin
-- Standardlimit 50 MB pro Datei
-- optionale Limits 100 MB, 500 MB oder unbegrenzt
-- Speicherung als Datei im Media-Verzeichnis statt als Datenbank-Blob
-
----
-
-## 🎨 Skribble
-
-Skribble ist ein kleines Zeichen- und Ratespiel innerhalb von MyTools.
-
-Funktionen:
-
-- Lobbys erstellen und teilen
-- Freunde einladen
-- Spieler können Lobbys verlassen
-- Lobby-Ersteller können Lobbys löschen
-- Runden starten und neu starten
-- Wörter auswählen
-- Zeichnen im Browser
-- Chat-/Ratebereich für Antworten
-- Punktestand und Spielstatus
-- Punkteübersicht nach jeder Runde, bevor der Host die nächste Runde startet
-- dezenter eigener Hintergrund und Logo
-
----
-
-## 🎮 Tic Tac Toe
-
-Tic Tac Toe ist ein schnelles 1v1-Spiel für Freunde.
-
-Funktionen:
-
-- Räume erstellen und per Code oder Link teilen
-- Freunde einladen
-- offene Einladungen auf der Tic-Tac-Toe-Übersicht
-- Live-Aktualisierung der Raum- und Einladungsliste ohne Neuladen
-- maximal zwei Spieler pro Raum
-- automatische Sperre weiterer Einladungen, sobald der Raum voll ist
-- Spieler können Räume verlassen
-- leere Räume werden automatisch gelöscht
-- nur der Host kann Räume löschen
-- gelöschte Räume leiten offene Clients automatisch zurück zur Übersicht
-- serverseitig geprüfte Züge, Gewinnerkennung und neue Runden
-
----
-
-## ⚓ Schiffe versenken
-
-Schiffe versenken ist ein taktisches 1v1-Spiel mit privaten Räumen und eigener Spieloberfläche.
-
-Funktionen:
-
-- Räume erstellen und per Code oder Link teilen
-- Freunde einladen
-- offene Einladungen und eigene Räume mit Live-Aktualisierung
-- maximal zwei Spieler pro Raum
-- keine weiteren Einladungen, sobald ein zweiter Spieler im Raum ist
-- manuelle Flottenplatzierung auf einem 8x8-Feld
-- Schiffsauswahl, horizontale/vertikale Ausrichtung, Zufallsplatzierung und Leeren
-- serverseitige Validierung der Flotte: richtige Schiffe, keine Überlappung, zusammenhängend und innerhalb des Spielfelds
-- abwechselndes Schießen mit Treffer/Wasser/versenkt-Anzeige
-- Treffer erlauben einen weiteren Schuss
-- Gewinnmeldung als Overlay
-- nur der Host kann eine neue Runde starten
-- Soundeffekte und Treffer-/Wasser-Effekte im Browser
-- gelöschte Räume leiten offene Clients automatisch zurück zur Übersicht
-
----
-
-## 🔴 Vier gewinnt
-
-Vier gewinnt ist ein animiertes 1v1-Spiel mit privaten Räumen und Live-Aktualisierung.
-
-Funktionen:
-
-- Räume erstellen und per Code oder Link teilen
-- Freunde einladen
-- offene Einladungen und eigene Räume mit Live-Aktualisierung
-- maximal zwei Spieler pro Raum
-- rote und gelbe Spielsteine mit klarer Spielerzuordnung
-- serverseitig geprüfte Spalten, Züge, Gewinnerkennung und Unentschieden
-- Fallanimation für neue Spielsteine
-- hervorgehobene Gewinnlinie
-- Gewinn- und Unentschieden-Meldung als Overlay
-- neue Runde direkt aus dem Ergebnis-Popup starten
-- Spieler können Räume verlassen
-- nur der Host kann Räume löschen
-- gelöschte Räume leiten offene Clients automatisch zurück zur Übersicht
-
----
-
-## 🧠 Stadt Land Fluss
-
-Stadt Land Fluss ist als gemeinsames Live-Spiel mit echten Runden und manueller Auswertung umgesetzt.
-
-Funktionen:
-
-- Lobbys erstellen und per Code oder Link teilen
-- Freunde einladen
-- offene Einladungen und eigene Lobbys mit Live-Aktualisierung
-- mehrere Spieler pro Lobby
-- Kategorien und Rundenzahl beim Erstellen festlegen
-- pro Runde zufälliger Buchstabe
-- Antwortentwürfe werden zwischengespeichert
-- sobald ein Spieler abgibt, ist die Runde für alle beendet
-- Auswertung nach Kategorien untereinander
-- Spieler entscheiden per Voting, welche Antworten zählen
-- Punktevergabe mit 20 Punkten für die einzige gültige Antwort einer Kategorie
-- finale Platzierungen nach der letzten Runde
-- Spieler können Lobbys verlassen
-- nur der Host kann Lobbys neu starten oder löschen
-- gelöschte Lobbys leiten offene Clients automatisch zurück zur Übersicht
-
----
-
-## 🏓 Pong Multiplayer
-
-Pong ist ein schnelles 1v1-Arcade-Spiel mit privaten Räumen, Freundeseinladungen und Profil-/Achievement-Anbindung.
-
-Funktionen:
-
-- Räume erstellen und per Code oder Link teilen
-- Freunde direkt aus der Lobby einladen
-- offene Einladungen und eigene Räume mit Live-Aktualisierung
-- maximal zwei Spieler pro Raum
-- Canvas-Spieloberfläche mit Maus-, Touch- und Tastatursteuerung
-- serverseitige Ballphysik, Punktewertung und Zielscore
-- Rally-Zähler, beste Rally und Gewinner-Overlay
-- nur der Host kann Räume löschen oder eine neue Runde starten
-- Spieler können Räume verlassen; leere Räume werden automatisch gelöscht
-- Header-Benachrichtigung für offene Pong-Einladungen
-- Pong-Statistiken in Profil-Spielkarten und eigene Achievements
-
----
-
-## 📝 Notizen
-
-Die Notizen-App speichert persönliche Notizen direkt in MyTools.
-
-Funktionen:
-
-- Notizen erstellen, bearbeiten und löschen
-- Notizen anpinnen
-- Notizen archivieren
-- Farben und Tags
-- Such- und Filterfunktionen
-- nutzerbezogene Speicherung
-
----
-
-## ⚡ Human Benchmark
-
-Die Human-Benchmark-Seite enthält kleine Reaktions- und Geschicklichkeits-Tests.
-
-Funktionen:
-
-- verschiedene Spielmodi
-- letzte Ergebnisse pro Spielmodus
-- gespeicherte Highscores
-- zusätzliche Statistiken je nach Spielmodus
-- Bestenliste pro Nutzer
-
----
-
-## 🌌 Nebula Forge Tycoon
-
-Nebula Forge Tycoon ist ein AFK-/Clicker-Tycoon mit Weltraum-Fokus.
-
-Funktionen:
-
-- Nebula per Klick oder Leertaste aktivieren
-- Anlagen kaufen und automatischen Flux-Aufbau steigern
-- Upgrades für Klickstärke, Multiplikatoren und Automatisierung freischalten
-- Erfolge und aktive Ereignisse anzeigen
-- Spielstand lokal speichern und per Datenbank-Save mit 60-Sekunden-Cooldown sichern
-- Spielstand exportieren und wieder importieren
-- klare Bedienung mit Zurücksetzen-Button, Meteor-Icon, entfernten Sichern-Reiter und linksbündigen Panels
-- Template- und JavaScript-Texte sind für Django-i18n vorbereitet
-
----
-
-## 🎛️ OBS Dashboard
-
-Das OBS Dashboard ist als lokale Steuerzentrale für OBS gedacht.
-
-Funktionen:
-
-- Verbindung zu OBS WebSocket
-- Szenen anzeigen und wechseln
-- Quellen anzeigen und umschalten
-- Audio-Mixer anzeigen
-- Mute/Volume-Steuerung
-- Stream-/Aufnahme-Steuerung
-- Reload- und Vollbildfunktionen
-- Offline-/Leerzustände, wenn keine Verbindung besteht
-
-Die Seite eignet sich besonders gut für ein Tablet als lokales Stream-Control-Panel.
-
----
-
-## 🎚️ Stream Deck
-
-Die Stream-Deck-Seite ist als Button-Dashboard für schnelle Aktionen gedacht.
-
-Mögliche Einsatzbereiche:
-
-- Mediensteuerung
-- Spotify-Verbindung
-- Voicemod-Steuerung mit lokal gespeichertem API-Key
-- Voicemod-Voices laden und per Dropdown auf Buttons legen
-- lokale Dashboard-Aktionen
-- eigene Buttons und Shortcuts
-- API-Key direkt in der Stream-Deck-Seitenleiste eintragen und im Browser speichern
-- Voice Changer, Hear Myself, Mikrofon-Mute und Zufalls-Voice als Schnellaktionen
-- eigene Buttons fuer Voicemod-Aktionen, inklusive Voice-Auswahl aus der geladenen Voicemod-Liste
-- klare Toast-Meldung, wenn kein Voicemod API-Key verbunden ist
-- Steuerung auf Tablet oder Zweitgerät
-
----
-
-## ⛽ Spritkostenrechner
+### ⛽ Spritkostenrechner
 
 Der Spritkostenrechner nutzt die **Tankerkönig API**.
 
-Funktionen:
-
-- Tankstellenabfrage über Browser-Standortfreigabe
-- Stadtsuche als Alternative zur Standortfreigabe
+- Standortabfrage über Browserfreigabe
+- Stadtsuche
 - Preisübersicht
-- API-Endpunkt unter `/api/tankstellen/`
-- Fehlermeldung, wenn der API-Key fehlt oder die API nicht erreichbar ist
+- API-Endpunkt `/api/tankstellen/`
 
-Benötigter `.env` Wert:
+Benötigter `.env`-Wert:
 
 ```env
 TANKERKOENIG_API_KEY=dein_tankerkoenig_api_key
@@ -482,18 +255,15 @@ TANKERKOENIG_API_KEY=dein_tankerkoenig_api_key
 
 ---
 
-## 🎵 Genius Search
+### 🎵 Genius Search
 
-Die Genius Search durchsucht Songs über die **Genius API**.
-
-Funktionen:
+Die Genius Search nutzt die **Genius API**.
 
 - Suche nach Songs und Künstlern
-- Ergebnisliste mit Titel, Künstler, Cover und Link
-- API-Endpunkt unter `/api/genius/search/`
-- saubere Fehlerausgabe bei fehlendem API-Key oder API-Problemen
+- Ergebnisliste mit Titel, Künstler, Cover und externem Link
+- API-Endpunkt `/api/genius/search/`
 
-Benötigter `.env` Wert:
+Benötigter `.env`-Wert:
 
 ```env
 GENIUS_ACCESS_TOKEN=dein_genius_access_token
@@ -501,75 +271,216 @@ GENIUS_ACCESS_TOKEN=dein_genius_access_token
 
 ---
 
-## 📐 Einheitenrechner
-
-Der Einheitenrechner bietet schnelle Umrechnungen direkt im Browser.
-
-Beispiele:
+### 📐 Einheitenrechner
 
 - Speichergrößen
 - Zeitwerte
 - Entfernungen
-- Geld-Zeiträume
+- weitere schnelle Umrechnungen direkt im Browser
 
 ---
 
-## 📚 Avatar Wiki
+### 🎲 Randomizer
 
-Das Avatar Wiki dient als kleine Charakterverwaltung.
-
-Funktionen:
-
-- Charaktere erstellen
-- Charaktere bearbeiten
-- Charaktere löschen
-- Suche und Übersicht
-- API-Endpunkte für Charakterdaten
+- Zufallszahlen
+- Listen-Auswahl
+- Entscheidungshilfen
+- kleine Zufallstools für Alltag und Spiele
 
 ---
 
-## 🏎️ Drift Circuit Pro
+### 📄 Datei-Konverter
 
-Drift Circuit Pro ist ein kleines browserbasiertes Racing-Game.
+Der Datei-Konverter verarbeitet Dateien serverseitig temporär und löscht sie danach wieder.
 
-Funktionen:
+Unterstützt:
 
-- Canvas-basiertes Spiel
-- verschiedene Maps
-- Nitro
-- Drift-Score
-- Tastatursteuerung
-
----
-
-## 📄 Datei-Konverter
-
-Der Datei-Konverter wandelt hochgeladene Dateien direkt im Browser-Workflow um. Die Dateien werden serverseitig nur temporär verarbeitet und danach wieder entfernt.
-
-Unterstützt sind aktuell:
-
-- DOC, DOCX, ODT, RTF und Textdateien zu PDF
+- DOC, DOCX, ODT, RTF und Text zu PDF
 - XLS, XLSX und ODS zu PDF
 - PPT, PPTX und ODP zu PDF
 - PNG, JPG, WEBP, BMP und GIF zu PNG, JPG, WEBP oder PDF
 
-Für Office-Dateien nutzt der Server LibreOffice. Im Dockerfile sind die nötigen LibreOffice-Pakete installiert.
+Office-Dateien werden serverseitig über LibreOffice verarbeitet. Die nötigen Pakete sind im Dockerfile installiert.
 
 ---
 
-## 🎨 Einheitliches Tool-Design
+### 🖼️ Bild Tools
 
-Die Toolbox-Seiten nutzen ein gemeinsames CSS-Layer über `app/static/app/css/tool_pages.css`.
+- Bilder komprimieren
+- Bildformate konvertieren
+- optimierte Medien-Verarbeitung
+- bessere Darstellung durch gemeinsame Tool-Styles
 
-Dadurch übernehmen Tools wie Datei-Konverter, Bild Tools, QR-Code Tool, Einheitenrechner, Spritkosten, Rechner, Randomizer, Notizen und weitere Seiten dieselben Theme-Werte für:
+---
 
-- Karten und Panels
-- Buttons und sekundäre Aktionen
-- Inputs, Selects und Textareas
-- Hover-/Focus-Zustände
-- Kontrastmodus und bessere Lesbarkeit
+### 🎨 Color Palette Tool
 
-Die einzelnen Tool-CSS-Dateien bleiben für Speziallayout zuständig. Das gemeinsame Tool-Design wird danach geladen und gleicht Farben, Abstände und Kontrast an.
+- Farbauswahl per Standard-Farbpicker
+- Bildschirm-Farbaufnahme über die Browser EyeDropper API, wenn unterstützt
+- Bild hochladen und Pixel-Farbe im Canvas anklicken
+- HEX, RGB und HSL kopieren
+- lokale Palette per `localStorage`
+- Kontrastprüfung für weißen und dunklen Text
+
+---
+
+### 🔳 QR-Code Tool
+
+- QR-Codes für Text und URLs
+- WLAN-QR-Codes
+- Kontakt-/vCard-QR-Codes
+- anpassbare Farben
+- PNG-Download
+
+---
+
+### 📚 Avatar Wiki
+
+- Avatar-Charaktere verwalten
+- Name, Nation, Link, Beschreibung und Bild
+- Suche und Übersicht
+- API-Endpunkte für Charakterdaten
+- Hintergrundbild über `app/static/app/img/Airtemple-island.webp`
+
+---
+
+### 🎛️ OBS Dashboard
+
+- Verbindung zu OBS WebSocket
+- Szenen anzeigen und wechseln
+- Quellen umschalten
+- Audio-Mixer
+- Mute-/Volume-Steuerung
+- Stream-/Aufnahme-Steuerung
+- Reload- und Vollbildfunktionen
+
+Geeignet als lokales Tablet-Control-Panel.
+
+---
+
+### 🎚️ Stream Deck
+
+- Button-Dashboard für Spotify, Voicemod und eigene Aktionen
+- Spotify-Anbindung
+- Voicemod-Steuerung mit lokal gespeichertem API-Key
+- Voicemod-Voices laden
+- Voice-Auswahl aus der geladenen Voicemod-Liste
+- Voice Changer, Hear Myself, Mikrofon-Mute und Zufalls-Voice
+- eigene Buttons und Aktionen
+- Toast-Hinweise bei fehlender Verbindung
+
+---
+
+## 🎮 Spiele
+
+MyTools enthält mehrere Singleplayer- und Multiplayer-Spiele. Multiplayer-Spiele nutzen private Räume/Lobbys, Codes/Links, Freundeseinladungen, Host-Rechte, Live-Status und serverseitig geprüfte Aktionen.
+
+### Singleplayer / Highscore
+
+- **Human Benchmark**: Reaktion, Aim Trainer, Typing und Visual Memory mit Highscores.
+- **2048**: Highscore-Speicherung, Aktivitätsstatus und Leaderboard-Anbindung.
+- **Cookie Cosmos**: Cookie-/Clicker-Spiel mit Highscore.
+- **Cookie Cosmos V2**: neuer Save-State, Datenbank-Speichern, Import/Export und Leaderboard-Anbindung.
+- **Nebula Forge Tycoon**: AFK-/Clicker-Tycoon mit Anlagen, Upgrades, Ereignissen, Erfolgen, DB-Save, Import/Export und i18n-Vorbereitung.
+- **Snake Powerups**: Snake-Variante mit Powerups.
+- **Drift Circuit Pro**: Canvas-Racing-Game mit Maps, Nitro, Drift-Score und Tastatursteuerung.
+
+### Multiplayer
+
+- **Skribble**: Zeichnen, Raten, Punkte, Runden und Lobby-System.
+- **Tic Tac Toe**: 1v1 mit Räumen, Einladungen, Live-Status und serverseitiger Zugprüfung.
+- **Vier gewinnt**: animiertes 1v1 mit Gewinnlinie, Reset und Live-Aktualisierung.
+- **Schiffe versenken**: manuelle Flottenplatzierung, Treffer/Wasser/versenkt, Sounds und geprüfte Regeln.
+- **Stadt Land Fluss**: gemeinsame Runden, Entwürfe, Stopp-Regel, Voting und Endplatzierung.
+- **Hangman**: Lobby-Spiel mit Wort/Hinweis, Rate-Logik, Spielern, Punkten und Review.
+- **Uno**: Lobby-Kartenspiel mit mehreren Spielern, Ziehen, Ablegen, UNO-Call, Sonderregeln und Runden-Reset.
+- **Kniffel**: Multiplayer-Würfelspiel mit Würfen, Wertung und Rundenlogik.
+- **Pong**: 1v1-Arcade-Spiel mit Canvas, Maus/Touch/Tastatur, serverseitiger Ballphysik und Profil-/Achievement-Anbindung.
+- **Werwolf**: Lobby-Spiel mit Rollen, Tag-/Nachtphasen, Aktionen, Chat und Host-Steuerung.
+
+### 🏆 Leaderboard
+
+Die Leaderboard-Seite fasst verschiedene Highscores und Rekorde zusammen, unter anderem für:
+
+- Human Benchmark
+- 2048
+- Cookie Cosmos / Cookie Cosmos V2
+- Nebula Forge Tycoon
+- Multiplayer-Siege je nach Spiel
+
+---
+
+## 🛡️ Sicherheit, Admin & Moderation
+
+### Zwei-Faktor-Authentifizierung
+
+- 2FA-Einrichtung über `/settings/security/2fa/`
+- 2FA-Verifizierung beim Login
+- Security-Events für Aktivierung/Deaktivierung und Logins
+
+### Security-Dashboard
+
+Unter `/security/`:
+
+- 2FA-Status
+- aktive Sessions
+- erfolgreiche/fehlgeschlagene Login-Ereignisse
+- andere Sitzungen beenden
+- Security-Historie
+
+### Moderation
+
+Unter `/moderation/` für Staff-Nutzer:
+
+- Login-/Registrierungs-Sperre
+- Tool- und Spielzugriff steuern
+- Status: **Veröffentlicht**, **Unveröffentlicht**, **Versteckt**
+- Reports bearbeiten
+- Feedback-Status pflegen
+- File-Shares moderieren
+- Nutzer verwarnen/sperren
+- Medien optimieren
+- Audit-Log
+
+### Papierkorb
+
+Unter `/trash/`:
+
+- gelöschte unterstützte Inhalte ansehen
+- wiederherstellen
+- endgültig löschen
+- Papierkorb leeren
+
+Aktuell über den Papierkorb geführt werden unter anderem Shortcuts, Notizen, Datei-Shares und Home-Widgets.
+
+---
+
+## 🎨 Design & Oberfläche
+
+- Dark Mode
+- Theme-Editor
+- eigene Accent-Farben
+- moderne Kartenlayouts
+- Kontrastmodus
+- reduzierte Animationen
+- Hintergrundeffekte
+- responsive Darstellung für Desktop, Tablet und Smartphone
+- mobile Bottom-Navigation
+- sticky Header
+- überarbeiteter Footer
+- Einheitliches Tool-Design über `app/static/app/css/tool_pages.css`
+- linkslastige, kompakte UI-Ausrichtung
+
+Gemeinsame Tool-Styles gelten unter anderem für:
+
+- Datei-Konverter
+- Bild Tools
+- QR-Code Tool
+- Einheitenrechner
+- Spritkostenrechner
+- Rechner
+- Randomizer
+- Notizen
 
 ---
 
@@ -577,12 +488,10 @@ Die einzelnen Tool-CSS-Dateien bleiben für Speziallayout zuständig. Das gemein
 
 MyTools nutzt Django i18n.
 
-Aktuell vorgesehen:
+Unterstützte Sprachen:
 
 - Deutsch
 - Englisch
-
-Nebula Forge Tycoon enthält auch übersetzbare JavaScript-Texte über ein Template-basiertes i18n-JSON, damit Spieltexte bei `makemessages` in den normalen PO-Dateien landen.
 
 Nach Änderungen an übersetzbaren Texten:
 
@@ -594,38 +503,155 @@ python manage.py compilemessages
 
 Unter Windows müssen dafür die GNU-gettext-Tools installiert sein.
 
+Nebula Forge Tycoon und andere JavaScript-lastige Bereiche nutzen zusätzlich Template-/JSON-basierte Übersetzungsdaten, damit Texte von `makemessages` erkannt werden können.
+
 ---
 
-## 🎨 Design
+## 📦 PWA
 
-Design-Funktionen:
+MyTools ist als installierbare Web-App vorbereitet.
 
-- Dark Mode
-- Theme-Editor
-- eigene Accent-Farbe
-- moderne Kartenlayouts
-- globale Design-Modi: Kompakt, große Schrift, hoher Kontrast und weniger Bewegung
-- Hintergrundeffekt über den Theme-Editor schaltbar
-- responsive Darstellung für Desktop, Tablet und Smartphone
-- mobile Bottom-Navigation mit Header-Toggle
-- sticky Header
-- überarbeiteter Footer
-- Widget-Farbstile und Widget-Layouts
-- Startseiten-Quick-Actions für häufige Bereiche
+- `manifest.webmanifest`
+- `service-worker.js`
+- Offline-Seite unter `/offline/`
+- Caching statischer Dateien
+- keine aggressive Vorab-Caches für private HTML-Seiten oder API-Antworten
+
+Nach dem Deployment prüfen:
+
+```text
+https://deine-domain.de/manifest.webmanifest
+https://deine-domain.de/service-worker.js
+https://deine-domain.de/offline/
+```
+
+Für Installation und Service Worker wird produktiv HTTPS benötigt. Lokal funktioniert der Service Worker auch auf `localhost`.
+
+---
+
+## ⚙️ Wichtige `.env`-Werte
+
+Beispiel:
+
+```env
+DEBUG=False
+SECRET_KEY=dein_secret_key
+DOMAIN=mytools.example.de
+ALLOWED_HOSTS=localhost,127.0.0.1,mytools.example.de
+CSRF_TRUSTED_ORIGINS=https://mytools.example.de
+
+DB_NAME=mytools
+DB_USER=mytools
+DB_PASSWORD=dein_db_passwort
+DB_HOST=db
+DB_PORT=5432
+
+REDIS_URL=redis://redis:6379/0
+
+OPENWEATHER_API_KEY=dein_openweather_api_key
+TANKERKOENIG_API_KEY=dein_tankerkoenig_api_key
+GENIUS_ACCESS_TOKEN=dein_genius_access_token
+
+FONTAWESOME_KIT_KEY=dein_fontawesome_kit_key
+USE_FONTAWESOME_KIT=False
+
+RECAPTCHA_PUBLIC_KEY=dein_recaptcha_public_key
+RECAPTCHA_PRIVATE_KEY=dein_recaptcha_private_key
+
+GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
+
+EMAIL_BACKEND_MODE=smtp
+EMAIL_HOST=smtp.example.de
+EMAIL_PORT=465
+EMAIL_USE_SSL=True
+EMAIL_USE_TLS=False
+EMAIL_HOST_USER=deine_mail@example.de
+EMAIL_HOST_PASSWORD=dein_mail_passwort
+DEFAULT_FROM_EMAIL=MyTools <deine_mail@example.de>
+SERVER_EMAIL=MyTools <deine_mail@example.de>
+
+CLOUDFLARE_TUNNEL_TOKEN=dein_cloudflare_tunnel_token
+```
+
+Hinweise:
+
+- `GOOGLE_ANALYTICS_ID` muss eine **GA4 Measurement ID** sein und mit `G-` beginnen.
+- In Tests werden bei fehlenden reCAPTCHA-Keys automatisch Googles Test-Keys verwendet.
+- Secrets gehören nicht ins Repository.
+
+---
+
+## 🧑‍💻 Lokale Entwicklung
+
+### 1. Virtuelle Umgebung erstellen
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\activate
+```
+
+Linux/macOS:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 2. Abhängigkeiten installieren
+
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 3. `.env` für lokale Entwicklung anlegen
+
+Minimal lokal mit SQLite:
+
+```env
+DEBUG=True
+SECRET_KEY=dev-only-change-me
+USE_SQLITE=True
+USE_LOCAL_CACHE=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+CSRF_TRUSTED_ORIGINS=
+OPENWEATHER_API_KEY=
+```
+
+### 4. Datenbank vorbereiten
+
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+### 5. Server starten
+
+```bash
+python manage.py runserver 127.0.0.1:8090
+```
+
+Danach öffnen:
+
+```text
+http://127.0.0.1:8090/
+```
 
 ---
 
 ## 🐳 Docker Deployment
 
-Produktiv läuft MyTools typischerweise über Docker Compose.
+Produktiv läuft MyTools typischerweise mit Docker Compose.
 
-Typische Container:
+Container:
 
-- `web` für Django/Gunicorn
-- `db` für PostgreSQL
-- `redis` für Cache/Redis und spätere Echtzeit-/Caching-Funktionen
-- `caddy` als Reverse Proxy
-- optional `cloudflared` für Cloudflare Tunnel
+- `mytools_web` für Django/Daphne
+- `mytools_db` für PostgreSQL
+- `mytools_redis` für Cache/WebSocket-Backend
+- `mytools_caddy` als Reverse Proxy
+- `mytools_cloudflared` optional für Cloudflare Tunnel
 
 Start/Rebuild:
 
@@ -633,10 +659,9 @@ Start/Rebuild:
 docker compose up -d --build
 ```
 
-Migrationen ausführen:
+Migrationen manuell ausführen:
 
 ```bash
-docker compose exec web python manage.py makemigrations
 docker compose exec web python manage.py migrate
 ```
 
@@ -652,65 +677,41 @@ Logs ansehen:
 docker compose logs -f web
 ```
 
----
-
-## ⚙️ Wichtige `.env` Werte
-
-Beispiel:
-
-```env
-DEBUG=False
-SECRET_KEY=dein_secret_key
-ALLOWED_HOSTS=localhost,127.0.0.1,mytools.yfserver.de
-CSRF_TRUSTED_ORIGINS=https://mytools.yfserver.de
-
-OPENWEATHER_API_KEY=dein_openweather_api_key
-TANKERKOENIG_API_KEY=dein_tankerkoenig_api_key
-GENIUS_ACCESS_TOKEN=dein_genius_access_token
-
-DB_NAME=mytools
-DB_USER=mytools
-DB_PASSWORD=dein_db_passwort
-DB_HOST=db
-DB_PORT=5432
-
-REDIS_URL=redis://redis:6379/1
-```
-
-Secrets gehören nicht ins Git-Repository. Dafür sollte eine `.env.example` ohne echte Zugangsdaten gepflegt werden.
-
-
----
-
-## 📱 PWA / installierbare App
-
-MyTools ist als Progressive Web App vorbereitet:
-
-- `manifest.webmanifest` liefert App-Name, Start-URL, Theme-Farbe, Icons und Shortcuts.
-- `service-worker.js` wird am Origin-Root ausgeliefert und darf dadurch die komplette App-Scope `/` kontrollieren.
-- Die Offline-Seite unter `/offline/` wird vorab gecacht.
-- Statische Dateien unter `/static/` werden beim ersten Laden gecacht und danach schneller wiederverwendet.
-- Private HTML-Seiten und API-Antworten werden bewusst nicht vorab gecacht.
-
-Nach dem Deployment einmal ausführen:
+Containerstatus:
 
 ```bash
-python manage.py collectstatic --noinput
+docker compose ps
 ```
-
-Dann im Browser prüfen:
-
-```text
-https://deine-domain.de/manifest.webmanifest
-https://deine-domain.de/service-worker.js
-https://deine-domain.de/offline/
-```
-
-Für die Installation muss die Seite über HTTPS laufen. Lokal funktioniert der Service Worker auch auf `localhost`.
 
 ---
 
-## 🧪 Tests
+## 📰 Git-Changelog
+
+Die Seite `/changelog/` liest die Datei:
+
+```text
+app/static/app/data/changelog_git.json
+```
+
+Diese Datei wird aus dem Git-Repository erzeugt:
+
+```bash
+python scripts/generate_git_changelog.py --limit 0
+```
+
+Alternativ über Django:
+
+```bash
+python manage.py generate_git_changelog --limit 0
+```
+
+Beim Deployment auf dem Server wird der Changelog im Workflow vor dem Docker-Start automatisch erzeugt.
+
+Wenn lokal keine `.git`-Historie vorhanden ist, bleibt der Changelog leer und die Seite zeigt einen Hinweis an.
+
+---
+
+## 🧪 Tests & Qualitätschecks
 
 Kompletter lokaler Qualitätslauf:
 
@@ -718,30 +719,41 @@ Kompletter lokaler Qualitätslauf:
 python scripts/verify.py
 ```
 
-Das prüft Django-Systemchecks, fehlende Migrationen, die Testsuite, `collectstatic` als Dry-Run und JavaScript-Syntax, falls Node.js verfügbar ist.
-Der GitHub-Actions-Workflow für diesen Qualitätslauf ist bewusst nur manuell per `workflow_dispatch` aktiv, damit Pushes und Merges nicht mehr automatisch lange hängen bleiben.
-
-Tests lokal starten:
+Nur Django-Tests:
 
 ```bash
-python manage.py test
+python manage.py test app
 ```
 
-Tests im Docker-Container:
+Migrationen prüfen:
 
 ```bash
-docker compose exec web python manage.py test
+python manage.py makemigrations --check --dry-run
 ```
+
+Statische Dateien testweise sammeln:
+
+```bash
+python manage.py collectstatic --noinput --dry-run
+```
+
+GitHub Actions:
+
+- `quality.yml`: GitHub-Actions-Workflow läuft nur manuell über `workflow_dispatch`
+- `deploy.yml`: Tests/Security-Scan für Feature-Branches, Build/Deploy bei Push/Merge auf `main`
+- OSV-Scan blockiert den Workflow nicht, sondern gibt nur Hinweise aus
 
 ---
 
 ## 📁 Projektstruktur
 
-Grob:
-
 ```text
 MyTools/
+├── .github/workflows/
+│   ├── deploy.yml
+│   └── quality.yml
 ├── MyTools/
+│   ├── asgi.py
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
@@ -750,74 +762,55 @@ MyTools/
 │   ├── static/app/css/
 │   ├── static/app/js/
 │   ├── static/app/img/
+│   ├── static/app/data/
+│   ├── management/commands/
 │   ├── migrations/
+│   ├── forms/
+│   │   ├── chat.py
+│   │   ├── core.py
+│   │   ├── platform.py
+│   │   └── profile.py
+│   ├── views/
+│   │   ├── auth.py
+│   │   ├── budget.py
+│   │   ├── chat.py
+│   │   ├── community.py
+│   │   ├── core.py
+│   │   ├── moderation.py
+│   │   ├── performance_tools.py
+│   │   ├── profile.py
+│   │   ├── pwa.py
+│   │   ├── security.py
+│   │   └── ...
+│   ├── access_control.py
+│   ├── achievement_utils.py
 │   ├── models.py
-│   ├── views.py
-│   ├── notes_views.py
-│   ├── pwa_views.py
-│   ├── profile_views.py
-│   ├── chat_views.py
-│   ├── skribble_views.py
-│   ├── tictactoe_views.py
-│   ├── battleship_views.py
-│   └── urls.py
+│   ├── urls.py
+│   └── *_utils.py
 ├── locale/
 ├── media/
-├── docker-compose.yml
-├── Dockerfile
+├── scripts/
+│   ├── generate_git_changelog.py
+│   └── verify.py
 ├── Caddyfile
+├── Dockerfile
+├── docker-compose.yml
+├── DOCKER.md
+├── manage.py
 ├── requirements.txt
-└── manage.py
+└── README.md
 ```
 
 ---
 
-## 🚀 Ziel
+## 🚀 Ziel des Projekts
 
 MyTools soll eine persönliche, erweiterbare Web-Toolbox bleiben:
 
 - schnell erreichbar
-- gut für Homelab, Alltag und kleine gemeinsame Tools
+- gut für Homelab, Alltag, Medien und Streaming
 - nutzerbezogen mit Profilen, Freunden und Chats
-- optisch modern
-- einfach per Docker deploybar
-- Schritt für Schritt um neue Tools erweiterbar
-
-
-### Color Palette Tool
-
-- Farbauswahl per Standard-Farbpicker
-- Bildschirm-Farbaufnahme über die Browser EyeDropper API, wenn unterstützt
-- Bild hochladen und Pixel-Farbe direkt im Canvas anklicken
-- HEX, RGB und HSL kopieren
-- Lokale Palette per `localStorage`
-- Kontrastprüfung für weißen und dunklen Text
-
-
-## Sicherheits-Dashboard und QR-Code Tool
-
-- `/security/`: zeigt 2FA-Status, aktive Sessions, erfolgreiche/fehlgeschlagene Login-Ereignisse und erlaubt das Beenden anderer Sitzungen.
-- `/qr-code/`: erstellt QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte mit PNG-Download und anpassbaren Farben.
-
-Nach dem Einspielen ausführen:
-
-```bash
-python manage.py migrate
-python manage.py test app.tests.SecurityDashboardAndQrToolTests
-```
-
-## Roadmap, Achievement-Center, Serverstatus und Changelog
-
-Neue Bereiche:
-
-- `/roadmap/`: Feature-Ideen einreichen, nach Status/Kategorie filtern, voten, kommentieren und als Admin den Status plus Admin-Notiz pflegen.
-- `/achievements/`: persönliches Achievement-Center mit Level, XP-Fortschritt, Kategorien, nächsten Zielen und Top-10-XP-Ranking.
-- `/changelog/`: Timeline für sichtbare Neuerungen, Bedienkomfort-Updates und größere Plattform-Verbesserungen.
-- `/server-status/`: staff-only System-Monitor mit App-/Datenbank-/Cache-Status, Speicherplatz, Laufzeitdaten, Mediengröße, Datenbankgröße, App-Aktivität, aktiven Nutzern und letzten Security-Events.
-
-Nach dem Einspielen ausführen:
-
-```bash
-python manage.py migrate
-python manage.py test app.tests.RoadmapAchievementAndServerStatusTests
-```
+- modern und mobil bedienbar
+- mit sinnvollen Admin-/Security-Funktionen
+- leicht per Docker deploybar
+- Schritt für Schritt um neue Tools und Spiele erweiterbar

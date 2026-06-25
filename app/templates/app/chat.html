@@ -5,8 +5,10 @@
 
 {% block title %}{% translate "Chat" %} | MyTools{% endblock %}
 
+{% block body_class %}chat-page-body{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/chat.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/chat.css' %}?v=20260625-chat-scrollbar-fix">
 {% endblock %}
 
 {% block content %}

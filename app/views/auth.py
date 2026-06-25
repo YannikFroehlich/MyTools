@@ -18,9 +18,9 @@ from django.views.decorators.http import require_http_methods
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
-from .models import SecurityEvent, SiteAccessSettings, UserTwoFactorSettings
-from .security_views import create_security_event
-from .totp_utils import generate_totp_secret, provisioning_uri, verify_totp
+from ..models import SecurityEvent, SiteAccessSettings, UserTwoFactorSettings
+from .security import create_security_event
+from ..totp_utils import generate_totp_secret, provisioning_uri, verify_totp
 
 
 class AccessLockedAuthenticationForm(AuthenticationForm):

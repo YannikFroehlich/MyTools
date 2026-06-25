@@ -1598,6 +1598,57 @@ body.dark-mode .menu-dropdown {
     display: none !important;
 }
 
+
+.menu-dropdown.games-menu-panel,
+.menu-dropdown.google-library-panel,
+.menu-dropdown.tools-library-panel {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--theme-accent-rgb), 0.58) rgba(255, 255, 255, 0.08);
+}
+
+.menu-dropdown.games-menu-panel::-webkit-scrollbar,
+.menu-dropdown.google-library-panel::-webkit-scrollbar,
+.menu-dropdown.tools-library-panel::-webkit-scrollbar {
+    width: 10px;
+}
+
+.menu-dropdown.games-menu-panel::-webkit-scrollbar-track,
+.menu-dropdown.google-library-panel::-webkit-scrollbar-track,
+.menu-dropdown.tools-library-panel::-webkit-scrollbar-track {
+    margin-block: 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.menu-dropdown.games-menu-panel::-webkit-scrollbar-thumb,
+.menu-dropdown.google-library-panel::-webkit-scrollbar-thumb,
+.menu-dropdown.tools-library-panel::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background:
+        linear-gradient(180deg, var(--theme-accent-start), var(--theme-accent-end)) padding-box;
+    box-shadow: 0 6px 16px rgba(var(--theme-accent-rgb), 0.22);
+}
+
+.menu-dropdown.games-menu-panel::-webkit-scrollbar-thumb:hover,
+.menu-dropdown.google-library-panel::-webkit-scrollbar-thumb:hover,
+.menu-dropdown.tools-library-panel::-webkit-scrollbar-thumb:hover {
+    background:
+        linear-gradient(180deg, var(--theme-accent-end), var(--theme-accent-start)) padding-box;
+}
+
+body.dark-mode .menu-dropdown.games-menu-panel,
+body.dark-mode .menu-dropdown.google-library-panel,
+body.dark-mode .menu-dropdown.tools-library-panel {
+    scrollbar-color: rgba(var(--theme-accent-rgb), 0.7) rgba(15, 23, 42, 0.34);
+}
+
+body.dark-mode .menu-dropdown.games-menu-panel::-webkit-scrollbar-track,
+body.dark-mode .menu-dropdown.google-library-panel::-webkit-scrollbar-track,
+body.dark-mode .menu-dropdown.tools-library-panel::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.34);
+}
+
 body.dark-mode .menu-dropdown.games-menu-panel {
     color: #f8fafc;
     background: rgba(15, 23, 42, 0.98);

@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .models import Friendship, KniffelGame, KniffelInvite, KniffelPlayer, UserProfile
+from ..models import Friendship, KniffelGame, KniffelInvite, KniffelPlayer, UserProfile
 
 
 KNIFFEL_PLAYER_TIMEOUT = timedelta(seconds=45)

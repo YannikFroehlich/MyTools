@@ -11,8 +11,8 @@ from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from .models import HomeWidget, Shortcut, ShortcutSection
-from .trash_utils import TRASH_RETENTION_DAYS, TRASH_TYPES, deleted_items_for, purge_expired_trash
+from ..models import HomeWidget, Shortcut, ShortcutSection
+from ..trash_utils import TRASH_RETENTION_DAYS, TRASH_TYPES, deleted_items_for, purge_expired_trash
 
 
 TRASH_PRESENTATION = {

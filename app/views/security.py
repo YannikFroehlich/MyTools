@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
-from .models import SecurityEvent, UserTwoFactorSettings
+from ..models import SecurityEvent, UserTwoFactorSettings
 
 
 HEX_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")

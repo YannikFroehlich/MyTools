@@ -1122,6 +1122,33 @@ body.dark .status-warning-strip div {
 }
 
 /* Changelog */
+.changelog-page {
+    --changelog-card-bg: var(--tool-card-bg, var(--theme-card-bg, rgba(255, 255, 255, 0.9)));
+    --changelog-card-text: var(--tool-card-text, var(--theme-card-text, var(--theme-text, #111827)));
+    --changelog-muted: color-mix(in srgb, var(--changelog-card-text) 72%, transparent);
+    --changelog-line: rgba(var(--theme-accent-rgb), 0.22);
+    --changelog-line-strong: rgba(var(--theme-accent-end-rgb), 0.36);
+    --changelog-surface: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.12), rgba(var(--theme-accent-end-rgb), 0.10)), var(--changelog-card-bg);
+    --changelog-item-bg: color-mix(in srgb, var(--changelog-card-bg) 84%, var(--theme-accent-start) 16%);
+    --changelog-item-hover-bg: color-mix(in srgb, var(--changelog-card-bg) 78%, var(--theme-accent-end) 22%);
+    --changelog-chip-bg: color-mix(in srgb, var(--changelog-card-bg) 76%, var(--theme-accent-start) 24%);
+    --changelog-chip-text: color-mix(in srgb, var(--theme-accent-start) 36%, var(--changelog-card-text) 64%);
+    --changelog-date-text: color-mix(in srgb, var(--changelog-card-text) 62%, transparent);
+}
+
+body.dark-mode .changelog-page,
+body.dark .changelog-page {
+    --changelog-card-bg: var(--tool-card-bg, var(--theme-card-bg, rgba(15, 23, 42, 0.86)));
+    --changelog-card-text: var(--tool-card-text, var(--theme-card-text, var(--theme-text, #f8fafc)));
+    --changelog-muted: color-mix(in srgb, var(--changelog-card-text) 76%, transparent);
+    --changelog-surface: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.14), rgba(var(--theme-accent-end-rgb), 0.12)), var(--changelog-card-bg);
+    --changelog-item-bg: color-mix(in srgb, var(--changelog-card-bg) 76%, var(--theme-accent-end) 24%);
+    --changelog-item-hover-bg: color-mix(in srgb, var(--changelog-card-bg) 68%, var(--theme-accent-end) 32%);
+    --changelog-chip-bg: color-mix(in srgb, var(--changelog-card-bg) 68%, var(--theme-accent-end) 32%);
+    --changelog-chip-text: color-mix(in srgb, var(--theme-accent-end) 28%, var(--changelog-card-text) 72%);
+    --changelog-date-text: color-mix(in srgb, var(--changelog-card-text) 58%, transparent);
+}
+
 .changelog-hero {
     background:
         radial-gradient(circle at top right, rgba(56, 189, 248, 0.28), transparent 34%),
@@ -1274,18 +1301,18 @@ body.dark .status-warning-strip div {
 }
 
 .changelog-mini-list a.is-git-link {
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(6, 182, 212, 0.12));
+    border: 1px solid var(--changelog-line, rgba(var(--theme-accent-rgb), 0.2));
+    background: var(--changelog-item-bg, linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.14), rgba(var(--theme-accent-end-rgb), 0.12)));
 }
 
 .git-changelog-card {
     display: grid;
     gap: 16px;
     padding: 22px;
-    border: 1px solid rgba(37, 99, 235, 0.16);
-    background:
-        radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 34%),
-        rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--changelog-line) !important;
+    background: var(--changelog-surface) !important;
+    color: var(--changelog-card-text) !important;
+    box-shadow: 0 18px 46px rgba(var(--theme-accent-rgb), 0.10) !important;
 }
 
 .git-changelog-meta {
@@ -1303,15 +1330,15 @@ body.dark .status-warning-strip div {
     min-height: 28px;
     padding: 5px 9px;
     border-radius: 999px;
-    background: rgba(15, 23, 42, 0.06);
-    color: #475569;
+    background: var(--changelog-chip-bg);
+    color: var(--changelog-chip-text);
     font-size: 0.78rem;
     font-weight: 800;
 }
 
 .git-changelog-commit-meta code {
-    border: 1px solid rgba(37, 99, 235, 0.14);
-    color: #1d4ed8;
+    border: 1px solid var(--changelog-line-strong);
+    color: var(--changelog-chip-text);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
@@ -1325,9 +1352,17 @@ body.dark .status-warning-strip div {
     grid-template-columns: 42px minmax(0, 1fr);
     gap: 12px;
     padding: 12px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    border: 1px solid var(--changelog-line) !important;
     border-radius: 18px;
-    background: rgba(248, 250, 252, 0.78);
+    background: var(--changelog-item-bg) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.git-changelog-item:hover {
+    transform: translateY(-1px);
+    border-color: var(--changelog-line-strong) !important;
+    background: var(--changelog-item-hover-bg) !important;
 }
 
 .git-changelog-icon {
@@ -1336,8 +1371,9 @@ body.dark .status-warning-strip div {
     width: 42px;
     height: 42px;
     border-radius: 15px;
-    color: #fff;
-    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 12px 28px rgba(var(--theme-accent-rgb), 0.22);
 }
 
 .git-changelog-item-main {
@@ -1355,13 +1391,13 @@ body.dark .status-warning-strip div {
 
 .git-changelog-item-top strong {
     min-width: 0;
-    color: #0f172a;
+    color: var(--changelog-card-text);
     line-height: 1.35;
 }
 
 .git-changelog-item-top span {
     flex: 0 0 auto;
-    color: #64748b;
+    color: var(--changelog-date-text);
     font-size: 0.82rem;
     font-weight: 800;
 }
@@ -1374,7 +1410,7 @@ body.dark .status-warning-strip div {
 
 .changelog-mini-list span,
 .changelog-date {
-    color: #64748b;
+    color: var(--changelog-date-text, #64748b);
     font-size: 0.86rem;
     font-weight: 800;
 }
@@ -1397,8 +1433,8 @@ body.dark .status-warning-strip div {
     width: 54px;
     height: 54px;
     border-radius: 18px;
-    color: #fff;
-    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
 }
 
 .changelog-entry-top {
@@ -1422,8 +1458,8 @@ body.dark .status-warning-strip div {
     flex: 0 0 auto;
     padding: 7px 10px;
     border-radius: 999px;
-    color: #1d4ed8;
-    background: rgba(37, 99, 235, 0.1);
+    color: var(--changelog-chip-text, var(--theme-accent-start));
+    background: var(--changelog-chip-bg, rgba(var(--theme-accent-rgb), 0.1));
     font-size: 0.78rem;
     font-weight: 900;
 }
@@ -1470,21 +1506,19 @@ body.dark .changelog-entry p {
 
 body.dark-mode .git-changelog-card,
 body.dark .git-changelog-card {
-    border-color: rgba(96, 165, 250, 0.18);
-    background:
-        radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 34%),
-        rgba(15, 23, 42, 0.82);
+    border-color: var(--changelog-line) !important;
+    background: var(--changelog-surface) !important;
 }
 
 body.dark-mode .git-changelog-item,
 body.dark .git-changelog-item {
-    border-color: rgba(148, 163, 184, 0.18);
-    background: rgba(30, 41, 59, 0.64);
+    border-color: var(--changelog-line) !important;
+    background: var(--changelog-item-bg) !important;
 }
 
 body.dark-mode .git-changelog-item-top strong,
 body.dark .git-changelog-item-top strong {
-    color: #e2e8f0;
+    color: var(--changelog-card-text);
 }
 
 body.dark-mode .git-changelog-meta span,
@@ -1493,14 +1527,14 @@ body.dark-mode .git-changelog-commit-meta code,
 body.dark .git-changelog-meta span,
 body.dark .git-changelog-commit-meta span,
 body.dark .git-changelog-commit-meta code {
-    background: rgba(148, 163, 184, 0.12);
-    color: #cbd5e1;
+    background: var(--changelog-chip-bg);
+    color: var(--changelog-chip-text);
 }
 
 body.dark-mode .git-changelog-commit-meta code,
 body.dark .git-changelog-commit-meta code {
-    border-color: rgba(96, 165, 250, 0.22);
-    color: #93c5fd;
+    border-color: var(--changelog-line-strong);
+    color: var(--changelog-chip-text);
 }
 
 
@@ -1872,9 +1906,9 @@ body.dark .server-status-page .admin-mini-card {
     gap: 14px;
     align-items: start;
     padding: 18px;
-    border: 1px dashed rgba(37, 99, 235, 0.28);
+    border: 1px dashed var(--changelog-line-strong);
     border-radius: 20px;
-    background: rgba(37, 99, 235, 0.06);
+    background: var(--changelog-item-bg);
 }
 
 .git-changelog-empty-icon {
@@ -1883,18 +1917,18 @@ body.dark .server-status-page .admin-mini-card {
     width: 52px;
     height: 52px;
     border-radius: 18px;
-    color: #fff;
-    background: linear-gradient(135deg, #2563eb, #06b6d4);
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
 }
 
 .git-changelog-empty h3 {
     margin: 0 0 6px;
-    color: #0f172a;
+    color: var(--changelog-card-text);
 }
 
 .git-changelog-empty p {
     margin: 0 0 12px;
-    color: #475569;
+    color: var(--changelog-muted);
     line-height: 1.6;
 }
 
@@ -1903,8 +1937,8 @@ body.dark .server-status-page .admin-mini-card {
     max-width: 100%;
     padding: 8px 10px;
     border-radius: 12px;
-    background: rgba(15, 23, 42, 0.08);
-    color: #1d4ed8;
+    background: var(--changelog-chip-bg);
+    color: var(--changelog-chip-text);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     font-size: 0.82rem;
     font-weight: 800;
@@ -1925,26 +1959,26 @@ body.dark-mode .changelog-empty-mini strong,
 body.dark .changelog-empty-mini strong,
 body.dark-mode .git-changelog-empty h3,
 body.dark .git-changelog-empty h3 {
-    color: #e2e8f0;
+    color: var(--changelog-card-text);
 }
 
 body.dark-mode .changelog-empty-mini span,
 body.dark .changelog-empty-mini span,
 body.dark-mode .git-changelog-empty p,
 body.dark .git-changelog-empty p {
-    color: #94a3b8;
+    color: var(--changelog-muted);
 }
 
 body.dark-mode .git-changelog-empty,
 body.dark .git-changelog-empty {
-    border-color: rgba(96, 165, 250, 0.24);
-    background: rgba(37, 99, 235, 0.1);
+    border-color: var(--changelog-line-strong);
+    background: var(--changelog-item-bg);
 }
 
 body.dark-mode .git-changelog-empty code,
 body.dark .git-changelog-empty code {
-    background: rgba(148, 163, 184, 0.12);
-    color: #93c5fd;
+    background: var(--changelog-chip-bg);
+    color: var(--changelog-chip-text);
 }
 
 @media (max-width: 640px) {
@@ -1984,14 +2018,14 @@ body.dark .git-changelog-empty code {
     gap: 8px;
     padding: 10px 12px;
     border-radius: 16px;
-    background: rgba(15, 23, 42, 0.05);
+    background: var(--changelog-item-bg);
 }
 
 .git-changelog-page-status span {
     display: inline-flex;
     align-items: center;
     min-height: 28px;
-    color: #475569;
+    color: var(--changelog-muted);
     font-size: 0.82rem;
     font-weight: 800;
 }
@@ -2008,7 +2042,7 @@ body.dark .git-changelog-empty code {
 .git-changelog-pagination-footer {
     margin-top: 4px;
     padding-top: 16px;
-    border-top: 1px solid rgba(37, 99, 235, 0.12);
+    border-top: 1px solid var(--changelog-line);
 }
 
 .git-changelog-page-numbers {
@@ -2027,10 +2061,10 @@ body.dark .git-changelog-empty code {
     gap: 7px;
     min-height: 38px;
     padding: 8px 12px;
-    border: 1px solid rgba(37, 99, 235, 0.18);
+    border: 1px solid var(--changelog-line);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.84);
-    color: #1d4ed8;
+    background: var(--changelog-chip-bg);
+    color: var(--changelog-chip-text);
     font-size: 0.84rem;
     font-weight: 900;
     text-decoration: none;
@@ -2038,16 +2072,16 @@ body.dark .git-changelog-empty code {
 
 .git-changelog-pagination a:hover {
     transform: translateY(-1px);
-    border-color: rgba(37, 99, 235, 0.34);
-    background: rgba(37, 99, 235, 0.1);
+    border-color: var(--changelog-line-strong) !important;
+    background: var(--changelog-item-hover-bg) !important;
 }
 
 .git-changelog-pagination .git-changelog-pagination-current,
 .git-changelog-pagination .git-changelog-page-number.is-current {
     min-width: 42px;
     border-color: transparent;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(6, 182, 212, 0.14));
-    color: #0f172a;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text);
 }
 
 .git-changelog-pagination .git-changelog-page-number {
@@ -2065,51 +2099,51 @@ body.dark .git-changelog-empty code {
     padding-inline: 10px;
     border-color: transparent;
     background: transparent;
-    color: #64748b;
+    color: var(--changelog-date-text);
 }
 
 body.dark-mode .git-changelog-page-status,
 body.dark .git-changelog-page-status {
-    background: rgba(148, 163, 184, 0.1);
+    background: var(--changelog-item-bg);
 }
 
 body.dark-mode .git-changelog-page-status span,
 body.dark .git-changelog-page-status span {
-    color: #cbd5e1;
+    color: var(--changelog-muted);
 }
 
 body.dark-mode .git-changelog-pagination a,
 body.dark-mode .git-changelog-pagination span,
 body.dark .git-changelog-pagination a,
 body.dark .git-changelog-pagination span {
-    border-color: rgba(96, 165, 250, 0.2);
-    background: rgba(30, 41, 59, 0.74);
-    color: #bfdbfe;
+    border-color: var(--changelog-line);
+    background: var(--changelog-chip-bg);
+    color: var(--changelog-chip-text);
 }
 
 body.dark-mode .git-changelog-pagination a:hover,
 body.dark .git-changelog-pagination a:hover {
-    border-color: rgba(96, 165, 250, 0.38);
-    background: rgba(37, 99, 235, 0.22);
+    border-color: var(--changelog-line-strong) !important;
+    background: var(--changelog-item-hover-bg) !important;
 }
 
 body.dark-mode .git-changelog-pagination-footer,
 body.dark .git-changelog-pagination-footer {
-    border-top-color: rgba(96, 165, 250, 0.16);
+    border-top-color: var(--changelog-line);
 }
 
 body.dark-mode .git-changelog-pagination .git-changelog-pagination-current,
 body.dark-mode .git-changelog-pagination .git-changelog-page-number.is-current,
 body.dark .git-changelog-pagination .git-changelog-pagination-current,
 body.dark .git-changelog-pagination .git-changelog-page-number.is-current {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(6, 182, 212, 0.2));
-    color: #e2e8f0;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text);
 }
 
 body.dark-mode .git-changelog-pagination .is-ellipsis,
 body.dark .git-changelog-pagination .is-ellipsis {
     background: transparent;
-    color: #94a3b8;
+    color: var(--changelog-date-text);
 }
 
 @media (max-width: 640px) {
@@ -2164,7 +2198,7 @@ body.dark .git-changelog-pagination .is-ellipsis {
     gap: 14px;
     margin-top: 4px;
     padding-top: 18px;
-    border-top: 1px solid rgba(37, 99, 235, 0.12);
+    border-top: 1px solid var(--changelog-line);
 }
 
 .git-changelog-footer-nav .git-changelog-pagination-footer {
@@ -2175,5 +2209,5 @@ body.dark .git-changelog-pagination .is-ellipsis {
 
 body.dark-mode .git-changelog-footer-nav,
 body.dark .git-changelog-footer-nav {
-    border-top-color: rgba(96, 165, 250, 0.16);
+    border-top-color: var(--changelog-line);
 }

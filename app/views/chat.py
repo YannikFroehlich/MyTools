@@ -11,8 +11,8 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .chat_forms import ChatGroupSettingsForm
-from .models import (
+from ..forms.chat import ChatGroupSettingsForm
+from ..models import (
     ChatAttachment,
     ChatMessage,
     ChatMessageReaction,
@@ -25,10 +25,10 @@ from .models import (
     UserBlock,
     UserProfile,
 )
-from .profile_views import ensure_profiles_for_users, get_friend_profiles
-from .notification_utils import invalidate_notification_cache
-from .presence_utils import decorate_users_with_presence
-from .realtime import broadcast_chat_event
+from .profile import ensure_profiles_for_users, get_friend_profiles
+from ..notification_utils import invalidate_notification_cache
+from ..presence_utils import decorate_users_with_presence
+from ..realtime import broadcast_chat_event
 
 User = get_user_model()
 
@@ -674,7 +674,6 @@ def set_chat_theme(request, room_id):
 
     room.theme = theme
     room.save(update_fields=["theme", "updated_at"])
-    messages.success(request, _("Chat-Theme gespeichert."))
     return redirect("chat_room", room_id=room.id)
 
 

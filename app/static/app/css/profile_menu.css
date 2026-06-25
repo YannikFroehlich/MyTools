@@ -169,9 +169,30 @@
 }
 
 .profile-menu-item i {
-    width: 18px;
-    color: var(--theme-accent-start);
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    border-radius: 11px;
+    display: inline-grid;
+    place-items: center;
+    color: #ffffff;
+    background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.26), rgba(15, 23, 42, 0.08)),
+        linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow:
+        0 8px 18px rgba(var(--theme-accent-rgb), 0.26),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
     text-align: center;
+    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.3);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+}
+
+.profile-menu-item:hover i {
+    transform: scale(1.04);
+    filter: brightness(1.08) saturate(1.08);
+    box-shadow:
+        0 10px 22px rgba(var(--theme-accent-rgb), 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .profile-menu-logout-form {
@@ -185,11 +206,23 @@
 }
 
 .profile-menu-logout i {
-    color: #dc2626;
+    color: #ffffff;
+    background:
+        linear-gradient(135deg, rgba(127, 29, 29, 0.28), rgba(127, 29, 29, 0.08)),
+        linear-gradient(135deg, #dc2626, #fb7185);
+    box-shadow:
+        0 8px 18px rgba(220, 38, 38, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24);
 }
 
 .profile-menu-logout:hover {
     background: rgba(239, 68, 68, 0.1);
+}
+
+.profile-menu-logout:hover i {
+    box-shadow:
+        0 10px 22px rgba(220, 38, 38, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 body.dark-mode .profile-menu-dropdown {

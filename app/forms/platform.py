@@ -1,8 +1,8 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from .models import ToolFeedback
-from .platform_utils import get_feedback_tool_choices, get_feedback_tool_keys
+from ..models import ToolFeedback
+from ..platform_utils import get_feedback_tool_choices, get_feedback_tool_keys
 
 
 class ToolFeedbackForm(forms.ModelForm):

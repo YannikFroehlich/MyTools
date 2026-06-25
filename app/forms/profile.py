@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
-from .models import ProfileGalleryImage, UserProfile, UserReport
+from ..models import ProfileGalleryImage, UserProfile, UserReport
 
 User = get_user_model()
 MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024

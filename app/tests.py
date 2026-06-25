@@ -606,7 +606,7 @@ class MediaThumbnailTests(BaseTestCase):
 
 
     def test_media_thumbnail_cache_path_uses_webp_for_png_sources(self):
-        from app.media_views import _thumbnail_path
+        from app.views.media import _thumbnail_path
 
         thumb_path = _thumbnail_path("profile_pictures/avatar.png", "avatar-small", Path("avatar.png"))
 
@@ -791,7 +791,7 @@ class AuthViewTests(BaseTestCase):
         self.assertTrue(get_user_model().objects.filter(username="neueruser").exists())
 
     def test_login_route_uses_access_aware_login_view(self):
-        from app.auth_views import AccessAwareLoginView
+        from app.views.auth import AccessAwareLoginView
 
         match = resolve("/accounts/login/")
 
@@ -2774,8 +2774,8 @@ class StaticPageTests(BaseTestCase):
         self.assertIn("function saveVoicemodApiKey()", js_content)
         self.assertIn('throw new Error("Kein Voicemod API-Key verbunden.")', js_content)
 
-    @patch("app.views.get_env_value")
-    @patch("app.views.send_voicemod_action")
+    @patch("app.views.core.get_env_value")
+    @patch("app.views.core.send_voicemod_action")
     def test_stream_deck_voicemod_action_uses_posted_key(self, mock_send_voicemod_action, mock_get_env_value):
         mock_get_env_value.side_effect = lambda name: {
             "VOICEMOD_HOST": "",
@@ -2800,8 +2800,8 @@ class StaticPageTests(BaseTestCase):
             ports=[59129],
         )
 
-    @patch("app.views.get_env_value")
-    @patch("app.views.send_voicemod_action")
+    @patch("app.views.core.get_env_value")
+    @patch("app.views.core.send_voicemod_action")
     def test_stream_deck_voicemod_action_prefers_posted_key(self, mock_send_voicemod_action, mock_get_env_value):
         mock_get_env_value.side_effect = lambda name: {
             "VOICEMOD_HOST": "",
@@ -2824,7 +2824,7 @@ class StaticPageTests(BaseTestCase):
             ports=[59129],
         )
 
-    @patch("app.views.send_voicemod_action")
+    @patch("app.views.core.send_voicemod_action")
     def test_stream_deck_voicemod_action_without_key_returns_error(self, mock_send_voicemod_action):
         response = self.client.post(
             reverse("stream-deck-voicemod-action"),
@@ -2836,7 +2836,7 @@ class StaticPageTests(BaseTestCase):
         self.assertEqual(response.json()["message"], "Kein Voicemod API-Key verbunden.")
         mock_send_voicemod_action.assert_not_called()
 
-    @patch("app.views.send_voicemod_action")
+    @patch("app.views.core.send_voicemod_action")
     def test_stream_deck_voicemod_action_rejects_unknown_action(self, mock_send_voicemod_action):
         response = self.client.post(
             reverse("stream-deck-voicemod-action"),
@@ -2972,7 +2972,7 @@ class FileConverterTests(BaseTestCase):
         self.assertIn('filename="avatar-konvertiert.jpg"', response["Content-Disposition"])
         self.assertTrue(response.content.startswith(b"\xff\xd8"))
 
-    @patch("app.file_converter_views._office_converter_binary", return_value=None)
+    @patch("app.views.file_converter._office_converter_binary", return_value=None)
     def test_docx_to_pdf_shows_message_when_libreoffice_is_missing(self, _binary_mock):
         response = self.client.post(reverse("file_converter"), {
             "target": "pdf",
@@ -2987,8 +2987,8 @@ class FileConverterTests(BaseTestCase):
         self.assertTemplateUsed(response, "app/file_converter.html")
         self.assertContains(response, "LibreOffice ist auf dem Server nicht installiert")
 
-    @patch("app.file_converter_views._office_converter_binary", return_value="/usr/bin/libreoffice")
-    @patch("app.file_converter_views.subprocess.run")
+    @patch("app.views.file_converter._office_converter_binary", return_value="/usr/bin/libreoffice")
+    @patch("app.views.file_converter.subprocess.run")
     def test_docx_to_pdf_downloads_generated_pdf(self, run_mock, _binary_mock):
         def fake_run(command, **kwargs):
             output_dir = Path(command[command.index("--outdir") + 1])
@@ -3133,7 +3133,7 @@ class ChatEnhancementTests(BaseTestCase):
         self.assertEqual(response.json()["typing_users"][0]["username"], self.user.username)
 
 
-    @patch("app.chat_views.broadcast_chat_event")
+    @patch("app.views.chat.broadcast_chat_event")
     def test_chat_write_actions_broadcast_realtime_events(self, mock_broadcast):
         send_response = self.client.post(
             reverse("chat_send", args=[self.room.id]),
@@ -3297,8 +3297,8 @@ class WeatherViewTests(BaseTestCase):
         }
         return response
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_loads_with_api_data(self, mock_get, mock_get_env_value):
         mock_get.side_effect = [
             self.mocked_current_weather_response(),
@@ -3328,7 +3328,7 @@ class WeatherViewTests(BaseTestCase):
         self.assertContains(response, reverse("weather_icon", args=["02d", "2x"]))
         self.assertNotContains(response, "openweathermap.org/img/wn")
 
-    @patch("app.views.requests.get")
+    @patch("app.views.core.requests.get")
     def test_weather_icon_view_converts_and_caches_openweather_icon_as_webp(self, mock_get):
         icon_file = self.get_test_image("icon.png")
         upstream_response = Mock(status_code=200, content=icon_file.read())
@@ -3347,15 +3347,15 @@ class WeatherViewTests(BaseTestCase):
         self.assertEqual(cached_response.status_code, 200)
         self.assertEqual(mock_get.call_count, 1)
 
-    @patch("app.views.requests.get")
+    @patch("app.views.core.requests.get")
     def test_weather_icon_view_rejects_invalid_icon_codes(self, mock_get):
         response = self.client.get(reverse("weather_icon", args=["abc", "2x"]))
 
         self.assertEqual(response.status_code, 404)
         mock_get.assert_not_called()
 
-    @patch("app.views.get_env_value", return_value="")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="")
+    @patch("app.views.core.requests.get")
     def test_weather_page_handles_missing_api_key(self, mock_get, mock_get_env_value):
         response = self.client.get(reverse("weather"), {
             "city": "Berlin",
@@ -3365,8 +3365,8 @@ class WeatherViewTests(BaseTestCase):
         self.assertEqual(response.context["error"], "OPENWEATHER_API_KEY fehlt in der .env.")
         mock_get.assert_not_called()
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_falls_back_to_berlin_without_saved_location(self, mock_get, mock_get_env_value):
         mock_get.side_effect = [
             self.mocked_current_weather_response(),
@@ -3381,8 +3381,8 @@ class WeatherViewTests(BaseTestCase):
 
         self.assertEqual(first_call_params["q"], "Berlin")
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_uses_saved_default_city(self, mock_get, mock_get_env_value):
         WeatherLocation.objects.create(name="Berlin", order=1)
         WeatherLocation.objects.create(name="Hamburg", is_default=True, order=2)
@@ -3399,8 +3399,8 @@ class WeatherViewTests(BaseTestCase):
 
         self.assertEqual(first_call_params["q"], "Hamburg")
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_can_use_lat_lon(self, mock_get, mock_get_env_value):
         mock_get.side_effect = [
             self.mocked_current_weather_response(),
@@ -3419,8 +3419,8 @@ class WeatherViewTests(BaseTestCase):
         self.assertEqual(first_call_params["lat"], "52.52")
         self.assertEqual(first_call_params["lon"], "13.405")
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_handles_city_not_found(self, mock_get, mock_get_env_value):
         mock_get.return_value = self.mocked_current_weather_response(
             status_code=404,
@@ -3436,8 +3436,8 @@ class WeatherViewTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["error"], "Standort nicht gefunden.")
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_handles_invalid_current_weather_response(self, mock_get, mock_get_env_value):
         mock_get.return_value = self.mocked_current_weather_response(json_data=[])
 
@@ -3448,8 +3448,8 @@ class WeatherViewTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["error"], "Ungültige Antwort der OpenWeather API.")
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_handles_forecast_error(self, mock_get, mock_get_env_value):
         mock_get.side_effect = [
             self.mocked_current_weather_response(),
@@ -3468,8 +3468,8 @@ class WeatherViewTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["error"], "Wettervorhersage konnte nicht geladen werden.")
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_handles_connection_error(self, mock_get, mock_get_env_value):
         mock_get.side_effect = Exception("API nicht erreichbar")
 
@@ -3566,9 +3566,9 @@ class WeatherViewTests(BaseTestCase):
         self.assertTrue(next_location.is_default)
 
 
-    @patch("app.views.requests.get")
+    @patch("app.views.core.requests.get")
     def test_cached_openweather_json_reuses_successful_response_without_api_key_in_cache_key(self, mock_get):
-        from app.views import cached_openweather_json
+        from app.views.core import cached_openweather_json
 
         mock_get.return_value = self.mocked_current_weather_response()
         first_status, first_data = cached_openweather_json(
@@ -3586,9 +3586,9 @@ class WeatherViewTests(BaseTestCase):
         self.assertEqual(second_data["name"], "Berlin")
         self.assertEqual(mock_get.call_count, 1)
 
-    @patch("app.views.requests.get")
+    @patch("app.views.core.requests.get")
     def test_cached_openweather_json_does_not_cache_failed_responses(self, mock_get):
-        from app.views import cached_openweather_json
+        from app.views.core import cached_openweather_json
 
         mock_get.return_value = self.mocked_current_weather_response(
             status_code=500,
@@ -3600,8 +3600,8 @@ class WeatherViewTests(BaseTestCase):
 
         self.assertEqual(mock_get.call_count, 2)
 
-    @patch("app.views.get_env_value", return_value="test-weather-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-weather-key")
+    @patch("app.views.core.requests.get")
     def test_weather_page_reuses_cached_current_and_forecast_data(self, mock_get, mock_get_env_value):
         mock_get.side_effect = [
             self.mocked_current_weather_response(),
@@ -4266,7 +4266,7 @@ class GeniusSearchApiTests(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Suchbegriff fehlt.")
 
-    @patch("app.views.get_env_value", return_value="")
+    @patch("app.views.core.get_env_value", return_value="")
     def test_genius_search_api_handles_missing_api_key(self, mock_get_env_value):
         response = self.client.get(reverse("genius-search-api"), {
             "q": "Daft Punk",
@@ -4275,8 +4275,8 @@ class GeniusSearchApiTests(BaseTestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json()["message"], "GENIUS_API_KEY fehlt in der .env.")
 
-    @patch("app.views.get_env_value", return_value="test-genius-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-genius-key")
+    @patch("app.views.core.requests.get")
     def test_genius_search_api_returns_results(self, mock_get, mock_get_env_value):
         mock_get.return_value = self.mocked_genius_response()
 
@@ -4296,7 +4296,7 @@ class GeniusSearchApiTests(BaseTestCase):
         self.assertEqual(mock_get.call_args.kwargs["params"]["page"], 2)
         self.assertEqual(mock_get.call_args.kwargs["params"]["per_page"], 8)
 
-    @patch("app.views.get_env_value", return_value="test-genius-key")
+    @patch("app.views.core.get_env_value", return_value="test-genius-key")
     def test_genius_search_api_rejects_invalid_pagination(self, mock_get_env_value):
         response = self.client.get(reverse("genius-search-api"), {
             "q": "Daft Punk",
@@ -4306,8 +4306,8 @@ class GeniusSearchApiTests(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Pagination-Parameter sind ungültig.")
 
-    @patch("app.views.get_env_value", return_value="test-genius-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-genius-key")
+    @patch("app.views.core.requests.get")
     def test_genius_search_api_handles_api_error(self, mock_get, mock_get_env_value):
         mock_get.return_value = self.mocked_genius_response(
             status_code=401,
@@ -4325,8 +4325,8 @@ class GeniusSearchApiTests(BaseTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.json()["message"], "Unauthorized")
 
-    @patch("app.views.get_env_value", return_value="test-genius-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-genius-key")
+    @patch("app.views.core.requests.get")
     def test_genius_search_api_handles_connection_error(self, mock_get, mock_get_env_value):
         mock_get.side_effect = requests.RequestException()
 
@@ -4758,7 +4758,7 @@ class ModerationTests(BaseTestCase):
                     "quality": 60,
                 },
             )
-            with override_settings(STATIC_ROOT=tempdir), patch("app.moderation_views.STATIC_IMAGE_TARGETS", static_targets):
+            with override_settings(STATIC_ROOT=tempdir), patch("app.views.moderation.STATIC_IMAGE_TARGETS", static_targets):
                 response = self.client.post(reverse("moderation_media_optimize"))
 
             self.assertRedirects(response, reverse("moderation"))
@@ -5811,7 +5811,7 @@ class TankstellenApiTests(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Latitude und Longitude müssen Zahlen sein.")
 
-    @patch("app.views.get_env_value", return_value="")
+    @patch("app.views.core.get_env_value", return_value="")
     def test_tankstellen_api_handles_missing_api_key(self, mock_get_env_value):
         response = self.client.get(reverse("tankstellen-api"), {
             "lat": "52.52",
@@ -5821,8 +5821,8 @@ class TankstellenApiTests(BaseTestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json()["message"], "TANKERKOENIG_API_KEY fehlt in der .env.")
 
-    @patch("app.views.get_env_value", return_value="test-tanker-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-tanker-key")
+    @patch("app.views.core.requests.get")
     def test_tankstellen_api_returns_external_data(self, mock_get, mock_get_env_value):
         mock_get.return_value = self.mocked_tanker_response()
 
@@ -5837,8 +5837,8 @@ class TankstellenApiTests(BaseTestCase):
         self.assertEqual(mock_get.call_args.kwargs["params"]["lat"], 52.52)
         self.assertEqual(mock_get.call_args.kwargs["params"]["lng"], 13.405)
 
-    @patch("app.views.get_env_value", return_value="test-tanker-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-tanker-key")
+    @patch("app.views.core.requests.get")
     def test_tankstellen_api_handles_api_error(self, mock_get, mock_get_env_value):
         mock_get.return_value = self.mocked_tanker_response(
             status_code=403,
@@ -5855,8 +5855,8 @@ class TankstellenApiTests(BaseTestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()["message"], "Invalid API key")
 
-    @patch("app.views.get_env_value", return_value="test-tanker-key")
-    @patch("app.views.requests.get")
+    @patch("app.views.core.get_env_value", return_value="test-tanker-key")
+    @patch("app.views.core.requests.get")
     def test_tankstellen_api_handles_connection_error(self, mock_get, mock_get_env_value):
         mock_get.side_effect = requests.RequestException()
 

@@ -741,6 +741,14 @@
     animation: fadeUp 0.4s ease both;
 }
 
+.detail-item,
+.hourly-item,
+.forecast-item,
+.sun-item {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
 /* ───────────────── DARK MODE ───────────────── */
 
 body.dark-mode .weather-search-form,
@@ -807,124 +815,162 @@ body.dark-mode .weather-search-form:focus-within input::placeholder {
     color: rgba(255, 255, 255, 0.28);
 }
 
-body.dark-mode .weather-card {
+body.dark-mode .weather-card,
+body.dark .weather-card {
     background:
-        linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.2), rgba(0, 0, 0, 0.34));
-    border-color: rgba(var(--theme-accent-end-rgb), 0.28);
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.24), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(var(--theme-accent-end-rgb), 0.16), transparent 36%),
+        rgba(24, 24, 27, 0.68);
+    border-color: rgba(255, 255, 255, 0.08);
 
     box-shadow:
-        0 14px 42px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        0 24px 80px rgba(15, 23, 42, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-body.dark-mode .weather-card:hover {
-    border-color: rgba(var(--theme-accent-end-rgb), 0.42);
+body.dark-mode .weather-card:hover,
+body.dark .weather-card:hover {
+    border-color: rgba(var(--theme-accent-rgb), 0.20);
 
     box-shadow:
-        0 18px 48px rgba(0, 0, 0, 0.36),
-        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        0 28px 84px rgba(15, 23, 42, 0.16),
+        0 0 0 1px rgba(var(--theme-accent-rgb), 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-body.dark-mode .weather-card::before {
+body.dark-mode .weather-card::before,
+body.dark .weather-card::before {
     background: linear-gradient(
         90deg,
         transparent,
-        rgba(var(--theme-accent-end-rgb), 0.22),
+        rgba(var(--theme-accent-rgb), 0.24),
         transparent
     );
 }
 
-body.dark-mode .weather-card::after {
-    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.14), transparent 65%);
+body.dark-mode .weather-card::after,
+body.dark .weather-card::after {
+    background: radial-gradient(circle, rgba(var(--theme-accent-end-rgb), 0.16), transparent 65%);
 }
 
-body.dark-mode .weather-card h2 {
-    color: rgba(255, 255, 255, 0.7);
+body.dark-mode .weather-card h2,
+body.dark .weather-card h2 {
+    color: rgba(255, 255, 255, 0.72);
 }
 
-body.dark-mode .weather-location {
+body.dark-mode .weather-location,
+body.dark .weather-location {
     color: #ffffff;
 }
 
-body.dark-mode .weather-location i {
+body.dark-mode .weather-location i,
+body.dark .weather-location i {
     color: var(--theme-accent-end);
 }
 
 body.dark-mode .current-main img,
+body.dark .current-main img,
 body.dark-mode .hourly-item img,
-body.dark-mode .forecast-item img {
-    filter: drop-shadow(0 4px 16px rgba(var(--theme-accent-end-rgb), 0.35));
+body.dark .hourly-item img,
+body.dark-mode .forecast-item img,
+body.dark .forecast-item img {
+    filter: drop-shadow(0 6px 18px rgba(var(--theme-accent-rgb), 0.24));
 }
 
 body.dark-mode .temperature,
+body.dark .temperature,
 body.dark-mode .hour-temp,
+body.dark .hour-temp,
 body.dark-mode .forecast-temp,
+body.dark .forecast-temp,
 body.dark-mode .sun-item span,
+body.dark .sun-item span,
 body.dark-mode .forecast-day,
-body.dark-mode .detail-item span {
+body.dark .forecast-day,
+body.dark-mode .detail-item span,
+body.dark .detail-item span {
     color: #ffffff;
 }
 
 body.dark-mode .description,
+body.dark .description,
 body.dark-mode .forecast-date,
+body.dark .forecast-date,
 body.dark-mode .forecast-min,
+body.dark .forecast-min,
 body.dark-mode .detail-item p,
+body.dark .detail-item p,
 body.dark-mode .hour-time,
-body.dark-mode .sun-item p {
+body.dark .hour-time,
+body.dark-mode .sun-item p,
+body.dark .sun-item p {
     color: rgba(255, 255, 255, 0.72);
 }
 
 body.dark-mode .detail-item,
+body.dark .detail-item,
 body.dark-mode .hourly-item,
-body.dark-mode .forecast-item {
-    background: linear-gradient(180deg, rgba(var(--theme-accent-rgb), 0.22), rgba(0, 0, 0, 0.3));
-    border-color: rgba(var(--theme-accent-end-rgb), 0.22);
+body.dark .hourly-item,
+body.dark-mode .forecast-item,
+body.dark .forecast-item,
+body.dark-mode .sun-item,
+body.dark .sun-item {
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.14), transparent 42%),
+        rgba(24, 24, 27, 0.58);
+    border-color: rgba(255, 255, 255, 0.08);
 
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.04),
-        0 8px 18px rgba(0, 0, 0, 0.14);
+        0 18px 55px rgba(15, 23, 42, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 body.dark-mode .hourly-item img,
-body.dark-mode .forecast-item img {
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.16), rgba(var(--theme-accent-rgb), 0.2));
+body.dark .hourly-item img,
+body.dark-mode .forecast-item img,
+body.dark .forecast-item img {
+    background: radial-gradient(circle, rgba(var(--theme-accent-rgb), 0.18), rgba(255, 255, 255, 0.05));
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.06),
-        0 4px 12px rgba(0, 0, 0, 0.2);
-    filter: drop-shadow(0 2px 8px rgba(var(--theme-accent-end-rgb), 0.15));
+        inset 0 1px 0 rgba(255, 255, 255, 0.07),
+        0 6px 18px rgba(15, 23, 42, 0.16);
+    filter: drop-shadow(0 3px 10px rgba(var(--theme-accent-rgb), 0.14));
 }
 
 body.dark-mode .detail-item:hover,
+body.dark .detail-item:hover,
 body.dark-mode .hourly-item:hover,
-body.dark-mode .forecast-item:hover {
-    background: linear-gradient(180deg, rgba(var(--theme-accent-rgb), 0.3), rgba(0, 0, 0, 0.34));
-    border-color: rgba(var(--theme-accent-end-rgb), 0.42);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+body.dark .hourly-item:hover,
+body.dark-mode .forecast-item:hover,
+body.dark .forecast-item:hover,
+body.dark-mode .sun-item:hover,
+body.dark .sun-item:hover {
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.18), transparent 42%),
+        rgba(24, 24, 27, 0.66);
+    border-color: rgba(var(--theme-accent-rgb), 0.20);
+    box-shadow:
+        0 20px 60px rgba(15, 23, 42, 0.14),
+        0 0 0 1px rgba(var(--theme-accent-rgb), 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 body.dark-mode .detail-item i,
+body.dark .detail-item i,
 body.dark-mode .hour-rain,
-body.dark-mode .forecast-rain {
+body.dark .hour-rain,
+body.dark-mode .forecast-rain,
+body.dark .forecast-rain {
     color: var(--theme-accent-end);
 }
 
-body.dark-mode .sun-item {
-    background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 190, 61, 0.06));
-    border-color: rgba(255, 190, 61, 0.14);
-}
-
-body.dark-mode .sun-item:hover {
-    border-color: rgba(255, 190, 61, 0.28);
-    box-shadow: 0 10px 24px rgba(255, 190, 61, 0.08);
-}
-
-body.dark-mode .sun-item i {
+body.dark-mode .sun-item i,
+body.dark .sun-item i {
     color: #ffbe3d;
-    filter: drop-shadow(0 2px 8px rgba(255, 190, 61, 0.4));
+    filter: drop-shadow(0 2px 10px rgba(255, 190, 61, 0.38));
 }
 
-body.dark-mode .weather-error {
+body.dark-mode .weather-error,
+body.dark .weather-error {
     background: rgba(239, 68, 68, 0.12);
     border-color: rgba(248, 113, 113, 0.26);
     color: #fecaca;

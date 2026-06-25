@@ -8,10 +8,10 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
-from .access_control import user_can_access_key
-from .models import ChatRoom, DrawingGameInvite, FeatureIdea, FileShare, Friendship, InboxItem, Note, ToolFavorite, ToolFeedback, UserProfile
-from .platform_forms import ToolFeedbackForm
-from .platform_utils import resolve_tools, tool_by_key
+from ..access_control import user_can_access_key
+from ..models import ChatRoom, DrawingGameInvite, FeatureIdea, FileShare, Friendship, InboxItem, Note, ToolFavorite, ToolFeedback, UserProfile
+from ..forms.platform import ToolFeedbackForm
+from ..platform_utils import resolve_tools, tool_by_key
 
 
 @login_required

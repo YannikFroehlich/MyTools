@@ -37,11 +37,11 @@ from django.db.models import Q
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .models import Note, SiteAccessSettings
-from .forms import SignUpForm
-from .platform_utils import resolve_tools
-from .presence_utils import clear_active_game, mark_active_game
-from .voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
+from ..models import Note, SiteAccessSettings
+from ..forms import SignUpForm
+from ..platform_utils import resolve_tools
+from ..presence_utils import clear_active_game, mark_active_game
+from ..voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
 
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -745,7 +745,7 @@ def build_home_inbox_widget_data(user):
 
 
 def build_home_changelog_widget_data():
-    from .community_views import get_changelog_entries
+    from .community import get_changelog_entries
 
     entries = get_changelog_entries()
     latest_entry = entries[0] if entries else None

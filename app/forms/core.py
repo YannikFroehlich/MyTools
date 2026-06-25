@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 import bleach
 from bleach.css_sanitizer import CSSSanitizer
 
-from .models import Friendship, Note
+from ..models import Friendship, Note
 
 
 ALLOWED_TAGS = [
