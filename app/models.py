@@ -604,6 +604,7 @@ class ShortcutSection(models.Model):
         ("purple", _("Lila")),
         ("orange", _("Orange")),
         ("red", _("Rot")),
+        ("theme", _("Design")),
     ]
 
     user = models.ForeignKey(
@@ -1072,6 +1073,7 @@ class HomeWidget(TrashableModel):
         ("purple", _("Lila")),
         ("orange", _("Orange")),
         ("red", _("Rot")),
+        ("theme", _("Design")),
     ]
 
     user = models.ForeignKey(

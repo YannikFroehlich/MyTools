@@ -1951,11 +1951,22 @@ body.dark-mode .shortcut-remove-image-button {
 }
 
 .section-color-blue .section-color-dot {
-    background: var(--theme-accent-start);
-    box-shadow: 0 0 0 5px rgba(var(--theme-accent-rgb), 0.1);
+    background: #2563eb;
+    box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.12);
 }
 
 .section-color-blue {
+    --shortcut-section-rgb: 37, 99, 235;
+    --shortcut-section-start: #2563eb;
+    --shortcut-section-end: #1d4ed8;
+}
+
+.section-color-theme .section-color-dot {
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 0 0 5px rgba(var(--theme-accent-rgb), 0.1);
+}
+
+.section-color-theme {
     --shortcut-section-rgb: var(--theme-accent-rgb);
     --shortcut-section-start: var(--theme-accent-start);
     --shortcut-section-end: var(--theme-accent-end);
@@ -2204,6 +2215,11 @@ body.dark-mode .shortcut-remove-image-button {
     gap: 0.6rem;
 }
 
+.section-color-option {
+    --picker-rgb: var(--theme-accent-rgb);
+    --picker-color: var(--theme-accent-start);
+}
+
 .section-color-option input {
     display: none;
 }
@@ -2235,23 +2251,41 @@ body.dark-mode .shortcut-remove-image-button {
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    background: var(--theme-accent-start);
+    background: var(--picker-color);
 }
 
-.section-color-option.green span::before {
-    background: #22c55e;
+.section-color-option.blue {
+    --picker-rgb: 37, 99, 235;
+    --picker-color: #2563eb;
 }
 
-.section-color-option.purple span::before {
-    background: #8b5cf6;
+.section-color-option.theme {
+    --picker-rgb: var(--theme-accent-rgb);
+    --picker-color: var(--theme-accent-start);
 }
 
-.section-color-option.orange span::before {
-    background: #f97316;
+.section-color-option.theme span::before {
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
 }
 
-.section-color-option.red span::before {
-    background: #ef4444;
+.section-color-option.green {
+    --picker-rgb: 34, 197, 94;
+    --picker-color: #22c55e;
+}
+
+.section-color-option.purple {
+    --picker-rgb: 139, 92, 246;
+    --picker-color: #8b5cf6;
+}
+
+.section-color-option.orange {
+    --picker-rgb: 249, 115, 22;
+    --picker-color: #f97316;
+}
+
+.section-color-option.red {
+    --picker-rgb: 239, 68, 68;
+    --picker-color: #ef4444;
 }
 
 .section-color-option span:hover {
@@ -2260,9 +2294,9 @@ body.dark-mode .shortcut-remove-image-button {
 }
 
 .section-color-option input:checked + span {
-    border-color: rgba(var(--theme-accent-rgb), 0.75);
-    background: rgba(var(--theme-accent-rgb), 0.1);
-    color: var(--theme-accent-start);
+    border-color: rgba(var(--picker-rgb), 0.75);
+    background: rgba(var(--picker-rgb), 0.1);
+    color: var(--picker-color);
 }
 
 /* Dark Mode */
@@ -2339,8 +2373,8 @@ body.dark-mode .section-color-option span:hover {
 }
 
 body.dark-mode .section-color-option input:checked + span {
-    border-color: rgba(var(--theme-accent-end-rgb), 0.8);
-    background: rgba(var(--theme-accent-end-rgb), 0.14);
+    border-color: rgba(var(--picker-rgb), 0.8);
+    background: rgba(var(--picker-rgb), 0.14);
     color: #ffffff;
 }
 
@@ -2688,6 +2722,7 @@ body.dark-mode .shortcuts-grid.drag-over {
 }
 
 .widget-color-blue { --widget-rgb: 26, 86, 214; }
+.widget-color-theme { --widget-rgb: var(--theme-accent-rgb); }
 .widget-color-green { --widget-rgb: 16, 185, 129; }
 .widget-color-purple { --widget-rgb: 124, 58, 237; }
 .widget-color-orange { --widget-rgb: 249, 115, 22; }
@@ -5016,6 +5051,20 @@ body.dark-mode .home-undo-toast-copy span {
     --shortcut-text: var(--theme-accent-text);
 }
 
+.shortcut-card.shortcut-color-blue {
+    --shortcut-rgb: 37, 99, 235;
+    --shortcut-start: #2563eb;
+    --shortcut-end: #1d4ed8;
+    --shortcut-text: #ffffff;
+}
+
+.shortcut-card.shortcut-color-theme {
+    --shortcut-rgb: var(--theme-accent-rgb);
+    --shortcut-start: var(--theme-accent-start);
+    --shortcut-end: var(--theme-accent-end);
+    --shortcut-text: var(--theme-accent-text);
+}
+
 .shortcut-card.shortcut-color-green {
     --shortcut-rgb: 34, 197, 94;
     --shortcut-start: #22c55e;
@@ -5132,3 +5181,190 @@ body.dark-mode .shortcut-card .shortcut-card-actions .edit-shortcut-button:hover
     color: #ffffff !important;
 }
 
+
+
+/* ───────────────── SOFT GLASS TRANSLUCENT ACTION BUTTONS ───────────────── */
+body.theme-lunora-mode :is(.search-button, .add-shortcut-button, .add-widget-button) {
+    border: 1px solid rgba(156, 119, 77, 0.18);
+    border-radius: 999px;
+    color: #6d5233;
+    background:
+        linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.24), rgba(255, 255, 255, 0.36)),
+        rgba(255, 255, 255, 0.26);
+    box-shadow:
+        0 12px 28px rgba(91, 64, 35, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(18px) saturate(1.12);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
+}
+
+body.theme-lunora-mode :is(.search-button, .add-shortcut-button, .add-widget-button) i {
+    color: currentColor;
+}
+
+body.theme-lunora-mode .search-button {
+    color: #fffaf2;
+    background:
+        linear-gradient(135deg, rgba(191, 147, 91, 0.66), rgba(222, 185, 126, 0.52)),
+        rgba(255, 255, 255, 0.2);
+}
+
+body.theme-lunora-mode :is(.search-button, .add-shortcut-button, .add-widget-button):hover,
+body.theme-lunora-mode :is(.search-button, .add-shortcut-button, .add-widget-button):focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(156, 119, 77, 0.28);
+    background:
+        linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.30), rgba(255, 255, 255, 0.44)),
+        rgba(255, 255, 255, 0.30);
+    box-shadow:
+        0 16px 34px rgba(91, 64, 35, 0.18),
+        0 0 0 3px rgba(183, 138, 85, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+body.theme-lunora-mode .search-button:hover,
+body.theme-lunora-mode .search-button:focus-visible {
+    color: #fffdf8;
+    background:
+        linear-gradient(135deg, rgba(184, 137, 78, 0.72), rgba(218, 176, 113, 0.58)),
+        rgba(255, 255, 255, 0.22);
+    filter: none;
+}
+
+body.theme-lunora-mode :is(.search-button, .add-shortcut-button, .add-widget-button):active {
+    transform: scale(0.98);
+}
+
+body.dark-mode.theme-lunora-mode :is(.search-button, .add-shortcut-button, .add-widget-button) {
+    border-color: rgba(231, 200, 148, 0.16);
+    color: #f4ddbd;
+    background:
+        linear-gradient(135deg, rgba(183, 138, 85, 0.22), rgba(255, 255, 255, 0.08)),
+        rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .search-button {
+    color: #fff6ea;
+    background:
+        linear-gradient(135deg, rgba(183, 138, 85, 0.34), rgba(231, 200, 148, 0.18)),
+        rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode.theme-lunora-mode :is(.search-button, .add-shortcut-button, .add-widget-button):hover,
+body.dark-mode.theme-lunora-mode :is(.search-button, .add-shortcut-button, .add-widget-button):focus-visible {
+    border-color: rgba(231, 200, 148, 0.24);
+    background:
+        linear-gradient(135deg, rgba(183, 138, 85, 0.28), rgba(255, 255, 255, 0.12)),
+        rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 18px 36px rgba(0, 0, 0, 0.28),
+        0 0 0 3px rgba(231, 200, 148, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+body.dark-mode.theme-lunora-mode .search-button:hover,
+body.dark-mode.theme-lunora-mode .search-button:focus-visible {
+    background:
+        linear-gradient(135deg, rgba(191, 150, 96, 0.42), rgba(231, 200, 148, 0.22)),
+        rgba(255, 255, 255, 0.08);
+}
+
+
+/* ───────────────── LUNORA THEME ROUNDER SHORTCUT TILES ───────────────── */
+body.theme-lunora-mode .shortcut-card {
+    border-radius: 28px;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(248, 242, 233, 0.88));
+    box-shadow:
+        0 16px 34px rgba(91, 64, 35, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+body.theme-lunora-mode .shortcut-card:hover,
+body.theme-lunora-mode .shortcut-card:focus-within {
+    box-shadow:
+        0 20px 42px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+body.theme-lunora-mode :is(.shortcut-icon, .shortcut-image-icon) {
+    border-radius: 22px;
+}
+
+body.theme-lunora-mode .shortcut-image-icon img {
+    border-radius: 18px;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-card {
+    background:
+        linear-gradient(145deg, rgba(48, 36, 26, 0.92), rgba(35, 26, 18, 0.9));
+    box-shadow:
+        0 18px 38px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-card:hover,
+body.dark-mode.theme-lunora-mode .shortcut-card:focus-within {
+    box-shadow:
+        0 22px 46px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.theme-lunora-mode .home-widget.widget-color-theme {
+    border-color: rgba(var(--widget-rgb), 0.28);
+    background:
+        radial-gradient(circle at 92% 0%, rgba(var(--widget-rgb), 0.16), transparent 38%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.95), rgba(248, 242, 233, 0.88));
+    box-shadow:
+        0 18px 40px rgba(91, 64, 35, 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.84);
+}
+
+body.dark-mode.theme-lunora-mode .home-widget.widget-color-theme {
+    border-color: rgba(var(--widget-rgb), 0.30);
+    background:
+        radial-gradient(circle at 92% 0%, rgba(var(--widget-rgb), 0.18), transparent 40%),
+        linear-gradient(145deg, rgba(43, 32, 23, 0.94), rgba(23, 17, 13, 0.92));
+    box-shadow:
+        0 20px 48px rgba(0, 0, 0, 0.28),
+        0 0 0 1px rgba(var(--widget-rgb), 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode.theme-lunora-mode .home-widget.widget-color-theme::before {
+    background:
+        radial-gradient(circle at top right, rgba(var(--widget-rgb), 0.20), transparent 40%),
+        linear-gradient(135deg, rgba(var(--widget-rgb), 0.10), transparent 52%);
+}
+
+body.dark-mode.theme-lunora-mode .home-widget.widget-color-theme :is(
+    .benchmark-row,
+    .stats-grid div,
+    .weather-mini-stats span,
+    .widget-empty-state.compact,
+    .widget-list a,
+    .widget-soft-pill,
+    .widget-progress,
+    .widget-feature-note
+) {
+    background:
+        radial-gradient(circle at 92% 8%, rgba(var(--widget-rgb), 0.16), transparent 34%),
+        rgba(var(--widget-rgb), 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .home-widget.widget-color-theme .clock-design-minimal {
+    border-color: rgba(var(--widget-rgb), 0.28);
+    background:
+        radial-gradient(circle at 92% 8%, rgba(var(--widget-rgb), 0.18), transparent 34%),
+        linear-gradient(145deg, rgba(52, 40, 30, 0.86), rgba(28, 21, 16, 0.74));
+}
+
+body.dark-mode.theme-lunora-mode .home-widget.widget-color-theme .clock-analog {
+    border-color: rgba(var(--widget-rgb), 0.34);
+    background:
+        radial-gradient(circle at top left, rgba(255, 230, 194, 0.12), transparent 45%),
+        rgba(var(--widget-rgb), 0.10);
+}

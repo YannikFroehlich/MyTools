@@ -4510,7 +4510,6 @@ nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"]
         inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
-nav#site-header .navigation > a.active::after,
 nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"]::after {
     position: absolute;
     right: 13px;
@@ -5024,4 +5023,782 @@ body.dark-mode nav#site-header {
         padding-inline: 10px;
         border-radius: 24px 24px 0 0;
     }
+}
+
+/* ── Lunora Theme apply button ── */
+.theme-editor-panel .theme-remaster-button {
+    width: 100% !important;
+    min-height: 50px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    margin: 10px 0 0 !important;
+    padding: 0 16px !important;
+    border: 1px solid rgba(226, 186, 123, 0.38) !important;
+    border-radius: 18px !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    background: linear-gradient(135deg, #c79658, #e2ba7b) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 12px 24px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+    cursor: pointer !important;
+    font: inherit !important;
+    font-size: 0.92rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    transition:
+        transform 0.16s ease,
+        border-color 0.16s ease,
+        background 0.16s ease,
+        box-shadow 0.16s ease !important;
+}
+
+.theme-editor-panel .theme-remaster-button:hover,
+.theme-editor-panel .theme-remaster-button:focus-visible {
+    transform: translateY(-1px) !important;
+    border-color: rgba(226, 186, 123, 0.68) !important;
+    background: linear-gradient(135deg, #d5a466, #ebc986) !important;
+    box-shadow:
+        0 15px 28px rgba(0, 0, 0, 0.24),
+        0 0 0 3px rgba(226, 186, 123, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.36) !important;
+    outline: none !important;
+}
+
+.theme-editor-panel .theme-remaster-button:active {
+    transform: translateY(0) scale(0.99) !important;
+}
+
+.theme-editor-panel .theme-remaster-button.is-active {
+    border-color: rgba(226, 186, 123, 0.78) !important;
+    background: linear-gradient(135deg, #b98445, #d9ae6c) !important;
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.20),
+        0 0 0 3px rgba(226, 186, 123, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+}
+
+.theme-editor-panel .theme-remaster-icon,
+.theme-editor-panel .theme-remaster-label,
+.theme-editor-panel .theme-remaster-action,
+.theme-editor-panel .theme-remaster-arrow {
+    color: currentColor !important;
+}
+
+.theme-editor-panel .theme-remaster-icon {
+    width: auto !important;
+    height: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 1rem !important;
+}
+
+.theme-editor-panel .theme-remaster-label,
+.theme-editor-panel .theme-remaster-action {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    white-space: nowrap !important;
+}
+
+.theme-editor-panel .theme-remaster-arrow {
+    transition: transform 0.16s ease !important;
+}
+
+.theme-editor-panel .theme-remaster-button:hover .theme-remaster-arrow,
+.theme-editor-panel .theme-remaster-button:focus-visible .theme-remaster-arrow {
+    transform: translateX(2px) !important;
+}
+
+body:not(.dark-mode) .theme-editor-panel .theme-remaster-button {
+    border-color: rgba(154, 106, 52, 0.28) !important;
+    background: linear-gradient(135deg, #c79658, #e2ba7b) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 12px 24px rgba(107, 78, 43, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
+body:not(.dark-mode) .theme-editor-panel .theme-remaster-button:hover,
+body:not(.dark-mode) .theme-editor-panel .theme-remaster-button:focus-visible {
+    background: linear-gradient(135deg, #d2a061, #ebc986) !important;
+    box-shadow:
+        0 15px 28px rgba(107, 78, 43, 0.20),
+        0 0 0 3px rgba(183, 138, 85, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+}
+
+@media (max-width: 420px) {
+    .theme-editor-panel .theme-remaster-button {
+        min-height: 48px !important;
+        padding: 0 13px !important;
+        font-size: 0.86rem !important;
+    }
+}
+
+
+
+/* ── Lunora Theme liquid button polish ───────────────────────────── */
+body.theme-lunora-mode {
+    --lunora-theme-ink: #493929;
+    --lunora-theme-muted: #8a7358;
+    --lunora-theme-border: rgba(156, 119, 77, 0.20);
+    --lunora-theme-panel: rgba(255, 250, 244, 0.72);
+    --lunora-theme-panel-strong: rgba(255, 250, 244, 0.88);
+    --lunora-theme-shadow: rgba(91, 64, 35, 0.14);
+    --lunora-theme-pill-radius: 18px;
+    --lunora-theme-pill-radius-large: 22px;
+    --lunora-theme-pill-shadow:
+        0 10px 24px rgba(91, 64, 35, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.84);
+    --lunora-theme-pill-bg: rgba(255, 255, 255, 0.54);
+    --lunora-theme-pill-bg-strong: rgba(255, 255, 255, 0.72);
+}
+
+body.dark-mode.theme-lunora-mode {
+    --lunora-theme-ink: #fff0dd;
+    --lunora-theme-muted: #d2b58d;
+    --lunora-theme-border: rgba(231, 200, 148, 0.18);
+    --lunora-theme-panel: rgba(39, 29, 21, 0.74);
+    --lunora-theme-panel-strong: rgba(43, 32, 23, 0.90);
+    --lunora-theme-shadow: rgba(0, 0, 0, 0.38);
+    --theme-page-bg: #19100a;
+    background-color: #19100a;
+    background-image:
+        linear-gradient(180deg, #21140c 0%, #19100a 48%, #100905 100%);
+    --lunora-theme-pill-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --lunora-theme-pill-bg: rgba(255, 255, 255, 0.08);
+    --lunora-theme-pill-bg-strong: rgba(255, 255, 255, 0.12);
+}
+
+body.theme-lunora-mode.theme-pattern-mode {
+    background-color: var(--theme-page-bg);
+    background-image:
+        radial-gradient(circle at 14% 18%, rgba(var(--theme-accent-rgb), .20), transparent clamp(210px, 32vw, 460px)),
+        radial-gradient(circle at 92% 10%, rgba(var(--theme-accent-end-rgb), .18), transparent clamp(220px, 34vw, 500px)),
+        radial-gradient(circle at 76% 92%, rgba(var(--theme-accent-rgb), .14), transparent clamp(200px, 30vw, 420px)),
+        linear-gradient(115deg, transparent 0 47%, rgba(var(--theme-accent-end-rgb), .07) 47% 50%, transparent 50% 100%),
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-page-bg) 88%, #ffffff), var(--theme-page-bg));
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
+    background-size: cover, cover, cover, 56px 56px, cover;
+}
+
+body.dark-mode.theme-lunora-mode.theme-pattern-mode {
+    background-color: var(--theme-page-bg);
+    background-image:
+        radial-gradient(circle at 14% 18%, rgba(var(--theme-accent-rgb), .26), transparent clamp(210px, 32vw, 460px)),
+        radial-gradient(circle at 92% 10%, rgba(var(--theme-accent-end-rgb), .22), transparent clamp(220px, 34vw, 500px)),
+        radial-gradient(circle at 76% 92%, rgba(var(--theme-accent-rgb), .18), transparent clamp(200px, 30vw, 420px)),
+        linear-gradient(115deg, transparent 0 47%, rgba(255, 255, 255, .035) 47% 50%, transparent 50% 100%),
+        linear-gradient(135deg, color-mix(in srgb, var(--theme-page-bg) 86%, #000000), var(--theme-page-bg));
+}
+
+body.theme-lunora-mode nav#site-header .navigation,
+body.theme-lunora-mode nav#site-header .navigation > a,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button {
+    border-radius: var(--lunora-theme-pill-radius-large);
+}
+
+body.theme-lunora-mode nav#site-header .navigation > a,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button,
+body.theme-lunora-mode nav#site-header .user-actions select,
+body.theme-lunora-mode nav#site-header .user-actions .global-search-trigger,
+body.theme-lunora-mode nav#site-header .theme-editor-btn,
+body.theme-lunora-mode nav#site-header .pwa-install-btn,
+body.theme-lunora-mode nav#site-header .dark-mode-btn,
+body.theme-lunora-mode nav#site-header .notification-center-button,
+body.theme-lunora-mode nav#site-header .profile-menu-button,
+body.theme-lunora-mode .theme-toggle-option,
+body.theme-lunora-mode .theme-editor-actions button,
+body.theme-lunora-mode .theme-remaster-button {
+    border-radius: var(--lunora-theme-pill-radius-large);
+}
+
+body.theme-lunora-mode nav#site-header .navigation > a,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button,
+body.theme-lunora-mode nav#site-header .user-actions select,
+body.theme-lunora-mode nav#site-header .user-actions .global-search-trigger,
+body.theme-lunora-mode nav#site-header .theme-editor-btn,
+body.theme-lunora-mode nav#site-header .pwa-install-btn,
+body.theme-lunora-mode nav#site-header .dark-mode-btn,
+body.theme-lunora-mode nav#site-header .notification-center-button,
+body.theme-lunora-mode nav#site-header .profile-menu-button {
+    backdrop-filter: blur(16px) saturate(1.12);
+    -webkit-backdrop-filter: blur(16px) saturate(1.12);
+}
+
+body.theme-lunora-mode nav#site-header .navigation > a:hover,
+body.theme-lunora-mode nav#site-header .navigation > a.active,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button:hover,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"],
+body.theme-lunora-mode nav#site-header .user-actions select:hover,
+body.theme-lunora-mode nav#site-header .user-actions .global-search-trigger:hover,
+body.theme-lunora-mode nav#site-header .theme-editor-btn:hover,
+body.theme-lunora-mode nav#site-header .pwa-install-btn:hover,
+body.theme-lunora-mode nav#site-header .dark-mode-btn:hover,
+body.theme-lunora-mode nav#site-header .notification-center-button:hover,
+body.theme-lunora-mode nav#site-header .notification-center-button.active,
+body.theme-lunora-mode nav#site-header .profile-menu-button:hover {
+    border-radius: var(--lunora-theme-pill-radius-large);
+    background: var(--lunora-theme-pill-bg-strong);
+    box-shadow: var(--lunora-theme-pill-shadow);
+}
+
+body.theme-lunora-mode nav#site-header .navigation > a > i,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button > i:first-child,
+body.theme-lunora-mode nav#site-header .logo-mark {
+    border-radius: 12px;
+}
+
+body.theme-lunora-mode .theme-editor-panel .theme-remaster-button,
+body.theme-lunora-mode .theme-toggle-option,
+body.theme-lunora-mode .theme-editor-actions button {
+    min-height: 46px;
+    box-shadow: var(--lunora-theme-pill-shadow);
+}
+
+body.theme-lunora-mode .theme-toggle-option,
+body.theme-lunora-mode .theme-editor-actions button.theme-secondary-action {
+    border-color: var(--lunora-theme-border);
+    background: var(--lunora-theme-pill-bg);
+    backdrop-filter: blur(18px) saturate(1.12);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
+}
+
+body.theme-lunora-mode .theme-toggle-option:hover,
+body.theme-lunora-mode .theme-editor-actions button:hover {
+    transform: translateY(-1px);
+}
+
+body.dark-mode.theme-lunora-mode .theme-toggle-option,
+body.dark-mode.theme-lunora-mode .theme-editor-actions button.theme-secondary-action {
+    color: #f6e7cf;
+}
+
+
+/* ── Lunora Theme hover/active contrast fix ─────────────────────── */
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a.active,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"],
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .user-actions select:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .user-actions .global-search-trigger:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .theme-editor-btn:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .pwa-install-btn:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .dark-mode-btn:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .notification-center-button:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .notification-center-button.active,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .profile-menu-button:hover {
+    color: #3f2f1f;
+    border-color: rgba(139, 98, 50, 0.30);
+    background:
+        linear-gradient(180deg, rgba(213, 170, 111, 0.46), rgba(183, 138, 85, 0.30)),
+        rgba(255, 255, 255, 0.28);
+    box-shadow:
+        0 12px 26px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.62),
+        inset 0 -1px 0 rgba(139, 98, 50, 0.10);
+}
+
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a:hover > i,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a.active > i,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button:hover > i:first-child,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"] > i:first-child,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .logo:hover .logo-mark,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .logo:focus-visible .logo-mark {
+    color: #4a351f;
+    border-color: rgba(139, 98, 50, 0.22);
+    background: rgba(255, 248, 238, 0.58);
+}
+
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"]::after {
+    background: #7b5a32;
+    box-shadow: 0 0 10px rgba(123, 90, 50, 0.30);
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-toggle-option:hover,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-actions button:hover,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:hover,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:focus-visible {
+    color: #3f2f1f !important;
+    border-color: rgba(139, 98, 50, 0.30) !important;
+    background:
+        linear-gradient(180deg, rgba(213, 170, 111, 0.46), rgba(183, 138, 85, 0.30)),
+        rgba(255, 255, 255, 0.28) !important;
+    box-shadow:
+        0 12px 26px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-toggle-option:hover i,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-actions button:hover i,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:hover i,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:focus-visible i {
+    color: #4a351f !important;
+}
+
+
+/* ── Beta badge for the Lunora Theme theme switch ────────────────── */
+body.theme-lunora-mode:not(.dark-mode) .theme-toggle-option.is-active {
+    color: #4a351f !important;
+    border-color: rgba(139, 98, 50, 0.34) !important;
+    background:
+        linear-gradient(180deg, rgba(230, 196, 142, 0.70), rgba(191, 143, 86, 0.48)),
+        rgba(255, 255, 255, 0.36) !important;
+    box-shadow:
+        0 12px 26px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.68),
+        inset 0 -1px 0 rgba(139, 98, 50, 0.14) !important;
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-toggle-option.is-active i {
+    color: #4a351f !important;
+}
+
+body.dark-mode.theme-lunora-mode .theme-toggle-option.is-active {
+    color: #f2ddbd !important;
+    border-color: rgba(231, 200, 148, 0.28) !important;
+    background:
+        linear-gradient(180deg, rgba(196, 151, 88, 0.44), rgba(140, 95, 51, 0.28)),
+        rgba(255, 255, 255, 0.09) !important;
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode.theme-lunora-mode .theme-toggle-option.is-active i {
+    color: #f2ddbd !important;
+}
+
+.theme-editor-panel .theme-remaster-beta-badge {
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 17px !important;
+    padding: 2px 6px !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+    border-radius: 999px !important;
+    color: #92400e !important;
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.96), rgba(253, 230, 138, 0.92)) !important;
+    box-shadow: 0 5px 12px rgba(245, 158, 11, 0.14) !important;
+    font-size: 0.62rem !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.05em !important;
+    line-height: 1 !important;
+    text-transform: uppercase !important;
+}
+
+body.dark-mode .theme-editor-panel .theme-remaster-beta-badge {
+    color: #fef3c7 !important;
+    background: linear-gradient(135deg, rgba(180, 83, 9, 0.52), rgba(245, 158, 11, 0.24)) !important;
+    border-color: rgba(251, 191, 36, 0.34) !important;
+    box-shadow: 0 6px 14px rgba(245, 158, 11, 0.16) !important;
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:hover .theme-remaster-beta-badge,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:focus-visible .theme-remaster-beta-badge {
+    color: #7c2d12 !important;
+    background: linear-gradient(135deg, rgba(255, 237, 213, 0.98), rgba(253, 186, 116, 0.82)) !important;
+    border-color: rgba(234, 88, 12, 0.38) !important;
+}
+
+/* Match the Lunora switch to the option pills instead of the old banner style. */
+.theme-editor-panel .theme-remaster-button {
+    min-height: 46px !important;
+    gap: 9px !important;
+    padding: 0 15px !important;
+    border-color: rgba(148, 163, 184, 0.22) !important;
+    border-radius: 22px !important;
+    color: var(--theme-text) !important;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+        rgba(148, 163, 184, 0.10) !important;
+    box-shadow:
+        0 10px 24px rgba(15, 23, 42, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+    backdrop-filter: blur(18px) saturate(1.12);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
+}
+
+.theme-editor-panel .theme-remaster-button:hover,
+.theme-editor-panel .theme-remaster-button:focus-visible {
+    color: var(--theme-text) !important;
+    border-color: rgba(var(--theme-accent-rgb), 0.28) !important;
+    background:
+        linear-gradient(180deg, rgba(var(--theme-accent-rgb), 0.14), rgba(var(--theme-accent-end-rgb), 0.08)),
+        rgba(148, 163, 184, 0.12) !important;
+    box-shadow:
+        0 12px 26px rgba(15, 23, 42, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.30) !important;
+}
+
+body.dark-mode .theme-editor-panel .theme-remaster-button {
+    color: #e5e7eb !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
+        rgba(148, 163, 184, 0.10) !important;
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .theme-editor-panel .theme-remaster-button:hover,
+body.dark-mode .theme-editor-panel .theme-remaster-button:focus-visible {
+    color: #ffffff !important;
+    border-color: rgba(var(--theme-accent-end-rgb), 0.28) !important;
+    background:
+        linear-gradient(180deg, rgba(var(--theme-accent-rgb), 0.20), rgba(var(--theme-accent-end-rgb), 0.10)),
+        rgba(148, 163, 184, 0.12) !important;
+    box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+.theme-editor-panel .theme-remaster-button.is-active {
+    color: #fff !important;
+    border-color: transparent !important;
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end)) !important;
+    box-shadow:
+        0 12px 26px rgba(var(--theme-accent-rgb), 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button {
+    color: #493929 !important;
+    border-color: var(--lunora-theme-border) !important;
+    background: var(--lunora-theme-pill-bg) !important;
+    box-shadow: var(--lunora-theme-pill-shadow) !important;
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button.is-active {
+    color: #4a351f !important;
+    border-color: rgba(139, 98, 50, 0.34) !important;
+    background:
+        linear-gradient(180deg, rgba(230, 196, 142, 0.70), rgba(191, 143, 86, 0.48)),
+        rgba(255, 255, 255, 0.36) !important;
+    box-shadow:
+        0 12px 26px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.68),
+        inset 0 -1px 0 rgba(139, 98, 50, 0.14) !important;
+}
+
+body.dark-mode.theme-lunora-mode .theme-editor-panel .theme-remaster-button {
+    color: #f6e7cf !important;
+    border-color: var(--lunora-theme-border) !important;
+    background: var(--lunora-theme-pill-bg) !important;
+    box-shadow: var(--lunora-theme-pill-shadow) !important;
+}
+
+body.dark-mode.theme-lunora-mode .theme-editor-panel .theme-remaster-button:hover,
+body.dark-mode.theme-lunora-mode .theme-editor-panel .theme-remaster-button:focus-visible {
+    color: #f2ddbd !important;
+    border-color: rgba(231, 200, 148, 0.28) !important;
+    background:
+        linear-gradient(180deg, rgba(196, 151, 88, 0.36), rgba(140, 95, 51, 0.22)),
+        rgba(255, 255, 255, 0.09) !important;
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode.theme-lunora-mode .theme-editor-panel .theme-remaster-button.is-active {
+    color: #f2ddbd !important;
+    border-color: rgba(231, 200, 148, 0.28) !important;
+    background:
+        linear-gradient(180deg, rgba(196, 151, 88, 0.44), rgba(140, 95, 51, 0.28)),
+        rgba(255, 255, 255, 0.09) !important;
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+
+/* ── Lunora Theme softer library cards ──────────────────────────── */
+body.theme-lunora-mode :is(.menu-dropdown.games-menu-panel, .menu-dropdown.google-library-panel, .menu-dropdown.tools-library-panel) {
+    color: var(--lunora-theme-ink);
+    border-color: var(--lunora-theme-border);
+    background:
+        radial-gradient(circle at 92% 0%, rgba(214, 173, 115, 0.24), transparent 38%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.94), rgba(248, 239, 227, 0.90));
+    box-shadow:
+        0 24px 70px rgba(91, 64, 35, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+    scrollbar-color: rgba(183, 138, 85, 0.72) rgba(156, 119, 77, 0.12);
+}
+
+body.theme-lunora-mode :is(.menu-dropdown.games-menu-panel, .menu-dropdown.google-library-panel, .menu-dropdown.tools-library-panel)::-webkit-scrollbar-track {
+    background: rgba(156, 119, 77, 0.12);
+}
+
+body.theme-lunora-mode :is(.menu-dropdown.games-menu-panel, .menu-dropdown.google-library-panel, .menu-dropdown.tools-library-panel)::-webkit-scrollbar-thumb {
+    background:
+        linear-gradient(180deg, #d6ad73, #9b6b38) padding-box;
+    box-shadow: 0 6px 16px rgba(91, 64, 35, 0.18);
+}
+
+body.theme-lunora-mode :is(.games-menu-title strong, .game-menu-card:hover, .game-menu-card:focus-visible) {
+    color: #493929;
+}
+
+body.theme-lunora-mode :is(.games-menu-kicker, .games-menu-section-title, .games-menu-search i, .games-menu-empty) {
+    color: var(--lunora-theme-muted);
+}
+
+body.theme-lunora-mode .games-menu-section-title i {
+    color: #b78a55;
+}
+
+body.theme-lunora-mode .games-menu-leaderboard-link {
+    color: #6d5233;
+    border-color: rgba(156, 119, 77, 0.24);
+    background:
+        linear-gradient(180deg, rgba(230, 196, 142, 0.34), rgba(183, 138, 85, 0.16)),
+        rgba(255, 255, 255, 0.38);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.54);
+}
+
+body.theme-lunora-mode .games-menu-leaderboard-link:hover,
+body.theme-lunora-mode .games-menu-leaderboard-link:focus-visible {
+    color: #4a351f;
+    border-color: rgba(139, 98, 50, 0.34);
+    background:
+        linear-gradient(180deg, rgba(230, 196, 142, 0.48), rgba(183, 138, 85, 0.24)),
+        rgba(255, 255, 255, 0.50);
+}
+
+body.theme-lunora-mode .games-menu-search input {
+    color: #493929;
+    border-color: rgba(156, 119, 77, 0.24);
+    background: rgba(255, 250, 244, 0.64);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
+}
+
+body.theme-lunora-mode .games-menu-search input::placeholder {
+    color: rgba(101, 74, 43, 0.62);
+}
+
+body.theme-lunora-mode .games-menu-search input:focus {
+    border-color: rgba(183, 138, 85, 0.58);
+    background: rgba(255, 250, 244, 0.90);
+    box-shadow:
+        0 0 0 3px rgba(183, 138, 85, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+body.theme-lunora-mode .games-menu-empty {
+    border-color: rgba(156, 119, 77, 0.24);
+    background: rgba(255, 250, 244, 0.42);
+}
+
+body.dark-mode.theme-lunora-mode :is(.menu-dropdown.games-menu-panel, .menu-dropdown.google-library-panel, .menu-dropdown.tools-library-panel) {
+    color: var(--lunora-theme-ink);
+    border-color: var(--lunora-theme-border);
+    background:
+        radial-gradient(circle at 88% 0%, rgba(183, 138, 85, 0.18), transparent 40%),
+        linear-gradient(145deg, rgba(43, 32, 23, 0.96), rgba(18, 13, 9, 0.94));
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.46),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    scrollbar-color: rgba(214, 173, 115, 0.62) rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode :is(.menu-dropdown.games-menu-panel, .menu-dropdown.google-library-panel, .menu-dropdown.tools-library-panel)::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode :is(.menu-dropdown.games-menu-panel, .menu-dropdown.google-library-panel, .menu-dropdown.tools-library-panel)::-webkit-scrollbar-thumb {
+    background:
+        linear-gradient(180deg, #d6ad73, #8c5f33) padding-box;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
+}
+
+body.dark-mode.theme-lunora-mode :is(.games-menu-title strong, .game-menu-card:hover, .game-menu-card:focus-visible) {
+    color: #fff0dd;
+}
+
+body.dark-mode.theme-lunora-mode :is(.games-menu-kicker, .games-menu-section-title, .games-menu-search i, .games-menu-empty) {
+    color: #d2b58d;
+}
+
+body.dark-mode.theme-lunora-mode .games-menu-section-title i {
+    color: #e7c894;
+}
+
+body.dark-mode.theme-lunora-mode .games-menu-leaderboard-link {
+    color: #f2ddbd;
+    border-color: rgba(231, 200, 148, 0.20);
+    background:
+        linear-gradient(180deg, rgba(196, 151, 88, 0.34), rgba(120, 86, 51, 0.20)),
+        rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+body.dark-mode.theme-lunora-mode .games-menu-leaderboard-link:hover,
+body.dark-mode.theme-lunora-mode .games-menu-leaderboard-link:focus-visible {
+    color: #fff6e8;
+    border-color: rgba(231, 200, 148, 0.32);
+    background:
+        linear-gradient(180deg, rgba(196, 151, 88, 0.46), rgba(120, 86, 51, 0.28)),
+        rgba(255, 255, 255, 0.10);
+}
+
+body.dark-mode.theme-lunora-mode .games-menu-search input {
+    color: #fff0dd;
+    border-color: rgba(231, 200, 148, 0.18);
+    background: rgba(29, 21, 15, 0.72);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode.theme-lunora-mode .games-menu-search input::placeholder {
+    color: rgba(242, 221, 189, 0.58);
+}
+
+body.dark-mode.theme-lunora-mode .games-menu-search input:focus {
+    border-color: rgba(231, 200, 148, 0.42);
+    background: rgba(39, 29, 21, 0.88);
+    box-shadow:
+        0 0 0 3px rgba(231, 200, 148, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .games-menu-empty {
+    border-color: rgba(231, 200, 148, 0.16);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+body.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme]) {
+    border-radius: 22px;
+    border-color: rgba(156, 119, 77, 0.18);
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(248, 242, 233, 0.88));
+    box-shadow:
+        0 14px 30px rgba(91, 64, 35, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+body.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme])::before {
+    height: 2px;
+    background: linear-gradient(90deg, rgba(183, 138, 85, 0.88), rgba(231, 200, 148, 0.82));
+    opacity: 0.62;
+    box-shadow: 0 -4px 10px rgba(91, 64, 35, 0.12);
+}
+
+body.theme-lunora-mode #games-menu-dropdown .game-menu-card::after,
+body.theme-lunora-mode #menu-dropdown [data-tool-theme]::after,
+body.theme-lunora-mode #google-apps-menu-dropdown [data-google-theme]::after {
+    color: rgba(101, 74, 43, 0.92);
+    opacity: 0.12;
+}
+
+body.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme]):hover,
+body.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme]):focus-visible {
+    border-color: rgba(156, 119, 77, 0.28);
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(251, 246, 239, 0.92));
+    box-shadow:
+        0 18px 38px rgba(91, 64, 35, 0.14),
+        0 0 0 3px rgba(183, 138, 85, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+body.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme]) .game-menu-icon {
+    border-radius: 18px;
+    border-color: rgba(255, 255, 255, 0.42);
+    background: linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.78), rgba(var(--theme-accent-rgb), 0.58));
+    box-shadow:
+        0 12px 24px rgba(91, 64, 35, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+body.theme-lunora-mode #games-menu-dropdown .game-menu-card .game-menu-copy small,
+body.theme-lunora-mode #menu-dropdown [data-tool-theme] .game-menu-copy small,
+body.theme-lunora-mode #google-apps-menu-dropdown [data-google-theme] .game-menu-copy small {
+    color: #8a7358;
+}
+
+body.theme-lunora-mode #games-menu-dropdown .game-menu-card:hover .game-menu-icon,
+body.theme-lunora-mode #games-menu-dropdown .game-menu-card:focus-visible .game-menu-icon,
+body.theme-lunora-mode #menu-dropdown [data-tool-theme]:hover .game-menu-icon,
+body.theme-lunora-mode #menu-dropdown [data-tool-theme]:focus-visible .game-menu-icon,
+body.theme-lunora-mode #google-apps-menu-dropdown [data-google-theme]:hover .game-menu-icon,
+body.theme-lunora-mode #google-apps-menu-dropdown [data-google-theme]:focus-visible .game-menu-icon {
+    box-shadow:
+        0 16px 28px rgba(91, 64, 35, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.30);
+    transform: translateY(-1px) scale(1.03);
+}
+
+body.dark-mode.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme]) {
+    border-color: rgba(231, 200, 148, 0.14);
+    background:
+        linear-gradient(145deg, rgba(43, 32, 23, 0.92), rgba(31, 23, 17, 0.90));
+    box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme])::before {
+    background: linear-gradient(90deg, rgba(183, 138, 85, 0.72), rgba(231, 200, 148, 0.56));
+    opacity: 0.52;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.18);
+}
+
+body.dark-mode.theme-lunora-mode #games-menu-dropdown .game-menu-card::after,
+body.dark-mode.theme-lunora-mode #menu-dropdown [data-tool-theme]::after,
+body.dark-mode.theme-lunora-mode #google-apps-menu-dropdown [data-google-theme]::after {
+    color: #f0dcc0;
+    opacity: 0.10;
+}
+
+body.dark-mode.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme]):hover,
+body.dark-mode.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme]):focus-visible {
+    border-color: rgba(231, 200, 148, 0.22);
+    background:
+        linear-gradient(145deg, rgba(49, 37, 27, 0.96), rgba(36, 27, 19, 0.94));
+    box-shadow:
+        0 22px 40px rgba(0, 0, 0, 0.28),
+        0 0 0 3px rgba(231, 200, 148, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode.theme-lunora-mode :is(#games-menu-dropdown .game-menu-card, #menu-dropdown [data-tool-theme], #google-apps-menu-dropdown [data-google-theme]) .game-menu-icon {
+    border-radius: 18px;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: linear-gradient(145deg, rgba(183, 138, 85, 0.40), rgba(120, 86, 51, 0.68));
+    box-shadow:
+        0 14px 24px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode #games-menu-dropdown .game-menu-card .game-menu-copy small,
+body.dark-mode.theme-lunora-mode #menu-dropdown [data-tool-theme] .game-menu-copy small,
+body.dark-mode.theme-lunora-mode #google-apps-menu-dropdown [data-google-theme] .game-menu-copy small {
+    color: #d2b58d;
 }
