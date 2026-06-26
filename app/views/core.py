@@ -1173,6 +1173,10 @@ def home(request):
         if action == "add_section":
             section_name = request.POST.get("section_name", "").strip()
             section_color = request.POST.get("section_color", "blue").strip()
+            valid_section_colors = {choice[0] for choice in ShortcutSection.COLOR_CHOICES}
+
+            if section_color not in valid_section_colors:
+                section_color = "blue"
 
             if section_name:
                 layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
@@ -1192,6 +1196,10 @@ def home(request):
             section_id = request.POST.get("section_id")
             section_name = request.POST.get("section_name", "").strip()
             section_color = request.POST.get("section_color", "blue").strip()
+            valid_section_colors = {choice[0] for choice in ShortcutSection.COLOR_CHOICES}
+
+            if section_color not in valid_section_colors:
+                section_color = "blue"
 
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
 

@@ -6,7 +6,7 @@
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260626-lunora-theme-rounder-shortcuts">
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260626-lunora-theme-widgets">
 {% endblock %}
 
 {% block content %}
@@ -1060,30 +1060,12 @@
                     <span>{% translate 'Widget-Farbe' %}</span>
 
                     <div class="section-color-options">
-                        <label class="section-color-option blue">
-                            <input type="radio" name="widget_color" value="blue" checked>
-                            <span>{% translate 'Blau' %}</span>
-                        </label>
-
-                        <label class="section-color-option green">
-                            <input type="radio" name="widget_color" value="green">
-                            <span>{% translate 'Grün' %}</span>
-                        </label>
-
-                        <label class="section-color-option purple">
-                            <input type="radio" name="widget_color" value="purple">
-                            <span>{% translate 'Lila' %}</span>
-                        </label>
-
-                        <label class="section-color-option orange">
-                            <input type="radio" name="widget_color" value="orange">
-                            <span>{% translate 'Orange' %}</span>
-                        </label>
-
-                        <label class="section-color-option red">
-                            <input type="radio" name="widget_color" value="red">
-                            <span>{% translate 'Rot' %}</span>
-                        </label>
+                        {% for value, label in widget_colors %}
+                            <label class="section-color-option {{ value }}">
+                                <input type="radio" name="widget_color" value="{{ value }}" {% if value == 'blue' %}checked{% endif %}>
+                                <span>{{ label }}</span>
+                            </label>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -1286,30 +1268,12 @@
                     <span>{% translate 'Bereichsfarbe' %}</span>
 
                     <div class="section-color-options">
-                        <label class="section-color-option blue">
-                            <input type="radio" name="section_color" value="blue" checked>
-                            <span>{% translate 'Blau' %}</span>
-                        </label>
-
-                        <label class="section-color-option green">
-                            <input type="radio" name="section_color" value="green">
-                            <span>{% translate 'Grün' %}</span>
-                        </label>
-
-                        <label class="section-color-option purple">
-                            <input type="radio" name="section_color" value="purple">
-                            <span>{% translate 'Lila' %}</span>
-                        </label>
-
-                        <label class="section-color-option orange">
-                            <input type="radio" name="section_color" value="orange">
-                            <span>{% translate 'Orange' %}</span>
-                        </label>
-
-                        <label class="section-color-option red">
-                            <input type="radio" name="section_color" value="red">
-                            <span>{% translate 'Rot' %}</span>
-                        </label>
+                        {% for value, label in shortcut_colors %}
+                            <label class="section-color-option {{ value }}">
+                                <input type="radio" name="section_color" value="{{ value }}" {% if value == 'blue' %}checked{% endif %}>
+                                <span>{{ label }}</span>
+                            </label>
+                        {% endfor %}
                     </div>
                 </div>
 

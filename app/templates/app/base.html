@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260626-lunora-theme-card-mark-contrast">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260626-lunora-library-panel">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -41,7 +41,7 @@
     {% block extra_css %}{% endblock %}
     <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260623-notes-style-fix">
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}?v=20260626-lunora-theme" defer></script>
+        <script src="{% static 'app/js/base.js' %}?v=20260626-lunora-warm-dark-bg" defer></script>
     {% endblock %}
 </head>
 <body class="{% if request.user.is_authenticated %}has-mobile-bottom-nav {% endif %}{% block body_class %}{% endblock %}"{% if request.user.is_authenticated %} data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}" data-access-locked-label="{% translate 'Unveröffentlicht' %}" data-access-locked-title="{% translate 'Unveröffentlicht' %}" data-access-restricted-label="{% translate 'Unveröffentlicht' %}" data-access-restricted-title="{% translate 'Unveröffentlicht' %}" data-access-hidden-label="{% translate 'Versteckt' %}" data-access-hidden-title="{% translate 'Versteckt' %}"{% endif %}>

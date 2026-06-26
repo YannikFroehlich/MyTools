@@ -1957,6 +1957,26 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(section.color, "green")
         self.assertEqual(section.order, 2)
 
+    def test_add_section_accepts_theme_color(self):
+        response = self.client.post(reverse("home"), {
+            "action": "add_section",
+            "section_name": "Designbereich",
+            "section_color": "theme",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertEqual(ShortcutSection.objects.get(name="Designbereich").color, "theme")
+
+    def test_add_section_falls_back_for_invalid_color(self):
+        response = self.client.post(reverse("home"), {
+            "action": "add_section",
+            "section_name": "Server",
+            "section_color": "pink",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertEqual(ShortcutSection.objects.get(name="Server").color, "blue")
+
     def test_add_empty_section_does_not_create_extra_section(self):
         response = self.client.post(reverse("home"), {
             "action": "add_section",
@@ -2048,6 +2068,20 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(shortcut.url, "https://github.com")
         self.assertEqual(shortcut.icon, "fa-solid fa-link")
         self.assertEqual(shortcut.order, 1)
+
+    def test_add_shortcut_accepts_theme_color(self):
+        section = ShortcutSection.objects.create(name="Coding")
+
+        response = self.client.post(reverse("home"), {
+            "action": "add_shortcut",
+            "section_id": section.id,
+            "name": "Docs",
+            "url": "docs.example.com",
+            "shortcut_color": "theme",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertEqual(Shortcut.objects.get(name="Docs").color, "theme")
 
     def test_add_shortcut_with_custom_icon_overwrites_selected_icon(self):
         section = ShortcutSection.objects.create(name="Server")
@@ -2269,6 +2303,17 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(widget.color, "green")
         self.assertEqual(widget.weather_location, weather_location)
         self.assertEqual(widget.order, 1)
+
+    def test_add_widget_accepts_theme_color(self):
+        response = self.client.post(reverse("home"), {
+            "action": "add_widget",
+            "widget_title": "Theme Widget",
+            "widget_type": HomeWidget.WIDGET_STATS,
+            "widget_color": "theme",
+        })
+
+        self.assertRedirects(response, reverse("home"))
+        self.assertEqual(HomeWidget.objects.get(title="Theme Widget").color, "theme")
 
     def test_add_widget_uses_fallbacks_for_invalid_or_empty_data(self):
         response = self.client.post(reverse("home"), {
