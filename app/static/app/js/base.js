@@ -99,12 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const themeStorageKey = 'customTheme';
-    const themePresetStorageKey = 'customThemePreset';
-    const themeSlotsStorageKey = 'customThemeSlots';
+    const themePresetStorageKey = 'themePreset';
+    const legacyThemeStorageKey = 'customTheme';
+    const legacyThemePresetStorageKey = 'customThemePreset';
+    const legacyThemeSlotsStorageKey = 'customThemeSlots';
     const themeDisplayOptionsStorageKey = 'customThemeDisplayOptions';
 
     const displayOptionControls = {
+        backgroundEffect: { id: 'theme-pattern-toggle', className: 'theme-pattern-mode' },
         highContrast: { id: 'theme-contrast-toggle', className: 'theme-high-contrast-mode' },
         reducedMotion: { id: 'theme-motion-toggle', className: 'theme-reduced-motion-mode' },
     };
@@ -122,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cardBg: '#ffffff',
         footerBg: '#ffffff',
         radius: 22,
-        pattern: false,
     };
 
     const darkDefaultTheme = {
@@ -133,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cardBg: '#1c2231',
         footerBg: '#1a1d2b',
         radius: 22,
-        pattern: false,
     };
 
     const themePresets = {
@@ -179,6 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 cardBg: '#fff7ed',
                 footerBg: '#fff7ed',
             },
+            'lunora-theme': {
+                navStart: '#9b6b38',
+                navEnd: '#d6ad73',
+                pageBgLight: '#f4f1e8',
+                pageBgDark: '#18130f',
+                cardBg: '#fffaf4',
+                footerBg: '#f8efe3',
+                radius: 24,
+                bodyClass: 'theme-lunora-mode',
+            },
         },
         dark: {
             sky: darkDefaultTheme,
@@ -222,8 +232,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 cardBg: '#2c1a10',
                 footerBg: '#2c1a10',
             },
+            'lunora-theme': {
+                navStart: '#b78a55',
+                navEnd: '#e7c894',
+                pageBgLight: '#f4f1e8',
+                pageBgDark: '#18130f',
+                cardBg: '#251d16',
+                footerBg: '#1f1812',
+                radius: 24,
+                bodyClass: 'theme-lunora-mode',
+            },
         },
     };
+
+    const themeCssProperties = [
+        '--theme-nav-start',
+        '--theme-nav-end',
+        '--theme-accent-start',
+        '--theme-accent-end',
+        '--theme-accent-text',
+        '--theme-accent-rgb',
+        '--theme-accent-end-rgb',
+        '--theme-page-bg',
+        '--theme-footer-bg',
+        '--theme-card-bg',
+        '--theme-card-text',
+        '--theme-card-radius',
+        '--theme-text',
+        '--theme-footer-text',
+        '--theme-footer-border',
+        '--theme-nav-shadow',
+    ];
+
+    const completeThemeClasses = ['theme-lunora-mode'];
 
     function currentMode() {
         return body.classList.contains('dark-mode') ? 'dark' : 'light';
@@ -261,36 +302,51 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${r}, ${g}, ${b}`;
     }
 
-    function migrateLegacyTheme(theme) {
-        const migratedTheme = { ...(theme || {}) };
+    function normalizePresetTheme(preset) {
+        return { ...defaultThemeForMode(), ...(preset || {}) };
+    }
 
-        if (migratedTheme.pageBg && !migratedTheme.pageBgLight && !migratedTheme.pageBgDark) {
-            if (currentMode() === 'dark') {
-                migratedTheme.pageBgDark = migratedTheme.pageBg;
-                migratedTheme.pageBgLight = defaultTheme.pageBgLight;
-            } else {
-                migratedTheme.pageBgLight = migratedTheme.pageBg;
-                migratedTheme.pageBgDark = darkDefaultTheme.pageBgDark;
-            }
-        }
-
-        delete migratedTheme.pageBg;
-        return migratedTheme;
+    function presetExists(presetName) {
+        return Boolean(presetName && themePresets.light[presetName] && themePresets.dark[presetName]);
     }
 
     function themePageBgForMode(theme) {
-        const completeTheme = migrateLegacyTheme(theme);
         return currentMode() === 'dark'
-            ? (completeTheme.pageBgDark || darkDefaultTheme.pageBgDark)
-            : (completeTheme.pageBgLight || defaultTheme.pageBgLight);
+            ? (theme.pageBgDark || darkDefaultTheme.pageBgDark)
+            : (theme.pageBgLight || defaultTheme.pageBgLight);
     }
 
-    function applyCustomTheme(theme) {
-        const completeTheme = migrateLegacyTheme(theme);
+    function updateActivePresetButton(presetName) {
+        document.querySelectorAll('.theme-preset').forEach((button) => {
+            const isActive = Boolean(presetName && button.dataset.preset === presetName);
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        document.querySelectorAll('[data-theme-remaster]').forEach((button) => {
+            const isActive = Boolean(presetName && button.dataset.themeRemaster === presetName);
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+    }
+
+    function applyPresetTheme(presetName) {
+        if (!presetExists(presetName)) {
+            clearPresetTheme();
+            return;
+        }
+
+        const completeTheme = normalizePresetTheme(themePresets[currentMode()][presetName]);
         const pageBackground = themePageBgForMode(completeTheme);
+        const cardBackground = completeTheme.cardBg || completeTheme.footerBg || '#ffffff';
+
+        completeThemeClasses.forEach((className) => body.classList.remove(className));
+
+        if (completeTheme.bodyClass) {
+            body.classList.add(completeTheme.bodyClass);
+        }
 
         body.classList.add('custom-theme');
-
         document.documentElement.style.setProperty('--theme-nav-start', completeTheme.navStart);
         document.documentElement.style.setProperty('--theme-nav-end', completeTheme.navEnd);
         document.documentElement.style.setProperty('--theme-accent-start', completeTheme.navStart);
@@ -298,46 +354,29 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.style.setProperty('--theme-accent-text', readableTextColor(completeTheme.navStart));
         document.documentElement.style.setProperty('--theme-accent-rgb', rgbString(completeTheme.navStart));
         document.documentElement.style.setProperty('--theme-accent-end-rgb', rgbString(completeTheme.navEnd));
-        const cardBackground = completeTheme.cardBg || completeTheme.footerBg || '#ffffff';
-
         document.documentElement.style.setProperty('--theme-page-bg', pageBackground);
         document.documentElement.style.setProperty('--theme-footer-bg', completeTheme.footerBg);
         document.documentElement.style.setProperty('--theme-card-bg', cardBackground);
         document.documentElement.style.setProperty('--theme-card-text', readableTextColor(cardBackground));
         document.documentElement.style.setProperty('--theme-card-radius', `${completeTheme.radius || 22}px`);
         document.documentElement.style.setProperty('--theme-text', readableTextColor(pageBackground));
-        body.classList.toggle('theme-pattern-mode', Boolean(completeTheme.pattern));
         document.documentElement.style.setProperty('--theme-footer-text', readableTextColor(completeTheme.footerBg));
         document.documentElement.style.setProperty('--theme-footer-border', 'rgba(0, 0, 0, 0.08)');
         document.documentElement.style.setProperty('--theme-nav-shadow', `rgba(${rgbString(completeTheme.navStart)}, 0.28)`);
+
+        updateActivePresetButton(presetName);
     }
 
-    function clearCustomTheme() {
+    function clearPresetTheme() {
         body.classList.remove('custom-theme');
-        body.classList.remove('theme-pattern-mode');
-
-        [
-            '--theme-nav-start',
-            '--theme-nav-end',
-            '--theme-accent-start',
-            '--theme-accent-end',
-            '--theme-accent-text',
-            '--theme-accent-rgb',
-            '--theme-accent-end-rgb',
-            '--theme-page-bg',
-            '--theme-footer-bg',
-            '--theme-card-bg',
-            '--theme-card-text',
-            '--theme-card-radius',
-            '--theme-text',
-            '--theme-footer-text',
-            '--theme-footer-border',
-            '--theme-nav-shadow',
-        ].forEach((property) => document.documentElement.style.removeProperty(property));
+        completeThemeClasses.forEach((className) => body.classList.remove(className));
+        themeCssProperties.forEach((property) => document.documentElement.style.removeProperty(property));
+        updateActivePresetButton(null);
     }
 
     function defaultDisplayOptions() {
         return {
+            backgroundEffect: false,
             highContrast: false,
             reducedMotion: false,
         };
@@ -349,16 +388,86 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
-    function loadDisplayOptions() {
+    function readStoredDisplayOptions() {
         try {
-            return cleanDisplayOptions({
-                ...defaultDisplayOptions(),
-                ...(JSON.parse(localStorage.getItem(themeDisplayOptionsStorageKey)) || {}),
-            });
+            return JSON.parse(localStorage.getItem(themeDisplayOptionsStorageKey)) || {};
         } catch (error) {
             localStorage.removeItem(themeDisplayOptionsStorageKey);
-            return defaultDisplayOptions();
+            return {};
         }
+    }
+
+    function readLegacyBackgroundEffect() {
+        try {
+            const legacyTheme = JSON.parse(localStorage.getItem(legacyThemeStorageKey));
+            return legacyTheme && Object.prototype.hasOwnProperty.call(legacyTheme, 'pattern')
+                ? Boolean(legacyTheme.pattern)
+                : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function removeLegacyCustomDesignData() {
+        [
+            legacyThemeStorageKey,
+            legacyThemePresetStorageKey,
+            legacyThemeSlotsStorageKey,
+        ].forEach((key) => {
+            try {
+                localStorage.removeItem(key);
+            } catch (error) {
+            }
+        });
+
+        deprecatedDisplayOptionClasses.forEach((className) => body.classList.remove(className));
+    }
+
+    function loadDisplayOptions() {
+        const storedOptions = readStoredDisplayOptions();
+        const legacyBackgroundEffect = readLegacyBackgroundEffect();
+
+        if (legacyBackgroundEffect !== null && storedOptions.backgroundEffect === undefined) {
+            storedOptions.backgroundEffect = legacyBackgroundEffect;
+        }
+
+        return cleanDisplayOptions({
+            ...defaultDisplayOptions(),
+            ...storedOptions,
+        });
+    }
+
+    function readStoredPreset() {
+        let storedPreset = null;
+
+        try {
+            storedPreset = localStorage.getItem(themePresetStorageKey);
+        } catch (error) {
+            storedPreset = null;
+        }
+
+        if (!presetExists(storedPreset)) {
+            try {
+                storedPreset = localStorage.getItem(legacyThemePresetStorageKey);
+            } catch (error) {
+                storedPreset = null;
+            }
+        }
+
+        if (!presetExists(storedPreset)) {
+            try {
+                localStorage.removeItem(themePresetStorageKey);
+            } catch (error) {
+            }
+            return null;
+        }
+
+        try {
+            localStorage.setItem(themePresetStorageKey, storedPreset);
+        } catch (error) {
+        }
+
+        return storedPreset;
     }
 
     function applyDisplayOptions(options) {
@@ -382,6 +491,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function showThemeSaveHint() {
+        const themeSaveHint = document.getElementById('theme-save-hint');
+
+        if (!themeSaveHint) {
+            return;
+        }
+
+        themeSaveHint.classList.remove('is-visible');
+        void themeSaveHint.offsetWidth;
+        themeSaveHint.classList.add('is-visible');
+
+        window.clearTimeout(showThemeSaveHint.timeoutId);
+        showThemeSaveHint.timeoutId = window.setTimeout(() => {
+            themeSaveHint.classList.remove('is-visible');
+        }, 1200);
+    }
+
     function saveDisplayOptions(options) {
         activeDisplayOptions = cleanDisplayOptions(options);
         localStorage.setItem(themeDisplayOptionsStorageKey, JSON.stringify(activeDisplayOptions));
@@ -390,21 +516,19 @@ document.addEventListener('DOMContentLoaded', () => {
         showThemeSaveHint();
     }
 
-    function loadCustomTheme() {
-        try {
-            const storedTheme = JSON.parse(localStorage.getItem(themeStorageKey));
-
-            if (storedTheme) {
-                const migratedTheme = migrateLegacyTheme(storedTheme);
-                applyCustomTheme(migratedTheme);
-                localStorage.setItem(themeStorageKey, JSON.stringify(migratedTheme));
-                return migratedTheme;
-            }
-        } catch (error) {
-            localStorage.removeItem(themeStorageKey);
+    function saveThemePreset(presetName) {
+        if (!presetExists(presetName)) {
+            activeThemePreset = null;
+            localStorage.removeItem(themePresetStorageKey);
+            clearPresetTheme();
+            showThemeSaveHint();
+            return;
         }
 
-        return null;
+        activeThemePreset = presetName;
+        localStorage.setItem(themePresetStorageKey, activeThemePreset);
+        applyPresetTheme(activeThemePreset);
+        showThemeSaveHint();
     }
 
     /* ── THEME FLASH OVERLAY ── */
@@ -412,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
     flash.className = 'theme-flash';
     document.body.appendChild(flash);
 
-    /* ── DARK MODE LADEN ── */
+    /* ── DARK MODE LOAD ── */
     if (localStorage.getItem('theme') === 'dark') {
         const noTrans = document.createElement('style');
         noTrans.textContent = '*, *::before, *::after { transition: none !important; }';
@@ -426,14 +550,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let activeDisplayOptions = loadDisplayOptions();
+    let activeThemePreset = readStoredPreset();
+
     try {
         localStorage.setItem(themeDisplayOptionsStorageKey, JSON.stringify(activeDisplayOptions));
     } catch (error) {
     }
+
+    removeLegacyCustomDesignData();
     applyDisplayOptions(activeDisplayOptions);
 
-    let activeCustomTheme = loadCustomTheme();
-    let activeThemePreset = localStorage.getItem(themePresetStorageKey);
+    if (activeThemePreset) {
+        applyPresetTheme(activeThemePreset);
+    } else {
+        clearPresetTheme();
+    }
 
     /* ── DARK MODE BUTTON ── */
     const darkModeButton = document.getElementById('darkmode-button');
@@ -468,165 +599,20 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             if (activeThemePreset) {
-                const preset = themePresets[currentMode()][activeThemePreset] || defaultThemeForMode();
-
-                activeCustomTheme = { ...preset };
-                syncThemeInputs(activeCustomTheme);
-                applyCustomTheme(activeCustomTheme);
-                localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
-            } else if (activeCustomTheme) {
-                syncThemeInputs(activeCustomTheme);
-                applyCustomTheme(activeCustomTheme);
-                localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
-            } else {
-                syncThemeInputs(defaultThemeForMode());
+                applyPresetTheme(activeThemePreset);
             }
         });
     }
 
-    /* ── THEME EDITOR ── */
+    /* ── DISPLAY OPTIONS PANEL ── */
     const themeEditorButton = document.getElementById('theme-editor-button');
     const themeEditorPanel = document.getElementById('theme-editor-panel');
     const themeEditorClose = document.getElementById('theme-editor-close');
     const themeResetButton = document.getElementById('theme-reset-button');
 
-    const themeInputs = {
-        navStart: document.getElementById('theme-nav-start'),
-        navEnd: document.getElementById('theme-nav-end'),
-        pageBgLight: document.getElementById('theme-page-bg-light'),
-        pageBgDark: document.getElementById('theme-page-bg-dark'),
-        cardBg: document.getElementById('theme-card-bg'),
-        footerBg: document.getElementById('theme-footer-bg'),
-        radius: document.getElementById('theme-radius'),
-    };
-
-    const themeRadiusValue = document.getElementById('theme-radius-value');
-    const themeSaveHint = document.getElementById('theme-save-hint');
-    const themeRandomButton = document.getElementById('theme-random-button');
-
-    function normalizedTheme(theme) {
-        return { ...defaultThemeForMode(), ...migrateLegacyTheme(theme || {}) };
-    }
-
-    function updateThemeRadiusLabel(theme) {
-        if (themeRadiusValue) {
-            themeRadiusValue.textContent = `${Number(theme.radius || defaultTheme.radius)}px`;
-        }
-    }
-
-    function syncThemeInputs(theme) {
-        const completeTheme = normalizedTheme(theme);
-
-        Object.entries(themeInputs).forEach(([key, input]) => {
-            if (input && completeTheme[key] !== undefined) {
-                input.value = completeTheme[key];
-            }
-        });
-
-        updateThemeRadiusLabel(completeTheme);
-    }
-
-    function updateActivePresetButton(presetName) {
-        document.querySelectorAll('.theme-preset').forEach((button) => {
-            button.classList.toggle('is-active', Boolean(presetName && button.dataset.preset === presetName));
-        });
-    }
-
-    function showThemeSaveHint() {
-        if (!themeSaveHint) {
-            return;
-        }
-
-        themeSaveHint.classList.remove('is-visible');
-        void themeSaveHint.offsetWidth;
-        themeSaveHint.classList.add('is-visible');
-
-        window.clearTimeout(showThemeSaveHint.timeoutId);
-        showThemeSaveHint.timeoutId = window.setTimeout(() => {
-            themeSaveHint.classList.remove('is-visible');
-        }, 1200);
-    }
-
-    function loadThemeSlots() {
-        try {
-            const slots = JSON.parse(localStorage.getItem(themeSlotsStorageKey));
-            return Array.from({ length: 3 }, (_, index) => slots?.[index] || null);
-        } catch (error) {
-            localStorage.removeItem(themeSlotsStorageKey);
-            return [null, null, null];
-        }
-    }
-
-    let themeSlots = loadThemeSlots();
-
-    function saveThemeSlots() {
-        localStorage.setItem(themeSlotsStorageKey, JSON.stringify(themeSlots));
-    }
-
-    function slotColorPreview(theme) {
-        if (!theme) {
-            return '';
-        }
-
-        return `linear-gradient(135deg, ${theme.navStart}, ${theme.navEnd})`;
-    }
-
-    function updateThemeSlotsUi() {
-        document.querySelectorAll('.theme-slot').forEach((slotElement) => {
-            const slotIndex = Number(slotElement.dataset.slot);
-            const slotTheme = themeSlots[slotIndex];
-            const status = slotElement.querySelector('[data-slot-status]');
-            const loadButton = slotElement.querySelector('[data-slot-load]');
-            const deleteButton = slotElement.querySelector('[data-slot-delete]');
-
-            slotElement.classList.toggle('is-filled', Boolean(slotTheme));
-            slotElement.style.setProperty('--slot-preview', slotColorPreview(slotTheme) || 'linear-gradient(135deg, #cbd5e1, #94a3b8)');
-
-            if (status) {
-                status.textContent = slotTheme ? 'Gespeichert' : 'Leer';
-            }
-
-            if (loadButton) {
-                loadButton.disabled = !slotTheme;
-            }
-
-            if (deleteButton) {
-                deleteButton.disabled = !slotTheme;
-            }
-        });
-    }
-
-    function readThemeInputs() {
-        return {
-            navStart: themeInputs.navStart?.value || defaultTheme.navStart,
-            navEnd: themeInputs.navEnd?.value || defaultTheme.navEnd,
-            pageBgLight: themeInputs.pageBgLight?.value || defaultTheme.pageBgLight,
-            pageBgDark: themeInputs.pageBgDark?.value || darkDefaultTheme.pageBgDark,
-            cardBg: themeInputs.cardBg?.value || defaultTheme.cardBg,
-            footerBg: themeInputs.footerBg?.value || defaultTheme.footerBg,
-            radius: Number(themeInputs.radius?.value || defaultTheme.radius),
-            pattern: document.getElementById('theme-pattern-toggle')?.classList.contains('is-active') || false,
-        };
-    }
-
-    function saveThemeFromInputs() {
-        activeThemePreset = null;
-        localStorage.removeItem(themePresetStorageKey);
-        updateActivePresetButton(null);
-
-        activeCustomTheme = readThemeInputs();
-        applyCustomTheme(activeCustomTheme);
-        updateThemeRadiusLabel(activeCustomTheme);
-        localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
-        showThemeSaveHint();
-    }
-
     if (themeEditorButton && themeEditorPanel) {
-        syncThemeInputs(activeCustomTheme || defaultThemeForMode());
-        updateActivePresetButton(activeThemePreset);
-        document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active', Boolean((activeCustomTheme || {}).pattern));
         syncDisplayOptionControls(activeDisplayOptions);
-        updateThemeSlotsUi();
+        updateActivePresetButton(activeThemePreset);
 
         themeEditorButton.addEventListener('click', (event) => {
             event.stopPropagation();
@@ -637,55 +623,21 @@ document.addEventListener('DOMContentLoaded', () => {
             themeEditorPanel.classList.remove('open');
         });
 
-        Object.values(themeInputs).forEach((input) => {
-            input?.addEventListener('input', saveThemeFromInputs);
-        });
-
-        document.querySelectorAll('[data-slot-save]').forEach((button) => {
+        document.querySelectorAll('.theme-preset').forEach((button) => {
             button.addEventListener('click', () => {
-                const slotIndex = Number(button.dataset.slotSave);
-                themeSlots[slotIndex] = { ...readThemeInputs() };
-                saveThemeSlots();
-                updateThemeSlotsUi();
-                showThemeSaveHint();
+                saveThemePreset(button.dataset.preset);
             });
         });
 
-        document.querySelectorAll('[data-slot-load]').forEach((button) => {
+        document.querySelectorAll('[data-theme-remaster]').forEach((button) => {
             button.addEventListener('click', () => {
-                const slotIndex = Number(button.dataset.slotLoad);
-                const slotTheme = themeSlots[slotIndex];
-
-                if (!slotTheme) {
-                    return;
-                }
-
-                activeThemePreset = null;
-                localStorage.removeItem(themePresetStorageKey);
-                updateActivePresetButton(null);
-
-                activeCustomTheme = normalizedTheme(slotTheme);
-                syncThemeInputs(activeCustomTheme);
-                document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active', Boolean(activeCustomTheme.pattern));
-                applyCustomTheme(activeCustomTheme);
-                localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
-                showThemeSaveHint();
+                activeDisplayOptions = {
+                    ...activeDisplayOptions,
+                    backgroundEffect: true,
+                };
+                saveDisplayOptions(activeDisplayOptions);
+                saveThemePreset(button.dataset.themeRemaster);
             });
-        });
-
-        document.querySelectorAll('[data-slot-delete]').forEach((button) => {
-            button.addEventListener('click', () => {
-                const slotIndex = Number(button.dataset.slotDelete);
-                themeSlots[slotIndex] = null;
-                saveThemeSlots();
-                updateThemeSlotsUi();
-                showThemeSaveHint();
-            });
-        });
-
-        document.getElementById('theme-pattern-toggle')?.addEventListener('click', () => {
-            document.getElementById('theme-pattern-toggle')?.classList.toggle('is-active');
-            saveThemeFromInputs();
         });
 
         Object.entries(displayOptionControls).forEach(([key, config]) => {
@@ -698,77 +650,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        document.querySelectorAll('.theme-preset').forEach((button) => {
-            button.addEventListener('click', () => {
-                const preset = normalizedTheme(themePresets[currentMode()][button.dataset.preset]);
-
-                syncThemeInputs(preset);
-                document.getElementById('theme-pattern-toggle')?.classList.remove('is-active');
-                activeThemePreset = button.dataset.preset;
-                activeCustomTheme = { ...preset };
-
-                applyCustomTheme(activeCustomTheme);
-                updateActivePresetButton(activeThemePreset);
-                showThemeSaveHint();
-
-                localStorage.setItem(themePresetStorageKey, activeThemePreset);
-                localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
-            });
-        });
-
-        themeRandomButton?.addEventListener('click', () => {
-            const hue = Math.floor(Math.random() * 360);
-            const secondHue = (hue + 38) % 360;
-            const isDark = currentMode() === 'dark';
-
-            activeThemePreset = null;
-            localStorage.removeItem(themePresetStorageKey);
-            updateActivePresetButton(null);
-
-            const hslToHex = (h, s, l) => {
-                const saturation = s / 100;
-                const lightness = l / 100;
-                const k = (n) => (n + h / 30) % 12;
-                const a = saturation * Math.min(lightness, 1 - lightness);
-                const f = (n) => lightness - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-                const toHex = (value) => Math.round(255 * value).toString(16).padStart(2, '0');
-
-                return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
-            };
-
-            activeCustomTheme = {
-                navStart: hslToHex(hue, 72, isDark ? 36 : 44),
-                navEnd: hslToHex(secondHue, 82, isDark ? 48 : 62),
-                pageBgLight: hslToHex(hue, 58, 92),
-                pageBgDark: hslToHex(hue, 26, 10),
-                cardBg: hslToHex(hue, isDark ? 24 : 60, isDark ? 15 : 98),
-                footerBg: hslToHex(hue, isDark ? 24 : 55, isDark ? 13 : 97),
-                radius: Number(themeInputs.radius?.value || defaultTheme.radius),
-                pattern: document.getElementById('theme-pattern-toggle')?.classList.contains('is-active') || false,
-            };
-
-            syncThemeInputs(activeCustomTheme);
-            applyCustomTheme(activeCustomTheme);
-            localStorage.setItem(themeStorageKey, JSON.stringify(activeCustomTheme));
-            showThemeSaveHint();
-        });
-
         themeResetButton?.addEventListener('click', () => {
-            activeCustomTheme = null;
             activeThemePreset = null;
-
-            localStorage.removeItem(themeStorageKey);
             localStorage.removeItem(themePresetStorageKey);
-            localStorage.removeItem(themeDisplayOptionsStorageKey);
-
-            syncThemeInputs(defaultThemeForMode());
-            updateActivePresetButton(null);
-            document.getElementById('theme-pattern-toggle')?.classList.remove('is-active');
             activeDisplayOptions = defaultDisplayOptions();
-            applyDisplayOptions(activeDisplayOptions);
-            syncDisplayOptionControls(activeDisplayOptions);
-            clearCustomTheme();
-            showThemeSaveHint();
+            saveDisplayOptions(activeDisplayOptions);
+            clearPresetTheme();
         });
 
         document.addEventListener('click', (event) => {
@@ -786,6 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
 
 
     /* ── LIVE BENACHRICHTIGUNGS-ZÄHLER ── */

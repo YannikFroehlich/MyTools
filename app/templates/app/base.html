@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260625-header-menu-scrollbar-fix">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260626-lunora-theme-beta-badge">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -41,7 +41,7 @@
     {% block extra_css %}{% endblock %}
     <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260623-notes-style-fix">
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}?v=20260619-access-hidden" defer></script>
+        <script src="{% static 'app/js/base.js' %}?v=20260626-lunora-theme" defer></script>
     {% endblock %}
 </head>
 <body class="{% if request.user.is_authenticated %}has-mobile-bottom-nav {% endif %}{% block body_class %}{% endblock %}"{% if request.user.is_authenticated %} data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}" data-access-locked-label="{% translate 'Unveröffentlicht' %}" data-access-locked-title="{% translate 'Unveröffentlicht' %}" data-access-restricted-label="{% translate 'Unveröffentlicht' %}" data-access-restricted-title="{% translate 'Unveröffentlicht' %}" data-access-hidden-label="{% translate 'Versteckt' %}" data-access-hidden-title="{% translate 'Versteckt' %}"{% endif %}>
@@ -737,29 +737,28 @@
             {% endif %}
 
             <div class="theme-editor-wrapper">
-                <button class="theme-editor-btn" id="theme-editor-button" type="button" aria-label="{% translate 'Design anpassen' %}">
-                    <i class="fa-solid fa-pen"></i>
+                <button class="theme-editor-btn" id="theme-editor-button" type="button" aria-label="{% translate 'Anzeigeoptionen anpassen' %}">
+                    <i class="fa-solid fa-sliders"></i>
                 </button>
 
                 <div class="theme-editor-panel" id="theme-editor-panel">
                     <div class="theme-editor-header">
-                        <h2>{% translate 'Design' %}</h2>
-                        <button type="button" id="theme-editor-close" aria-label="{% translate 'Design-Men&uuml; schlie&szlig;en' %}">
+                        <h2>{% translate 'Anzeige' %}</h2>
+                        <button type="button" id="theme-editor-close" aria-label="{% translate 'Anzeige-Men&uuml; schlie&szlig;en' %}">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
 
                     <div class="theme-editor-intro">
-                        <p>{% translate 'Passe Farben, Rundungen und Hintergrund-Effekt live an. Deine Auswahl wird automatisch gespeichert.' %}</p>
+                        <p>{% translate 'W&auml;hle eine voreingestellte Farbe und passe Hintergrund-Effekt, Kontrast und Bewegung an.' %}</p>
                     </div>
-
 
                     <div class="theme-editor-section">
                         <div class="theme-section-title">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>{% translate 'Vorlagen' %}</span>
+                            <span>{% translate 'Farben' %}</span>
                         </div>
-                        <div class="theme-preset-row" aria-label="{% translate 'Design-Vorlagen' %}">
+                        <div class="theme-preset-row" aria-label="{% translate 'Voreingestellte Farben' %}">
                             <button type="button" class="theme-preset" data-preset="sky" title="{% translate 'Blau' %}">
                                 <span style="background: linear-gradient(135deg, #1a56d6, #5aadee);"></span>
                             </button>
@@ -784,91 +783,20 @@
                                 <span style="background: linear-gradient(135deg, #ea580c, #facc15);"></span>
                             </button>
                         </div>
-                    </div>
 
-                    <div class="theme-editor-section">
-                        <div class="theme-section-title">
-                            <i class="fa-solid fa-palette"></i>
-                            <span>{% translate 'Farben' %}</span>
-                        </div>
-                        <div class="theme-control-grid">
-                            <label>
-                                <span>{% translate 'Header links' %}</span>
-                                <input type="color" id="theme-nav-start" value="#1a56d6">
-                            </label>
-
-                            <label>
-                                <span>{% translate 'Header rechts' %}</span>
-                                <input type="color" id="theme-nav-end" value="#5aadee">
-                            </label>
-
-                            <label>
-                                <span>{% translate 'Hintergrund Light Mode' %}</span>
-                                <input type="color" id="theme-page-bg-light" value="#dce5f5">
-                            </label>
-
-                            <label>
-                                <span>{% translate 'Hintergrund Dark Mode' %}</span>
-                                <input type="color" id="theme-page-bg-dark" value="#12151f">
-                            </label>
-
-                            <label>
-                                <span>{% translate 'Karten' %}</span>
-                                <input type="color" id="theme-card-bg" value="#ffffff">
-                            </label>
-
-                            <label>
-                                <span>{% translate 'Footer' %}</span>
-                                <input type="color" id="theme-footer-bg" value="#ffffff">
-                            </label>
-
-                            <label>
-                                <span>{% translate 'Rundung' %} <b id="theme-radius-value">22px</b></span>
-                                <input type="range" id="theme-radius" min="8" max="38" value="22">
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="theme-editor-section">
-                        <div class="theme-section-title">
-                            <i class="fa-solid fa-floppy-disk"></i>
-                            <span>{% translate 'Eigene Farbkombis' %}</span>
-                        </div>
-                        <div class="theme-slot-list" id="theme-slot-list" aria-label="{% translate 'Eigene Design-Speicherpl&auml;tze' %}">
-                            <div class="theme-slot" data-slot="0">
-                                <div>
-                                    <strong>{% translate 'Platz 1' %}</strong>
-                                    <small data-slot-status>{% translate 'Leer' %}</small>
-                                </div>
-                                <div class="theme-slot-actions">
-                                    <button type="button" class="theme-slot-save" data-slot-save="0">{% translate 'Speichern' %}</button>
-                                    <button type="button" class="theme-slot-load" data-slot-load="0">{% translate 'Laden' %}</button>
-                                    <button type="button" class="theme-slot-delete" data-slot-delete="0" aria-label="{% translate 'Speicherplatz 1 l&ouml;schen' %}"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <div class="theme-slot" data-slot="1">
-                                <div>
-                                    <strong>{% translate 'Platz 2' %}</strong>
-                                    <small data-slot-status>{% translate 'Leer' %}</small>
-                                </div>
-                                <div class="theme-slot-actions">
-                                    <button type="button" class="theme-slot-save" data-slot-save="1">{% translate 'Speichern' %}</button>
-                                    <button type="button" class="theme-slot-load" data-slot-load="1">{% translate 'Laden' %}</button>
-                                    <button type="button" class="theme-slot-delete" data-slot-delete="1" aria-label="{% translate 'Speicherplatz 2 l&ouml;schen' %}"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <div class="theme-slot" data-slot="2">
-                                <div>
-                                    <strong>{% translate 'Platz 3' %}</strong>
-                                    <small data-slot-status>{% translate 'Leer' %}</small>
-                                </div>
-                                <div class="theme-slot-actions">
-                                    <button type="button" class="theme-slot-save" data-slot-save="2">{% translate 'Speichern' %}</button>
-                                    <button type="button" class="theme-slot-load" data-slot-load="2">{% translate 'Laden' %}</button>
-                                    <button type="button" class="theme-slot-delete" data-slot-delete="2" aria-label="{% translate 'Speicherplatz 3 l&ouml;schen' %}"><i class="fa-solid fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
+                        <button type="button" class="theme-remaster-button" id="theme-lunora-theme-button" data-theme-remaster="lunora-theme">
+                            <span class="theme-remaster-icon" aria-hidden="true">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </span>
+                            <span class="theme-remaster-label">
+                                {% translate 'Lunora Theme' %}
+                                <span class="theme-remaster-beta-badge" title="Beta-Version">Beta</span>
+                            </span>
+                            <span class="theme-remaster-action">
+                                {% translate 'Anwenden' %}
+                                <i class="fa-solid fa-arrow-right theme-remaster-arrow" aria-hidden="true"></i>
+                            </span>
+                        </button>
                     </div>
 
                     <div class="theme-editor-section">
@@ -893,16 +821,12 @@
                     </div>
 
                     <div class="theme-editor-actions">
-                        <button type="button" id="theme-random-button" class="theme-secondary-action">
-                            <i class="fa-solid fa-shuffle"></i>
-                            {% translate 'Zufällig' %}
-                        </button>
                         <button type="button" id="theme-reset-button">
                             <i class="fa-solid fa-rotate-left"></i>
                             {% translate 'Zur&uuml;cksetzen' %}
                         </button>
                     </div>
-                    <div class="theme-save-hint" id="theme-save-hint" aria-live="polite">{% translate 'Automatisch gespeichert' %}</div>
+                    <div class="theme-save-hint" id="theme-save-hint" aria-live="polite">{% translate 'Gespeichert' %}</div>
                 </div>
             </div>
 

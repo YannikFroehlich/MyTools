@@ -5025,3 +5025,336 @@ body.dark-mode nav#site-header {
         border-radius: 24px 24px 0 0;
     }
 }
+
+/* ── Lunora Theme apply button ── */
+.theme-editor-panel .theme-remaster-button {
+    width: 100% !important;
+    min-height: 50px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    margin: 10px 0 0 !important;
+    padding: 0 16px !important;
+    border: 1px solid rgba(226, 186, 123, 0.38) !important;
+    border-radius: 18px !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    background: linear-gradient(135deg, #c79658, #e2ba7b) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 12px 24px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+    cursor: pointer !important;
+    font: inherit !important;
+    font-size: 0.92rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    transition:
+        transform 0.16s ease,
+        border-color 0.16s ease,
+        background 0.16s ease,
+        box-shadow 0.16s ease !important;
+}
+
+.theme-editor-panel .theme-remaster-button:hover,
+.theme-editor-panel .theme-remaster-button:focus-visible {
+    transform: translateY(-1px) !important;
+    border-color: rgba(226, 186, 123, 0.68) !important;
+    background: linear-gradient(135deg, #d5a466, #ebc986) !important;
+    box-shadow:
+        0 15px 28px rgba(0, 0, 0, 0.24),
+        0 0 0 3px rgba(226, 186, 123, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.36) !important;
+    outline: none !important;
+}
+
+.theme-editor-panel .theme-remaster-button:active {
+    transform: translateY(0) scale(0.99) !important;
+}
+
+.theme-editor-panel .theme-remaster-button.is-active {
+    border-color: rgba(226, 186, 123, 0.78) !important;
+    background: linear-gradient(135deg, #b98445, #d9ae6c) !important;
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.20),
+        0 0 0 3px rgba(226, 186, 123, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+}
+
+.theme-editor-panel .theme-remaster-icon,
+.theme-editor-panel .theme-remaster-label,
+.theme-editor-panel .theme-remaster-action,
+.theme-editor-panel .theme-remaster-arrow {
+    color: currentColor !important;
+}
+
+.theme-editor-panel .theme-remaster-icon {
+    width: auto !important;
+    height: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 1rem !important;
+}
+
+.theme-editor-panel .theme-remaster-label,
+.theme-editor-panel .theme-remaster-action {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    white-space: nowrap !important;
+}
+
+.theme-editor-panel .theme-remaster-arrow {
+    transition: transform 0.16s ease !important;
+}
+
+.theme-editor-panel .theme-remaster-button:hover .theme-remaster-arrow,
+.theme-editor-panel .theme-remaster-button:focus-visible .theme-remaster-arrow {
+    transform: translateX(2px) !important;
+}
+
+body:not(.dark-mode) .theme-editor-panel .theme-remaster-button {
+    border-color: rgba(154, 106, 52, 0.28) !important;
+    background: linear-gradient(135deg, #c79658, #e2ba7b) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 12px 24px rgba(107, 78, 43, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
+body:not(.dark-mode) .theme-editor-panel .theme-remaster-button:hover,
+body:not(.dark-mode) .theme-editor-panel .theme-remaster-button:focus-visible {
+    background: linear-gradient(135deg, #d2a061, #ebc986) !important;
+    box-shadow:
+        0 15px 28px rgba(107, 78, 43, 0.20),
+        0 0 0 3px rgba(183, 138, 85, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+}
+
+@media (max-width: 420px) {
+    .theme-editor-panel .theme-remaster-button {
+        min-height: 48px !important;
+        padding: 0 13px !important;
+        font-size: 0.86rem !important;
+    }
+}
+
+
+
+/* ── Lunora Theme liquid button polish ───────────────────────────── */
+body.theme-lunora-mode {
+    --lunora-theme-pill-radius: 18px;
+    --lunora-theme-pill-radius-large: 22px;
+    --lunora-theme-pill-shadow:
+        0 10px 24px rgba(91, 64, 35, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.84);
+    --lunora-theme-pill-bg: rgba(255, 255, 255, 0.54);
+    --lunora-theme-pill-bg-strong: rgba(255, 255, 255, 0.72);
+}
+
+body.dark-mode.theme-lunora-mode {
+    --lunora-theme-pill-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --lunora-theme-pill-bg: rgba(255, 255, 255, 0.08);
+    --lunora-theme-pill-bg-strong: rgba(255, 255, 255, 0.12);
+}
+
+body.theme-lunora-mode nav#site-header .navigation,
+body.theme-lunora-mode nav#site-header .navigation > a,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button {
+    border-radius: var(--lunora-theme-pill-radius-large);
+}
+
+body.theme-lunora-mode nav#site-header .navigation > a,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button,
+body.theme-lunora-mode nav#site-header .user-actions select,
+body.theme-lunora-mode nav#site-header .user-actions .global-search-trigger,
+body.theme-lunora-mode nav#site-header .theme-editor-btn,
+body.theme-lunora-mode nav#site-header .pwa-install-btn,
+body.theme-lunora-mode nav#site-header .dark-mode-btn,
+body.theme-lunora-mode nav#site-header .notification-center-button,
+body.theme-lunora-mode nav#site-header .profile-menu-button,
+body.theme-lunora-mode .theme-toggle-option,
+body.theme-lunora-mode .theme-editor-actions button,
+body.theme-lunora-mode .theme-remaster-button {
+    border-radius: var(--lunora-theme-pill-radius-large);
+}
+
+body.theme-lunora-mode nav#site-header .navigation > a,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button,
+body.theme-lunora-mode nav#site-header .user-actions select,
+body.theme-lunora-mode nav#site-header .user-actions .global-search-trigger,
+body.theme-lunora-mode nav#site-header .theme-editor-btn,
+body.theme-lunora-mode nav#site-header .pwa-install-btn,
+body.theme-lunora-mode nav#site-header .dark-mode-btn,
+body.theme-lunora-mode nav#site-header .notification-center-button,
+body.theme-lunora-mode nav#site-header .profile-menu-button {
+    backdrop-filter: blur(16px) saturate(1.12);
+    -webkit-backdrop-filter: blur(16px) saturate(1.12);
+}
+
+body.theme-lunora-mode nav#site-header .navigation > a:hover,
+body.theme-lunora-mode nav#site-header .navigation > a.active,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button:hover,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"],
+body.theme-lunora-mode nav#site-header .user-actions select:hover,
+body.theme-lunora-mode nav#site-header .user-actions .global-search-trigger:hover,
+body.theme-lunora-mode nav#site-header .theme-editor-btn:hover,
+body.theme-lunora-mode nav#site-header .pwa-install-btn:hover,
+body.theme-lunora-mode nav#site-header .dark-mode-btn:hover,
+body.theme-lunora-mode nav#site-header .notification-center-button:hover,
+body.theme-lunora-mode nav#site-header .notification-center-button.active,
+body.theme-lunora-mode nav#site-header .profile-menu-button:hover {
+    border-radius: var(--lunora-theme-pill-radius-large);
+    background: var(--lunora-theme-pill-bg-strong);
+    box-shadow: var(--lunora-theme-pill-shadow);
+}
+
+body.theme-lunora-mode nav#site-header .navigation > a > i,
+body.theme-lunora-mode nav#site-header .navigation > .menu-wrapper > .menu-button > i:first-child,
+body.theme-lunora-mode nav#site-header .logo-mark {
+    border-radius: 12px;
+}
+
+body.theme-lunora-mode .theme-editor-panel .theme-remaster-button,
+body.theme-lunora-mode .theme-toggle-option,
+body.theme-lunora-mode .theme-editor-actions button {
+    min-height: 46px;
+    box-shadow: var(--lunora-theme-pill-shadow);
+}
+
+body.theme-lunora-mode .theme-toggle-option,
+body.theme-lunora-mode .theme-editor-actions button.theme-secondary-action {
+    border-color: var(--lunora-theme-border);
+    background: var(--lunora-theme-pill-bg);
+    backdrop-filter: blur(18px) saturate(1.12);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
+}
+
+body.theme-lunora-mode .theme-toggle-option:hover,
+body.theme-lunora-mode .theme-editor-actions button:hover {
+    transform: translateY(-1px);
+}
+
+body.dark-mode.theme-lunora-mode .theme-toggle-option,
+body.dark-mode.theme-lunora-mode .theme-editor-actions button.theme-secondary-action {
+    color: #f6e7cf;
+}
+
+
+/* ── Lunora Theme hover/active contrast fix ─────────────────────── */
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a.active,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"],
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .user-actions select:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .user-actions .global-search-trigger:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .theme-editor-btn:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .pwa-install-btn:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .dark-mode-btn:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .notification-center-button:hover,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .notification-center-button.active,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .profile-menu-button:hover {
+    color: #3f2f1f;
+    border-color: rgba(139, 98, 50, 0.30);
+    background:
+        linear-gradient(180deg, rgba(213, 170, 111, 0.46), rgba(183, 138, 85, 0.30)),
+        rgba(255, 255, 255, 0.28);
+    box-shadow:
+        0 12px 26px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.62),
+        inset 0 -1px 0 rgba(139, 98, 50, 0.10);
+}
+
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a:hover > i,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a.active > i,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button:hover > i:first-child,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"] > i:first-child,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .logo:hover .logo-mark,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .logo:focus-visible .logo-mark {
+    color: #4a351f;
+    border-color: rgba(139, 98, 50, 0.22);
+    background: rgba(255, 248, 238, 0.58);
+}
+
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > a.active::after,
+body.theme-lunora-mode:not(.dark-mode) nav#site-header .navigation > .menu-wrapper > .menu-button[aria-expanded="true"]::after {
+    background: #7b5a32;
+    box-shadow: 0 0 10px rgba(123, 90, 50, 0.30);
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-toggle-option:hover,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-actions button:hover,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:hover,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:focus-visible {
+    color: #3f2f1f !important;
+    border-color: rgba(139, 98, 50, 0.30) !important;
+    background:
+        linear-gradient(180deg, rgba(213, 170, 111, 0.46), rgba(183, 138, 85, 0.30)),
+        rgba(255, 255, 255, 0.28) !important;
+    box-shadow:
+        0 12px 26px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.62) !important;
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-toggle-option:hover i,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-actions button:hover i,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:hover i,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:focus-visible i {
+    color: #4a351f !important;
+}
+
+
+/* ── Beta badge for the Lunora Theme theme switch ────────────────── */
+.theme-editor-panel .theme-remaster-beta-badge {
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 17px !important;
+    padding: 2px 6px !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+    border-radius: 999px !important;
+    color: #92400e !important;
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.96), rgba(253, 230, 138, 0.92)) !important;
+    box-shadow: 0 5px 12px rgba(245, 158, 11, 0.14) !important;
+    font-size: 0.62rem !important;
+    font-weight: 950 !important;
+    letter-spacing: 0.05em !important;
+    line-height: 1 !important;
+    text-transform: uppercase !important;
+}
+
+body.dark-mode .theme-editor-panel .theme-remaster-beta-badge {
+    color: #fef3c7 !important;
+    background: linear-gradient(135deg, rgba(180, 83, 9, 0.52), rgba(245, 158, 11, 0.24)) !important;
+    border-color: rgba(251, 191, 36, 0.34) !important;
+    box-shadow: 0 6px 14px rgba(245, 158, 11, 0.16) !important;
+}
+
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:hover .theme-remaster-beta-badge,
+body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button:focus-visible .theme-remaster-beta-badge {
+    color: #7c2d12 !important;
+    background: linear-gradient(135deg, rgba(255, 237, 213, 0.98), rgba(253, 186, 116, 0.82)) !important;
+    border-color: rgba(234, 88, 12, 0.38) !important;
+}
