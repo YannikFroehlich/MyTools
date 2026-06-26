@@ -6060,7 +6060,7 @@ msgstr "Background effect"
 #: .\app\templates\app\base.html:866
 #: .\app\templates\app\color_palette_tool.html:152
 msgid "Kontrast"
-msgstr "Kontrast"
+msgstr "Contrast"
 
 #: .\app\templates\app\base.html:870
 msgid "Weniger Bewegung"
@@ -14477,3 +14477,29 @@ msgstr "No content"
 #, python-format
 msgid "%(size)s · %(downloads)s Downloads"
 msgstr "%(size)s · %(downloads)s downloads"
+
+#: .\app\templates\app\base.html
+msgid "Anzeigeoptionen anpassen"
+msgstr "Customize display options"
+
+#: .\app\templates\app\base.html
+msgid "Anzeige"
+msgstr "Display"
+
+#: .\app\templates\app\base.html
+msgid "Anzeige-Men&uuml; schlie&szlig;en"
+msgstr "Close display menu"
+
+#: .\app\templates\app\base.html
+msgid "W&auml;hle eine voreingestellte Farbe und passe Hintergrund-Effekt, Kontrast und Bewegung an."
+msgstr "Choose a preset color and adjust the background effect, contrast, and motion."
+
+#: .\app\templates\app\base.html
+msgid "Voreingestellte Farben"
+msgstr "Preset colors"
+
+msgid "Glass-Theme"
+msgstr "Glass theme"
+
+msgid "Anwenden"
+msgstr "Apply"

@@ -780,3 +780,130 @@ body.clock-modal-open {
         justify-content: space-between;
     }
 }
+
+
+/* Theme-aware clock surfaces */
+body.custom-theme .clock-page {
+    --clock-surface: color-mix(in srgb, var(--theme-card-bg, #ffffff) 82%, transparent);
+    --clock-surface-strong: color-mix(in srgb, var(--theme-card-bg, #ffffff) 94%, transparent);
+    --clock-surface-muted: color-mix(in srgb, var(--theme-card-bg, #ffffff) 78%, var(--theme-page-bg, #f8fafc) 22%);
+    --clock-border-soft: color-mix(in srgb, var(--theme-accent-start) 22%, transparent);
+    --clock-border-strong: color-mix(in srgb, var(--theme-accent-start) 34%, transparent);
+    --clock-panel-shadow: 0 24px 58px rgba(var(--theme-accent-rgb), 0.14);
+    color: var(--theme-card-text, var(--theme-text));
+}
+
+body.dark-mode.custom-theme .clock-page {
+    --clock-surface: color-mix(in srgb, var(--theme-card-bg, #1f2937) 78%, transparent);
+    --clock-surface-strong: color-mix(in srgb, var(--theme-card-bg, #1f2937) 90%, transparent);
+    --clock-surface-muted: color-mix(in srgb, var(--theme-card-bg, #1f2937) 82%, var(--theme-page-bg, #111827) 18%);
+    --clock-border-soft: color-mix(in srgb, var(--theme-accent-end) 18%, transparent);
+    --clock-border-strong: color-mix(in srgb, var(--theme-accent-end) 30%, transparent);
+    --clock-panel-shadow: 0 24px 62px rgba(0, 0, 0, 0.30);
+}
+
+body.custom-theme .clock-hero,
+body.custom-theme .clock-panel {
+    border-color: var(--clock-border-soft);
+    background:
+        radial-gradient(circle at top right, rgba(var(--theme-accent-end-rgb), 0.12), transparent 36%),
+        linear-gradient(145deg, var(--clock-surface-strong), var(--clock-surface));
+    box-shadow: var(--clock-panel-shadow);
+}
+
+body.custom-theme .clock-now-card {
+    color: var(--theme-accent-text);
+    background:
+        linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    box-shadow: 0 18px 40px rgba(var(--theme-accent-rgb), 0.22);
+}
+
+body.dark-mode.custom-theme .clock-now-card {
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--theme-accent-start) 56%, var(--theme-card-bg, #111827) 44%),
+            color-mix(in srgb, var(--theme-accent-end) 44%, var(--theme-card-bg, #111827) 56%)
+        );
+}
+
+body.custom-theme .clock-settings-button,
+body.custom-theme .world-clock-card,
+body.custom-theme .timer-preset-card,
+body.custom-theme .timer-save-form,
+body.custom-theme .ringtone-option span,
+body.custom-theme .custom-sound-upload,
+body.custom-theme .clock-page input,
+body.custom-theme .clock-page select {
+    color: var(--theme-card-text, var(--theme-text));
+    border-color: var(--clock-border-soft);
+    background: var(--clock-surface-strong);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.custom-theme .clock-settings-button {
+    min-height: 56px;
+    border-radius: 22px;
+    box-shadow:
+        0 14px 30px rgba(var(--theme-accent-rgb), 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.custom-theme .clock-settings-button:hover {
+    border-color: var(--clock-border-strong);
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--theme-card-bg, #ffffff) 78%, var(--theme-accent-start) 22%),
+            color-mix(in srgb, var(--theme-card-bg, #ffffff) 86%, var(--theme-accent-end) 14%)
+        );
+    box-shadow:
+        0 18px 38px rgba(var(--theme-accent-rgb), 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+body.custom-theme .world-clock-card,
+body.custom-theme .timer-preset-card {
+    box-shadow:
+        0 12px 28px rgba(var(--theme-accent-rgb), 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.custom-theme .world-clock-card span,
+body.custom-theme .timer-preset-card span,
+body.custom-theme .clock-empty,
+body.custom-theme .custom-sound-upload small,
+body.custom-theme .clock-inline-form span,
+body.custom-theme .timer-create-form span,
+body.custom-theme .clock-settings-form span {
+    color: color-mix(in srgb, var(--theme-card-text, var(--theme-text)) 68%, transparent);
+}
+
+body.custom-theme .world-clock-card strong,
+body.custom-theme .world-clock-card h3,
+body.custom-theme .timer-preset-card h3 {
+    color: var(--theme-card-text, var(--theme-text));
+}
+
+body.custom-theme .clock-delete-form button,
+body.custom-theme .clock-icon-button,
+body.custom-theme .clock-button:not(.clock-button-primary):not(.clock-button-danger) {
+    color: var(--theme-card-text, var(--theme-text));
+    border: 1px solid var(--clock-border-soft);
+    background: var(--clock-surface-muted);
+}
+
+body.custom-theme .clock-delete-form button:hover,
+body.custom-theme .clock-icon-button:hover,
+body.custom-theme .clock-button:not(.clock-button-primary):not(.clock-button-danger):hover {
+    border-color: var(--clock-border-strong);
+    background: color-mix(in srgb, var(--clock-surface-muted) 82%, var(--theme-accent-start) 18%);
+}
+
+body.custom-theme .timer-quick-set,
+body.custom-theme .lap-list li,
+body.custom-theme .clock-message,
+body.custom-theme .ringtone-option input:checked + span {
+    border-color: var(--clock-border-soft);
+    background: color-mix(in srgb, var(--theme-card-bg, #ffffff) 82%, var(--theme-accent-start) 18%);
+}
