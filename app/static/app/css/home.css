@@ -5222,3 +5222,44 @@ body.dark-mode.theme-lunora-mode .search-button:focus-visible {
         linear-gradient(135deg, rgba(191, 150, 96, 0.42), rgba(231, 200, 148, 0.22)),
         rgba(255, 255, 255, 0.08);
 }
+
+
+/* ───────────────── LUNORA THEME ROUNDER SHORTCUT TILES ───────────────── */
+body.theme-lunora-mode .shortcut-card {
+    border-radius: 28px;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(248, 242, 233, 0.88));
+    box-shadow:
+        0 16px 34px rgba(91, 64, 35, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+body.theme-lunora-mode .shortcut-card:hover,
+body.theme-lunora-mode .shortcut-card:focus-within {
+    box-shadow:
+        0 20px 42px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+body.theme-lunora-mode :is(.shortcut-icon, .shortcut-image-icon) {
+    border-radius: 22px;
+}
+
+body.theme-lunora-mode .shortcut-image-icon img {
+    border-radius: 18px;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-card {
+    background:
+        linear-gradient(145deg, rgba(48, 36, 26, 0.92), rgba(35, 26, 18, 0.9));
+    box-shadow:
+        0 18px 38px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-card:hover,
+body.dark-mode.theme-lunora-mode .shortcut-card:focus-within {
+    box-shadow:
+        0 22px 46px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
