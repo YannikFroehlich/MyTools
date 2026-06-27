@@ -484,3 +484,403 @@ body.dark-mode .about-link-card:hover {
         min-height: auto;
     }
 }
+
+/* Theme-driven about page refresh */
+.about-page {
+    --about-theme-ink: #0f172a;
+    --about-theme-muted: #64748b;
+    --about-theme-border: rgba(var(--theme-accent-rgb), 0.18);
+    --about-theme-panel: rgba(255, 255, 255, 0.82);
+    --about-theme-panel-strong: rgba(255, 255, 255, 0.92);
+    --about-theme-panel-soft: rgba(var(--theme-accent-rgb), 0.08);
+    --about-theme-shadow: rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.about-hero-copy,
+.about-hero-panel,
+.about-principle,
+.about-section,
+.about-module-group,
+.about-info-panel {
+    border-color: var(--about-theme-border);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--theme-accent-rgb), 0.14), transparent 38%),
+        linear-gradient(145deg, var(--about-theme-panel-strong), var(--about-theme-panel));
+    box-shadow:
+        0 18px 46px var(--about-theme-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+.about-hero-panel {
+    background:
+        radial-gradient(circle at 16% 0%, rgba(var(--theme-accent-rgb), 0.26), transparent 42%),
+        linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.18), rgba(var(--theme-accent-end-rgb), 0.10)),
+        var(--about-theme-panel-strong);
+    color: var(--about-theme-ink);
+}
+
+.about-kicker,
+.about-section-head span,
+.about-panel-top span,
+.about-action-secondary {
+    color: var(--theme-accent-start);
+    border-color: rgba(var(--theme-accent-rgb), 0.20);
+    background: rgba(var(--theme-accent-rgb), 0.10);
+}
+
+.about-hero h1,
+.about-principle h2,
+.about-module-heading h3,
+.about-section-head h2,
+.about-link-card strong,
+.about-metrics dd {
+    color: var(--about-theme-ink);
+}
+
+.about-hero-copy p,
+.about-section-head p,
+.about-principle p,
+.about-link-card span,
+.about-check-list li,
+.about-roadmap span,
+.about-metrics dt {
+    color: var(--about-theme-muted);
+}
+
+.about-panel-top i,
+.about-principle i,
+.about-module-heading i,
+.about-link-card > i,
+.about-check-list i,
+.about-roadmap i {
+    color: var(--theme-accent-start);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.about-metrics div,
+.about-link-card,
+.about-roadmap div {
+    border-color: rgba(var(--theme-accent-rgb), 0.16);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--theme-accent-rgb), 0.10), transparent 42%),
+        rgba(255, 255, 255, 0.70);
+    box-shadow:
+        0 10px 24px rgba(var(--theme-accent-rgb), 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
+.about-link-card:hover {
+    border-color: rgba(var(--theme-accent-rgb), 0.34);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--theme-accent-rgb), 0.14), transparent 42%),
+        rgba(255, 255, 255, 0.86);
+    box-shadow:
+        0 14px 30px rgba(var(--theme-accent-rgb), 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+
+body.dark-mode .about-page,
+body.dark .about-page {
+    --about-theme-ink: #f8fafc;
+    --about-theme-muted: rgba(226, 232, 240, 0.76);
+    --about-theme-border: rgba(var(--theme-accent-end-rgb), 0.22);
+    --about-theme-panel: rgba(17, 24, 39, 0.68);
+    --about-theme-panel-strong: rgba(15, 23, 42, 0.76);
+    --about-theme-panel-soft: rgba(var(--theme-accent-rgb), 0.14);
+    --about-theme-shadow: rgba(0, 0, 0, 0.24);
+}
+
+body.dark-mode .about-hero-copy,
+body.dark-mode .about-hero-panel,
+body.dark-mode .about-principle,
+body.dark-mode .about-section,
+body.dark-mode .about-module-group,
+body.dark-mode .about-info-panel,
+body.dark .about-hero-copy,
+body.dark .about-hero-panel,
+body.dark .about-principle,
+body.dark .about-section,
+body.dark .about-module-group,
+body.dark .about-info-panel {
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--theme-accent-rgb), 0.18), transparent 40%),
+        linear-gradient(145deg, var(--about-theme-panel-strong), var(--about-theme-panel));
+}
+
+body.dark-mode .about-hero-panel,
+body.dark .about-hero-panel {
+    background:
+        radial-gradient(circle at 14% 0%, rgba(var(--theme-accent-rgb), 0.26), transparent 42%),
+        radial-gradient(circle at 96% 12%, rgba(var(--theme-accent-end-rgb), 0.18), transparent 38%),
+        linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.18), rgba(0, 0, 0, 0.24)),
+        var(--about-theme-panel-strong);
+}
+
+body.dark-mode .about-hero h1,
+body.dark-mode .about-principle h2,
+body.dark-mode .about-module-heading h3,
+body.dark-mode .about-section-head h2,
+body.dark-mode .about-link-card strong,
+body.dark-mode .about-metrics dd,
+body.dark .about-hero h1,
+body.dark .about-principle h2,
+body.dark .about-module-heading h3,
+body.dark .about-section-head h2,
+body.dark .about-link-card strong,
+body.dark .about-metrics dd {
+    color: var(--about-theme-ink);
+}
+
+body.dark-mode .about-hero-copy p,
+body.dark-mode .about-section-head p,
+body.dark-mode .about-principle p,
+body.dark-mode .about-link-card span,
+body.dark-mode .about-check-list li,
+body.dark-mode .about-roadmap span,
+body.dark-mode .about-metrics dt,
+body.dark .about-hero-copy p,
+body.dark .about-section-head p,
+body.dark .about-principle p,
+body.dark .about-link-card span,
+body.dark .about-check-list li,
+body.dark .about-roadmap span,
+body.dark .about-metrics dt {
+    color: var(--about-theme-muted);
+}
+
+body.dark-mode .about-panel-top i,
+body.dark-mode .about-principle i,
+body.dark-mode .about-module-heading i,
+body.dark-mode .about-link-card > i,
+body.dark-mode .about-check-list i,
+body.dark-mode .about-roadmap i,
+body.dark .about-panel-top i,
+body.dark .about-principle i,
+body.dark .about-module-heading i,
+body.dark .about-link-card > i,
+body.dark .about-check-list i,
+body.dark .about-roadmap i {
+    color: var(--theme-accent-end);
+    background: rgba(var(--theme-accent-end-rgb), 0.14);
+}
+
+body.dark-mode .about-kicker,
+body.dark-mode .about-section-head span,
+body.dark-mode .about-panel-top span,
+body.dark-mode .about-action-secondary,
+body.dark .about-kicker,
+body.dark .about-section-head span,
+body.dark .about-panel-top span,
+body.dark .about-action-secondary {
+    color: var(--theme-accent-end);
+    border-color: rgba(var(--theme-accent-end-rgb), 0.20);
+    background: rgba(var(--theme-accent-end-rgb), 0.14);
+}
+
+body.dark-mode .about-metrics div,
+body.dark-mode .about-link-card,
+body.dark-mode .about-roadmap div,
+body.dark .about-metrics div,
+body.dark .about-link-card,
+body.dark .about-roadmap div {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.16);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--theme-accent-end-rgb), 0.12), transparent 42%),
+        rgba(255, 255, 255, 0.045);
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .about-link-card:hover,
+body.dark .about-link-card:hover {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.30);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--theme-accent-end-rgb), 0.16), transparent 42%),
+        rgba(255, 255, 255, 0.075);
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.24),
+        0 0 0 1px rgba(var(--theme-accent-end-rgb), 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+body.theme-lunora-mode .about-page {
+    --about-theme-ink: var(--lunora-theme-ink);
+    --about-theme-muted: var(--lunora-theme-muted);
+    --about-theme-border: var(--lunora-theme-border);
+    --about-theme-panel: var(--lunora-theme-panel);
+    --about-theme-panel-strong: var(--lunora-theme-panel-strong);
+    --about-theme-panel-soft: rgba(183, 138, 85, 0.12);
+    --about-theme-shadow: rgba(91, 64, 35, 0.14);
+}
+
+body.theme-lunora-mode .about-hero-copy,
+body.theme-lunora-mode .about-hero-panel,
+body.theme-lunora-mode .about-principle,
+body.theme-lunora-mode .about-section,
+body.theme-lunora-mode .about-module-group,
+body.theme-lunora-mode .about-info-panel {
+    border-color: var(--lunora-theme-border);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(226, 186, 123, 0.18), transparent 38%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.82), rgba(247, 232, 211, 0.62));
+    box-shadow:
+        0 18px 46px rgba(91, 64, 35, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+body.theme-lunora-mode .about-hero-panel {
+    background:
+        radial-gradient(circle at 16% 0%, rgba(226, 186, 123, 0.26), transparent 42%),
+        radial-gradient(circle at 96% 12%, rgba(183, 138, 85, 0.16), transparent 38%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.84), rgba(247, 232, 211, 0.66));
+}
+
+body.theme-lunora-mode .about-hero h1,
+body.theme-lunora-mode .about-principle h2,
+body.theme-lunora-mode .about-module-heading h3,
+body.theme-lunora-mode .about-section-head h2,
+body.theme-lunora-mode .about-link-card strong,
+body.theme-lunora-mode .about-metrics dd {
+    color: var(--about-theme-ink);
+}
+
+body.theme-lunora-mode .about-hero-copy p,
+body.theme-lunora-mode .about-section-head p,
+body.theme-lunora-mode .about-principle p,
+body.theme-lunora-mode .about-link-card span,
+body.theme-lunora-mode .about-check-list li,
+body.theme-lunora-mode .about-roadmap span,
+body.theme-lunora-mode .about-metrics dt {
+    color: var(--about-theme-muted);
+}
+
+body.theme-lunora-mode .about-metrics div,
+body.theme-lunora-mode .about-link-card,
+body.theme-lunora-mode .about-roadmap div {
+    border-color: var(--lunora-theme-border);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(226, 186, 123, 0.16), transparent 42%),
+        rgba(255, 250, 244, 0.64);
+    box-shadow:
+        0 10px 24px rgba(91, 64, 35, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
+body.theme-lunora-mode .about-link-card:hover {
+    border-color: rgba(183, 138, 85, 0.34);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(226, 186, 123, 0.22), transparent 42%),
+        rgba(255, 250, 244, 0.78);
+    box-shadow:
+        0 14px 30px rgba(91, 64, 35, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+
+body.theme-lunora-mode .about-panel-top i,
+body.theme-lunora-mode .about-principle i,
+body.theme-lunora-mode .about-module-heading i,
+body.theme-lunora-mode .about-link-card > i,
+body.theme-lunora-mode .about-check-list i,
+body.theme-lunora-mode .about-roadmap i {
+    color: var(--theme-accent-start);
+    background: rgba(183, 138, 85, 0.12);
+}
+
+body.theme-lunora-mode .about-kicker,
+body.theme-lunora-mode .about-section-head span,
+body.theme-lunora-mode .about-panel-top span,
+body.theme-lunora-mode .about-action-secondary {
+    color: var(--theme-accent-start);
+    border-color: rgba(183, 138, 85, 0.20);
+    background: rgba(183, 138, 85, 0.12);
+}
+
+body.dark-mode.theme-lunora-mode .about-page,
+body.dark.theme-lunora-mode .about-page {
+    --about-theme-ink: #fff0dd;
+    --about-theme-muted: #d2b58d;
+    --about-theme-border: rgba(226, 186, 123, 0.18);
+    --about-theme-panel: rgba(38, 27, 19, 0.78);
+    --about-theme-panel-strong: rgba(43, 32, 23, 0.90);
+    --about-theme-panel-soft: rgba(226, 186, 123, 0.12);
+    --about-theme-shadow: rgba(0, 0, 0, 0.30);
+}
+
+body.dark-mode.theme-lunora-mode .about-hero-copy,
+body.dark-mode.theme-lunora-mode .about-hero-panel,
+body.dark-mode.theme-lunora-mode .about-principle,
+body.dark-mode.theme-lunora-mode .about-section,
+body.dark-mode.theme-lunora-mode .about-module-group,
+body.dark-mode.theme-lunora-mode .about-info-panel,
+body.dark.theme-lunora-mode .about-hero-copy,
+body.dark.theme-lunora-mode .about-hero-panel,
+body.dark.theme-lunora-mode .about-principle,
+body.dark.theme-lunora-mode .about-section,
+body.dark.theme-lunora-mode .about-module-group,
+body.dark.theme-lunora-mode .about-info-panel {
+    border-color: rgba(226, 186, 123, 0.18);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(226, 186, 123, 0.16), transparent 38%),
+        radial-gradient(circle at 94% 8%, rgba(183, 138, 85, 0.12), transparent 34%),
+        rgba(38, 27, 19, 0.84);
+    box-shadow:
+        0 18px 48px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .about-metrics div,
+body.dark-mode.theme-lunora-mode .about-link-card,
+body.dark-mode.theme-lunora-mode .about-roadmap div,
+body.dark.theme-lunora-mode .about-metrics div,
+body.dark.theme-lunora-mode .about-link-card,
+body.dark.theme-lunora-mode .about-roadmap div {
+    border-color: rgba(226, 186, 123, 0.16);
+    background:
+        radial-gradient(circle at 14% 0%, rgba(226, 186, 123, 0.12), transparent 42%),
+        rgba(44, 32, 23, 0.74);
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+body.dark-mode.theme-lunora-mode .about-link-card:hover,
+body.dark.theme-lunora-mode .about-link-card:hover {
+    border-color: rgba(226, 186, 123, 0.28);
+    background:
+        radial-gradient(circle at 14% 0%, rgba(226, 186, 123, 0.18), transparent 42%),
+        rgba(50, 36, 25, 0.86);
+    box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.30),
+        0 0 0 1px rgba(226, 186, 123, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+body.dark-mode.theme-lunora-mode .about-panel-top i,
+body.dark-mode.theme-lunora-mode .about-principle i,
+body.dark-mode.theme-lunora-mode .about-module-heading i,
+body.dark-mode.theme-lunora-mode .about-link-card > i,
+body.dark-mode.theme-lunora-mode .about-check-list i,
+body.dark-mode.theme-lunora-mode .about-roadmap i,
+body.dark.theme-lunora-mode .about-panel-top i,
+body.dark.theme-lunora-mode .about-principle i,
+body.dark.theme-lunora-mode .about-module-heading i,
+body.dark.theme-lunora-mode .about-link-card > i,
+body.dark.theme-lunora-mode .about-check-list i,
+body.dark.theme-lunora-mode .about-roadmap i {
+    color: #e2ba7b;
+    background: rgba(226, 186, 123, 0.12);
+}
+
+body.dark-mode.theme-lunora-mode .about-kicker,
+body.dark-mode.theme-lunora-mode .about-section-head span,
+body.dark-mode.theme-lunora-mode .about-panel-top span,
+body.dark-mode.theme-lunora-mode .about-action-secondary,
+body.dark.theme-lunora-mode .about-kicker,
+body.dark.theme-lunora-mode .about-section-head span,
+body.dark.theme-lunora-mode .about-panel-top span,
+body.dark.theme-lunora-mode .about-action-secondary {
+    color: #e2ba7b;
+    border-color: rgba(226, 186, 123, 0.20);
+    background: rgba(226, 186, 123, 0.12);
+}

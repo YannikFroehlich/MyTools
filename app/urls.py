@@ -218,7 +218,6 @@ from .views.chat import (
     pin_chat_message,
     react_chat_message,
     send_chat_message,
-    set_chat_theme,
     start_direct_chat,
 )
 from .views.notification import live_status_api, notification_center_api, notification_counts_api, notification_dismiss_all_api, notification_dismiss_api
@@ -339,7 +338,6 @@ urlpatterns = [
     path('chat/<int:room_id>/message/<int:message_id>/edit/', edit_chat_message, name='chat_message_edit'),
     path('chat/<int:room_id>/message/<int:message_id>/pin/', pin_chat_message, name='chat_message_pin'),
     path('chat/<int:room_id>/message/<int:message_id>/react/', react_chat_message, name='chat_message_react'),
-    path('chat/<int:room_id>/theme/', set_chat_theme, name='chat_theme'),
     path('api/chat/<int:room_id>/messages/', chat_messages_api, name='chat_messages_api'),
     path('api/chat/<int:room_id>/typing/', chat_typing_api, name='chat_typing_api'),
     path('api/live-status/', live_status_api, name='live_status_api'),

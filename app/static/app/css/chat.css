@@ -1834,37 +1834,7 @@ body.dark-mode .chat-group-member-row button { background: rgba(255,255,255,.1);
     .chat-group-manage-panel { left: 14px; right: 14px; width: auto; }
 }
 
-/* ===== Chat themes and pinned messages ===== */
-.chat-layout.chat-theme-ocean {
-    --theme-accent-start: #06b6d4;
-    --theme-accent-end: #2563eb;
-    --theme-accent-rgb: 6, 182, 212;
-}
-
-.chat-layout.chat-theme-forest {
-    --theme-accent-start: #16a34a;
-    --theme-accent-end: #0f766e;
-    --theme-accent-rgb: 22, 163, 74;
-}
-
-.chat-layout.chat-theme-sunset {
-    --theme-accent-start: #f97316;
-    --theme-accent-end: #db2777;
-    --theme-accent-rgb: 249, 115, 22;
-}
-
-.chat-layout.chat-theme-grape {
-    --theme-accent-start: #8b5cf6;
-    --theme-accent-end: #ec4899;
-    --theme-accent-rgb: 139, 92, 246;
-}
-
-.chat-layout.chat-theme-graphite {
-    --theme-accent-start: #475569;
-    --theme-accent-end: #0f172a;
-    --theme-accent-rgb: 71, 85, 105;
-}
-
+/* ===== Pinned messages ===== */
 .chat-window {
     grid-template-rows: auto auto minmax(0, 1fr) auto;
 }
@@ -1884,83 +1854,6 @@ body.dark-mode .chat-group-member-row button { background: rgba(255,255,255,.1);
 .chat-compose {
     grid-row: 4;
 }
-
-.chat-theme-menu {
-    position: relative;
-}
-
-.chat-theme-menu summary {
-    min-height: 42px;
-    padding: 0 13px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    list-style: none;
-    color: var(--theme-text);
-    background: rgba(148, 163, 184, .12);
-    font-weight: 900;
-}
-
-.chat-theme-menu summary::-webkit-details-marker {
-    display: none;
-}
-
-.chat-theme-panel {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    z-index: 55;
-    width: 250px;
-    padding: 10px;
-    border-radius: 20px;
-    display: grid;
-    gap: 8px;
-    border: 1px solid rgba(148, 163, 184, .18);
-    background: rgba(255, 255, 255, .96);
-    box-shadow: 0 24px 60px rgba(15, 23, 42, .18);
-    backdrop-filter: blur(18px);
-}
-
-.chat-theme-choice {
-    cursor: pointer;
-}
-
-.chat-theme-choice input {
-    display: none;
-}
-
-.chat-theme-choice span {
-    min-height: 42px;
-    padding: 8px 10px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    border: 1px solid transparent;
-    background: rgba(148, 163, 184, .08);
-}
-
-.chat-theme-choice input:checked + span {
-    border-color: rgba(var(--theme-accent-rgb), .34);
-    background: rgba(var(--theme-accent-rgb), .13);
-}
-
-.chat-theme-choice i {
-    width: 26px;
-    height: 26px;
-    border-radius: 10px;
-    flex: 0 0 auto;
-    background: linear-gradient(135deg, var(--swatch-start, var(--theme-accent-start)), var(--swatch-end, var(--theme-accent-end)));
-}
-
-.chat-theme-choice-default { --swatch-start: var(--theme-accent-start); --swatch-end: var(--theme-accent-end); }
-.chat-theme-choice-ocean { --swatch-start: #06b6d4; --swatch-end: #2563eb; }
-.chat-theme-choice-forest { --swatch-start: #16a34a; --swatch-end: #0f766e; }
-.chat-theme-choice-sunset { --swatch-start: #f97316; --swatch-end: #db2777; }
-.chat-theme-choice-grape { --swatch-start: #8b5cf6; --swatch-end: #ec4899; }
-.chat-theme-choice-graphite { --swatch-start: #475569; --swatch-end: #0f172a; }
 
 .chat-pinned-message {
     padding: 10px 16px;
@@ -2050,14 +1943,6 @@ body.dark-mode .chat-group-member-row button { background: rgba(255,255,255,.1);
     50% { transform: translateY(0); }
 }
 
-body.dark-mode .chat-theme-panel {
-    background: rgba(15, 23, 42, .97);
-    border-color: rgba(203, 213, 225, .14);
-    box-shadow: 0 24px 60px rgba(0,0,0,.34);
-}
-
-body.dark-mode .chat-theme-menu summary,
-body.dark-mode .chat-theme-choice span,
 body.dark-mode .chat-pinned-jump {
     background: rgba(255,255,255,.08);
     color: #e2e8f0;
@@ -2067,7 +1952,548 @@ body.dark-mode .chat-pinned-jump small {
     color: #cbd5e1;
 }
 
-@media (max-width: 760px) {
-    .chat-theme-menu { position: static; }
-    .chat-theme-panel { left: 14px; right: 14px; width: auto; }
+/* Theme-driven chat surface refresh */
+.chat-page {
+    --chat-surface: color-mix(in srgb, var(--theme-page-bg) 74%, #ffffff 26%);
+    --chat-surface-strong: color-mix(in srgb, var(--theme-page-bg) 64%, #ffffff 36%);
+    --chat-surface-soft: color-mix(in srgb, var(--theme-page-bg) 84%, #ffffff 16%);
+    --chat-surface-muted: color-mix(in srgb, var(--theme-page-bg) 88%, var(--theme-text) 12%);
+    --chat-border: rgba(var(--theme-accent-rgb), 0.18);
+    --chat-border-strong: rgba(var(--theme-accent-rgb), 0.34);
+    --chat-muted: color-mix(in srgb, var(--theme-text) 58%, var(--theme-page-bg));
+    --chat-shadow: 0 22px 70px rgba(var(--theme-accent-rgb), 0.10);
+    --chat-danger-start: #a85548;
+    --chat-danger-end: #d17a5d;
+    --chat-danger-rgb: 168, 85, 72;
+}
+
+body.chat-page-body {
+    scrollbar-color: rgba(var(--theme-accent-rgb), 0.58) rgba(var(--theme-accent-rgb), 0.10);
+}
+
+body.chat-page-body::-webkit-scrollbar-track {
+    background: rgba(var(--theme-accent-rgb), 0.10);
+}
+
+body.chat-page-body::-webkit-scrollbar-thumb {
+    border-color: color-mix(in srgb, var(--theme-page-bg) 76%, transparent);
+}
+
+.chat-sidebar,
+.chat-window,
+.chat-start-panel,
+.chat-sidebar-hero {
+    color: var(--theme-text);
+    border-color: var(--chat-border);
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.14), transparent 38%),
+        radial-gradient(circle at bottom right, rgba(var(--theme-accent-end-rgb), 0.12), transparent 40%),
+        var(--chat-surface-strong);
+    box-shadow: var(--chat-shadow);
+}
+
+.chat-sidebar-hero {
+    background:
+        radial-gradient(circle at 88% 8%, rgba(var(--theme-accent-end-rgb), 0.22), transparent 34%),
+        linear-gradient(135deg, var(--chat-surface-strong), var(--chat-surface));
+}
+
+.chat-window-header,
+.chat-pinned-message,
+.chat-compose {
+    border-color: var(--chat-border);
+}
+
+.chat-window-header {
+    background: color-mix(in srgb, var(--chat-surface-strong) 84%, transparent);
+}
+
+.chat-messages {
+    background:
+        radial-gradient(circle at 50% 0, rgba(var(--theme-accent-rgb), 0.08), transparent 34%),
+        var(--chat-surface-soft);
+}
+
+.chat-compose,
+.chat-pinned-message {
+    background: color-mix(in srgb, var(--chat-surface-strong) 78%, transparent);
+}
+
+.chat-kicker,
+.chat-room-description,
+.chat-room-main small,
+.chat-panel-heading small,
+.chat-direct-info small,
+.chat-no-friends,
+.chat-empty-state,
+.chat-start-panel,
+.chat-empty-mini,
+.chat-attachment-name,
+.chat-typing-indicator,
+.chat-edit-state,
+.chat-date-separator,
+.chat-message-meta span,
+.chat-pinned-jump small,
+.chat-profile-card-copy small,
+.chat-profile-card-copy em {
+    color: var(--chat-muted);
+}
+
+.chat-kicker,
+.chat-mention,
+.chat-attach-button {
+    color: var(--theme-accent-start);
+}
+
+.chat-sidebar-header h2,
+.chat-window-header h2,
+.chat-room-main strong,
+.chat-message-meta strong,
+.chat-empty-state h2,
+.chat-start-panel h2,
+.chat-action-title,
+.chat-profile-card-copy b {
+    color: var(--theme-text);
+}
+
+.chat-sidebar-header > span,
+.chat-room-avatar,
+.chat-room-avatar.is-group,
+.chat-member-strip a,
+.chat-message-avatar,
+.chat-action-icon,
+.chat-action-icon.is-group,
+.chat-direct-avatar b,
+.chat-friend-picker img,
+.chat-friend-picker b,
+.chat-friend-chip img,
+.chat-friend-chip b,
+.chat-empty-state i,
+.chat-start-panel i,
+.chat-group-form button,
+.chat-find-friends,
+.chat-start-panel a,
+.chat-compose button,
+.chat-edit-form button,
+.chat-pinned-jump > i,
+.chat-message.is-pinned .chat-bubble::before {
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text, #ffffff);
+    box-shadow: 0 14px 30px rgba(var(--theme-accent-rgb), 0.18);
+}
+
+.chat-room-item,
+.chat-action-card,
+.chat-action-card[open] .chat-action-body,
+.chat-direct-panel,
+.chat-group-form,
+.chat-empty-mini,
+.chat-friend-picker span,
+.chat-direct-user,
+.chat-direct-compact-user,
+.chat-friend-chip span,
+.chat-bubble,
+.chat-search-form,
+.chat-attachment,
+.chat-message-menu,
+.chat-emoji-picker,
+.chat-pinned-jump,
+.chat-group-manage summary,
+.chat-group-manage-panel,
+.chat-settings-file-label,
+.chat-group-member-row,
+.chat-profile-card,
+.chat-date-separator span,
+.chat-edit-form textarea,
+.chat-settings-input,
+.chat-compose textarea,
+.chat-group-form input[type="text"] {
+    border-color: var(--chat-border);
+    background: var(--chat-surface);
+    color: var(--theme-text);
+}
+
+.chat-room-item:hover,
+.chat-room-item.is-active,
+.chat-direct-user:hover,
+.chat-direct-compact-user:hover,
+.chat-friend-chip input:checked + span,
+.chat-message-menu button:hover,
+.chat-emoji-picker button:hover {
+    border-color: var(--chat-border-strong);
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.16), transparent 42%),
+        var(--chat-surface-strong);
+}
+
+.chat-room-item.is-active {
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--theme-accent-rgb), 0.12),
+        0 14px 34px rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.chat-search-form input,
+.chat-compose textarea,
+.chat-group-form input[type="text"],
+.chat-settings-input,
+.chat-edit-form textarea {
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: none;
+}
+
+.chat-search-form input {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--theme-text);
+}
+
+.chat-search-form input::placeholder,
+.chat-compose textarea::placeholder,
+.chat-group-form input[type="text"]::placeholder,
+.chat-settings-input::placeholder,
+.chat-edit-form textarea::placeholder {
+    color: color-mix(in srgb, var(--chat-muted) 72%, transparent);
+}
+
+.chat-attach-button {
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    border: 1px solid rgba(var(--theme-accent-rgb), 0.18);
+}
+
+.chat-message.is-own .chat-bubble {
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text, #ffffff);
+    box-shadow: 0 16px 34px rgba(var(--theme-accent-rgb), 0.18);
+}
+
+.chat-message.is-own .chat-message-meta strong,
+.chat-message.is-own .chat-message-meta span,
+.chat-message.is-own .chat-read-state {
+    color: color-mix(in srgb, var(--theme-accent-text, #ffffff) 84%, transparent);
+}
+
+.chat-message-menu button,
+.chat-emoji-picker button {
+    color: var(--theme-text);
+}
+
+.chat-message.is-own .chat-message-menu button[data-chat-action="delete"]:hover,
+.chat-danger-button {
+    background: linear-gradient(135deg, var(--chat-danger-start), var(--chat-danger-end));
+    color: #ffffff;
+}
+
+.chat-unread-badge,
+.chat-action-count {
+    background: linear-gradient(135deg, var(--chat-danger-start), var(--chat-danger-end));
+    color: #ffffff;
+}
+
+.chat-reaction,
+.chat-reaction.is-mine,
+.chat-mention,
+.chat-group-member-row b {
+    border-color: rgba(var(--theme-accent-rgb), 0.18);
+    background: rgba(var(--theme-accent-rgb), 0.12);
+    color: var(--theme-accent-start);
+}
+
+body.dark-mode .chat-page,
+body.dark .chat-page {
+    --chat-surface: color-mix(in srgb, var(--theme-page-bg) 82%, #ffffff 8%);
+    --chat-surface-strong: color-mix(in srgb, var(--theme-page-bg) 74%, #ffffff 12%);
+    --chat-surface-soft: color-mix(in srgb, var(--theme-page-bg) 88%, #ffffff 6%);
+    --chat-surface-muted: color-mix(in srgb, var(--theme-page-bg) 84%, #ffffff 8%);
+    --chat-border: rgba(var(--theme-accent-end-rgb), 0.20);
+    --chat-border-strong: rgba(var(--theme-accent-end-rgb), 0.34);
+    --chat-muted: color-mix(in srgb, var(--theme-text) 64%, var(--theme-page-bg));
+    --chat-shadow: 0 24px 76px rgba(0, 0, 0, 0.24);
+}
+
+body.dark-mode .chat-sidebar,
+body.dark .chat-sidebar,
+body.dark-mode .chat-window,
+body.dark .chat-window,
+body.dark-mode .chat-start-panel,
+body.dark .chat-start-panel,
+body.dark-mode .chat-sidebar-hero,
+body.dark .chat-sidebar-hero {
+    color: var(--theme-text);
+    border-color: var(--chat-border);
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.20), transparent 38%),
+        radial-gradient(circle at bottom right, rgba(var(--theme-accent-end-rgb), 0.16), transparent 40%),
+        var(--chat-surface-strong);
+    box-shadow: var(--chat-shadow);
+}
+
+body.dark-mode .chat-room-item,
+body.dark .chat-room-item,
+body.dark-mode .chat-action-card,
+body.dark .chat-action-card,
+body.dark-mode .chat-action-card[open] .chat-action-body,
+body.dark .chat-action-card[open] .chat-action-body,
+body.dark-mode .chat-direct-panel,
+body.dark .chat-direct-panel,
+body.dark-mode .chat-group-form,
+body.dark .chat-group-form,
+body.dark-mode .chat-empty-mini,
+body.dark .chat-empty-mini,
+body.dark-mode .chat-friend-picker span,
+body.dark .chat-friend-picker span,
+body.dark-mode .chat-direct-user,
+body.dark .chat-direct-user,
+body.dark-mode .chat-direct-compact-user,
+body.dark .chat-direct-compact-user,
+body.dark-mode .chat-friend-chip span,
+body.dark .chat-friend-chip span,
+body.dark-mode .chat-bubble,
+body.dark .chat-bubble,
+body.dark-mode .chat-search-form,
+body.dark .chat-search-form,
+body.dark-mode .chat-attachment,
+body.dark .chat-attachment,
+body.dark-mode .chat-message-menu,
+body.dark .chat-message-menu,
+body.dark-mode .chat-emoji-picker,
+body.dark .chat-emoji-picker,
+body.dark-mode .chat-pinned-jump,
+body.dark .chat-pinned-jump,
+body.dark-mode .chat-group-manage summary,
+body.dark .chat-group-manage summary,
+body.dark-mode .chat-group-manage-panel,
+body.dark .chat-group-manage-panel,
+body.dark-mode .chat-settings-file-label,
+body.dark .chat-settings-file-label,
+body.dark-mode .chat-group-member-row,
+body.dark .chat-group-member-row,
+body.dark-mode .chat-profile-card,
+body.dark .chat-profile-card,
+body.dark-mode .chat-date-separator span,
+body.dark .chat-date-separator span,
+body.dark-mode .chat-edit-form textarea,
+body.dark .chat-edit-form textarea,
+body.dark-mode .chat-settings-input,
+body.dark .chat-settings-input,
+body.dark-mode .chat-compose textarea,
+body.dark .chat-compose textarea,
+body.dark-mode .chat-group-form input[type="text"],
+body.dark .chat-group-form input[type="text"] {
+    border-color: var(--chat-border);
+    background: var(--chat-surface);
+    color: var(--theme-text);
+}
+
+body.dark-mode .chat-search-form input,
+body.dark .chat-search-form input {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 0;
+    box-shadow: none;
+    color: var(--theme-text);
+}
+
+body.dark-mode .chat-kicker,
+body.dark .chat-kicker,
+body.dark-mode .chat-attach-button,
+body.dark .chat-attach-button {
+    color: var(--theme-accent-end);
+}
+
+body.theme-lunora-mode .chat-layout {
+    --theme-accent-start: #b78a55 !important;
+    --theme-accent-end: #e2ba7b !important;
+    --theme-accent-rgb: 183, 138, 85 !important;
+    --theme-accent-end-rgb: 226, 186, 123 !important;
+}
+
+body.theme-lunora-mode .chat-page {
+    --chat-surface: var(--lunora-theme-panel);
+    --chat-surface-strong: var(--lunora-theme-panel-strong);
+    --chat-surface-soft: rgba(255, 255, 255, 0.50);
+    --chat-surface-muted: rgba(255, 250, 244, 0.42);
+    --chat-border: var(--lunora-theme-border);
+    --chat-border-strong: rgba(183, 138, 85, 0.34);
+    --chat-muted: var(--lunora-theme-muted);
+    --chat-shadow: 0 22px 60px var(--lunora-theme-shadow);
+    --chat-danger-start: #8f4d3f;
+    --chat-danger-end: #c06f56;
+    --chat-danger-rgb: 143, 77, 63;
+}
+
+body.theme-lunora-mode .chat-sidebar,
+body.theme-lunora-mode .chat-window,
+body.theme-lunora-mode .chat-start-panel,
+body.theme-lunora-mode .chat-sidebar-hero {
+    border-color: var(--chat-border);
+    background:
+        radial-gradient(circle at 90% 8%, rgba(226, 186, 123, 0.20), transparent 34%),
+        radial-gradient(circle at 6% 100%, rgba(183, 138, 85, 0.14), transparent 38%),
+        var(--chat-surface-strong);
+    box-shadow: var(--chat-shadow);
+}
+
+body.theme-lunora-mode .chat-window-header,
+body.theme-lunora-mode .chat-pinned-message,
+body.theme-lunora-mode .chat-compose {
+    background: color-mix(in srgb, var(--chat-surface-strong) 78%, transparent);
+    border-color: var(--chat-border);
+}
+
+body.theme-lunora-mode .chat-messages {
+    background:
+        radial-gradient(circle at 50% 0, rgba(226, 186, 123, 0.10), transparent 34%),
+        var(--chat-surface-soft);
+}
+
+body.theme-lunora-mode .chat-room-item,
+body.theme-lunora-mode .chat-action-card,
+body.theme-lunora-mode .chat-action-card[open] .chat-action-body,
+body.theme-lunora-mode .chat-direct-panel,
+body.theme-lunora-mode .chat-group-form,
+body.theme-lunora-mode .chat-empty-mini,
+body.theme-lunora-mode .chat-friend-picker span,
+body.theme-lunora-mode .chat-direct-user,
+body.theme-lunora-mode .chat-direct-compact-user,
+body.theme-lunora-mode .chat-friend-chip span,
+body.theme-lunora-mode .chat-bubble,
+body.theme-lunora-mode .chat-search-form,
+body.theme-lunora-mode .chat-attachment,
+body.theme-lunora-mode .chat-message-menu,
+body.theme-lunora-mode .chat-emoji-picker,
+body.theme-lunora-mode .chat-pinned-jump,
+body.theme-lunora-mode .chat-group-manage summary,
+body.theme-lunora-mode .chat-group-manage-panel,
+body.theme-lunora-mode .chat-settings-file-label,
+body.theme-lunora-mode .chat-group-member-row,
+body.theme-lunora-mode .chat-profile-card,
+body.theme-lunora-mode .chat-date-separator span,
+body.theme-lunora-mode .chat-edit-form textarea,
+body.theme-lunora-mode .chat-settings-input,
+body.theme-lunora-mode .chat-compose textarea,
+body.theme-lunora-mode .chat-group-form input[type="text"] {
+    border-color: var(--chat-border);
+    background:
+        radial-gradient(circle at top left, rgba(226, 186, 123, 0.12), transparent 42%),
+        var(--chat-surface);
+    color: var(--lunora-theme-ink);
+}
+
+body.theme-lunora-mode .chat-room-item:hover,
+body.theme-lunora-mode .chat-room-item.is-active,
+body.theme-lunora-mode .chat-direct-user:hover,
+body.theme-lunora-mode .chat-direct-compact-user:hover,
+body.theme-lunora-mode .chat-friend-chip input:checked + span {
+    border-color: var(--chat-border-strong);
+    background:
+        radial-gradient(circle at top left, rgba(226, 186, 123, 0.20), transparent 42%),
+        var(--chat-surface-strong);
+}
+
+body.theme-lunora-mode .chat-sidebar-header > span,
+body.theme-lunora-mode .chat-room-avatar,
+body.theme-lunora-mode .chat-room-avatar.is-group,
+body.theme-lunora-mode .chat-member-strip a,
+body.theme-lunora-mode .chat-message-avatar,
+body.theme-lunora-mode .chat-action-icon,
+body.theme-lunora-mode .chat-action-icon.is-group,
+body.theme-lunora-mode .chat-direct-avatar b,
+body.theme-lunora-mode .chat-friend-picker img,
+body.theme-lunora-mode .chat-friend-picker b,
+body.theme-lunora-mode .chat-friend-chip img,
+body.theme-lunora-mode .chat-friend-chip b,
+body.theme-lunora-mode .chat-empty-state i,
+body.theme-lunora-mode .chat-start-panel i,
+body.theme-lunora-mode .chat-compose button,
+body.theme-lunora-mode .chat-edit-form button,
+body.theme-lunora-mode .chat-group-form button,
+body.theme-lunora-mode .chat-find-friends,
+body.theme-lunora-mode .chat-start-panel a,
+body.theme-lunora-mode .chat-pinned-jump > i,
+body.theme-lunora-mode .chat-message.is-own .chat-bubble,
+body.theme-lunora-mode .chat-message.is-pinned .chat-bubble::before {
+    background: linear-gradient(135deg, #b78a55, #e2ba7b);
+    color: #ffffff;
+    box-shadow:
+        0 16px 34px rgba(91, 64, 35, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+body.theme-lunora-mode .chat-search-form input,
+body.theme-lunora-mode .chat-compose textarea,
+body.theme-lunora-mode .chat-group-form input[type="text"],
+body.theme-lunora-mode .chat-settings-input,
+body.theme-lunora-mode .chat-edit-form textarea {
+    background-color: transparent !important;
+}
+
+body.dark-mode.theme-lunora-mode .chat-page {
+    --chat-surface: rgba(39, 29, 21, 0.72);
+    --chat-surface-strong: rgba(43, 32, 23, 0.88);
+    --chat-surface-soft: rgba(255, 255, 255, 0.06);
+    --chat-surface-muted: rgba(255, 255, 255, 0.08);
+    --chat-border: rgba(226, 186, 123, 0.18);
+    --chat-muted: #d2b58d;
+    --chat-shadow: 0 24px 76px rgba(0, 0, 0, 0.30);
+    --chat-danger-start: #be6f5a;
+    --chat-danger-end: #e09b77;
+    --chat-danger-rgb: 190, 111, 90;
+}
+
+body.dark-mode.theme-lunora-mode .chat-sidebar,
+body.dark-mode.theme-lunora-mode .chat-window,
+body.dark-mode.theme-lunora-mode .chat-start-panel,
+body.dark-mode.theme-lunora-mode .chat-sidebar-hero {
+    background:
+        radial-gradient(circle at 90% 8%, rgba(226, 186, 123, 0.16), transparent 34%),
+        radial-gradient(circle at 6% 100%, rgba(183, 138, 85, 0.13), transparent 38%),
+        var(--chat-surface-strong);
+}
+
+body.dark-mode.theme-lunora-mode .chat-room-item,
+body.dark-mode.theme-lunora-mode .chat-action-card,
+body.dark-mode.theme-lunora-mode .chat-action-card[open] .chat-action-body,
+body.dark-mode.theme-lunora-mode .chat-direct-panel,
+body.dark-mode.theme-lunora-mode .chat-group-form,
+body.dark-mode.theme-lunora-mode .chat-empty-mini,
+body.dark-mode.theme-lunora-mode .chat-friend-picker span,
+body.dark-mode.theme-lunora-mode .chat-direct-user,
+body.dark-mode.theme-lunora-mode .chat-direct-compact-user,
+body.dark-mode.theme-lunora-mode .chat-friend-chip span,
+body.dark-mode.theme-lunora-mode .chat-bubble,
+body.dark-mode.theme-lunora-mode .chat-search-form,
+body.dark-mode.theme-lunora-mode .chat-attachment,
+body.dark-mode.theme-lunora-mode .chat-message-menu,
+body.dark-mode.theme-lunora-mode .chat-emoji-picker,
+body.dark-mode.theme-lunora-mode .chat-pinned-jump,
+body.dark-mode.theme-lunora-mode .chat-group-manage summary,
+body.dark-mode.theme-lunora-mode .chat-group-manage-panel,
+body.dark-mode.theme-lunora-mode .chat-settings-file-label,
+body.dark-mode.theme-lunora-mode .chat-group-member-row,
+body.dark-mode.theme-lunora-mode .chat-profile-card,
+body.dark-mode.theme-lunora-mode .chat-date-separator span,
+body.dark-mode.theme-lunora-mode .chat-edit-form textarea,
+body.dark-mode.theme-lunora-mode .chat-settings-input,
+body.dark-mode.theme-lunora-mode .chat-compose textarea,
+body.dark-mode.theme-lunora-mode .chat-group-form input[type="text"] {
+    background:
+        radial-gradient(circle at top left, rgba(226, 186, 123, 0.12), transparent 42%),
+        var(--chat-surface);
+    color: var(--lunora-theme-ink);
+}
+
+body.theme-lunora-mode .chat-compose textarea,
+body.theme-lunora-mode .chat-group-form input[type="text"],
+body.theme-lunora-mode .chat-settings-input,
+body.theme-lunora-mode .chat-edit-form textarea {
+    background:
+        radial-gradient(circle at top left, rgba(226, 186, 123, 0.10), transparent 42%),
+        var(--chat-surface) !important;
+    background-color: var(--chat-surface) !important;
+}
+
+body.theme-lunora-mode .chat-search-form input {
+    background: transparent !important;
+    background-color: transparent !important;
 }

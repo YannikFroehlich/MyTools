@@ -404,3 +404,276 @@ body.dark-mode .trash-summary > span i,
 body.dark .trash-summary > span i {
     color: var(--theme-accent-end);
 }
+
+/* Theme-driven trash page refresh */
+.trash-page {
+    --trash-surface: color-mix(in srgb, var(--theme-page-bg) 74%, #ffffff 26%);
+    --trash-surface-strong: color-mix(in srgb, var(--theme-page-bg) 64%, #ffffff 36%);
+    --trash-surface-soft: color-mix(in srgb, var(--theme-page-bg) 84%, #ffffff 16%);
+    --trash-border: rgba(var(--theme-accent-rgb), 0.18);
+    --trash-border-strong: rgba(var(--theme-accent-rgb), 0.34);
+    --trash-muted: color-mix(in srgb, var(--theme-text) 58%, var(--theme-page-bg));
+    --trash-shadow: 0 22px 70px rgba(var(--theme-accent-rgb), 0.10);
+    --trash-danger-start: #a85548;
+    --trash-danger-end: #d17a5d;
+    --trash-danger-rgb: 168, 85, 72;
+}
+
+.trash-hero,
+.trash-toolbar,
+.trash-list,
+.trash-empty-state {
+    border-color: var(--trash-border);
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.14), transparent 38%),
+        radial-gradient(circle at bottom right, rgba(var(--theme-accent-end-rgb), 0.12), transparent 40%),
+        var(--trash-surface-strong);
+    box-shadow: var(--trash-shadow);
+}
+
+.trash-hero {
+    background:
+        radial-gradient(circle at 88% 8%, rgba(var(--theme-accent-end-rgb), 0.22), transparent 34%),
+        linear-gradient(135deg, var(--trash-surface-strong), var(--trash-surface));
+}
+
+.trash-hero p,
+.trash-toolbar p,
+.trash-item p,
+.trash-expiry,
+.trash-empty-state p {
+    color: var(--trash-muted);
+}
+
+.trash-kicker,
+.trash-summary > span i,
+.trash-summary strong {
+    color: var(--theme-accent-start);
+}
+
+.trash-hero-count,
+.trash-empty-state a {
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text);
+    box-shadow: 0 20px 44px rgba(var(--theme-accent-rgb), 0.24);
+}
+
+.trash-summary > span {
+    border-color: var(--trash-border);
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.13), transparent 42%),
+        var(--trash-surface);
+    box-shadow: 0 18px 46px rgba(var(--theme-accent-rgb), 0.08);
+}
+
+.trash-empty-button,
+.trash-delete-button {
+    background: rgba(var(--trash-danger-rgb), 0.13);
+    color: var(--trash-danger-start);
+}
+
+.trash-empty-button:hover,
+.trash-delete-button:hover,
+.trash-empty-button:focus-visible,
+.trash-delete-button:focus-visible {
+    background: linear-gradient(135deg, var(--trash-danger-start), var(--trash-danger-end));
+    color: #ffffff;
+}
+
+.trash-restore-button {
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text);
+    box-shadow: 0 12px 24px rgba(var(--theme-accent-rgb), 0.16);
+}
+
+.trash-item,
+.trash-item.is-blue,
+.trash-item.is-purple,
+.trash-item.is-green,
+.trash-item.is-orange,
+.trash-item.is-theme {
+    --trash-color: var(--theme-accent-rgb);
+}
+
+.trash-item {
+    border-color: var(--trash-border);
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.13), transparent 42%),
+        linear-gradient(135deg, var(--trash-surface-soft), var(--trash-surface));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.trash-item-icon {
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    color: var(--theme-accent-text);
+    box-shadow: 0 14px 28px rgba(var(--theme-accent-rgb), 0.18);
+}
+
+.trash-item-title-row > span {
+    color: var(--theme-accent-start);
+}
+
+.trash-item-title-row small {
+    color: color-mix(in srgb, var(--trash-muted) 82%, var(--theme-text));
+}
+
+.trash-messages p {
+    background: rgba(var(--theme-accent-rgb), 0.13);
+    color: var(--theme-accent-start);
+}
+
+.trash-messages p.error {
+    background: rgba(var(--trash-danger-rgb), 0.13);
+    color: var(--trash-danger-start);
+}
+
+.trash-expiry.is-urgent {
+    color: var(--trash-danger-start);
+}
+
+body.dark-mode .trash-page,
+body.dark .trash-page {
+    --trash-surface: color-mix(in srgb, var(--theme-page-bg) 82%, #ffffff 8%);
+    --trash-surface-strong: color-mix(in srgb, var(--theme-page-bg) 74%, #ffffff 12%);
+    --trash-surface-soft: color-mix(in srgb, var(--theme-page-bg) 88%, #ffffff 6%);
+    --trash-border: rgba(var(--theme-accent-end-rgb), 0.20);
+    --trash-border-strong: rgba(var(--theme-accent-end-rgb), 0.34);
+    --trash-muted: color-mix(in srgb, var(--theme-text) 64%, var(--theme-page-bg));
+    --trash-shadow: 0 24px 76px rgba(0, 0, 0, 0.24);
+}
+
+body.dark-mode .trash-hero,
+body.dark .trash-hero,
+body.dark-mode .trash-toolbar,
+body.dark .trash-toolbar,
+body.dark-mode .trash-list,
+body.dark .trash-list,
+body.dark-mode .trash-empty-state {
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.20), transparent 38%),
+        radial-gradient(circle at bottom right, rgba(var(--theme-accent-end-rgb), 0.16), transparent 40%),
+        var(--trash-surface-strong);
+    border-color: var(--trash-border);
+    box-shadow: var(--trash-shadow);
+}
+
+body.dark-mode .trash-summary > span,
+body.dark .trash-summary > span,
+body.dark-mode .trash-item,
+body.dark .trash-item {
+    border-color: var(--trash-border);
+    background:
+        radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.16), transparent 42%),
+        var(--trash-surface);
+    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.16);
+}
+
+body.dark-mode .trash-kicker,
+body.dark .trash-kicker,
+body.dark-mode .trash-summary > span i,
+body.dark .trash-summary > span i,
+body.dark-mode .trash-item-title-row > span,
+body.dark .trash-item-title-row > span {
+    color: var(--theme-accent-end);
+}
+
+body.dark-mode .trash-summary strong,
+body.dark .trash-summary strong {
+    color: var(--theme-text);
+}
+
+body.dark-mode .trash-empty-button,
+body.dark .trash-empty-button,
+body.dark-mode .trash-delete-button,
+body.dark .trash-delete-button {
+    background: rgba(var(--trash-danger-rgb), 0.20);
+    color: color-mix(in srgb, var(--trash-danger-end) 70%, #ffffff);
+}
+
+body.theme-lunora-mode .trash-page {
+    --trash-surface: var(--lunora-theme-panel);
+    --trash-surface-strong: var(--lunora-theme-panel-strong);
+    --trash-surface-soft: rgba(255, 255, 255, 0.50);
+    --trash-border: var(--lunora-theme-border);
+    --trash-border-strong: rgba(183, 138, 85, 0.34);
+    --trash-muted: var(--lunora-theme-muted);
+    --trash-shadow: 0 22px 60px var(--lunora-theme-shadow);
+    --trash-danger-start: #8f4d3f;
+    --trash-danger-end: #c06f56;
+    --trash-danger-rgb: 143, 77, 63;
+}
+
+body.theme-lunora-mode .trash-hero,
+body.theme-lunora-mode .trash-toolbar,
+body.theme-lunora-mode .trash-list,
+body.theme-lunora-mode .trash-empty-state,
+body.theme-lunora-mode .trash-summary > span,
+body.theme-lunora-mode .trash-item {
+    border-color: var(--trash-border);
+    box-shadow: var(--trash-shadow);
+}
+
+body.theme-lunora-mode .trash-hero,
+body.theme-lunora-mode .trash-toolbar,
+body.theme-lunora-mode .trash-list,
+body.theme-lunora-mode .trash-empty-state {
+    background:
+        radial-gradient(circle at 90% 8%, rgba(226, 186, 123, 0.20), transparent 34%),
+        radial-gradient(circle at 6% 100%, rgba(183, 138, 85, 0.14), transparent 38%),
+        var(--trash-surface-strong);
+}
+
+body.theme-lunora-mode .trash-summary > span,
+body.theme-lunora-mode .trash-item {
+    background:
+        radial-gradient(circle at top left, rgba(226, 186, 123, 0.14), transparent 42%),
+        linear-gradient(135deg, var(--trash-surface-soft), var(--trash-surface));
+}
+
+body.theme-lunora-mode .trash-kicker,
+body.theme-lunora-mode .trash-summary > span i,
+body.theme-lunora-mode .trash-summary strong,
+body.theme-lunora-mode .trash-item-title-row > span,
+body.theme-lunora-mode .trash-messages p {
+    color: var(--theme-accent-start);
+}
+
+body.theme-lunora-mode .trash-hero-count,
+body.theme-lunora-mode .trash-restore-button,
+body.theme-lunora-mode .trash-item-icon,
+body.theme-lunora-mode .trash-empty-state a {
+    background: linear-gradient(135deg, #b78a55, #e2ba7b);
+    color: #ffffff;
+    box-shadow:
+        0 16px 34px rgba(91, 64, 35, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+body.dark-mode.theme-lunora-mode .trash-page {
+    --trash-surface: rgba(39, 29, 21, 0.72);
+    --trash-surface-strong: rgba(43, 32, 23, 0.88);
+    --trash-surface-soft: rgba(255, 255, 255, 0.06);
+    --trash-border: rgba(226, 186, 123, 0.18);
+    --trash-muted: #d2b58d;
+    --trash-shadow: 0 24px 76px rgba(0, 0, 0, 0.30);
+    --trash-danger-start: #be6f5a;
+    --trash-danger-end: #e09b77;
+    --trash-danger-rgb: 190, 111, 90;
+}
+
+body.dark-mode.theme-lunora-mode .trash-hero,
+body.dark-mode.theme-lunora-mode .trash-toolbar,
+body.dark-mode.theme-lunora-mode .trash-list,
+body.dark-mode.theme-lunora-mode .trash-empty-state {
+    background:
+        radial-gradient(circle at 90% 8%, rgba(226, 186, 123, 0.16), transparent 34%),
+        radial-gradient(circle at 6% 100%, rgba(183, 138, 85, 0.13), transparent 38%),
+        var(--trash-surface-strong);
+}
+
+body.dark-mode.theme-lunora-mode .trash-summary > span,
+body.dark-mode.theme-lunora-mode .trash-item {
+    background:
+        radial-gradient(circle at top left, rgba(226, 186, 123, 0.14), transparent 42%),
+        linear-gradient(135deg, var(--trash-surface-soft), var(--trash-surface));
+}
