@@ -1062,7 +1062,7 @@
                     <div class="section-color-options">
                         {% for value, label in widget_colors %}
                             <label class="section-color-option {{ value }}">
-                                <input type="radio" name="widget_color" value="{{ value }}" {% if value == 'blue' %}checked{% endif %}>
+                                <input type="radio" name="widget_color" value="{{ value }}" {% if value == 'theme' %}checked{% endif %}>
                                 <span>{{ label }}</span>
                             </label>
                         {% endfor %}
@@ -1204,7 +1204,7 @@
                     <div class="section-color-options">
                         {% for value, label in shortcut_colors %}
                             <label class="section-color-option {{ value }}">
-                                <input type="radio" name="shortcut_color" value="{{ value }}" {% if value == 'blue' %}checked{% endif %}>
+                                <input type="radio" name="shortcut_color" value="{{ value }}" {% if value == 'theme' %}checked{% endif %}>
                                 <span>{{ label }}</span>
                             </label>
                         {% endfor %}
@@ -1270,7 +1270,7 @@
                     <div class="section-color-options">
                         {% for value, label in shortcut_colors %}
                             <label class="section-color-option {{ value }}">
-                                <input type="radio" name="section_color" value="{{ value }}" {% if value == 'blue' %}checked{% endif %}>
+                                <input type="radio" name="section_color" value="{{ value }}" {% if value == 'theme' %}checked{% endif %}>
                                 <span>{{ label }}</span>
                             </label>
                         {% endfor %}
@@ -1287,5 +1287,5 @@
 
 {% block extra_js %}
     {{ home_labels|json_script:"home-labels" }}
-    <script src="{% static 'app/js/home.js' %}?v=20260623-shortcut-colors" defer></script>
+    <script src="{% static 'app/js/home.js' %}?v=20260627-theme-defaults" defer></script>
 {% endblock %}

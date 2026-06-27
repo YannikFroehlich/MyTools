@@ -1756,10 +1756,18 @@ class HomeViewTests(BaseTestCase):
 
     def test_global_search_frontend_renders_individual_result_themes(self):
         script = (settings.BASE_DIR / "app" / "static" / "app" / "js" / "base.js").read_text(encoding="utf-8")
+        styles = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "core.css").read_text(encoding="utf-8")
 
         self.assertIn("resolveGlobalSearchTheme", script)
         self.assertIn('data-search-theme="${escapeHtml(theme.key)}"', script)
         self.assertIn("--search-result-start:${theme.start}", script)
+        self.assertIn("Final theme pass for the global search overlay", styles)
+        self.assertIn("--search-result-start: var(--theme-accent-start) !important", styles)
+        self.assertIn("color-mix(in srgb, var(--theme-page-bg)", styles)
+        self.assertIn("Lunora global search: warm surfaces only, no blue/slate input patches", styles)
+        self.assertIn("body.theme-lunora-mode .global-search-input-row input", styles)
+        self.assertIn("background-color: transparent !important", styles)
+        self.assertIn("--search-result-start: #b78a55 !important", styles)
 
     def test_home_has_accessible_heading_and_search_combobox(self):
         response = self.client.get(reverse("home"))
@@ -1804,7 +1812,13 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(response.context["home_labels"]["undoDelete"], "Rückgängig")
         self.assertIn("deleteUndoDelay = 7000", script)
         self.assertIn(".delete-widget-form, .delete-section-form, .delete-shortcut-form", script)
+        self.assertIn('getCookie("csrftoken")', script)
+        self.assertIn('formData.set("csrfmiddlewaretoken", csrfToken)', script)
+        self.assertIn('"Accept": "application/json"', script)
         self.assertIn('"X-Requested-With": "XMLHttpRequest"', script)
+        self.assertIn("!payload || payload.success === false", script)
+        self.assertIn('deleteForm.getAttribute("action") || window.location.href', script)
+        self.assertNotIn("fetch(deleteForm.action || window.location.href", script)
 
     def test_ajax_delete_actions_return_json(self):
         section = ShortcutSection.objects.create(name="Temporär")
@@ -1926,7 +1940,8 @@ class HomeViewTests(BaseTestCase):
 
         self.client.get(reverse("home"))
 
-        self.assertTrue(ShortcutSection.objects.filter(name="Verknüpfungen").exists())
+        section = ShortcutSection.objects.get(name="Verknüpfungen")
+        self.assertEqual(section.color, "theme")
 
     def test_old_shortcuts_without_section_are_moved_to_default_section(self):
         shortcut = Shortcut.objects.create(
@@ -1975,7 +1990,7 @@ class HomeViewTests(BaseTestCase):
         })
 
         self.assertRedirects(response, reverse("home"))
-        self.assertEqual(ShortcutSection.objects.get(name="Server").color, "blue")
+        self.assertEqual(ShortcutSection.objects.get(name="Server").color, "theme")
 
     def test_add_empty_section_does_not_create_extra_section(self):
         response = self.client.post(reverse("home"), {
@@ -2067,6 +2082,7 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(shortcut.section, section)
         self.assertEqual(shortcut.url, "https://github.com")
         self.assertEqual(shortcut.icon, "fa-solid fa-link")
+        self.assertEqual(shortcut.color, "theme")
         self.assertEqual(shortcut.order, 1)
 
     def test_add_shortcut_accepts_theme_color(self):
@@ -2328,7 +2344,7 @@ class HomeViewTests(BaseTestCase):
         widget = HomeWidget.objects.get()
         self.assertEqual(widget.title, "Wetter")
         self.assertEqual(widget.widget_type, HomeWidget.WIDGET_WEATHER)
-        self.assertEqual(widget.color, "blue")
+        self.assertEqual(widget.color, "theme")
 
     def test_edit_widget_updates_widget(self):
         old_location = WeatherLocation.objects.create(name="Berlin")
@@ -2466,6 +2482,17 @@ class TrashTests(BaseTestCase):
         self.assertContains(response, "Gelöschtes Widget")
         self.assertContains(response, "Gelöschter Link")
         self.assertContains(response, "trash.txt")
+        self.assertContains(response, 'class="trash-item is-theme"', count=4)
+
+    def test_trash_page_uses_theme_driven_styles(self):
+        css = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "trash.css").read_text(encoding="utf-8")
+        response = self.client.get(reverse("trash"))
+
+        self.assertIn("Theme-driven trash page refresh", css)
+        self.assertIn(".trash-item.is-theme", css)
+        self.assertIn("body.theme-lunora-mode .trash-page", css)
+        self.assertIn("--trash-surface: var(--lunora-theme-panel)", css)
+        self.assertContains(response, "20260627-theme-trash")
 
     def test_restore_makes_all_supported_types_active_again(self):
         note, widget, shortcut, share = self.create_deleted_items()
@@ -2548,6 +2575,21 @@ class StaticPageTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "app/about.html")
+
+    def test_about_page_uses_theme_driven_styles(self):
+        css = (Path(settings.BASE_DIR) / "app" / "static" / "app" / "css" / "about.css").read_text(encoding="utf-8")
+        template = (Path(settings.BASE_DIR) / "app" / "templates" / "app" / "about.html").read_text(encoding="utf-8")
+
+        self.assertIn("20260627-about-theme-refresh", template)
+        self.assertIn("Theme-driven about page refresh", css)
+        self.assertIn("body.theme-lunora-mode .about-hero-panel", css)
+        self.assertIn("body.dark-mode.theme-lunora-mode .about-hero-copy", css)
+        self.assertIn("body.dark.theme-lunora-mode .about-link-card:hover", css)
+        self.assertIn("--about-theme-panel-strong", css)
+        self.assertGreater(
+            css.rfind("Theme-driven about page refresh"),
+            css.find("body.dark-mode .about-hero-copy"),
+        )
 
     def test_about_page_links_scientific_calculator(self):
         response = self.client.get(reverse("about"))
@@ -3081,13 +3123,6 @@ class ChatEnhancementTests(BaseTestCase):
         ChatRoomMember.objects.create(room=self.room, user=self.other_user)
         self.message = ChatMessage.objects.create(room=self.room, sender=self.other_user, text="Merken")
 
-    def test_set_chat_theme_updates_room(self):
-        response = self.client.post(reverse("chat_theme", args=[self.room.id]), {"theme": ChatRoom.THEME_FOREST})
-
-        self.assertRedirects(response, reverse("chat_room", args=[self.room.id]))
-        self.room.refresh_from_db()
-        self.assertEqual(self.room.theme, ChatRoom.THEME_FOREST)
-
     def test_pin_chat_message_toggles_pinned_message(self):
         response = self.client.post(
             reverse("chat_message_pin", args=[self.room.id, self.message.id]),
@@ -3110,17 +3145,30 @@ class ChatEnhancementTests(BaseTestCase):
         self.assertIsNone(self.room.pinned_message)
         self.assertIsNone(response.json()["pinned_message"])
 
-    def test_chat_page_renders_theme_menu_and_pinned_message(self):
-        self.room.theme = ChatRoom.THEME_GRAPE
+    def test_chat_page_renders_pinned_message_without_room_theme_controls(self):
         self.room.pinned_message = self.message
-        self.room.save(update_fields=["theme", "pinned_message"])
+        self.room.save(update_fields=["pinned_message"])
 
         response = self.client.get(reverse("chat_room", args=[self.room.id]))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "chat-theme-grape")
         self.assertContains(response, "chat-pinned-message")
         self.assertContains(response, "Merken")
+        self.assertNotContains(response, "chat-theme-menu")
+        self.assertNotContains(response, "chat-theme-")
+        self.assertNotContains(response, "chat_theme")
+
+    def test_chat_page_uses_theme_driven_lunora_styles(self):
+        css = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "chat.css").read_text(encoding="utf-8")
+        response = self.client.get(reverse("chat_room", args=[self.room.id]))
+
+        self.assertContains(response, "20260627-chat-no-room-theme")
+        self.assertIn("Theme-driven chat surface refresh", css)
+        self.assertIn("body.theme-lunora-mode .chat-layout", css)
+        self.assertIn("--theme-accent-start: #b78a55 !important", css)
+        self.assertNotIn("chat-theme-choice", css)
+        self.assertNotIn(".chat-layout.chat-theme-", css)
+        self.assertIn("background-color: transparent !important", css)
 
     def test_chat_page_renders_day_separators_and_profile_card(self):
         old_message = ChatMessage.objects.create(room=self.room, sender=self.user, text="Gestern")
@@ -3372,6 +3420,29 @@ class WeatherViewTests(BaseTestCase):
         self.assertContains(response, reverse("weather_icon", args=["01d", "4x"]))
         self.assertContains(response, reverse("weather_icon", args=["02d", "2x"]))
         self.assertNotContains(response, "openweathermap.org/img/wn")
+
+    def test_weather_unit_select_uses_theme_styles(self):
+        css = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "weather.css").read_text(encoding="utf-8")
+        template = (settings.BASE_DIR / "app" / "templates" / "app" / "weather.html").read_text(encoding="utf-8")
+
+        self.assertIn("20260627-weather-surface-theme", template)
+        self.assertIn("Theme-driven weather unit select cleanup", css)
+        self.assertIn("Theme-driven weather search input and full select hit area", css)
+        self.assertIn("Theme-driven weather surfaces refresh", css)
+        self.assertIn(".weather-unit-toggle::after", css)
+        self.assertIn("inset: 0", css)
+        self.assertIn("padding: 0 34px 0 42px", css)
+        self.assertIn("appearance: none", css)
+        self.assertIn("body.theme-lunora-mode .weather-unit-toggle select", css)
+        self.assertIn("body.theme-lunora-mode .weather-search-form input[type=\"text\"]", css)
+        self.assertIn("body.theme-lunora-mode .weather-card", css)
+        self.assertIn("body.theme-lunora-mode .hourly-item", css)
+        self.assertIn("body.theme-lunora-mode .compact-location-item", css)
+        self.assertIn("body.dark-mode.theme-lunora-mode .weather-search-form", css)
+        self.assertIn("body.dark-mode.theme-lunora-mode .forecast-item", css)
+        self.assertIn("body.dark.theme-lunora-mode .weather-unit-toggle select", css)
+        self.assertIn("background-color: transparent !important", css)
+        self.assertIn("body.dark-mode.theme-lunora-mode .weather-unit-toggle select option", css)
 
     @patch("app.views.core.requests.get")
     def test_weather_icon_view_converts_and_caches_openweather_icon_as_webp(self, mock_get):

@@ -546,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (shortcutFileName) shortcutFileName.textContent = labels.noFileSelected || "Keine Datei ausgewählt";
         if (shortcutModalTitle) shortcutModalTitle.textContent = labels.newShortcut || "Neue Verknüpfung";
         setCheckedRadio(shortcutForm, "icon", "fa-brands fa-youtube");
-        setCheckedRadio(shortcutForm, "shortcut_color", "blue", "blue");
+        setCheckedRadio(shortcutForm, "shortcut_color", "theme", "theme");
     }
 
     shortcutImageInput?.addEventListener("change", () => {
@@ -589,7 +589,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = card.dataset.shortcutName || card.querySelector("a span")?.textContent?.trim() || "";
         const url = card.dataset.shortcutUrl || card.querySelector("a")?.getAttribute("href") || "";
         const icon = card.dataset.shortcutIcon || "";
-        const color = card.dataset.shortcutColor || "blue";
+        const color = card.dataset.shortcutColor || "theme";
         const hasImage = card.dataset.shortcutHasImage === "true";
 
         if (shortcutFormActionInput) shortcutFormActionInput.value = "edit_shortcut";
@@ -618,7 +618,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (shortcutCustomIconInput) shortcutCustomIconInput.value = icon;
         }
 
-        setCheckedRadio(shortcutForm, "shortcut_color", color, "blue");
+        setCheckedRadio(shortcutForm, "shortcut_color", color, "theme");
 
         openModal(shortcutModal, shortcutNameInput);
     }
@@ -743,7 +743,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (widgetModalTitle) widgetModalTitle.textContent = labels.newWidget || "Neues Widget";
         if (widgetSubmitButton) widgetSubmitButton.textContent = labels.addWidget || "Widget hinzufügen";
 
-        setCheckedRadio(widgetForm, "widget_color", "blue");
+        setCheckedRadio(widgetForm, "widget_color", "theme");
         toggleWidgetTypeFields();
     }
 
@@ -768,7 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (widgetModalTitle) widgetModalTitle.textContent = labels.editWidget || "Widget bearbeiten";
         if (widgetSubmitButton) widgetSubmitButton.textContent = labels.saveWidget || "Widget speichern";
 
-        setCheckedRadio(widgetForm, "widget_color", widgetCard.dataset.widgetColor || "blue", "blue");
+        setCheckedRadio(widgetForm, "widget_color", widgetCard.dataset.widgetColor || "theme", "theme");
         toggleWidgetTypeFields();
 
         openModal(widgetModal, widgetTitleInput);
@@ -817,7 +817,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sectionNameInput) sectionNameInput.value = "";
         if (sectionModalTitle) sectionModalTitle.textContent = labels.newSection || "Neuer Bereich";
         if (sectionSubmitButton) sectionSubmitButton.textContent = labels.createSection || "Bereich erstellen";
-        setCheckedRadio(sectionForm, "section_color", "blue");
+        setCheckedRadio(sectionForm, "section_color", "theme");
     }
 
     function openAddSectionModal() {
@@ -834,7 +834,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sectionModalTitle) sectionModalTitle.textContent = labels.editSection || "Bereich bearbeiten";
         if (sectionSubmitButton) sectionSubmitButton.textContent = labels.saveChanges || "Änderungen speichern";
 
-        setCheckedRadio(sectionForm, "section_color", button.dataset.sectionColor || "blue", "blue");
+        setCheckedRadio(sectionForm, "section_color", button.dataset.sectionColor || "theme", "theme");
 
         openModal(sectionModal, sectionNameInput);
     }
@@ -858,7 +858,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ── Pointer Drag & Drop: Shortcuts + Sections ── */
 
+    function getCookie(name) {
+        const prefix = `${name}=`;
+        const cookie = document.cookie
+            .split(";")
+            .map(value => value.trim())
+            .find(value => value.startsWith(prefix));
+
+        return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : "";
+    }
+
     function getCsrfToken() {
+        const csrfCookie = getCookie("csrftoken");
+        if (csrfCookie) return csrfCookie;
+
         const csrfInput = document.querySelector("input[name='csrfmiddlewaretoken']");
         return csrfInput ? csrfInput.value : "";
     }
@@ -981,17 +994,25 @@ document.addEventListener("DOMContentLoaded", () => {
         if (toastParts?.undoButton) toastParts.undoButton.disabled = true;
 
         try {
-            const response = await fetch(deleteForm.action || window.location.href, {
+            const formData = new FormData(deleteForm);
+            const csrfToken = getCsrfToken();
+            if (csrfToken) formData.set("csrfmiddlewaretoken", csrfToken);
+
+            const response = await fetch(deleteForm.getAttribute("action") || window.location.href, {
                 method: "POST",
-                body: new FormData(deleteForm),
+                body: formData,
                 credentials: "same-origin",
-                headers: { "X-Requested-With": "XMLHttpRequest" },
+                headers: {
+                    "Accept": "application/json",
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest",
+                },
             });
             const payload = response.headers.get("content-type")?.includes("application/json")
                 ? await response.json()
                 : null;
 
-            if (!response.ok || payload?.success === false) {
+            if (!response.ok || !payload || payload.success === false) {
                 throw new Error("delete_failed");
             }
 

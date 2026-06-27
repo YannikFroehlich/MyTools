@@ -98,7 +98,6 @@ def decorate_room(room, current_user):
 
 CHAT_REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"]
 MAX_CHAT_ATTACHMENT_SIZE = 8 * 1024 * 1024
-CHAT_THEME_VALUES = {choice[0] for choice in ChatRoom.THEME_CHOICES}
 MENTION_RE = re.compile(r"@([\w.@+-]{1,150})")
 
 
@@ -289,7 +288,6 @@ def chat_view(request, room_id=None):
         "active_room_members": active_room_members,
         "friend_profiles": friend_profiles,
         "chat_query": request.GET.get("q", "").strip(),
-        "chat_theme_choices": ChatRoom.THEME_CHOICES,
     })
 
 
@@ -660,20 +658,6 @@ def pin_chat_message(request, room_id, message_id):
         })
 
     messages.success(request, _("Nachricht wurde angepinnt.") if not should_unpin else _("Angeheftete Nachricht wurde entfernt."))
-    return redirect("chat_room", room_id=room.id)
-
-
-@login_required
-@require_POST
-def set_chat_theme(request, room_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
-    theme = request.POST.get("theme", ChatRoom.THEME_DEFAULT).strip()
-    if theme not in CHAT_THEME_VALUES:
-        messages.error(request, _("Dieses Chat-Theme gibt es nicht."))
-        return redirect("chat_room", room_id=room.id)
-
-    room.theme = theme
-    room.save(update_fields=["theme", "updated_at"])
     return redirect("chat_room", room_id=room.id)
 
 

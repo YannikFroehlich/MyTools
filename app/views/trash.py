@@ -16,10 +16,10 @@ from ..trash_utils import TRASH_RETENTION_DAYS, TRASH_TYPES, deleted_items_for, 
 
 
 TRASH_PRESENTATION = {
-    "note": {"label": _("Notiz"), "icon": "fa-regular fa-note-sticky", "color": "blue"},
-    "file": {"label": _("Datei"), "icon": "fa-regular fa-file", "color": "purple"},
-    "widget": {"label": _("Widget"), "icon": "fa-solid fa-table-cells-large", "color": "green"},
-    "shortcut": {"label": _("Verknüpfung"), "icon": "fa-solid fa-link", "color": "orange"},
+    "note": {"label": _("Notiz"), "icon": "fa-regular fa-note-sticky", "color": "theme"},
+    "file": {"label": _("Datei"), "icon": "fa-regular fa-file", "color": "theme"},
+    "widget": {"label": _("Widget"), "icon": "fa-solid fa-table-cells-large", "color": "theme"},
+    "shortcut": {"label": _("Verknüpfung"), "icon": "fa-solid fa-link", "color": "theme"},
 }
 
 
@@ -106,7 +106,7 @@ def trash_restore_view(request, item_type, item_id):
             section, _created = ShortcutSection.objects.get_or_create(
                 user=request.user,
                 name="Verknüpfungen",
-                defaults={"color": "blue", "order": 0},
+                defaults={"color": "theme", "order": 0},
             )
         item.section = section
         item.order = (
