@@ -61,6 +61,8 @@
 }
 
 .weather-unit-toggle {
+    position: relative;
+    overflow: hidden;
     height: 52px;
     min-width: 142px;
     display: inline-flex;
@@ -70,26 +72,56 @@
     border-radius: 17px;
     background: rgba(255, 255, 255, 0.88);
     border: 1px solid rgba(120, 140, 180, 0.28);
+    cursor: pointer;
     box-shadow:
         0 14px 34px rgba(var(--theme-accent-rgb), 0.10),
         inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
 .weather-unit-toggle i {
+    position: relative;
+    z-index: 3;
     color: var(--theme-accent-start);
     font-size: 0.92rem;
+    pointer-events: none;
+}
+
+.weather-unit-toggle::after {
+    content: "\f078";
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    z-index: 3;
+    transform: translateY(-50%);
+    color: var(--theme-accent-start);
+    font-family: "Font Awesome 6 Free";
+    font-size: 0.78rem;
+    font-weight: 900;
+    pointer-events: none;
 }
 
 .weather-unit-toggle select {
     min-width: 0;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    padding: 0 34px 0 42px;
+    flex: unset;
     border: none;
     outline: none;
-    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent !important;
+    background-color: transparent !important;
     color: #172033;
     font: inherit;
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
+    box-shadow: none !important;
+    color-scheme: light;
 }
 
 .weather-unit-toggle select option {
@@ -121,7 +153,11 @@
     padding: 0 18px;
     border: none;
     outline: none;
-    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
 
     color: #172033;
     font-size: 15.5px;
@@ -778,6 +814,8 @@ body.dark .weather-unit-toggle i {
 body.dark-mode .weather-unit-toggle select,
 body.dark .weather-unit-toggle select {
     color-scheme: dark;
+    background: transparent !important;
+    background-color: transparent !important;
     color: #ffffff;
 }
 
@@ -1580,4 +1618,480 @@ body.dark-mode .compact-location-delete:hover {
         width: 36px;
         min-height: 44px;
     }
+}
+
+/* Theme-driven weather unit select cleanup */
+.weather-unit-toggle:hover {
+    border-color: rgba(var(--theme-accent-rgb), 0.34);
+}
+
+.weather-unit-toggle:focus-within {
+    border-color: rgba(var(--theme-accent-rgb), 0.58);
+    box-shadow:
+        0 16px 38px rgba(var(--theme-accent-rgb), 0.16),
+        0 0 0 4px rgba(var(--theme-accent-rgb), 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+body.dark-mode .weather-unit-toggle:focus-within,
+body.dark .weather-unit-toggle:focus-within {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.58);
+    box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.26),
+        0 0 0 4px rgba(var(--theme-accent-end-rgb), 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.theme-lunora-mode .weather-unit-toggle {
+    border-color: var(--lunora-theme-border);
+    background: var(--lunora-theme-pill-bg-strong);
+    box-shadow: var(--lunora-theme-pill-shadow);
+}
+
+body.theme-lunora-mode .weather-unit-toggle i,
+body.theme-lunora-mode .weather-unit-toggle::after {
+    color: var(--theme-accent-start);
+}
+
+body.theme-lunora-mode .weather-unit-toggle select {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--lunora-theme-ink);
+    color-scheme: light;
+}
+
+body.theme-lunora-mode .weather-unit-toggle select option {
+    background: #fffaf4;
+    color: #493929;
+}
+
+body.theme-lunora-mode .weather-unit-toggle:hover,
+body.theme-lunora-mode .weather-unit-toggle:focus-within {
+    border-color: rgba(183, 138, 85, 0.36);
+    box-shadow:
+        0 12px 28px rgba(91, 64, 35, 0.16),
+        0 0 0 4px rgba(183, 138, 85, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.50);
+}
+
+body.dark-mode.theme-lunora-mode .weather-unit-toggle,
+body.dark.theme-lunora-mode .weather-unit-toggle {
+    border-color: rgba(226, 186, 123, 0.18);
+    background: rgba(43, 32, 23, 0.88);
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .weather-unit-toggle i,
+body.dark-mode.theme-lunora-mode .weather-unit-toggle::after,
+body.dark.theme-lunora-mode .weather-unit-toggle i,
+body.dark.theme-lunora-mode .weather-unit-toggle::after {
+    color: #e2ba7b;
+}
+
+body.dark-mode.theme-lunora-mode .weather-unit-toggle select,
+body.dark.theme-lunora-mode .weather-unit-toggle select {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #fff0dd;
+    color-scheme: dark;
+}
+
+body.dark-mode.theme-lunora-mode .weather-unit-toggle select option,
+body.dark.theme-lunora-mode .weather-unit-toggle select option {
+    background: #2b2017;
+    color: #fff0dd;
+}
+
+/* Theme-driven weather search input and full select hit area */
+.weather-unit-toggle select {
+    cursor: pointer;
+    text-align: left;
+}
+
+body.theme-lunora-mode .weather-search-form {
+    border-color: var(--lunora-theme-border);
+    background:
+        linear-gradient(135deg, rgba(255, 250, 244, 0.94), rgba(247, 232, 211, 0.88));
+    box-shadow: var(--lunora-theme-pill-shadow);
+}
+
+body.theme-lunora-mode .weather-search-form:hover,
+body.theme-lunora-mode .weather-search-form:focus-within {
+    border-color: rgba(183, 138, 85, 0.36);
+    box-shadow:
+        0 12px 28px rgba(91, 64, 35, 0.16),
+        0 0 0 4px rgba(183, 138, 85, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.50);
+}
+
+body.theme-lunora-mode .weather-search-form input[type="text"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--lunora-theme-ink);
+    color-scheme: light;
+}
+
+body.theme-lunora-mode .weather-search-form input[type="text"]::placeholder {
+    color: rgba(73, 57, 41, 0.60);
+}
+
+body.dark-mode.theme-lunora-mode .weather-search-form,
+body.dark.theme-lunora-mode .weather-search-form {
+    border-color: rgba(226, 186, 123, 0.18);
+    background: rgba(43, 32, 23, 0.88);
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .weather-search-form:hover,
+body.dark-mode.theme-lunora-mode .weather-search-form:focus-within,
+body.dark.theme-lunora-mode .weather-search-form:hover,
+body.dark.theme-lunora-mode .weather-search-form:focus-within {
+    border-color: rgba(226, 186, 123, 0.34);
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.28),
+        0 0 0 4px rgba(226, 186, 123, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+body.dark-mode.theme-lunora-mode .weather-search-form input[type="text"],
+body.dark.theme-lunora-mode .weather-search-form input[type="text"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #fff0dd;
+    color-scheme: dark;
+}
+
+body.dark-mode.theme-lunora-mode .weather-search-form input[type="text"]::placeholder,
+body.dark.theme-lunora-mode .weather-search-form input[type="text"]::placeholder {
+    color: rgba(255, 240, 221, 0.58);
+}
+
+/* Theme-driven weather surfaces refresh */
+body.theme-lunora-mode .weather-card {
+    color: var(--lunora-theme-ink);
+    border-color: var(--lunora-theme-border);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(226, 186, 123, 0.18), transparent 36%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.82), rgba(247, 232, 211, 0.62));
+    box-shadow:
+        0 18px 46px rgba(91, 64, 35, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+body.theme-lunora-mode .weather-card:hover {
+    border-color: rgba(183, 138, 85, 0.34);
+    box-shadow:
+        0 22px 54px rgba(91, 64, 35, 0.18),
+        0 0 0 1px rgba(183, 138, 85, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.64);
+}
+
+body.theme-lunora-mode .weather-card::before {
+    background: linear-gradient(90deg, transparent, rgba(226, 186, 123, 0.42), transparent);
+}
+
+body.theme-lunora-mode .weather-card::after {
+    background: radial-gradient(circle, rgba(226, 186, 123, 0.20), transparent 65%);
+}
+
+body.theme-lunora-mode .weather-card h2,
+body.theme-lunora-mode .description,
+body.theme-lunora-mode .hour-time,
+body.theme-lunora-mode .forecast-date,
+body.theme-lunora-mode .forecast-min,
+body.theme-lunora-mode .detail-item p,
+body.theme-lunora-mode .sun-item p {
+    color: var(--lunora-theme-muted);
+}
+
+body.theme-lunora-mode .weather-location,
+body.theme-lunora-mode .temperature,
+body.theme-lunora-mode .detail-item span,
+body.theme-lunora-mode .hour-temp,
+body.theme-lunora-mode .forecast-day,
+body.theme-lunora-mode .forecast-temp,
+body.theme-lunora-mode .sun-item span,
+body.theme-lunora-mode .compact-location-button {
+    color: var(--lunora-theme-ink);
+}
+
+body.theme-lunora-mode .weather-location i,
+body.theme-lunora-mode .detail-item i,
+body.theme-lunora-mode .hour-rain,
+body.theme-lunora-mode .forecast-rain,
+body.theme-lunora-mode .compact-location-button i,
+body.theme-lunora-mode .compact-location-default:hover,
+body.theme-lunora-mode .compact-location-default-badge {
+    color: var(--theme-accent-start);
+}
+
+body.theme-lunora-mode .detail-item,
+body.theme-lunora-mode .hourly-item,
+body.theme-lunora-mode .forecast-item,
+body.theme-lunora-mode .sun-item,
+body.theme-lunora-mode .compact-location-item {
+    border-color: var(--lunora-theme-border);
+    background:
+        radial-gradient(circle at 14% 0%, rgba(226, 186, 123, 0.16), transparent 42%),
+        rgba(255, 250, 244, 0.64);
+    box-shadow:
+        0 10px 26px rgba(91, 64, 35, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
+body.theme-lunora-mode .detail-item:hover,
+body.theme-lunora-mode .hourly-item:hover,
+body.theme-lunora-mode .forecast-item:hover,
+body.theme-lunora-mode .sun-item:hover,
+body.theme-lunora-mode .compact-location-item:hover,
+body.theme-lunora-mode .compact-location-item.is-default {
+    border-color: rgba(183, 138, 85, 0.34);
+    background:
+        radial-gradient(circle at 14% 0%, rgba(226, 186, 123, 0.22), transparent 42%),
+        rgba(255, 250, 244, 0.78);
+    box-shadow:
+        0 14px 30px rgba(91, 64, 35, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+
+body.theme-lunora-mode .hourly-item img,
+body.theme-lunora-mode .forecast-item img {
+    background:
+        radial-gradient(circle, rgba(255, 250, 244, 0.95), rgba(226, 186, 123, 0.18));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.70),
+        0 4px 12px rgba(91, 64, 35, 0.12);
+    filter: drop-shadow(0 2px 6px rgba(91, 64, 35, 0.12));
+}
+
+body.theme-lunora-mode .sun-item i {
+    color: var(--theme-accent-end);
+    filter: drop-shadow(0 3px 8px rgba(183, 138, 85, 0.26));
+}
+
+body.theme-lunora-mode .hourly-list,
+body.theme-lunora-mode .forecast-list,
+body.theme-lunora-mode .compact-location-scroll {
+    scrollbar-color: rgba(183, 138, 85, 0.44) transparent;
+}
+
+body.theme-lunora-mode .hourly-list::-webkit-scrollbar-thumb,
+body.theme-lunora-mode .forecast-list::-webkit-scrollbar-thumb,
+body.theme-lunora-mode .compact-location-scroll::-webkit-scrollbar-thumb {
+    background: rgba(183, 138, 85, 0.44);
+}
+
+body.theme-lunora-mode .compact-location-default,
+body.theme-lunora-mode .compact-location-default-badge,
+body.theme-lunora-mode .compact-location-delete {
+    border-left-color: rgba(156, 119, 77, 0.18);
+}
+
+body.theme-lunora-mode .compact-location-default {
+    background: rgba(183, 138, 85, 0.06);
+    color: rgba(73, 57, 41, 0.46);
+}
+
+body.theme-lunora-mode .compact-location-default:hover,
+body.theme-lunora-mode .compact-location-default-badge {
+    background: rgba(183, 138, 85, 0.12);
+}
+
+body.theme-lunora-mode .compact-location-delete {
+    background: rgba(73, 57, 41, 0.06);
+    color: rgba(73, 57, 41, 0.52);
+}
+
+body.dark-mode.theme-lunora-mode .weather-card,
+body.dark.theme-lunora-mode .weather-card {
+    color: #fff0dd;
+    border-color: rgba(226, 186, 123, 0.18);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(226, 186, 123, 0.16), transparent 38%),
+        radial-gradient(circle at 94% 8%, rgba(183, 138, 85, 0.12), transparent 34%),
+        rgba(38, 27, 19, 0.84);
+    box-shadow:
+        0 18px 48px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .weather-card:hover,
+body.dark.theme-lunora-mode .weather-card:hover {
+    border-color: rgba(226, 186, 123, 0.30);
+    box-shadow:
+        0 22px 56px rgba(0, 0, 0, 0.34),
+        0 0 0 1px rgba(226, 186, 123, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+body.dark-mode.theme-lunora-mode .weather-card::before,
+body.dark.theme-lunora-mode .weather-card::before {
+    background: linear-gradient(90deg, transparent, rgba(226, 186, 123, 0.34), transparent);
+}
+
+body.dark-mode.theme-lunora-mode .weather-card::after,
+body.dark.theme-lunora-mode .weather-card::after {
+    background: radial-gradient(circle, rgba(226, 186, 123, 0.12), transparent 66%);
+}
+
+body.dark-mode.theme-lunora-mode .weather-card h2,
+body.dark-mode.theme-lunora-mode .description,
+body.dark-mode.theme-lunora-mode .hour-time,
+body.dark-mode.theme-lunora-mode .forecast-date,
+body.dark-mode.theme-lunora-mode .forecast-min,
+body.dark-mode.theme-lunora-mode .detail-item p,
+body.dark-mode.theme-lunora-mode .sun-item p,
+body.dark.theme-lunora-mode .weather-card h2,
+body.dark.theme-lunora-mode .description,
+body.dark.theme-lunora-mode .hour-time,
+body.dark.theme-lunora-mode .forecast-date,
+body.dark.theme-lunora-mode .forecast-min,
+body.dark.theme-lunora-mode .detail-item p,
+body.dark.theme-lunora-mode .sun-item p {
+    color: rgba(255, 240, 221, 0.72);
+}
+
+body.dark-mode.theme-lunora-mode .weather-location,
+body.dark-mode.theme-lunora-mode .temperature,
+body.dark-mode.theme-lunora-mode .detail-item span,
+body.dark-mode.theme-lunora-mode .hour-temp,
+body.dark-mode.theme-lunora-mode .forecast-day,
+body.dark-mode.theme-lunora-mode .forecast-temp,
+body.dark-mode.theme-lunora-mode .sun-item span,
+body.dark-mode.theme-lunora-mode .compact-location-button,
+body.dark.theme-lunora-mode .weather-location,
+body.dark.theme-lunora-mode .temperature,
+body.dark.theme-lunora-mode .detail-item span,
+body.dark.theme-lunora-mode .hour-temp,
+body.dark.theme-lunora-mode .forecast-day,
+body.dark.theme-lunora-mode .forecast-temp,
+body.dark.theme-lunora-mode .sun-item span,
+body.dark.theme-lunora-mode .compact-location-button {
+    color: #fff0dd;
+}
+
+body.dark-mode.theme-lunora-mode .weather-location i,
+body.dark-mode.theme-lunora-mode .detail-item i,
+body.dark-mode.theme-lunora-mode .hour-rain,
+body.dark-mode.theme-lunora-mode .forecast-rain,
+body.dark-mode.theme-lunora-mode .compact-location-button i,
+body.dark-mode.theme-lunora-mode .compact-location-default:hover,
+body.dark-mode.theme-lunora-mode .compact-location-default-badge,
+body.dark.theme-lunora-mode .weather-location i,
+body.dark.theme-lunora-mode .detail-item i,
+body.dark.theme-lunora-mode .hour-rain,
+body.dark.theme-lunora-mode .forecast-rain,
+body.dark.theme-lunora-mode .compact-location-button i,
+body.dark.theme-lunora-mode .compact-location-default:hover,
+body.dark.theme-lunora-mode .compact-location-default-badge {
+    color: #e2ba7b;
+}
+
+body.dark-mode.theme-lunora-mode .detail-item,
+body.dark-mode.theme-lunora-mode .hourly-item,
+body.dark-mode.theme-lunora-mode .forecast-item,
+body.dark-mode.theme-lunora-mode .sun-item,
+body.dark-mode.theme-lunora-mode .compact-location-item,
+body.dark.theme-lunora-mode .detail-item,
+body.dark.theme-lunora-mode .hourly-item,
+body.dark.theme-lunora-mode .forecast-item,
+body.dark.theme-lunora-mode .sun-item,
+body.dark.theme-lunora-mode .compact-location-item {
+    border-color: rgba(226, 186, 123, 0.16);
+    background:
+        radial-gradient(circle at 14% 0%, rgba(226, 186, 123, 0.12), transparent 42%),
+        rgba(44, 32, 23, 0.74);
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+body.dark-mode.theme-lunora-mode .detail-item:hover,
+body.dark-mode.theme-lunora-mode .hourly-item:hover,
+body.dark-mode.theme-lunora-mode .forecast-item:hover,
+body.dark-mode.theme-lunora-mode .sun-item:hover,
+body.dark-mode.theme-lunora-mode .compact-location-item:hover,
+body.dark-mode.theme-lunora-mode .compact-location-item.is-default,
+body.dark.theme-lunora-mode .detail-item:hover,
+body.dark.theme-lunora-mode .hourly-item:hover,
+body.dark.theme-lunora-mode .forecast-item:hover,
+body.dark.theme-lunora-mode .sun-item:hover,
+body.dark.theme-lunora-mode .compact-location-item:hover,
+body.dark.theme-lunora-mode .compact-location-item.is-default {
+    border-color: rgba(226, 186, 123, 0.28);
+    background:
+        radial-gradient(circle at 14% 0%, rgba(226, 186, 123, 0.18), transparent 42%),
+        rgba(50, 36, 25, 0.86);
+    box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.30),
+        0 0 0 1px rgba(226, 186, 123, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+body.dark-mode.theme-lunora-mode .hourly-item img,
+body.dark-mode.theme-lunora-mode .forecast-item img,
+body.dark.theme-lunora-mode .hourly-item img,
+body.dark.theme-lunora-mode .forecast-item img {
+    background:
+        radial-gradient(circle, rgba(255, 240, 221, 0.11), rgba(226, 186, 123, 0.08));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 6px 18px rgba(0, 0, 0, 0.18);
+    filter: drop-shadow(0 3px 10px rgba(226, 186, 123, 0.10));
+}
+
+body.dark-mode.theme-lunora-mode .sun-item i,
+body.dark.theme-lunora-mode .sun-item i {
+    color: #e2ba7b;
+    filter: drop-shadow(0 3px 10px rgba(226, 186, 123, 0.26));
+}
+
+body.dark-mode.theme-lunora-mode .hourly-list,
+body.dark-mode.theme-lunora-mode .forecast-list,
+body.dark-mode.theme-lunora-mode .compact-location-scroll,
+body.dark.theme-lunora-mode .hourly-list,
+body.dark.theme-lunora-mode .forecast-list,
+body.dark.theme-lunora-mode .compact-location-scroll {
+    scrollbar-color: rgba(226, 186, 123, 0.42) transparent;
+}
+
+body.dark-mode.theme-lunora-mode .hourly-list::-webkit-scrollbar-thumb,
+body.dark-mode.theme-lunora-mode .forecast-list::-webkit-scrollbar-thumb,
+body.dark-mode.theme-lunora-mode .compact-location-scroll::-webkit-scrollbar-thumb,
+body.dark.theme-lunora-mode .hourly-list::-webkit-scrollbar-thumb,
+body.dark.theme-lunora-mode .forecast-list::-webkit-scrollbar-thumb,
+body.dark.theme-lunora-mode .compact-location-scroll::-webkit-scrollbar-thumb {
+    background: rgba(226, 186, 123, 0.42);
+}
+
+body.dark-mode.theme-lunora-mode .compact-location-default,
+body.dark-mode.theme-lunora-mode .compact-location-default-badge,
+body.dark-mode.theme-lunora-mode .compact-location-delete,
+body.dark.theme-lunora-mode .compact-location-default,
+body.dark.theme-lunora-mode .compact-location-default-badge,
+body.dark.theme-lunora-mode .compact-location-delete {
+    border-left-color: rgba(226, 186, 123, 0.14);
+}
+
+body.dark-mode.theme-lunora-mode .compact-location-default,
+body.dark.theme-lunora-mode .compact-location-default {
+    background: rgba(255, 240, 221, 0.04);
+    color: rgba(255, 240, 221, 0.44);
+}
+
+body.dark-mode.theme-lunora-mode .compact-location-default:hover,
+body.dark-mode.theme-lunora-mode .compact-location-default-badge,
+body.dark.theme-lunora-mode .compact-location-default:hover,
+body.dark.theme-lunora-mode .compact-location-default-badge {
+    background: rgba(226, 186, 123, 0.12);
+}
+
+body.dark-mode.theme-lunora-mode .compact-location-delete,
+body.dark.theme-lunora-mode .compact-location-delete {
+    background: rgba(255, 240, 221, 0.04);
+    color: rgba(255, 240, 221, 0.52);
 }

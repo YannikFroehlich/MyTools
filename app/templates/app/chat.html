@@ -8,12 +8,12 @@
 {% block body_class %}chat-page-body{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/chat.css' %}?v=20260625-chat-scrollbar-fix">
+    <link rel="stylesheet" href="{% static 'app/css/chat.css' %}?v=20260627-chat-no-room-theme">
 {% endblock %}
 
 {% block content %}
 <section class="chat-page">
-    <div class="chat-layout {% if active_room %}chat-theme-{{ active_room.theme }}{% endif %}" data-browser-notifications="{{ request.user.profile.browser_notifications|yesno:'true,false' }}" data-sound-notifications="{{ request.user.profile.sound_notifications|yesno:'true,false' }}" {% if active_room %}data-room-id="{{ active_room.id }}" data-messages-url="{% url 'chat_messages_api' active_room.id %}" data-send-url="{% url 'chat_send' active_room.id %}" data-typing-url="{% url 'chat_typing_api' active_room.id %}"{% endif %}>
+    <div class="chat-layout" data-browser-notifications="{{ request.user.profile.browser_notifications|yesno:'true,false' }}" data-sound-notifications="{{ request.user.profile.sound_notifications|yesno:'true,false' }}" {% if active_room %}data-room-id="{{ active_room.id }}" data-messages-url="{% url 'chat_messages_api' active_room.id %}" data-send-url="{% url 'chat_send' active_room.id %}" data-typing-url="{% url 'chat_typing_api' active_room.id %}"{% endif %}>
         <aside class="chat-sidebar">
             <div class="chat-sidebar-hero">
                 <p class="chat-kicker">{% translate "Nachrichten" %}</p>
@@ -169,21 +169,6 @@
                             {% if active_room.description %}<small class="chat-room-description">{{ active_room.description }}</small>{% endif %}
                         </div>
                     </div>
-                    <details class="chat-theme-menu">
-                        <summary><i class="fa-solid fa-palette"></i>{% translate "Theme" %}</summary>
-                        <form method="post" action="{% url 'chat_theme' active_room.id %}" class="chat-theme-panel">
-                            {% csrf_token %}
-                            {% for value, label in chat_theme_choices %}
-                                <label class="chat-theme-choice chat-theme-choice-{{ value }}">
-                                    <input type="radio" name="theme" value="{{ value }}" {% if active_room.theme == value %}checked{% endif %} onchange="this.form.submit()">
-                                    <span>
-                                        <i></i>
-                                        <b>{{ label }}</b>
-                                    </span>
-                                </label>
-                            {% endfor %}
-                        </form>
-                    </details>
                     {% if active_room.room_type == 'group' %}
                         <details class="chat-group-manage">
                             <summary><i class="fa-solid fa-sliders"></i>{% translate "Gruppe" %}</summary>

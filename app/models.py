@@ -615,7 +615,7 @@ class ShortcutSection(models.Model):
         blank=True,
     )
     name = models.CharField(max_length=60)
-    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="blue")
+    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="theme")
     order = models.PositiveIntegerField(default=0)
     is_collapsed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -660,7 +660,7 @@ class Shortcut(TrashableModel):
     color = models.CharField(
         max_length=20,
         choices=ShortcutSection.COLOR_CHOICES,
-        default="blue",
+        default="theme",
     )
 
     is_favorite = models.BooleanField(default=False)
@@ -1083,7 +1083,7 @@ class HomeWidget(TrashableModel):
     )
     title = models.CharField(max_length=80)
     widget_type = models.CharField(max_length=30, choices=WIDGET_CHOICES, default=WIDGET_WEATHER)
-    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="blue")
+    color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="theme")
     weather_location = models.ForeignKey(
         WeatherLocation,
         on_delete=models.SET_NULL,

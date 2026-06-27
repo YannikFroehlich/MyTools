@@ -866,10 +866,10 @@ def home_onboarding_templates():
     return {
         "everyday": {
             "widgets": [
-                {"title": _("Uhr"), "widget_type": HomeWidget.WIDGET_CLOCK, "color": "blue"},
-                {"title": _("Wetter"), "widget_type": HomeWidget.WIDGET_WEATHER, "color": "green"},
-                {"title": _("Notizen"), "widget_type": HomeWidget.WIDGET_NOTES, "color": "orange"},
-                {"title": _("Schnellstatistiken"), "widget_type": HomeWidget.WIDGET_STATS, "color": "purple"},
+                {"title": _("Uhr"), "widget_type": HomeWidget.WIDGET_CLOCK, "color": "theme"},
+                {"title": _("Wetter"), "widget_type": HomeWidget.WIDGET_WEATHER, "color": "theme"},
+                {"title": _("Notizen"), "widget_type": HomeWidget.WIDGET_NOTES, "color": "theme"},
+                {"title": _("Schnellstatistiken"), "widget_type": HomeWidget.WIDGET_STATS, "color": "theme"},
             ],
             "shortcuts": [
                 {"name": "Gmail", "url": "https://mail.google.com", "icon": "fa-solid fa-envelope"},
@@ -879,10 +879,10 @@ def home_onboarding_templates():
         },
         "gaming": {
             "widgets": [
-                {"title": _("Chats"), "widget_type": HomeWidget.WIDGET_CHAT, "color": "blue"},
-                {"title": _("Freunde"), "widget_type": HomeWidget.WIDGET_FRIENDS, "color": "green"},
-                {"title": _("Tic Tac Toe"), "widget_type": HomeWidget.WIDGET_TICTACTOE, "color": "purple"},
-                {"title": _("Human Benchmark"), "widget_type": HomeWidget.WIDGET_BENCHMARK, "color": "orange"},
+                {"title": _("Chats"), "widget_type": HomeWidget.WIDGET_CHAT, "color": "theme"},
+                {"title": _("Freunde"), "widget_type": HomeWidget.WIDGET_FRIENDS, "color": "theme"},
+                {"title": _("Tic Tac Toe"), "widget_type": HomeWidget.WIDGET_TICTACTOE, "color": "theme"},
+                {"title": _("Human Benchmark"), "widget_type": HomeWidget.WIDGET_BENCHMARK, "color": "theme"},
             ],
             "shortcuts": [
                 {"name": "Steam", "url": "https://store.steampowered.com", "icon": "fa-brands fa-steam"},
@@ -892,9 +892,9 @@ def home_onboarding_templates():
         },
         "homelab": {
             "widgets": [
-                {"title": _("Schnellstatistiken"), "widget_type": HomeWidget.WIDGET_STATS, "color": "blue"},
-                {"title": _("Notizen"), "widget_type": HomeWidget.WIDGET_NOTES, "color": "green"},
-                {"title": _("Uhr"), "widget_type": HomeWidget.WIDGET_CLOCK, "color": "purple"},
+                {"title": _("Schnellstatistiken"), "widget_type": HomeWidget.WIDGET_STATS, "color": "theme"},
+                {"title": _("Notizen"), "widget_type": HomeWidget.WIDGET_NOTES, "color": "theme"},
+                {"title": _("Uhr"), "widget_type": HomeWidget.WIDGET_CLOCK, "color": "theme"},
             ],
             "shortcuts": [
                 {"name": "CasaOS", "url": "http://casaos.local", "icon": "fa-solid fa-server"},
@@ -932,7 +932,7 @@ def apply_home_onboarding_template(user, template_key):
                 default_section, _ = ShortcutSection.objects.get_or_create(
                     user=user,
                     name="Verknüpfungen",
-                    defaults={"color": "blue", "order": 0},
+                    defaults={"color": "theme", "order": 0},
                 )
                 Shortcut.objects.bulk_create([
                     Shortcut(user=user, section=default_section, order=order, **shortcut)
@@ -975,7 +975,7 @@ def home(request):
         user=user,
         name="Verknüpfungen",
         defaults={
-            "color": "blue",
+            "color": "theme",
             "order": 0
         }
     )
@@ -1072,7 +1072,7 @@ def home(request):
         if action == "add_widget":
             title = request.POST.get("widget_title", "").strip()
             widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
-            widget_color = request.POST.get("widget_color", "blue").strip()
+            widget_color = request.POST.get("widget_color", "theme").strip()
             weather_location_id = request.POST.get("weather_location") or None
             clock_design = request.POST.get("clock_design", HomeWidget.CLOCK_DESIGN_MINIMAL).strip()
             clock_style = request.POST.get("clock_style", HomeWidget.CLOCK_STYLE_CLASSIC).strip()
@@ -1086,7 +1086,7 @@ def home(request):
                 widget_type = HomeWidget.WIDGET_WEATHER
 
             if widget_color not in valid_colors:
-                widget_color = "blue"
+                widget_color = "theme"
 
             if clock_design not in valid_clock_designs:
                 clock_design = HomeWidget.CLOCK_DESIGN_MINIMAL
@@ -1122,7 +1122,7 @@ def home(request):
             widget_id = request.POST.get("widget_id")
             title = request.POST.get("widget_title", "").strip()
             widget_type = request.POST.get("widget_type", HomeWidget.WIDGET_WEATHER).strip()
-            widget_color = request.POST.get("widget_color", "blue").strip()
+            widget_color = request.POST.get("widget_color", "theme").strip()
             weather_location_id = request.POST.get("weather_location") or None
             clock_design = request.POST.get("clock_design", HomeWidget.CLOCK_DESIGN_MINIMAL).strip()
             clock_style = request.POST.get("clock_style", HomeWidget.CLOCK_STYLE_CLASSIC).strip()
@@ -1137,7 +1137,7 @@ def home(request):
                 widget_type = HomeWidget.WIDGET_WEATHER
 
             if widget_color not in valid_colors:
-                widget_color = "blue"
+                widget_color = "theme"
 
             if clock_design not in valid_clock_designs:
                 clock_design = HomeWidget.CLOCK_DESIGN_MINIMAL
@@ -1172,11 +1172,11 @@ def home(request):
 
         if action == "add_section":
             section_name = request.POST.get("section_name", "").strip()
-            section_color = request.POST.get("section_color", "blue").strip()
+            section_color = request.POST.get("section_color", "theme").strip()
             valid_section_colors = {choice[0] for choice in ShortcutSection.COLOR_CHOICES}
 
             if section_color not in valid_section_colors:
-                section_color = "blue"
+                section_color = "theme"
 
             if section_name:
                 layout_preference, layout_created = HomeLayoutPreference.objects.get_or_create(user=user)
@@ -1195,11 +1195,11 @@ def home(request):
         if action == "edit_section":
             section_id = request.POST.get("section_id")
             section_name = request.POST.get("section_name", "").strip()
-            section_color = request.POST.get("section_color", "blue").strip()
+            section_color = request.POST.get("section_color", "theme").strip()
             valid_section_colors = {choice[0] for choice in ShortcutSection.COLOR_CHOICES}
 
             if section_color not in valid_section_colors:
-                section_color = "blue"
+                section_color = "theme"
 
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
 
@@ -1220,7 +1220,7 @@ def home(request):
                 default_section, _created = ShortcutSection.objects.get_or_create(
                     user=user,
                     name="Verknüpfungen",
-                    defaults={"color": "blue", "order": 0},
+                    defaults={"color": "theme", "order": 0},
                 )
                 Shortcut.all_objects.filter(section=section, deleted_at__isnull=True).update(
                     deleted_at=django_timezone.now(),
@@ -1250,11 +1250,11 @@ def home(request):
             custom_icon = request.POST.get("custom_icon", "").strip()
             image = request.FILES.get("image")
             remove_image = request.POST.get("remove_image") == "1"
-            color = request.POST.get("shortcut_color", "blue").strip()
+            color = request.POST.get("shortcut_color", "theme").strip()
             valid_shortcut_colors = {choice[0] for choice in ShortcutSection.COLOR_CHOICES}
 
             if color not in valid_shortcut_colors:
-                color = "blue"
+                color = "theme"
 
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
 
@@ -1290,11 +1290,11 @@ def home(request):
             custom_icon = request.POST.get("custom_icon", "").strip()
             image = request.FILES.get("image")
             remove_image = request.POST.get("remove_image") == "1"
-            color = request.POST.get("shortcut_color", "blue").strip()
+            color = request.POST.get("shortcut_color", "theme").strip()
             valid_shortcut_colors = {choice[0] for choice in ShortcutSection.COLOR_CHOICES}
 
             if color not in valid_shortcut_colors:
-                color = "blue"
+                color = "theme"
 
             shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
             section = get_object_or_404(ShortcutSection, id=section_id, user=user)
