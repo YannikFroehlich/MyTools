@@ -176,7 +176,7 @@ msgstr "Randomizer"
 #: .\app\templates\app\qr_code_tool.html:5
 #: .\app\templates\app\qr_code_tool.html:21
 msgid "QR-Code Tool"
-msgstr "QR-Code Tool"
+msgstr "QR code tool"
 
 #: .\app\access_control.py:160 .\app\platform_utils.py:28
 #: .\app\platform_utils.py:77 .\app\templates\app\about.html:165
@@ -206,13 +206,12 @@ msgstr "Image tools"
 #: .\app\templates\app\base.html:625 .\app\templates\app\base.html:628
 #: .\app\templates\app\file_converter.html:5
 #: .\app\templates\app\file_converter.html:24
-#, fuzzy
 msgid "Datei-Konverter"
-msgstr "File distributor"
+msgstr "File converter"
 
 #: .\app\access_control.py:184 .\app\templates\app\base.html:636
 msgid "Color Palette"
-msgstr "Color Palette"
+msgstr "Color palette"
 
 #: .\app\access_control.py:192 .\app\templates\app\base.html:641
 #: .\app\templates\app\base.html:644
@@ -263,7 +262,7 @@ msgstr "Leaderboard"
 #: .\app\access_control.py:416 .\app\access_control.py:437
 #: .\app\access_control.py:456 .\app\models.py:2879
 msgid "Spiel"
-msgstr "Spiel"
+msgstr "Game"
 
 #: .\app\access_control.py:226 .\app\access_control.py:234
 #: .\app\access_control.py:242 .\app\access_control.py:250
@@ -439,7 +438,7 @@ msgstr "Profile started"
 
 #: .\app\achievement_utils.py:51
 msgid "Profilinformationen gepflegt."
-msgstr "Profile information filled in."
+msgstr "Profile information maintained."
 
 #: .\app\achievement_utils.py:60
 msgid "Profil komplett"
@@ -463,7 +462,7 @@ msgstr "Gallery moment"
 
 #: .\app\achievement_utils.py:81
 msgid "Ein Profilbild in die Galerie geladen."
-msgstr "Uploaded a profile picture to the gallery."
+msgstr "Uploaded one profile picture to the gallery."
 
 #: .\app\achievement_utils.py:90
 msgid "Showcase gebaut"
@@ -471,7 +470,7 @@ msgstr "Showcase built"
 
 #: .\app\achievement_utils.py:91
 msgid "Profilkarte oder Spielkarten angepasst."
-msgstr "Customized profile card or game cards."
+msgstr "Profile card or game cards customized."
 
 #: .\app\achievement_utils.py:100
 msgid "Galerie-Sammlung"
@@ -487,7 +486,7 @@ msgstr "Daily visit"
 
 #: .\app\achievement_utils.py:111
 msgid "An einem Tag Aktivität gesammelt."
-msgstr "Logged activity on one day."
+msgstr "Activity collected on one day."
 
 #: .\app\achievement_utils.py:120
 msgid "Wochenrhythmus"
@@ -555,7 +554,7 @@ msgstr "Sent a chat message."
 
 #: .\app\achievement_utils.py:200
 msgid "Gesprächig"
-msgstr "Talkative"
+msgstr "Chatty"
 
 #: .\app\achievement_utils.py:201
 msgid "25 Chatnachrichten gesendet."
@@ -563,7 +562,7 @@ msgstr "Sent 25 chat messages."
 
 #: .\app\achievement_utils.py:210
 msgid "Stammtisch"
-msgstr "Regular table"
+msgstr "Regular chat"
 
 #: .\app\achievement_utils.py:211
 msgid "100 Chatnachrichten gesendet."
@@ -579,7 +578,7 @@ msgstr "Sent 500 chat messages."
 
 #: .\app\achievement_utils.py:230
 msgid "Raumreisender"
-msgstr "Room traveler"
+msgstr "Room hopper"
 
 #: .\app\achievement_utils.py:231
 msgid "In drei Chaträumen aktiv."
@@ -587,7 +586,7 @@ msgstr "Active in three chat rooms."
 
 #: .\app\achievement_utils.py:240
 msgid "Gruppenmensch"
-msgstr "Group person"
+msgstr "Group regular"
 
 #: .\app\achievement_utils.py:241
 msgid "In drei Gruppenchats aktiv."
@@ -599,11 +598,11 @@ msgstr "First upload"
 
 #: .\app\achievement_utils.py:251
 msgid "Eine Datei geteilt."
-msgstr "File shared."
+msgstr "Shared a file."
 
 #: .\app\achievement_utils.py:260
 msgid "Datei-Verteiler"
-msgstr "File distributor"
+msgstr "File sharer"
 
 #: .\app\achievement_utils.py:261
 msgid "Fünf Dateien geteilt."
@@ -615,12 +614,12 @@ msgstr "Private link"
 
 #: .\app\achievement_utils.py:271
 msgid "Eine Datei per privatem Link freigegeben."
-msgstr "Shared a file via private link."
+msgstr "Shared a file with a private link."
 
 # | msgid "Angepinnt"
 #: .\app\achievement_utils.py:280
 msgid "Angekommen"
-msgstr "Arrived"
+msgstr "Delivered"
 
 #: .\app\achievement_utils.py:281
 msgid "Zehn Downloads deiner Freigaben erreicht."
@@ -633,7 +632,7 @@ msgstr "Game started"
 
 #: .\app\achievement_utils.py:291
 msgid "Erste Spielaktivität gesammelt."
-msgstr "Logged your first game activity."
+msgstr "First game activity collected."
 
 #: .\app\achievement_utils.py:300
 msgid "Score-Jäger"
@@ -641,7 +640,7 @@ msgstr "Score hunter"
 
 #: .\app\achievement_utils.py:301
 msgid "Drei Highscores erspielt."
-msgstr "Earned three high scores."
+msgstr "Earned three highscores."
 
 #: .\app\achievement_utils.py:310
 msgid "Benchmark-Routine"
@@ -653,35 +652,35 @@ msgstr "Played ten Human Benchmark runs."
 
 #: .\app\achievement_utils.py:320
 msgid "Highscore-Meister"
-msgstr "High score master"
+msgstr "Highscore master"
 
 #: .\app\achievement_utils.py:321
 msgid "Alle fünf Highscore-Slots gefüllt."
-msgstr "Filled all five high score slots."
+msgstr "Filled all five highscore slots."
 
 #: .\app\achievement_utils.py:330
 msgid "1024-Kachel"
-msgstr "1024-Kachel"
+msgstr "1024 tile"
 
 #: .\app\achievement_utils.py:331
 msgid "In 2048 mindestens die 1024-Kachel erreicht."
-msgstr "In 2048 mindestens die 1024-Kachel erreicht."
+msgstr "Reached at least the 1024 tile in 2048."
 
 #: .\app\achievement_utils.py:340
 msgid "2048 geschafft"
-msgstr "2048 geschafft"
+msgstr "Completed 2048"
 
 #: .\app\achievement_utils.py:341
 msgid "In 2048 die 2048-Kachel erreicht."
-msgstr "In 2048 die 2048-Kachel erreicht."
+msgstr "Reached the 2048 tile in 2048."
 
 #: .\app\achievement_utils.py:350
 msgid "Kachel-Routine"
-msgstr "Kachel-Routine"
+msgstr "Tile routine"
 
 #: .\app\achievement_utils.py:351
 msgid "Zehn 2048-Runden gespielt."
-msgstr "Zehn 2048-Runden gespielt."
+msgstr "Played ten 2048 rounds."
 
 #: .\app\achievement_utils.py:360
 msgid "Cookie-Sammler"
@@ -702,27 +701,27 @@ msgstr "Made ten Skribble drawings."
 
 #: .\app\achievement_utils.py:380
 msgid "Pong-Duell"
-msgstr "Pong-Duell"
+msgstr "Pong duel"
 
 #: .\app\achievement_utils.py:381
 msgid "Ein Pong-Match beendet."
-msgstr "Ein Pong-Match beendet."
+msgstr "Finished a Pong match."
 
 #: .\app\achievement_utils.py:390
 msgid "Rally-Kontrolle"
-msgstr "Rally-Kontrolle"
+msgstr "Rally control"
 
 #: .\app\achievement_utils.py:391
 msgid "In Pong eine Rally mit zehn Ballkontakten erreicht."
-msgstr "In Pong eine Rally mit zehn Ballkontakten erreicht."
+msgstr "Reached a rally with ten ball touches in Pong."
 
 #: .\app\achievement_utils.py:400
 msgid "Pong-Champion"
-msgstr "Pong-Champion"
+msgstr "Pong champion"
 
 #: .\app\achievement_utils.py:401
 msgid "Drei Pong-Matches gewonnen."
-msgstr "Drei Pong-Matches gewonnen."
+msgstr "Won three Pong matches."
 
 # | msgid "Spiele"
 #: .\app\achievement_utils.py:410
@@ -778,21 +777,21 @@ msgstr "2FA active"
 
 #: .\app\admin.py:147
 msgid "2FA für ausgewählte Nutzer zurücksetzen"
-msgstr "2FA fuer ausgewaehlte Nutzer zuruecksetzen"
+msgstr "Reset 2FA for selected users"
 
 #: .\app\admin.py:152
 #, python-format
 msgid "2FA wurde für %(count)s Nutzer zurückgesetzt."
-msgstr "2FA wurde fuer %(count)s Nutzer zurueckgesetzt."
+msgstr "2FA was reset for %(count)s users."
 
 #: .\app\admin.py:165
 msgid "Ausgewählte 2FA-Einstellungen löschen/zurücksetzen"
-msgstr "Ausgewaehlte 2FA-Einstellungen delete/zuruecksetzen"
+msgstr "Delete/reset selected 2FA settings"
 
 #: .\app\admin.py:170
 #, python-format
 msgid "%(count)s 2FA-Einstellung wurde zurückgesetzt."
-msgstr "%(count)s 2FA-Einstellung wurde zurueckgesetzt."
+msgstr "%(count)s 2FA setting was reset."
 
 #: .\app\admin.py:199 .\app\templates\app\roadmap.html:18
 msgid "Votes"
@@ -822,7 +821,7 @@ msgstr "Password"
 
 #: .\app\auth_views.py:55 .\app\auth_views.py:94
 msgid "Der Login ist aktuell für normale Nutzer gesperrt."
-msgstr "Der Login ist aktuell fuer normale Nutzer gesperrt."
+msgstr "Login is currently locked for regular users."
 
 #: .\app\auth_views.py:62
 msgid "Authentifizierungs-Code"
@@ -834,50 +833,49 @@ msgstr "Bitte gib einen 6-stelligen Code ein."
 
 #: .\app\auth_views.py:111
 msgid "Login ohne 2FA abgeschlossen."
-msgstr "Login ohne 2FA abgeschlossen."
+msgstr "Login completed without 2FA."
 
 # | msgid "Uhr-Einstellungen wurden gespeichert."
 #: .\app\auth_views.py:127
 msgid "Login-Versuch wurde abgelehnt."
-msgstr "Login-Versuch wurde abgelehnt."
+msgstr "Login attempt was rejected."
 
 #: .\app\auth_views.py:160
 msgid "Login mit 2FA bestätigt."
-msgstr "Login mit 2FA bestaetigt."
+msgstr "Login confirmed with 2FA."
 
 #: .\app\auth_views.py:165
 msgid "Der Code ist ungültig oder abgelaufen."
-msgstr "Der Code ist ungueltig oder abgelaufen."
+msgstr "The code is invalid or expired."
 
 #: .\app\auth_views.py:196
 msgid ""
 "Scanne den QR-Code und bestätige die Einrichtung mit einem 6-stelligen Code."
-msgstr ""
-"Scanne den QR-Code und bestaetige die Einrichtung mit einem 6-stelligen Code."
+msgstr "Scan the QR code and confirm setup with a 6-digit code."
 
 #: .\app\auth_views.py:210
 msgid "2FA wurde für den Account aktiviert."
-msgstr "2FA wurde fuer den Account activeiert."
+msgstr "2FA was enabled for the account."
 
 #: .\app\auth_views.py:212
 msgid "Zwei-Faktor-Authentifizierung wurde aktiviert."
-msgstr "Zwei-Faktor-Authentifizierung wurde activeiert."
+msgstr "Two-factor authentication was enabled."
 
 #: .\app\auth_views.py:214
 msgid "Der Code konnte nicht bestätigt werden."
-msgstr "Der Code konnte nicht bestaetigt werden."
+msgstr "The code could not be confirmed."
 
 #: .\app\auth_views.py:228
 msgid "2FA wurde für den Account deaktiviert."
-msgstr "2FA wurde fuer den Account deactiveiert."
+msgstr "2FA was disabled for the account."
 
 #: .\app\auth_views.py:230
 msgid "Zwei-Faktor-Authentifizierung wurde deaktiviert."
-msgstr "Zwei-Faktor-Authentifizierung wurde deactiveiert."
+msgstr "Two-factor authentication was disabled."
 
 #: .\app\auth_views.py:232
 msgid "Der Code ist ungültig. 2FA wurde nicht deaktiviert."
-msgstr "Der Code ist ungueltig. 2FA wurde nicht deactiveiert."
+msgstr "The code is invalid. 2FA was not disabled."
 
 #: .\app\battleship_views.py:27
 msgid "Träger"
@@ -1672,7 +1670,7 @@ msgstr "All"
 
 #: .\app\community_views.py:363 .\app\community_views.py:365
 msgid "Datenbank"
-msgstr "Datenbank"
+msgstr "Database"
 
 #: .\app\community_views.py:363 .\app\community_views.py:374
 #: .\app\community_views.py:477 .\app\models.py:61
@@ -1723,11 +1721,11 @@ msgstr "nicht gesetzt"
 
 #: .\app\community_views.py:477
 msgid "Django App"
-msgstr "Django App"
+msgstr "Django app"
 
 #: .\app\community_views.py:477
 msgid "Request wurde erfolgreich verarbeitet."
-msgstr "Request wurde erfolgreich verarbeitet."
+msgstr "Request processed successfully."
 
 #: .\app\community_views.py:480
 msgid "PWA"
@@ -1987,11 +1985,11 @@ msgstr ""
 #: .\app\file_converter_views.py:113
 #, python-format
 msgid "LibreOffice konnte die Datei nicht konvertieren: %(error)s"
-msgstr ""
+msgstr "LibreOffice could not convert the file: %(error)s"
 
 #: .\app\file_converter_views.py:114
 msgid "LibreOffice konnte keine PDF-Datei erzeugen."
-msgstr ""
+msgstr "LibreOffice could not create a PDF file."
 
 #: .\app\file_converter_views.py:139
 msgid "Dieses Zielformat wird für Bilder nicht unterstützt."
@@ -2020,7 +2018,7 @@ msgstr "The file is too large. Maximum allowed size is %(size)s."
 
 #: .\app\file_converter_views.py:180
 msgid "Die Datei braucht eine erkennbare Dateiendung."
-msgstr ""
+msgstr "The file needs a recognizable file extension."
 
 #: .\app\file_converter_views.py:187
 msgid "Dieses Zielformat ist aktuell nur für Bilder verfügbar."
@@ -2028,13 +2026,12 @@ msgstr ""
 
 # | msgid "Neue Accounts können aktuell nicht erstellt werden."
 #: .\app\file_converter_views.py:191
-#, fuzzy
 msgid "Diese Datei kann aktuell nicht zu PDF konvertiert werden."
-msgstr "Neue Accounts koennen aktuell nicht erstellt werden."
+msgstr "This file cannot currently be converted to PDF."
 
 #: .\app\file_converter_views.py:199
 msgid "Diese Kombination aus Datei und Zielformat wird nicht unterstützt."
-msgstr ""
+msgstr "This file and target format combination is not supported."
 
 #: .\app\forms.py:49 .\app\models.py:580 .\app\models.py:690
 #: .\app\models.py:1021 .\app\templates\app\base.html:743
@@ -2918,7 +2915,7 @@ msgstr "Accepted"
 #: .\app\models.py:2294 .\app\models.py:2867 .\app\models.py:3081
 #: .\app\models.py:3438
 msgid "Abgelehnt"
-msgstr "Declined"
+msgstr "Rejected"
 
 #: .\app\models.py:1443 .\app\templates\app\uno_lobby.html:184
 #: .\app\uno_views.py:24
@@ -2988,11 +2985,11 @@ msgstr "Mine"
 
 #: .\app\models.py:2622
 msgid "Login erfolgreich"
-msgstr "Login erfolgreich"
+msgstr "Login successful"
 
 #: .\app\models.py:2623
 msgid "Login fehlgeschlagen"
-msgstr "Login fehlgeschlagen"
+msgstr "Login failed"
 
 #: .\app\models.py:2624
 msgid "Logout"
@@ -3000,20 +2997,20 @@ msgstr "Logout"
 
 #: .\app\models.py:2625
 msgid "2FA aktiviert"
-msgstr "2FA activeiert"
+msgstr "2FA enabled"
 
 #: .\app\models.py:2626
 msgid "2FA deaktiviert"
-msgstr "2FA deactiveiert"
+msgstr "2FA disabled"
 
 #: .\app\models.py:2627
 msgid "Sitzung beendet"
-msgstr "Sitzung beendet"
+msgstr "Session ended"
 
 # | msgid "E-Mail gesendet"
 #: .\app\models.py:2628
 msgid "Andere Sitzungen beendet"
-msgstr "Andere Sitzungen beendet"
+msgstr "Other sessions ended"
 
 #: .\app\models.py:2637
 msgid "Info"
@@ -3021,15 +3018,15 @@ msgstr "Info"
 
 #: .\app\models.py:2638
 msgid "Erfolg"
-msgstr "Erfolg"
+msgstr "Success"
 
 #: .\app\models.py:2639
 msgid "Warnung"
-msgstr "Warnung"
+msgstr "Warning"
 
 #: .\app\models.py:2640
 msgid "Gefahr"
-msgstr "Gefahr"
+msgstr "Danger"
 
 #: .\app\models.py:2665
 msgid "Sicherheitsereignis"
@@ -3079,15 +3076,15 @@ msgstr "User deactivated"
 
 #: .\app\models.py:2702
 msgid "Login und Registrierung gesperrt"
-msgstr "Login und Registrierung gesperrt"
+msgstr "Login and registration locked"
 
 #: .\app\models.py:2703
 msgid "Login und Registrierung entsperrt"
-msgstr "Login und Registrierung entsperrt"
+msgstr "Login and registration unlocked"
 
 #: .\app\models.py:2704
 msgid "Tool-Zugriffe geaendert"
-msgstr ""
+msgstr "Tool access changed"
 
 #: .\app\models.py:2705
 msgid "Medien komprimiert"
@@ -3132,7 +3129,7 @@ msgstr "Design / UI"
 
 #: .\app\models.py:2881 .\app\templates\app\two_factor_settings.html:15
 msgid "Sicherheit"
-msgstr "Sicherheit"
+msgstr "Security"
 
 #: .\app\models.py:2882
 msgid "Performance"
@@ -3140,7 +3137,7 @@ msgstr "Performance"
 
 #: .\app\models.py:2891
 msgid "Niedrig"
-msgstr "Niedrig"
+msgstr "Low"
 
 #: .\app\models.py:2893 .\app\templates\app\image_tools.html:105
 msgid "Hoch"
@@ -3213,7 +3210,7 @@ msgstr "File shares"
 
 #: .\app\moderation_views.py:374
 msgid "Bild-Medien"
-msgstr "Bild-Medien"
+msgstr "Image media"
 
 #: .\app\moderation_views.py:394
 msgid "Aktive Sperren"
@@ -3221,21 +3218,20 @@ msgstr "Active suspensions"
 
 #: .\app\moderation_views.py:400
 msgid "Login-Sperre"
-msgstr "Login-Sperre"
+msgstr "Login lock"
 
 #: .\app\moderation_views.py:406
-#, fuzzy
 #| msgid "7-0 Regel"
 msgid "Tool-Regeln"
-msgstr "7-0 rule"
+msgstr "Tool rules"
 
 #: .\app\moderation_views.py:457
 msgid "Login und Registrierung sind jetzt für normale Nutzer gesperrt."
-msgstr "Login und Registrierung sind jetzt fuer normale Nutzer gesperrt."
+msgstr "Login and registration are now locked for regular users."
 
 #: .\app\moderation_views.py:459
 msgid "Login und Registrierung sind wieder freigegeben."
-msgstr "Login und Registrierung sind wieder freigegeben."
+msgstr "Login and registration are open again."
 
 #: .\app\moderation_views.py:487
 #, fuzzy
@@ -3278,9 +3274,7 @@ msgstr "Keine weiteren Bilder mussten komprimiert werden."
 msgid ""
 "Hinweis: %(missing)s Dateien fehlen im Speicher, %(failed)s konnten nicht "
 "verarbeitet werden."
-msgstr ""
-"Hinweis: %(missing)s Dateien fehlen im Speicher, %(failed)s konnten nicht "
-"verarbeitet werden."
+msgstr "Note: %(missing)s files are missing from storage, %(failed)s could not be processed."
 
 #: .\app\moderation_views.py:598
 msgid "Ungültige Nutzeraktion."
@@ -3697,7 +3691,7 @@ msgstr "No access."
 
 #: .\app\platform_views.py:40
 msgid "Du hast keinen Zugriff auf dieses Tool."
-msgstr ""
+msgstr "You do not have access to this tool."
 
 #: .\app\platform_views.py:52
 msgid "Favoriten wurden aktualisiert."
@@ -3990,7 +3984,7 @@ msgstr "%(label)s must be an image file."
 
 #: .\app\profile_forms.py:182 .\app\templates\app\color_palette_tool.html:116
 msgid "Bild"
-msgstr "Bild"
+msgstr "Image"
 
 #: .\app\profile_forms.py:184
 msgid "Öffentlich sichtbar"
@@ -4035,11 +4029,11 @@ msgstr ""
 #: .\app\profile_views.py:135
 #, python-format
 msgid "%(total)s gesamt"
-msgstr ""
+msgstr "%(total)s total"
 
 #: .\app\profile_views.py:141
 msgid "Netzwerk"
-msgstr ""
+msgstr "Network"
 
 #: .\app\profile_views.py:145 .\app\profile_views.py:298
 #: .\app\profile_views.py:555 .\app\templates\app\profile.html:84
@@ -4050,13 +4044,12 @@ msgstr "Highscores"
 
 #: .\app\profile_views.py:147
 msgid "sichtbar im Profil"
-msgstr ""
+msgstr "visible on profile"
 
 # | msgid "aktive Konten"
 #: .\app\profile_views.py:157
-#, fuzzy
 msgid "aktive Einträge"
-msgstr "active accounts"
+msgstr "active entries"
 
 #: .\app\profile_views.py:235
 msgid "Statistiken"
@@ -4085,7 +4078,7 @@ msgstr "Best tile"
 
 #: .\app\profile_views.py:263
 msgid "Zuege"
-msgstr "Zuege"
+msgstr "Moves"
 
 #: .\app\profile_views.py:264 .\app\templates\app\game_2048.html:68
 #: .\app\templates\app\human_benchmark.html:42
@@ -4324,29 +4317,29 @@ msgstr "Profile card saved."
 
 #: .\app\security_views.py:95
 msgid "Es wurde keine Sitzung ausgewählt."
-msgstr "Es wurde keine Sitzung ausgewaehlt."
+msgstr "No session was selected."
 
 #: .\app\security_views.py:98
 msgid "Die aktuelle Sitzung kann nicht hier beendet werden."
-msgstr "Die aktuelle Sitzung kann nicht hier beendet werden."
+msgstr "The current session cannot be ended here."
 
 # | msgid "Uhr-Einstellungen wurden gespeichert."
 #: .\app\security_views.py:109
 msgid "Eine andere Sitzung wurde beendet."
-msgstr "Eine andere Sitzung wurde beendet."
+msgstr "Another session was ended."
 
 #: .\app\security_views.py:112
 msgid "Die ausgewählte Sitzung wurde beendet."
-msgstr "Die ausgewaehlte Sitzung wurde beendet."
+msgstr "The selected session was ended."
 
 #: .\app\security_views.py:114
 msgid "Diese Sitzung konnte nicht gefunden werden."
-msgstr "Diese Sitzung konnte nicht gefunden werden."
+msgstr "This session could not be found."
 
 #: .\app\security_views.py:131 .\app\security_views.py:135
 #, python-format
 msgid "%(count)s andere Sitzung(en) wurden beendet."
-msgstr "%(count)s andere Sitzung(en) wurden beendet."
+msgstr "%(count)s other session(s) were ended."
 
 #: .\app\security_views.py:190
 msgid "Bitte gib eine URL ein."
@@ -4354,7 +4347,7 @@ msgstr "Bitte gib eine URL ein."
 
 #: .\app\security_views.py:201
 msgid "Bitte gib den WLAN-Namen ein."
-msgstr "Bitte gib den WLAN-Namen ein."
+msgstr "Please enter the Wi-Fi name."
 
 #: .\app\security_views.py:213
 msgid "Bitte gib mindestens einen Kontaktdaten-Wert ein."
@@ -4367,11 +4360,11 @@ msgstr "Bitte gib einen Text ein."
 # | msgid "Notiz wurde erstellt."
 #: .\app\security_views.py:311
 msgid "QR-Code wurde erstellt."
-msgstr "QR-Code wurde erstellt."
+msgstr "QR code was created."
 
 #: .\app\security_views.py:313
 msgid "QR-Code konnte nicht erstellt werden."
-msgstr "QR-Code konnte nicht erstellt werden."
+msgstr "QR code could not be created."
 
 #: .\app\skribble_views.py:468
 msgid "hat das Wort erraten!"
@@ -4715,7 +4708,7 @@ msgstr "Control scenes, sources, audio, stream, and recording locally."
 msgid ""
 "OBS, Spotify und Voicemod mit eigenen Buttons, lokalem API-Key und Voice-"
 "Auswahl steuern."
-msgstr ""
+msgstr "Control OBS, Spotify, and Voicemod with custom buttons, a local API key, and voice selection."
 
 #: .\app\templates\app\about.html:150 .\app\templates\app\calculator.html:4
 #: .\app\templates\app\calculator.html:15
@@ -4753,7 +4746,7 @@ msgstr "Convert units of measurement, time, distance, and currency."
 
 #: .\app\templates\app\about.html:176
 msgid "QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte als PNG erzeugen."
-msgstr "QR-Codes fuer Text, URLs, WLAN-Zugaenge und Kontakte als PNG erzeugen."
+msgstr "Generate QR codes for text, URLs, Wi-Fi access, and contacts as PNG files."
 
 #: .\app\templates\app\about.html:181
 msgid "Bilder komprimieren, konvertieren und direkt als Download vorbereiten."
@@ -4781,7 +4774,7 @@ msgstr "A clicker with upgrades, events, offline progress, and prestige."
 msgid ""
 "AFK-Tycoon mit Anlagen, Upgrades, Erfolgen, Datenbank-Speichern, Import/"
 "Export und vollständig übersetzbarer Oberfläche."
-msgstr ""
+msgstr "AFK tycoon with facilities, upgrades, achievements, database saves, import/export, and a fully translatable interface."
 
 #: .\app\templates\app\about.html:215
 msgid "Drift Circuit Pro"
@@ -4969,7 +4962,7 @@ msgstr ""
 msgid ""
 "Ein gemeinsamer Qualitätslauf prüft Systemcheck, Migrationen, Tests, "
 "statische Dateien und JavaScript und wird bei Bedarf manuell gestartet."
-msgstr ""
+msgstr "A shared quality run checks system checks, migrations, tests, static files, and JavaScript, and can be started manually when needed."
 
 #: .\app\templates\app\about.html:323
 msgid ""
@@ -4981,7 +4974,7 @@ msgstr ""
 msgid ""
 "Nebula Forge Tycoon nutzt übersetzbare Template- und JavaScript-Texte für "
 "die Django-PO-Dateien."
-msgstr ""
+msgstr "Nebula Forge Tycoon uses translatable template and JavaScript text for the Django PO files."
 
 #: .\app\templates\app\about.html:325
 msgid ""
@@ -5062,7 +5055,7 @@ msgstr "Next goals"
 
 #: .\app\templates\app\achievement_center.html:80
 msgid "Diese Achievements sind am nächsten dran."
-msgstr "These achievements are closest to completion."
+msgstr "These achievements are closest to being unlocked."
 
 #: .\app\templates\app\achievement_center.html:92
 msgid "Du hast aktuell alles freigeschaltet."
@@ -5298,7 +5291,7 @@ msgstr "No characters added yet."
 
 #: .\app\templates\app\base.html:17
 msgid "Mein myManager"
-msgstr "My myManager"
+msgstr "MyTools"
 
 #: .\app\templates\app\base.html:47 .\app\templates\app\favorites.html:36
 #, fuzzy
@@ -5816,7 +5809,7 @@ msgstr "Admin reports feedback files users"
 
 #: .\app\templates\app\base.html:542
 msgid "Admin Server System Monitor Status Datenbank Cache Speicher"
-msgstr "Admin Server System Monitor Status Datenbank Cache Speicher"
+msgstr "Admin server system monitor status database cache storage"
 
 #: .\app\templates\app\base.html:546
 msgid "Monitor"
@@ -5826,13 +5819,11 @@ msgstr "Monitor"
 msgid ""
 "Taschenrechner Wissenschaftlich Wurzel Potenzen Logarithmus Sinus Cosinus "
 "Casio"
-msgstr ""
-"Taschenrechner Wissenschaftlich Wurzel Potenzen Logarithmus Sinus Cosinus "
-"Casio"
+msgstr "Calculator scientific roots powers logarithm sine cosine Casio"
 
 #: .\app\templates\app\base.html:564 .\app\templates\app\calculator.html:36
 msgid "Wissenschaftlich"
-msgstr "Wissenschaftlich"
+msgstr "Scientific"
 
 #: .\app\templates\app\base.html:568
 msgid "Auto Sprit Benzin Kosten Rechner"
@@ -5880,7 +5871,7 @@ msgstr "Images photo media tools"
 
 #: .\app\templates\app\base.html:625
 msgid "DOCX PDF Dateien Konverter Office Umwandeln"
-msgstr ""
+msgstr "DOCX PDF files converter office convert"
 
 #: .\app\templates\app\base.html:629
 msgid "DOCX zu PDF"
@@ -5894,7 +5885,7 @@ msgstr "Color palette tool"
 
 #: .\app\templates\app\base.html:633
 msgid "Farbe Palette Design Eyedropper Bildschirm Bild Kontrast HEX RGB HSL"
-msgstr "Farbe Palette Design Eyedropper Bildschirm Bild Kontrast HEX RGB HSL"
+msgstr "Color palette design eyedropper screen image contrast HEX RGB HSL"
 
 # | msgid "Farbe"
 #: .\app\templates\app\base.html:637 .\app\templates\app\base.html:772
@@ -6662,7 +6653,7 @@ msgstr "Aktueller Monat"
 
 #: .\app\templates\app\budget_tracker.html:35
 msgid "Alles ist nur für deinen Account sichtbar."
-msgstr "Alles ist nur fuer deinen Account sichtbar."
+msgstr "Everything is visible only to your account."
 
 #: .\app\templates\app\budget_tracker.html:39
 msgid "Budget-Zusammenfassung"
@@ -6867,46 +6858,44 @@ msgstr "Kategorie delete"
 msgid ""
 "Ein richtiger Taschenrechner für Grundrechenarten, Wurzeln, Potenzen, "
 "Logarithmen, Trigonometrie, Fakultät, Speicher und Verlauf."
-msgstr ""
-"Ein richtiger Taschenrechner fuer Grundrechenarten, Wurzeln, Potenzen, "
-"Logarithmen, Trigonometrie, Fakultaet, Speicher und Verlauf."
+msgstr "A proper calculator for arithmetic, roots, powers, logarithms, trigonometry, factorials, memory, and history."
 
 # | msgid "Geplante Funktionen"
 #: .\app\templates\app\calculator.html:19
 msgid "Rechner-Funktionen"
-msgstr "Rechner-Funktionen"
+msgstr "Calculator functions"
 
 #: .\app\templates\app\calculator.html:20
 msgid "Wurzeln"
-msgstr "Wurzeln"
+msgstr "Roots"
 
 #: .\app\templates\app\calculator.html:21
 msgid "Potenzen"
-msgstr "Potenzen"
+msgstr "Powers"
 
 #: .\app\templates\app\calculator.html:22
 msgid "Trigonometrie"
-msgstr "Trigonometrie"
+msgstr "Trigonometry"
 
 #: .\app\templates\app\calculator.html:38
 msgid "Winkelmodus"
-msgstr "Winkelmodus"
+msgstr "Angle mode"
 
 #: .\app\templates\app\calculator.html:49
 msgid "Rechenausdruck"
-msgstr "Rechenausdruck"
+msgstr "Calculation expression"
 
 #: .\app\templates\app\calculator.html:53
 msgid "Tastenfeld"
-msgstr "Tastenfeld"
+msgstr "Keypad"
 
 #: .\app\templates\app\calculator.html:116
 msgid "Beispiele"
-msgstr "Beispiele"
+msgstr "Examples"
 
 #: .\app\templates\app\calculator.html:117
 msgid "Antippen zum Einfügen"
-msgstr "Antippen zum Einfuegen"
+msgstr "Tap to insert"
 
 #: .\app\templates\app\calculator.html:135
 msgid "Die letzten Rechnungen bleiben lokal im Browser."
@@ -6916,35 +6905,38 @@ msgstr "Die letzten Rechnungen bleiben lokal im Browser."
 #: .\app\templates\app\calculator.html:139
 #: .\app\templates\app\calculator.html:169
 msgid "Noch keine Rechnungen."
-msgstr "Noch keine Rechnungen."
+msgstr "No calculations yet."
 
 #: .\app\templates\app\calculator.html:143
 msgid "Verlauf löschen"
-msgstr "Verlauf delete"
+msgstr "Clear history"
 
 #: .\app\templates\app\calculator.html:151
 msgid "Kurz-Hilfe"
-msgstr "Kurz-Hilfe"
+msgstr "Quick help"
 
 #: .\app\templates\app\calculator.html:152
 msgid "Die wichtigsten Eingaben auf einen Blick."
-msgstr "Die wichtigsten Eingaben auf einen Blick."
+msgstr "The most important inputs at a glance."
+
+msgid "Die wichtigsten Inputs auf einen Blick."
+msgstr "The most important inputs at a glance."
 
 #: .\app\templates\app\calculator.html:156
 msgid "Potenzen: 2^8 oder Taste xʸ."
-msgstr "Potenzen: 2^8 oder Taste xʸ."
+msgstr "Powers: 2^8 or the xʸ key."
 
 #: .\app\templates\app\calculator.html:157
 msgid "Wurzeln: sqrt(16), cbrt(27) oder root(27,3)."
-msgstr "Wurzeln: sqrt(16), cbrt(27) oder root(27,3)."
+msgstr "Roots: sqrt(16), cbrt(27), or root(27,3)."
 
 #: .\app\templates\app\calculator.html:158
 msgid "Trigonometrie läuft je nach Schalter in DEG oder RAD."
-msgstr "Trigonometrie laeuft je nach Schalter in DEG oder RAD."
+msgstr "Trigonometry uses DEG or RAD depending on the switch."
 
 #: .\app\templates\app\calculator.html:159
 msgid "Tastatur: Enter berechnet, Escape löscht, Backspace entfernt Zeichen."
-msgstr "Tastatur: Enter berechnet, Escape loescht, Backspace entfernt Zeichen."
+msgstr "Keyboard: Enter calculates, Escape clears, Backspace removes characters."
 
 #: .\app\templates\app\calculator.html:170
 msgid "Gib zuerst eine Rechnung ein."
@@ -6992,7 +6984,7 @@ msgstr "Fakultaet geht nur mit ganzen Zahlen ab 0."
 
 #: .\app\templates\app\calculator.html:181
 msgid "Fakultät ist zu groß für diesen Rechner."
-msgstr "Fakultaet ist zu gross fuer diesen Rechner."
+msgstr "The factorial is too large for this calculator."
 
 #: .\app\templates\app\calculator.html:182
 msgid "Die Wurzelordnung darf nicht 0 sein."
@@ -7356,22 +7348,20 @@ msgstr "Design Tool"
 msgid ""
 "Erfasse Farben per Farbwähler, Browser-Eyedropper oder direkt aus einem "
 "hochgeladenen Bild. Kopiere HEX, RGB und HSL und prüfe sofort den Kontrast."
-msgstr ""
-"Erfasse Farben per Farbwaehler, Browser-Eyedropper oder direkt aus einem "
-"hochgeladenen Bild. Kopiere HEX, RGB und HSL und pruefe sofort den Kontrast."
+msgstr "Capture colors via color picker, browser eyedropper, or directly from an uploaded image. Copy HEX, RGB, and HSL and check contrast instantly."
 
 #: .\app\templates\app\color_palette_tool.html:32
 msgid "Farbe vom Bildschirm erfassen"
-msgstr "Farbe vom Bildschirm erfassen"
+msgstr "Pick color from screen"
 
 #: .\app\templates\app\color_palette_tool.html:36
 msgid "Bild hochladen"
-msgstr "Bild hochladen"
+msgstr "Upload image"
 
 # | msgid "Aktuelles Wetter"
 #: .\app\templates\app\color_palette_tool.html:46
 msgid "Aktuelle Farbe"
-msgstr "Aktuelle Farbe"
+msgstr "Current color"
 
 #: .\app\templates\app\color_palette_tool.html:57
 msgid "Picker"
@@ -7380,50 +7370,50 @@ msgstr "Picker"
 #: .\app\templates\app\color_palette_tool.html:58
 #: .\app\templates\app\color_palette_tool.html:64
 msgid "Farbe auswählen"
-msgstr "Farbe auswaehlen"
+msgstr "Choose color"
 
 #: .\app\templates\app\color_palette_tool.html:66
 msgid "Normaler Farbwähler"
-msgstr "Normaler Farbwaehler"
+msgstr "Native color picker"
 
 #: .\app\templates\app\color_palette_tool.html:67
 msgid "Funktioniert in jedem modernen Browser und ist der sichere Fallback."
-msgstr "Funktioniert in jedem modernen Browser und ist der sichere Fallback."
+msgstr "Works in every modern browser and is the safe fallback."
 
 # | msgid "Link (optional)"
 #: .\app\templates\app\color_palette_tool.html:76
 msgid "HEX kopieren"
-msgstr "HEX kopieren"
+msgstr "Copy HEX"
 
 # | msgid "Link (optional)"
 #: .\app\templates\app\color_palette_tool.html:85
 msgid "RGB kopieren"
-msgstr "RGB kopieren"
+msgstr "Copy RGB"
 
 # | msgid "Link (optional)"
 #: .\app\templates\app\color_palette_tool.html:94
 msgid "HSL kopieren"
-msgstr "HSL kopieren"
+msgstr "Copy HSL"
 
 #: .\app\templates\app\color_palette_tool.html:104
 msgid "Zur Palette hinzufügen"
-msgstr "Zur Palette add"
+msgstr "Add to palette"
 
 #: .\app\templates\app\color_palette_tool.html:108
 msgid "Zufallsfarbe"
-msgstr "Zufallsfarbe"
+msgstr "Random color"
 
 #: .\app\templates\app\color_palette_tool.html:117
 msgid "Farbe aus Bild anklicken"
-msgstr "Farbe aus Bild anklicken"
+msgstr "Click color from image"
 
 #: .\app\templates\app\color_palette_tool.html:126
 msgid "Noch kein Bild geladen"
-msgstr "Noch kein Bild geladen"
+msgstr "No image loaded yet"
 
 #: .\app\templates\app\color_palette_tool.html:127
 msgid "Lade ein Bild hoch und klicke danach direkt auf eine Stelle im Bild."
-msgstr "Lade ein Bild hoch und klicke danach direkt auf eine Stelle im Bild."
+msgstr "Upload an image and then click directly on a spot in the image."
 
 #: .\app\templates\app\color_palette_tool.html:130
 msgid ""
@@ -7431,9 +7421,8 @@ msgid ""
 "Bildschirm lesen. Nutze dafür den Eyedropper-Button oder lade einen "
 "Screenshot hoch."
 msgstr ""
-"Tipp: Im Browser darf eine Webseite nicht ohne Erlaubnis deinen gesamten "
-"Bildschirm lesen. Nutze dafuer den Eyedropper-Button oder lade einen "
-"Screenshot hoch."
+"Tip: in the browser, a website cannot read your whole screen without "
+"permission. Use the eyedropper button or upload a screenshot."
 
 #: .\app\templates\app\color_palette_tool.html:138
 msgid "Palette"
@@ -7441,7 +7430,7 @@ msgstr "Palette"
 
 #: .\app\templates\app\color_palette_tool.html:139
 msgid "Gespeicherte Farben"
-msgstr "Gespeicherte Farben"
+msgstr "Saved colors"
 
 #: .\app\templates\app\color_palette_tool.html:143
 #: .\app\templates\app\skribble_lobby.html:182
@@ -7450,31 +7439,31 @@ msgstr "Clear"
 
 #: .\app\templates\app\color_palette_tool.html:153
 msgid "Lesbarkeit prüfen"
-msgstr "Lesbarkeit pruefen"
+msgstr "Check readability"
 
 #: .\app\templates\app\color_palette_tool.html:159
 msgid "Beispieltext auf deiner Farbe"
-msgstr "Beispieltext auf deiner Farbe"
+msgstr "Sample text on your color"
 
 #: .\app\templates\app\color_palette_tool.html:160
 msgid "So würde Text auf diesem Hintergrund aussehen."
-msgstr "So wuerde Text auf diesem Hintergrund aussehen."
+msgstr "This is how text would look on this background."
 
 #: .\app\templates\app\color_palette_tool.html:165
 msgid "Weißer Text"
-msgstr "Weisser Text"
+msgstr "White text"
 
 #: .\app\templates\app\color_palette_tool.html:169
 msgid "Schwarzer Text"
-msgstr "Schwarzer Text"
+msgstr "Black text"
 
 #: .\app\templates\app\color_palette_tool.html:173
 msgid "Empfehlung"
-msgstr "Empfehlung"
+msgstr "Recommendation"
 
 #: .\app\templates\app\color_palette_tool.html:182
 msgid "CSS-Gradient kopieren"
-msgstr "CSS-Gradient kopieren"
+msgstr "Copy CSS gradient"
 
 #: .\app\templates\app\connectfour_home.html:18
 #: .\app\templates\app\connectfour_home.html:102
@@ -7693,48 +7682,46 @@ msgstr "No feedback yet."
 
 # | msgid "Datei teilen"
 #: .\app\templates\app\file_converter.html:22
-#, fuzzy
 msgid "Dateien umwandeln"
-msgstr "Share file"
+msgstr "Convert files"
 
 #: .\app\templates\app\file_converter.html:26
 msgid ""
 "Wandle Dokumente wie DOCX, XLSX oder PPTX in PDF um. Bilder kannst du "
 "zusätzlich direkt nach PNG, JPG, WEBP oder PDF konvertieren."
 msgstr ""
+"Convert documents such as DOCX, XLSX, or PPTX to PDF. You can also convert "
+"images directly to PNG, JPG, WEBP, or PDF."
 
 #: .\app\templates\app\file_converter.html:33
 msgid "Temporär verarbeitet"
-msgstr ""
+msgstr "Processed temporarily"
 
 # | msgid "Uploads"
 #: .\app\templates\app\file_converter.html:50
-#, fuzzy
 msgid "Upload"
-msgstr "Uploads"
+msgstr "Upload"
 
 # | msgid "Spalten auswählen"
 #: .\app\templates\app\file_converter.html:51
-#, fuzzy
 msgid "Datei auswählen"
-msgstr "Choose columns"
+msgstr "Choose file"
 
 #: .\app\templates\app\file_converter.html:52
 msgid ""
 "Die Datei wird nur für die Konvertierung zwischengespeichert und danach "
 "wieder entfernt."
-msgstr ""
+msgstr "The file is stored only temporarily for conversion and then removed."
 
 # | msgid "Freunde auswählen"
 #: .\app\templates\app\file_converter.html:58
-#, fuzzy
 msgid "Datei hier ablegen oder auswählen"
-msgstr "Select friends"
+msgstr "Drop file here or choose one"
 
 #: .\app\templates\app\file_converter.html:59
 #, python-format
 msgid "Maximal %(max_upload_label)s"
-msgstr ""
+msgstr "Maximum %(max_upload_label)s"
 
 #: .\app\templates\app\file_converter.html:64
 #: .\app\templates\app\image_tools.html:68
@@ -7745,55 +7732,53 @@ msgstr "Target format"
 #: .\app\templates\app\file_converter.html:67
 #: .\app\templates\app\file_converter.html:68
 #: .\app\templates\app\file_converter.html:69
-#, fuzzy
 msgid "(nur Bilder)"
-msgstr "Images"
+msgstr "(images only)"
 
 #: .\app\templates\app\file_converter.html:75
 msgid ""
 "PDF unterstützt Dokumente, Tabellen, Präsentationen, Textdateien und Bilder."
-msgstr ""
+msgstr "PDF supports documents, spreadsheets, presentations, text files, and images."
 
 # | msgid "PNG herunterladen"
 #: .\app\templates\app\file_converter.html:81
-#, fuzzy
 msgid "Konvertieren & herunterladen"
-msgstr "PNG herunterladen"
+msgstr "Convert and download"
 
 # | msgid "Format"
 #: .\app\templates\app\file_converter.html:87
-#, fuzzy
 msgid "Formate"
-msgstr "Format"
+msgstr "Formats"
 
 #: .\app\templates\app\file_converter.html:88
 msgid "Was geht aktuell?"
-msgstr ""
+msgstr "What is currently supported?"
 
 #: .\app\templates\app\file_converter.html:94
 msgid "Zu PDF"
-msgstr ""
+msgstr "To PDF"
 
 #: .\app\templates\app\file_converter.html:96
 msgid "Office-Dateien, Textdateien, Tabellen, Präsentationen und Bilder."
-msgstr ""
+msgstr "Office files, text files, spreadsheets, presentations, and images."
 
 # | msgid "Bild zuschneiden"
 #: .\app\templates\app\file_converter.html:110
-#, fuzzy
 msgid "Bilder umwandeln"
-msgstr "Crop picture"
+msgstr "Convert images"
 
 #: .\app\templates\app\file_converter.html:112
 msgid ""
 "PNG, JPG, WEBP, BMP und GIF lassen sich in PNG, JPG, WEBP oder PDF umwandeln."
-msgstr ""
+msgstr "PNG, JPG, WEBP, BMP, and GIF can be converted to PNG, JPG, WEBP, or PDF."
 
 #: .\app\templates\app\file_converter.html:123
 msgid ""
 "Für DOCX/XLSX/PPTX zu PDF braucht der Server LibreOffice. Im Dockerfile ist "
 "die Installation bereits ergänzt."
 msgstr ""
+"DOCX/XLSX/PPTX to PDF requires LibreOffice on the server. The installation "
+"is already included in the Dockerfile."
 
 #: .\app\templates\app\file_share.html:14
 msgid ""
@@ -9067,7 +9052,7 @@ msgstr ""
 #: .\app\templates\app\moderation.html:112
 #, python-format
 msgid "Zugriff fuer %(label)s"
-msgstr ""
+msgstr "Access for %(label)s"
 
 # | msgid "Notiz speichern"
 #: .\app\templates\app\moderation.html:122
@@ -10823,9 +10808,7 @@ msgstr "Pong Multiplayer"
 msgid ""
 "Erstelle einen Raum, lade einen Freund ein und spielt ein schnelles 1v1-"
 "Match mit Score, Rallies, Achievements und Profilkarte."
-msgstr ""
-"Erstelle einen Raum, lade einen Freund ein und spielt ein schnelles 1v1-"
-"Match mit Score, Rallies, Achievements und Profilkarte."
+msgstr "Create a room, invite a friend, and play a quick 1v1 match with score, rallies, achievements, and profile card."
 
 #: .\app\templates\app\pong_home.html:46
 msgid "Zielscore"
@@ -11193,7 +11176,7 @@ msgstr "Add friend"
 
 #: .\app\templates\app\public_profile.html:192
 msgid "Blockierung aufheben"
-msgstr "Remove block"
+msgstr "Unblock"
 
 #: .\app\templates\app\public_profile.html:196
 msgid "Blockieren"
@@ -11238,9 +11221,7 @@ msgstr "Friend activity"
 msgid ""
 "Erstelle QR-Codes für Text, URLs, WLAN-Zugänge und Kontakte. Farben und "
 "Qualität kannst du direkt anpassen."
-msgstr ""
-"Erstelle QR-Codes fuer Text, URLs, WLAN-Zugaenge und Kontakte. Farben und "
-"Qualitaet kannst du direkt anpassen."
+msgstr "Create QR codes for text, URLs, Wi-Fi access, and contacts. You can adjust colors and quality directly."
 
 #: .\app\templates\app\qr_code_tool.html:26
 msgid "PNG-Download"
@@ -11248,11 +11229,11 @@ msgstr "PNG-Download"
 
 #: .\app\templates\app\qr_code_tool.html:44
 msgid "Was soll im QR-Code stehen?"
-msgstr "Was soll im QR-Code stehen?"
+msgstr "What should be in the QR code?"
 
 #: .\app\templates\app\qr_code_tool.html:47
 msgid "QR-Code Typ"
-msgstr "QR-Code Typ"
+msgstr "QR code type"
 
 #: .\app\templates\app\qr_code_tool.html:50
 #: .\app\templates\app\qr_code_tool.html:68
@@ -11267,35 +11248,35 @@ msgstr "URL"
 
 #: .\app\templates\app\qr_code_tool.html:58
 msgid "WLAN"
-msgstr "WLAN"
+msgstr "Wi-Fi"
 
 #: .\app\templates\app\qr_code_tool.html:69
 msgid "Text eingeben..."
-msgstr "Text eingeben..."
+msgstr "Enter text..."
 
 #: .\app\templates\app\qr_code_tool.html:82
 msgid "WLAN-Name / SSID"
-msgstr "WLAN-Name / SSID"
+msgstr "Wi-Fi name / SSID"
 
 #: .\app\templates\app\qr_code_tool.html:90
 msgid "Verschlüsselung"
-msgstr "Verschluesselung"
+msgstr "Encryption"
 
 #: .\app\templates\app\qr_code_tool.html:94
 msgid "Ohne Passwort"
-msgstr "Ohne Passwort"
+msgstr "No password"
 
 #: .\app\templates\app\qr_code_tool.html:99
 msgid "Verstecktes WLAN"
-msgstr "Verstecktes WLAN"
+msgstr "Hidden Wi-Fi"
 
 #: .\app\templates\app\qr_code_tool.html:109
 msgid "Telefon"
-msgstr "Telefon"
+msgstr "Phone"
 
 #: .\app\templates\app\qr_code_tool.html:117
 msgid "Organisation"
-msgstr "Organisation"
+msgstr "Organization"
 
 #: .\app\templates\app\qr_code_tool.html:121
 msgid "Website"
@@ -11303,23 +11284,23 @@ msgstr "Website"
 
 #: .\app\templates\app\qr_code_tool.html:128
 msgid "Aussehen anpassen"
-msgstr "Aussehen anpassen"
+msgstr "Customize appearance"
 
 #: .\app\templates\app\qr_code_tool.html:133
 msgid "Vordergrund"
-msgstr "Vordergrund"
+msgstr "Foreground"
 
 #: .\app\templates\app\qr_code_tool.html:137
 msgid "Hintergrund"
-msgstr "Hintergrund"
+msgstr "Background"
 
 #: .\app\templates\app\qr_code_tool.html:141
 msgid "Fehlerkorrektur"
-msgstr "Fehlerkorrektur"
+msgstr "Error correction"
 
 #: .\app\templates\app\qr_code_tool.html:143
 msgid "klein"
-msgstr "klein"
+msgstr "small"
 
 #: .\app\templates\app\qr_code_tool.html:144
 msgid "normal"
@@ -11327,62 +11308,62 @@ msgstr "normal"
 
 #: .\app\templates\app\qr_code_tool.html:145
 msgid "hoch"
-msgstr "hoch"
+msgstr "high"
 
 #: .\app\templates\app\qr_code_tool.html:146
 msgid "maximal"
-msgstr "maximal"
+msgstr "maximum"
 
 #: .\app\templates\app\qr_code_tool.html:154
 msgid "Rand"
-msgstr "Rand"
+msgstr "Margin"
 
 # | msgid "Bereich erstellen"
 #: .\app\templates\app\qr_code_tool.html:161
 msgid "QR-Code erstellen"
-msgstr "QR-Code erstellen"
+msgstr "Create QR code"
 
 #: .\app\templates\app\qr_code_tool.html:168
 msgid "Dein QR-Code"
-msgstr "Dein QR-Code"
+msgstr "Your QR code"
 
 #: .\app\templates\app\qr_code_tool.html:173
 msgid "Generierter QR-Code"
-msgstr "Generierter QR-Code"
+msgstr "Generated QR code"
 
 #: .\app\templates\app\qr_code_tool.html:178
 msgid "PNG herunterladen"
-msgstr "PNG herunterladen"
+msgstr "Download PNG"
 
 # | msgid "Link (optional)"
 #: .\app\templates\app\qr_code_tool.html:182
 msgid "Inhalt kopieren"
-msgstr "Inhalt kopieren"
+msgstr "Copy content"
 
 #: .\app\templates\app\qr_code_tool.html:187
 msgid "Typ"
-msgstr "Typ"
+msgstr "Type"
 
 #: .\app\templates\app\qr_code_tool.html:192
 msgid "Bildgröße"
-msgstr "Bildgroesse"
+msgstr "Image size"
 
 # | msgid "Speicher"
 #: .\app\templates\app\qr_code_tool.html:197
 msgid "Zeichen"
-msgstr "Zeichen"
+msgstr "Characters"
 
 #: .\app\templates\app\qr_code_tool.html:202
 msgid "QR-Inhalt"
-msgstr "QR-Inhalt"
+msgstr "QR content"
 
 #: .\app\templates\app\qr_code_tool.html:208
 msgid "Noch kein QR-Code"
-msgstr "Noch kein QR-Code"
+msgstr "No QR code yet"
 
 #: .\app\templates\app\qr_code_tool.html:209
 msgid "Wähle links einen Typ aus und klicke auf „QR-Code erstellen“."
-msgstr "Waehle links einen Typ aus und klicke auf „QR-Code erstellen“."
+msgstr "Choose a type on the left and click “Create QR code”."
 
 #: .\app\templates\app\randomizer_tools.html:15
 msgid "Fun Tools"
@@ -11585,7 +11566,7 @@ msgstr "Account security"
 msgid ""
 "Prüfe deine 2FA, aktive Sitzungen und die letzten sicherheitsrelevanten "
 "Ereignisse."
-msgstr "Check your 2FA, active sessions, and recent security-related events."
+msgstr "Review your 2FA, active sessions, and recent security-related events."
 
 #: .\app\templates\app\security_dashboard.html:21
 msgid "2FA verwalten"
@@ -11594,7 +11575,7 @@ msgstr "Manage 2FA"
 # | msgid "Spotify-Status"
 #: .\app\templates\app\security_dashboard.html:37
 msgid "2FA-Status"
-msgstr "2FA-Status"
+msgstr "2FA status"
 
 #: .\app\templates\app\security_dashboard.html:39
 #: .\app\templates\app\two_factor_settings.html:23
@@ -11670,7 +11651,7 @@ msgstr "This device"
 msgid ""
 "Keine aktive Sitzung gefunden. Lade die Seite nach dem erneuten Login "
 "nochmal."
-msgstr "No active session found. Reload the page after signing in again."
+msgstr "No active session found. Reload the page after logging in again."
 
 #: .\app\templates\app\security_dashboard.html:143
 msgid "Letzte Sicherheitsereignisse"
@@ -11739,7 +11720,7 @@ msgstr "Users, content and today's activity in MyTools."
 
 #: .\app\templates\app\server_status.html:104
 msgid "App-Zähler"
-msgstr "App-Zaehler"
+msgstr "App counters"
 
 #: .\app\templates\app\server_status.html:105
 msgid "Sicherheits- und Roadmap-Werte auf einen Blick."
@@ -12325,13 +12306,12 @@ msgstr "Connect with Spotify"
 
 #: .\app\templates\app\stream_deck.html:157
 msgid "API-Key fehlt"
-msgstr ""
+msgstr "API key missing"
 
 # | msgid "Als Vorlage speichern"
 #: .\app\templates\app\stream_deck.html:161
-#, fuzzy
 msgid "API-Key eintragen und speichern"
-msgstr "Save as template"
+msgstr "Enter and save an API key"
 
 #: .\app\templates\app\stream_deck.html:165
 msgid "API-Key"
@@ -12339,32 +12319,31 @@ msgstr ""
 
 #: .\app\templates\app\stream_deck.html:168
 msgid "Voicemod API-Key"
-msgstr ""
+msgstr "Voicemod API key"
 
 #: .\app\templates\app\stream_deck.html:169
 msgid "Voicemod API-Key anzeigen"
-msgstr ""
+msgstr "Show Voicemod API key"
 
 #: .\app\templates\app\stream_deck.html:177
 msgid "Voicemod API-Key entfernen"
-msgstr ""
+msgstr "Remove Voicemod API key"
 
 #: .\app\templates\app\stream_deck.html:184
 #: .\app\templates\app\stream_deck.html:437
 msgid "Voice"
-msgstr ""
+msgstr "Voice"
 
 #: .\app\templates\app\stream_deck.html:186
 #: .\app\templates\app\stream_deck.html:440
 msgid "Voices laden..."
-msgstr ""
+msgstr "Loading voices..."
 
 # | msgid "Vote umschalten"
 #: .\app\templates\app\stream_deck.html:191
 #: .\app\templates\app\stream_deck.html:427
-#, fuzzy
 msgid "Voice Changer umschalten"
-msgstr "Toggle vote"
+msgstr "Toggle voice changer"
 
 #: .\app\templates\app\stream_deck.html:191
 msgid "Voice Changer"
@@ -12373,9 +12352,8 @@ msgstr ""
 # | msgid "Dark Mode umschalten"
 #: .\app\templates\app\stream_deck.html:194
 #: .\app\templates\app\stream_deck.html:428
-#, fuzzy
 msgid "Hear Myself umschalten"
-msgstr "Toggle Dark Mode"
+msgstr "Toggle hear myself"
 
 #: .\app\templates\app\stream_deck.html:194
 msgid "Hear Myself"
@@ -12383,9 +12361,8 @@ msgstr ""
 
 # | msgid "Mikrofon stumm"
 #: .\app\templates\app\stream_deck.html:197
-#, fuzzy
 msgid "Voicemod Mikrofon stummschalten"
-msgstr "Microphone muted"
+msgstr "Mute Voicemod microphone"
 
 #: .\app\templates\app\stream_deck.html:197
 msgid "Mute"
@@ -12393,26 +12370,24 @@ msgstr ""
 
 #: .\app\templates\app\stream_deck.html:200
 msgid "Zufaellige Voicemod Voice"
-msgstr ""
+msgstr "Random Voicemod voice"
 
 #: .\app\templates\app\stream_deck.html:200
 #: .\app\templates\app\stream_deck.html:430
 msgid "Zufaellige Voice"
-msgstr ""
+msgstr "Random voice"
 
 # | msgid "Neu laden"
 #: .\app\templates\app\stream_deck.html:208
 #: .\app\templates\app\stream_deck.html:432
-#, fuzzy
 msgid "Voices laden"
-msgstr "Reload"
+msgstr "Load voices"
 
 # | msgid "Spotify-Status"
 # | msgid "Status"
 #: .\app\templates\app\stream_deck.html:213
-#, fuzzy
 msgid "Status pruefen"
-msgstr "Status"
+msgstr "Check status"
 
 #: .\app\templates\app\stream_deck.html:223
 msgid "OBS-Version"
@@ -12680,37 +12655,32 @@ msgstr "Toggle play/pause"
 
 # | msgid "Audio-Aktion"
 #: .\app\templates\app\stream_deck.html:425
-#, fuzzy
 msgid "Voicemod-Aktion"
-msgstr "Audio action"
+msgstr "Voicemod action"
 
 # | msgid "Stumm umschalten"
 #: .\app\templates\app\stream_deck.html:429
-#, fuzzy
 msgid "Mikrofon stumm umschalten"
-msgstr "Toggle mute"
+msgstr "Toggle microphone mute"
 
 # | msgid "Neu laden"
 #: .\app\templates\app\stream_deck.html:431
-#, fuzzy
 msgid "Voice laden"
-msgstr "Reload"
+msgstr "Load voice"
 
 #: .\app\templates\app\stream_deck.html:450
 msgid "Random-Modus"
-msgstr ""
+msgstr "Random mode"
 
 # | msgid "Feature Votes"
 #: .\app\templates\app\stream_deck.html:452
-#, fuzzy
 msgid "Freie Voices"
-msgstr "Feature votes"
+msgstr "Free voices"
 
 # | msgid "Alle Notizen"
 #: .\app\templates\app\stream_deck.html:453
-#, fuzzy
 msgid "Alle Voices"
-msgstr "All notes"
+msgstr "All voices"
 
 #: .\app\templates\app\stream_deck.html:490
 msgid "Spotify-Zugriffstoken"
@@ -12819,15 +12789,15 @@ msgstr "Finish setup"
 msgid ""
 "Scanne diesen QR-Code mit deiner Authenticator-App und bestätige danach den "
 "Code."
-msgstr "Scan this QR code with your authenticator app, then confirm the code."
+msgstr "Scan this QR code with your authenticator app and then confirm the code."
 
 #: .\app\templates\app\two_factor_settings.html:68
 msgid "2FA QR-Code"
-msgstr "2FA QR-Code"
+msgstr "2FA QR code"
 
 #: .\app\templates\app\two_factor_settings.html:72
 msgid "QR-Code nicht verfügbar. Nutze den manuellen Schlüssel."
-msgstr "QR code unavailable. Use the manual key."
+msgstr "QR code not available. Use the manual key."
 
 #: .\app\templates\app\two_factor_settings.html:78
 msgid "Manueller Schlüssel"
@@ -12846,7 +12816,7 @@ msgstr "Enable 2FA"
 msgid ""
 "Starte die Einrichtung, um einen neuen geheimen Schlüssel und QR-Code zu "
 "erzeugen."
-msgstr "Start setup to generate a new secret key and QR code."
+msgstr "Start setup to create a new secret key and QR code."
 
 # | msgid "Stream starten"
 #: .\app\templates\app\two_factor_settings.html:102
@@ -13101,7 +13071,7 @@ msgstr "Log in to use your tools."
 
 #: .\app\templates\registration\login.html:65
 msgid "Login vorübergehend gesperrt"
-msgstr "Login voruebergehend gesperrt"
+msgstr "Login temporarily locked"
 
 #: .\app\templates\registration\login.html:70
 msgid ""
@@ -13149,7 +13119,7 @@ msgstr "Zwei-Faktor-Code"
 
 #: .\app\templates\registration\two_factor_verify.html:39
 msgid "2FA-Code eingeben"
-msgstr "2FA-Code eingeben"
+msgstr "Enter 2FA code"
 
 #: .\app\templates\registration\two_factor_verify.html:40
 msgid ""
@@ -13163,7 +13133,7 @@ msgstr "Authenticator-Code"
 
 #: .\app\templates\registration\two_factor_verify.html:68
 msgid "Login bestätigen"
-msgstr "Login bestaetigen"
+msgstr "Confirm login"
 
 #: .\app\tictactoe_views.py:220
 #, python-format
@@ -13634,7 +13604,7 @@ msgstr "Invalid fleet."
 msgid ""
 "Du kannst Nebula Forge Tycoon nur einmal pro Minute in der Datenbank "
 "speichern."
-msgstr ""
+msgstr "You can save Nebula Forge Tycoon to the database only once per minute."
 
 #: .\app\views.py:2134 .\app\views.py:2365 .\app\views.py:2451
 msgid "Ungueltige Anfrage."
@@ -13663,7 +13633,7 @@ msgstr "Invalid Cookie Cosmos score."
 #: .\app\views.py:2326
 msgid ""
 "Du kannst Cookie Cosmos V2 nur einmal pro Minute in der Datenbank speichern."
-msgstr ""
+msgstr "You can save Cookie Cosmos V2 to the database only once per minute."
 
 # | msgid "Ungueltiger Cookie-Cosmos-Score."
 #: .\app\views.py:2377 .\app\views.py:2380
@@ -13679,12 +13649,11 @@ msgstr "Unknown action"
 
 #: .\app\views.py:2461
 msgid "Voicemod Aktion unvollstaendig."
-msgstr ""
+msgstr "Voicemod action incomplete."
 
 #: .\app\views.py:2467
 msgid "Kein Voicemod API-Key verbunden."
-msgstr ""
-
+msgstr "No Voicemod API key connected."
 
 #: .\app\community_views.py:32
 msgid "Nebula Forge Tycoon Update"
@@ -13709,7 +13678,6 @@ msgstr "The leaderboard has been expanded with current games such as 2048, Cooki
 #: .\app\community_views.py:41
 msgid "Cookie Cosmos, Cookie Cosmos V2 und Nebula Forge Tycoon sortieren ihre Ranglisten jetzt nach aktueller Währung und zeigen zusätzlich Rekorde."
 msgstr "Cookie Cosmos, Cookie Cosmos V2, and Nebula Forge Tycoon now sort their rankings by current currency and also show records."
-
 
 #~ msgid "Widgets"
 #~ msgstr "Widgets"
@@ -14503,3 +14471,269 @@ msgstr "Glass theme"
 
 msgid "Anwenden"
 msgstr "Apply"
+
+# Added by Codex for issue translation fixes.
+
+msgid "Die letzten Rechnungen bleiben lokal in deinem Browser."
+msgstr "Recent calculations stay local in your browser."
+
+msgid "Potenzen: 2^8 oder die xʸ-Taste."
+msgstr "Powers: 2^8 or the xʸ key."
+
+msgid "Tastatur: Enter rechnet, Escape löscht, Backspace entfernt Zeichen."
+msgstr "Keyboard: Enter calculates, Escape clears, Backspace removes characters."
+
+msgid "Gib zuerst einen Ausdruck ein."
+msgstr "Enter an expression first."
+
+msgid "Division durch 0 ist nicht definiert."
+msgstr "Division by zero is not defined."
+
+msgid "Fakultät ist nur für ganze Zahlen möglich."
+msgstr "Factorials are only possible for whole numbers."
+
+msgid "Ungültiger Ausdruck."
+msgstr "Invalid expression."
+
+msgid "Wandle Dokumente wie DOCX, XLSX oder PPTX in PDF um. Bilder kannst du direkt in PNG, JPG, WEBP oder PDF konvertieren."
+msgstr "Convert documents such as DOCX, XLSX, or PPTX to PDF. You can also convert images directly to PNG, JPG, WEBP, or PDF."
+
+msgid "PNG, JPG, WEBP, BMP und GIF lassen sich zu PNG, JPG, WEBP oder PDF konvertieren."
+msgstr "PNG, JPG, WEBP, BMP, and GIF can be converted to PNG, JPG, WEBP, or PDF."
+
+msgid "Für DOCX/XLSX/PPTX zu PDF braucht der Server LibreOffice. Im Dockerfile ist die Installation bereits vorgesehen."
+msgstr "DOCX/XLSX/PPTX to PDF requires LibreOffice on the server. The Dockerfile already includes the installation."
+
+msgid "PNG, JPG und WEBP sind nur für Bilddateien verfügbar."
+msgstr "PNG, JPG, and WEBP are only available for image files."
+
+msgid "PDF unterstützt Dokumente, Textdateien und Bilder."
+msgstr "PDF supports documents, text files, and images."
+
+msgid "unbekannter Dateityp"
+msgstr "unknown file type"
+
+msgid "Tipp: Browser können nicht ohne Berechtigung deinen gesamten Bildschirm lesen. Nutze dafür den Eyedropper-Button oder lade einen Screenshot hoch."
+msgstr "Tip: browsers cannot read your whole screen without permission. Use the eyedropper button or upload a screenshot."
+
+msgid "So würde Text auf diesem Hintergrund wirken."
+msgstr "This is how text would look on this background."
+
+msgid "Dunkler Text"
+msgstr "Dark text"
+
+msgid "Kopiert"
+msgstr "Copied"
+
+msgid "Kopieren nicht möglich"
+msgstr "Could not copy"
+
+msgid "Großer Text"
+msgstr "Large text"
+
+msgid "Schwach"
+msgstr "Weak"
+
+msgid "Noch keine Farben gespeichert."
+msgstr "No saved colors yet."
+
+msgid "Farbe entfernen"
+msgstr "Remove color"
+
+msgid "Farbe gespeichert"
+msgstr "Color saved"
+
+msgid "Der Bildschirm-Eyedropper wird von deinem Browser unterstützt."
+msgstr "The screen eyedropper is supported by your browser."
+
+msgid "Dein Browser unterstützt den Bildschirm-Eyedropper nicht. Nutze den normalen Farbwähler oder lade ein Bild hoch."
+msgstr "Your browser does not support the screen eyedropper. Use the native color picker or upload an image."
+
+msgid "Farbaufnahme abgebrochen"
+msgstr "Color picking cancelled"
+
+msgid "Palette wirklich leeren?"
+msgstr "Really clear the palette?"
+
+msgid "Cover"
+msgstr "Cover"
+
+msgid "Unbekannter Titel"
+msgstr "Unknown title"
+
+msgid "Unbekannter Künstler"
+msgstr "Unknown artist"
+
+msgid "Lyrics ansehen"
+msgstr "View lyrics"
+
+msgid "Keine Ergebnisse gefunden."
+msgstr "No results found."
+
+msgid "Suche läuft..."
+msgstr "Searching..."
+
+msgid "Genius konnte nicht geladen werden."
+msgstr "Genius could not be loaded."
+
+msgid "Zuletzt hochgeladen"
+msgstr "Recently uploaded"
+
+msgid "Schneller Blick auf deine letzten Dateien."
+msgstr "Quick look at your latest files."
+
+msgid "Noch keine Uploads."
+msgstr "No uploads yet."
+
+msgid "Noch keine Uploads"
+msgstr "No uploads yet"
+
+msgid "Teile eine Datei mit Freunden oder erstelle einen privaten Link für den schnellen Zugriff."
+msgstr "Share a file with friends or create a private link for quick access."
+
+msgid "Noch nichts freigegeben"
+msgstr "Nothing shared yet"
+
+msgid "Sobald Freunde Dateien mit dir teilen, erscheinen sie hier mit Vorschau, Ablauf und Download-Status."
+msgstr "When friends share files with you, they will appear here with preview, expiration, and download status."
+
+msgid "Git-Changelog"
+msgstr "Git changelog"
+
+msgid "Diese Seite zeigt nur noch Änderungen aus deinem Git-Repository. Die Liste wird beim Deployment automatisch aus allen Commits erzeugt und in Seiten aufgeteilt."
+msgstr "This page now only shows changes from your Git repository. The list is generated automatically from all commits during deployment and split into pages."
+
+msgid "Diese Seite zeigt nur noch Änderungen aus deinem Git-Repository. Die Liste wird beim Deploy automatisch aus allen Commits erzeugt und in Seiten aufgeteilt."
+msgstr "This page now only shows changes from your Git repository. The list is generated automatically from all commits during deployment and split into pages."
+
+msgid "Änderungen aus Git"
+msgstr "Changes from Git"
+
+msgid "Wird aus den Commit-Nachrichten deines Repositories generiert. Pro Seite erscheinen 20 Änderungen."
+msgstr "Generated from your repository's commit messages. 20 changes are shown per page."
+
+msgid "Wird aus den Commit-Nachrichten deines Repos generiert. Pro Seite werden 20 Änderungen angezeigt."
+msgstr "Generated from your repository's commit messages. 20 changes are shown per page."
+
+msgid "Commits insgesamt"
+msgstr "total commits"
+
+msgid "Git-Changelog-Seiten"
+msgstr "Git changelog pages"
+
+msgid "Erste"
+msgstr "First"
+
+msgid "Letzte"
+msgstr "Last"
+
+msgid "Seitennummern"
+msgstr "Page numbers"
+
+msgid "Keine Git-Änderungen gefunden"
+msgstr "No Git changes found"
+
+msgid "Erzeuge die Datei einmal beim Deployment oder lokal, dann erscheinen hier automatisch deine letzten Commits."
+msgstr "Generate the file once during deployment or locally, then your latest commits will appear here automatically."
+
+msgid "Erzeuge die Datei einmal beim Deploy oder lokal, dann erscheinen hier automatisch deine letzten Commits."
+msgstr "Generate the file once during deployment or locally, then your latest commits will appear here automatically."
+
+msgid "Zugriff für %(label)s"
+msgstr "Access for %(label)s"
+
+msgid "Zufällige Voicemod Voice"
+msgstr "Random Voicemod voice"
+
+msgid "Zufällige Voice"
+msgstr "Random voice"
+
+msgid "Status prüfen"
+msgstr "Check status"
+
+# Added by Codex for issue translation fixes.
+
+msgid "Lieblings-Tools"
+msgstr "Favorite tools"
+
+msgid "Letzte Aktivität"
+msgstr "Latest activity"
+
+msgid "Kein eigener Statustext gesetzt."
+msgstr "No custom status set."
+
+msgid "Tool favorisiert"
+msgstr "Tool favorited"
+
+msgid "Datei hochgeladen"
+msgstr "File uploaded"
+
+msgid "Chatnachricht geschrieben"
+msgstr "Chat message written"
+
+msgid "Zieltrainer"
+msgstr "Aim Trainer"
+
+msgid "Tipptest"
+msgstr "Typing Test"
+
+msgid "Visuelles Gedächtnis"
+msgstr "Visual Memory"
+
+msgid "Avatar, Bio und Name sind gepflegt."
+msgstr "Avatar, bio, and name are maintained."
+
+msgid "Ein Profilbild wurde in die Galerie geladen."
+msgstr "Uploaded one profile picture to the gallery."
+
+msgid "Ausstehende Freundschaftsanfragen"
+msgstr "Pending friend requests"
+
+msgid "Freundschaftsanfrage senden"
+msgstr "Send friend request"
+
+msgid "Freundschaftsanfrage annehmen"
+msgstr "Accept friend request"
+
+msgid "Freundschaftsanfrage ablehnen"
+msgstr "Decline friend request"
+
+msgid "Freundschaftsanfrage zurückziehen"
+msgstr "Withdraw friend request"
+
+msgid "Freund entfernen"
+msgstr "Remove friend"
+
+msgid "Melden"
+msgstr "Report"
+
+msgid "Du hast keine offenen Freundschaftsanfragen."
+msgstr "You have no pending friend requests."
+
+msgid "Keine Freundschaftsanfragen"
+msgstr "No friend requests"
+
+msgid "Anfrage erhalten"
+msgstr "Request received"
+
+# Added by Codex for issue translation fixes.
+
+msgid "Tool-Zugriffe geändert"
+msgstr "Tool access changed"
+
+# Added by Codex for issue translation fixes.
+
+msgid "Alles ist nur fuer deinen Account sichtbar."
+msgstr "Everything is visible only to your account."
+
+msgid "Dieses Tool oder Spiel ist aktuell nicht für deinen Account freigegeben."
+msgstr "This tool or game is not currently enabled for your account."
+
+msgid "Dieses Tool oder Spiel ist aktuell nicht fuer deinen Account freigegeben."
+msgstr "This tool or game is not currently enabled for your account."
+
+msgid "Snake Powerups ist bereit für deinen ersten Lauf."
+msgstr "Snake Powerups is ready for your first run."
+
+msgid "Voicemod Aktion unvollständig."
+msgstr "Voicemod action incomplete."

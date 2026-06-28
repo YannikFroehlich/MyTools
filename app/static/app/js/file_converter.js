@@ -8,6 +8,7 @@
     const fileMeta = root.querySelector("[data-file-meta]");
     const targetSelect = root.querySelector("[data-target-select]");
     const hint = root.querySelector("[data-format-hint] span");
+    const label = (key, fallback) => root.dataset[key] || fallback;
 
     const formatBytes = (bytes) => {
         const units = ["B", "KB", "MB", "GB"];
@@ -23,10 +24,10 @@
     const updateHint = () => {
         if (!hint || !targetSelect) return;
         if (targetSelect.value === "pdf") {
-            hint.textContent = "PDF unterstützt Dokumente, Tabellen, Präsentationen, Textdateien und Bilder.";
+            hint.textContent = label("labelPdfHint", "PDF unterstützt Dokumente, Tabellen, Präsentationen, Textdateien und Bilder.");
             fileInput.setAttribute("accept", ".doc,.docx,.odt,.rtf,.txt,.html,.htm,.csv,.xls,.xlsx,.ods,.ppt,.pptx,.odp,.png,.jpg,.jpeg,.webp,.bmp,.gif");
         } else {
-            hint.textContent = "PNG, JPG und WEBP sind nur für Bilddateien verfügbar.";
+            hint.textContent = label("labelImageHint", "PNG, JPG und WEBP sind nur für Bilddateien verfügbar.");
             fileInput.setAttribute("accept", ".png,.jpg,.jpeg,.webp,.bmp,.gif");
         }
     };
@@ -34,7 +35,7 @@
     const setFile = (file) => {
         if (!file) return;
         fileName.textContent = file.name;
-        fileMeta.textContent = `${formatBytes(file.size)} · ${file.type || "unbekannter Dateityp"}`;
+        fileMeta.textContent = `${formatBytes(file.size)} · ${file.type || label("labelUnknownFileType", "unbekannter Dateityp")}`;
         dropZone.classList.add("has-file");
     };
 

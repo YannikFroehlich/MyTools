@@ -9,7 +9,16 @@
 {% endblock %}
 
 {% block content %}
-    <section class="genius-page" data-search-url="{% url 'genius-search-api' %}">
+    <section class="genius-page"
+             data-search-url="{% url 'genius-search-api' %}"
+             data-label-cover-prefix="{% translate 'Cover' %}"
+             data-label-unknown-title="{% translate 'Unbekannter Titel' %}"
+             data-label-unknown-artist="{% translate 'Unbekannter Künstler' %}"
+             data-label-lyrics-link="{% translate 'Lyrics ansehen' %}"
+             data-label-no-results="{% translate 'Keine Ergebnisse gefunden.' %}"
+             data-label-page="{% translate 'Seite' %}"
+             data-label-loading="{% translate 'Suche läuft...' %}"
+             data-label-load-error="{% translate 'Genius konnte nicht geladen werden.' %}">
         <div class="genius-header">
             <a href="{% url 'genius-search' %}" class="genius-brand">
                 <i class="fa-solid fa-music"></i>
@@ -38,5 +47,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/genius_search.js' %}" defer></script>
+    <script src="{% static 'app/js/genius_search.js' %}?v=20260628-i18n-labels" defer></script>
 {% endblock %}

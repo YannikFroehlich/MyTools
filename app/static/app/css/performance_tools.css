@@ -2408,8 +2408,15 @@ body.dark-mode .file-share-page .share-card {
 }
 
 .file-share-page .share-empty-state {
+    text-align: center;
     border-color: rgba(var(--share-accent-rgb), 0.28);
     background: rgba(var(--share-accent-rgb), 0.06);
+}
+
+.file-share-page .share-empty-state p {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
 }
 
 body.dark-mode .file-share-page .share-empty-state {

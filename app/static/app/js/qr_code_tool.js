@@ -35,7 +35,7 @@
             try {
                 await navigator.clipboard.writeText(payload);
                 const originalText = copyButton.innerHTML;
-                copyButton.innerHTML = '<i class="fa-solid fa-check"></i> Kopiert';
+                copyButton.innerHTML = `<i class="fa-solid fa-check"></i> ${copyButton.dataset.labelCopied || "Kopiert"}`;
                 setTimeout(() => {
                     copyButton.innerHTML = originalText;
                 }, 1400);
