@@ -4352,6 +4352,21 @@ body.dark-mode .global-search-input-row button {
         inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
+button.global-search-result {
+    width: 100%;
+    border-style: solid;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+.global-search-result.is-command .global-search-result-kind {
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
 .global-search-result[data-search-theme]::before {
     background: linear-gradient(180deg, var(--theme-accent-start), var(--theme-accent-end));
     box-shadow: 5px 0 18px rgba(var(--theme-accent-rgb), 0.32);

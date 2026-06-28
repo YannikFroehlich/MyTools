@@ -1265,20 +1265,51 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ── DROPDOWN MENÜS ── */
 
     const mobileToolsSheetMedia = window.matchMedia('(max-width: 820px)');
+    const gamesMenuButton = document.getElementById('games-menu-button');
     const toolsMenuButton = document.getElementById('menu-button');
     const toolsMenuDropdown = document.getElementById('menu-dropdown');
+    const toolsMenuOriginalParent = toolsMenuDropdown?.parentNode || null;
+    const toolsMenuOriginalNextSibling = toolsMenuDropdown?.nextSibling || null;
+
+    function isMobileMenuLayout() {
+        return body.classList.contains('has-mobile-bottom-nav') && mobileToolsSheetMedia.matches;
+    }
+
+    function moveToolsDropdownToSheetLayer() {
+        if (toolsMenuDropdown && toolsMenuDropdown.parentNode !== document.body) {
+            document.body.appendChild(toolsMenuDropdown);
+        }
+    }
+
+    function restoreToolsDropdownHome() {
+        if (!toolsMenuDropdown || !toolsMenuOriginalParent || toolsMenuDropdown.parentNode === toolsMenuOriginalParent) {
+            return;
+        }
+
+        if (toolsMenuOriginalNextSibling?.parentNode === toolsMenuOriginalParent) {
+            toolsMenuOriginalParent.insertBefore(toolsMenuDropdown, toolsMenuOriginalNextSibling);
+        } else {
+            toolsMenuOriginalParent.appendChild(toolsMenuDropdown);
+        }
+    }
 
     function syncToolsSheetState() {
         const isSheetOpen = Boolean(
             toolsMenuDropdown &&
             toolsMenuDropdown.classList.contains('open') &&
-            mobileToolsSheetMedia.matches
+            isMobileMenuLayout()
         );
 
         body.classList.toggle('tools-sheet-open', isSheetOpen);
 
         if (!toolsMenuDropdown) {
             return;
+        }
+
+        if (isSheetOpen) {
+            moveToolsDropdownToSheetLayer();
+        } else {
+            restoreToolsDropdownHome();
         }
 
         toolsMenuDropdown.classList.toggle('is-bottom-sheet', isSheetOpen);
@@ -1292,6 +1323,20 @@ document.addEventListener('DOMContentLoaded', () => {
             toolsMenuDropdown.removeAttribute('aria-modal');
             toolsMenuDropdown.removeAttribute('aria-label');
         }
+    }
+
+    function clickMenuButtonAfterCurrentEvent(button, options = {}) {
+        if (!button) {
+            return;
+        }
+
+        window.setTimeout(() => {
+            if (options.forceMobileHeaderHidden && isMobileMenuLayout()) {
+                setMobileHeaderVisible(false, false);
+            }
+
+            button.click();
+        }, 0);
     }
 
     function closeAllDropdowns(exceptDropdown = null, exceptButton = null) {
@@ -1454,6 +1499,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const globalSearchUrl = body.dataset.globalSearchUrl;
     let globalSearchController = null;
     let globalSearchItems = [];
+    let globalSearchActiveIndex = 0;
 
     const globalSearchThemeMap = {
         home: ['194, 65, 12', '#c2410c', '#f97316'],
@@ -1515,16 +1561,396 @@ document.addEventListener('DOMContentLoaded', () => {
         return { key, rgb: colors[0], start: colors[1], end: colors[2] };
     }
 
-    function renderGlobalSearchResults(results) {
-        globalSearchItems = results || [];
+    const commandCopy = {
+        de: {
+            action: 'Aktion',
+            command: 'Befehl',
+            open: '\u00d6ffnen',
+            apply: 'Anwenden',
+            newNoteTitle: 'Neue Notiz',
+            newNoteSubtitle: 'Sofort eine neue Notiz erstellen.',
+            uploadFileTitle: 'Datei hochladen',
+            uploadFileSubtitle: 'Datei-Share \u00f6ffnen und Upload starten.',
+            openChatTitle: 'Chat \u00f6ffnen',
+            openChatSubtitle: 'Direkt zu deinen Chats springen.',
+            openGamesTitle: 'Spiel starten',
+            openGamesSubtitle: 'Spielebibliothek \u00f6ffnen und ein Spiel w\u00e4hlen.',
+            openToolsTitle: 'Tools \u00f6ffnen',
+            openToolsSubtitle: 'Alle Werkzeuge und Helfer anzeigen.',
+            openThemeTitle: 'Theme wechseln',
+            openThemeSubtitle: 'Design-Editor mit Farben und Optionen \u00f6ffnen.',
+            toggleDarkTitle: 'Dark Mode umschalten',
+            toggleDarkSubtitle: 'Zwischen hellem und dunklem Modus wechseln.',
+            themeSky: 'Theme: Blau',
+            themeForest: 'Theme: Gr\u00fcn',
+            themeRose: 'Theme: Rose',
+            themeGraphite: 'Theme: Graphit',
+            themeViolet: 'Theme: Violett',
+            themeSunset: 'Theme: Sunset',
+            themeLunora: 'Theme: Lunora',
+            themePresetSubtitle: 'Theme-Preset direkt anwenden.',
+            startGamePrefix: 'Spiel starten',
+            gameSubtitle: 'Spiel direkt \u00f6ffnen.',
+            noResults: 'Kein Befehl oder Treffer gefunden.',
+        },
+        en: {
+            action: 'Action',
+            command: 'Command',
+            open: 'Open',
+            apply: 'Apply',
+            newNoteTitle: 'New note',
+            newNoteSubtitle: 'Create a new note right away.',
+            uploadFileTitle: 'Upload file',
+            uploadFileSubtitle: 'Open file sharing and start an upload.',
+            openChatTitle: 'Open chat',
+            openChatSubtitle: 'Jump straight to your chats.',
+            openGamesTitle: 'Start game',
+            openGamesSubtitle: 'Open the game library and pick a game.',
+            openToolsTitle: 'Open tools',
+            openToolsSubtitle: 'Show all tools and helpers.',
+            openThemeTitle: 'Switch theme',
+            openThemeSubtitle: 'Open the design editor with colors and options.',
+            toggleDarkTitle: 'Toggle dark mode',
+            toggleDarkSubtitle: 'Switch between light and dark mode.',
+            themeSky: 'Theme: Blue',
+            themeForest: 'Theme: Green',
+            themeRose: 'Theme: Rose',
+            themeGraphite: 'Theme: Graphite',
+            themeViolet: 'Theme: Violet',
+            themeSunset: 'Theme: Sunset',
+            themeLunora: 'Theme: Lunora',
+            themePresetSubtitle: 'Apply this theme preset directly.',
+            startGamePrefix: 'Start game',
+            gameSubtitle: 'Open this game directly.',
+            noResults: 'No command or result found.',
+        },
+    };
+
+    function commandText(key) {
+        const language = (document.documentElement.lang || 'de').toLowerCase().startsWith('en') ? 'en' : 'de';
+        return commandCopy[language][key] || commandCopy.de[key] || key;
+    }
+
+    function normalizeCommandText(value) {
+        return String(value || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function readJsonScriptArray(id) {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            return [];
+        }
+
+        try {
+            const parsed = JSON.parse(element.textContent || '[]');
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    const globalSearchBlockedPaths = new Set(readJsonScriptArray('access-blocked-paths'));
+    const globalSearchHiddenPaths = new Set(readJsonScriptArray('access-hidden-paths'));
+
+    function getCommandPath(url) {
+        try {
+            return new URL(url, window.location.origin).pathname;
+        } catch (error) {
+            return '';
+        }
+    }
+
+    function canShowUrlCommand(url) {
+        const path = getCommandPath(url);
+
+        if (!path) {
+            return true;
+        }
+
+        return !globalSearchBlockedPaths.has(path) && !globalSearchHiddenPaths.has(path);
+    }
+
+    function makeCommand({
+        id,
+        title,
+        subtitle,
+        keywords = '',
+        icon = 'fa-solid fa-bolt',
+        theme = 'command',
+        badge = commandText('action'),
+        url = '',
+        action = '',
+        value = '',
+        priority = 100,
+        defaultVisible = false,
+    }) {
+        return {
+            id,
+            title,
+            subtitle,
+            keywords,
+            icon,
+            theme,
+            badge,
+            kind: commandText('command'),
+            url,
+            action,
+            value,
+            priority,
+            defaultVisible,
+            source: 'command',
+        };
+    }
+
+    function buildStaticCommands() {
+        const config = globalSearchOverlay?.dataset || {};
+        const noteCreateUrl = config.noteCreateUrl || '/notes/new/';
+        const fileUploadUrl = config.fileUploadUrl || '/datei-share/#file-share-upload';
+        const chatUrl = config.chatUrl || '/chat/';
+        const themePresets = [
+            ['theme-sky', commandText('themeSky'), 'sky'],
+            ['theme-forest', commandText('themeForest'), 'forest'],
+            ['theme-rose', commandText('themeRose'), 'rose'],
+            ['theme-graphite', commandText('themeGraphite'), 'graphite'],
+            ['theme-violet', commandText('themeViolet'), 'violet'],
+            ['theme-sunset', commandText('themeSunset'), 'sunset'],
+            ['theme-lunora', commandText('themeLunora'), 'lunora-theme'],
+        ];
+
+        return [
+            makeCommand({
+                id: 'new-note',
+                title: commandText('newNoteTitle'),
+                subtitle: commandText('newNoteSubtitle'),
+                keywords: 'notiz note neu erstellen schreiben todo',
+                icon: 'fa-regular fa-note-sticky',
+                theme: 'note-result',
+                badge: commandText('open'),
+                url: noteCreateUrl,
+                priority: 1,
+                defaultVisible: true,
+            }),
+            makeCommand({
+                id: 'upload-file',
+                title: commandText('uploadFileTitle'),
+                subtitle: commandText('uploadFileSubtitle'),
+                keywords: 'datei upload hochladen teilen share file senden',
+                icon: 'fa-solid fa-file-arrow-up',
+                theme: 'file-result',
+                badge: commandText('open'),
+                url: fileUploadUrl,
+                priority: 2,
+                defaultVisible: true,
+            }),
+            makeCommand({
+                id: 'open-chat',
+                title: commandText('openChatTitle'),
+                subtitle: commandText('openChatSubtitle'),
+                keywords: 'chat nachricht dm gruppe oeffnen message',
+                icon: 'fa-solid fa-comments',
+                theme: 'chat',
+                badge: commandText('open'),
+                url: chatUrl,
+                priority: 3,
+                defaultVisible: true,
+            }),
+            makeCommand({
+                id: 'open-games-menu',
+                title: commandText('openGamesTitle'),
+                subtitle: commandText('openGamesSubtitle'),
+                keywords: 'spiel spiele game starten spielen library bibliothek',
+                icon: 'fa-solid fa-gamepad',
+                theme: 'game_2048',
+                action: 'open-games-menu',
+                priority: 4,
+                defaultVisible: true,
+            }),
+            makeCommand({
+                id: 'open-theme-editor',
+                title: commandText('openThemeTitle'),
+                subtitle: commandText('openThemeSubtitle'),
+                keywords: 'theme design farbe farben wechseln anpassen editor',
+                icon: 'fa-solid fa-palette',
+                theme: 'roadmap-result',
+                action: 'open-theme-editor',
+                priority: 5,
+                defaultVisible: true,
+            }),
+            makeCommand({
+                id: 'open-tools-menu',
+                title: commandText('openToolsTitle'),
+                subtitle: commandText('openToolsSubtitle'),
+                keywords: 'tool tools werkzeuge menu oeffnen',
+                icon: 'fa-solid fa-table-cells-large',
+                theme: 'home',
+                action: 'open-tools-menu',
+                priority: 6,
+                defaultVisible: true,
+            }),
+            makeCommand({
+                id: 'toggle-dark-mode',
+                title: commandText('toggleDarkTitle'),
+                subtitle: commandText('toggleDarkSubtitle'),
+                keywords: 'dark mode dunkel hell light theme nacht',
+                icon: 'fa-solid fa-circle-half-stroke',
+                theme: 'clock',
+                action: 'toggle-dark-mode',
+                priority: 30,
+            }),
+            ...themePresets.map(([id, title, preset], index) => makeCommand({
+                id,
+                title,
+                subtitle: commandText('themePresetSubtitle'),
+                keywords: `theme design preset farbe anwenden wechseln ${title}`,
+                icon: 'fa-solid fa-swatchbook',
+                theme: id,
+                badge: commandText('apply'),
+                action: 'apply-theme-preset',
+                value: preset,
+                priority: 40 + index,
+            })),
+        ].filter((command) => !command.url || canShowUrlCommand(command.url));
+    }
+
+    function buildGameCommands() {
+        const seenUrls = new Set();
+
+        return [...document.querySelectorAll('#games-menu-dropdown a[data-game-card][href]')]
+            .filter((link) => (
+                !link.hidden
+                && link.dataset.accessHidden !== 'true'
+                && !link.classList.contains('is-access-hidden')
+                && !link.classList.contains('is-access-locked')
+                && canShowUrlCommand(link.getAttribute('href'))
+            ))
+            .map((link, index) => {
+                const url = link.getAttribute('href');
+
+                if (!url || seenUrls.has(url)) {
+                    return null;
+                }
+
+                seenUrls.add(url);
+                const title = link.dataset.gameName || link.querySelector('strong')?.textContent?.trim() || link.textContent.trim();
+                const subtitle = link.querySelector('small')?.textContent?.trim() || commandText('gameSubtitle');
+                const theme = link.dataset.gameTheme || link.dataset.gameName || 'game';
+                const icon = link.querySelector('.game-menu-icon i')?.className || 'fa-solid fa-gamepad';
+
+                return makeCommand({
+                    id: `game-${index}`,
+                    title: `${commandText('startGamePrefix')}: ${title}`,
+                    subtitle,
+                    keywords: `${title} ${subtitle} ${link.dataset.gameCategory || ''} spiel game starten spielen`,
+                    icon,
+                    theme,
+                    badge: commandText('open'),
+                    url,
+                    priority: 70 + index,
+                });
+            })
+            .filter(Boolean);
+    }
+
+    function getCommandResults(query) {
+        const normalizedQuery = normalizeCommandText(query).trim();
+        const queryTokens = normalizedQuery.split(/\s+/).filter(Boolean);
+        const commands = [...buildStaticCommands(), ...buildGameCommands()];
+
+        return commands
+            .filter((command) => {
+                if (!queryTokens.length) {
+                    return command.defaultVisible;
+                }
+
+                const searchable = normalizeCommandText([
+                    command.title,
+                    command.subtitle,
+                    command.keywords,
+                    command.badge,
+                ].join(' '));
+
+                return queryTokens.every((token) => searchable.includes(token));
+            })
+            .sort((a, b) => a.priority - b.priority || a.title.localeCompare(b.title))
+            .slice(0, queryTokens.length ? 10 : 6);
+    }
+
+    function setActiveGlobalSearchResult(index) {
+        if (!globalSearchItems.length || !globalSearchResults) {
+            globalSearchActiveIndex = 0;
+            return;
+        }
+
+        globalSearchActiveIndex = (index + globalSearchItems.length) % globalSearchItems.length;
+
+        globalSearchResults.querySelectorAll('.global-search-result').forEach((result) => {
+            const isActive = Number(result.dataset.searchIndex) === globalSearchActiveIndex;
+            result.classList.toggle('is-active', isActive);
+            result.setAttribute('aria-selected', String(isActive));
+
+            if (isActive) {
+                result.scrollIntoView({ block: 'nearest' });
+            }
+        });
+    }
+
+    function executeGlobalSearchItem(item) {
+        if (!item) {
+            return;
+        }
+
+        if (item.action === 'open-games-menu') {
+            closeGlobalSearch();
+            clickMenuButtonAfterCurrentEvent(gamesMenuButton, { forceMobileHeaderHidden: true });
+            return;
+        }
+
+        if (item.action === 'open-tools-menu') {
+            closeGlobalSearch();
+            clickMenuButtonAfterCurrentEvent(toolsMenuButton);
+            return;
+        }
+
+        if (item.action === 'open-theme-editor') {
+            closeGlobalSearch();
+            document.getElementById('theme-editor-button')?.click();
+            return;
+        }
+
+        if (item.action === 'toggle-dark-mode') {
+            closeGlobalSearch();
+            darkModeButton?.click();
+            return;
+        }
+
+        if (item.action === 'apply-theme-preset') {
+            saveThemePreset(item.value);
+            closeGlobalSearch();
+            return;
+        }
+
+        if (item.url) {
+            window.location.href = item.url;
+        }
+    }
+
+    function renderGlobalSearchResults(results, query = globalSearchInput?.value || '') {
+        const commandResults = getCommandResults(query);
+        globalSearchItems = [...commandResults, ...(results || []).map((item) => ({ ...item, source: 'search' }))].slice(0, 24);
+        globalSearchActiveIndex = 0;
         if (!globalSearchResults) {
             return;
         }
         if (!globalSearchItems.length) {
+            const emptyText = globalSearchOverlay?.dataset.commandEmpty || commandText('noResults');
             globalSearchResults.innerHTML = `
                 <div class="global-search-empty">
                     <i class="fa-regular fa-face-meh"></i>
-                    <p>Kein Treffer gefunden.</p>
+                    <p>${escapeHtml(emptyText)}</p>
                 </div>
             `;
             return;
@@ -1532,21 +1958,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         globalSearchResults.innerHTML = globalSearchItems.map((item, index) => {
             const theme = resolveGlobalSearchTheme(item.theme || item.kind);
+            const element = item.action && !item.url ? 'button' : 'a';
+            const behaviorAttributes = item.url
+                ? `href="${escapeHtml(item.url)}"`
+                : 'type="button"';
+            const commandClass = item.source === 'command' ? ' is-command' : '';
             return `
-            <a class="global-search-result${index === 0 ? ' is-active' : ''}" href="${escapeHtml(item.url)}" data-search-index="${index}" data-search-theme="${escapeHtml(theme.key)}" style="--search-result-rgb:${theme.rgb};--search-result-start:${theme.start};--search-result-end:${theme.end}">
+            <${element} class="global-search-result${commandClass}${index === 0 ? ' is-active' : ''}" ${behaviorAttributes} data-search-index="${index}" data-search-theme="${escapeHtml(theme.key)}" aria-selected="${index === 0 ? 'true' : 'false'}" style="--search-result-rgb:${theme.rgb};--search-result-start:${theme.start};--search-result-end:${theme.end}">
                 <span class="global-search-result-icon"><i class="${escapeHtml(item.icon || 'fa-solid fa-link')}"></i></span>
                 <span class="global-search-result-copy">
                     <strong>${escapeHtml(item.title)}</strong>
                     <small>${escapeHtml(item.subtitle)}</small>
                 </span>
                 <span class="global-search-result-kind">${escapeHtml(item.badge || item.kind)}</span>
-            </a>
+            </${element}>
         `;
         }).join('');
     }
 
     function runGlobalSearch(query = '') {
         if (!globalSearchUrl) {
+            renderGlobalSearchResults([], query);
             return;
         }
 
@@ -1559,10 +1991,10 @@ document.addEventListener('DOMContentLoaded', () => {
             signal: globalSearchController.signal,
         })
             .then((response) => response.ok ? response.json() : Promise.reject(response))
-            .then((data) => renderGlobalSearchResults(data.results || []))
+            .then((data) => renderGlobalSearchResults(data.results || [], query))
             .catch((error) => {
                 if (error.name !== 'AbortError') {
-                    renderGlobalSearchResults([]);
+                    renderGlobalSearchResults([], query);
                 }
             });
     }
@@ -1574,6 +2006,17 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAllDropdowns();
         globalSearchOverlay.hidden = false;
         body.classList.add('global-search-open');
+        if (globalSearchInput) {
+            globalSearchInput.placeholder = globalSearchOverlay.dataset.commandPlaceholder || globalSearchInput.placeholder;
+        }
+        const title = document.getElementById('global-search-title');
+        if (title && globalSearchOverlay.dataset.commandTitle) {
+            title.textContent = globalSearchOverlay.dataset.commandTitle;
+        }
+        const hint = globalSearchOverlay.querySelector('.global-search-meta span');
+        if (hint && globalSearchOverlay.dataset.commandHint) {
+            hint.textContent = globalSearchOverlay.dataset.commandHint;
+        }
         window.setTimeout(() => {
             globalSearchInput?.focus({ preventScroll: true });
             globalSearchInput?.select();
@@ -1598,14 +2041,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     globalSearchInput?.addEventListener('input', () => {
+        renderGlobalSearchResults([], globalSearchInput.value);
         window.clearTimeout(globalSearchInput.searchTimeout);
         globalSearchInput.searchTimeout = window.setTimeout(() => runGlobalSearch(globalSearchInput.value), 120);
     });
 
     globalSearchInput?.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' && globalSearchItems[0]?.url) {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();
-            window.location.href = globalSearchItems[0].url;
+            setActiveGlobalSearchResult(globalSearchActiveIndex + (event.key === 'ArrowDown' ? 1 : -1));
+            return;
+        }
+
+        if (event.key === 'Home' && globalSearchItems.length) {
+            event.preventDefault();
+            setActiveGlobalSearchResult(0);
+            return;
+        }
+
+        if (event.key === 'End' && globalSearchItems.length) {
+            event.preventDefault();
+            setActiveGlobalSearchResult(globalSearchItems.length - 1);
+            return;
+        }
+
+        if (event.key === 'Enter' && globalSearchItems[globalSearchActiveIndex]) {
+            event.preventDefault();
+            executeGlobalSearchItem(globalSearchItems[globalSearchActiveIndex]);
+        }
+    });
+
+    globalSearchResults?.addEventListener('click', (event) => {
+        const result = event.target.closest('.global-search-result');
+
+        if (!result) {
+            return;
+        }
+
+        const index = Number(result.dataset.searchIndex);
+        const item = globalSearchItems[index];
+
+        if (!item) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        executeGlobalSearchItem(item);
+    });
+
+    globalSearchResults?.addEventListener('mousemove', (event) => {
+        const result = event.target.closest('.global-search-result');
+
+        if (!result) {
+            return;
+        }
+
+        const index = Number(result.dataset.searchIndex);
+        if (Number.isInteger(index) && index !== globalSearchActiveIndex) {
+            setActiveGlobalSearchResult(index);
         }
     });
 
@@ -1614,7 +2108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             event.stopPropagation();
             closeGlobalSearch();
-            toolsMenuButton?.click();
+            clickMenuButtonAfterCurrentEvent(toolsMenuButton);
         });
     });
 
