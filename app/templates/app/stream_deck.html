@@ -8,8 +8,10 @@
 {% endblock %}
 
 {% block content %}
+{% get_current_language as STREAM_DECK_LANGUAGE %}
 <section class="stream-deck-page"
          data-user-id="{{ request.user.id }}"
+         data-language="{{ STREAM_DECK_LANGUAGE|default:'de' }}"
          data-spotify-client-id="{{ spotify_client_id|escape }}"
          data-spotify-redirect-uri="{{ spotify_redirect_uri|escape }}"
          data-voicemod-action-url="{% url 'stream-deck-voicemod-action' %}">
@@ -197,7 +199,7 @@
                             <button data-voicemod-quick="toggleMuteMic" class="round-btn" type="button" aria-label="{% translate 'Voicemod Mikrofon stummschalten' %}" title="{% translate 'Mute' %}">
                                 <i class="fa-solid fa-microphone-slash"></i>
                             </button>
-                            <button data-voicemod-quick="selectRandomVoice" class="round-btn" type="button" aria-label="{% translate 'Zufaellige Voicemod Voice' %}" title="{% translate 'Zufaellige Voice' %}">
+                            <button data-voicemod-quick="selectRandomVoice" class="round-btn" type="button" aria-label="{% translate 'Zufällige Voicemod Voice' %}" title="{% translate 'Zufällige Voice' %}">
                                 <i class="fa-solid fa-shuffle"></i>
                             </button>
                         </div>
@@ -210,7 +212,7 @@
 
                             <button id="refresh-voicemod-status-btn" class="sidebar-btn" type="button">
                                 <i class="fa-solid fa-rotate"></i>
-                                <span>{% translate "Status pruefen" %}</span>
+                                <span>{% translate "Status prüfen" %}</span>
                             </button>
                         </div>
                     </div>
@@ -427,7 +429,7 @@
                             <option value="toggleVoiceChanger">{% translate "Voice Changer umschalten" %}</option>
                             <option value="toggleHearMyVoice">{% translate "Hear Myself umschalten" %}</option>
                             <option value="toggleMuteMic">{% translate "Mikrofon stumm umschalten" %}</option>
-                            <option value="selectRandomVoice">{% translate "Zufaellige Voice" %}</option>
+                            <option value="selectRandomVoice">{% translate "Zufällige Voice" %}</option>
                             <option value="loadVoice">{% translate "Voice laden" %}</option>
                             <option value="getVoices">{% translate "Voices laden" %}</option>
                         </select>
@@ -549,5 +551,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="module" src="{% static 'app/js/stream_deck.js' %}"></script>
+<script type="module" src="{% static 'app/js/stream_deck.js' %}?v=20260628-stream-deck-i18n-labels"></script>
 {% endblock %}

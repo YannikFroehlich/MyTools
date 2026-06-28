@@ -627,7 +627,7 @@ def moderation_user_status_view(request, user_id):
         _audit(
             request,
             ModerationAuditLog.ACTION_USER_SUSPENDED,
-            f"{target_user.username} fuer {duration_hours} Stunden gesperrt",
+            f"{target_user.username} für {duration_hours} Stunden gesperrt",
             target_user=target_user,
             metadata={"duration_hours": duration_hours, "reason": reason, "suspension_id": suspension.id},
         )
@@ -644,7 +644,7 @@ def moderation_user_status_view(request, user_id):
         _audit(
             request,
             ModerationAuditLog.ACTION_USER_UNSUSPENDED,
-            f"Sperre fuer {target_user.username} aufgehoben",
+            f"Sperre für {target_user.username} aufgehoben",
             target_user=target_user,
             metadata={"updated": updated},
         )

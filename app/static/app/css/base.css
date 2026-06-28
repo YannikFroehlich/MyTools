@@ -1148,12 +1148,14 @@ body.dark-mode .dark-mode-btn .icon-sun {
     min-width: auto;
 }
 
-.games-menu-chevron {
+.games-menu-chevron,
+.google-apps-menu-chevron {
     font-size: 0.72rem;
     opacity: 0.8;
 }
 
-.games-menu-button[aria-expanded="true"] .games-menu-chevron {
+.games-menu-button[aria-expanded="true"] .games-menu-chevron,
+.google-apps-menu-button[aria-expanded="true"] .google-apps-menu-chevron {
     transform: rotate(180deg);
 }
 

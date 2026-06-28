@@ -11,11 +11,24 @@
 
 {% block scripts %}
     {{ block.super }}
-    <script src="{% static 'app/js/color_palette_tool.js' %}" defer></script>
+    <script src="{% static 'app/js/color_palette_tool.js' %}?v=20260628-i18n-labels" defer></script>
 {% endblock %}
 
 {% block content %}
-<main class="color-tool-page">
+<main class="color-tool-page"
+      data-label-copied="{% translate 'Kopiert' %}"
+      data-label-copy-failed="{% translate 'Kopieren nicht möglich' %}"
+      data-label-large-text="{% translate 'Großer Text' %}"
+      data-label-weak="{% translate 'Schwach' %}"
+      data-label-white-text="{% translate 'Weißer Text' %}"
+      data-label-dark-text="{% translate 'Dunkler Text' %}"
+      data-label-empty-palette="{% translate 'Noch keine Farben gespeichert.' %}"
+      data-label-remove-color="{% translate 'Farbe entfernen' %}"
+      data-label-color-saved="{% translate 'Farbe gespeichert' %}"
+      data-label-eyedropper-unsupported="{% translate 'Dein Browser unterstützt den Bildschirm-Eyedropper nicht. Nutze den Bild-Upload oder Chrome/Edge.' %}"
+      data-label-eyedropper-supported="{% translate 'Der Bildschirm-Eyedropper wird von deinem Browser unterstützt.' %}"
+      data-label-pick-cancelled="{% translate 'Farbaufnahme abgebrochen' %}"
+      data-label-clear-confirm="{% translate 'Palette wirklich leeren?' %}">
     <section class="color-hero">
         <div class="color-hero-copy">
             <p class="color-kicker">

@@ -1153,10 +1153,10 @@ class HumanBenchmarkScore(models.Model):
     GAME_VISUAL = "visual"
 
     GAME_CHOICES = [
-        (GAME_REACTION, "Reaktion"),
-        (GAME_AIM, "Aim Trainer"),
-        (GAME_TYPING, "Typing Test"),
-        (GAME_VISUAL, "Visual Memory"),
+        (GAME_REACTION, _("Reaktion")),
+        (GAME_AIM, _("Zieltrainer")),
+        (GAME_TYPING, _("Tipptest")),
+        (GAME_VISUAL, _("Visuelles Gedächtnis")),
     ]
 
     user = models.ForeignKey(

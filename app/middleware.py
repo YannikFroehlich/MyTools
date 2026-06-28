@@ -82,7 +82,7 @@ class LoginRequiredMiddleware:
         return path.startswith("/accounts/logout/") or path.startswith("/admin/")
 
     def _tool_access_forbidden(self, request):
-        message = "Dieses Tool oder Spiel ist aktuell nicht fuer deinen Account freigegeben."
+        message = "Dieses Tool oder Spiel ist aktuell nicht für deinen Account freigegeben."
         wants_json = (
             request.path.startswith("/api/")
             or request.headers.get("x-requested-with") == "XMLHttpRequest"

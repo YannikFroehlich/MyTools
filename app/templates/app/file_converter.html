@@ -10,11 +10,15 @@
 
 {% block scripts %}
     {{ block.super }}
-    <script src="{% static 'app/js/file_converter.js' %}" defer></script>
+    <script src="{% static 'app/js/file_converter.js' %}?v=20260628-i18n-labels" defer></script>
 {% endblock %}
 
 {% block content %}
-<section class="file-converter-page" data-file-converter>
+<section class="file-converter-page"
+         data-file-converter
+         data-label-pdf-hint="{% translate 'PDF unterstützt Dokumente, Tabellen, Präsentationen, Textdateien und Bilder.' %}"
+         data-label-image-hint="{% translate 'PNG, JPG und WEBP sind nur für Bilddateien verfügbar.' %}"
+         data-label-unknown-file-type="{% translate 'unbekannter Dateityp' %}">
     <header class="file-converter-hero">
         <div class="file-converter-hero-copy">
             <span class="file-converter-kicker">
