@@ -2,7 +2,7 @@
 {% load static i18n %}
 
 {% block title %}{% translate "Datei-Share" %} | MyTools{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/performance_tools.css' %}?v=20260625-file-share-theme-fix">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/performance_tools.css' %}?v=20260628-upload-theme-sync">{% endblock %}
 
 {% block content %}
 <section class="perf-page file-share-page">
@@ -20,6 +20,7 @@
     </div>
 
     <div class="share-layout">
+        <div class="share-side">
         <form id="file-share-upload" class="share-upload-card share-upload-panel" method="post" action="{% url 'file_share_upload' %}" enctype="multipart/form-data" data-share-upload-panel data-share-success-url="{% url 'file_share' %}" data-share-max-size="{{ max_share_bytes }}" data-share-max-label="{{ max_share_mb }}" data-label-selected-one="{% translate 'Ausgewählte Datei' %}" data-label-selected-many="{% translate 'ausgewählte Dateien' %}" data-label-file-generic="{% translate 'Datei' %}" data-label-too-large="{% translate 'zu groß' %}" data-label-max-short="{% translate 'max.' %}" data-label-upload-preparing="{% translate 'Upload wird vorbereitet...' %}" data-label-upload-running="{% translate 'Upload läuft...' %}" data-label-upload-complete="{% translate 'Upload abgeschlossen.' %}" data-label-upload-failed="{% translate 'Upload fehlgeschlagen.' %}" data-label-oversized="{% translate 'Mindestens eine Datei ist zu groß. Maximal erlaubt:' %}">
             {% csrf_token %}
             <div class="share-section-title">
@@ -51,6 +52,14 @@
                 <button type="button" data-share-file-clear aria-label="{% translate 'Auswahl entfernen' %}">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
+            </div>
+
+            <div class="share-preview-panel" data-share-preview-panel hidden>
+                <div class="share-preview-head">
+                    <strong>{% translate "Vorschau" %}</strong>
+                    <small data-share-total-size></small>
+                </div>
+                <div class="share-preview-grid" data-share-preview-grid></div>
             </div>
 
             <div class="share-toggle-box">
@@ -114,6 +123,38 @@
                 </div>
             </div>
         </form>
+
+        <section class="share-card share-recent-card">
+            <div class="share-card-head">
+                <div>
+                    <h2>{% translate "Zuletzt hochgeladen" %}</h2>
+                    <p>{% translate "Schneller Blick auf deine neuesten Dateien." %}</p>
+                </div>
+            </div>
+            {% if recent_uploads %}
+                <div class="share-recent-list">
+                    {% for share in recent_uploads %}
+                        <a class="share-recent-row" href="{% url 'file_share_download' share.token %}">
+                            {% if share.is_image %}
+                                <span class="share-recent-thumb"><img src="{% url 'file_share_download' share.token %}?preview=1" alt="{{ share.original_name }}" loading="lazy" decoding="async"></span>
+                            {% else %}
+                                <span class="share-recent-thumb"><i class="{{ share.icon_class }}"></i></span>
+                            {% endif %}
+                            <span>
+                                <strong>{{ share.original_name }}</strong>
+                                <small>{{ share.human_size }} · {{ share.created_at|timesince }}</small>
+                            </span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="share-recent-empty">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <span>{% translate "Noch keine Uploads." %}</span>
+                </div>
+            {% endif %}
+        </section>
+        </div>
 
         <div class="share-lists">
             <section class="share-card share-list-card">
@@ -232,14 +273,32 @@
         return index === 0 ? `${value} ${units[index]}` : `${value.toFixed(1)} ${units[index]}`;
     };
 
+    const iconForFile = (file) => {
+        const type = String(file?.type || '').toLowerCase();
+        const name = String(file?.name || '').toLowerCase();
+        if (type.startsWith('image/')) return 'fa-regular fa-file-image';
+        if (type.includes('pdf') || name.endsWith('.pdf')) return 'fa-regular fa-file-pdf';
+        if (name.match(/\.(zip|rar|7z|tar|gz)$/)) return 'fa-regular fa-file-zipper';
+        if (name.match(/\.(doc|docx|odt)$/)) return 'fa-regular fa-file-word';
+        if (name.match(/\.(xls|xlsx|csv)$/)) return 'fa-regular fa-file-excel';
+        return 'fa-regular fa-file';
+    };
+
     const renderFiles = (panel) => {
         const input = panel.querySelector('[data-share-file-input]');
         const dropCard = panel.querySelector('[data-share-drop-card]');
         const selectedCard = panel.querySelector('[data-share-selected-file]');
         const selectedCount = panel.querySelector('[data-share-selected-count]');
         const fileList = panel.querySelector('[data-share-file-list]');
+        const previewPanel = panel.querySelector('[data-share-preview-panel]');
+        const previewGrid = panel.querySelector('[data-share-preview-grid]');
+        const totalSizeElement = panel.querySelector('[data-share-total-size]');
         const files = Array.from(input?.files || []);
         const maxSize = Number(panel.dataset.shareMaxSize || 0);
+        const totalSize = files.reduce((sum, file) => sum + Number(file.size || 0), 0);
+
+        (panel._sharePreviewUrls || []).forEach((url) => URL.revokeObjectURL(url));
+        panel._sharePreviewUrls = [];
 
         dropCard?.classList.toggle('has-file', files.length > 0);
         if (!selectedCard || !selectedCount || !fileList) {
@@ -248,6 +307,16 @@
 
         selectedCard.hidden = files.length === 0;
         fileList.innerHTML = '';
+        if (previewPanel) {
+            previewPanel.hidden = files.length === 0;
+        }
+        if (previewGrid) {
+            previewGrid.innerHTML = '';
+        }
+        if (totalSizeElement) {
+            const fileLabel = files.length === 1 ? panel.dataset.labelSelectedOne : `${files.length} ${panel.dataset.labelSelectedMany}`;
+            totalSizeElement.textContent = files.length ? `${fileLabel} \u00b7 ${formatSize(totalSize)}` : '';
+        }
         if (!files.length) {
             return;
         }
@@ -260,6 +329,10 @@
                 row.classList.add('is-too-large');
             }
 
+            const icon = document.createElement('span');
+            icon.className = 'share-selected-file-mini';
+            icon.innerHTML = `<i class="${iconForFile(file)}" aria-hidden="true"></i>`;
+
             const name = document.createElement('strong');
             name.textContent = file.name;
 
@@ -267,8 +340,36 @@
             const limitNote = maxSize && file.size > maxSize ? ` · ${panel.dataset.labelTooLarge} (${panel.dataset.labelMaxShort} ${panel.dataset.shareMaxLabel})` : '';
             meta.textContent = `${file.type || panel.dataset.labelFileGeneric} · ${formatSize(file.size)}${limitNote}`;
 
-            row.append(name, meta);
+            const copy = document.createElement('span');
+            copy.className = 'share-selected-file-row-copy';
+            copy.append(name, meta);
+            row.append(icon, copy);
             fileList.append(row);
+
+            if (previewGrid) {
+                const preview = document.createElement('article');
+                preview.className = 'share-file-preview';
+                const thumb = document.createElement('span');
+                thumb.className = 'share-file-preview-thumb';
+
+                if (file.type?.startsWith('image/')) {
+                    const previewUrl = URL.createObjectURL(file);
+                    panel._sharePreviewUrls.push(previewUrl);
+                    const image = document.createElement('img');
+                    image.src = previewUrl;
+                    image.alt = file.name;
+                    thumb.append(image);
+                } else {
+                    thumb.innerHTML = `<i class="${iconForFile(file)}" aria-hidden="true"></i>`;
+                }
+
+                const previewName = document.createElement('strong');
+                previewName.textContent = file.name;
+                const previewMeta = document.createElement('small');
+                previewMeta.textContent = formatSize(file.size);
+                preview.append(thumb, previewName, previewMeta);
+                previewGrid.append(preview);
+            }
         });
     };
 
@@ -319,7 +420,8 @@
                 setProgress(panel, 0, panel.dataset.labelUploadRunning);
                 return;
             }
-            setProgress(panel, (event.loaded / event.total) * 100, panel.dataset.labelUploadRunning);
+            const detail = `${panel.dataset.labelUploadRunning} · ${formatSize(event.loaded)} / ${formatSize(event.total)}`;
+            setProgress(panel, (event.loaded / event.total) * 100, detail);
         });
 
         xhr.addEventListener('load', () => {

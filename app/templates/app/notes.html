@@ -36,7 +36,7 @@
     {% if note_messages %}
         <div class="notes-messages">
             {% for message in note_messages %}
-                <div class="notes-message {{ message.tags }}">
+                <div class="notes-message {{ message.tags }}" data-toast-message data-toast-level="{{ message.level_tag|default:'info' }}" data-toast-tags="{{ message.tags|default:'' }}">
                     <i class="fa-solid fa-circle-check"></i>
                     {{ message }}
                 </div>

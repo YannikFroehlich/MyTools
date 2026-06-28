@@ -610,17 +610,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeEditorClose = document.getElementById('theme-editor-close');
     const themeResetButton = document.getElementById('theme-reset-button');
 
+    function setThemeEditorOpen(isOpen) {
+        if (!themeEditorButton || !themeEditorPanel) {
+            return;
+        }
+
+        themeEditorPanel.classList.toggle('open', isOpen);
+        themeEditorButton.classList.toggle('active', isOpen);
+        themeEditorButton.setAttribute('aria-expanded', String(isOpen));
+    }
+
     if (themeEditorButton && themeEditorPanel) {
         syncDisplayOptionControls(activeDisplayOptions);
         updateActivePresetButton(activeThemePreset);
+        themeEditorButton.setAttribute('aria-expanded', 'false');
 
         themeEditorButton.addEventListener('click', (event) => {
+            event.preventDefault();
             event.stopPropagation();
-            themeEditorPanel.classList.toggle('open');
+
+            const shouldOpen = !themeEditorPanel.classList.contains('open');
+
+            closeAllDropdowns(shouldOpen ? themeEditorPanel : null, shouldOpen ? themeEditorButton : null);
+            setThemeEditorOpen(shouldOpen);
         });
 
-        themeEditorClose?.addEventListener('click', () => {
-            themeEditorPanel.classList.remove('open');
+        themeEditorPanel.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        themeEditorClose?.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setThemeEditorOpen(false);
         });
 
         document.querySelectorAll('.theme-preset').forEach((button) => {
@@ -663,13 +685,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const clickedButton = themeEditorButton.contains(event.target);
 
             if (!clickedPanel && !clickedButton) {
-                themeEditorPanel.classList.remove('open');
+                setThemeEditorOpen(false);
             }
         });
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
-                themeEditorPanel.classList.remove('open');
+                setThemeEditorOpen(false);
             }
         });
     }
@@ -830,6 +852,197 @@ document.addEventListener('DOMContentLoaded', () => {
         return '';
     }
 
+    function parseUndoAction(tags = '') {
+        const match = String(tags).match(/\bundo-(note|file|widget|shortcut)-(\d+)\b/);
+        if (!match) {
+            return null;
+        }
+
+        return {
+            type: match[1],
+            id: match[2],
+            url: `/trash/${match[1]}/${match[2]}/restore/`,
+        };
+    }
+
+    function normalizeToastLevel(level = '') {
+        const value = String(level).toLowerCase();
+        if (value.includes('error') || value.includes('danger')) return 'error';
+        if (value.includes('warning')) return 'warning';
+        if (value.includes('success')) return 'success';
+        return 'info';
+    }
+
+    function enableSwipeDismiss(element, onDismiss, options = {}) {
+        if (!element || typeof onDismiss !== 'function') {
+            return;
+        }
+
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+        const threshold = Number(options.threshold || 84);
+
+        const isInteractiveTarget = (target) => Boolean(target.closest('button, a, input, textarea, select, summary, [contenteditable="true"]'));
+        const hasScrolledAncestor = (target) => {
+            let node = target;
+            while (node && node !== element) {
+                if (node instanceof HTMLElement && node.scrollHeight > node.clientHeight + 4 && node.scrollTop > 2) {
+                    return true;
+                }
+                node = node.parentElement;
+            }
+            return false;
+        };
+
+        element.addEventListener('pointerdown', (event) => {
+            if (event.pointerType !== 'touch' || isInteractiveTarget(event.target) || hasScrolledAncestor(event.target)) {
+                return;
+            }
+
+            tracking = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            element.classList.add('swipe-dismiss-active');
+        });
+
+        element.addEventListener('pointermove', (event) => {
+            if (!tracking) {
+                return;
+            }
+
+            const deltaY = Math.max(0, event.clientY - startY);
+            const deltaX = Math.abs(event.clientX - startX);
+            if (deltaY > 8 && deltaY > deltaX) {
+                element.style.setProperty('--swipe-dismiss-y', `${Math.min(deltaY, 160)}px`);
+            }
+        });
+
+        const finish = (event) => {
+            if (!tracking) {
+                return;
+            }
+
+            tracking = false;
+            const deltaY = event.clientY - startY;
+            const deltaX = Math.abs(event.clientX - startX);
+            element.classList.remove('swipe-dismiss-active');
+            element.style.removeProperty('--swipe-dismiss-y');
+
+            if (deltaY > threshold && deltaY > deltaX * 1.4) {
+                onDismiss();
+            }
+        };
+
+        element.addEventListener('pointerup', finish);
+        element.addEventListener('pointercancel', () => {
+            tracking = false;
+            element.classList.remove('swipe-dismiss-active');
+            element.style.removeProperty('--swipe-dismiss-y');
+        });
+    }
+
+    function showAppToast(message, options = {}) {
+        const text = String(message || '').trim();
+        if (!text) {
+            return null;
+        }
+
+        let region = document.getElementById('app-toast-region');
+        if (!region) {
+            region = document.createElement('div');
+            region.id = 'app-toast-region';
+            region.className = 'app-toast-region';
+            region.setAttribute('aria-live', 'polite');
+            region.setAttribute('aria-atomic', 'false');
+            document.body.appendChild(region);
+        }
+
+        const level = normalizeToastLevel(options.level);
+        const toast = document.createElement('article');
+        toast.className = `app-toast app-toast-${level}`;
+        toast.setAttribute('role', level === 'error' ? 'alert' : 'status');
+
+        const icon = {
+            success: 'fa-solid fa-circle-check',
+            error: 'fa-solid fa-triangle-exclamation',
+            warning: 'fa-solid fa-circle-exclamation',
+            info: 'fa-solid fa-circle-info',
+        }[level] || 'fa-solid fa-circle-info';
+
+        const actionLabel = options.actionLabel ? String(options.actionLabel) : '';
+        toast.innerHTML = `
+            <span class="app-toast-icon"><i class="${icon}" aria-hidden="true"></i></span>
+            <span class="app-toast-copy">${escapeHtml(text)}</span>
+            ${actionLabel ? `<button type="button" class="app-toast-action">${escapeHtml(actionLabel)}</button>` : ''}
+            <button type="button" class="app-toast-close" aria-label="Meldung schließen"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        `;
+
+        const removeToast = () => {
+            toast.classList.add('is-leaving');
+            window.setTimeout(() => toast.remove(), 180);
+        };
+
+        toast.querySelector('.app-toast-close')?.addEventListener('click', removeToast);
+        toast.querySelector('.app-toast-action')?.addEventListener('click', async () => {
+            if (typeof options.onAction === 'function') {
+                await options.onAction(toast);
+            }
+            removeToast();
+        });
+
+        enableSwipeDismiss(toast, removeToast, { threshold: 54 });
+        region.appendChild(toast);
+
+        window.setTimeout(() => toast.classList.add('is-visible'), 20);
+        const duration = Number(options.duration ?? (level === 'error' ? 7000 : 5200));
+        if (duration > 0) {
+            window.setTimeout(removeToast, duration);
+        }
+
+        return toast;
+    }
+
+    async function restoreTrashItemFromToast(action) {
+        const response = await fetch(action.url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
+        });
+
+        if (!response.ok) {
+            showAppToast('Wiederherstellen fehlgeschlagen.', { level: 'error' });
+            return;
+        }
+
+        showAppToast('Eintrag wurde wiederhergestellt.', { level: 'success' });
+        window.setTimeout(() => window.location.reload(), 450);
+    }
+
+    function hydrateServerToasts() {
+        document.querySelectorAll('[data-toast-message]').forEach((element) => {
+            const undoAction = parseUndoAction(element.dataset.toastTags || '');
+            showAppToast(element.textContent, {
+                level: element.dataset.toastLevel || element.dataset.toastTags,
+                actionLabel: undoAction ? 'Rückgängig' : '',
+                onAction: undoAction ? () => restoreTrashItemFromToast(undoAction) : null,
+            });
+        });
+    }
+
+    window.MyToolsToast = {
+        show: showAppToast,
+        success: (message, options = {}) => showAppToast(message, { ...options, level: 'success' }),
+        error: (message, options = {}) => showAppToast(message, { ...options, level: 'error' }),
+        warning: (message, options = {}) => showAppToast(message, { ...options, level: 'warning' }),
+        info: (message, options = {}) => showAppToast(message, { ...options, level: 'info' }),
+    };
+
+    hydrateServerToasts();
+
     async function postNotificationAction(url, data = {}) {
         if (!url) return;
 
@@ -883,6 +1096,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="notification-item-delete js-notification-delete" type="button" title="Benachrichtigung löschen" aria-label="Benachrichtigung löschen">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
+            </div>
+        `).join('');
+    }
+
+    function renderNotificationSkeleton() {
+        if (!notificationList) return;
+
+        notificationList.innerHTML = Array.from({ length: 4 }).map(() => `
+            <div class="notification-center-item notification-center-skeleton">
+                <span class="skeleton-block skeleton-icon"></span>
+                <span class="notification-center-item-main">
+                    <span class="skeleton-block skeleton-line"></span>
+                    <span class="skeleton-block skeleton-line is-short"></span>
+                </span>
             </div>
         `).join('');
     }
@@ -1091,6 +1318,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             url.searchParams.set('_', String(Date.now()));
+
+            if (includeItems) {
+                renderNotificationSkeleton();
+            }
 
             const response = await fetch(url.toString(), {
                 headers: {
@@ -1345,6 +1576,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropdown.classList.remove('open');
             }
         });
+
+        if (themeEditorPanel && exceptDropdown !== themeEditorPanel) {
+            setThemeEditorOpen(false);
+        }
 
         document.querySelectorAll('.menu-button.active, .profile-menu-button.active, .notification-center-button.active').forEach((button) => {
             if (button !== exceptButton) {
@@ -2138,6 +2373,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function setupSwipeCloseGestures() {
+        enableSwipeDismiss(toolsMenuDropdown, closeAllDropdowns, { threshold: 88 });
+        enableSwipeDismiss(document.querySelector('.global-search-panel'), closeGlobalSearch, { threshold: 96 });
+
+        document.querySelectorAll('.avatar-crop-dialog, .clock-settings-modal').forEach((dialog) => {
+            const closeButton = dialog.querySelector('[data-avatar-crop-close], [data-clock-settings-close], [data-modal-close]');
+            enableSwipeDismiss(dialog, () => {
+                closeButton?.click();
+            }, { threshold: 92 });
+        });
+    }
+
+    setupSwipeCloseGestures();
+
     function setupPwaInstallPrompt() {
         const installButton = document.getElementById('pwa-install-button');
         let deferredInstallPrompt = null;
@@ -2184,7 +2433,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const message = isIos
                     ? 'iPhone/iPad: Öffne diese Seite in Safari, tippe auf Teilen und dann auf „Zum Home-Bildschirm“.'
                     : 'Chrome/Edge: Nutze das Installieren-Symbol in der Adressleiste oder das Browser-Menü „App installieren“. Lokal funktioniert das über localhost, auf dem Server über HTTPS.';
-                window.alert(message);
+                showAppToast(message, { level: 'info', duration: 9000 });
                 return;
             }
 
