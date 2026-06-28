@@ -431,6 +431,7 @@ def file_share_view(request):
         .prefetch_related("recipients")
         .order_by("-created_at")
     )
+    recent_uploads = list(own_shares[:3])
     received_shares = (
         FileShare.objects.filter(recipients=request.user)
         .exclude(owner=request.user)
@@ -442,6 +443,7 @@ def file_share_view(request):
     return render(request, "app/file_share.html", {
         "friends": friends,
         "own_shares": Paginator(own_shares, 12).get_page(request.GET.get("own_page")),
+        "recent_uploads": recent_uploads,
         "received_shares": Paginator(received_shares, 12).get_page(request.GET.get("received_page")),
         "max_share_mb": share_limit["label"],
         "max_share_bytes": share_limit["size"] or "",
@@ -557,5 +559,5 @@ def file_share_download_view(request, token):
 def file_share_delete_view(request, share_id):
     share = get_object_or_404(FileShare, id=share_id, owner=request.user)
     share.move_to_trash()
-    messages.success(request, _("Datei wurde in den Papierkorb verschoben."))
+    messages.success(request, _("Datei wurde in den Papierkorb verschoben."), extra_tags=f"undo-file-{share.pk}")
     return redirect("file_share")

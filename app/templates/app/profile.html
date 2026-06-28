@@ -6,7 +6,7 @@
 {% block title %}{% translate "Profil" %} | MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/profile.css' %}?v=20260628-profile-shell-theme-sync">
 {% endblock %}
 
 {% block content %}
@@ -99,6 +99,64 @@
             </div>
 
 
+
+            <div class="profile-status-panel">
+                <span class="profile-status-dot is-{{ profile.status }}"></span>
+                <div>
+                    <strong>{{ profile.get_status_display }}</strong>
+                    {% if profile.status_text %}
+                        <small>{{ profile.status_text }}</small>
+                    {% else %}
+                        <small>{% translate "Kein eigener Statustext gesetzt." %}</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="profile-tools-panel">
+                <div class="profile-panel-head">
+                    <span>{% translate "Lieblings-Tools" %}</span>
+                    <a href="{% url 'favorites' %}">{% translate "Bearbeiten" %}</a>
+                </div>
+                {% if profile_favorite_tools %}
+                    <div class="profile-favorite-tools">
+                        {% for tool in profile_favorite_tools %}
+                            <a href="{{ tool.url }}" class="profile-favorite-tool">
+                                <i class="{{ tool.icon }}"></i>
+                                <span>{{ tool.label }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="profile-soft-empty">
+                        <i class="fa-regular fa-star"></i>
+                        <span>{% translate "Markiere Tools als Favorit, dann erscheinen sie hier." %}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="profile-activity-panel">
+                <div class="profile-panel-head">
+                    <span>{% translate "Letzte Aktivität" %}</span>
+                </div>
+                {% if profile_recent_activity %}
+                    <div class="profile-activity-list">
+                        {% for activity in profile_recent_activity %}
+                            {% if activity.url %}<a href="{{ activity.url }}" class="profile-activity-row">{% else %}<div class="profile-activity-row">{% endif %}
+                                <i class="{{ activity.icon }}"></i>
+                                <span>
+                                    <strong>{{ activity.title }}</strong>
+                                    <small>{{ activity.meta }} · {{ activity.time }}</small>
+                                </span>
+                            {% if activity.url %}</a>{% else %}</div>{% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="profile-soft-empty">
+                        <i class="fa-regular fa-clock"></i>
+                        <span>{% translate "Noch keine Aktivität vorhanden." %}</span>
+                    </div>
+                {% endif %}
+            </div>
 
             <div class="profile-showcase-card {{ profile.profile_card_classes }}" style="{{ profile.profile_card_style_vars }}">
                 <div class="profile-showcase-card-pattern"></div>

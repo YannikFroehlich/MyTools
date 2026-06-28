@@ -2459,3 +2459,281 @@ body.dark-mode .file-share-page .share-empty-state {
     background: linear-gradient(90deg, var(--share-accent-start), var(--share-accent-end));
 }
 
+.file-share-page .share-side {
+    display: grid;
+    gap: 18px;
+    align-content: start;
+}
+
+.share-preview-panel {
+    display: grid;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.64);
+}
+
+.share-preview-panel[hidden] {
+    display: none;
+}
+
+.share-preview-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.share-preview-head strong {
+    color: var(--theme-text);
+}
+
+.share-preview-head small {
+    color: #64748b;
+    font-weight: 800;
+}
+
+.share-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    gap: 10px;
+}
+
+.share-file-preview {
+    min-width: 0;
+    display: grid;
+    gap: 7px;
+    padding: 10px;
+    border-radius: 16px;
+    background: rgba(148, 163, 184, 0.12);
+}
+
+.share-file-preview-thumb {
+    display: grid;
+    place-items: center;
+    height: 82px;
+    overflow: hidden;
+    border-radius: 13px;
+    color: var(--share-accent-text, #2563eb);
+    background: rgba(var(--share-accent-rgb), 0.1);
+    font-size: 1.8rem;
+}
+
+.share-file-preview-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.share-file-preview strong,
+.share-file-preview small,
+.share-recent-row strong,
+.share-recent-row small {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.share-file-preview strong,
+.share-recent-row strong {
+    color: var(--theme-text);
+    font-size: 0.86rem;
+}
+
+.share-file-preview small,
+.share-recent-row small {
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.share-selected-file-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: center;
+}
+
+.share-selected-file-row .share-selected-file-mini {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    color: var(--share-accent-text, #2563eb);
+    background: rgba(var(--share-accent-rgb), 0.12);
+}
+
+.share-selected-file-row .share-selected-file-row-copy {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+
+.share-recent-card {
+    display: grid;
+    gap: 14px;
+}
+
+.share-recent-list {
+    display: grid;
+    gap: 9px;
+}
+
+.share-recent-row {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 9px;
+    border-radius: 16px;
+    color: inherit;
+    text-decoration: none;
+    background: rgba(var(--share-accent-rgb), 0.06);
+}
+
+.share-recent-row:hover {
+    background: rgba(var(--share-accent-rgb), 0.11);
+}
+
+.share-recent-thumb {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    border-radius: 15px;
+    color: var(--share-accent-text, #2563eb);
+    background: rgba(var(--share-accent-rgb), 0.12);
+    font-size: 1.2rem;
+}
+
+.share-recent-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.share-recent-empty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 16px;
+    color: #64748b;
+    background: rgba(148, 163, 184, 0.1);
+    font-weight: 850;
+}
+
+body.dark-mode .share-preview-panel {
+    border-color: rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 42, 0.52);
+}
+
+body.dark-mode .share-preview-head small,
+body.dark-mode .share-file-preview small,
+body.dark-mode .share-recent-row small,
+body.dark-mode .share-recent-empty {
+    color: #94a3b8;
+}
+
+body.dark-mode .share-file-preview,
+body.dark-mode .share-recent-row,
+body.dark-mode .share-recent-empty {
+    background: rgba(148, 163, 184, 0.1);
+}
+
+@media (max-width: 640px) {
+    .share-preview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .share-file-preview-thumb {
+        height: 72px;
+    }
+}
+
+/* Datei-Share Upload-Vorschau: neue Upload-Elemente konsequent ans Theme koppeln. */
+.file-share-page .share-selected-file,
+.file-share-page .share-preview-panel {
+    border-color: rgba(var(--share-accent-rgb), 0.28);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--share-accent-rgb), 0.16), transparent 58%),
+        radial-gradient(circle at 100% 18%, rgba(var(--share-accent-end-rgb), 0.12), transparent 52%),
+        rgba(var(--share-accent-rgb), 0.075);
+}
+
+.file-share-page .share-preview-head strong,
+.file-share-page .share-file-preview strong,
+.file-share-page .share-recent-row strong {
+    color: var(--theme-text);
+}
+
+.file-share-page .share-selected-file-main small,
+.file-share-page .share-selected-file-row span,
+.file-share-page .share-preview-head small,
+.file-share-page .share-file-preview small,
+.file-share-page .share-recent-row small,
+.file-share-page .share-recent-empty {
+    color: color-mix(in srgb, var(--theme-text) 68%, var(--share-accent-start) 32%);
+}
+
+.file-share-page .share-selected-file-row,
+.file-share-page .share-file-preview,
+.file-share-page .share-recent-row,
+.file-share-page .share-recent-empty {
+    border: 1px solid rgba(var(--share-accent-rgb), 0.18);
+    background: rgba(var(--share-accent-rgb), 0.085);
+}
+
+.file-share-page .share-selected-file-row:hover,
+.file-share-page .share-file-preview:hover,
+.file-share-page .share-recent-row:hover {
+    border-color: rgba(var(--share-accent-rgb), 0.28);
+    background: rgba(var(--share-accent-rgb), 0.12);
+}
+
+.file-share-page .share-selected-file-icon,
+.file-share-page .share-selected-file-row .share-selected-file-mini,
+.file-share-page .share-file-preview-thumb,
+.file-share-page .share-recent-thumb {
+    color: var(--share-accent-text);
+    background: linear-gradient(135deg, var(--share-accent-start), var(--share-accent-end));
+    box-shadow: 0 12px 26px rgba(var(--share-accent-rgb), 0.20);
+}
+
+.file-share-page .share-selected-file button {
+    color: var(--share-accent-start);
+    background: rgba(var(--share-accent-rgb), 0.13);
+}
+
+.file-share-page .share-selected-file button:hover {
+    color: #fff;
+    background: #ef4444;
+}
+
+body.dark-mode .file-share-page .share-selected-file,
+body.dark-mode .file-share-page .share-preview-panel {
+    border-color: rgba(var(--share-accent-rgb), 0.34);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--share-accent-rgb), 0.22), transparent 58%),
+        radial-gradient(circle at 100% 18%, rgba(var(--share-accent-end-rgb), 0.18), transparent 52%),
+        rgba(var(--share-accent-rgb), 0.11);
+}
+
+body.dark-mode .file-share-page .share-selected-file-row,
+body.dark-mode .file-share-page .share-file-preview,
+body.dark-mode .file-share-page .share-recent-row,
+body.dark-mode .file-share-page .share-recent-empty {
+    border-color: rgba(var(--share-accent-rgb), 0.24);
+    background: rgba(var(--share-accent-rgb), 0.12);
+}
+
+body.dark-mode .file-share-page .share-selected-file button {
+    color: color-mix(in srgb, var(--theme-text) 76%, var(--share-accent-start) 24%);
+    background: rgba(var(--share-accent-rgb), 0.16);
+}
+

@@ -177,7 +177,7 @@ def note_delete_view(request, pk):
     note = get_object_or_404(Note, pk=pk, user=request.user)
     note.move_to_trash()
 
-    messages.success(request, _("Notiz wurde in den Papierkorb verschoben."), extra_tags="notes")
+    messages.success(request, _("Notiz wurde in den Papierkorb verschoben."), extra_tags=f"notes undo-note-{note.pk}")
     return redirect("notes")
 
 

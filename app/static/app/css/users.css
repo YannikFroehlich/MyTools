@@ -2651,3 +2651,370 @@ body.dark-mode .public-report-box { background: rgba(255,255,255,.07); border-co
 .friends-page .user-card-profile-showcase .user-open {
     margin-left: auto;
 }
+
+/* Public profile theme sync */
+.public-profile-page {
+    --public-profile-card-bg: color-mix(in srgb, var(--theme-card-bg, #ffffff) 88%, var(--theme-accent-start) 12%);
+    --public-profile-card-bg-strong: color-mix(in srgb, var(--theme-card-bg, #ffffff) 76%, var(--theme-accent-end) 18%);
+    --public-profile-inner-bg: color-mix(in srgb, var(--theme-card-bg, #ffffff) 78%, var(--theme-accent-start) 10%);
+    --public-profile-inner-hover: color-mix(in srgb, var(--theme-card-bg, #ffffff) 70%, var(--theme-accent-start) 18%);
+    --public-profile-line: rgba(var(--theme-accent-rgb), .18);
+    --public-profile-muted: color-mix(in srgb, var(--theme-text) 64%, transparent);
+    --public-profile-track-bg: rgba(148, 163, 184, .18);
+    --public-profile-shadow: 0 18px 48px rgba(var(--theme-accent-rgb), .10);
+}
+
+body.dark-mode .public-profile-page {
+    --public-profile-card-bg: color-mix(in srgb, var(--theme-card-bg, #111827) 84%, var(--theme-accent-end) 16%);
+    --public-profile-card-bg-strong: color-mix(in srgb, var(--theme-card-bg, #111827) 74%, var(--theme-accent-end) 20%);
+    --public-profile-inner-bg: color-mix(in srgb, var(--theme-card-bg, #111827) 78%, #ffffff 7%);
+    --public-profile-inner-hover: color-mix(in srgb, var(--theme-card-bg, #111827) 70%, var(--theme-accent-end) 18%);
+    --public-profile-line: rgba(var(--theme-accent-end-rgb), .18);
+    --public-profile-muted: color-mix(in srgb, var(--theme-text) 72%, transparent);
+    --public-profile-track-bg: rgba(255, 255, 255, .10);
+    --public-profile-shadow: 0 22px 58px rgba(0, 0, 0, .30);
+}
+
+body.theme-lunora-mode .public-profile-page {
+    --public-profile-card-bg: linear-gradient(145deg, rgba(255, 250, 244, .92), rgba(248, 239, 227, .86));
+    --public-profile-card-bg-strong: linear-gradient(145deg, rgba(255, 250, 244, .96), rgba(245, 232, 215, .90));
+    --public-profile-inner-bg: var(--lunora-theme-pill-bg);
+    --public-profile-inner-hover: var(--lunora-theme-pill-bg-strong);
+    --public-profile-line: var(--lunora-theme-border);
+    --public-profile-muted: var(--lunora-theme-muted);
+    --public-profile-track-bg: rgba(156, 119, 77, .16);
+    --public-profile-shadow: 0 18px 42px var(--lunora-theme-shadow);
+}
+
+body.dark-mode.theme-lunora-mode .public-profile-page {
+    --public-profile-card-bg: linear-gradient(145deg, rgba(43, 32, 23, .94), rgba(30, 23, 18, .90));
+    --public-profile-card-bg-strong: linear-gradient(145deg, rgba(48, 35, 25, .96), rgba(24, 18, 13, .92));
+    --public-profile-inner-bg: var(--lunora-theme-pill-bg);
+    --public-profile-inner-hover: var(--lunora-theme-pill-bg-strong);
+    --public-profile-line: var(--lunora-theme-border);
+    --public-profile-muted: var(--lunora-theme-muted);
+    --public-profile-track-bg: rgba(255, 255, 255, .10);
+    --public-profile-shadow: 0 22px 60px var(--lunora-theme-shadow);
+}
+
+.public-profile-page .public-profile-card,
+.public-profile-page .achievement-panel {
+    color: var(--theme-text);
+    border-color: var(--public-profile-line);
+    background: var(--public-profile-card-bg);
+    box-shadow:
+        var(--public-profile-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+
+.public-profile-page .public-profile-info-list div,
+.public-profile-page .public-profile-empty-bio,
+.public-profile-page .public-profile-benchmark-score,
+.public-profile-page .public-profile-tool,
+.public-profile-page .public-profile-timeline-row,
+.public-profile-page .friend-preview-card,
+.public-profile-page .friend-activity-item,
+.public-profile-page .public-report-box,
+.public-profile-page .achievement-category,
+.public-profile-page .achievement-badge {
+    color: var(--theme-text);
+    border: 1px solid var(--public-profile-line);
+    background: var(--public-profile-inner-bg);
+}
+
+.public-profile-page .public-profile-info-list div:hover,
+.public-profile-page .public-profile-tool:hover,
+.public-profile-page .public-profile-timeline-row:hover,
+.public-profile-page .friend-preview-card:hover,
+.public-profile-page .friend-activity-item:hover,
+.public-profile-page .achievement-category:hover,
+.public-profile-page .achievement-badge:hover {
+    background: var(--public-profile-inner-hover);
+}
+
+.public-profile-page .public-profile-card h2,
+.public-profile-page .public-profile-info-list strong,
+.public-profile-page .public-profile-benchmark-score strong,
+.public-profile-page .public-profile-tool strong,
+.public-profile-page .public-profile-timeline-row strong,
+.public-profile-page .friend-preview-card strong,
+.public-profile-page .achievement-head h2,
+.public-profile-page .achievement-category strong,
+.public-profile-page .achievement-badge-copy strong,
+.public-profile-page .friend-activity-item {
+    color: var(--theme-text);
+}
+
+.public-profile-page .public-profile-info-list span,
+.public-profile-page .public-profile-info-list small,
+.public-profile-page .public-profile-bio,
+.public-profile-page .public-profile-empty-bio,
+.public-profile-page .public-profile-benchmark-score span,
+.public-profile-page .public-profile-benchmark-score small,
+.public-profile-page .public-profile-tool small,
+.public-profile-page .public-profile-timeline-row small,
+.public-profile-page .friend-preview-card small,
+.public-profile-page .achievement-head p:not(.profile-kicker),
+.public-profile-page .achievement-xp > div:first-child,
+.public-profile-page .achievement-category small,
+.public-profile-page .achievement-category em,
+.public-profile-page .achievement-badge-copy small,
+.public-profile-page .achievement-badge-copy em {
+    color: var(--public-profile-muted);
+}
+
+.public-profile-page :is(.public-profile-empty-bio i, .public-profile-tool > i, .public-profile-timeline-row > i, .public-profile-benchmark-icon) {
+    color: color-mix(in srgb, var(--theme-accent-start) 76%, var(--theme-text) 24%);
+    border: 1px solid var(--public-profile-line);
+    background: rgba(var(--theme-accent-rgb), .12);
+}
+
+.public-profile-page .achievement-xp-track,
+.public-profile-page .achievement-progress {
+    background: var(--public-profile-track-bg);
+}
+
+.public-profile-page .public-profile-benchmark-link,
+.public-profile-page .friendship-link-button,
+.public-profile-page .friendship-button-muted {
+    color: color-mix(in srgb, var(--theme-accent-start) 72%, var(--theme-text) 28%);
+    border: 1px solid var(--public-profile-line);
+    background: var(--public-profile-inner-bg);
+}
+
+.public-profile-page .public-profile-benchmark-link:hover,
+.public-profile-page .friendship-link-button:hover,
+.public-profile-page .friendship-button-muted:hover {
+    background: var(--public-profile-inner-hover);
+}
+
+body.theme-lunora-mode .public-profile-page .public-profile-card,
+body.theme-lunora-mode .public-profile-page .achievement-panel,
+body.theme-lunora-mode .public-profile-page .public-profile-card h2,
+body.theme-lunora-mode .public-profile-page .public-profile-info-list strong,
+body.theme-lunora-mode .public-profile-page .public-profile-benchmark-score strong,
+body.theme-lunora-mode .public-profile-page .public-profile-tool strong,
+body.theme-lunora-mode .public-profile-page .public-profile-timeline-row strong,
+body.theme-lunora-mode .public-profile-page .friend-preview-card strong,
+body.theme-lunora-mode .public-profile-page .achievement-head h2,
+body.theme-lunora-mode .public-profile-page .achievement-category strong,
+body.theme-lunora-mode .public-profile-page .achievement-badge-copy strong,
+body.theme-lunora-mode .public-profile-page .friend-activity-item {
+    color: var(--lunora-theme-ink);
+}
+
+body.theme-lunora-mode .public-profile-page :is(.public-profile-empty-bio i, .public-profile-tool > i, .public-profile-timeline-row > i, .public-profile-benchmark-icon) {
+    color: #b78a55;
+    background: rgba(214, 173, 115, .16);
+}
+
+body.theme-lunora-mode .public-profile-page .friend-activity-item strong {
+    color: #b78a55;
+}
+
+body.dark-mode.theme-lunora-mode .public-profile-page :is(.public-profile-empty-bio i, .public-profile-tool > i, .public-profile-timeline-row > i, .public-profile-benchmark-icon) {
+    color: #e7c894;
+    background: rgba(231, 200, 148, .10);
+}
+
+body.dark-mode.theme-lunora-mode .public-profile-page .friend-activity-item strong {
+    color: #e7c894;
+}
+
+/* Users toolbar theme sync */
+.users-page,
+.friends-page {
+    --users-toolbar-bg: color-mix(in srgb, var(--theme-card-bg, #ffffff) 88%, var(--theme-accent-start) 12%);
+    --users-toolbar-bg-hover: color-mix(in srgb, var(--theme-card-bg, #ffffff) 76%, var(--theme-accent-start) 18%);
+    --users-toolbar-line: rgba(var(--theme-accent-rgb), .20);
+    --users-toolbar-muted: color-mix(in srgb, var(--theme-text) 66%, transparent);
+    --users-toolbar-shadow: 0 16px 40px rgba(var(--theme-accent-rgb), .10);
+}
+
+body.dark-mode :is(.users-page, .friends-page) {
+    --users-toolbar-bg: color-mix(in srgb, var(--theme-card-bg, #111827) 82%, var(--theme-accent-end) 16%);
+    --users-toolbar-bg-hover: color-mix(in srgb, var(--theme-card-bg, #111827) 72%, var(--theme-accent-end) 20%);
+    --users-toolbar-line: rgba(var(--theme-accent-end-rgb), .18);
+    --users-toolbar-muted: color-mix(in srgb, var(--theme-text) 74%, transparent);
+    --users-toolbar-shadow: 0 18px 46px rgba(0, 0, 0, .26);
+}
+
+body.theme-lunora-mode :is(.users-page, .friends-page) {
+    --users-toolbar-bg: var(--lunora-theme-pill-bg);
+    --users-toolbar-bg-hover: var(--lunora-theme-pill-bg-strong);
+    --users-toolbar-line: var(--lunora-theme-border);
+    --users-toolbar-muted: var(--lunora-theme-muted);
+    --users-toolbar-shadow: var(--lunora-theme-pill-shadow);
+}
+
+.users-page .users-search,
+.friends-page .users-search,
+.users-page .users-counter,
+.friends-page .users-counter,
+.users-page .users-toolbar-action,
+.friends-page .users-toolbar-action {
+    color: var(--theme-text);
+    border-color: var(--users-toolbar-line);
+    background: var(--users-toolbar-bg);
+    box-shadow: var(--users-toolbar-shadow);
+}
+
+.users-page .users-toolbar-action:hover,
+.friends-page .users-toolbar-action:hover,
+.users-page .users-clear-search:hover,
+.friends-page .users-clear-search:hover {
+    background: var(--users-toolbar-bg-hover);
+}
+
+.users-page .users-search input,
+.friends-page .users-search input,
+.users-page .users-counter span,
+.friends-page .users-counter span {
+    color: var(--theme-text);
+}
+
+.users-page .users-search input::placeholder,
+.friends-page .users-search input::placeholder,
+.users-page .users-counter small,
+.friends-page .users-counter small {
+    color: var(--users-toolbar-muted);
+}
+
+.users-page .users-search i,
+.friends-page .users-search i,
+.users-page .users-toolbar-action i,
+.friends-page .users-toolbar-action i {
+    color: color-mix(in srgb, var(--theme-accent-start) 76%, var(--theme-text) 24%);
+}
+
+.users-page .users-clear-search,
+.friends-page .users-clear-search {
+    color: var(--users-toolbar-muted);
+    border: 1px solid var(--users-toolbar-line);
+    background: var(--users-toolbar-bg);
+}
+
+body.theme-lunora-mode :is(.users-page, .friends-page) .users-toolbar-action,
+body.theme-lunora-mode :is(.users-page, .friends-page) .users-search,
+body.theme-lunora-mode :is(.users-page, .friends-page) .users-counter,
+body.theme-lunora-mode :is(.users-page, .friends-page) .users-search input {
+    color: var(--lunora-theme-ink);
+}
+
+body.theme-lunora-mode :is(.users-page, .friends-page) :is(.users-search i, .users-toolbar-action i) {
+    color: #b78a55;
+}
+
+body.dark-mode.theme-lunora-mode :is(.users-page, .friends-page) :is(.users-search i, .users-toolbar-action i) {
+    color: #e7c894;
+}
+
+/* Specificity lift so older dark-mode card rules cannot repaint these boxes blue. */
+body :is(.users-page, .friends-page) :is(.users-search, .users-counter, .users-toolbar-action) {
+    color: var(--theme-text);
+    border-color: var(--users-toolbar-line);
+    background: var(--users-toolbar-bg);
+    box-shadow: var(--users-toolbar-shadow);
+}
+
+body :is(.users-page, .friends-page) :is(.users-search input, .users-counter span) {
+    color: var(--theme-text);
+}
+
+body :is(.users-page, .friends-page) :is(.users-search input::placeholder, .users-counter small) {
+    color: var(--users-toolbar-muted);
+}
+
+body :is(.users-page, .friends-page) :is(.users-search i, .users-toolbar-action i) {
+    color: color-mix(in srgb, var(--theme-accent-start) 76%, var(--theme-text) 24%);
+}
+
+body.theme-lunora-mode :is(.users-page, .friends-page) :is(.users-search, .users-counter, .users-toolbar-action, .users-search input) {
+    color: var(--lunora-theme-ink);
+}
+
+body.theme-lunora-mode :is(.users-page, .friends-page) :is(.users-search i, .users-toolbar-action i) {
+    color: #b78a55;
+}
+
+body.dark-mode.theme-lunora-mode :is(.users-page, .friends-page) :is(.users-search i, .users-toolbar-action i) {
+    color: #e7c894;
+}
+
+body .public-profile-page :is(.public-profile-card, .achievement-panel) {
+    color: var(--theme-text);
+    border-color: var(--public-profile-line);
+    background: var(--public-profile-card-bg);
+    box-shadow:
+        var(--public-profile-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+
+body .public-profile-page :is(
+    .public-profile-info-list div,
+    .public-profile-empty-bio,
+    .public-profile-benchmark-score,
+    .public-profile-tool,
+    .public-profile-timeline-row,
+    .friend-preview-card,
+    .friend-activity-item,
+    .public-report-box,
+    .achievement-category,
+    .achievement-badge
+) {
+    color: var(--theme-text);
+    border-color: var(--public-profile-line);
+    background: var(--public-profile-inner-bg);
+}
+
+body .public-profile-page :is(
+    .public-profile-card h2,
+    .public-profile-info-list strong,
+    .public-profile-benchmark-score strong,
+    .public-profile-tool strong,
+    .public-profile-timeline-row strong,
+    .friend-preview-card strong,
+    .achievement-head h2,
+    .achievement-category strong,
+    .achievement-badge-copy strong,
+    .friend-activity-item
+) {
+    color: var(--theme-text);
+}
+
+body .public-profile-page :is(
+    .public-profile-info-list span,
+    .public-profile-info-list small,
+    .public-profile-bio,
+    .public-profile-empty-bio,
+    .public-profile-benchmark-score span,
+    .public-profile-benchmark-score small,
+    .public-profile-tool small,
+    .public-profile-timeline-row small,
+    .friend-preview-card small,
+    .achievement-head p:not(.profile-kicker),
+    .achievement-xp > div:first-child,
+    .achievement-category small,
+    .achievement-category em,
+    .achievement-badge-copy small,
+    .achievement-badge-copy em
+) {
+    color: var(--public-profile-muted);
+}
+
+body.theme-lunora-mode .public-profile-page :is(
+    .public-profile-card,
+    .achievement-panel,
+    .public-profile-card h2,
+    .public-profile-info-list strong,
+    .public-profile-benchmark-score strong,
+    .public-profile-tool strong,
+    .public-profile-timeline-row strong,
+    .friend-preview-card strong,
+    .achievement-head h2,
+    .achievement-category strong,
+    .achievement-badge-copy strong,
+    .friend-activity-item
+) {
+    color: var(--lunora-theme-ink);
+}
