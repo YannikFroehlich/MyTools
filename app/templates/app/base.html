@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}{% translate 'Mein myManager' %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260627-lunora-search-warm">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260628-mobile-menu-fix">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -41,7 +41,7 @@
     {% block extra_css %}{% endblock %}
     <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260623-notes-style-fix">
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}?v=20260626-lunora-warm-dark-bg" defer></script>
+        <script src="{% static 'app/js/base.js' %}?v=20260628-mobile-menu-fix" defer></script>
     {% endblock %}
 </head>
 <body class="{% if request.user.is_authenticated %}has-mobile-bottom-nav {% endif %}{% block body_class %}{% endblock %}"{% if request.user.is_authenticated %} data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}" data-access-locked-label="{% translate 'Unveröffentlicht' %}" data-access-locked-title="{% translate 'Unveröffentlicht' %}" data-access-restricted-label="{% translate 'Unveröffentlicht' %}" data-access-restricted-title="{% translate 'Unveröffentlicht' %}" data-access-hidden-label="{% translate 'Versteckt' %}" data-access-hidden-title="{% translate 'Versteckt' %}"{% endif %}>
@@ -979,20 +979,31 @@
     </nav>
 
     {% if request.user.is_authenticated %}
-        <div class="global-search-overlay" id="global-search-overlay" hidden>
+        <div
+            class="global-search-overlay"
+            id="global-search-overlay"
+            data-note-create-url="{% url 'note_create' %}"
+            data-file-upload-url="{% url 'file_share' %}#file-share-upload"
+            data-chat-url="{% url 'chat' %}"
+            data-command-placeholder="{% translate 'Befehl, Tool, Notiz oder Nutzer suchen...' %}"
+            data-command-title="{% translate 'Command Palette' %}"
+            data-command-hint="{% translate 'Pfeiltasten wählen · Enter ausführen' %}"
+            data-command-empty="{% translate 'Kein Befehl oder Treffer gefunden.' %}"
+            hidden
+        >
             <div class="global-search-backdrop" data-close-global-search></div>
             <section class="global-search-panel" role="dialog" aria-modal="true" aria-labelledby="global-search-title">
                 <div class="global-search-input-row">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="search" id="global-search-input" placeholder="{% translate 'Tools, Notizen, Dateien, Nutzer suchen...' %}" autocomplete="off">
+                    <input type="search" id="global-search-input" placeholder="{% translate 'Befehl, Tool, Notiz oder Nutzer suchen...' %}" autocomplete="off">
                     <button type="button" data-close-global-search aria-label="{% translate 'Suche schließen' %}">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
                 <div class="global-search-meta">
-                    <strong id="global-search-title">{% translate 'MyTools Suche' %}</strong>
-                    <span>{% translate 'Enter öffnet den ersten Treffer' %}</span>
+                    <strong id="global-search-title">{% translate 'Command Palette' %}</strong>
+                    <span>{% translate 'Pfeiltasten wählen · Enter ausführen' %}</span>
                 </div>
 
                 <div class="global-search-results" id="global-search-results">

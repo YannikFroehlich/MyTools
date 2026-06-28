@@ -1140,6 +1140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function setFloatingElement(element, rect) {
+        document.body.classList.add("home-pointer-drag-active");
         element.classList.add("pointer-dragging");
         element.style.position = "fixed";
         element.style.left = `${rect.left}px`;
@@ -1157,6 +1158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function resetFloatingElement(element) {
+        document.body.classList.remove("home-pointer-drag-active");
         element.classList.remove("pointer-dragging");
         element.style.position = "";
         element.style.left = "";
@@ -1166,6 +1168,17 @@ document.addEventListener("DOMContentLoaded", () => {
         element.style.zIndex = "";
         element.style.pointerEvents = "";
         element.style.margin = "";
+    }
+
+    function autoScrollDuringDrag(clientY) {
+        const edgeSize = Math.min(92, window.innerHeight * 0.16);
+        const maxStep = 18;
+
+        if (clientY < edgeSize) {
+            window.scrollBy({ top: -maxStep, behavior: "auto" });
+        } else if (window.innerHeight - clientY < edgeSize) {
+            window.scrollBy({ top: maxStep, behavior: "auto" });
+        }
     }
 
     function getElementUnderPointer(clientX, clientY, selector) {
@@ -1232,6 +1245,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function onPointerMove(moveEvent) {
             moveEvent.preventDefault();
+            autoScrollDuringDrag(moveEvent.clientY);
             moveFloatingElement(card, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
 
             const grid = getElementUnderPointer(moveEvent.clientX, moveEvent.clientY, ".shortcuts-grid");
@@ -1309,6 +1323,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function onPointerMove(moveEvent) {
             moveEvent.preventDefault();
+            autoScrollDuringDrag(moveEvent.clientY);
             moveFloatingElement(layoutItem, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
 
             const before = getLayoutInsertBefore(wrapper, moveEvent.clientY);
@@ -1345,7 +1360,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!widget || !grid) return;
 
         event.preventDefault();
-        handle.setPointerCapture?.(event.pointerId);
+        try {
+            handle.setPointerCapture?.(event.pointerId);
+        } catch (error) {
+        }
 
         const rect = widget.getBoundingClientRect();
         const pointerOffsetX = event.clientX - rect.left;
@@ -1359,6 +1377,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function onPointerMove(moveEvent) {
             moveEvent.preventDefault();
+            autoScrollDuringDrag(moveEvent.clientY);
 
             widget.style.left = `${moveEvent.clientX - pointerOffsetX}px`;
             widget.style.top = `${moveEvent.clientY - pointerOffsetY}px`;
@@ -1399,17 +1418,71 @@ document.addEventListener("DOMContentLoaded", () => {
         document.addEventListener("pointercancel", onPointerUp, { once: true });
     }
 
-    document.querySelectorAll(".shortcut-drag-handle").forEach(handle => {
-        handle.addEventListener("pointerdown", event => startPointerShortcutDrag(event, handle));
-    });
+    function bindDragHandle(selector, startDrag) {
+        document.querySelectorAll(selector).forEach(handle => {
+            handle.addEventListener("pointerdown", event => {
+                if (event.button !== undefined && event.button !== 0) {
+                    return;
+                }
 
-    document.querySelectorAll(".section-drag-handle").forEach(handle => {
-        handle.addEventListener("pointerdown", event => startPointerSectionDrag(event, handle));
-    });
+                if (event.pointerType !== "touch") {
+                    startDrag(event, handle);
+                    return;
+                }
 
-    document.querySelectorAll(".widget-drag-handle").forEach(handle => {
-        handle.addEventListener("pointerdown", event => startPointerWidgetDrag(event, handle));
-    });
+                const startX = event.clientX;
+                const startY = event.clientY;
+                const pointerId = event.pointerId;
+                let lastEvent = event;
+                let dragStarted = false;
+
+                const cleanup = () => {
+                    window.clearTimeout(pressTimer);
+                    document.removeEventListener("pointermove", onPressMove);
+                    document.removeEventListener("pointerup", onPressEnd);
+                    document.removeEventListener("pointercancel", onPressEnd);
+                };
+
+                const beginDrag = () => {
+                    if (dragStarted || !handle.isConnected) {
+                        return;
+                    }
+
+                    dragStarted = true;
+                    cleanup();
+                    startDrag(lastEvent, handle);
+                };
+
+                const onPressMove = moveEvent => {
+                    if (moveEvent.pointerId !== pointerId) {
+                        return;
+                    }
+
+                    lastEvent = moveEvent;
+                    const distance = Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY);
+
+                    if (distance > 10) {
+                        cleanup();
+                    }
+                };
+
+                const onPressEnd = endEvent => {
+                    if (endEvent.pointerId === pointerId) {
+                        cleanup();
+                    }
+                };
+
+                const pressTimer = window.setTimeout(beginDrag, 150);
+                document.addEventListener("pointermove", onPressMove, { passive: true });
+                document.addEventListener("pointerup", onPressEnd, { once: true });
+                document.addEventListener("pointercancel", onPressEnd, { once: true });
+            }, { passive: false });
+        });
+    }
+
+    bindDragHandle(".shortcut-drag-handle", startPointerShortcutDrag);
+    bindDragHandle(".section-drag-handle", startPointerSectionDrag);
+    bindDragHandle(".widget-drag-handle", startPointerWidgetDrag);
 
     updateEmptyStates();
     toggleWidgetTypeFields();
