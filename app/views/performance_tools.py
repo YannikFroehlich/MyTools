@@ -304,9 +304,9 @@ def leaderboard_view(request):
 
     boards = [
         _human_benchmark_rows(HumanBenchmarkScore.GAME_REACTION, _("Reaktion"), lower_is_better=True),
-        _human_benchmark_rows(HumanBenchmarkScore.GAME_AIM, _("Aim Trainer")),
-        _human_benchmark_rows(HumanBenchmarkScore.GAME_TYPING, _("Typing Test")),
-        _human_benchmark_rows(HumanBenchmarkScore.GAME_VISUAL, _("Visual Memory")),
+        _human_benchmark_rows(HumanBenchmarkScore.GAME_AIM, _("Zieltrainer")),
+        _human_benchmark_rows(HumanBenchmarkScore.GAME_TYPING, _("Tipptest")),
+        _human_benchmark_rows(HumanBenchmarkScore.GAME_VISUAL, _("Visuelles Gedächtnis")),
         _game_2048_rows(),
     ]
 

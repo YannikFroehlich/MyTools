@@ -266,7 +266,7 @@ def _game_2048_card(user, definition):
     }
     card["metrics"] = [
         {"label": _("Beste Kachel"), "value": _display_number(highscore.best_tile), "icon": "fa-solid fa-table-cells-large"},
-        {"label": _("Zuege"), "value": _display_number(highscore.moves), "icon": "fa-solid fa-shuffle"},
+        {"label": _("Züge"), "value": _display_number(highscore.moves), "icon": "fa-solid fa-shuffle"},
         {"label": _("Zeit"), "value": highscore.duration_label, "icon": "fa-regular fa-clock"},
         {"label": _("Spiele"), "value": _display_number(highscore.games_played), "icon": "fa-solid fa-gamepad"},
     ]
@@ -429,7 +429,7 @@ def _snake_powerups_card(user, definition):
     card = _base_game_card(definition)
     card["title"] = _("Arcade")
     card["is_empty"] = True
-    card["empty_text"] = _("Snake Powerups ist bereit fuer deinen ersten Lauf.")
+    card["empty_text"] = _("Snake Powerups ist bereit für deinen ersten Lauf.")
     return card
 
 

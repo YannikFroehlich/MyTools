@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 1;
     const songsPerPage = 8;
     const searchUrl = page.dataset.searchUrl || '/api/genius/search/';
+    const label = (key, fallback) => page.dataset[key] || fallback;
 
     const queryInput = document.getElementById('query');
     const searchBtn = document.getElementById('searchBtn');
@@ -32,20 +33,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const image = document.createElement('img');
         image.src = song.image || '';
-        image.alt = song.title ? `Cover: ${song.title}` : 'Song Cover';
+        image.alt = song.title ? `${label('labelCoverPrefix', 'Cover')}: ${song.title}` : label('labelCoverPrefix', 'Cover');
         image.loading = 'lazy';
 
         const title = document.createElement('h3');
-        title.textContent = song.title || 'Unbekannter Titel';
+        title.textContent = song.title || label('labelUnknownTitle', 'Unbekannter Titel');
 
         const artist = document.createElement('p');
-        artist.textContent = song.artist || 'Unbekannter Künstler';
+        artist.textContent = song.artist || label('labelUnknownArtist', 'Unbekannter Künstler');
 
         const link = document.createElement('a');
         link.href = song.url;
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
-        link.textContent = 'Lyrics ansehen ->';
+        link.textContent = `${label('labelLyricsLink', 'Lyrics ansehen')} ->`;
 
         card.append(image, title, artist, link);
         return card;
@@ -55,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         results.innerHTML = '';
 
         if (songs.length === 0) {
-            setEmptyState('Keine Ergebnisse gefunden.');
+            setEmptyState(label('labelNoResults', 'Keine Ergebnisse gefunden.'));
             return;
         }
 
@@ -67,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updatePagination(hitCount) {
-        pageInfo.textContent = `Seite ${currentPage}`;
+        pageInfo.textContent = `${label('labelPage', 'Seite')} ${currentPage}`;
         prevBtn.disabled = currentPage === 1;
         nextBtn.disabled = hitCount < songsPerPage;
     }
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        setEmptyState('Suche läuft...');
+        setEmptyState(label('labelLoading', 'Suche läuft...'));
         searchBtn.disabled = true;
 
         try {
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (!response.ok) {
-                setEmptyState(data.message || 'Genius konnte nicht geladen werden.');
+                setEmptyState(data.message || label('labelLoadError', 'Genius konnte nicht geladen werden.'));
                 return;
             }
 
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updatePagination(songs.length);
         } catch (error) {
             console.error('Genius API Fehler:', error);
-            setEmptyState('Genius konnte nicht geladen werden.');
+            setEmptyState(label('labelLoadError', 'Genius konnte nicht geladen werden.'));
         } finally {
             searchBtn.disabled = false;
         }

@@ -1,4 +1,7 @@
 (() => {
+    const root = document.querySelector(".color-tool-page");
+    if (!root) return;
+
     const STORAGE_KEY = "mytools_color_palette_v1";
     const state = {
         color: "#7C3AED",
@@ -32,6 +35,7 @@
     };
 
     const ctx = els.canvas ? els.canvas.getContext("2d", { willReadFrequently: true }) : null;
+    const label = (key, fallback) => root.dataset[key] || fallback;
 
     function clamp(value, min, max) {
         return Math.min(max, Math.max(min, value));
@@ -119,8 +123,8 @@
     function gradeContrast(ratio) {
         if (ratio >= 7) return "AAA";
         if (ratio >= 4.5) return "AA";
-        if (ratio >= 3) return "Großer Text";
-        return "Schwach";
+        if (ratio >= 3) return label("labelLargeText", "Großer Text");
+        return label("labelWeak", "Schwach");
     }
 
     function getReadableText(rgb) {
@@ -155,9 +159,9 @@
     async function copyText(value) {
         try {
             await navigator.clipboard.writeText(value);
-            toast("Kopiert");
+            toast(label("labelCopied", "Kopiert"));
         } catch {
-            toast("Kopieren nicht möglich");
+            toast(label("labelCopyFailed", "Kopieren nicht möglich"));
         }
     }
 
@@ -188,7 +192,9 @@
         const blackRatio = contrastRatio(rgb, { r: 0, g: 0, b: 0 });
         els.contrastWhite.textContent = `${whiteRatio.toFixed(2)} · ${gradeContrast(whiteRatio)}`;
         els.contrastBlack.textContent = `${blackRatio.toFixed(2)} · ${gradeContrast(blackRatio)}`;
-        els.contrastRecommendation.textContent = whiteRatio >= blackRatio ? "Weißer Text" : "Dunkler Text";
+        els.contrastRecommendation.textContent = whiteRatio >= blackRatio
+            ? label("labelWhiteText", "Weißer Text")
+            : label("labelDarkText", "Dunkler Text");
 
         const secondColor = options.secondColor || suggestSecondColor(rgb);
         state.gradient = `linear-gradient(135deg, ${normalized}, ${secondColor})`;
@@ -241,7 +247,7 @@
         if (!state.palette.length) {
             const empty = document.createElement("div");
             empty.className = "palette-empty";
-            empty.textContent = "Noch keine Farben gespeichert.";
+            empty.textContent = label("labelEmptyPalette", "Noch keine Farben gespeichert.");
             els.paletteList.appendChild(empty);
             return;
         }
@@ -253,7 +259,7 @@
                 <div class="palette-swatch" style="background:${hex}" title="${hex}"></div>
                 <div class="palette-item-footer">
                     <strong>${hex}</strong>
-                    <button type="button" aria-label="Farbe entfernen">
+                    <button type="button" aria-label="${label("labelRemoveColor", "Farbe entfernen")}">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -278,7 +284,7 @@
             savePalette();
             renderPalette();
         }
-        toast("Farbe gespeichert");
+        toast(label("labelColorSaved", "Farbe gespeichert"));
     }
 
     function initEyeDropper() {
@@ -288,11 +294,11 @@
             els.screenPickerButton.disabled = true;
             els.screenPickerButton.classList.remove("color-btn-primary");
             els.screenPickerButton.classList.add("color-btn-soft");
-            els.supportNote.textContent = "Dein Browser unterstützt den Bildschirm-Eyedropper nicht. Nutze den Bild-Upload oder Chrome/Edge.";
+            els.supportNote.textContent = label("labelEyedropperUnsupported", "Dein Browser unterstützt den Bildschirm-Eyedropper nicht. Nutze den Bild-Upload oder Chrome/Edge.");
             return;
         }
 
-        els.supportNote.textContent = "Der Bildschirm-Eyedropper wird von deinem Browser unterstützt.";
+        els.supportNote.textContent = label("labelEyedropperSupported", "Der Bildschirm-Eyedropper wird von deinem Browser unterstützt.");
 
         els.screenPickerButton.addEventListener("click", async () => {
             try {
@@ -301,7 +307,7 @@
                 updateColor(result.sRGBHex);
                 addCurrentToPalette();
             } catch {
-                toast("Farbaufnahme abgebrochen");
+                toast(label("labelPickCancelled", "Farbaufnahme abgebrochen"));
             }
         });
     }
@@ -368,7 +374,7 @@
 
         els.clearPalette.addEventListener("click", () => {
             if (!state.palette.length) return;
-            if (!window.confirm("Palette wirklich leeren?")) return;
+            if (!window.confirm(label("labelClearConfirm", "Palette wirklich leeren?"))) return;
             state.palette = [];
             savePalette();
             renderPalette();

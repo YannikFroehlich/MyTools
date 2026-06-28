@@ -376,6 +376,26 @@ body.dark-mode .timer-preset-card {
     max-height: 270px;
     overflow: auto;
     padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--theme-accent-rgb), 0.72) rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.lap-list-wrapper::-webkit-scrollbar,
+.clock-settings-dialog::-webkit-scrollbar {
+    width: 10px;
+}
+
+.lap-list-wrapper::-webkit-scrollbar-track,
+.clock-settings-dialog::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background: rgba(var(--theme-accent-rgb), 0.12);
+}
+
+.lap-list-wrapper::-webkit-scrollbar-thumb,
+.clock-settings-dialog::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--theme-accent-start), var(--theme-accent-end)) border-box;
 }
 
 .lap-list {
@@ -906,4 +926,26 @@ body.custom-theme .clock-message,
 body.custom-theme .ringtone-option input:checked + span {
     border-color: var(--clock-border-soft);
     background: color-mix(in srgb, var(--theme-card-bg, #ffffff) 82%, var(--theme-accent-start) 18%);
+}
+
+body.dark-mode .world-clock-card,
+body.dark-mode .timer-preset-card,
+body.dark-mode .timer-save-form,
+body.dark-mode .timer-quick-set,
+body.dark-mode .ringtone-option span,
+body.dark-mode .custom-sound-upload {
+    color: var(--theme-card-text, var(--theme-text));
+    border-color: color-mix(in srgb, var(--theme-accent-start) 26%, transparent);
+    background:
+        linear-gradient(
+            145deg,
+            color-mix(in srgb, var(--theme-card-bg, #1f2937) 82%, var(--theme-accent-start) 18%),
+            color-mix(in srgb, var(--theme-card-bg, #1f2937) 92%, transparent)
+        );
+}
+
+body.dark-mode .world-clock-card strong,
+body.dark-mode .world-clock-card h3,
+body.dark-mode .timer-preset-card h3 {
+    color: var(--theme-card-text, var(--theme-text));
 }

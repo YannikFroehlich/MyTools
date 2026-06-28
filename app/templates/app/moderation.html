@@ -109,7 +109,7 @@
                             <strong>{{ item.label }}</strong>
                             <small>{{ item.kind }} &middot; {{ item.category }}</small>
                         </span>
-                        <select name="access_{{ item.key }}" aria-label="{% blocktranslate with label=item.label %}Zugriff fuer {{ label }}{% endblocktranslate %}">
+                        <select name="access_{{ item.key }}" aria-label="{% blocktranslate with label=item.label %}Zugriff für {{ label }}{% endblocktranslate %}">
                             {% for value, label in tool_access_choices %}
                                 <option value="{{ value }}" {% if value == item.access_level %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
