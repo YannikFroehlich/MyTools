@@ -14,6 +14,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from ..models import (
     BattleshipGame,
+    ChatMessage,
     ChatRoom,
     ConnectFourGame,
     CookieClickerHighScore,
@@ -33,6 +34,7 @@ from ..models import (
     StadtLandFlussPlayer,
     Note,
     TicTacToeGame,
+    ToolFavorite,
     UnoGame,
     UnoPlayer,
     UserBlock,
@@ -47,6 +49,7 @@ from ..image_optimization import (
     optimize_uploaded_image,
 )
 from ..notification_utils import invalidate_notification_cache
+from ..platform_utils import resolve_tools
 from ..presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
 
 User = get_user_model()
@@ -559,6 +562,89 @@ def get_friend_activity(profile_user, viewer):
     return activity
 
 
+def get_profile_favorite_tools(request, profile_user, limit=6):
+    favorite_keys = list(
+        ToolFavorite.objects
+        .filter(user=profile_user)
+        .values_list("tool_key", flat=True)[: max(limit * 2, limit)]
+    )
+
+    if not favorite_keys:
+        return []
+
+    favorite_key_set = set(favorite_keys)
+    tools_by_key = {
+        tool["key"]: tool
+        for tool in resolve_tools(request, favorite_key_set)
+        if tool.get("is_favorite")
+    }
+    return [tools_by_key[key] for key in favorite_keys if key in tools_by_key][:limit]
+
+
+def get_profile_recent_activity(request, profile_user, *, include_private=False, limit=6):
+    if not include_private:
+        return []
+
+    is_self = request.user.is_authenticated and request.user == profile_user
+    items = []
+
+    for note in Note.objects.filter(user=profile_user, is_archived=False).order_by("-updated_at")[:3]:
+        items.append({
+            "icon": "fa-regular fa-note-sticky",
+            "title": (note.title or _("Unbenannte Notiz")) if is_self else _("Notiz"),
+            "meta": _("Notiz aktualisiert"),
+            "time": timesince(note.updated_at),
+            "timestamp": note.updated_at,
+            "url": reverse("note_detail", args=[note.pk]) if is_self else "",
+        })
+
+    for share in FileShare.objects.filter(owner=profile_user).order_by("-created_at")[:3]:
+        items.append({
+            "icon": share.icon_class,
+            "title": share.original_name if is_self else _("Datei"),
+            "meta": _("Datei hochgeladen"),
+            "time": timesince(share.created_at),
+            "timestamp": share.created_at,
+            "url": reverse("file_share") if is_self else "",
+        })
+
+    for message in (
+        ChatMessage.objects
+        .select_related("room")
+        .filter(sender=profile_user)
+        .order_by("-created_at")[:3]
+    ):
+        items.append({
+            "icon": "fa-solid fa-comments",
+            "title": message.room.title_for(profile_user) if is_self else _("Chat"),
+            "meta": _("Chatnachricht geschrieben"),
+            "time": timesince(message.created_at),
+            "timestamp": message.created_at,
+            "url": reverse("chat") if is_self else "",
+        })
+
+    favorite_tools = get_profile_favorite_tools(request, profile_user, limit=3)
+    favorite_created = {
+        favorite.tool_key: favorite.created_at
+        for favorite in ToolFavorite.objects.filter(user=profile_user, tool_key__in=[tool["key"] for tool in favorite_tools])
+    }
+    for tool in favorite_tools:
+        created_at = favorite_created.get(tool["key"])
+        if not created_at:
+            continue
+        items.append({
+            "icon": tool["icon"],
+            "title": tool["label"],
+            "meta": _("Tool favorisiert"),
+            "time": timesince(created_at),
+            "timestamp": created_at,
+            "url": tool["url"] if is_self else "",
+        })
+
+    items.sort(key=lambda item: item["timestamp"], reverse=True)
+    return items[:limit]
+
+
 def get_friendship_state(viewer, profile_user):
     if not viewer.is_authenticated or viewer == profile_user:
         return "self" if viewer == profile_user else "none"
@@ -758,6 +844,7 @@ def profile_view(request):
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=request.user).distinct().count()
     total_highscores_count = get_total_profile_highscores(request.user)
     achievement_summary = get_achievement_summary(request.user)
+    profile_favorite_tools = get_profile_favorite_tools(request, request.user)
 
     return render(request, "app/profile.html", {
         "form": form,
@@ -776,6 +863,8 @@ def profile_view(request):
             highscore_count=total_highscores_count,
             include_private=True,
         ),
+        "profile_favorite_tools": profile_favorite_tools,
+        "profile_recent_activity": get_profile_recent_activity(request, request.user, include_private=True),
         "gallery_form": ProfileGalleryImageForm(),
         "gallery_images": ProfileGalleryImage.objects.filter(user=request.user)[:12],
         "blocked_users": UserBlock.objects.select_related("blocked", "blocked__profile").filter(blocker=request.user)[:20],
@@ -853,9 +942,10 @@ def public_profile_view(request, user_id):
     friends_count = Friendship.accepted_for_user(profile_user).count()
     chat_rooms_count = ChatRoom.objects.filter(room_memberships__user=profile_user).distinct().count()
     total_highscores_count = get_total_profile_highscores(profile_user)
-    can_view_highscores = profile.privacy_show_highscores or can_view_private_profile_area(request.user, profile_user)
-    can_view_achievements = profile.privacy_show_achievements or can_view_private_profile_area(request.user, profile_user)
-    can_view_private_achievements = can_view_private_profile_area(request.user, profile_user)
+    can_view_private_area = can_view_private_profile_area(request.user, profile_user)
+    can_view_highscores = profile.privacy_show_highscores or can_view_private_area
+    can_view_achievements = profile.privacy_show_achievements or can_view_private_area
+    can_view_private_achievements = can_view_private_area
     achievement_summary = None
     if can_view_achievements:
         achievement_summary = get_achievement_summary(
@@ -872,10 +962,12 @@ def public_profile_view(request, user_id):
         "game_2048_highscore": get_profile_2048_highscore(profile_user) if can_view_highscores else None,
         "profile_game_cards": get_profile_game_cards(profile_user, profile) if can_view_highscores else [],
         "friendship_state": get_friendship_state(request.user, profile_user),
-        "friends_preview": get_friend_profiles(profile_user, limit=6) if profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user) else [],
-        "can_view_friends": profile.privacy_show_friends or can_view_private_profile_area(request.user, profile_user),
-        "can_use_chat_button": profile.privacy_show_chat_button or can_view_private_profile_area(request.user, profile_user),
+        "friends_preview": get_friend_profiles(profile_user, limit=6) if profile.privacy_show_friends or can_view_private_area else [],
+        "can_view_friends": profile.privacy_show_friends or can_view_private_area,
+        "can_use_chat_button": profile.privacy_show_chat_button or can_view_private_area,
         "friend_activity": get_friend_activity(profile_user, request.user),
+        "profile_favorite_tools": get_profile_favorite_tools(request, profile_user) if can_view_private_area else [],
+        "profile_recent_activity": get_profile_recent_activity(request, profile_user, include_private=can_view_private_area),
         "achievement_summary": achievement_summary,
         "profile_spotlight_stats": get_profile_spotlight_stats(
             profile_user,

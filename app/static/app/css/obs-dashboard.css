@@ -55,10 +55,7 @@ body.dark-mode .obs-dashboard-page {
     min-height: calc(100vh - 120px);
     padding: 2rem;
     color: var(--obs-text);
-    background:
-        radial-gradient(circle at top left, var(--obs-page-accent-one), transparent 35%),
-        radial-gradient(circle at bottom right, var(--obs-page-accent-two), transparent 35%),
-        var(--obs-bg);
+    background: transparent;
     border-radius: 18px;
 }
 

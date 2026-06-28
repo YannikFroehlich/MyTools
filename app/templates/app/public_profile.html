@@ -14,8 +14,8 @@
 
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/profile.css' %}">
-    <link rel="stylesheet" href="{% static 'app/css/users.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/profile.css' %}?v=20260628-profile-shell-theme-sync">
+    <link rel="stylesheet" href="{% static 'app/css/users.css' %}?v=20260628-users-box-specificity">
 {% endblock %}
 
 
@@ -229,6 +229,41 @@
         </article>
 
 
+        {% if profile_favorite_tools %}
+        <article class="public-profile-card public-profile-tools-card">
+            <p class="users-kicker">{% translate "Lieblings-Tools" %}</p>
+            <h2>{% translate "Favoriten" %}</h2>
+            <div class="public-profile-tool-grid">
+                {% for tool in profile_favorite_tools %}
+                    <a href="{{ tool.url }}" class="public-profile-tool">
+                        <i class="{{ tool.icon }}"></i>
+                        <span>
+                            <strong>{{ tool.label }}</strong>
+                            <small>{{ tool.category }}</small>
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </article>
+        {% endif %}
+
+        {% if profile_recent_activity %}
+        <article class="public-profile-card public-profile-timeline-card">
+            <p class="users-kicker">{% translate "Aktivität" %}</p>
+            <h2>{% translate "Letzte Aktivitäten" %}</h2>
+            <div class="public-profile-timeline">
+                {% for activity in profile_recent_activity %}
+                    <div class="public-profile-timeline-row">
+                        <i class="{{ activity.icon }}"></i>
+                        <span>
+                            <strong>{{ activity.title }}</strong>
+                            <small>{{ activity.meta }} · {{ activity.time }}</small>
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+        {% endif %}
 
 
         {% if gallery_images %}
