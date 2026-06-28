@@ -281,7 +281,7 @@ class ModelTests(BaseTestCase):
             details={"rounds": 5},
         )
 
-        self.assertEqual(str(score), f"{self.user} · Reaktion · 250 ms")
+        self.assertEqual(str(score), f"{self.user} · {score.get_game_display()} · 250 ms")
 
     def test_human_benchmark_highscore_str_returns_user_game_and_score(self):
         highscore = HumanBenchmarkHighScore.objects.create(
@@ -292,7 +292,7 @@ class ModelTests(BaseTestCase):
             details={"accuracy": 97},
         )
 
-        self.assertEqual(str(highscore), f"{self.user} · Typing Test · 82 WPM")
+        self.assertEqual(str(highscore), f"{self.user} · {highscore.get_game_display()} · 82 WPM")
 
 
 class MultiplayerRoomCleanupTests(BaseTestCase):
