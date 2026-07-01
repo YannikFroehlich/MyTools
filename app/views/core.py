@@ -2251,7 +2251,47 @@ def drift_circuit(request):
 
 def snake_powerups(request):
     mark_active_game(request.user, "snake_powerups")
-    return render(request, "app/snake_powerups.html")
+    snake_text = {
+        "readyKicker": _("Bereit"),
+        "readyText": _("Starte ein schlichtes Snake ohne Effekte. Die Lüfter sollten dabei deutlich ruhiger bleiben."),
+        "pausedKicker": _("Pausiert"),
+        "pausedTitle": _("Pause"),
+        "pausedText": _("Drücke Fortsetzen oder die Leertaste."),
+        "resume": _("Fortsetzen"),
+        "start": _("Start"),
+        "pause": _("Pausieren"),
+        "settingsLocked": _("Einstellungen sind während des Runs gesperrt."),
+        "settingsHint": _("Änderungen gelten ab dem nächsten Start."),
+        "hitWall": _("Die Snake ist gegen die Wand gelaufen."),
+        "hitSnake": _("Die Snake hat sich selbst erwischt."),
+        "boardFull": _("Das Spielfeld ist voll. Stark gespielt!"),
+        "newHighscore": _("Neuer Highscore!"),
+        "gameOverKicker": _("Game Over"),
+        "gameOverTitle": _("Game Over"),
+        "scoreSaved": _("Dein Score wurde gespeichert."),
+        "fruitSingle": _("Frucht"),
+        "fruitPlural": _("Früchte"),
+        "lengthShort": _("Länge"),
+        "noHighscore": _("Noch kein Highscore"),
+        "emptyHighscores": _("Noch keine Highscores gespielt."),
+        "speedLabels": {
+            "relaxed": _("Entspannt"),
+            "normal": _("Normal"),
+            "fast": _("Schnell"),
+            "turbo": _("Turbo"),
+        },
+        "spawnLabels": {
+            "slow": _("Ruhig"),
+            "normal": _("Standard"),
+            "high": _("Hoch"),
+            "instant": _("Sofort"),
+        },
+        "wallLabels": {
+            "wrap": _("Durchlaufen"),
+            "wall": _("Wände"),
+        },
+    }
+    return render(request, "app/snake_powerups.html", {"snake_text": snake_text})
 
 
 NEBULA_FORGE_SAVE_COOLDOWN_SECONDS = 60

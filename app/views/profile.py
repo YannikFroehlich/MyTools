@@ -67,7 +67,7 @@ PROFILE_GAME_CARD_DEFINITIONS = [
     {"key": "uno", "label": "Uno", "icon": "fa-solid fa-layer-group", "url_name": "uno_home"},
     {"key": "kniffel", "label": "Kniffel", "icon": "fa-solid fa-dice", "url_name": "kniffel_home"},
     {"key": "pong", "label": "Pong", "icon": "fa-solid fa-table-tennis-paddle-ball", "url_name": "pong_home"},
-    {"key": "snake_powerups", "label": "Snake Powerups", "icon": "fa-solid fa-bolt", "url_name": "snake-powerups"},
+    {"key": "snake_powerups", "label": "Snake", "icon": "fa-solid fa-staff-snake", "url_name": "snake-powerups"},
     {"key": "nebula_forge_tycoon", "label": "Nebula Forge Tycoon", "icon": "fa-solid fa-meteor", "url_name": "nebula-forge-tycoon"},
 ]
 PROFILE_GAME_CARD_DEFINITIONS_BY_KEY = {item["key"]: item for item in PROFILE_GAME_CARD_DEFINITIONS}
@@ -435,7 +435,7 @@ def _snake_powerups_card(user, definition):
     card = _base_game_card(definition)
     card["title"] = _("Arcade")
     card["is_empty"] = True
-    card["empty_text"] = _("Snake Powerups ist bereit für deinen ersten Lauf.")
+    card["empty_text"] = _("Snake ist bereit für deinen ersten Lauf.")
     return card
 
 

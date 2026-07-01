@@ -14495,3 +14495,116 @@ msgstr "Prestige"
 #~ msgid "Login und Registrierung sind aktuell gesperrt."
 #~ msgstr "Login and registration are currently blocked."
 
+
+# Snake simple game refresh
+
+msgid "Snake"
+msgstr "Snake"
+
+msgid "Schlichtes Snake"
+msgstr "Simple Snake"
+
+msgid "Leichtgewichtig, simpel und mit Highscores pro Einstellung."
+msgstr "Lightweight, simple, and with highscores per setting."
+
+msgid "Spielaktionen"
+msgstr "Game actions"
+
+msgid "Neues Spiel"
+msgstr "New game"
+
+msgid "Pausieren"
+msgstr "Pause"
+
+msgid "Snake Spielbereich"
+msgstr "Snake game area"
+
+msgid "Länge"
+msgstr "Length"
+
+msgid "Früchte"
+msgstr "Fruits"
+
+msgid "Snake Spielfeld"
+msgstr "Snake board"
+
+msgid "Starte ein schlichtes Snake ohne Effekte. Die Lüfter sollten dabei deutlich ruhiger bleiben."
+msgstr "Start a simple Snake without effects. The fans should stay noticeably quieter."
+
+msgid "Änderungen gelten ab dem nächsten Start."
+msgstr "Changes apply from the next start."
+
+msgid "Spielfeldgröße"
+msgstr "Board size"
+
+msgid "Entspannt"
+msgstr "Relaxed"
+
+msgid "Turbo"
+msgstr "Turbo"
+
+msgid "Früchte gleichzeitig"
+msgstr "Fruits at once"
+
+msgid "Spawnrate"
+msgstr "Spawn rate"
+
+msgid "Ruhig"
+msgstr "Calm"
+
+msgid "Sofort"
+msgstr "Instant"
+
+msgid "Durchlaufen"
+msgstr "Wrap around"
+
+msgid "Wände"
+msgstr "Walls"
+
+msgid "Score mit den dazugehörigen Settings."
+msgstr "Score with the matching settings."
+
+msgid "Aktuelle Einstellung"
+msgstr "Current setting"
+
+msgid "Pfeiltasten oder WASD. Leertaste pausiert. Auf Touch-Geräten kannst du wischen."
+msgstr "Arrow keys or WASD. Space pauses. On touch devices you can swipe."
+
+msgid "Drücke Fortsetzen oder die Leertaste."
+msgstr "Press resume or the space bar."
+
+msgid "Fortsetzen"
+msgstr "Resume"
+
+msgid "Einstellungen sind während des Runs gesperrt."
+msgstr "Settings are locked during the run."
+
+msgid "Die Snake ist gegen die Wand gelaufen."
+msgstr "The snake hit the wall."
+
+msgid "Die Snake hat sich selbst erwischt."
+msgstr "The snake caught itself."
+
+msgid "Das Spielfeld ist voll. Stark gespielt!"
+msgstr "The board is full. Great game!"
+
+msgid "Game Over"
+msgstr "Game Over"
+
+msgid "Dein Score wurde gespeichert."
+msgstr "Your score has been saved."
+
+msgid "Frucht"
+msgstr "Fruit"
+
+msgid "Noch keine Highscores gespielt."
+msgstr "No highscores played yet."
+
+msgid "Solo Arcade Snake Highscore Score"
+msgstr "Solo Arcade Snake Highscore Score"
+
+msgid "spielt Snake"
+msgstr "playing Snake"
+
+msgid "Snake ist bereit für deinen ersten Lauf."
+msgstr "Snake is ready for your first run."
