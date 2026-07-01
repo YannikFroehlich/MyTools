@@ -1986,7 +1986,7 @@ class HomeViewTests(BaseTestCase):
         response = self.client.post(reverse("home"), {
             "action": "add_section",
             "section_name": "Server",
-            "section_color": "pink",
+            "section_color": "invalid-color",
         })
 
         self.assertRedirects(response, reverse("home"))
@@ -2336,7 +2336,7 @@ class HomeViewTests(BaseTestCase):
             "action": "add_widget",
             "widget_title": "",
             "widget_type": "kaputt",
-            "widget_color": "pink",
+            "widget_color": "invalid-color",
         })
 
         self.assertRedirects(response, reverse("home"))
