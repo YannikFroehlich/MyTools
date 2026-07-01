@@ -2016,6 +2016,72 @@ body.dark-mode .shortcut-remove-image-button {
     --shortcut-section-end: #dc2626;
 }
 
+.section-color-cyan .section-color-dot {
+    background: #06b6d4;
+    box-shadow: 0 0 0 5px rgba(6, 182, 212, 0.12);
+}
+
+.section-color-cyan {
+    --shortcut-section-rgb: 6, 182, 212;
+    --shortcut-section-start: #06b6d4;
+    --shortcut-section-end: #0891b2;
+}
+
+.section-color-teal .section-color-dot {
+    background: #14b8a6;
+    box-shadow: 0 0 0 5px rgba(20, 184, 166, 0.12);
+}
+
+.section-color-teal {
+    --shortcut-section-rgb: 20, 184, 166;
+    --shortcut-section-start: #14b8a6;
+    --shortcut-section-end: #0f766e;
+}
+
+.section-color-yellow .section-color-dot {
+    background: #eab308;
+    box-shadow: 0 0 0 5px rgba(234, 179, 8, 0.14);
+}
+
+.section-color-yellow {
+    --shortcut-section-rgb: 234, 179, 8;
+    --shortcut-section-start: #eab308;
+    --shortcut-section-end: #ca8a04;
+}
+
+.section-color-pink .section-color-dot {
+    background: #ec4899;
+    box-shadow: 0 0 0 5px rgba(236, 72, 153, 0.12);
+}
+
+.section-color-pink {
+    --shortcut-section-rgb: 236, 72, 153;
+    --shortcut-section-start: #ec4899;
+    --shortcut-section-end: #db2777;
+}
+
+.section-color-indigo .section-color-dot {
+    background: #6366f1;
+    box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.12);
+}
+
+.section-color-indigo {
+    --shortcut-section-rgb: 99, 102, 241;
+    --shortcut-section-start: #6366f1;
+    --shortcut-section-end: #4f46e5;
+}
+
+.section-color-gray .section-color-dot {
+    background: #64748b;
+    box-shadow: 0 0 0 5px rgba(100, 116, 139, 0.12);
+}
+
+.section-color-gray {
+    --shortcut-section-rgb: 100, 116, 139;
+    --shortcut-section-start: #64748b;
+    --shortcut-section-end: #475569;
+}
+
 .section-status-badge {
     display: inline-flex;
     align-items: center;
@@ -2286,6 +2352,36 @@ body.dark-mode .shortcut-remove-image-button {
 .section-color-option.red {
     --picker-rgb: 239, 68, 68;
     --picker-color: #ef4444;
+}
+
+.section-color-option.cyan {
+    --picker-rgb: 6, 182, 212;
+    --picker-color: #06b6d4;
+}
+
+.section-color-option.teal {
+    --picker-rgb: 20, 184, 166;
+    --picker-color: #14b8a6;
+}
+
+.section-color-option.yellow {
+    --picker-rgb: 234, 179, 8;
+    --picker-color: #eab308;
+}
+
+.section-color-option.pink {
+    --picker-rgb: 236, 72, 153;
+    --picker-color: #ec4899;
+}
+
+.section-color-option.indigo {
+    --picker-rgb: 99, 102, 241;
+    --picker-color: #6366f1;
+}
+
+.section-color-option.gray {
+    --picker-rgb: 100, 116, 139;
+    --picker-color: #64748b;
 }
 
 .section-color-option span:hover {
@@ -2727,6 +2823,12 @@ body.dark-mode .shortcuts-grid.drag-over {
 .widget-color-purple { --widget-rgb: 124, 58, 237; }
 .widget-color-orange { --widget-rgb: 249, 115, 22; }
 .widget-color-red { --widget-rgb: 239, 68, 68; }
+.widget-color-cyan { --widget-rgb: 6, 182, 212; }
+.widget-color-teal { --widget-rgb: 20, 184, 166; }
+.widget-color-yellow { --widget-rgb: 234, 179, 8; }
+.widget-color-pink { --widget-rgb: 236, 72, 153; }
+.widget-color-indigo { --widget-rgb: 99, 102, 241; }
+.widget-color-gray { --widget-rgb: 100, 116, 139; }
 
 .widget-topbar,
 .weather-widget-content,
@@ -5093,6 +5195,48 @@ body.dark-mode .home-undo-toast-copy span {
     --shortcut-text: #ffffff;
 }
 
+.shortcut-card.shortcut-color-cyan {
+    --shortcut-rgb: 6, 182, 212;
+    --shortcut-start: #06b6d4;
+    --shortcut-end: #0891b2;
+    --shortcut-text: #ffffff;
+}
+
+.shortcut-card.shortcut-color-teal {
+    --shortcut-rgb: 20, 184, 166;
+    --shortcut-start: #14b8a6;
+    --shortcut-end: #0f766e;
+    --shortcut-text: #ffffff;
+}
+
+.shortcut-card.shortcut-color-yellow {
+    --shortcut-rgb: 234, 179, 8;
+    --shortcut-start: #eab308;
+    --shortcut-end: #ca8a04;
+    --shortcut-text: #172033;
+}
+
+.shortcut-card.shortcut-color-pink {
+    --shortcut-rgb: 236, 72, 153;
+    --shortcut-start: #ec4899;
+    --shortcut-end: #db2777;
+    --shortcut-text: #ffffff;
+}
+
+.shortcut-card.shortcut-color-indigo {
+    --shortcut-rgb: 99, 102, 241;
+    --shortcut-start: #6366f1;
+    --shortcut-end: #4f46e5;
+    --shortcut-text: #ffffff;
+}
+
+.shortcut-card.shortcut-color-gray {
+    --shortcut-rgb: 100, 116, 139;
+    --shortcut-start: #64748b;
+    --shortcut-end: #475569;
+    --shortcut-text: #ffffff;
+}
+
 .shortcut-card:not(.shortcut-favorite) {
     background:
         radial-gradient(circle at 18% 0%, rgba(var(--shortcut-rgb), 0.13), transparent 34%),
@@ -5673,4 +5817,517 @@ body.home-pointer-drag-active {
         right: -0.35rem;
         width: min(220px, calc(100vw - 1rem));
     }
+}
+
+/* ───────────────── LUNORA HOME MODAL THEME FIXES ───────────────── */
+body.theme-lunora-mode .shortcut-modal {
+    background: rgba(42, 31, 22, 0.44);
+    backdrop-filter: blur(12px) saturate(1.08);
+    -webkit-backdrop-filter: blur(12px) saturate(1.08);
+}
+
+body.theme-lunora-mode .shortcut-modal-content {
+    color: var(--lunora-theme-ink);
+    border-color: var(--lunora-theme-border);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.72), transparent 34%),
+        radial-gradient(circle at 90% 12%, rgba(var(--theme-accent-rgb), 0.18), transparent 38%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.94), rgba(248, 238, 224, 0.88));
+    box-shadow:
+        0 28px 70px rgba(91, 64, 35, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    scrollbar-color: rgba(183, 138, 85, 0.78) rgba(156, 119, 77, 0.14);
+}
+
+body.theme-lunora-mode .shortcut-modal-content::-webkit-scrollbar-track {
+    background: rgba(156, 119, 77, 0.12);
+}
+
+body.theme-lunora-mode .shortcut-modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #e7c894, #b78a55);
+    border-color: rgba(255, 250, 244, 0.72);
+    background-clip: content-box;
+}
+
+body.theme-lunora-mode .shortcut-modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #f0d8ad, #a97940);
+    background-clip: content-box;
+}
+
+body.theme-lunora-mode .shortcut-modal-header h3,
+body.theme-lunora-mode #section-modal-title,
+body.theme-lunora-mode #shortcut-modal-title {
+    color: var(--lunora-theme-ink);
+}
+
+body.theme-lunora-mode .shortcut-modal-header button {
+    color: var(--lunora-theme-muted);
+}
+
+body.theme-lunora-mode .shortcut-modal-header button:hover {
+    color: #b45309;
+    background: rgba(var(--theme-accent-rgb), 0.12);
+}
+
+body.theme-lunora-mode #shortcut-modal-section-name,
+body.theme-lunora-mode .widget-weather-location-field small,
+body.theme-lunora-mode .clock-option-heading small,
+body.theme-lunora-mode .shortcut-file-name {
+    color: var(--lunora-theme-muted);
+}
+
+body.theme-lunora-mode .shortcut-form label,
+body.theme-lunora-mode .icon-picker-title,
+body.theme-lunora-mode .section-color-picker > span,
+body.theme-lunora-mode .clock-option-heading > span {
+    color: var(--lunora-theme-ink);
+}
+
+body.theme-lunora-mode .shortcut-form input,
+body.theme-lunora-mode .shortcut-form select,
+body.theme-lunora-mode .shortcut-file-picker,
+body.theme-lunora-mode .section-color-option span,
+body.theme-lunora-mode .icon-option span,
+body.theme-lunora-mode .shortcut-form .clock-option-card {
+    color: var(--lunora-theme-ink);
+    border-color: rgba(156, 119, 77, 0.24);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 250, 244, 0.36)),
+        rgba(255, 250, 244, 0.48);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+body.theme-lunora-mode .shortcut-form input::placeholder {
+    color: rgba(73, 57, 41, 0.52);
+}
+
+body.theme-lunora-mode .shortcut-form input:focus,
+body.theme-lunora-mode .shortcut-form select:focus {
+    border-color: rgba(183, 138, 85, 0.76);
+    box-shadow:
+        0 0 0 4px rgba(183, 138, 85, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+body.theme-lunora-mode .section-color-option span:hover,
+body.theme-lunora-mode .icon-option span:hover,
+body.theme-lunora-mode .shortcut-form .clock-option-card:hover {
+    border-color: rgba(183, 138, 85, 0.34);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(255, 245, 232, 0.48)),
+        rgba(183, 138, 85, 0.10);
+    box-shadow:
+        0 12px 26px rgba(91, 64, 35, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+body.theme-lunora-mode .section-color-option input:checked + span,
+body.theme-lunora-mode .icon-option input:checked + span,
+body.theme-lunora-mode .shortcut-form .clock-option-card.is-active {
+    color: var(--lunora-theme-ink);
+    border-color: rgba(var(--picker-rgb, var(--theme-accent-rgb)), 0.74);
+    background:
+        radial-gradient(circle at 88% 16%, rgba(var(--picker-rgb, var(--theme-accent-rgb)), 0.20), transparent 34%),
+        linear-gradient(135deg, rgba(var(--picker-rgb, var(--theme-accent-rgb)), 0.14), rgba(255, 250, 244, 0.72));
+    box-shadow:
+        0 0 0 3px rgba(var(--picker-rgb, var(--theme-accent-rgb)), 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+body.theme-lunora-mode .section-color-option.theme input:checked + span,
+body.theme-lunora-mode .icon-option input:checked + span,
+body.theme-lunora-mode .shortcut-form .clock-option-card.is-active {
+    border-color: rgba(183, 138, 85, 0.76);
+    background:
+        radial-gradient(circle at 88% 16%, rgba(231, 200, 148, 0.24), transparent 34%),
+        linear-gradient(135deg, rgba(183, 138, 85, 0.18), rgba(255, 250, 244, 0.72));
+    box-shadow:
+        0 0 0 3px rgba(183, 138, 85, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+body.theme-lunora-mode .icon-option span i,
+body.theme-lunora-mode .shortcut-file-button {
+    color: #8a5d28;
+}
+
+body.theme-lunora-mode .shortcut-file-button {
+    background: rgba(var(--theme-accent-rgb), 0.14);
+}
+
+body.theme-lunora-mode .shortcut-file-picker:hover .shortcut-file-button {
+    background: rgba(var(--theme-accent-rgb), 0.20);
+}
+
+body.theme-lunora-mode .shortcut-form > button[type="submit"],
+body.theme-lunora-mode #widget-submit-button,
+body.theme-lunora-mode #section-submit-button {
+    color: #fffaf2;
+    background: linear-gradient(135deg, #b78a55, #e7c894);
+    box-shadow:
+        0 16px 32px rgba(91, 64, 35, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.36);
+}
+
+body.theme-lunora-mode .shortcut-form > button[type="submit"]:hover,
+body.theme-lunora-mode #widget-submit-button:hover,
+body.theme-lunora-mode #section-submit-button:hover {
+    box-shadow:
+        0 20px 38px rgba(91, 64, 35, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    filter: brightness(1.03);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-modal {
+    background: rgba(13, 8, 5, 0.58);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-modal-content {
+    color: var(--lunora-theme-ink);
+    border-color: var(--lunora-theme-border);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(255, 237, 213, 0.08), transparent 34%),
+        radial-gradient(circle at 90% 12%, rgba(231, 200, 148, 0.12), transparent 40%),
+        linear-gradient(145deg, rgba(43, 32, 23, 0.96), rgba(20, 14, 10, 0.94));
+    box-shadow:
+        0 30px 76px rgba(0, 0, 0, 0.52),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    scrollbar-color: rgba(231, 200, 148, 0.74) rgba(231, 200, 148, 0.12);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-modal-content::-webkit-scrollbar-track {
+    background: rgba(231, 200, 148, 0.10);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #e7c894, #b78a55);
+    border-color: rgba(20, 14, 10, 0.82);
+    background-clip: content-box;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-modal-header h3,
+body.dark-mode.theme-lunora-mode #section-modal-title,
+body.dark-mode.theme-lunora-mode #shortcut-modal-title,
+body.dark-mode.theme-lunora-mode .shortcut-form label,
+body.dark-mode.theme-lunora-mode .icon-picker-title,
+body.dark-mode.theme-lunora-mode .section-color-picker > span,
+body.dark-mode.theme-lunora-mode .clock-option-heading > span {
+    color: var(--lunora-theme-ink);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-modal-header button,
+body.dark-mode.theme-lunora-mode #shortcut-modal-section-name,
+body.dark-mode.theme-lunora-mode .widget-weather-location-field small,
+body.dark-mode.theme-lunora-mode .clock-option-heading small,
+body.dark-mode.theme-lunora-mode .shortcut-file-name {
+    color: var(--lunora-theme-muted);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-modal-header button:hover {
+    color: #f0d8ad;
+    background: rgba(231, 200, 148, 0.12);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-form input,
+body.dark-mode.theme-lunora-mode .shortcut-form select,
+body.dark-mode.theme-lunora-mode .shortcut-file-picker,
+body.dark-mode.theme-lunora-mode .section-color-option span,
+body.dark-mode.theme-lunora-mode .icon-option span,
+body.dark-mode.theme-lunora-mode .shortcut-form .clock-option-card {
+    color: var(--lunora-theme-ink);
+    border-color: rgba(231, 200, 148, 0.16);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(231, 200, 148, 0.035)),
+        rgba(29, 21, 15, 0.72);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-form input::placeholder {
+    color: rgba(255, 240, 221, 0.52);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-form input:focus,
+body.dark-mode.theme-lunora-mode .shortcut-form select:focus {
+    border-color: rgba(231, 200, 148, 0.72);
+    box-shadow:
+        0 0 0 4px rgba(231, 200, 148, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .section-color-option span:hover,
+body.dark-mode.theme-lunora-mode .icon-option span:hover,
+body.dark-mode.theme-lunora-mode .shortcut-form .clock-option-card:hover {
+    border-color: rgba(231, 200, 148, 0.24);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(231, 200, 148, 0.055)),
+        rgba(44, 32, 22, 0.82);
+    box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.075);
+}
+
+body.dark-mode.theme-lunora-mode .section-color-option input:checked + span,
+body.dark-mode.theme-lunora-mode .icon-option input:checked + span,
+body.dark-mode.theme-lunora-mode .shortcut-form .clock-option-card.is-active {
+    color: var(--lunora-theme-ink);
+    border-color: rgba(var(--picker-rgb, var(--theme-accent-end-rgb)), 0.76);
+    background:
+        radial-gradient(circle at 88% 16%, rgba(var(--picker-rgb, var(--theme-accent-end-rgb)), 0.26), transparent 34%),
+        linear-gradient(135deg, rgba(var(--picker-rgb, var(--theme-accent-end-rgb)), 0.16), rgba(43, 32, 23, 0.74));
+    box-shadow:
+        0 0 0 3px rgba(var(--picker-rgb, var(--theme-accent-end-rgb)), 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .section-color-option.theme input:checked + span,
+body.dark-mode.theme-lunora-mode .icon-option input:checked + span,
+body.dark-mode.theme-lunora-mode .shortcut-form .clock-option-card.is-active {
+    border-color: rgba(231, 200, 148, 0.76);
+    background:
+        radial-gradient(circle at 88% 16%, rgba(231, 200, 148, 0.22), transparent 34%),
+        linear-gradient(135deg, rgba(183, 138, 85, 0.18), rgba(43, 32, 23, 0.74));
+    box-shadow:
+        0 0 0 3px rgba(231, 200, 148, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .icon-option span i,
+body.dark-mode.theme-lunora-mode .shortcut-file-button {
+    color: #e7c894;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-file-button {
+    background: rgba(231, 200, 148, 0.12);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-file-picker:hover .shortcut-file-button {
+    background: rgba(231, 200, 148, 0.18);
+}
+
+@media (max-width: 560px) {
+    body.theme-lunora-mode .shortcut-modal-header {
+        border-color: rgba(156, 119, 77, 0.16);
+        background: rgba(255, 250, 244, 0.88);
+    }
+
+    body.theme-lunora-mode .shortcut-modal-header::before {
+        background: rgba(156, 119, 77, 0.28);
+    }
+
+    body.dark-mode.theme-lunora-mode .shortcut-modal-header {
+        border-color: rgba(231, 200, 148, 0.14);
+        background: rgba(31, 23, 16, 0.92);
+    }
+
+    body.dark-mode.theme-lunora-mode .shortcut-modal-header::before {
+        background: rgba(231, 200, 148, 0.26);
+    }
+
+    body.theme-lunora-mode .shortcut-form > button[type="submit"],
+    body.theme-lunora-mode #widget-submit-button,
+    body.theme-lunora-mode #section-submit-button {
+        box-shadow:
+            0 14px 30px rgba(91, 64, 35, 0.20),
+            0 -10px 24px rgba(255, 250, 244, 0.70);
+    }
+
+    body.dark-mode.theme-lunora-mode .shortcut-form > button[type="submit"],
+    body.dark-mode.theme-lunora-mode #widget-submit-button,
+    body.dark-mode.theme-lunora-mode #section-submit-button {
+        box-shadow:
+            0 14px 30px rgba(0, 0, 0, 0.34),
+            0 -10px 24px rgba(17, 11, 7, 0.78);
+    }
+}
+
+
+/* ───────────────── LUNORA SHORTCUT MENU THEME FIX ───────────────── */
+body.theme-lunora-mode .shortcut-menu-toggle {
+    color: #8a5d28;
+    border-color: rgba(156, 119, 77, 0.28);
+    background:
+        radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.78), transparent 52%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.96), rgba(245, 232, 210, 0.88));
+    box-shadow:
+        0 10px 24px rgba(91, 64, 35, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+body.theme-lunora-mode .shortcut-menu-toggle:hover,
+body.theme-lunora-mode .shortcut-menu-toggle:focus-visible,
+body.theme-lunora-mode .shortcut-card.actions-open .shortcut-menu-toggle {
+    color: #6d451d;
+    background:
+        radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.86), transparent 52%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.98), rgba(231, 200, 148, 0.94));
+    box-shadow:
+        0 14px 28px rgba(91, 64, 35, 0.18),
+        0 0 0 3px rgba(183, 138, 85, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+body.theme-lunora-mode .shortcut-actions-menu {
+    border-color: rgba(156, 119, 77, 0.22);
+    background:
+        radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.86), transparent 38%),
+        radial-gradient(circle at 100% 18%, rgba(231, 200, 148, 0.22), transparent 44%),
+        linear-gradient(145deg, rgba(255, 250, 244, 0.97), rgba(244, 235, 220, 0.95));
+    box-shadow:
+        0 22px 44px rgba(91, 64, 35, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+body.theme-lunora-mode .shortcut-menu-item,
+body.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form button,
+body.theme-lunora-mode .shortcut-card-actions .favorite-shortcut-form button,
+body.theme-lunora-mode .shortcut-card-actions .edit-shortcut-button {
+    color: #4d3117 !important;
+}
+
+body.theme-lunora-mode .shortcut-menu-item i {
+    color: #9b6a35 !important;
+}
+
+body.theme-lunora-mode .shortcut-menu-item:hover,
+body.theme-lunora-mode .shortcut-menu-item:focus-visible,
+body.theme-lunora-mode .shortcut-card-actions .favorite-shortcut-form button:hover,
+body.theme-lunora-mode .shortcut-card-actions .edit-shortcut-button:hover {
+    color: #4b2e15 !important;
+    background: rgba(183, 138, 85, 0.14) !important;
+}
+
+body.theme-lunora-mode .shortcut-menu-item:hover i,
+body.theme-lunora-mode .shortcut-menu-item:focus-visible i {
+    color: #7d5023 !important;
+}
+
+body.theme-lunora-mode .shortcut-drag-handle.shortcut-menu-item,
+body.theme-lunora-mode .shortcut-drag-handle.shortcut-menu-item:hover,
+body.theme-lunora-mode .shortcut-drag-handle.shortcut-menu-item:focus-visible {
+    background: transparent !important;
+}
+
+body.theme-lunora-mode .shortcut-card.shortcut-favorite .favorite-shortcut-form .shortcut-menu-item,
+body.theme-lunora-mode .shortcut-card.shortcut-favorite .favorite-shortcut-form .shortcut-menu-item i {
+    color: #b77d1a !important;
+}
+
+body.theme-lunora-mode .shortcut-menu-danger,
+body.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger {
+    color: #b8404d !important;
+}
+
+body.theme-lunora-mode .shortcut-menu-danger i,
+body.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger i {
+    color: #d95969 !important;
+}
+
+body.theme-lunora-mode .shortcut-menu-danger:hover,
+body.theme-lunora-mode .shortcut-menu-danger:focus-visible,
+body.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:hover,
+body.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:focus-visible {
+    color: #942a38 !important;
+    background: rgba(217, 89, 105, 0.12) !important;
+}
+
+body.theme-lunora-mode .shortcut-menu-danger:hover i,
+body.theme-lunora-mode .shortcut-menu-danger:focus-visible i,
+body.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:hover i,
+body.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:focus-visible i {
+    color: #b8404d !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-toggle {
+    color: #f0d8ad;
+    border-color: rgba(231, 200, 148, 0.20);
+    background:
+        radial-gradient(circle at 30% 22%, rgba(255, 244, 224, 0.10), transparent 52%),
+        linear-gradient(145deg, rgba(42, 31, 22, 0.96), rgba(18, 12, 8, 0.92));
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.30),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-toggle:hover,
+body.dark-mode.theme-lunora-mode .shortcut-menu-toggle:focus-visible,
+body.dark-mode.theme-lunora-mode .shortcut-card.actions-open .shortcut-menu-toggle {
+    color: #fff3dc;
+    background:
+        radial-gradient(circle at 30% 22%, rgba(255, 244, 224, 0.14), transparent 52%),
+        linear-gradient(145deg, rgba(56, 40, 28, 0.98), rgba(27, 18, 13, 0.96));
+    box-shadow:
+        0 16px 30px rgba(0, 0, 0, 0.34),
+        0 0 0 3px rgba(231, 200, 148, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-actions-menu {
+    border-color: rgba(231, 200, 148, 0.18);
+    background:
+        radial-gradient(circle at 18% 0%, rgba(255, 240, 221, 0.08), transparent 38%),
+        radial-gradient(circle at 100% 18%, rgba(231, 200, 148, 0.10), transparent 44%),
+        linear-gradient(145deg, rgba(40, 29, 21, 0.98), rgba(17, 11, 7, 0.96));
+    box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.40),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-item,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form button,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .favorite-shortcut-form button,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .edit-shortcut-button {
+    color: #fff3de !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-item i {
+    color: #e7c894 !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-item:hover,
+body.dark-mode.theme-lunora-mode .shortcut-menu-item:focus-visible,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .favorite-shortcut-form button:hover,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .edit-shortcut-button:hover {
+    color: #fff7ea !important;
+    background: rgba(231, 200, 148, 0.14) !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-item:hover i,
+body.dark-mode.theme-lunora-mode .shortcut-menu-item:focus-visible i {
+    color: #f7dfb5 !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-drag-handle.shortcut-menu-item,
+body.dark-mode.theme-lunora-mode .shortcut-drag-handle.shortcut-menu-item:hover,
+body.dark-mode.theme-lunora-mode .shortcut-drag-handle.shortcut-menu-item:focus-visible {
+    background: transparent !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-card.shortcut-favorite .favorite-shortcut-form .shortcut-menu-item,
+body.dark-mode.theme-lunora-mode .shortcut-card.shortcut-favorite .favorite-shortcut-form .shortcut-menu-item i {
+    color: #f0c36e !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-danger,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger {
+    color: #ffd7dc !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-danger i,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger i {
+    color: #ff8897 !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-danger:hover,
+body.dark-mode.theme-lunora-mode .shortcut-menu-danger:focus-visible,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:hover,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:focus-visible {
+    color: #fff1f3 !important;
+    background: rgba(255, 136, 151, 0.16) !important;
+}
+
+body.dark-mode.theme-lunora-mode .shortcut-menu-danger:hover i,
+body.dark-mode.theme-lunora-mode .shortcut-menu-danger:focus-visible i,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:hover i,
+body.dark-mode.theme-lunora-mode .shortcut-card-actions .delete-shortcut-form .shortcut-menu-danger:focus-visible i {
+    color: #ffc5cf !important;
 }

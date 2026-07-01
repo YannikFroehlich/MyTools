@@ -1334,14 +1334,6 @@ def home(request):
                 return JsonResponse({"success": True, "deleted": "shortcut"})
             return redirect("home")
 
-        if action == "toggle_favorite":
-            shortcut_id = request.POST.get("shortcut_id")
-            shortcut = get_object_or_404(Shortcut, id=shortcut_id, user=user)
-
-            shortcut.is_favorite = not shortcut.is_favorite
-            shortcut.save()
-
-            return redirect("home")
 
     sections = list(
         ShortcutSection.objects

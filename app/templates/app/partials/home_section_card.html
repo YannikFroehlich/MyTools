@@ -89,7 +89,7 @@
         <div class="shortcuts-grid" data-section-id="{{ section.id }}">
             {% for shortcut in section.shortcuts.all %}
                 <div
-                    class="shortcut-card shortcut-color-{{ shortcut.color }} {% if shortcut.is_favorite %}shortcut-favorite{% endif %}"
+                    class="shortcut-card shortcut-color-{{ shortcut.color }}"
                     data-shortcut-id="{{ shortcut.id }}"
                     data-shortcut-name="{{ shortcut.name|escape }}"
                     data-shortcut-url="{{ shortcut.url|escape }}"
@@ -120,21 +120,6 @@
                                 <span>{% translate 'Bearbeiten' %}</span>
                             </button>
 
-                            <form method="post" class="favorite-shortcut-form">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="toggle_favorite">
-                                <input type="hidden" name="shortcut_id" value="{{ shortcut.id }}">
-
-                                <button type="submit" class="shortcut-menu-item" role="menuitem">
-                                    {% if shortcut.is_favorite %}
-                                        <i class="fa-solid fa-star"></i>
-                                        <span>{% translate 'Favorit entfernen' %}</span>
-                                    {% else %}
-                                        <i class="fa-regular fa-star"></i>
-                                        <span>{% translate 'Als Favorit markieren' %}</span>
-                                    {% endif %}
-                                </button>
-                            </form>
 
                             <form method="post" class="delete-shortcut-form">
                                 {% csrf_token %}
