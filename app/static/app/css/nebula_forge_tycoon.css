@@ -3660,3 +3660,300 @@ body:not(.dark-mode) .nft-page .nft-tab-panel[data-panel="prestige"] .nft-presti
     color: rgba(19, 32, 56, 0.64);
     background: rgba(148, 163, 184, 0.36);
 }
+
+
+/* Prestige shop repair: use one dedicated scroll container and a self-contained node layout.
+   The Prestige tree no longer inherits the generic shop-list sizing/containment rules, so
+   action buttons cannot paint over the next node and the scrollbar starts at the top of the tab. */
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding-right: 0.28rem;
+    scrollbar-color: rgba(var(--theme-accent-rgb), 0.72) rgba(var(--theme-accent-rgb), 0.12);
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active::-webkit-scrollbar {
+    width: 10px;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active::-webkit-scrollbar-track {
+    margin-block: 0;
+    border-radius: 999px;
+    background: rgba(var(--theme-accent-rgb), 0.1);
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--theme-accent-start), var(--theme-accent-end));
+    background-clip: content-box;
+    box-shadow: 0 6px 16px rgba(var(--theme-accent-rgb), 0.22);
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--theme-accent-end), var(--theme-accent-start));
+    background-clip: content-box;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-tree-list {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-direction: column;
+    gap: 0.72rem;
+    width: 100%;
+    min-height: auto !important;
+    max-height: none !important;
+    margin-top: 0.72rem;
+    padding-right: 0;
+    overflow: visible !important;
+    contain: none !important;
+    scrollbar-width: auto;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card {
+    position: relative;
+    display: grid !important;
+    grid-template-columns: 2.55rem minmax(0, 1fr) minmax(5.9rem, 6.9rem) !important;
+    grid-template-areas: "icon main action";
+    grid-auto-rows: auto !important;
+    align-items: stretch !important;
+    gap: 0.64rem;
+    width: 100%;
+    height: auto !important;
+    min-height: 6.75rem !important;
+    border: 1px solid var(--nft-border);
+    border-radius: 18px;
+    padding: 0.74rem;
+    overflow: hidden !important;
+    contain: none !important;
+    text-align: left !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.04));
+    transition: transform 0.16s ease, border-color 0.16s ease, opacity 0.16s ease, filter 0.16s ease;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    border-radius: 18px 0 0 18px;
+    background: linear-gradient(180deg, var(--theme-accent-start), var(--theme-accent-end));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card.is-affordable::before,
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card.is-maxed::before {
+    opacity: 1;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card.is-affordable {
+    border-color: rgba(var(--theme-accent-rgb), 0.45);
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card.is-maxed {
+    border-color: rgba(134, 239, 172, 0.38);
+    background: linear-gradient(135deg, rgba(134, 239, 172, 0.11), rgba(255, 255, 255, 0.045));
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card.is-locked,
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card.is-unaffordable {
+    opacity: 0.82;
+    filter: grayscale(0.26) saturate(0.94);
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-icon {
+    grid-area: icon;
+    display: grid;
+    place-items: center;
+    align-self: start;
+    width: 2.55rem;
+    height: 2.55rem;
+    margin: 0;
+    border-radius: 0.95rem;
+    color: #08111f;
+    background: linear-gradient(135deg, var(--nft-accent), var(--nft-accent-2));
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-main {
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+    gap: 0.24rem;
+    text-align: left !important;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.32rem 0.45rem;
+    width: 100%;
+    min-width: 0;
+    text-align: left !important;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-title {
+    min-width: 0;
+    color: var(--nft-text);
+    font-size: 0.95rem;
+    font-weight: 950;
+    line-height: 1.16;
+    overflow-wrap: anywhere;
+    text-align: left !important;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-level {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+    white-space: nowrap;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-description {
+    width: 100%;
+    margin: 0;
+    color: var(--nft-muted);
+    font-size: 0.76rem;
+    font-weight: 720;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+    text-align: left !important;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-pills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.28rem;
+    width: 100%;
+    min-width: 0;
+    margin-top: 0.14rem;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-pills span,
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-level {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid var(--nft-border);
+    border-radius: 999px;
+    padding: 0.15rem 0.46rem;
+    color: var(--nft-muted);
+    font-size: 0.64rem;
+    font-weight: 900;
+    line-height: 1.18;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-pills span:first-child {
+    color: var(--nft-text);
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button {
+    grid-area: action !important;
+    align-self: stretch;
+    justify-self: stretch !important;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.12rem;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 3.2rem;
+    border: 0;
+    border-radius: 14px;
+    padding: 0.52rem 0.58rem;
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    font-weight: 950;
+    line-height: 1.05;
+    white-space: normal;
+    box-shadow: 0 10px 26px rgba(var(--theme-accent-rgb), 0.22);
+    cursor: pointer;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button strong,
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button small {
+    display: block;
+    max-width: 100%;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button strong {
+    font-size: 0.86rem;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button small {
+    font-size: 0.6rem;
+    font-weight: 900;
+    opacity: 0.78;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button:disabled {
+    cursor: not-allowed;
+}
+
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button.is-unaffordable,
+.nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button.is-maxed {
+    color: rgba(246, 248, 255, 0.72);
+    background: rgba(148, 163, 184, 0.30);
+    box-shadow: none;
+}
+
+body:not(.dark-mode) .nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card {
+    background: rgba(255, 255, 255, 0.78);
+}
+
+body:not(.dark-mode) .nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card.is-maxed {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.13), rgba(255, 255, 255, 0.82));
+}
+
+body:not(.dark-mode) .nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button.is-unaffordable,
+body:not(.dark-mode) .nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button.is-maxed {
+    color: rgba(19, 32, 56, 0.66);
+    background: rgba(148, 163, 184, 0.34);
+}
+
+@media (max-width: 430px) {
+    .nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-card {
+        grid-template-columns: 2.4rem minmax(0, 1fr) !important;
+        grid-template-areas:
+            "icon main"
+            "action action";
+        min-height: 0 !important;
+        gap: 0.58rem;
+        padding: 0.68rem;
+    }
+
+    .nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-icon {
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 0.86rem;
+    }
+
+    .nft-page .nft-tab-panel[data-panel="prestige"].is-active .nft-prestige-node-button {
+        min-height: 2.55rem;
+    }
+}

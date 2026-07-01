@@ -634,6 +634,7 @@
         researchCount: document.getElementById("nftResearchCount"),
         researchActive: document.getElementById("nftResearchActive"),
         prestigeTree: document.getElementById("nftPrestigeTree"),
+        prestigePanel: document.querySelector('[data-panel="prestige"]'),
         prestigeTreeCount: document.getElementById("nftPrestigeTreeCount"),
         prestigeCoresAvailable: document.getElementById("nftPrestigeCoresAvailable"),
         prestigeCoresSpent: document.getElementById("nftPrestigeCoresSpent"),
@@ -2512,7 +2513,7 @@
         }
 
         if ((force || prestigeKey !== lastPrestigeTreeRenderKey) && (!isUserScrollingShop || force)) {
-            preserveListScroll(elements.prestigeTree, () => {
+            preserveListScroll(elements.prestigePanel || elements.prestigeTree, () => {
                 renderPrestigeTree();
                 lastPrestigeTreeRenderKey = prestigeKey;
             });
@@ -3124,7 +3125,7 @@
             handleShopBuy(event, "[data-buy-prestige-node]", button => buyPrestigeNode(button.dataset.buyPrestigeNode, button));
         });
 
-        [elements.buildings, elements.upgrades, elements.research, elements.prestigeTree, elements.achievements].forEach(list => {
+        [elements.buildings, elements.upgrades, elements.research, elements.prestigePanel || elements.prestigeTree, elements.achievements].forEach(list => {
             if (!list) return;
             list.addEventListener("scroll", markShopScrollActive, { passive: true });
             list.addEventListener("wheel", markShopScrollActive, { passive: true });
@@ -3143,8 +3144,9 @@
                 if (button.dataset.tab === "research" && elements.research) {
                     elements.research.scrollTop = 0;
                 }
-                if (button.dataset.tab === "prestige" && elements.prestigeTree) {
-                    elements.prestigeTree.scrollTop = 0;
+                if (button.dataset.tab === "prestige") {
+                    if (elements.prestigePanel) elements.prestigePanel.scrollTop = 0;
+                    if (elements.prestigeTree) elements.prestigeTree.scrollTop = 0;
                 }
                 renderShopLists(true);
             });
