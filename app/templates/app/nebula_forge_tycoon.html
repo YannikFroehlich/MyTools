@@ -5,7 +5,7 @@
 {% block title %}{% translate "Nebula Forge Tycoon" %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260619-nebula-forge-performance-pass">
+    <link rel="stylesheet" href="{% static 'app/css/nebula_forge_tycoon.css' %}?v=20260701-prestige-shop-repair">
 {% endblock %}
 
 {% block content %}
@@ -58,9 +58,9 @@
                 <small id="nftComboHint">{% translate "halte Rhythmus" %}</small>
             </article>
             <article class="nft-stat">
-                <span>{% translate "Splitter" %}</span>
+                <span>{% translate "Sternenkerne" %}</span>
                 <strong id="nftShards">0</strong>
-                <small>{% translate "Prestige Bonus" %}</small>
+                <small>{% translate "verfügbar" %}</small>
             </article>
         </section>
 
@@ -72,7 +72,7 @@
                     <strong>{% translate "Prestige: neue Galaxie" %}</strong>
                 </div>
             </div>
-            <p id="nftPrestigeHint">{% translate "Sammle genug Lifetime-Flux, um Splitter zu erhalten." %}</p>
+            <p id="nftPrestigeHint">{% translate "Sammle genug Lifetime-Flux, um Sternenkerne zu erhalten." %}</p>
             <button type="button" class="nft-primary-button" id="nftPrestigeButton">
                 <i class="fa-solid fa-star"></i>
                 {% translate "Prestige starten" %}
@@ -208,6 +208,8 @@
                 <div class="nft-tabs" role="tablist" aria-label="{% translate 'Tycoon Bereiche' %}">
                     <button type="button" class="is-active" data-tab="buildings">{% translate "Anlagen" %}</button>
                     <button type="button" data-tab="upgrades">{% translate "Upgrades" %}</button>
+                    <button type="button" data-tab="research">{% translate "Forschung" %}</button>
+                    <button type="button" data-tab="prestige">{% translate "Prestige" %}</button>
                     <button type="button" data-tab="achievements">{% translate "Erfolge" %}</button>
                 </div>
 
@@ -230,6 +232,44 @@
                         </div>
                     </div>
                     <div class="nft-shop-list" id="nftUpgrades"></div>
+                </section>
+
+
+                <section class="nft-tab-panel" data-panel="research">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-flask-vial"></i> {% translate "Forschungszeit" %}</p>
+                            <h2>{% translate "Forschungslabor" %}</h2>
+                        </div>
+                        <span id="nftResearchCount">0/0</span>
+                    </div>
+                    <div class="nft-research-active" id="nftResearchActive"></div>
+                    <div class="nft-shop-list nft-research-list" id="nftResearch"></div>
+                </section>
+
+                <section class="nft-tab-panel" data-panel="prestige">
+                    <div class="nft-panel-head">
+                        <div>
+                            <p class="nft-kicker"><i class="fa-solid fa-star-and-crescent"></i> {% translate "Sternenkerne" %}</p>
+                            <h2>{% translate "Prestige-Baum" %}</h2>
+                        </div>
+                        <span id="nftPrestigeTreeCount">0 Level</span>
+                    </div>
+                    <div class="nft-prestige-tree-summary">
+                        <article>
+                            <span>{% translate "Verfügbar" %}</span>
+                            <strong id="nftPrestigeCoresAvailable">0</strong>
+                        </article>
+                        <article>
+                            <span>{% translate "Investiert" %}</span>
+                            <strong id="nftPrestigeCoresSpent">0</strong>
+                        </article>
+                        <article>
+                            <span>{% translate "Gesamt" %}</span>
+                            <strong id="nftPrestigeCoresTotal">0</strong>
+                        </article>
+                    </div>
+                    <div class="nft-prestige-tree-list" id="nftPrestigeTree"></div>
                 </section>
 
                 <section class="nft-tab-panel" data-panel="achievements">
@@ -366,7 +406,7 @@
                 {% translate "Timing-Bonus bereit" as nft_i18n_113 %}"Timing-Bonus bereit": "{{ nft_i18n_113|escapejs }}",
                 {% translate "AFK-Boost erspielen" as nft_i18n_114 %}"AFK-Boost erspielen": "{{ nft_i18n_114|escapejs }}",
                 {% translate "Hitze senken + Boost" as nft_i18n_115 %}"Hitze senken + Boost": "{{ nft_i18n_115|escapejs }}",
-                {% translate "Bereit: {reward} Splitter beim Neustart. Aktueller Bonus danach ca. +{bonus}%." as nft_i18n_116 %}"Bereit: {reward} Splitter beim Neustart. Aktueller Bonus danach ca. +{bonus}%.": "{{ nft_i18n_116|escapejs }}",
+                {% translate "Bereit: {reward} Sternenkerne beim Neustart. Aktueller Bonus danach ca. +{bonus}%." as nft_i18n_116 %}"Bereit: {reward} Sternenkerne beim Neustart. Aktueller Bonus danach ca. +{bonus}%.": "{{ nft_i18n_116|escapejs }}",
                 {% translate "{current} / {required} Lifetime-Flux bis zum nächsten Prestige." as nft_i18n_117 %}"{current} / {required} Lifetime-Flux bis zum nächsten Prestige.": "{{ nft_i18n_117|escapejs }}",
                 {% translate "Offline-Effizienz: {efficiency}%, Offline-Cap: {hours}h." as nft_i18n_118 %}"Offline-Effizienz: {efficiency}%, Offline-Cap: {hours}h.": "{{ nft_i18n_118|escapejs }}",
                 {% translate "Letzter AFK-Ertrag: {amount} Flux für {duration}. Offline-Cap: {hours}h." as nft_i18n_119 %}"Letzter AFK-Ertrag: {amount} Flux für {duration}. Offline-Cap: {hours}h.": "{{ nft_i18n_119|escapejs }}",
@@ -447,7 +487,7 @@
                 {% translate "Erfolg freigeschaltet" as nft_i18n_194 %}"Erfolg freigeschaltet": "{{ nft_i18n_194|escapejs }}",
                 {% translate "Prestige noch nicht bereit" as nft_i18n_195 %}"Prestige noch nicht bereit": "{{ nft_i18n_195|escapejs }}",
                 {% translate "Du brauchst {amount} Lifetime-Flux." as nft_i18n_196 %}"Du brauchst {amount} Lifetime-Flux.": "{{ nft_i18n_196|escapejs }}",
-                {% translate "Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt." as nft_i18n_197 %}"Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.": "{{ nft_i18n_197|escapejs }}",
+                {% translate "Neue Galaxie starten und {reward} Sternenkerne erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt." as nft_i18n_197 %}"Neue Galaxie starten und {reward} Sternenkerne erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.": "{{ nft_i18n_197|escapejs }}",
                 {% translate "Prestige abgeschlossen" as nft_i18n_198 %}"Prestige abgeschlossen": "{{ nft_i18n_198|escapejs }}",
                 {% translate "Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%." as nft_i18n_199 %}"Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%.": "{{ nft_i18n_199|escapejs }}",
                 {% translate "Export erstellt" as nft_i18n_200 %}"Export erstellt": "{{ nft_i18n_200|escapejs }}",
@@ -469,6 +509,123 @@
                 {% translate "Taste 5" as nft_i18n_218 %}"Taste 5": "{{ nft_i18n_218|escapejs }}",
                 {% translate "100% / 100%" as nft_i18n_219 %}"100% / 100%": "{{ nft_i18n_219|escapejs }}",
                 {% translate "+25% Klicks" as nft_i18n_220 %}"+25% Klicks": "{{ nft_i18n_220|escapejs }}",
+                {% translate "Forschung" as nft_i18n_222 %}"Forschung": "{{ nft_i18n_222|escapejs }}",
+                {% translate "Forschungszeit" as nft_i18n_223 %}"Forschungszeit": "{{ nft_i18n_223|escapejs }}",
+                {% translate "Forschungslabor" as nft_i18n_224 %}"Forschungslabor": "{{ nft_i18n_224|escapejs }}",
+                {% translate "Quanten-Sensorik" as nft_i18n_226 %}"Quanten-Sensorik": "{{ nft_i18n_226|escapejs }}",
+                {% translate "Scans finden effizientere AFK-Routen um den Sternenkern." as nft_i18n_227 %}"Scans finden effizientere AFK-Routen um den Sternenkern.": "{{ nft_i18n_227|escapejs }}",
+                {% translate "Passive Produktion +12%." as nft_i18n_228 %}"Passive Produktion +12%.": "{{ nft_i18n_228|escapejs }}",
+                {% translate "Plasma-Theorie" as nft_i18n_229 %}"Plasma-Theorie": "{{ nft_i18n_229|escapejs }}",
+                {% translate "Stabilisiert aktiven Abbau durch bessere Werkzeugfelder." as nft_i18n_230 %}"Stabilisiert aktiven Abbau durch bessere Werkzeugfelder.": "{{ nft_i18n_230|escapejs }}",
+                {% translate "Aktiver Abbau +12%." as nft_i18n_231 %}"Aktiver Abbau +12%.": "{{ nft_i18n_231|escapejs }}",
+                {% translate "Drohnen-Automation" as nft_i18n_232 %}"Drohnen-Automation": "{{ nft_i18n_232|escapejs }}",
+                {% translate "Drohnen verteilen Produktionsaufträge selbstständig." as nft_i18n_233 %}"Drohnen verteilen Produktionsaufträge selbstständig.": "{{ nft_i18n_233|escapejs }}",
+                {% translate "Passive Produktion +8% und Sammelimpuls lädt schneller." as nft_i18n_234 %}"Passive Produktion +8% und Sammelimpuls lädt schneller.": "{{ nft_i18n_234|escapejs }}",
+                {% translate "Kryo-Chemie" as nft_i18n_235 %}"Kryo-Chemie": "{{ nft_i18n_235|escapejs }}",
+                {% translate "Neue Kühlmittel erhöhen die Hitze-Kapazität der Forge." as nft_i18n_236 %}"Neue Kühlmittel erhöhen die Hitze-Kapazität der Forge.": "{{ nft_i18n_236|escapejs }}",
+                {% translate "Mehr Hitze-Kapazität und schnellere Abkühlung." as nft_i18n_237 %}"Mehr Hitze-Kapazität und schnellere Abkühlung.": "{{ nft_i18n_237|escapejs }}",
+                {% translate "Tiefenarchiv" as nft_i18n_238 %}"Tiefenarchiv": "{{ nft_i18n_238|escapejs }}",
+                {% translate "Speichert Baupläne für längere Offline-Schichten." as nft_i18n_239 %}"Speichert Baupläne für längere Offline-Schichten.": "{{ nft_i18n_239|escapejs }}",
+                {% translate "Offline-Cap +4h und Offline-Effizienz +6%." as nft_i18n_240 %}"Offline-Cap +4h und Offline-Effizienz +6%.": "{{ nft_i18n_240|escapejs }}",
+                {% translate "Riss-Mathematik" as nft_i18n_241 %}"Riss-Mathematik": "{{ nft_i18n_241|escapejs }}",
+                {% translate "Berechnet Flux-Risse und Meteorbahnen genauer." as nft_i18n_242 %}"Berechnet Flux-Risse und Meteorbahnen genauer.": "{{ nft_i18n_242|escapejs }}",
+                {% translate "Events geben +18% Flux und laden schneller." as nft_i18n_243 %}"Events geben +18% Flux und laden schneller.": "{{ nft_i18n_243|escapejs }}",
+                {% translate "Singularitäts-Blaupause" as nft_i18n_244 %}"Singularitäts-Blaupause": "{{ nft_i18n_244|escapejs }}",
+                {% translate "Nutze Prestige-Erfahrung für stabilere Galaxie-Neustarts." as nft_i18n_245 %}"Nutze Prestige-Erfahrung für stabilere Galaxie-Neustarts.": "{{ nft_i18n_245|escapejs }}",
+                {% translate "Prestige-Bonus +8%." as nft_i18n_246 %}"Prestige-Bonus +8%.": "{{ nft_i18n_246|escapejs }}",
+                {% translate "Aktive Forschung" as nft_i18n_247 %}"Aktive Forschung": "{{ nft_i18n_247|escapejs }}",
+                {% translate "Kein Projekt aktiv" as nft_i18n_248 %}"Kein Projekt aktiv": "{{ nft_i18n_248|escapejs }}",
+                {% translate "Starte ein Forschungsprojekt, um nach Ablauf der Zeit einen dauerhaften Bonus zu erhalten." as nft_i18n_249 %}"Starte ein Forschungsprojekt, um nach Ablauf der Zeit einen dauerhaften Bonus zu erhalten.": "{{ nft_i18n_249|escapejs }}",
+                {% translate "{done}/{total} erforscht" as nft_i18n_250 %}"{done}/{total} erforscht": "{{ nft_i18n_250|escapejs }}",
+                {% translate "Dauer: {duration}" as nft_i18n_251 %}"Dauer: {duration}": "{{ nft_i18n_251|escapejs }}",
+                {% translate "Effekt: {effect}" as nft_i18n_252 %}"Effekt: {effect}": "{{ nft_i18n_252|escapejs }}",
+                {% translate "Voraussetzung: {hint}" as nft_i18n_253 %}"Voraussetzung: {hint}": "{{ nft_i18n_253|escapejs }}",
+                {% translate "Forschung läuft" as nft_i18n_254 %}"Forschung läuft": "{{ nft_i18n_254|escapejs }}",
+                {% translate "bereit in {duration}" as nft_i18n_255 %}"bereit in {duration}": "{{ nft_i18n_255|escapejs }}",
+                {% translate "Abschließen" as nft_i18n_256 %}"Abschließen": "{{ nft_i18n_256|escapejs }}",
+                {% translate "Erforschen" as nft_i18n_257 %}"Erforschen": "{{ nft_i18n_257|escapejs }}",
+                {% translate "Erforscht" as nft_i18n_258 %}"Erforscht": "{{ nft_i18n_258|escapejs }}",
+                {% translate "Labor belegt" as nft_i18n_259 %}"Labor belegt": "{{ nft_i18n_259|escapejs }}",
+                {% translate "Nicht verfügbar" as nft_i18n_260 %}"Nicht verfügbar": "{{ nft_i18n_260|escapejs }}",
+                {% translate "Forschung gestartet" as nft_i18n_261 %}"Forschung gestartet": "{{ nft_i18n_261|escapejs }}",
+                {% translate "{name} wird erforscht. Dauer: {duration}." as nft_i18n_262 %}"{name} wird erforscht. Dauer: {duration}.": "{{ nft_i18n_262|escapejs }}",
+                {% translate "Forschung abgeschlossen" as nft_i18n_263 %}"Forschung abgeschlossen": "{{ nft_i18n_263|escapejs }}",
+                {% translate "{name} wurde freigeschaltet." as nft_i18n_264 %}"{name} wurde freigeschaltet.": "{{ nft_i18n_264|escapejs }}",
+                {% translate "Forschung bereit" as nft_i18n_265 %}"Forschung bereit": "{{ nft_i18n_265|escapejs }}",
+                {% translate "{name} ist bereit zum Abschließen." as nft_i18n_266 %}"{name} ist bereit zum Abschließen.": "{{ nft_i18n_266|escapejs }}",
+                {% translate "Projekt abgeschlossen" as nft_i18n_267 %}"Projekt abgeschlossen": "{{ nft_i18n_267|escapejs }}",
+                {% translate "Dieses Projekt ist bereits erforscht." as nft_i18n_268 %}"Dieses Projekt ist bereits erforscht.": "{{ nft_i18n_268|escapejs }}",
+                {% translate "Labor ist belegt" as nft_i18n_269 %}"Labor ist belegt": "{{ nft_i18n_269|escapejs }}",
+                {% translate "Schließe zuerst {name} ab." as nft_i18n_270 %}"Schließe zuerst {name} ab.": "{{ nft_i18n_270|escapejs }}",
+                {% translate "Voraussetzung fehlt" as nft_i18n_271 %}"Voraussetzung fehlt": "{{ nft_i18n_271|escapejs }}",
+                {% translate "Noch nicht freigeschaltet: {hint}." as nft_i18n_272 %}"Noch nicht freigeschaltet: {hint}.": "{{ nft_i18n_272|escapejs }}",
+                {% translate "{item} benötigt {cost} Flux." as nft_i18n_273 %}"{item} benötigt {cost} Flux.": "{{ nft_i18n_273|escapejs }}",
+                {% translate "Noch {duration} Forschungszeit." as nft_i18n_274 %}"Noch {duration} Forschungszeit.": "{{ nft_i18n_274|escapejs }}",
+                {% translate "Bereit zum Abschluss" as nft_i18n_275 %}"Bereit zum Abschluss": "{{ nft_i18n_275|escapejs }}",
+                {% translate "Forschung abholen" as nft_i18n_276 %}"Forschung abholen": "{{ nft_i18n_276|escapejs }}",
+                {% translate "8 Anlagen" as nft_i18n_277 %}"8 Anlagen": "{{ nft_i18n_277|escapejs }}",
+                {% translate "50K Lifetime-Flux" as nft_i18n_278 %}"50K Lifetime-Flux": "{{ nft_i18n_278|escapejs }}",
+                {% translate "4 Anlagenarten" as nft_i18n_279 %}"4 Anlagenarten": "{{ nft_i18n_279|escapejs }}",
+                {% translate "Kryo-Kühlkreis Level 3" as nft_i18n_280 %}"Kryo-Kühlkreis Level 3": "{{ nft_i18n_280|escapejs }}",
+                {% translate "750K Total-Flux" as nft_i18n_281 %}"750K Total-Flux": "{{ nft_i18n_281|escapejs }}",
+                {% translate "3 Flux-Risse oder 5 Meteore" as nft_i18n_282 %}"3 Flux-Risse oder 5 Meteore": "{{ nft_i18n_282|escapejs }}",
+                {% translate "Prestige-Level 2" as nft_i18n_283 %}"Prestige-Level 2": "{{ nft_i18n_283|escapejs }}",
+                {% translate "Forschungsabteilung" as nft_i18n_284 %}"Forschungsabteilung": "{{ nft_i18n_284|escapejs }}",
+                {% translate "Schließe deine erste Forschung ab." as nft_i18n_285 %}"Schließe deine erste Forschung ab.": "{{ nft_i18n_285|escapejs }}",
+                {% translate "Sternenlabor" as nft_i18n_286 %}"Sternenlabor": "{{ nft_i18n_286|escapejs }}",
+                {% translate "Schließe 5 Forschungen ab." as nft_i18n_287 %}"Schließe 5 Forschungen ab.": "{{ nft_i18n_287|escapejs }}",
+                {% translate "Sammle genug Lifetime-Flux, um Sternenkerne zu erhalten." as nft_i18n_prestige_000 %}"Sammle genug Lifetime-Flux, um Sternenkerne zu erhalten.": "{{ nft_i18n_prestige_000|escapejs }}",
+                {% translate "Prestige" as nft_i18n_prestige_001 %}"Prestige": "{{ nft_i18n_prestige_001|escapejs }}",
+                {% translate "Prestige-Baum" as nft_i18n_prestige_002 %}"Prestige-Baum": "{{ nft_i18n_prestige_002|escapejs }}",
+                {% translate "Verfügbar" as nft_i18n_prestige_003 %}"Verfügbar": "{{ nft_i18n_prestige_003|escapejs }}",
+                {% translate "Investiert" as nft_i18n_prestige_004 %}"Investiert": "{{ nft_i18n_prestige_004|escapejs }}",
+                {% translate "Gesamt" as nft_i18n_prestige_005 %}"Gesamt": "{{ nft_i18n_prestige_005|escapejs }}",
+                {% translate "{levels} Level" as nft_i18n_prestige_006 %}"{levels} Level": "{{ nft_i18n_prestige_006|escapejs }}",
+                {% translate "Sternenfundament" as nft_i18n_prestige_007 %}"Sternenfundament": "{{ nft_i18n_prestige_007|escapejs }}",
+                {% translate "Stabilisiert jede neue Galaxie und verstärkt deine passive Produktion dauerhaft." as nft_i18n_prestige_008 %}"Stabilisiert jede neue Galaxie und verstärkt deine passive Produktion dauerhaft.": "{{ nft_i18n_prestige_008|escapejs }}",
+                {% translate "+6% passive Produktion pro Level." as nft_i18n_prestige_009 %}"+6% passive Produktion pro Level.": "{{ nft_i18n_prestige_009|escapejs }}",
+                {% translate "Kernreflex" as nft_i18n_prestige_010 %}"Kernreflex": "{{ nft_i18n_prestige_010|escapejs }}",
+                {% translate "Der Sternenkern reagiert stärker auf aktive Abbau-Aktionen." as nft_i18n_prestige_011 %}"Der Sternenkern reagiert stärker auf aktive Abbau-Aktionen.": "{{ nft_i18n_prestige_011|escapejs }}",
+                {% translate "+6% aktiver Abbau pro Level." as nft_i18n_prestige_012 %}"+6% aktiver Abbau pro Level.": "{{ nft_i18n_prestige_012|escapejs }}",
+                {% translate "Schmiede-Gedächtnis" as nft_i18n_prestige_013 %}"Schmiede-Gedächtnis": "{{ nft_i18n_prestige_013|escapejs }}",
+                {% translate "Neue Galaxien starten nicht mehr komplett bei null." as nft_i18n_prestige_014 %}"Neue Galaxien starten nicht mehr komplett bei null.": "{{ nft_i18n_prestige_014|escapejs }}",
+                {% translate "+2.500 Start-Flux pro Level nach Prestige." as nft_i18n_prestige_015 %}"+2.500 Start-Flux pro Level nach Prestige.": "{{ nft_i18n_prestige_015|escapejs }}",
+                {% translate "Kompressionsmarkt" as nft_i18n_prestige_016 %}"Kompressionsmarkt": "{{ nft_i18n_prestige_016|escapejs }}",
+                {% translate "Sternenkerne drücken Materialkosten für Anlagen und Upgrades." as nft_i18n_prestige_017 %}"Sternenkerne drücken Materialkosten für Anlagen und Upgrades.": "{{ nft_i18n_prestige_017|escapejs }}",
+                {% translate "Kosten -2% pro Level." as nft_i18n_prestige_018 %}"Kosten -2% pro Level.": "{{ nft_i18n_prestige_018|escapejs }}",
+                {% translate "Tiefenkontinuum" as nft_i18n_prestige_019 %}"Tiefenkontinuum": "{{ nft_i18n_prestige_019|escapejs }}",
+                {% translate "Deine Schmiede sammelt auch nach längeren Pausen zuverlässiger weiter." as nft_i18n_prestige_020 %}"Deine Schmiede sammelt auch nach längeren Pausen zuverlässiger weiter.": "{{ nft_i18n_prestige_020|escapejs }}",
+                {% translate "+1h Offline-Cap und +2% Offline-Effizienz pro Level." as nft_i18n_prestige_021 %}"+1h Offline-Cap und +2% Offline-Effizienz pro Level.": "{{ nft_i18n_prestige_021|escapejs }}",
+                {% translate "Forschungsrelais" as nft_i18n_prestige_022 %}"Forschungsrelais": "{{ nft_i18n_prestige_022|escapejs }}",
+                {% translate "Prestige-Erfahrung beschleunigt zukünftige Forschungsprojekte." as nft_i18n_prestige_023 %}"Prestige-Erfahrung beschleunigt zukünftige Forschungsprojekte.": "{{ nft_i18n_prestige_023|escapejs }}",
+                {% translate "Forschungszeit -5% pro Level." as nft_i18n_prestige_024 %}"Forschungszeit -5% pro Level.": "{{ nft_i18n_prestige_024|escapejs }}",
+                {% translate "Event-Harmonik" as nft_i18n_prestige_025 %}"Event-Harmonik": "{{ nft_i18n_prestige_025|escapejs }}",
+                {% translate "Meteore, Risse und Timing-Events werden wertvoller und schneller verfügbar." as nft_i18n_prestige_026 %}"Meteore, Risse und Timing-Events werden wertvoller und schneller verfügbar.": "{{ nft_i18n_prestige_026|escapejs }}",
+                {% translate "+7% Event-Belohnung und kürzere Event-Cooldowns pro Level." as nft_i18n_prestige_027 %}"+7% Event-Belohnung und kürzere Event-Cooldowns pro Level.": "{{ nft_i18n_prestige_027|escapejs }}",
+                {% translate "Singularitätskrone" as nft_i18n_prestige_028 %}"Singularitätskrone": "{{ nft_i18n_prestige_028|escapejs }}",
+                {% translate "Ein später Knoten, der deine gesamte Produktion dauerhaft skaliert." as nft_i18n_prestige_029 %}"Ein später Knoten, der deine gesamte Produktion dauerhaft skaliert.": "{{ nft_i18n_prestige_029|escapejs }}",
+                {% translate "+10% Gesamtproduktion pro Level." as nft_i18n_prestige_030 %}"+10% Gesamtproduktion pro Level.": "{{ nft_i18n_prestige_030|escapejs }}",
+                {% translate "Sternenfundament Level 1" as nft_i18n_prestige_031 %}"Sternenfundament Level 1": "{{ nft_i18n_prestige_031|escapejs }}",
+                {% translate "Sternenfundament Level 2" as nft_i18n_prestige_032 %}"Sternenfundament Level 2": "{{ nft_i18n_prestige_032|escapejs }}",
+                {% translate "Kernreflex Level 2" as nft_i18n_prestige_033 %}"Kernreflex Level 2": "{{ nft_i18n_prestige_033|escapejs }}",
+                {% translate "1 Forschung abgeschlossen" as nft_i18n_prestige_034 %}"1 Forschung abgeschlossen": "{{ nft_i18n_prestige_034|escapejs }}",
+                {% translate "2 Forschungen oder Prestige-Level 3" as nft_i18n_prestige_035 %}"2 Forschungen oder Prestige-Level 3": "{{ nft_i18n_prestige_035|escapejs }}",
+                {% translate "10 Prestige-Baum-Level und Prestige-Level 4" as nft_i18n_prestige_036 %}"10 Prestige-Baum-Level und Prestige-Level 4": "{{ nft_i18n_prestige_036|escapejs }}",
+                {% translate "Kerne" as nft_i18n_prestige_037 %}"Kerne": "{{ nft_i18n_prestige_037|escapejs }}",
+                {% translate "Gesperrt" as nft_i18n_prestige_038 %}"Gesperrt": "{{ nft_i18n_prestige_038|escapejs }}",
+                {% translate "Aktivieren" as nft_i18n_prestige_039 %}"Aktivieren": "{{ nft_i18n_prestige_039|escapejs }}",
+                {% translate "Prestige-Fortschritt" as nft_i18n_prestige_040 %}"Prestige-Fortschritt": "{{ nft_i18n_prestige_040|escapejs }}",
+                {% translate "Nicht genug Sternenkerne" as nft_i18n_prestige_041 %}"Nicht genug Sternenkerne": "{{ nft_i18n_prestige_041|escapejs }}",
+                {% translate "{name} benötigt {cost} Sternenkerne." as nft_i18n_prestige_042 %}"{name} benötigt {cost} Sternenkerne.": "{{ nft_i18n_prestige_042|escapejs }}",
+                {% translate "Prestige-Knoten aktiviert" as nft_i18n_prestige_043 %}"Prestige-Knoten aktiviert": "{{ nft_i18n_prestige_043|escapejs }}",
+                {% translate "{name} ist jetzt Level {level}." as nft_i18n_prestige_044 %}"{name} ist jetzt Level {level}.": "{{ nft_i18n_prestige_044|escapejs }}",
+                {% translate "{name} ist bereits vollständig aktiviert." as nft_i18n_prestige_045 %}"{name} ist bereits vollständig aktiviert.": "{{ nft_i18n_prestige_045|escapejs }}",
+                {% translate "+{reward} Sternenkerne erhalten" as nft_i18n_prestige_046 %}"+{reward} Sternenkerne erhalten": "{{ nft_i18n_prestige_046|escapejs }}",
+                {% translate "Neue Galaxie starten und {reward} Sternenkerne erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt." as nft_i18n_prestige_047 %}"Neue Galaxie starten und {reward} Sternenkerne erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.": "{{ nft_i18n_prestige_047|escapejs }}",
+                {% translate "Sternenkern-Investor" as nft_i18n_prestige_048 %}"Sternenkern-Investor": "{{ nft_i18n_prestige_048|escapejs }}",
+                {% translate "Investiere deinen ersten Sternenkern im Prestige-Baum." as nft_i18n_prestige_049 %}"Investiere deinen ersten Sternenkern im Prestige-Baum.": "{{ nft_i18n_prestige_049|escapejs }}",
+                {% translate "Galaxie-Architekt" as nft_i18n_prestige_050 %}"Galaxie-Architekt": "{{ nft_i18n_prestige_050|escapejs }}",
+                {% translate "Erreiche 8 Level im Prestige-Baum." as nft_i18n_prestige_051 %}"Erreiche 8 Level im Prestige-Baum.": "{{ nft_i18n_prestige_051|escapejs }}",
                 {% translate "+20% passiv" as nft_i18n_221 %}"+20% passiv": "{{ nft_i18n_221|escapejs }}"
             }
         }
@@ -479,5 +636,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260623-presence-fix" defer></script>
+    <script src="{% static 'app/js/nebula_forge_tycoon.js' %}?v=20260701-prestige-shop-repair" defer></script>
 {% endblock %}

@@ -253,7 +253,7 @@ ACCESS_CONTROL_ITEMS = (
     },
     {
         "key": "snake_powerups",
-        "label": _("Snake Powerups"),
+        "label": _("Snake"),
         "kind": _("Spiel"),
         "category": _("Spiele"),
         "icon": "fa-solid fa-staff-snake",

@@ -1342,6 +1342,49 @@ class Game2048HighScore(models.Model):
         return f"{self.user} - 2048 - {self.display_score}"
 
 
+class SnakeHighScore(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="snake_highscores",
+    )
+    settings_key = models.CharField(max_length=80)
+    score = models.PositiveIntegerField(default=0)
+    length = models.PositiveIntegerField(default=3)
+    fruits = models.PositiveIntegerField(default=0)
+    moves = models.PositiveIntegerField(default=0)
+    duration_seconds = models.PositiveIntegerField(default=0)
+    runs = models.PositiveIntegerField(default=1)
+    settings = models.JSONField(default=dict, blank=True)
+    achieved_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "settings_key"],
+                name="unique_snake_highscore_per_user_settings",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["-score", "-length", "-achieved_at"]),
+            models.Index(fields=["user", "-score"]),
+        ]
+        verbose_name = "Snake Highscore"
+        verbose_name_plural = "Snake Highscores"
+
+    @property
+    def display_score(self):
+        return f"{self.score:,}".replace(",", ".")
+
+    @property
+    def duration_label(self):
+        minutes, seconds = divmod(int(self.duration_seconds or 0), 60)
+        return f"{minutes}:{seconds:02d}"
+
+    def __str__(self):
+        return f"{self.user} - Snake - {self.display_score}"
+
+
 class TicTacToeGame(models.Model):
     STATUS_WAITING = "waiting"
     STATUS_PLAYING = "playing"
