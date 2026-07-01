@@ -25,7 +25,7 @@ GAME_ACTIVITY_LABELS = {
     "nebula_forge_tycoon": _("spielt Nebula Forge Tycoon"),
     "drift_circuit": _("spielt Racing Game"),
     "human_benchmark": _("spielt Human Benchmark"),
-    "snake_powerups": _("spielt Snake Powerups"),
+    "snake_powerups": _("spielt Snake"),
 }
 
 

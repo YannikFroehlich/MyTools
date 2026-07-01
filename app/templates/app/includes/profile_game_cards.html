@@ -3,7 +3,7 @@
 {% if profile_game_cards %}
     <div class="profile-game-card-stack">
         {% for card in profile_game_cards %}
-            <article class="{{ card_shell_class|default:'profile-card' }} profile-game-card profile-game-card-{{ card.key }} {% if card.is_empty %}is-empty{% endif %}">
+            <article class="{{ card_shell_class|default:'profile-card' }} profile-game-card profile-game-card-{{ card.key }} {% if card.is_empty %}is-empty{% endif %}"{% if card.key == 'snake_powerups' %} data-snake-profile-card data-snake-score-api="{% url 'snake-score-api' %}"{% endif %}>
                 <div class="profile-game-card-header">
                     <div>
                         <p class="profile-kicker">{{ card.kicker }}</p>

@@ -31,6 +31,7 @@ from ..models import (
     ProfileGalleryImage,
     PongGame,
     SkribbleStats,
+    SnakeHighScore,
     StadtLandFlussPlayer,
     Note,
     TicTacToeGame,
@@ -67,7 +68,7 @@ PROFILE_GAME_CARD_DEFINITIONS = [
     {"key": "uno", "label": "Uno", "icon": "fa-solid fa-layer-group", "url_name": "uno_home"},
     {"key": "kniffel", "label": "Kniffel", "icon": "fa-solid fa-dice", "url_name": "kniffel_home"},
     {"key": "pong", "label": "Pong", "icon": "fa-solid fa-table-tennis-paddle-ball", "url_name": "pong_home"},
-    {"key": "snake_powerups", "label": "Snake Powerups", "icon": "fa-solid fa-bolt", "url_name": "snake-powerups"},
+    {"key": "snake_powerups", "label": "Snake", "icon": "fa-solid fa-staff-snake", "url_name": "snake-powerups"},
     {"key": "nebula_forge_tycoon", "label": "Nebula Forge Tycoon", "icon": "fa-solid fa-meteor", "url_name": "nebula-forge-tycoon"},
 ]
 PROFILE_GAME_CARD_DEFINITIONS_BY_KEY = {item["key"]: item for item in PROFILE_GAME_CARD_DEFINITIONS}
@@ -108,11 +109,17 @@ def get_profile_2048_highscore(user):
     return Game2048HighScore.objects.filter(user=user).first()
 
 
+def get_profile_snake_highscore(user):
+    return SnakeHighScore.objects.filter(user=user).order_by("-score", "-length", "-achieved_at").first()
+
+
 def get_total_profile_highscores(user):
     total = HumanBenchmarkHighScore.objects.filter(user=user).count()
     if CookieClickerHighScore.objects.filter(user=user).exists():
         total += 1
     if Game2048HighScore.objects.filter(user=user).exists():
+        total += 1
+    if SnakeHighScore.objects.filter(user=user).exists():
         total += 1
     return total
 
@@ -431,11 +438,63 @@ def _pong_game_card(user, definition):
     ])
     return card
 
+SNAKE_PROFILE_SPEED_LABELS = {
+    "relaxed": "Entspannt",
+    "normal": "Normal",
+    "fast": "Schnell",
+    "turbo": "Turbo",
+}
+SNAKE_PROFILE_SPAWN_LABELS = {
+    "slow": "Ruhig",
+    "normal": "Standard",
+    "high": "Hoch",
+    "instant": "Sofort",
+}
+SNAKE_PROFILE_WALL_LABELS = {
+    "wrap": "Durchlaufen",
+    "wall": "Wände",
+}
+
+
+def _snake_profile_settings_label(settings):
+    settings = settings if isinstance(settings, dict) else {}
+    try:
+        board_size = int(settings.get("boardSize") or 19)
+    except (TypeError, ValueError):
+        board_size = 19
+    try:
+        fruit_limit = int(settings.get("fruitLimit") or 1)
+    except (TypeError, ValueError):
+        fruit_limit = 1
+
+    speed_label = _(SNAKE_PROFILE_SPEED_LABELS.get(str(settings.get("speedKey") or "normal"), "Normal"))
+    spawn_label = _(SNAKE_PROFILE_SPAWN_LABELS.get(str(settings.get("spawnKey") or "normal"), "Standard"))
+    wall_label = _(SNAKE_PROFILE_WALL_LABELS.get(str(settings.get("wallMode") or "wrap"), "Durchlaufen"))
+    fruit_word = _("Frucht") if fruit_limit == 1 else _("Früchte")
+    return f"{board_size} × {board_size} · {speed_label} · {fruit_limit} {fruit_word} · {spawn_label} · {wall_label}"
+
+
 def _snake_powerups_card(user, definition):
     card = _base_game_card(definition)
-    card["title"] = _("Arcade")
-    card["is_empty"] = True
-    card["empty_text"] = _("Snake Powerups ist bereit für deinen ersten Lauf.")
+    card["title"] = _("Highscore")
+    card["empty_text"] = _("Noch kein Snake-Highscore gespeichert.")
+    highscore = get_profile_snake_highscore(user)
+    if not highscore:
+        card["is_empty"] = True
+        return card
+
+    card["main"] = {
+        "icon": "fa-solid fa-trophy",
+        "label": _("Bester Score"),
+        "value": highscore.display_score,
+        "detail": highscore.achieved_at.strftime("%d.%m.%Y %H:%M"),
+    }
+    card["metrics"] = [
+        {"label": _("Länge"), "value": _display_number(highscore.length), "icon": "fa-solid fa-staff-snake"},
+        {"label": _("Früchte"), "value": _display_number(highscore.fruits), "icon": "fa-solid fa-apple-whole"},
+        {"label": _("Spiele"), "value": _display_number(highscore.runs), "icon": "fa-solid fa-gamepad"},
+        {"label": _("Einstellung"), "value": _snake_profile_settings_label(highscore.settings), "icon": "fa-solid fa-sliders"},
+    ]
     return card
 
 
