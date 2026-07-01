@@ -148,7 +148,7 @@
                     <div class="security-event-row">
                         <span class="security-event-icon severity-{{ event.severity }}"><i class="fa-solid fa-shield-halved"></i></span>
                         <div>
-                            <strong>{{ event.get_event_type_display }}</strong>
+                            <strong>{{ event.translated_event_type }}</strong>
                             <span>{% if event.user %}{{ event.user.username }}{% else %}{% translate "Unbekannt" %}{% endif %} · {{ event.created_at|date:"d.m.Y H:i" }}</span>
                         </div>
                     </div>

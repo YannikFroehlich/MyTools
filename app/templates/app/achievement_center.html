@@ -1,10 +1,10 @@
 {% extends "app/base.html" %}
 {% load i18n static %}
 
-{% block title %}{% translate "Achievement-Center" %} | MyTools{% endblock %}
+{% block title %}{% translate "Achievements" %} | MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}?v=20260619-achievement-theme-icons">
+    <link rel="stylesheet" href="{% static 'app/css/community_features.css' %}?v=20260701-achievement-i18n-fix">
 {% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
     <div class="feature-hero achievement-hero">
         <div class="feature-hero-copy">
             <span class="feature-kicker"><i class="fa-solid fa-trophy"></i> {% translate "Achievement-Center" %}</span>
-            <h1>{% translate "Level, XP und Fortschritt" %}</h1>
+            <h1>{% translate "Achievements" %}</h1>
             <p>{% translate "Sieh deine freigeschalteten Achievements, deine nächsten Ziele und deinen Platz im MyTools-Ranking." %}</p>
         </div>
         <div class="level-orb">
@@ -46,7 +46,11 @@
             <div class="category-progress-grid">
                 {% for category in achievement_summary.categories %}
                     <article class="feature-card category-progress-card">
-                        <div class="category-title"><i class="{{ category.icon }}"></i><strong>{{ category.label }}</strong><span>{{ category.unlocked_count }}/{{ category.total_count }}</span></div>
+                        <div class="category-title">
+                            <i class="{{ category.icon }}"></i>
+                            <strong>{% if category.key == "games" %}{% translate "Spiele" %}{% elif category.key == "notes" %}{% translate "Notizen" %}{% elif category.key == "chat" %}{% translate "Chat" %}{% elif category.key == "profile" %}{% translate "Profil" %}{% elif category.key == "uploads" %}{% translate "Uploads" %}{% elif category.key == "daily" %}{% translate "Aktive Tage" %}{% else %}{{ category.label }}{% endif %}</strong>
+                            <span>{{ category.unlocked_count }}/{{ category.total_count }}</span>
+                        </div>
                         <div class="progress-track"><span style="width: {{ category.progress_percent }}%;"></span></div>
                     </article>
                 {% endfor %}

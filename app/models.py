@@ -1,3 +1,4 @@
+import re
 from django.conf import settings
 from django.db import models
 from django.core.validators import FileExtensionValidator
@@ -2722,7 +2723,64 @@ class SecurityEvent(models.Model):
 
     def __str__(self):
         user_label = self.user.username if self.user else _("unbekannter Nutzer")
-        return f"{self.get_event_type_display()} · {user_label}"
+        return f"{self.translated_event_type} · {user_label}"
+
+    @property
+    def translated_event_type(self):
+        label_map = {
+            self.EVENT_LOGIN_SUCCESS: "Login erfolgreich",
+            self.EVENT_LOGIN_FAILED: "Login fehlgeschlagen",
+            self.EVENT_LOGOUT: "Logout",
+            self.EVENT_TWO_FACTOR_ENABLED: "2FA aktiviert",
+            self.EVENT_TWO_FACTOR_DISABLED: "2FA deaktiviert",
+            self.EVENT_SESSION_REVOKED: "Sitzung beendet",
+            self.EVENT_SESSIONS_REVOKED: "Andere Sitzungen beendet",
+            "Login erfolgreich": "Login erfolgreich",
+            "Login successful": "Login erfolgreich",
+            "Login fehlgeschlagen": "Login fehlgeschlagen",
+            "Login failed": "Login fehlgeschlagen",
+            "Logout": "Logout",
+            "2FA aktiviert": "2FA aktiviert",
+            "2FA enabled": "2FA aktiviert",
+            "2FA deaktiviert": "2FA deaktiviert",
+            "2FA disabled": "2FA deaktiviert",
+            "Sitzung beendet": "Sitzung beendet",
+            "Session ended": "Sitzung beendet",
+            "Andere Sitzungen beendet": "Andere Sitzungen beendet",
+            "Other sessions ended": "Andere Sitzungen beendet",
+        }
+        return _(label_map.get(self.event_type, self.get_event_type_display()))
+
+    @property
+    def translated_note(self):
+        if not self.note:
+            return ""
+
+        note = str(self.note)
+        note_map = {
+            "Login ohne 2FA abgeschlossen.": "Login ohne 2FA abgeschlossen.",
+            "Login completed without 2FA.": "Login ohne 2FA abgeschlossen.",
+            "Login-Versuch wurde abgelehnt.": "Login-Versuch wurde abgelehnt.",
+            "Login attempt was rejected.": "Login-Versuch wurde abgelehnt.",
+            "Login mit 2FA bestätigt.": "Login mit 2FA bestätigt.",
+            "Login confirmed with 2FA.": "Login mit 2FA bestätigt.",
+            "Eine andere Sitzung wurde beendet.": "Eine andere Sitzung wurde beendet.",
+            "Another session was ended.": "Eine andere Sitzung wurde beendet.",
+        }
+
+        if note in note_map:
+            return _(note_map[note])
+
+        ended_sessions_match = re.match(
+            r"^(?P<count>\d+) (?:andere Sitzung\(en\) wurden beendet|other session\(s\) were ended)\.$",
+            note,
+        )
+        if ended_sessions_match:
+            return _("%(count)s andere Sitzung(en) wurden beendet.") % {
+                "count": ended_sessions_match.group("count"),
+            }
+
+        return _(note)
 
     @property
     def short_user_agent(self):
