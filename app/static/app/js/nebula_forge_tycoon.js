@@ -411,6 +411,103 @@
         },
     ];
 
+    const prestigeNodes = [
+        {
+            id: "stellarFoundations",
+            name: "Sternenfundament",
+            icon: "fa-solid fa-star-and-crescent",
+            description: "Stabilisiert jede neue Galaxie und verstärkt deine passive Produktion dauerhaft.",
+            effect: "+6% passive Produktion pro Level.",
+            baseCost: 1,
+            growth: 1.55,
+            max: 5,
+        },
+        {
+            id: "coreReflex",
+            name: "Kernreflex",
+            icon: "fa-solid fa-hand-sparkles",
+            description: "Der Sternenkern reagiert stärker auf aktive Abbau-Aktionen.",
+            effect: "+6% aktiver Abbau pro Level.",
+            baseCost: 1,
+            growth: 1.65,
+            max: 5,
+            unlockHint: "Sternenfundament Level 1",
+            requires: s => prestigeNodeLevel("stellarFoundations", s) >= 1,
+        },
+        {
+            id: "forgeMemory",
+            name: "Schmiede-Gedächtnis",
+            icon: "fa-solid fa-memory",
+            description: "Neue Galaxien starten nicht mehr komplett bei null.",
+            effect: "+2.500 Start-Flux pro Level nach Prestige.",
+            baseCost: 2,
+            growth: 1.8,
+            max: 5,
+            unlockHint: "Prestige-Level 2",
+            requires: s => s.prestigeLevel >= 2,
+        },
+        {
+            id: "compressionMarket",
+            name: "Kompressionsmarkt",
+            icon: "fa-solid fa-tags",
+            description: "Sternenkerne drücken Materialkosten für Anlagen und Upgrades.",
+            effect: "Kosten -2% pro Level.",
+            baseCost: 2,
+            growth: 1.7,
+            max: 5,
+            unlockHint: "Sternenfundament Level 2",
+            requires: s => prestigeNodeLevel("stellarFoundations", s) >= 2,
+        },
+        {
+            id: "deepContinuum",
+            name: "Tiefenkontinuum",
+            icon: "fa-solid fa-clock",
+            description: "Deine Schmiede sammelt auch nach längeren Pausen zuverlässiger weiter.",
+            effect: "+1h Offline-Cap und +2% Offline-Effizienz pro Level.",
+            baseCost: 3,
+            growth: 1.75,
+            max: 4,
+            unlockHint: "Kernreflex Level 2",
+            requires: s => prestigeNodeLevel("coreReflex", s) >= 2,
+        },
+        {
+            id: "researchRelay",
+            name: "Forschungsrelais",
+            icon: "fa-solid fa-flask-vial",
+            description: "Prestige-Erfahrung beschleunigt zukünftige Forschungsprojekte.",
+            effect: "Forschungszeit -5% pro Level.",
+            baseCost: 3,
+            growth: 1.85,
+            max: 4,
+            unlockHint: "1 Forschung abgeschlossen",
+            requires: s => completedResearchCount(s) >= 1,
+        },
+        {
+            id: "eventHarmonics",
+            name: "Event-Harmonik",
+            icon: "fa-solid fa-wave-square",
+            description: "Meteore, Risse und Timing-Events werden wertvoller und schneller verfügbar.",
+            effect: "+7% Event-Belohnung und kürzere Event-Cooldowns pro Level.",
+            baseCost: 4,
+            growth: 1.85,
+            max: 4,
+            unlockHint: "2 Forschungen oder Prestige-Level 3",
+            requires: s => completedResearchCount(s) >= 2 || s.prestigeLevel >= 3,
+        },
+        {
+            id: "singularityCrown",
+            name: "Singularitätskrone",
+            icon: "fa-solid fa-crown",
+            description: "Ein später Knoten, der deine gesamte Produktion dauerhaft skaliert.",
+            effect: "+10% Gesamtproduktion pro Level.",
+            baseCost: 6,
+            growth: 2.05,
+            max: 3,
+            unlockHint: "10 Prestige-Baum-Level und Prestige-Level 4",
+            requires: s => totalPrestigeNodeLevels(s) >= 10 && s.prestigeLevel >= 4,
+        },
+    ];
+
     const achievements = [
         { id: "firstFlux", title: "Erster Funke", description: "Sammle 100 Flux.", icon: "fa-solid fa-sparkles", test: s => s.lifetimeFlux >= 100 },
         { id: "afkStart", title: "Automatisierung", description: "Besitze 10 Anlagen.", icon: "fa-solid fa-robot", test: s => totalBuildings(s) >= 10 },
@@ -428,6 +525,8 @@
         { id: "prestige", title: "Neue Galaxie", description: "Führe dein erstes Prestige aus.", icon: "fa-solid fa-star", test: s => s.prestigeLevel >= 2 },
         { id: "researchFirst", title: "Forschungsabteilung", description: "Schließe deine erste Forschung ab.", icon: "fa-solid fa-flask-vial", test: s => completedResearchCount(s) >= 1 },
         { id: "researchFive", title: "Sternenlabor", description: "Schließe 5 Forschungen ab.", icon: "fa-solid fa-microscope", test: s => completedResearchCount(s) >= 5 },
+        { id: "starCoreInvestor", title: "Sternenkern-Investor", description: "Investiere deinen ersten Sternenkern im Prestige-Baum.", icon: "fa-solid fa-star-and-crescent", test: s => totalPrestigeNodeLevels(s) >= 1 },
+        { id: "galaxyArchitect", title: "Galaxie-Architekt", description: "Erreiche 8 Level im Prestige-Baum.", icon: "fa-solid fa-crown", test: s => totalPrestigeNodeLevels(s) >= 8 },
     ];
 
 
@@ -445,6 +544,12 @@
         item.effect = t(item.effect);
         item.unlockHint = t(item.unlockHint);
     });
+    prestigeNodes.forEach(item => {
+        item.name = t(item.name);
+        item.description = t(item.description);
+        item.effect = t(item.effect);
+        item.unlockHint = t(item.unlockHint || "");
+    });
     achievements.forEach(item => {
         item.title = t(item.title);
         item.description = t(item.description);
@@ -457,6 +562,8 @@
         totalLifetimeFlux: 0,
         prestigeLevel: 1,
         shards: 0,
+        totalShards: 0,
+        prestigeTree: {},
         heat: 0,
         combo: 0,
         bestCombo: 0,
@@ -526,6 +633,11 @@
         research: document.getElementById("nftResearch"),
         researchCount: document.getElementById("nftResearchCount"),
         researchActive: document.getElementById("nftResearchActive"),
+        prestigeTree: document.getElementById("nftPrestigeTree"),
+        prestigeTreeCount: document.getElementById("nftPrestigeTreeCount"),
+        prestigeCoresAvailable: document.getElementById("nftPrestigeCoresAvailable"),
+        prestigeCoresSpent: document.getElementById("nftPrestigeCoresSpent"),
+        prestigeCoresTotal: document.getElementById("nftPrestigeCoresTotal"),
         achievements: document.getElementById("nftAchievements"),
         achievementCount: document.getElementById("nftAchievementCount"),
         prestigeButton: document.getElementById("nftPrestigeButton"),
@@ -557,6 +669,7 @@
     let lastBuildingsRenderKey = "";
     let lastUpgradesRenderKey = "";
     let lastResearchRenderKey = "";
+    let lastPrestigeTreeRenderKey = "";
     let lastAchievementsRenderKey = "";
     let lastNebulaAppearanceKey = "";
     let lastModeRenderKey = "";
@@ -618,6 +731,16 @@
         merged.totalLifetimeFlux = Math.max(merged.lifetimeFlux, sanitizeNumber(merged.totalLifetimeFlux));
         merged.prestigeLevel = Math.max(1, Math.floor(sanitizeNumber(merged.prestigeLevel, 1)));
         merged.shards = Math.max(0, Math.floor(sanitizeNumber(merged.shards)));
+        merged.totalShards = Math.max(merged.shards, Math.floor(sanitizeNumber(merged.totalShards, merged.shards)));
+        merged.prestigeTree = normalizePrestigeTree(merged.prestigeTree);
+
+        // Backfill Star Cores for older saves that already had prestige levels
+        // before the Prestige Tree was added.
+        const legacyPrestigeCores = Math.max(0, merged.prestigeLevel - 1);
+        if (legacyPrestigeCores > 0 && merged.shards === 0 && merged.totalShards === 0 && totalPrestigeNodeLevels(merged) === 0) {
+            merged.shards = legacyPrestigeCores;
+            merged.totalShards = legacyPrestigeCores;
+        }
         merged.heat = Math.max(0, sanitizeNumber(merged.heat));
         merged.combo = Math.max(0, sanitizeNumber(merged.combo));
         merged.bestCombo = Math.max(0, sanitizeNumber(merged.bestCombo));
@@ -812,7 +935,7 @@
                 data.save && data.save.last_manual_save ? Date.parse(data.save.last_manual_save) : 0
             );
             const localDbSavedAt = sanitizeNumber(state.databaseSavedAt);
-            const localHasProgress = hadLocalSaveAtStartup && (state.totalLifetimeFlux > 0 || totalBuildings(state) > 0 || state.shards > 0 || state.prestigeLevel > 1);
+            const localHasProgress = hadLocalSaveAtStartup && (state.totalLifetimeFlux > 0 || totalBuildings(state) > 0 || state.shards > 0 || state.totalShards > 0 || totalPrestigeNodeLevels(state) > 0 || state.prestigeLevel > 1);
             const shouldLoadRemote = !hadLocalSaveAtStartup || !localHasProgress || remoteSavedAt > localDbSavedAt + 2000;
 
             if (!shouldLoadRemote) return;
@@ -913,6 +1036,57 @@
         return Math.max(0, Math.floor(sanitizeNumber(source.upgrades[id])));
     }
 
+    function getPrestigeNode(id) {
+        return prestigeNodes.find(item => item.id === id) || null;
+    }
+
+    function normalizePrestigeTree(raw) {
+        const normalized = {};
+        const source = raw && typeof raw === "object" ? raw : {};
+        prestigeNodes.forEach(node => {
+            const level = Math.max(0, Math.floor(sanitizeNumber(source[node.id])));
+            if (level > 0) normalized[node.id] = Math.min(node.max, level);
+        });
+        return normalized;
+    }
+
+    function prestigeNodeLevel(id, source = state) {
+        return Math.max(0, Math.floor(sanitizeNumber(source.prestigeTree?.[id])));
+    }
+
+    function totalPrestigeNodeLevels(source = state) {
+        return prestigeNodes.reduce((sum, node) => sum + prestigeNodeLevel(node.id, source), 0);
+    }
+
+    function totalPrestigeCores(source = state) {
+        return Math.max(0, Math.floor(sanitizeNumber(source.totalShards, source.shards)));
+    }
+
+    function prestigeNodeCost(node, level = prestigeNodeLevel(node.id)) {
+        return Math.max(1, Math.floor(node.baseCost * Math.pow(node.growth, level)));
+    }
+
+    function spentPrestigeCores(source = state) {
+        return prestigeNodes.reduce((sum, node) => {
+            const level = prestigeNodeLevel(node.id, source);
+            let spent = 0;
+            for (let current = 0; current < level; current += 1) {
+                spent += prestigeNodeCost(node, current);
+            }
+            return sum + spent;
+        }, 0);
+    }
+
+    function prestigeRequirementMet(node, source = state) {
+        if (!node || typeof node.requires !== "function") return true;
+        try {
+            return Boolean(node.requires(source));
+        } catch (error) {
+            console.warn("Nebula Forge Prestige-Voraussetzung konnte nicht geprüft werden.", error);
+            return false;
+        }
+    }
+
     function getResearchProject(id) {
         return researchProjects.find(item => item.id === id) || null;
     }
@@ -955,8 +1129,9 @@
         return researchProjects.reduce((sum, project) => sum + (researchCompleted(project.id, source) ? 1 : 0), 0);
     }
 
-    function researchDurationMs(project) {
-        return Math.max(1, sanitizeNumber(project.duration, 1)) * 1000;
+    function researchDurationMs(project, source = state) {
+        const speedBonus = Math.min(0.35, prestigeNodeLevel("researchRelay", source) * 0.05);
+        return Math.max(1, sanitizeNumber(project.duration, 1) * (1 - speedBonus)) * 1000;
     }
 
     function researchRequirementMet(project, source = state) {
@@ -977,13 +1152,30 @@
         return buildings.reduce((sum, item) => sum + (buildingCount(item.id, source) > 0 ? 1 : 0), 0);
     }
 
-    function costFor(item, owned) {
-        return Math.floor(item.baseCost * Math.pow(item.growth, owned));
+    function prestigeCostMultiplier(source = state) {
+        return Math.max(0.82, 1 - prestigeNodeLevel("compressionMarket", source) * 0.02);
+    }
+
+    function costFor(item, owned, source = state) {
+        return Math.max(1, Math.floor(item.baseCost * Math.pow(item.growth, owned) * prestigeCostMultiplier(source)));
     }
 
     function prestigeMultiplier(source = state) {
         const researchBonus = researchCompleted("singularityBlueprint", source) ? 0.08 : 0;
-        return 1 + (source.prestigeLevel - 1) * 0.12 + source.shards * 0.045 + researchBonus;
+        const crownBonus = prestigeNodeLevel("singularityCrown", source) * 0.1;
+        return 1 + (source.prestigeLevel - 1) * 0.12 + totalPrestigeCores(source) * 0.045 + researchBonus + crownBonus;
+    }
+
+    function prestigePassiveMultiplier(source = state) {
+        return 1 + prestigeNodeLevel("stellarFoundations", source) * 0.06;
+    }
+
+    function prestigeManualMultiplier(source = state) {
+        return 1 + prestigeNodeLevel("coreReflex", source) * 0.06;
+    }
+
+    function prestigeStartingFlux(source = state) {
+        return prestigeNodeLevel("forgeMemory", source) * 2500;
     }
 
     function researchPassiveMultiplier(source = state) {
@@ -1014,7 +1206,7 @@
         const overdrive = source.overdriveUntil > now() ? 2.4 : 1;
         const passiveBoost = source.passiveBoostUntil > now() ? 1.65 + upgradeLevel("harmonicCapacitor", source) * 0.08 : 1;
         const logistics = 1 + upgradeLevel("stellarLogistics", source) * 0.065 + uniqueBuildings(source) * upgradeLevel("autoCalibrator", source) * 0.012;
-        return (1 + afk * 0.08) * logistics * prestigeMultiplier(source) * focusPassive(source) * overdrive * passiveBoost * researchPassiveMultiplier(source);
+        return (1 + afk * 0.08) * logistics * prestigeMultiplier(source) * prestigePassiveMultiplier(source) * focusPassive(source) * overdrive * passiveBoost * researchPassiveMultiplier(source);
     }
 
     function calculateCps(source = state) {
@@ -1066,25 +1258,25 @@
         const heatRatio = clamp(source.heat / Math.max(1, maxHeat(source)), 0, 1);
         const hotPenalty = source.heat >= maxHeat(source) ? 0.62 : 1;
         const heatRecycler = 1 + heatRatio * upgradeLevel("heatRecycler", source) * 0.025;
-        const basePower = (1 + gloves * 0.9) * neural * comboMultiplier(source) * prestigeMultiplier(source) * focusManual(source) * activeBoost * hotPenalty * heatRecycler * researchManualMultiplier(source);
+        const basePower = (1 + gloves * 0.9) * neural * comboMultiplier(source) * prestigeMultiplier(source) * prestigeManualMultiplier(source) * focusManual(source) * activeBoost * hotPenalty * heatRecycler * researchManualMultiplier(source);
         const afkEcho = calculateCps(source) * activeTapSeconds(source) * activeBoost;
         return Math.max(1, basePower + afkEcho);
     }
 
     function offlineEfficiency(source = state) {
-        return clamp(0.55 + upgradeLevel("afkProtocol", source) * 0.025 + (researchCompleted("deepArchive", source) ? 0.06 : 0), 0.55, 0.96);
+        return clamp(0.55 + upgradeLevel("afkProtocol", source) * 0.025 + prestigeNodeLevel("deepContinuum", source) * 0.02 + (researchCompleted("deepArchive", source) ? 0.06 : 0), 0.55, 0.96);
     }
 
     function offlineCapHours(source = state) {
-        return 4 + upgradeLevel("deepStorage", source) * 2 + (researchCompleted("deepArchive", source) ? 4 : 0);
+        return 4 + upgradeLevel("deepStorage", source) * 2 + prestigeNodeLevel("deepContinuum", source) + (researchCompleted("deepArchive", source) ? 4 : 0);
     }
 
     function eventRewardMultiplier(source = state) {
-        return 1 + upgradeLevel("riftAmplifier", source) * 0.12 + upgradeLevel("meteorMagnet", source) * 0.025 + (researchCompleted("riftMath", source) ? 0.18 : 0);
+        return 1 + upgradeLevel("riftAmplifier", source) * 0.12 + upgradeLevel("meteorMagnet", source) * 0.025 + prestigeNodeLevel("eventHarmonics", source) * 0.07 + (researchCompleted("riftMath", source) ? 0.18 : 0);
     }
 
     function eventCooldownMs(base, min = 6000) {
-        const reduction = upgradeLevel("eventRelay") * 1200 + upgradeLevel("harmonicCapacitor") * 450 + (researchCompleted("riftMath") ? 1800 : 0);
+        const reduction = upgradeLevel("eventRelay") * 1200 + upgradeLevel("harmonicCapacitor") * 450 + prestigeNodeLevel("eventHarmonics") * 600 + (researchCompleted("riftMath") ? 1800 : 0);
         return Math.max(min, base - reduction);
     }
 
@@ -1201,6 +1393,7 @@
     function shopAnimationCardSelector(kind, id) {
         if (kind === "building") return `[data-building-card="${id}"]`;
         if (kind === "research") return `[data-research-card="${id}"]`;
+        if (kind === "prestige") return `[data-prestige-node-card="${id}"]`;
         return `[data-upgrade-card="${id}"]`;
     }
 
@@ -1412,7 +1605,7 @@
 
     function playDeniedPurchaseAnimation(button) {
         if (!button) return;
-        const card = button.closest(".nft-shop-card");
+        const card = button.closest(".nft-shop-card, .nft-prestige-node-card");
         restartTemporaryClass(button, "is-purchase-denied", 460);
         restartTemporaryClass(card, "is-purchase-denied", 460);
     }
@@ -1420,9 +1613,9 @@
     function playShopPurchaseAnimation(kind, id, details = {}) {
         const card = root.querySelector(shopAnimationCardSelector(kind, id));
         if (!card) return;
-        const button = card.querySelector('.nft-shop-buy');
-        const icon = card.querySelector('.nft-shop-icon');
-        const metaPills = [...card.querySelectorAll('.nft-shop-meta span')];
+        const button = card.querySelector('.nft-shop-buy, .nft-prestige-node-button');
+        const icon = card.querySelector('.nft-shop-icon, .nft-prestige-node-icon');
+        const metaPills = [...card.querySelectorAll('.nft-shop-meta span, .nft-prestige-node-level, .nft-prestige-node-pills span')];
         const valuePill = metaPills[kind === 'building' ? 0 : 0];
         const cardRect = card.getBoundingClientRect();
         const iconRect = icon?.getBoundingClientRect() || cardRect;
@@ -1531,7 +1724,7 @@
         text.appendChild(bonus);
 
         const shards = document.createElement("em");
-        shards.textContent = fmt("+{reward} Splitter erhalten", { reward });
+        shards.textContent = fmt("+{reward} Sternenkerne erhalten", { reward });
         text.appendChild(shards);
 
         overlay.appendChild(text);
@@ -1647,7 +1840,7 @@
             startedAt,
             readyAt: startedAt + researchDurationMs(project),
         };
-        showMessage(t("Forschung gestartet"), fmt("{name} wird erforscht. Dauer: {duration}.", { name: project.name, duration: formatSeconds(project.duration) }));
+        showMessage(t("Forschung gestartet"), fmt("{name} wird erforscht. Dauer: {duration}.", { name: project.name, duration: formatSeconds(researchDurationMs(project) / 1000) }));
         window.requestAnimationFrame(() => playShopPurchaseAnimation("research", id, { label: t("Forschung gestartet") }));
         saveState();
         renderAll(true);
@@ -1667,6 +1860,46 @@
         }
 
         completeReadyResearch(true);
+    }
+
+    function buyPrestigeNode(id, sourceButton = null) {
+        const node = getPrestigeNode(id);
+        if (!node) return;
+
+        const level = prestigeNodeLevel(id);
+        if (level >= node.max) {
+            showMessage(t("Maximal ausgebaut"), fmt("{name} ist bereits vollständig aktiviert.", { name: node.name }));
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        if (!prestigeRequirementMet(node)) {
+            showMessage(t("Voraussetzung fehlt"), fmt("Noch nicht freigeschaltet: {hint}.", { hint: node.unlockHint || t("Prestige-Fortschritt") }));
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        const cost = prestigeNodeCost(node, level);
+        if (state.shards < cost) {
+            showMessage(t("Nicht genug Sternenkerne"), fmt("{name} benötigt {cost} Sternenkerne.", { name: node.name, cost }));
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        state.shards -= cost;
+        state.prestigeTree[id] = level + 1;
+        state.heat = clamp(state.heat, 0, maxHeat());
+        showMessage(t("Prestige-Knoten aktiviert"), fmt("{name} ist jetzt Level {level}.", { name: node.name, level: level + 1 }));
+        renderStats();
+        renderShopLists(true);
+        window.requestAnimationFrame(() => {
+            playShopPurchaseAnimation("prestige", id, {
+                newValue: level + 1,
+                label: fmt("Level {level}/{max}", { level: level + 1, max: node.max }),
+            });
+        });
+        checkAchievements();
+        saveState();
     }
 
     function collectImpulseRewardPreview(source = state) {
@@ -2026,16 +2259,21 @@
             showMessage(t("Prestige noch nicht bereit"), fmt("Du brauchst {amount} Lifetime-Flux.", { amount: format(prestigeRequirement()) }));
             return;
         }
-        const confirmed = window.confirm(fmt("Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.", { reward }));
+        const confirmed = window.confirm(fmt("Neue Galaxie starten und {reward} Sternenkerne erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.", { reward }));
         if (!confirmed) return;
         const keepTotal = state.totalLifetimeFlux;
         const keepResearch = JSON.parse(JSON.stringify(state.research || defaultState().research));
+        const keepPrestigeTree = JSON.parse(JSON.stringify(state.prestigeTree || {}));
         const newLevel = state.prestigeLevel + 1;
         const newShards = state.shards + reward;
+        const newTotalShards = totalPrestigeCores(state) + reward;
         state = defaultState();
         state.research = normalizeResearchState(keepResearch);
+        state.prestigeTree = normalizePrestigeTree(keepPrestigeTree);
         state.prestigeLevel = newLevel;
         state.shards = newShards;
+        state.totalShards = newTotalShards;
+        state.flux = prestigeStartingFlux(state);
         state.totalLifetimeFlux = keepTotal;
         state.lastSaved = now();
         showMessage(t("Prestige abgeschlossen"), fmt("Galaxie Level {level}. Dauerhafter Bonus: +{bonus}%.", { level: newLevel, bonus: Math.round((prestigeMultiplier() - 1) * 100) }));
@@ -2159,7 +2397,7 @@
         const requirement = prestigeRequirement();
         elements.prestigeButton.disabled = reward <= 0;
         elements.prestigeHint.textContent = reward > 0
-            ? fmt("Bereit: {reward} Splitter beim Neustart. Aktueller Bonus danach ca. +{bonus}%.", { reward, bonus: Math.round(((prestigeMultiplier() + reward * 0.045 + 0.12) - 1) * 100) })
+            ? fmt("Bereit: {reward} Sternenkerne beim Neustart. Aktueller Bonus danach ca. +{bonus}%.", { reward, bonus: Math.round(((prestigeMultiplier() + reward * 0.045 + 0.12) - 1) * 100) })
             : fmt("{current} / {required} Lifetime-Flux bis zum nächsten Prestige.", { current: format(state.lifetimeFlux), required: format(requirement) });
 
         if (elements.offlineInfo && !elements.offlineInfo.dataset.touched) {
@@ -2209,6 +2447,17 @@
         }).join("|") + `|active:${activeKey}`;
     }
 
+    function prestigeTreeRenderKey() {
+        return prestigeNodes.map(node => {
+            const level = prestigeNodeLevel(node.id);
+            const maxed = level >= node.max ? 1 : 0;
+            const available = prestigeRequirementMet(node) ? 1 : 0;
+            const cost = maxed ? 0 : prestigeNodeCost(node, level);
+            const affordable = state.shards >= cost && !maxed ? 1 : 0;
+            return `${node.id}:${level}:${maxed}:${available}:${affordable}:${state.shards}`;
+        }).join("|");
+    }
+
     function achievementsRenderKey() {
         return achievements.map(item => `${item.id}:${state.achievements[item.id] ? 1 : 0}`).join("|");
     }
@@ -2238,6 +2487,7 @@
         const buildingKey = buildingsRenderKey();
         const upgradeKey = upgradesRenderKey();
         const researchKey = researchRenderKey();
+        const prestigeKey = prestigeTreeRenderKey();
         const achievementKey = achievementsRenderKey();
 
         if ((force || buildingKey !== lastBuildingsRenderKey) && (!isUserScrollingShop || force)) {
@@ -2258,6 +2508,13 @@
             preserveListScroll(elements.research, () => {
                 renderResearch();
                 lastResearchRenderKey = researchKey;
+            });
+        }
+
+        if ((force || prestigeKey !== lastPrestigeTreeRenderKey) && (!isUserScrollingShop || force)) {
+            preserveListScroll(elements.prestigeTree, () => {
+                renderPrestigeTree();
+                lastPrestigeTreeRenderKey = prestigeKey;
             });
         }
 
@@ -2405,7 +2662,7 @@
                 : isActive
                     ? (isReady ? t("Bereit zum Abschluss") : fmt("bereit in {duration}", { duration: formatSeconds(remaining / 1000) }))
                     : available
-                        ? fmt("Dauer: {duration}", { duration: formatSeconds(item.duration) })
+                        ? fmt("Dauer: {duration}", { duration: formatSeconds(researchDurationMs(item) / 1000) })
                         : fmt("Voraussetzung: {hint}", { hint: item.unlockHint });
             const actionAttr = isActive ? `data-finish-research="${item.id}"` : `data-start-research="${item.id}"`;
             return `
@@ -2415,7 +2672,7 @@
                         <strong>${escapeHtml(item.name)}</strong>
                         <p>${escapeHtml(item.description)}</p>
                         <div class="nft-shop-meta">
-                            <span>${escapeHtml(fmt("Dauer: {duration}", { duration: formatSeconds(item.duration) }))}</span>
+                            <span>${escapeHtml(fmt("Dauer: {duration}", { duration: formatSeconds(researchDurationMs(item) / 1000) }))}</span>
                             <span>${escapeHtml(fmt("Effekt: {effect}", { effect: item.effect }))}</span>
                             ${available ? "" : `<span>${escapeHtml(fmt("Voraussetzung: {hint}", { hint: item.unlockHint }))}</span>`}
                         </div>
@@ -2423,6 +2680,68 @@
                     </div>
                     <button type="button" class="nft-shop-buy ${isCompleted ? "is-maxed" : ((affordable && available && !isBusy) || isReady) ? "is-affordable" : "is-unaffordable"}" ${actionAttr} ${disabled ? "disabled" : ""} aria-disabled="${disabled ? "true" : "false"}">
                         ${escapeHtml(buttonLabel)}
+                        <small>${escapeHtml(buttonHint)}</small>
+                    </button>
+                </article>
+            `;
+        }).join("");
+    }
+
+    function renderPrestigeTree() {
+        if (!elements.prestigeTree) return;
+
+        const totalLevels = totalPrestigeNodeLevels();
+        const spent = spentPrestigeCores();
+        const totalCores = totalPrestigeCores();
+        if (elements.prestigeTreeCount) elements.prestigeTreeCount.textContent = fmt("{levels} Level", { levels: totalLevels });
+        if (elements.prestigeCoresAvailable) elements.prestigeCoresAvailable.textContent = format(state.shards);
+        if (elements.prestigeCoresSpent) elements.prestigeCoresSpent.textContent = format(spent);
+        if (elements.prestigeCoresTotal) elements.prestigeCoresTotal.textContent = format(totalCores);
+
+        elements.prestigeTree.innerHTML = prestigeNodes.map(node => {
+            const level = prestigeNodeLevel(node.id);
+            const maxed = level >= node.max;
+            const cost = maxed ? 0 : prestigeNodeCost(node, level);
+            const available = prestigeRequirementMet(node);
+            const affordable = state.shards >= cost && !maxed;
+            const stateClass = maxed
+                ? "is-maxed"
+                : !available
+                    ? "is-locked"
+                    : affordable
+                        ? "is-affordable"
+                        : "is-unaffordable";
+            const buttonLabel = maxed
+                ? t("Max")
+                : available
+                    ? `${cost} ${t("Kerne")}`
+                    : t("Gesperrt");
+            const buttonHint = maxed
+                ? t("Fertig")
+                : !available
+                    ? fmt("Voraussetzung: {hint}", { hint: node.unlockHint || t("Prestige-Fortschritt") })
+                    : affordable
+                        ? t("Aktivieren")
+                        : t("Nicht genug Sternenkerne");
+            const requirementPill = available
+                ? ""
+                : `<span>${escapeHtml(fmt("Voraussetzung: {hint}", { hint: node.unlockHint || t("Prestige-Fortschritt") }))}</span>`;
+            return `
+                <article class="nft-prestige-node-card ${stateClass}" data-prestige-node-card="${node.id}">
+                    <span class="nft-prestige-node-icon"><i class="${node.icon}"></i></span>
+                    <div class="nft-prestige-node-main">
+                        <div class="nft-prestige-node-title-row">
+                            <strong class="nft-prestige-node-title">${escapeHtml(node.name)}</strong>
+                            <span class="nft-prestige-node-level">${escapeHtml(fmt("Level: {level}/{max}", { level, max: node.max }))}</span>
+                        </div>
+                        <p class="nft-prestige-node-description">${escapeHtml(node.description)}</p>
+                        <div class="nft-prestige-node-pills">
+                            <span>${escapeHtml(node.effect)}</span>
+                            ${requirementPill}
+                        </div>
+                    </div>
+                    <button type="button" class="nft-prestige-node-button ${maxed ? "is-maxed" : affordable ? "is-affordable" : "is-unaffordable"}" data-buy-prestige-node="${node.id}" ${maxed || !available || !affordable ? "disabled" : ""} aria-disabled="${maxed || !available || !affordable ? "true" : "false"}">
+                        <strong>${escapeHtml(buttonLabel)}</strong>
                         <small>${escapeHtml(buttonHint)}</small>
                     </button>
                 </article>
@@ -2751,7 +3070,7 @@
         const handleShopBuy = (event, selector, callback) => {
             const button = event.target.closest(selector);
             if (!button) return;
-            if (!button.closest("#nftBuildings, #nftUpgrades, #nftResearch, #nftResearchActive")) return;
+            if (!button.closest("#nftBuildings, #nftUpgrades, #nftResearch, #nftResearchActive, #nftPrestigeTree")) return;
             event.preventDefault();
             event.stopPropagation();
             if (button.disabled) return;
@@ -2775,6 +3094,10 @@
             handleShopBuy(event, "[data-finish-research]", button => finishResearch(button.dataset.finishResearch, button));
         });
 
+        elements.prestigeTree?.addEventListener("pointerdown", event => {
+            handleShopBuy(event, "[data-buy-prestige-node]", button => buyPrestigeNode(button.dataset.buyPrestigeNode, button));
+        });
+
         elements.buildings.addEventListener("keydown", event => {
             if (event.key !== "Enter" && event.key !== " ") return;
             handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding, button));
@@ -2796,7 +3119,12 @@
             handleShopBuy(event, "[data-finish-research]", button => finishResearch(button.dataset.finishResearch, button));
         });
 
-        [elements.buildings, elements.upgrades, elements.research, elements.achievements].forEach(list => {
+        elements.prestigeTree?.addEventListener("keydown", event => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            handleShopBuy(event, "[data-buy-prestige-node]", button => buyPrestigeNode(button.dataset.buyPrestigeNode, button));
+        });
+
+        [elements.buildings, elements.upgrades, elements.research, elements.prestigeTree, elements.achievements].forEach(list => {
             if (!list) return;
             list.addEventListener("scroll", markShopScrollActive, { passive: true });
             list.addEventListener("wheel", markShopScrollActive, { passive: true });
@@ -2806,7 +3134,19 @@
         tabButtons.forEach(button => {
             button.addEventListener("click", () => {
                 tabButtons.forEach(item => item.classList.toggle("is-active", item === button));
-                tabPanels.forEach(panel => panel.classList.toggle("is-active", panel.dataset.panel === button.dataset.tab));
+                tabPanels.forEach(panel => {
+                    const isActive = panel.dataset.panel === button.dataset.tab;
+                    panel.classList.toggle("is-active", isActive);
+                    if (isActive) panel.scrollTop = 0;
+                });
+
+                if (button.dataset.tab === "research" && elements.research) {
+                    elements.research.scrollTop = 0;
+                }
+                if (button.dataset.tab === "prestige" && elements.prestigeTree) {
+                    elements.prestigeTree.scrollTop = 0;
+                }
+                renderShopLists(true);
             });
         });
 
