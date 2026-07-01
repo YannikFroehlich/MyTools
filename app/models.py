@@ -600,12 +600,18 @@ class ChatMessageReaction(models.Model):
 
 class ShortcutSection(models.Model):
     COLOR_CHOICES = [
+        ("theme", _("Design")),
         ("blue", _("Blau")),
+        ("cyan", _("Cyan")),
+        ("teal", _("Türkis")),
         ("green", _("Grün")),
-        ("purple", _("Lila")),
+        ("yellow", _("Gelb")),
         ("orange", _("Orange")),
         ("red", _("Rot")),
-        ("theme", _("Design")),
+        ("pink", _("Pink")),
+        ("purple", _("Lila")),
+        ("indigo", _("Indigo")),
+        ("gray", _("Grau")),
     ]
 
     user = models.ForeignKey(
@@ -1069,12 +1075,18 @@ class HomeWidget(TrashableModel):
     ]
 
     COLOR_CHOICES = [
+        ("theme", _("Design")),
         ("blue", _("Blau")),
+        ("cyan", _("Cyan")),
+        ("teal", _("Türkis")),
         ("green", _("Grün")),
-        ("purple", _("Lila")),
+        ("yellow", _("Gelb")),
         ("orange", _("Orange")),
         ("red", _("Rot")),
-        ("theme", _("Design")),
+        ("pink", _("Pink")),
+        ("purple", _("Lila")),
+        ("indigo", _("Indigo")),
+        ("gray", _("Grau")),
     ]
 
     user = models.ForeignKey(

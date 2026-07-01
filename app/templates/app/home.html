@@ -6,7 +6,7 @@
 {% block title %}{% translate 'Startseite' %} - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260628-mobile-touch-polish">
+    <link rel="stylesheet" href="{% static 'app/css/home.css' %}?v=20260701-more-home-colors">
 {% endblock %}
 
 {% block content %}
@@ -1287,5 +1287,5 @@
 
 {% block extra_js %}
     {{ home_labels|json_script:"home-labels" }}
-    <script src="{% static 'app/js/home.js' %}?v=20260628-mobile-touch-polish" defer></script>
+    <script src="{% static 'app/js/home.js' %}?v=20260701-more-home-colors" defer></script>
 {% endblock %}
