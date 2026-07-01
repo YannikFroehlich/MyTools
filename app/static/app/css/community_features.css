@@ -521,9 +521,21 @@ body.dark .empty-state-card > i {
 
 /* Achievement Center */
 .achievement-hero {
+    align-items: center;
     background:
         radial-gradient(circle at top right, rgba(250, 204, 21, 0.35), transparent 34%),
         linear-gradient(135deg, #111827, #312e81);
+}
+
+.achievement-page .feature-hero-copy {
+    min-width: 0;
+    max-width: min(720px, 100%);
+}
+
+.achievement-page .feature-hero h1 {
+    font-size: clamp(2rem, 4.2vw, 3.45rem);
+    line-height: 1.04;
+    overflow-wrap: anywhere;
 }
 
 .level-orb {

@@ -1164,13 +1164,26 @@ body.dark-mode .dark-mode-btn .icon-sun {
     min-width: auto;
 }
 
-.games-menu-chevron {
+.games-menu-chevron,
+.google-apps-menu-chevron {
+    flex: 0 0 auto;
     font-size: 0.72rem;
     opacity: 0.8;
+    transform-origin: center;
+    transition:
+        transform 0.18s ease,
+        opacity 0.18s ease;
 }
 
-.games-menu-button[aria-expanded="true"] .games-menu-chevron {
+.games-menu-button[aria-expanded="true"] .games-menu-chevron,
+.google-apps-menu-button[aria-expanded="true"] .google-apps-menu-chevron {
+    opacity: 1;
     transform: rotate(180deg);
+}
+
+.games-menu-button:hover .games-menu-chevron,
+.google-apps-menu-button:hover .google-apps-menu-chevron {
+    opacity: 1;
 }
 
 .menu-dropdown {

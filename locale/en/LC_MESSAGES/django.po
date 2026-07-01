@@ -111,7 +111,7 @@ msgstr "Roadmap"
 #: .\app\templates\app\achievement_center.html:12
 #: .\app\templates\app\base.html:986
 msgid "Achievement-Center"
-msgstr "Achievement center"
+msgstr "Achievement Center"
 
 #: .\app\access_control.py:98 .\app\achievement_utils.py:39
 #: .\app\platform_utils.py:39 .\app\platform_utils.py:51
@@ -370,7 +370,7 @@ msgstr "Battleship"
 #: .\app\templates\app\stadtlandfluss_home.html:28
 #: .\app\templates\app\stadtlandfluss_lobby.html:4
 msgid "Stadt Land Fluss"
-msgstr "Categories"
+msgstr "City Country River"
 
 #: .\app\access_control.py:369 .\app\hangman_views.py:462
 #: .\app\performance_tools_views.py:208 .\app\platform_utils.py:16
@@ -14737,3 +14737,9 @@ msgstr "Snake Powerups is ready for your first run."
 
 msgid "Voicemod Aktion unvollständig."
 msgstr "Voicemod action incomplete."
+
+msgid "Profileinstellungen"
+msgstr "Profile settings"
+
+msgid "Letzte Aktivitäten"
+msgstr "Recent activity"

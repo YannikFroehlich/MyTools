@@ -388,14 +388,28 @@ body.dark-mode .timer-preset-card {
 .lap-list-wrapper::-webkit-scrollbar-track,
 .clock-settings-dialog::-webkit-scrollbar-track {
     border-radius: 999px;
-    background: rgba(var(--theme-accent-rgb), 0.12);
+    background: rgba(var(--theme-accent-rgb), 0.1);
 }
 
 .lap-list-wrapper::-webkit-scrollbar-thumb,
 .clock-settings-dialog::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
     border-radius: 999px;
-    background: linear-gradient(180deg, var(--theme-accent-start), var(--theme-accent-end)) border-box;
+    background: linear-gradient(180deg, var(--theme-accent-start), var(--theme-accent-end));
+    background-clip: content-box;
+}
+
+.lap-list-wrapper::-webkit-scrollbar-thumb:hover,
+.clock-settings-dialog::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--theme-accent-end), var(--theme-accent-start));
+    background-clip: content-box;
+}
+
+.lap-list-wrapper::-webkit-scrollbar-button,
+.clock-settings-dialog::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 .lap-list {
@@ -949,3 +963,180 @@ body.dark-mode .world-clock-card h3,
 body.dark-mode .timer-preset-card h3 {
     color: var(--theme-card-text, var(--theme-text));
 }
+
+/* Lunora theme: keep all clock/timer inner surfaces in the warm theme family. */
+body.theme-lunora-mode .clock-page {
+    color: var(--lunora-theme-ink, var(--theme-text));
+}
+
+body.theme-lunora-mode .clock-hero,
+body.theme-lunora-mode .clock-panel {
+    color: var(--lunora-theme-ink, var(--theme-text));
+    border-color: var(--lunora-theme-border, rgba(var(--theme-accent-rgb), 0.22));
+    background:
+        radial-gradient(circle at 100% 0%, rgba(214, 173, 115, 0.20), transparent 38%),
+        linear-gradient(145deg, var(--lunora-theme-panel-strong, rgba(255, 250, 244, 0.88)), var(--lunora-theme-panel, rgba(255, 250, 244, 0.72)));
+    box-shadow:
+        0 24px 70px var(--lunora-theme-shadow, rgba(91, 64, 35, 0.14)),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+body.dark-mode.theme-lunora-mode .clock-hero,
+body.dark-mode.theme-lunora-mode .clock-panel {
+    background:
+        radial-gradient(circle at 100% 0%, rgba(196, 151, 88, 0.20), transparent 38%),
+        linear-gradient(145deg, var(--lunora-theme-panel-strong, rgba(43, 32, 23, 0.90)), var(--lunora-theme-panel, rgba(39, 29, 21, 0.74)));
+    box-shadow:
+        0 26px 78px var(--lunora-theme-shadow, rgba(0, 0, 0, 0.38)),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body.theme-lunora-mode .clock-settings-button,
+body.theme-lunora-mode .world-clock-card,
+body.theme-lunora-mode .timer-preset-card,
+body.theme-lunora-mode .timer-save-form,
+body.theme-lunora-mode .ringtone-option span,
+body.theme-lunora-mode .custom-sound-upload,
+body.theme-lunora-mode .timer-quick-set,
+body.theme-lunora-mode .lap-list li,
+body.theme-lunora-mode .clock-message,
+body.theme-lunora-mode .clock-page input,
+body.theme-lunora-mode .clock-page select {
+    color: var(--lunora-theme-ink, var(--theme-text));
+    border-color: var(--lunora-theme-border, rgba(var(--theme-accent-rgb), 0.22));
+    background: var(--lunora-theme-pill-bg, rgba(255, 255, 255, 0.54));
+    box-shadow: var(--lunora-theme-pill-shadow, 0 10px 24px rgba(91, 64, 35, 0.12));
+}
+
+body.dark-mode.theme-lunora-mode .clock-settings-button,
+body.dark-mode.theme-lunora-mode .world-clock-card,
+body.dark-mode.theme-lunora-mode .timer-preset-card,
+body.dark-mode.theme-lunora-mode .timer-save-form,
+body.dark-mode.theme-lunora-mode .ringtone-option span,
+body.dark-mode.theme-lunora-mode .custom-sound-upload,
+body.dark-mode.theme-lunora-mode .timer-quick-set,
+body.dark-mode.theme-lunora-mode .lap-list li,
+body.dark-mode.theme-lunora-mode .clock-message,
+body.dark-mode.theme-lunora-mode .clock-page input,
+body.dark-mode.theme-lunora-mode .clock-page select {
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.055)),
+        var(--lunora-theme-panel, rgba(39, 29, 21, 0.74));
+    box-shadow: var(--lunora-theme-pill-shadow, 0 10px 24px rgba(0, 0, 0, 0.24));
+}
+
+body.theme-lunora-mode .clock-page input::placeholder {
+    color: color-mix(in srgb, var(--lunora-theme-muted, var(--theme-text)) 74%, transparent);
+}
+
+body.theme-lunora-mode .clock-inline-form span,
+body.theme-lunora-mode .timer-create-form span,
+body.theme-lunora-mode .clock-settings-form span,
+body.theme-lunora-mode .timer-quick-set span,
+body.theme-lunora-mode .world-clock-card span,
+body.theme-lunora-mode .timer-preset-card span,
+body.theme-lunora-mode .clock-empty,
+body.theme-lunora-mode .custom-sound-upload small,
+body.theme-lunora-mode .clock-hero p {
+    color: var(--lunora-theme-muted, color-mix(in srgb, var(--theme-text) 68%, transparent));
+}
+
+body.theme-lunora-mode .world-clock-card h3,
+body.theme-lunora-mode .world-clock-card strong,
+body.theme-lunora-mode .timer-preset-card h3,
+body.theme-lunora-mode .clock-panel h2,
+body.theme-lunora-mode .clock-hero h1 {
+    color: var(--lunora-theme-ink, var(--theme-text));
+}
+
+body.theme-lunora-mode .clock-delete-form button,
+body.theme-lunora-mode .clock-icon-button,
+body.theme-lunora-mode .clock-button:not(.clock-button-primary):not(.clock-button-danger) {
+    color: var(--lunora-theme-ink, var(--theme-text));
+    border: 1px solid var(--lunora-theme-border, rgba(var(--theme-accent-rgb), 0.22));
+    background: var(--lunora-theme-pill-bg, rgba(255, 255, 255, 0.54));
+    box-shadow: var(--lunora-theme-pill-shadow, 0 10px 24px rgba(91, 64, 35, 0.12));
+}
+
+body.theme-lunora-mode .clock-settings-button:hover,
+body.theme-lunora-mode .clock-delete-form button:hover,
+body.theme-lunora-mode .clock-icon-button:hover,
+body.theme-lunora-mode .clock-button:not(.clock-button-primary):not(.clock-button-danger):hover {
+    border-color: color-mix(in srgb, var(--lunora-theme-border, rgba(var(--theme-accent-rgb), 0.22)) 76%, var(--theme-accent-end) 24%);
+    background: var(--lunora-theme-pill-bg-strong, rgba(255, 255, 255, 0.72));
+}
+
+body.theme-lunora-mode .clock-button-primary {
+    color: #fffaf4;
+    background: linear-gradient(135deg, #9b6b38, #d6ad73);
+    box-shadow: 0 16px 34px rgba(91, 64, 35, 0.22);
+}
+
+body.dark-mode.theme-lunora-mode .clock-button-primary {
+    color: #22160d;
+    background: linear-gradient(135deg, #c49758, #e7c894);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.26);
+}
+
+body.theme-lunora-mode .timer-progress {
+    background: color-mix(in srgb, var(--lunora-theme-pill-bg, rgba(255, 255, 255, 0.54)) 72%, var(--theme-accent-start) 28%);
+}
+
+body.theme-lunora-mode .lap-list-wrapper,
+body.theme-lunora-mode .clock-settings-dialog {
+    scrollbar-color: rgba(183, 138, 85, 0.76) rgba(156, 119, 77, 0.14);
+}
+
+body.theme-lunora-mode .lap-list-wrapper::-webkit-scrollbar-track,
+body.theme-lunora-mode .clock-settings-dialog::-webkit-scrollbar-track {
+    background: rgba(156, 119, 77, 0.14);
+}
+
+body.theme-lunora-mode .lap-list-wrapper::-webkit-scrollbar-thumb,
+body.theme-lunora-mode .clock-settings-dialog::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #9b6b38, #d6ad73);
+    background-clip: content-box;
+}
+
+body.theme-lunora-mode .lap-list-wrapper::-webkit-scrollbar-thumb:hover,
+body.theme-lunora-mode .clock-settings-dialog::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #d6ad73, #9b6b38);
+    background-clip: content-box;
+}
+
+body.dark-mode.theme-lunora-mode .lap-list-wrapper,
+body.dark-mode.theme-lunora-mode .clock-settings-dialog {
+    scrollbar-color: rgba(214, 173, 115, 0.70) rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .lap-list-wrapper::-webkit-scrollbar-track,
+body.dark-mode.theme-lunora-mode .clock-settings-dialog::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode.theme-lunora-mode .lap-list-wrapper::-webkit-scrollbar-thumb,
+body.dark-mode.theme-lunora-mode .clock-settings-dialog::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #c49758, #e7c894);
+    background-clip: content-box;
+}
+
+body.dark-mode.theme-lunora-mode .lap-list-wrapper::-webkit-scrollbar-thumb:hover,
+body.dark-mode.theme-lunora-mode .clock-settings-dialog::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #e7c894, #c49758);
+    background-clip: content-box;
+}
+
+body.theme-lunora-mode .timer-progress span {
+    background: linear-gradient(90deg, #9b6b38, #d6ad73);
+}
+
+body.dark-mode.theme-lunora-mode .timer-progress span {
+    background: linear-gradient(90deg, #c49758, #e7c894);
+}
+
+body.theme-lunora-mode .timer-status {
+    color: var(--lunora-theme-ink, var(--theme-text));
+    border: 1px solid var(--lunora-theme-border, rgba(var(--theme-accent-rgb), 0.22));
+    background: var(--lunora-theme-pill-bg, rgba(255, 255, 255, 0.54));
+}
+

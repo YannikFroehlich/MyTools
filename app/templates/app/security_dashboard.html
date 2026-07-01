@@ -149,9 +149,9 @@
                     <article class="security-event-item is-{{ event.severity }}">
                         <span class="security-event-dot"></span>
                         <div>
-                            <strong>{{ event.get_event_type_display }}</strong>
+                            <strong>{{ event.translated_event_type }}</strong>
                             <small>{{ event.created_at|date:"d.m.Y H:i" }}</small>
-                            {% if event.note %}<p>{{ event.note }}</p>{% endif %}
+                            {% if event.note %}<p>{{ event.translated_note }}</p>{% endif %}
                             <span class="security-event-meta">
                                 {% if event.ip_address %}IP: {{ event.ip_address }}{% endif %}
                                 {% if event.short_user_agent != '-' %} · {{ event.short_user_agent }}{% endif %}

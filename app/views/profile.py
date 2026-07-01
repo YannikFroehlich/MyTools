@@ -207,6 +207,7 @@ def get_profile_game_card_settings(profile):
 
         settings.append({
             **definition,
+            "label": _translated_game_card_label(definition),
             "order": order,
             "visible": visible,
         })
@@ -233,11 +234,16 @@ def save_profile_game_card_settings(profile, post_data):
     profile.save(update_fields=["profile_game_cards", "updated_at"])
 
 
+def _translated_game_card_label(definition):
+    return _(definition["label"])
+
+
 def _base_game_card(definition):
+    label = _translated_game_card_label(definition)
     return {
         "key": definition["key"],
-        "label": definition["label"],
-        "kicker": definition["label"],
+        "label": label,
+        "kicker": label,
         "title": _("Statistiken"),
         "icon": definition["icon"],
         "play_url": reverse(definition["url_name"]),
