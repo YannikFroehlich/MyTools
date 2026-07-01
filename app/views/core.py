@@ -20,7 +20,7 @@ from django.utils import timezone as django_timezone
 
 from dotenv import dotenv_values, load_dotenv
 
-from app.models import AvatarCharacter, BudgetEntry, BudgetMonth, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, CookieCosmosV2Save, FeatureIdea, FeatureVote, FileShare, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, KniffelGame, KniffelInvite, KniffelPlayer, NebulaForgeTycoonSave, Shortcut, \
+from app.models import AvatarCharacter, BudgetEntry, BudgetMonth, ChatMessage, ChatRoom, ChatRoomMember, ClockSettings, ClockTimerPreset, ClockWorldCity, CookieClickerHighScore, CookieCosmosV2Save, FeatureIdea, FeatureVote, FileShare, Game2048HighScore, DrawingGameInvite, DrawingGameLobby, DrawingGamePlayer, Friendship, HomeLayoutPreference, HomeWidget, HumanBenchmarkHighScore, HumanBenchmarkScore, InboxItem, KniffelGame, KniffelInvite, KniffelPlayer, NebulaForgeTycoonSave, Shortcut, SnakeHighScore, \
     ShortcutSection, StadtLandFlussInvite, StadtLandFlussLobby, StadtLandFlussPlayer, TicTacToeGame, ToolFavorite, UnoGame, UnoInvite, UnoPlayer, UserProfile, WeatherLocation
 
 import json
@@ -2249,6 +2249,65 @@ def drift_circuit(request):
     return render(request, "app/drift_circuit.html")
 
 
+SNAKE_SPEED_KEYS = {"relaxed", "normal", "fast", "turbo"}
+SNAKE_SPAWN_KEYS = {"slow", "normal", "high", "instant"}
+SNAKE_WALL_KEYS = {"wrap", "wall"}
+
+
+def _snake_int(value, default=0, minimum=0, maximum=999999999):
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return default
+    return max(minimum, min(maximum, number))
+
+
+def normalize_snake_settings(raw_settings):
+    raw_settings = raw_settings if isinstance(raw_settings, dict) else {}
+    board_size = _snake_int(raw_settings.get("boardSize"), 19, 11, 31)
+    fruit_limit = _snake_int(raw_settings.get("fruitLimit"), 1, 1, 7)
+    speed_key = str(raw_settings.get("speedKey") or "normal")
+    spawn_key = str(raw_settings.get("spawnKey") or "normal")
+    wall_mode = str(raw_settings.get("wallMode") or "wrap")
+
+    return {
+        "boardSize": board_size,
+        "speedKey": speed_key if speed_key in SNAKE_SPEED_KEYS else "normal",
+        "fruitLimit": fruit_limit,
+        "spawnKey": spawn_key if spawn_key in SNAKE_SPAWN_KEYS else "normal",
+        "wallMode": wall_mode if wall_mode in SNAKE_WALL_KEYS else "wrap",
+    }
+
+
+def snake_settings_key(settings):
+    return "|".join([
+        str(settings["boardSize"]),
+        settings["speedKey"],
+        str(settings["fruitLimit"]),
+        settings["spawnKey"],
+        settings["wallMode"],
+    ])
+
+
+def serialize_snake_highscore(highscore):
+    if not highscore:
+        return None
+
+    return {
+        "key": highscore.settings_key,
+        "settings": highscore.settings or {},
+        "score": highscore.score,
+        "length": highscore.length,
+        "fruits": highscore.fruits,
+        "moves": highscore.moves,
+        "durationSeconds": highscore.duration_seconds,
+        "runs": highscore.runs,
+        "achievedAt": highscore.achieved_at.isoformat(),
+        "achievedAtLabel": date_format(highscore.achieved_at, "d.m.Y H:i"),
+    }
+
+
+@ensure_csrf_cookie
 def snake_powerups(request):
     mark_active_game(request.user, "snake_powerups")
     snake_text = {
@@ -2291,7 +2350,84 @@ def snake_powerups(request):
             "wall": _("Wände"),
         },
     }
-    return render(request, "app/snake_powerups.html", {"snake_text": snake_text})
+    snake_highscores = []
+    if request.user.is_authenticated:
+        snake_highscores = [
+            serialize_snake_highscore(highscore)
+            for highscore in SnakeHighScore.objects.filter(user=request.user).order_by("-score", "-length", "-achieved_at")[:60]
+        ]
+
+    return render(request, "app/snake_powerups.html", {
+        "snake_text": snake_text,
+        "snake_highscores": snake_highscores,
+    })
+
+
+@login_required
+@require_POST
+def snake_score_api(request):
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return api_error_response(_("Ungueltige Anfrage."), status=400)
+
+    settings = normalize_snake_settings(payload.get("settings"))
+    settings_key = snake_settings_key(settings)
+
+    score = _snake_int(payload.get("score"), 0, 0, 999999999)
+    length = _snake_int(payload.get("length"), 3, 1, 999999)
+    fruits = _snake_int(payload.get("fruits"), 0, 0, 999999)
+    moves = _snake_int(payload.get("moves"), 0, 0, 999999)
+    duration_seconds = _snake_int(payload.get("durationSeconds"), 0, 0, 86400)
+    runs = _snake_int(payload.get("runs"), 1, 1, 999999)
+
+    if score <= 0:
+        return api_error_response(_("Ungueltiger Snake-Score."), status=400)
+
+    highscore, created = SnakeHighScore.objects.get_or_create(
+        user=request.user,
+        settings_key=settings_key,
+        defaults={
+            "settings": settings,
+            "score": score,
+            "length": length,
+            "fruits": fruits,
+            "moves": moves,
+            "duration_seconds": duration_seconds,
+            "runs": runs,
+        },
+    )
+
+    is_new_highscore = created or score > highscore.score or (score == highscore.score and length > highscore.length)
+    if not created:
+        if is_new_highscore:
+            highscore.settings = settings
+            highscore.score = score
+            highscore.length = length
+            highscore.fruits = fruits
+            highscore.moves = moves
+            highscore.duration_seconds = duration_seconds
+            highscore.runs = max(highscore.runs or 1, runs)
+            highscore.save()
+        else:
+            update_fields = []
+            merged_runs = max(highscore.runs or 1, runs)
+            if merged_runs != highscore.runs:
+                highscore.runs = merged_runs
+                update_fields.append("runs")
+            if highscore.settings != settings:
+                highscore.settings = settings
+                update_fields.append("settings")
+            if update_fields:
+                highscore.save(update_fields=update_fields)
+
+    mark_active_game(request.user, "snake_powerups")
+
+    return JsonResponse({
+        "status": "ok",
+        "new_highscore": is_new_highscore,
+        "highscore": serialize_snake_highscore(highscore),
+    })
 
 
 NEBULA_FORGE_SAVE_COOLDOWN_SECONDS = 60

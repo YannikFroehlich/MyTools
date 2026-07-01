@@ -14608,3 +14608,19 @@ msgstr "playing Snake"
 
 msgid "Snake ist bereit für deinen ersten Lauf."
 msgstr "Snake is ready for your first run."
+
+#: .\app\templates\app\snake_powerups.html:98
+msgid "Sehr klein"
+msgstr "Very small"
+
+#: app/views/core.py app/views/profile.py
+msgid "Noch kein Snake-Highscore gespeichert."
+msgstr "No Snake high score saved yet."
+
+#: app/views/core.py app/views/profile.py
+msgid "Ungueltiger Snake-Score."
+msgstr "Invalid Snake score."
+
+#: app/views/core.py app/views/profile.py
+msgid "Einstellung"
+msgstr "Setting"

@@ -8,6 +8,8 @@
     const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
     const text = readText();
     const highscoreKey = root.dataset.highscoresKey || 'mytools-snake-simple-highscores-v1';
+    const scoreApiUrl = root.dataset.scoreApi || '';
+    const serverHighscores = readServerHighscores();
     const locale = document.documentElement.lang || navigator.language || 'de-DE';
 
     const ui = {
@@ -51,6 +53,12 @@
         KeyD: 'right'
     };
 
+    const inputConfig = {
+        maxQueuedTurns: 2,
+        turnBoostProgress: 0.82,
+        minTurnBoostElapsed: 18
+    };
+
     const speedConfig = {
         relaxed: 150,
         normal: 112,
@@ -79,6 +87,17 @@
             return JSON.parse(script.textContent || '{}');
         } catch (_error) {
             return {};
+        }
+    }
+
+    function readServerHighscores() {
+        const script = document.getElementById('snakeServerHighscores');
+        if (!script) return [];
+        try {
+            const parsed = JSON.parse(script.textContent || '[]');
+            return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+        } catch (_error) {
+            return [];
         }
     }
 
@@ -132,6 +151,7 @@
             previousSnake: [],
             direction: directionVectors.right,
             nextDirection: directionVectors.right,
+            turnQueue: [],
             food: [],
             score: 0,
             fruits: 0,
@@ -296,7 +316,12 @@
 
     function step() {
         const previousSnake = cloneSnake(state.snake);
-        state.direction = state.nextDirection;
+        const queuedDirection = state.turnQueue.shift();
+        if (queuedDirection && !isOppositeDirection(queuedDirection, state.direction)) {
+            state.direction = queuedDirection;
+        }
+        state.nextDirection = state.turnQueue[0] || state.direction;
+
         const head = state.snake[0];
         const next = {
             x: head.x + state.direction.x,
@@ -473,6 +498,8 @@
         }
 
         saveHighscores(records);
+        const savedRecord = records.find((item) => item.key === key) || record;
+        void syncHighscoreRecord(savedRecord);
         renderHighscores();
         requestFitSync();
         return isNewHighscore;
@@ -489,6 +516,7 @@
 
     function saveHighscores(records) {
         const cleaned = records
+            .map(normalizeHighscoreRecord)
             .filter((record) => record && record.key && Number(record.score) >= 0)
             .sort(compareHighscores)
             .slice(0, 60);
@@ -497,6 +525,103 @@
         } catch (_error) {
             return;
         }
+    }
+
+    function normalizeHighscoreRecord(record) {
+        if (!record) return null;
+        const settings = normalizeSettings(record.settings || parseSettingsKey(record.key));
+        const key = record.key || settingsKey(settings);
+        return {
+            key,
+            settings,
+            score: clampNumber(Number(record.score || 0), 0, 999999999),
+            length: clampNumber(Number(record.length || 3), 1, 999999),
+            fruits: clampNumber(Number(record.fruits || 0), 0, 999999),
+            moves: clampNumber(Number(record.moves || 0), 0, 999999),
+            durationSeconds: clampNumber(Number(record.durationSeconds || 0), 0, 86400),
+            achievedAt: record.achievedAt || new Date().toISOString(),
+            runs: clampNumber(Number(record.runs || 1), 1, 999999)
+        };
+    }
+
+    function normalizeSettings(settings) {
+        const parsed = settings || {};
+        const speedKey = speedConfig[parsed.speedKey] ? parsed.speedKey : 'normal';
+        const spawnKey = Object.prototype.hasOwnProperty.call(spawnConfig, parsed.spawnKey) ? parsed.spawnKey : 'normal';
+        const wallMode = parsed.wallMode === 'wall' ? 'wall' : 'wrap';
+
+        return {
+            boardSize: clampNumber(Number(parsed.boardSize || 19), 11, 31),
+            speedKey,
+            interval: speedConfig[speedKey] || speedConfig.normal,
+            fruitLimit: clampNumber(Number(parsed.fruitLimit || 1), 1, 7),
+            spawnKey,
+            spawnEvery: spawnConfig[spawnKey] ?? spawnConfig.normal,
+            wallMode
+        };
+    }
+
+    function mergeHighscores(records) {
+        if (!Array.isArray(records) || !records.length) return;
+        const merged = loadHighscores();
+        records.map(normalizeHighscoreRecord).filter(Boolean).forEach((incoming) => {
+            const existingIndex = merged.findIndex((item) => item.key === incoming.key);
+            if (existingIndex < 0) {
+                merged.push(incoming);
+                return;
+            }
+
+            const existing = normalizeHighscoreRecord(merged[existingIndex]);
+            if (compareHighscores(incoming, existing) < 0) {
+                merged[existingIndex] = incoming;
+                return;
+            }
+
+            existing.runs = Math.max(Number(existing.runs || 1), Number(incoming.runs || 1));
+            merged[existingIndex] = existing;
+        });
+        saveHighscores(merged);
+    }
+
+    async function syncHighscoreRecord(record) {
+        if (!scoreApiUrl || !record || Number(record.score || 0) <= 0) return;
+        try {
+            const response = await fetch(scoreApiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(record)
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            if (data?.highscore) {
+                mergeHighscores([data.highscore]);
+                renderHighscores();
+            }
+        } catch (_error) {
+            // Local highscores are still kept when the profile sync is unavailable.
+        }
+    }
+
+    function syncStoredHighscores() {
+        if (!scoreApiUrl) return;
+        loadHighscores()
+            .slice(0, 60)
+            .forEach((record, index) => {
+                window.setTimeout(() => syncHighscoreRecord(record), index * 80);
+            });
+    }
+
+    function getCookie(name) {
+        const prefix = `${name}=`;
+        return document.cookie
+            .split(';')
+            .map((item) => item.trim())
+            .find((item) => item.startsWith(prefix))
+            ?.slice(prefix.length) || '';
     }
 
     function compareHighscores(a, b) {
@@ -615,9 +740,51 @@
         if (state.phase !== 'running') return;
 
         const next = directionVectors[directionName];
-        const base = state.nextDirection || state.direction;
-        if (next.x + base.x === 0 && next.y + base.y === 0) return;
-        state.nextDirection = next;
+        const lastQueuedDirection = state.turnQueue[state.turnQueue.length - 1];
+        const base = lastQueuedDirection || state.direction;
+        if (isSameDirection(next, base) || isOppositeDirection(next, base)) return;
+
+        if (state.turnQueue.length >= inputConfig.maxQueuedTurns) {
+            state.turnQueue[state.turnQueue.length - 1] = next;
+        } else {
+            state.turnQueue.push(next);
+        }
+
+        state.nextDirection = state.turnQueue[0] || state.direction;
+        boostPendingTurn();
+        renderCurrentFrame();
+    }
+
+    function isSameDirection(a, b) {
+        return Boolean(a && b && a.x === b.x && a.y === b.y);
+    }
+
+    function isOppositeDirection(a, b) {
+        return Boolean(a && b && a.x + b.x === 0 && a.y + b.y === 0);
+    }
+
+    function boostPendingTurn() {
+        if (!lastStepAt || state.phase !== 'running') return;
+
+        const now = performance.now();
+        const interval = state.settings.interval;
+        const elapsed = now - lastStepAt;
+        if (elapsed < inputConfig.minTurnBoostElapsed) return;
+
+        const targetElapsed = interval * inputConfig.turnBoostProgress;
+        if (elapsed < targetElapsed) {
+            lastStepAt = now - targetElapsed;
+        }
+
+        if (!animationFrameId) {
+            animationFrameId = window.requestAnimationFrame(animationLoop);
+        }
+    }
+
+    function renderCurrentFrame() {
+        if (!lastStepAt || state.phase !== 'running') return;
+        lastRenderProgress = clampFloat((performance.now() - lastStepAt) / state.settings.interval, 0, 1);
+        render(lastRenderProgress);
     }
 
     function syncBoardSize() {
@@ -777,7 +944,7 @@
         if (!position) return;
 
         const center = cellCenter(position, cellSize);
-        const angle = directionAngle(state.direction || state.nextDirection || directionVectors.right);
+        const angle = directionAngle(getVisualDirection());
         const radiusX = headDiameter * 0.5;
         const radiusY = headDiameter * 0.44;
 
@@ -862,6 +1029,10 @@
             x: cell.x * cellSize + cellSize / 2,
             y: cell.y * cellSize + cellSize / 2
         };
+    }
+
+    function getVisualDirection() {
+        return state.turnQueue?.[0] || state.nextDirection || state.direction || directionVectors.right;
     }
 
     function directionAngle(vector) {
@@ -966,9 +1137,11 @@
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
 
+    mergeHighscores(serverHighscores);
     bindEvents();
     updateSettingsDisabled(false);
     updatePauseButton();
     updateUi();
     requestFitSync();
+    syncStoredHighscores();
 })();

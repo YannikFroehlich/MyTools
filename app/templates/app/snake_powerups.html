@@ -5,12 +5,13 @@
 {% block title %}Snake - MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/snake_powerups.css' %}?v=20260701-snake-look">
+    <link rel="stylesheet" href="{% static 'app/css/snake_powerups.css' %}?v=20260701-snake-profile-sync">
 {% endblock %}
 
 {% block content %}
-<section class="snake-page" data-highscores-key="mytools-snake-simple-highscores-v1">
+<section class="snake-page" data-highscores-key="mytools-snake-simple-highscores-v1" data-score-api="{% if user.is_authenticated %}{% url 'snake-score-api' %}{% endif %}">
     {{ snake_text|json_script:"snakeText" }}
+    {{ snake_highscores|json_script:"snakeServerHighscores" }}
 
     <div class="snake-shell">
         <header class="snake-header">
@@ -94,6 +95,7 @@
                         <label>
                             <span>{% translate "Spielfeldgröße" %}</span>
                             <select id="snakeBoardSelect">
+                                <option value="11">11 × 11 · {% translate "Sehr klein" %}</option>
                                 <option value="15">15 × 15 · {% translate "Klein" %}</option>
                                 <option value="19" selected>19 × 19 · {% translate "Mittel" %}</option>
                                 <option value="23">23 × 23 · {% translate "Groß" %}</option>
@@ -175,5 +177,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/snake_powerups.js' %}?v=20260701-snake-look" defer></script>
+    <script src="{% static 'app/js/snake_powerups.js' %}?v=20260701-snake-profile-sync" defer></script>
 {% endblock %}
