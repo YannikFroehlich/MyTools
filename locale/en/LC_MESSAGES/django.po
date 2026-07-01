@@ -111,7 +111,7 @@ msgstr "Roadmap"
 #: .\app\templates\app\achievement_center.html:12
 #: .\app\templates\app\base.html:986
 msgid "Achievement-Center"
-msgstr "Achievement Center"
+msgstr "Achievement center"
 
 #: .\app\access_control.py:98 .\app\achievement_utils.py:39
 #: .\app\platform_utils.py:39 .\app\platform_utils.py:51
@@ -370,7 +370,7 @@ msgstr "Battleship"
 #: .\app\templates\app\stadtlandfluss_home.html:28
 #: .\app\templates\app\stadtlandfluss_lobby.html:4
 msgid "Stadt Land Fluss"
-msgstr "City Country River"
+msgstr "Categories"
 
 #: .\app\access_control.py:369 .\app\hangman_views.py:462
 #: .\app\performance_tools_views.py:208 .\app\platform_utils.py:16
@@ -14738,8 +14738,250 @@ msgstr "Snake Powerups is ready for your first run."
 msgid "Voicemod Aktion unvollständig."
 msgstr "Voicemod action incomplete."
 
-msgid "Profileinstellungen"
-msgstr "Profile settings"
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Forschungszeit"
+msgstr "Research time"
 
-msgid "Letzte Aktivitäten"
-msgstr "Recent activity"
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Forschungslabor"
+msgstr "Research lab"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Schalte dauerhafte Boni frei. Immer nur ein Projekt kann gleichzeitig laufen."
+msgstr "Unlock permanent bonuses. Only one project can run at a time."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Quanten-Sensorik"
+msgstr "Quantum sensorics"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Scans finden effizientere AFK-Routen um den Sternenkern."
+msgstr "Scans find more efficient AFK routes around the stellar core."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Passive Produktion +12%."
+msgstr "Passive production +12%."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Plasma-Theorie"
+msgstr "Plasma theory"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Stabilisiert aktiven Abbau durch bessere Werkzeugfelder."
+msgstr "Stabilizes active mining through better tool fields."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Aktiver Abbau +12%."
+msgstr "Active mining +12%."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Drohnen-Automation"
+msgstr "Drone automation"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Drohnen verteilen Produktionsaufträge selbstständig."
+msgstr "Drones distribute production tasks automatically."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Passive Produktion +8% und Sammelimpuls lädt schneller."
+msgstr "Passive production +8% and collection pulse recharges faster."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Kryo-Chemie"
+msgstr "Cryo chemistry"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Neue Kühlmittel erhöhen die Hitze-Kapazität der Forge."
+msgstr "New coolants increase the forge heat capacity."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Tiefenarchiv"
+msgstr "Deep archive"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Speichert Baupläne für längere Offline-Schichten."
+msgstr "Stores blueprints for longer offline shifts."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Offline-Cap +4h und Offline-Effizienz +6%."
+msgstr "Offline cap +4h and offline efficiency +6%."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Riss-Mathematik"
+msgstr "Rift mathematics"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Berechnet Flux-Risse und Meteorbahnen genauer."
+msgstr "Calculates flux rifts and meteor paths more accurately."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Events geben +18% Flux und laden schneller."
+msgstr "Events grant +18% flux and recharge faster."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Singularitäts-Blaupause"
+msgstr "Singularity blueprint"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Nutze Prestige-Erfahrung für stabilere Galaxie-Neustarts."
+msgstr "Use prestige experience for more stable galaxy restarts."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Prestige-Bonus +8%."
+msgstr "Prestige bonus +8%."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Aktive Forschung"
+msgstr "Active research"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Kein Projekt aktiv"
+msgstr "No active project"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Starte ein Forschungsprojekt, um nach Ablauf der Zeit einen dauerhaften Bonus zu erhalten."
+msgstr "Start a research project to gain a permanent bonus after the timer finishes."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "{done}/{total} erforscht"
+msgstr "{done}/{total} researched"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Dauer: {duration}"
+msgstr "Duration: {duration}"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Effekt: {effect}"
+msgstr "Effect: {effect}"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Voraussetzung: {hint}"
+msgstr "Requirement: {hint}"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Forschung läuft"
+msgstr "Research running"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Abschließen"
+msgstr "Complete"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Erforschen"
+msgstr "Research"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Erforscht"
+msgstr "Researched"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Labor belegt"
+msgstr "Lab busy"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Forschung gestartet"
+msgstr "Research started"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "{name} wird erforscht. Dauer: {duration}."
+msgstr "{name} is being researched. Duration: {duration}."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Forschung abgeschlossen"
+msgstr "Research complete"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "{name} wurde freigeschaltet."
+msgstr "{name} has been unlocked."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Forschung bereit"
+msgstr "Research ready"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "{name} ist bereit zum Abschließen."
+msgstr "{name} is ready to complete."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Projekt abgeschlossen"
+msgstr "Project complete"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Dieses Projekt ist bereits erforscht."
+msgstr "This project has already been researched."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Labor ist belegt"
+msgstr "Lab is busy"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Schließe zuerst {name} ab."
+msgstr "Complete {name} first."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Voraussetzung fehlt"
+msgstr "Requirement missing"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Noch nicht freigeschaltet: {hint}."
+msgstr "Not unlocked yet: {hint}."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "{item} benötigt {cost} Flux."
+msgstr "{item} requires {cost} flux."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Noch {duration} Forschungszeit."
+msgstr "{duration} research time remaining."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Bereit zum Abschluss"
+msgstr "Ready to complete"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Forschung abholen"
+msgstr "Claim research"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "8 Anlagen"
+msgstr "8 facilities"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "50K Lifetime-Flux"
+msgstr "50K lifetime flux"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "4 Anlagenarten"
+msgstr "4 facility types"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Kryo-Kühlkreis Level 3"
+msgstr "Cryo cooling loop level 3"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "750K Total-Flux"
+msgstr "750K total flux"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "3 Flux-Risse oder 5 Meteore"
+msgstr "3 flux rifts or 5 meteors"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Prestige-Level 2"
+msgstr "Prestige level 2"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Forschungsabteilung"
+msgstr "Research department"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Schließe deine erste Forschung ab."
+msgstr "Complete your first research project."
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Sternenlabor"
+msgstr "Star lab"
+
+#: app/templates/app/nebula_forge_tycoon.html app/static/app/js/nebula_forge_tycoon.js
+msgid "Schließe 5 Forschungen ab."
+msgstr "Complete 5 research projects."

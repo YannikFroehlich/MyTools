@@ -330,6 +330,87 @@
         },
     ];
 
+
+    const researchProjects = [
+        {
+            id: "quantumSensorics",
+            name: "Quanten-Sensorik",
+            icon: "fa-solid fa-satellite-dish",
+            description: "Scans finden effizientere AFK-Routen um den Sternenkern.",
+            effect: "Passive Produktion +12%.",
+            cost: 15000,
+            duration: 75,
+            unlockHint: "8 Anlagen",
+            requires: s => totalBuildings(s) >= 8,
+        },
+        {
+            id: "plasmaTheory",
+            name: "Plasma-Theorie",
+            icon: "fa-solid fa-atom",
+            description: "Stabilisiert aktiven Abbau durch bessere Werkzeugfelder.",
+            effect: "Aktiver Abbau +12%.",
+            cost: 35000,
+            duration: 120,
+            unlockHint: "50K Lifetime-Flux",
+            requires: s => s.lifetimeFlux >= 50000 || s.totalLifetimeFlux >= 50000,
+        },
+        {
+            id: "droneAutomation",
+            name: "Drohnen-Automation",
+            icon: "fa-solid fa-robot",
+            description: "Drohnen verteilen Produktionsaufträge selbstständig.",
+            effect: "Passive Produktion +8% und Sammelimpuls lädt schneller.",
+            cost: 120000,
+            duration: 240,
+            unlockHint: "4 Anlagenarten",
+            requires: s => uniqueBuildings(s) >= 4,
+        },
+        {
+            id: "cryoChemistry",
+            name: "Kryo-Chemie",
+            icon: "fa-solid fa-vial-circle-check",
+            description: "Neue Kühlmittel erhöhen die Hitze-Kapazität der Forge.",
+            effect: "Mehr Hitze-Kapazität und schnellere Abkühlung.",
+            cost: 280000,
+            duration: 360,
+            unlockHint: "Kryo-Kühlkreis Level 3",
+            requires: s => upgradeLevel("coolingLoop", s) >= 3,
+        },
+        {
+            id: "deepArchive",
+            name: "Tiefenarchiv",
+            icon: "fa-solid fa-database",
+            description: "Speichert Baupläne für längere Offline-Schichten.",
+            effect: "Offline-Cap +4h und Offline-Effizienz +6%.",
+            cost: 800000,
+            duration: 600,
+            unlockHint: "750K Total-Flux",
+            requires: s => s.totalLifetimeFlux >= 750000,
+        },
+        {
+            id: "riftMath",
+            name: "Riss-Mathematik",
+            icon: "fa-solid fa-square-root-variable",
+            description: "Berechnet Flux-Risse und Meteorbahnen genauer.",
+            effect: "Events geben +18% Flux und laden schneller.",
+            cost: 2200000,
+            duration: 900,
+            unlockHint: "3 Flux-Risse oder 5 Meteore",
+            requires: s => s.riftsSealed >= 3 || s.meteorsCollected >= 5,
+        },
+        {
+            id: "singularityBlueprint",
+            name: "Singularitäts-Blaupause",
+            icon: "fa-solid fa-circle-nodes",
+            description: "Nutze Prestige-Erfahrung für stabilere Galaxie-Neustarts.",
+            effect: "Prestige-Bonus +8%.",
+            cost: 8000000,
+            duration: 1500,
+            unlockHint: "Prestige-Level 2",
+            requires: s => s.prestigeLevel >= 2,
+        },
+    ];
+
     const achievements = [
         { id: "firstFlux", title: "Erster Funke", description: "Sammle 100 Flux.", icon: "fa-solid fa-sparkles", test: s => s.lifetimeFlux >= 100 },
         { id: "afkStart", title: "Automatisierung", description: "Besitze 10 Anlagen.", icon: "fa-solid fa-robot", test: s => totalBuildings(s) >= 10 },
@@ -345,6 +426,8 @@
         { id: "engineer", title: "Großingenieur", description: "Besitze 75 Anlagen.", icon: "fa-solid fa-gears", test: s => totalBuildings(s) >= 75 },
         { id: "million", title: "Millionen-Schmiede", description: "Sammle 1.000.000 Lifetime-Flux.", icon: "fa-solid fa-vault", test: s => s.totalLifetimeFlux >= 1_000_000 },
         { id: "prestige", title: "Neue Galaxie", description: "Führe dein erstes Prestige aus.", icon: "fa-solid fa-star", test: s => s.prestigeLevel >= 2 },
+        { id: "researchFirst", title: "Forschungsabteilung", description: "Schließe deine erste Forschung ab.", icon: "fa-solid fa-flask-vial", test: s => completedResearchCount(s) >= 1 },
+        { id: "researchFive", title: "Sternenlabor", description: "Schließe 5 Forschungen ab.", icon: "fa-solid fa-microscope", test: s => completedResearchCount(s) >= 5 },
     ];
 
 
@@ -355,6 +438,12 @@
     upgrades.forEach(item => {
         item.name = t(item.name);
         item.description = t(item.description);
+    });
+    researchProjects.forEach(item => {
+        item.name = t(item.name);
+        item.description = t(item.description);
+        item.effect = t(item.effect);
+        item.unlockHint = t(item.unlockHint);
     });
     achievements.forEach(item => {
         item.title = t(item.title);
@@ -374,6 +463,7 @@
         activeMode: "balanced",
         buildings: {},
         upgrades: {},
+        research: { completed: {}, active: null },
         achievements: {},
         lastSaved: now(),
         databaseSavedAt: 0,
@@ -433,6 +523,9 @@
         buildings: document.getElementById("nftBuildings"),
         buildingCount: document.getElementById("nftBuildingCount"),
         upgrades: document.getElementById("nftUpgrades"),
+        research: document.getElementById("nftResearch"),
+        researchCount: document.getElementById("nftResearchCount"),
+        researchActive: document.getElementById("nftResearchActive"),
         achievements: document.getElementById("nftAchievements"),
         achievementCount: document.getElementById("nftAchievementCount"),
         prestigeButton: document.getElementById("nftPrestigeButton"),
@@ -463,6 +556,7 @@
     let shopScrollLockUntil = 0;
     let lastBuildingsRenderKey = "";
     let lastUpgradesRenderKey = "";
+    let lastResearchRenderKey = "";
     let lastAchievementsRenderKey = "";
     let lastNebulaAppearanceKey = "";
     let lastModeRenderKey = "";
@@ -530,6 +624,7 @@
         merged.activeMode = ["balanced", "active", "afk"].includes(merged.activeMode) ? merged.activeMode : "balanced";
         merged.buildings = typeof merged.buildings === "object" && merged.buildings ? merged.buildings : {};
         merged.upgrades = typeof merged.upgrades === "object" && merged.upgrades ? merged.upgrades : {};
+        merged.research = normalizeResearchState(merged.research);
         merged.heat = clamp(merged.heat, 0, maxHeat(merged));
         merged.achievements = typeof merged.achievements === "object" && merged.achievements ? merged.achievements : {};
         merged.lastSaved = Math.max(0, sanitizeNumber(merged.lastSaved, now()));
@@ -818,6 +913,62 @@
         return Math.max(0, Math.floor(sanitizeNumber(source.upgrades[id])));
     }
 
+    function getResearchProject(id) {
+        return researchProjects.find(item => item.id === id) || null;
+    }
+
+    function normalizeResearchState(raw) {
+        const completed = {};
+        const rawCompleted = raw && typeof raw.completed === "object" && raw.completed ? raw.completed : {};
+        researchProjects.forEach(project => {
+            if (rawCompleted[project.id]) {
+                completed[project.id] = sanitizeNumber(rawCompleted[project.id], now()) || now();
+            }
+        });
+
+        const rawActive = raw && typeof raw.active === "object" && raw.active ? raw.active : null;
+        let active = null;
+        if (rawActive && getResearchProject(rawActive.id) && !completed[rawActive.id]) {
+            const startedAt = Math.max(0, sanitizeNumber(rawActive.startedAt, now()));
+            const readyAt = Math.max(startedAt, sanitizeNumber(rawActive.readyAt, startedAt));
+            if (readyAt <= now()) {
+                completed[rawActive.id] = readyAt || now();
+            } else {
+                active = { id: rawActive.id, startedAt, readyAt };
+            }
+        }
+
+        return { completed, active };
+    }
+
+    function researchCompleted(id, source = state) {
+        return Boolean(source.research?.completed?.[id]);
+    }
+
+    function activeResearch(source = state) {
+        const active = source.research?.active;
+        if (!active || !getResearchProject(active.id) || researchCompleted(active.id, source)) return null;
+        return active;
+    }
+
+    function completedResearchCount(source = state) {
+        return researchProjects.reduce((sum, project) => sum + (researchCompleted(project.id, source) ? 1 : 0), 0);
+    }
+
+    function researchDurationMs(project) {
+        return Math.max(1, sanitizeNumber(project.duration, 1)) * 1000;
+    }
+
+    function researchRequirementMet(project, source = state) {
+        if (!project || typeof project.requires !== "function") return true;
+        try {
+            return Boolean(project.requires(source));
+        } catch (error) {
+            console.warn("Nebula Forge Forschungsvoraussetzung konnte nicht geprüft werden.", error);
+            return false;
+        }
+    }
+
     function totalBuildings(source = state) {
         return buildings.reduce((sum, item) => sum + buildingCount(item.id, source), 0);
     }
@@ -831,7 +982,19 @@
     }
 
     function prestigeMultiplier(source = state) {
-        return 1 + (source.prestigeLevel - 1) * 0.12 + source.shards * 0.045;
+        const researchBonus = researchCompleted("singularityBlueprint", source) ? 0.08 : 0;
+        return 1 + (source.prestigeLevel - 1) * 0.12 + source.shards * 0.045 + researchBonus;
+    }
+
+    function researchPassiveMultiplier(source = state) {
+        let multiplier = 1;
+        if (researchCompleted("quantumSensorics", source)) multiplier *= 1.12;
+        if (researchCompleted("droneAutomation", source)) multiplier *= 1.08;
+        return multiplier;
+    }
+
+    function researchManualMultiplier(source = state) {
+        return researchCompleted("plasmaTheory", source) ? 1.12 : 1;
     }
 
     function focusPassive(source = state) {
@@ -851,7 +1014,7 @@
         const overdrive = source.overdriveUntil > now() ? 2.4 : 1;
         const passiveBoost = source.passiveBoostUntil > now() ? 1.65 + upgradeLevel("harmonicCapacitor", source) * 0.08 : 1;
         const logistics = 1 + upgradeLevel("stellarLogistics", source) * 0.065 + uniqueBuildings(source) * upgradeLevel("autoCalibrator", source) * 0.012;
-        return (1 + afk * 0.08) * logistics * prestigeMultiplier(source) * focusPassive(source) * overdrive * passiveBoost;
+        return (1 + afk * 0.08) * logistics * prestigeMultiplier(source) * focusPassive(source) * overdrive * passiveBoost * researchPassiveMultiplier(source);
     }
 
     function calculateCps(source = state) {
@@ -860,11 +1023,11 @@
     }
 
     function maxHeat(source = state) {
-        return 100 + upgradeLevel("coolingLoop", source) * 12;
+        return 100 + upgradeLevel("coolingLoop", source) * 12 + (researchCompleted("cryoChemistry", source) ? 18 : 0);
     }
 
     function heatDecay(source = state) {
-        return 4.5 + upgradeLevel("coolingLoop", source) * 0.8;
+        return 4.5 + upgradeLevel("coolingLoop", source) * 0.8 + (researchCompleted("cryoChemistry", source) ? 1.2 : 0);
     }
 
     function comboMultiplier(source = state) {
@@ -903,25 +1066,25 @@
         const heatRatio = clamp(source.heat / Math.max(1, maxHeat(source)), 0, 1);
         const hotPenalty = source.heat >= maxHeat(source) ? 0.62 : 1;
         const heatRecycler = 1 + heatRatio * upgradeLevel("heatRecycler", source) * 0.025;
-        const basePower = (1 + gloves * 0.9) * neural * comboMultiplier(source) * prestigeMultiplier(source) * focusManual(source) * activeBoost * hotPenalty * heatRecycler;
+        const basePower = (1 + gloves * 0.9) * neural * comboMultiplier(source) * prestigeMultiplier(source) * focusManual(source) * activeBoost * hotPenalty * heatRecycler * researchManualMultiplier(source);
         const afkEcho = calculateCps(source) * activeTapSeconds(source) * activeBoost;
         return Math.max(1, basePower + afkEcho);
     }
 
     function offlineEfficiency(source = state) {
-        return clamp(0.55 + upgradeLevel("afkProtocol", source) * 0.025, 0.55, 0.92);
+        return clamp(0.55 + upgradeLevel("afkProtocol", source) * 0.025 + (researchCompleted("deepArchive", source) ? 0.06 : 0), 0.55, 0.96);
     }
 
     function offlineCapHours(source = state) {
-        return 4 + upgradeLevel("deepStorage", source) * 2;
+        return 4 + upgradeLevel("deepStorage", source) * 2 + (researchCompleted("deepArchive", source) ? 4 : 0);
     }
 
     function eventRewardMultiplier(source = state) {
-        return 1 + upgradeLevel("riftAmplifier", source) * 0.12 + upgradeLevel("meteorMagnet", source) * 0.025;
+        return 1 + upgradeLevel("riftAmplifier", source) * 0.12 + upgradeLevel("meteorMagnet", source) * 0.025 + (researchCompleted("riftMath", source) ? 0.18 : 0);
     }
 
     function eventCooldownMs(base, min = 6000) {
-        const reduction = upgradeLevel("eventRelay") * 1200 + upgradeLevel("harmonicCapacitor") * 450;
+        const reduction = upgradeLevel("eventRelay") * 1200 + upgradeLevel("harmonicCapacitor") * 450 + (researchCompleted("riftMath") ? 1800 : 0);
         return Math.max(min, base - reduction);
     }
 
@@ -1036,7 +1199,9 @@
     }
 
     function shopAnimationCardSelector(kind, id) {
-        return kind === "building" ? `[data-building-card="${id}"]` : `[data-upgrade-card="${id}"]`;
+        if (kind === "building") return `[data-building-card="${id}"]`;
+        if (kind === "research") return `[data-research-card="${id}"]`;
+        return `[data-upgrade-card="${id}"]`;
     }
 
     function abilityTypeFromButton(button) {
@@ -1427,6 +1592,83 @@
         saveState();
     }
 
+
+    function completeReadyResearch(showToast = true) {
+        const active = activeResearch();
+        if (!active || active.readyAt > now()) return false;
+
+        const project = getResearchProject(active.id);
+        state.research.completed[active.id] = active.readyAt || now();
+        state.research.active = null;
+        if (showToast && project && !document.hidden) {
+            showMessage(t("Forschung abgeschlossen"), fmt("{name} wurde freigeschaltet.", { name: project.name }));
+        }
+        checkAchievements();
+        saveState();
+        renderAll(true);
+        return true;
+    }
+
+    function startResearch(id, sourceButton = null) {
+        if (completeReadyResearch(true)) return;
+
+        const project = getResearchProject(id);
+        if (!project) return;
+
+        if (researchCompleted(id)) {
+            showMessage(t("Projekt abgeschlossen"), t("Dieses Projekt ist bereits erforscht."));
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        const active = activeResearch();
+        if (active) {
+            const activeProject = getResearchProject(active.id);
+            showMessage(t("Labor ist belegt"), fmt("Schließe zuerst {name} ab.", { name: activeProject?.name || t("Aktive Forschung") }));
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        if (!researchRequirementMet(project)) {
+            showMessage(t("Voraussetzung fehlt"), fmt("Noch nicht freigeschaltet: {hint}.", { hint: project.unlockHint }));
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        if (!spendFlux(project.cost)) {
+            showMessage(t("Nicht genug Flux"), fmt("{item} benötigt {cost} Flux.", { item: project.name, cost: format(project.cost) }));
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        const startedAt = now();
+        state.research.active = {
+            id: project.id,
+            startedAt,
+            readyAt: startedAt + researchDurationMs(project),
+        };
+        showMessage(t("Forschung gestartet"), fmt("{name} wird erforscht. Dauer: {duration}.", { name: project.name, duration: formatSeconds(project.duration) }));
+        window.requestAnimationFrame(() => playShopPurchaseAnimation("research", id, { label: t("Forschung gestartet") }));
+        saveState();
+        renderAll(true);
+    }
+
+    function finishResearch(id, sourceButton = null) {
+        const active = activeResearch();
+        if (!active || active.id !== id) {
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        if (active.readyAt > now()) {
+            showMessage(t("Forschung läuft"), fmt("Noch {duration} Forschungszeit.", { duration: formatSeconds((active.readyAt - now()) / 1000) }));
+            playDeniedPurchaseAnimation(sourceButton);
+            return;
+        }
+
+        completeReadyResearch(true);
+    }
+
     function collectImpulseRewardPreview(source = state) {
         const collector = upgradeLevel("collectorArray", source);
         const secondsOfAfk = 2.2 + collector * 0.28;
@@ -1443,7 +1685,7 @@
     function collectImpulseCooldownMs(source = state) {
         const collector = upgradeLevel("collectorArray", source);
         const relay = upgradeLevel("eventRelay", source);
-        return Math.max(8500, 18000 - collector * 600 - relay * 250);
+        return Math.max(7800, 18000 - collector * 600 - relay * 250 - (researchCompleted("droneAutomation", source) ? 1600 : 0));
     }
 
     function collectImpulse() {
@@ -1787,9 +2029,11 @@
         const confirmed = window.confirm(fmt("Neue Galaxie starten und {reward} Splitter erhalten? Flux, Anlagen und Upgrades werden zurückgesetzt.", { reward }));
         if (!confirmed) return;
         const keepTotal = state.totalLifetimeFlux;
+        const keepResearch = JSON.parse(JSON.stringify(state.research || defaultState().research));
         const newLevel = state.prestigeLevel + 1;
         const newShards = state.shards + reward;
         state = defaultState();
+        state.research = normalizeResearchState(keepResearch);
         state.prestigeLevel = newLevel;
         state.shards = newShards;
         state.totalLifetimeFlux = keepTotal;
@@ -1953,6 +2197,18 @@
         }).join("|");
     }
 
+    function researchRenderKey() {
+        const active = activeResearch();
+        const activeBucket = active ? Math.max(0, Math.ceil((active.readyAt - now()) / 1000)) : 0;
+        const activeKey = active ? `${active.id}:${activeBucket}` : "none";
+        return researchProjects.map(item => {
+            const completed = researchCompleted(item.id) ? 1 : 0;
+            const available = researchRequirementMet(item) ? 1 : 0;
+            const affordable = state.flux >= item.cost ? 1 : 0;
+            return `${item.id}:${completed}:${available}:${affordable}`;
+        }).join("|") + `|active:${activeKey}`;
+    }
+
     function achievementsRenderKey() {
         return achievements.map(item => `${item.id}:${state.achievements[item.id] ? 1 : 0}`).join("|");
     }
@@ -1981,6 +2237,7 @@
         const isUserScrollingShop = now() < shopScrollLockUntil;
         const buildingKey = buildingsRenderKey();
         const upgradeKey = upgradesRenderKey();
+        const researchKey = researchRenderKey();
         const achievementKey = achievementsRenderKey();
 
         if ((force || buildingKey !== lastBuildingsRenderKey) && (!isUserScrollingShop || force)) {
@@ -1994,6 +2251,13 @@
             preserveListScroll(elements.upgrades, () => {
                 renderUpgrades();
                 lastUpgradesRenderKey = upgradeKey;
+            });
+        }
+
+        if ((force || researchKey !== lastResearchRenderKey) && (!isUserScrollingShop || force)) {
+            preserveListScroll(elements.research, () => {
+                renderResearch();
+                lastResearchRenderKey = researchKey;
             });
         }
 
@@ -2057,6 +2321,109 @@
                     <button type="button" class="nft-shop-buy ${maxed ? "is-maxed" : affordable ? "is-affordable" : "is-unaffordable"}" data-buy-upgrade="${item.id}" ${maxed ? "disabled" : ""} aria-disabled="${affordable ? "false" : "true"}" title="${escapeHtml(buyTitle)}">
                         ${maxed ? escapeHtml(t("Max")) : `${format(cost)} Flux`}
                         <small>${escapeHtml(buyHint)}</small>
+                    </button>
+                </article>
+            `;
+        }).join("");
+    }
+
+
+    function renderResearch() {
+        if (!elements.research || !elements.researchCount || !elements.researchActive) return;
+
+        const completed = completedResearchCount();
+        const active = activeResearch();
+        const activeProject = active ? getResearchProject(active.id) : null;
+        elements.researchCount.textContent = fmt("{done}/{total} erforscht", { done: completed, total: researchProjects.length });
+
+        if (active && activeProject) {
+            const remainingMs = Math.max(0, active.readyAt - now());
+            const elapsedMs = Math.max(0, now() - active.startedAt);
+            const totalMs = Math.max(1, active.readyAt - active.startedAt);
+            const progress = clamp((elapsedMs / totalMs) * 100, 0, 100);
+            const ready = remainingMs <= 0;
+            elements.researchActive.innerHTML = `
+                <article class="nft-research-status ${ready ? "is-ready" : "is-running"}">
+                    <span class="nft-shop-icon"><i class="${activeProject.icon}"></i></span>
+                    <div class="nft-shop-copy">
+                        <small>${escapeHtml(t("Aktive Forschung"))}</small>
+                        <strong>${escapeHtml(activeProject.name)}</strong>
+                        <p>${escapeHtml(ready ? t("Bereit zum Abschluss") : fmt("bereit in {duration}", { duration: formatSeconds(remainingMs / 1000) }))}</p>
+                        <div class="nft-research-progress" aria-hidden="true"><i style="width:${progress}%"></i></div>
+                    </div>
+                    <button type="button" class="nft-shop-buy ${ready ? "is-affordable" : "is-unaffordable"}" data-finish-research="${activeProject.id}" ${ready ? "" : "disabled"}>
+                        ${escapeHtml(ready ? t("Forschung abholen") : formatSeconds(remainingMs / 1000))}
+                        <small>${escapeHtml(ready ? t("Abschließen") : t("Forschung läuft"))}</small>
+                    </button>
+                </article>
+            `;
+        } else {
+            elements.researchActive.innerHTML = `
+                <article class="nft-research-status is-idle">
+                    <span class="nft-shop-icon"><i class="fa-solid fa-flask-vial"></i></span>
+                    <div class="nft-shop-copy">
+                        <small>${escapeHtml(t("Aktive Forschung"))}</small>
+                        <strong>${escapeHtml(t("Kein Projekt aktiv"))}</strong>
+                        <p>${escapeHtml(t("Starte ein Forschungsprojekt, um nach Ablauf der Zeit einen dauerhaften Bonus zu erhalten."))}</p>
+                    </div>
+                </article>
+            `;
+        }
+
+        elements.research.innerHTML = researchProjects.map(item => {
+            const isCompleted = researchCompleted(item.id);
+            const isActive = active?.id === item.id;
+            const isReady = isActive && active.readyAt <= now();
+            const isBusy = Boolean(active) && !isActive;
+            const available = researchRequirementMet(item);
+            const affordable = state.flux >= item.cost;
+            const remaining = isActive ? Math.max(0, active.readyAt - now()) : 0;
+            const activeElapsed = isActive ? Math.max(0, now() - active.startedAt) : 0;
+            const activeTotal = isActive ? Math.max(1, active.readyAt - active.startedAt) : 1;
+            const progress = isActive ? clamp((activeElapsed / activeTotal) * 100, 0, 100) : 0;
+            const disabled = isCompleted || (isActive ? !isReady : (isBusy || !available || !affordable));
+            const stateClass = isCompleted
+                ? "is-completed"
+                : isActive
+                    ? "is-researching"
+                    : !available
+                        ? "is-locked"
+                        : affordable && !isBusy
+                            ? "is-affordable"
+                            : "is-unaffordable";
+            const buttonLabel = isCompleted
+                ? t("Erforscht")
+                : isActive
+                    ? (isReady ? t("Abschließen") : formatSeconds(remaining / 1000))
+                    : isBusy
+                        ? t("Labor belegt")
+                        : available
+                            ? (affordable ? t("Erforschen") : `${format(item.cost)} Flux`)
+                            : t("Nicht verfügbar");
+            const buttonHint = isCompleted
+                ? t("Fertig")
+                : isActive
+                    ? (isReady ? t("Bereit zum Abschluss") : fmt("bereit in {duration}", { duration: formatSeconds(remaining / 1000) }))
+                    : available
+                        ? fmt("Dauer: {duration}", { duration: formatSeconds(item.duration) })
+                        : fmt("Voraussetzung: {hint}", { hint: item.unlockHint });
+            const actionAttr = isActive ? `data-finish-research="${item.id}"` : `data-start-research="${item.id}"`;
+            return `
+                <article class="nft-shop-card nft-research-card ${stateClass}" data-research-card="${item.id}">
+                    <span class="nft-shop-icon"><i class="${item.icon}"></i></span>
+                    <div class="nft-shop-copy">
+                        <strong>${escapeHtml(item.name)}</strong>
+                        <p>${escapeHtml(item.description)}</p>
+                        <div class="nft-shop-meta">
+                            <span>${escapeHtml(fmt("Dauer: {duration}", { duration: formatSeconds(item.duration) }))}</span>
+                            <span>${escapeHtml(fmt("Effekt: {effect}", { effect: item.effect }))}</span>
+                            ${available ? "" : `<span>${escapeHtml(fmt("Voraussetzung: {hint}", { hint: item.unlockHint }))}</span>`}
+                        </div>
+                        ${isActive ? `<div class="nft-research-progress" aria-hidden="true"><i style="width:${progress}%"></i></div>` : ""}
+                    </div>
+                    <button type="button" class="nft-shop-buy ${isCompleted ? "is-maxed" : ((affordable && available && !isBusy) || isReady) ? "is-affordable" : "is-unaffordable"}" ${actionAttr} ${disabled ? "disabled" : ""} aria-disabled="${disabled ? "true" : "false"}">
+                        ${escapeHtml(buttonLabel)}
+                        <small>${escapeHtml(buttonHint)}</small>
                     </button>
                 </article>
             `;
@@ -2282,6 +2649,8 @@
             spawnMeteor();
         }
 
+        completeReadyResearch(true);
+
         if (currentTime - lastAchievementSweepAt >= ACHIEVEMENT_SWEEP_INTERVAL_MS) {
             lastAchievementSweepAt = currentTime;
             checkAchievements();
@@ -2382,7 +2751,7 @@
         const handleShopBuy = (event, selector, callback) => {
             const button = event.target.closest(selector);
             if (!button) return;
-            if (!button.closest("#nftBuildings, #nftUpgrades")) return;
+            if (!button.closest("#nftBuildings, #nftUpgrades, #nftResearch, #nftResearchActive")) return;
             event.preventDefault();
             event.stopPropagation();
             if (button.disabled) return;
@@ -2397,6 +2766,15 @@
             handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade, button));
         });
 
+        elements.research?.addEventListener("pointerdown", event => {
+            handleShopBuy(event, "[data-start-research]", button => startResearch(button.dataset.startResearch, button));
+            handleShopBuy(event, "[data-finish-research]", button => finishResearch(button.dataset.finishResearch, button));
+        });
+
+        elements.researchActive?.addEventListener("pointerdown", event => {
+            handleShopBuy(event, "[data-finish-research]", button => finishResearch(button.dataset.finishResearch, button));
+        });
+
         elements.buildings.addEventListener("keydown", event => {
             if (event.key !== "Enter" && event.key !== " ") return;
             handleShopBuy(event, "[data-buy-building]", button => buyBuilding(button.dataset.buyBuilding, button));
@@ -2407,7 +2785,18 @@
             handleShopBuy(event, "[data-buy-upgrade]", button => buyUpgrade(button.dataset.buyUpgrade, button));
         });
 
-        [elements.buildings, elements.upgrades, elements.achievements].forEach(list => {
+        elements.research?.addEventListener("keydown", event => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            handleShopBuy(event, "[data-start-research]", button => startResearch(button.dataset.startResearch, button));
+            handleShopBuy(event, "[data-finish-research]", button => finishResearch(button.dataset.finishResearch, button));
+        });
+
+        elements.researchActive?.addEventListener("keydown", event => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            handleShopBuy(event, "[data-finish-research]", button => finishResearch(button.dataset.finishResearch, button));
+        });
+
+        [elements.buildings, elements.upgrades, elements.research, elements.achievements].forEach(list => {
             if (!list) return;
             list.addEventListener("scroll", markShopScrollActive, { passive: true });
             list.addEventListener("wheel", markShopScrollActive, { passive: true });
