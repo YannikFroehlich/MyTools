@@ -1077,15 +1077,23 @@ class HomeWidget(TrashableModel):
     COLOR_CHOICES = [
         ("theme", _("Design")),
         ("blue", _("Blau")),
+        ("sky", _("Himmel")),
         ("cyan", _("Cyan")),
         ("teal", _("Türkis")),
+        ("emerald", _("Smaragd")),
         ("green", _("Grün")),
+        ("lime", _("Limette")),
         ("yellow", _("Gelb")),
+        ("amber", _("Bernstein")),
         ("orange", _("Orange")),
         ("red", _("Rot")),
+        ("rose", _("Rose")),
         ("pink", _("Pink")),
+        ("fuchsia", _("Fuchsia")),
+        ("violet", _("Violett")),
         ("purple", _("Lila")),
         ("indigo", _("Indigo")),
+        ("slate", _("Schiefer")),
         ("gray", _("Grau")),
     ]
 

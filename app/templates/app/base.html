@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}MyTools{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260701-google-menu-chevron-fix">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260701-game-beta-badge-clip-fix">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -242,11 +242,11 @@
                                 <a href="{% url 'uno_home' %}" class="game-menu-card is-red" data-game-card data-game-theme="uno" data-game-mark="UNO!" data-game-name="{% translate 'Uno' %}" data-game-category="{% translate 'Mehrspieler Karten Party Einladung Beta Testphase' %}">
                                     <span class="game-menu-icon"><i class="fa-solid fa-layer-group"></i></span>
                                     <span class="game-menu-copy">
-                                        <span class="game-menu-title-row">
-                                            <strong>{% translate 'Uno' %}</strong>
+                                        <strong>{% translate 'Uno' %}</strong>
+                                        <small class="game-menu-meta">
+                                            <span>{% translate 'Karten' %}</span>
                                             <span class="game-menu-beta-badge" title="Beta-Version">Beta</span>
-                                        </span>
-                                        <small>{% translate 'Karten' %}</small>
+                                        </small>
                                     </span>
                                     {% if request.user.is_authenticated %}
                                         <span class="menu-badge js-notification-badge" data-current-value="{{ uno_invites_count }}" data-notification-key="uno_invites" data-label-singular="{% translate 'offene Uno-Einladung' %}" data-label-plural="{% translate 'offene Uno-Einladungen' %}" aria-label="{% blocktranslate count count=uno_invites_count %}{{ count }} offene Uno-Einladung{% plural %}{{ count }} offene Uno-Einladungen{% endblocktranslate %}">

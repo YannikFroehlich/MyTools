@@ -1550,10 +1550,20 @@ body.dark-mode .menu-dropdown {
 }
 
 .game-menu-copy .game-menu-meta {
-    display: inline-flex;
+    min-width: 0;
+    display: flex;
     align-items: center;
     gap: 6px;
     max-width: 100%;
+    min-height: 20px;
+    overflow: visible;
+}
+
+.game-menu-copy .game-menu-meta > span:not(.game-menu-beta-badge) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .game-menu-beta-badge {
@@ -1573,6 +1583,7 @@ body.dark-mode .menu-dropdown {
     letter-spacing: 0.05em;
     line-height: 1;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .game-menu-card .menu-badge {

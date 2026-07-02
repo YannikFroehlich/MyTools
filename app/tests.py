@@ -1806,6 +1806,7 @@ class HomeViewTests(BaseTestCase):
     def test_home_delete_actions_use_accessible_undo_toasts(self):
         response = self.client.get(reverse("home"))
         script = (settings.BASE_DIR / "app" / "static" / "app" / "js" / "home.js").read_text(encoding="utf-8")
+        styles = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "home.css").read_text(encoding="utf-8")
 
         self.assertContains(response, "data-delete-undo-region")
         self.assertContains(response, 'aria-live="polite"')
@@ -1819,6 +1820,12 @@ class HomeViewTests(BaseTestCase):
         self.assertIn("!payload || payload.success === false", script)
         self.assertIn('deleteForm.getAttribute("action") || window.location.href', script)
         self.assertNotIn("fetch(deleteForm.action || window.location.href", script)
+        self.assertIn("home-undo-progress var(--delete-undo-duration, 7s) linear forwards", styles)
+        self.assertIn("@keyframes home-undo-progress", styles)
+        self.assertNotRegex(
+            styles,
+            r"@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.home-undo-toast,\s*\.home-undo-toast-progress",
+        )
 
     def test_ajax_delete_actions_return_json(self):
         section = ShortcutSection.objects.create(name="Temporär")
@@ -2330,6 +2337,28 @@ class HomeViewTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("home"))
         self.assertEqual(HomeWidget.objects.get(title="Theme Widget").color, "theme")
+
+    def test_clock_widget_accepts_extended_color_palette(self):
+        response = self.client.post(reverse("home"), {
+            "action": "add_widget",
+            "widget_title": "Warme Uhr",
+            "widget_type": HomeWidget.WIDGET_CLOCK,
+            "widget_color": "amber",
+            "clock_design": HomeWidget.CLOCK_DESIGN_NEON,
+            "clock_style": HomeWidget.CLOCK_STYLE_HYBRID,
+        })
+
+        self.assertRedirects(response, reverse("home"))
+
+        widget = HomeWidget.objects.get(title="Warme Uhr")
+        self.assertEqual(widget.widget_type, HomeWidget.WIDGET_CLOCK)
+        self.assertEqual(widget.color, "amber")
+        self.assertEqual(widget.clock_design, HomeWidget.CLOCK_DESIGN_NEON)
+        self.assertEqual(widget.clock_style, HomeWidget.CLOCK_STYLE_HYBRID)
+
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, 'class="home-widget widget-color-amber"')
+        self.assertContains(response, 'value="amber"')
 
     def test_add_widget_uses_fallbacks_for_invalid_or_empty_data(self):
         response = self.client.post(reverse("home"), {
