@@ -628,6 +628,63 @@ class MediaThumbnailTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 404)
 
+    def test_private_chat_thumbnail_requires_room_membership(self):
+        room = ChatRoom.objects.create(room_type=ChatRoom.ROOM_GROUP, name="Privat", created_by=self.user)
+        ChatRoomMember.objects.create(room=room, user=self.user)
+        message = ChatMessage.objects.create(room=room, sender=self.user, text="Bild")
+        attachment = ChatAttachment.objects.create(
+            message=message,
+            file=self.get_test_image("secret.png"),
+            original_name="secret.png",
+            content_type="image/png",
+            size=16,
+        )
+        self.assertTrue(attachment.file.name.startswith("private/chat_attachments/"))
+
+        response = self.client.get(reverse("media_thumbnail", args=["preview-small", attachment.file.name]))
+        self.assertEqual(response.status_code, 200)
+
+        outsider = get_user_model().objects.create_user(username="thumbnail-outsider", password="testpass-123")
+        self.client.force_login(outsider)
+        response = self.client.get(reverse("media_thumbnail", args=["preview-small", attachment.file.name]))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_private_gallery_thumbnail_requires_owner_or_public_image(self):
+        private_image = ProfileGalleryImage.objects.create(
+            user=self.user,
+            image=self.get_test_image("private-gallery.png"),
+            is_public=False,
+        )
+        response = self.client.get(reverse("media_thumbnail", args=["gallery-small", private_image.image.name]))
+        self.assertEqual(response.status_code, 200)
+
+        outsider = get_user_model().objects.create_user(username="gallery-outsider", password="testpass-123")
+        self.client.force_login(outsider)
+        response = self.client.get(reverse("media_thumbnail", args=["gallery-small", private_image.image.name]))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_profile_gallery_image_view_respects_public_flag(self):
+        public_image = ProfileGalleryImage.objects.create(
+            user=self.user,
+            image=self.get_test_image("public-gallery.png"),
+            is_public=True,
+        )
+        private_image = ProfileGalleryImage.objects.create(
+            user=self.user,
+            image=self.get_test_image("private-gallery-original.png"),
+            is_public=False,
+        )
+        outsider = get_user_model().objects.create_user(username="gallery-viewer", password="testpass-123")
+        self.client.force_login(outsider)
+
+        public_response = self.client.get(reverse("profile_gallery_image", args=[public_image.id]))
+        private_response = self.client.get(reverse("profile_gallery_image", args=[private_image.id]))
+
+        self.assertEqual(public_response.status_code, 200)
+        self.assertEqual(private_response.status_code, 404)
+
 
 class RealtimeInfrastructureTests(SimpleTestCase):
     def test_broadcast_group_returns_false_without_channel_layer(self):
@@ -752,7 +809,9 @@ class CaddyPerformanceConfigTests(SimpleTestCase):
 
         self.assertIn("encode gzip zstd", caddyfile)
         self.assertIn("handle_path /static/*", caddyfile)
-        self.assertIn("handle_path /media/*", caddyfile)
+        self.assertIn("@public_media", caddyfile)
+        self.assertIn("/media/profile_pictures/*", caddyfile)
+        self.assertNotIn("handle_path /media/*", caddyfile)
         self.assertIn('Cache-Control "public, max-age=604800', caddyfile)
         self.assertIn('Cache-Control "public, max-age=86400', caddyfile)
         self.assertIn('X-Content-Type-Options "nosniff"', caddyfile)
@@ -3223,6 +3282,45 @@ class ChatEnhancementTests(BaseTestCase):
         self.assertIn("day_label", message)
         self.assertEqual(message["sender"]["profile_url"], reverse("public_profile", args=[self.other_user.id]))
 
+    def test_chat_attachment_download_requires_room_membership(self):
+        attachment = ChatAttachment.objects.create(
+            message=self.message,
+            file=SimpleUploadedFile("secret.txt", b"secret", content_type="text/plain"),
+            original_name="secret.txt",
+            content_type="text/plain",
+            size=6,
+        )
+        url = reverse("chat_attachment_download", args=[attachment.id])
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(b"".join(response.streaming_content), b"secret")
+        self.assertEqual(response["Cache-Control"], "private, no-store")
+
+        self.client.force_login(self.other_user)
+        self.assertEqual(self.client.get(url).status_code, 200)
+
+        outsider = get_user_model().objects.create_user(username="chat-outsider", password="testpass-123")
+        self.client.force_login(outsider)
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_messages_api_uses_protected_attachment_urls(self):
+        attachment = ChatAttachment.objects.create(
+            message=self.message,
+            file=self.get_test_image("chat-image.png"),
+            original_name="chat-image.png",
+            content_type="image/png",
+            size=16,
+        )
+
+        response = self.client.get(reverse("chat_messages_api", args=[self.room.id]))
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()["messages"][0]["attachments"][0]
+        self.assertEqual(payload["url"], reverse("chat_attachment_download", args=[attachment.id]))
+        self.assertEqual(payload["preview_url"], f"{reverse('chat_attachment_download', args=[attachment.id])}?preview=1")
+        self.assertNotIn(settings.MEDIA_URL, payload["url"])
+
     def test_user_can_edit_own_message(self):
         own_message = ChatMessage.objects.create(room=self.room, sender=self.user, text="Alt")
 
@@ -3303,6 +3401,24 @@ class ChatEnhancementTests(BaseTestCase):
         )
         self.assertEqual(delete_response.status_code, 200)
         mock_broadcast.assert_any_call(self.room.id, "message_deleted", message_id=own_message_id)
+
+    def test_chat_send_is_rate_limited(self):
+        for index in range(45):
+            response = self.client.post(
+                reverse("chat_send", args=[self.room.id]),
+                {"text": f"Hallo {index}"},
+                HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            )
+            self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            reverse("chat_send", args=[self.room.id]),
+            {"text": "Zu schnell"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 429)
+        self.assertIn("Retry-After", response)
 
 
 class ModerationDashboardTests(BaseTestCase):
@@ -4622,6 +4738,10 @@ class FileShareTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("file_share"))
         self.assertEqual(FileShare.objects.filter(owner=self.user).count(), 2)
+        self.assertTrue(all(
+            share.file.name.startswith("private/file_shares/")
+            for share in FileShare.objects.filter(owner=self.user)
+        ))
 
     def test_owner_delete_moves_file_share_to_trash_and_keeps_file(self):
         share = FileShare.objects.create(
@@ -4688,6 +4808,21 @@ class FileShareTests(BaseTestCase):
         self.assertEqual(download_response.status_code, 200)
         locked.refresh_from_db()
         self.assertEqual(locked.download_count, 1)
+
+    def test_file_share_media_url_is_not_served_directly(self):
+        share = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("private.txt", b"secret", content_type="text/plain"),
+            original_name="private.txt",
+            size=6,
+            content_type="text/plain",
+            token="private-media-token",
+            is_public_link=True,
+        )
+
+        response = self.client.get(f"{settings.MEDIA_URL}{share.file.name}")
+
+        self.assertEqual(response.status_code, 404)
 
 
 class ModerationTests(BaseTestCase):

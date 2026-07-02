@@ -5,9 +5,50 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect
 from django.urls import Resolver404, resolve, reverse
+from django.utils.translation import gettext as _
 
 from .access_control import access_key_for_url_name, user_can_access_key
 from .presence_utils import touch_user_presence
+from .rate_limits import check_rate_limit, rule_for_request
+
+
+class RateLimitMiddleware:
+    """Apply small cache-backed limits to high-risk write/API endpoints."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        match = getattr(request, "resolver_match", None)
+        url_name = getattr(match, "url_name", None)
+        rule = rule_for_request(url_name, request.method)
+        if not rule:
+            return None
+
+        result = check_rate_limit(request, rule)
+        if result.allowed:
+            return None
+
+        return self._rate_limited_response(request, result.retry_after)
+
+    def _rate_limited_response(self, request, retry_after):
+        message = _("Zu viele Anfragen. Bitte warte kurz und versuche es erneut.")
+        wants_json = (
+            request.path.startswith("/api/")
+            or request.headers.get("x-requested-with") == "XMLHttpRequest"
+            or "application/json" in request.headers.get("accept", "")
+        )
+        if wants_json:
+            response = JsonResponse({"ok": False, "error": message, "retry_after": retry_after}, status=429)
+        else:
+            messages.error(request, message)
+            response = redirect(request.META.get("HTTP_REFERER") or request.path or reverse(settings.LOGIN_URL))
+
+        response["Retry-After"] = str(retry_after)
+        return response
 
 
 class LoginRequiredMiddleware:
@@ -61,6 +102,10 @@ class LoginRequiredMiddleware:
     def _is_exempt(self, path):
         file_share_download_pattern = reverse("file_share_download", args=["__token__"])
         file_share_download_prefix, file_share_download_suffix = file_share_download_pattern.split("__token__")
+        public_media_prefixes = tuple(
+            f"{settings.MEDIA_URL}{prefix}"
+            for prefix in ("public/", "profile_pictures/", "profile_banners/", "shortcut_icons/", "avatar_characters/")
+        )
         exempt_prefixes = (
             "/accounts/",
             reverse("signup"),
@@ -71,7 +116,7 @@ class LoginRequiredMiddleware:
             "/service-worker.js",
             "/offline/",
             settings.STATIC_URL,
-            settings.MEDIA_URL,
+            *public_media_prefixes,
         )
         return (
             any(path.startswith(prefix) for prefix in exempt_prefixes if prefix)
@@ -104,4 +149,26 @@ class PermissionsPolicyMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         response["Permissions-Policy"] = "geolocation=(self), microphone=(), camera=()"
+        return response
+
+
+class ContentSecurityPolicyMiddleware:
+    """Send the configured CSP header, defaulting to report-only rollout."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        policy = getattr(settings, "CSP_POLICY", "")
+        if not policy:
+            return response
+
+        header_name = (
+            "Content-Security-Policy-Report-Only"
+            if getattr(settings, "CSP_REPORT_ONLY", True)
+            else "Content-Security-Policy"
+        )
+        if header_name not in response:
+            response[header_name] = policy
         return response

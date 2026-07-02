@@ -28,14 +28,14 @@ import json
 from django.db import transaction
 from django.db.models import Count, Max, Prefetch, Sum
 from django.db.utils import OperationalError, ProgrammingError
-from django.http import HttpResponse, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from ..models import Note, SiteAccessSettings
 from ..forms import SignUpForm
@@ -291,10 +291,28 @@ def clock_view(request):
         "world_cities": ClockWorldCity.objects.filter(user=request.user),
         "timer_presets": ClockTimerPreset.objects.filter(user=request.user),
         "clock_settings": settings_obj,
+        "custom_sound_url": reverse("clock_custom_sound") if settings_obj.custom_sound else "",
         "timezone_choices": timezone_choices,
         "ringtone_choices": ringtone_choices,
     }
     return render(request, "app/clock.html", context)
+
+
+@login_required
+@require_GET
+def clock_custom_sound_view(request):
+    settings_obj, _created = ClockSettings.objects.get_or_create(user=request.user)
+    if not settings_obj.custom_sound:
+        raise Http404
+
+    response = FileResponse(
+        settings_obj.custom_sound.open("rb"),
+        as_attachment=False,
+        filename=settings_obj.custom_sound.name.rsplit("/", 1)[-1],
+    )
+    response["Cache-Control"] = "private, max-age=300"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response
 
 
 def signup(request):

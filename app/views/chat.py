@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Max, Q
-from django.http import JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -102,11 +102,12 @@ MENTION_RE = re.compile(r"@([\w.@+-]{1,150})")
 
 
 def attachment_payload(attachment):
+    download_url = reverse("chat_attachment_download", args=[attachment.id])
     return {
         "id": attachment.id,
         "name": attachment.filename,
-        "url": attachment.file.url if attachment.file else "",
-        "preview_url": media_thumbnail_url(attachment.file, "preview") if attachment.is_image else "",
+        "url": download_url if attachment.file else "",
+        "preview_url": f"{download_url}?preview=1" if attachment.file and attachment.is_image else "",
         "content_type": attachment.content_type,
         "size": attachment.size,
         "is_image": attachment.is_image,
@@ -480,6 +481,31 @@ def message_payload(message, current_user, pinned_message_id=None):
         "attachments": [attachment_payload(attachment) for attachment in message.attachments.all()],
         "sender": sender_payload,
     }
+
+
+@login_required
+@require_GET
+def chat_attachment_download_view(request, attachment_id):
+    attachment = get_object_or_404(
+        ChatAttachment.objects.select_related("message__room").filter(
+            message__room__room_memberships__user=request.user,
+        ),
+        id=attachment_id,
+    )
+    if not attachment.file:
+        raise Http404
+
+    preview = request.GET.get("preview") == "1" and attachment.is_image
+    response = FileResponse(
+        attachment.file.open("rb"),
+        as_attachment=not preview,
+        filename=attachment.filename,
+    )
+    if attachment.content_type:
+        response["Content-Type"] = attachment.content_type
+    response["Cache-Control"] = "private, max-age=300" if preview else "private, no-store"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response
 
 
 @login_required

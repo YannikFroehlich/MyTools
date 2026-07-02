@@ -525,7 +525,8 @@ class ChatMessage(models.Model):
 
 
 def chat_attachment_upload_path(instance, filename):
-    return f"chat_attachments/room_{instance.message.room_id}/{instance.message_id}_{filename}"
+    safe_name = get_valid_filename(filename.rsplit("/", 1)[-1])[:180] or "attachment"
+    return f"private/chat_attachments/room_{instance.message.room_id}/{instance.message_id}_{safe_name}"
 
 
 def validate_chat_attachment_size(file):
@@ -835,7 +836,7 @@ class WeatherLocation(models.Model):
 
 def clock_sound_upload_path(instance, filename):
     suffix = filename.rsplit(".", 1)[-1].lower() if "." in filename else "mp3"
-    return f"clock_sounds/user_{instance.user_id}/custom_timer_sound.{suffix}"
+    return f"private/clock_sounds/user_{instance.user_id}/custom_timer_sound.{suffix}"
 
 
 def validate_clock_sound_size(file):
@@ -3413,7 +3414,7 @@ class BudgetEntry(models.Model):
 
 def file_share_upload_path(instance, filename):
     safe_name = get_valid_filename(filename.rsplit("/", 1)[-1])[:180] or "datei"
-    return f"file_shares/user_{instance.owner_id}/{instance.token}_{safe_name}"
+    return f"private/file_shares/user_{instance.owner_id}/{instance.token}_{safe_name}"
 
 
 class FileShare(TrashableModel):

@@ -1,6 +1,8 @@
 from pathlib import Path
 
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.http import FileResponse, Http404, HttpResponseNotModified
 from django.utils._os import safe_join
 from django.utils.http import http_date
@@ -25,6 +27,14 @@ THUMBNAIL_SPECS = {
     "shortcut": (128, 128, "contain"),
 }
 
+PUBLIC_MEDIA_PREFIXES = (
+    "public/",
+    "profile_pictures/",
+    "profile_banners/",
+    "shortcut_icons/",
+    "avatar_characters/",
+)
+
 
 def _resolve_media_path(source):
     try:
@@ -37,6 +47,80 @@ def _resolve_media_path(source):
         raise Http404
 
     return resolved
+
+
+def _authenticated_user(request):
+    user = getattr(request, "user", None)
+    return user if getattr(user, "is_authenticated", False) else None
+
+
+def _user_can_access_gallery(user, source):
+    from ..models import ProfileGalleryImage, UserBlock
+
+    image = ProfileGalleryImage.objects.select_related("user").filter(image=source).first()
+    if not image:
+        return False
+    if user and image.user_id == user.id:
+        return True
+    if not image.is_public:
+        return False
+    if not user:
+        return True
+    return not UserBlock.objects.filter(
+        Q(blocker=user, blocked=image.user) | Q(blocker=image.user, blocked=user)
+    ).exists()
+
+
+def _user_can_access_chat_media(user, source):
+    if not user:
+        return False
+
+    from ..models import ChatAttachment, ChatRoom
+
+    if source.startswith(("private/chat_attachments/", "chat_attachments/")):
+        return ChatAttachment.objects.filter(
+            file=source,
+            message__room__room_memberships__user=user,
+        ).exists()
+
+    if source.startswith("chat_group_avatars/"):
+        return ChatRoom.objects.filter(
+            avatar=source,
+            room_memberships__user=user,
+        ).exists()
+
+    return False
+
+
+def _user_can_access_clock_sound(user, source):
+    if not user:
+        return False
+
+    from ..models import ClockSettings
+
+    return ClockSettings.objects.filter(user=user, custom_sound=source).exists()
+
+
+def _ensure_thumbnail_source_allowed(request, source):
+    normalized_source = str(source or "").replace("\\", "/")
+    if normalized_source.startswith(PUBLIC_MEDIA_PREFIXES):
+        return
+
+    user = _authenticated_user(request)
+
+    if normalized_source.startswith("profile_gallery/") and _user_can_access_gallery(user, normalized_source):
+        return
+
+    if _user_can_access_chat_media(user, normalized_source):
+        return
+
+    if normalized_source.startswith(("private/clock_sounds/", "clock_sounds/")) and _user_can_access_clock_sound(user, normalized_source):
+        return
+
+    if normalized_source.startswith(("private/file_shares/", "file_shares/", "_thumbs/")):
+        raise Http404
+
+    raise PermissionDenied
 
 
 def _thumbnail_path(source, spec, original_path):
@@ -94,6 +178,7 @@ def media_thumbnail(request, spec, source):
         raise Http404
 
     original_path = _resolve_media_path(source)
+    _ensure_thumbnail_source_allowed(request, source)
     thumb_path = _thumbnail_path(source, spec, original_path)
 
     try:

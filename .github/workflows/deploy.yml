@@ -119,13 +119,11 @@ jobs:
     runs-on: self-hosted
     timeout-minutes: 25
 
-    # Tests nur für Arbeits-/Feature-Branches.
-    # Nicht auf main und nicht auf develop, damit Merge- und Develop-Läufe
-    # nicht nochmal die komplette Testsuite starten.
+    # Tests laufen vor Build/Deploy. Nur develop bleibt bewusst ausgespart.
     if: |
-      (github.event_name == 'push' && github.ref_name != 'main' && github.ref_name != 'develop') ||
+      (github.event_name == 'push' && github.ref_name != 'develop') ||
       (github.event_name == 'pull_request' && github.head_ref != 'main' && github.head_ref != 'develop') ||
-      (github.event_name == 'workflow_dispatch' && github.ref_name != 'main' && github.ref_name != 'develop')
+      github.event_name == 'workflow_dispatch'
 
     env:
       USE_SQLITE: "True"
@@ -167,16 +165,15 @@ jobs:
       - name: Django Tests ausführen
         run: |
           . .venv/bin/activate
-          python manage.py test app --verbosity 2
+          python scripts/verify.py --test-label app
 
   build:
     name: Build Docker Image
     runs-on: self-hosted
+    needs: test
     timeout-minutes: 20
 
-    # Build nach Push/Merge auf main oder manuell.
-    # Der Build hängt nicht vom Test-Job ab, weil Tests auf main bewusst
-    # übersprungen werden.
+    # Build nach erfolgreichem Test auf main oder manuell.
     if: |
       (github.ref == 'refs/heads/main' && github.event_name == 'push') ||
       github.event_name == 'workflow_dispatch'

@@ -11,8 +11,12 @@
         file_server
     }
 
-    handle_path /media/* {
-        root * /app/media
+    @public_media {
+        path /media/public/* /media/profile_pictures/* /media/profile_banners/* /media/shortcut_icons/* /media/avatar_characters/*
+    }
+
+    handle @public_media {
+        root * /app
         header {
             Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
             Vary "Accept-Encoding"
