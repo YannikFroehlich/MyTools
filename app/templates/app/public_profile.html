@@ -9,7 +9,7 @@
     {% else %}
         {{ profile_user.username }}
     {% endif %}
-    | MyTools
+    • MyTools
 {% endblock %}
 
 
@@ -272,7 +272,7 @@
             <h2>{% translate "Bilder" %}</h2>
             <div class="public-gallery-grid">
                 {% for image in gallery_images %}
-                    <a href="{{ image.image.url }}" target="_blank" rel="noopener" class="public-gallery-item">
+                    <a href="{% url 'profile_gallery_image' image.id %}" target="_blank" rel="noopener" class="public-gallery-item">
                         <img src="{{ image.image|media_thumb:'gallery' }}" srcset="{{ image.image|media_srcset:'gallery-small 320w, gallery 640w, gallery-large 960w' }}" sizes="(max-width: 700px) 92vw, 320px" alt="{{ image.caption|default:'Galeriebild' }}" width="640" height="640" loading="lazy" decoding="async">
                         {% if image.caption %}<span>{{ image.caption }}</span>{% endif %}
                     </a>

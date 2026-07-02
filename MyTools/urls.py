@@ -20,11 +20,12 @@ from django.urls import path, include, re_path
 from django.urls import reverse_lazy
 from django.views.i18n import set_language
 from django.conf import settings
-from django.conf.urls.static import static
 from django.views.static import serve as media_serve
 from django.contrib.staticfiles.views import serve as staticfiles_serve
 from app.views.media import media_thumbnail
 from app.views.auth import AccessAwareLoginView
+
+PUBLIC_MEDIA_PATH_PATTERN = r"^media/(?P<path>(?:public|profile_pictures|profile_banners|shortcut_icons|avatar_characters)/.*)$"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -70,10 +71,12 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [
+        re_path(PUBLIC_MEDIA_PATH_PATTERN, media_serve, {"document_root": settings.MEDIA_ROOT}),
+    ]
 
 if settings.RUNSERVER_SERVE_STATIC and not settings.DEBUG:
     urlpatterns += [
         re_path(r"^static/(?P<path>.*)$", staticfiles_serve, {"insecure": True}),
-        re_path(r"^media/(?P<path>.*)$", media_serve, {"document_root": settings.MEDIA_ROOT}),
+        re_path(PUBLIC_MEDIA_PATH_PATTERN, media_serve, {"document_root": settings.MEDIA_ROOT}),
     ]

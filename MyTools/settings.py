@@ -118,8 +118,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'app.middleware.RateLimitMiddleware',
     'app.middleware.LoginRequiredMiddleware',
     'app.middleware.PermissionsPolicyMiddleware',
+    'app.middleware.ContentSecurityPolicyMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -298,3 +300,22 @@ SECURE_HSTS_PRELOAD = False
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
+
+# CSP starts in report-only mode because several templates still use inline scripts/styles.
+CSP_REPORT_ONLY = os.getenv("CSP_REPORT_ONLY", "True").lower() in {"1", "true", "yes", "on"}
+DEFAULT_CSP_POLICY = (
+    "default-src 'self'; "
+    "script-src 'self' 'unsafe-inline' https://kit.fontawesome.com https://cdnjs.cloudflare.com "
+    "https://www.googletagmanager.com https://www.google-analytics.com; "
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
+    "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://ka-f.fontawesome.com; "
+    "img-src 'self' data: blob: https:; "
+    "media-src 'self' data: blob:; "
+    "connect-src 'self' ws: wss: https://www.google-analytics.com https://region1.google-analytics.com "
+    "https://accounts.spotify.com https://api.spotify.com https://ka-f.fontawesome.com; "
+    "object-src 'none'; "
+    "base-uri 'self'; "
+    "frame-ancestors 'none'; "
+    "form-action 'self'"
+)
+CSP_POLICY = os.getenv("CSP_POLICY") or DEFAULT_CSP_POLICY

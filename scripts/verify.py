@@ -9,6 +9,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MANAGE = ROOT / "manage.py"
 
+QUICK_TEST_LABELS = [
+    "app.tests.MediaThumbnailTests",
+    "app.tests.PwaTests",
+    "app.tests.CaddyPerformanceConfigTests",
+    "app.tests.RateLimitTests",
+    "app.tests.ChatEnhancementTests",
+    "app.tests.FileShareTests",
+]
+
 
 def run_step(label, command, env):
     print(f"\n==> {label}")
@@ -41,9 +50,17 @@ def main():
         default=[],
         help="Optional Django test label. Can be passed multiple times. Defaults to the full test suite.",
     )
+    parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="Run the focused security/media/PWA test set instead of the full Django test suite.",
+    )
     parser.add_argument("--skip-js", action="store_true", help="Skip JavaScript syntax checks.")
     parser.add_argument("--skip-static", action="store_true", help="Skip collectstatic dry-run.")
     args = parser.parse_args()
+
+    if args.quick and args.test_label:
+        parser.error("--quick cannot be combined with --test-label.")
 
     env = default_env()
     python = sys.executable
@@ -51,7 +68,8 @@ def main():
     run_step("Django system check", [python, MANAGE, "check"], env)
     run_step("Migration drift check", [python, MANAGE, "makemigrations", "--check", "--dry-run"], env)
 
-    test_command = [python, MANAGE, "test", *(args.test_label or [])]
+    test_labels = QUICK_TEST_LABELS if args.quick else args.test_label
+    test_command = [python, MANAGE, "test", *(test_labels or [])]
     run_step("Django tests", test_command, env)
 
     if not args.skip_static:

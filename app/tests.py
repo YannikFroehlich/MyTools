@@ -628,6 +628,63 @@ class MediaThumbnailTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 404)
 
+    def test_private_chat_thumbnail_requires_room_membership(self):
+        room = ChatRoom.objects.create(room_type=ChatRoom.ROOM_GROUP, name="Privat", created_by=self.user)
+        ChatRoomMember.objects.create(room=room, user=self.user)
+        message = ChatMessage.objects.create(room=room, sender=self.user, text="Bild")
+        attachment = ChatAttachment.objects.create(
+            message=message,
+            file=self.get_test_image("secret.png"),
+            original_name="secret.png",
+            content_type="image/png",
+            size=16,
+        )
+        self.assertTrue(attachment.file.name.startswith("private/chat_attachments/"))
+
+        response = self.client.get(reverse("media_thumbnail", args=["preview-small", attachment.file.name]))
+        self.assertEqual(response.status_code, 200)
+
+        outsider = get_user_model().objects.create_user(username="thumbnail-outsider", password="testpass-123")
+        self.client.force_login(outsider)
+        response = self.client.get(reverse("media_thumbnail", args=["preview-small", attachment.file.name]))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_private_gallery_thumbnail_requires_owner_or_public_image(self):
+        private_image = ProfileGalleryImage.objects.create(
+            user=self.user,
+            image=self.get_test_image("private-gallery.png"),
+            is_public=False,
+        )
+        response = self.client.get(reverse("media_thumbnail", args=["gallery-small", private_image.image.name]))
+        self.assertEqual(response.status_code, 200)
+
+        outsider = get_user_model().objects.create_user(username="gallery-outsider", password="testpass-123")
+        self.client.force_login(outsider)
+        response = self.client.get(reverse("media_thumbnail", args=["gallery-small", private_image.image.name]))
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_profile_gallery_image_view_respects_public_flag(self):
+        public_image = ProfileGalleryImage.objects.create(
+            user=self.user,
+            image=self.get_test_image("public-gallery.png"),
+            is_public=True,
+        )
+        private_image = ProfileGalleryImage.objects.create(
+            user=self.user,
+            image=self.get_test_image("private-gallery-original.png"),
+            is_public=False,
+        )
+        outsider = get_user_model().objects.create_user(username="gallery-viewer", password="testpass-123")
+        self.client.force_login(outsider)
+
+        public_response = self.client.get(reverse("profile_gallery_image", args=[public_image.id]))
+        private_response = self.client.get(reverse("profile_gallery_image", args=[private_image.id]))
+
+        self.assertEqual(public_response.status_code, 200)
+        self.assertEqual(private_response.status_code, 404)
+
 
 class RealtimeInfrastructureTests(SimpleTestCase):
     def test_broadcast_group_returns_false_without_channel_layer(self):
@@ -752,10 +809,45 @@ class CaddyPerformanceConfigTests(SimpleTestCase):
 
         self.assertIn("encode gzip zstd", caddyfile)
         self.assertIn("handle_path /static/*", caddyfile)
-        self.assertIn("handle_path /media/*", caddyfile)
+        self.assertIn("@public_media", caddyfile)
+        self.assertIn("/media/profile_pictures/*", caddyfile)
+        self.assertNotIn("handle_path /media/*", caddyfile)
         self.assertIn('Cache-Control "public, max-age=604800', caddyfile)
         self.assertIn('Cache-Control "public, max-age=86400', caddyfile)
         self.assertIn('X-Content-Type-Options "nosniff"', caddyfile)
+
+
+class RateLimitTests(SimpleTestCase):
+    def setUp(self):
+        cache.clear()
+        self.factory = RequestFactory()
+
+    def tearDown(self):
+        cache.clear()
+        super().tearDown()
+
+    def test_cache_backed_rate_limit_blocks_after_limit(self):
+        from app.rate_limits import RateLimitRule, check_rate_limit
+
+        request = self.factory.post("/chat/")
+        rule = RateLimitRule("test-scope", 2, 60, frozenset({"POST"}))
+
+        self.assertTrue(check_rate_limit(request, rule).allowed)
+        self.assertTrue(check_rate_limit(request, rule).allowed)
+        limited = check_rate_limit(request, rule)
+
+        self.assertFalse(limited.allowed)
+        self.assertGreater(limited.retry_after, 0)
+
+    def test_rule_mapping_covers_high_risk_endpoints(self):
+        from app.rate_limits import rule_for_request
+
+        self.assertIsNotNone(rule_for_request("login", "POST"))
+        self.assertIsNotNone(rule_for_request("password_reset", "POST"))
+        self.assertIsNotNone(rule_for_request("chat_send", "POST"))
+        self.assertIsNotNone(rule_for_request("file_share_upload", "POST"))
+        self.assertIsNotNone(rule_for_request("genius-search-api", "GET"))
+        self.assertIsNone(rule_for_request("chat_send", "GET"))
 
 
 class AuthViewTests(BaseTestCase):
@@ -1806,6 +1898,7 @@ class HomeViewTests(BaseTestCase):
     def test_home_delete_actions_use_accessible_undo_toasts(self):
         response = self.client.get(reverse("home"))
         script = (settings.BASE_DIR / "app" / "static" / "app" / "js" / "home.js").read_text(encoding="utf-8")
+        styles = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "home.css").read_text(encoding="utf-8")
 
         self.assertContains(response, "data-delete-undo-region")
         self.assertContains(response, 'aria-live="polite"')
@@ -1819,6 +1912,12 @@ class HomeViewTests(BaseTestCase):
         self.assertIn("!payload || payload.success === false", script)
         self.assertIn('deleteForm.getAttribute("action") || window.location.href', script)
         self.assertNotIn("fetch(deleteForm.action || window.location.href", script)
+        self.assertIn("home-undo-progress var(--delete-undo-duration, 7s) linear forwards", styles)
+        self.assertIn("@keyframes home-undo-progress", styles)
+        self.assertNotRegex(
+            styles,
+            r"@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.home-undo-toast,\s*\.home-undo-toast-progress",
+        )
 
     def test_ajax_delete_actions_return_json(self):
         section = ShortcutSection.objects.create(name="Temporär")
@@ -2330,6 +2429,28 @@ class HomeViewTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("home"))
         self.assertEqual(HomeWidget.objects.get(title="Theme Widget").color, "theme")
+
+    def test_clock_widget_accepts_extended_color_palette(self):
+        response = self.client.post(reverse("home"), {
+            "action": "add_widget",
+            "widget_title": "Warme Uhr",
+            "widget_type": HomeWidget.WIDGET_CLOCK,
+            "widget_color": "amber",
+            "clock_design": HomeWidget.CLOCK_DESIGN_NEON,
+            "clock_style": HomeWidget.CLOCK_STYLE_HYBRID,
+        })
+
+        self.assertRedirects(response, reverse("home"))
+
+        widget = HomeWidget.objects.get(title="Warme Uhr")
+        self.assertEqual(widget.widget_type, HomeWidget.WIDGET_CLOCK)
+        self.assertEqual(widget.color, "amber")
+        self.assertEqual(widget.clock_design, HomeWidget.CLOCK_DESIGN_NEON)
+        self.assertEqual(widget.clock_style, HomeWidget.CLOCK_STYLE_HYBRID)
+
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, 'class="home-widget widget-color-amber"')
+        self.assertContains(response, 'value="amber"')
 
     def test_add_widget_uses_fallbacks_for_invalid_or_empty_data(self):
         response = self.client.post(reverse("home"), {
@@ -3193,6 +3314,45 @@ class ChatEnhancementTests(BaseTestCase):
         self.assertIn("day_key", message)
         self.assertIn("day_label", message)
         self.assertEqual(message["sender"]["profile_url"], reverse("public_profile", args=[self.other_user.id]))
+
+    def test_chat_attachment_download_requires_room_membership(self):
+        attachment = ChatAttachment.objects.create(
+            message=self.message,
+            file=SimpleUploadedFile("secret.txt", b"secret", content_type="text/plain"),
+            original_name="secret.txt",
+            content_type="text/plain",
+            size=6,
+        )
+        url = reverse("chat_attachment_download", args=[attachment.id])
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(b"".join(response.streaming_content), b"secret")
+        self.assertEqual(response["Cache-Control"], "private, no-store")
+
+        self.client.force_login(self.other_user)
+        self.assertEqual(self.client.get(url).status_code, 200)
+
+        outsider = get_user_model().objects.create_user(username="chat-outsider", password="testpass-123")
+        self.client.force_login(outsider)
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_messages_api_uses_protected_attachment_urls(self):
+        attachment = ChatAttachment.objects.create(
+            message=self.message,
+            file=self.get_test_image("chat-image.png"),
+            original_name="chat-image.png",
+            content_type="image/png",
+            size=16,
+        )
+
+        response = self.client.get(reverse("chat_messages_api", args=[self.room.id]))
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()["messages"][0]["attachments"][0]
+        self.assertEqual(payload["url"], reverse("chat_attachment_download", args=[attachment.id]))
+        self.assertEqual(payload["preview_url"], f"{reverse('chat_attachment_download', args=[attachment.id])}?preview=1")
+        self.assertNotIn(settings.MEDIA_URL, payload["url"])
 
     def test_user_can_edit_own_message(self):
         own_message = ChatMessage.objects.create(room=self.room, sender=self.user, text="Alt")
@@ -4593,6 +4753,10 @@ class FileShareTests(BaseTestCase):
 
         self.assertRedirects(response, reverse("file_share"))
         self.assertEqual(FileShare.objects.filter(owner=self.user).count(), 2)
+        self.assertTrue(all(
+            share.file.name.startswith("private/file_shares/")
+            for share in FileShare.objects.filter(owner=self.user)
+        ))
 
     def test_owner_delete_moves_file_share_to_trash_and_keeps_file(self):
         share = FileShare.objects.create(
@@ -4659,6 +4823,21 @@ class FileShareTests(BaseTestCase):
         self.assertEqual(download_response.status_code, 200)
         locked.refresh_from_db()
         self.assertEqual(locked.download_count, 1)
+
+    def test_file_share_media_url_is_not_served_directly(self):
+        share = FileShare.objects.create(
+            owner=self.user,
+            file=SimpleUploadedFile("private.txt", b"secret", content_type="text/plain"),
+            original_name="private.txt",
+            size=6,
+            content_type="text/plain",
+            token="private-media-token",
+            is_public_link=True,
+        )
+
+        response = self.client.get(f"{settings.MEDIA_URL}{share.file.name}")
+
+        self.assertEqual(response.status_code, 404)
 
 
 class ModerationTests(BaseTestCase):

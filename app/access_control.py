@@ -23,6 +23,7 @@ ACCESS_CONTROL_ITEMS = (
             "chat_message_edit",
             "chat_message_pin",
             "chat_message_react",
+            "chat_attachment_download",
             "chat_theme",
             "chat_messages_api",
             "chat_typing_api",
@@ -65,7 +66,7 @@ ACCESS_CONTROL_ITEMS = (
         "kind": _("Tool"),
         "category": _("Alltag"),
         "icon": "fa-regular fa-clock",
-        "url_names": ("clock",),
+        "url_names": ("clock", "clock_custom_sound"),
     },
     {
         "key": "file_share",
