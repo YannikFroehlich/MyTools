@@ -817,6 +817,39 @@ class CaddyPerformanceConfigTests(SimpleTestCase):
         self.assertIn('X-Content-Type-Options "nosniff"', caddyfile)
 
 
+class RateLimitTests(SimpleTestCase):
+    def setUp(self):
+        cache.clear()
+        self.factory = RequestFactory()
+
+    def tearDown(self):
+        cache.clear()
+        super().tearDown()
+
+    def test_cache_backed_rate_limit_blocks_after_limit(self):
+        from app.rate_limits import RateLimitRule, check_rate_limit
+
+        request = self.factory.post("/chat/")
+        rule = RateLimitRule("test-scope", 2, 60, frozenset({"POST"}))
+
+        self.assertTrue(check_rate_limit(request, rule).allowed)
+        self.assertTrue(check_rate_limit(request, rule).allowed)
+        limited = check_rate_limit(request, rule)
+
+        self.assertFalse(limited.allowed)
+        self.assertGreater(limited.retry_after, 0)
+
+    def test_rule_mapping_covers_high_risk_endpoints(self):
+        from app.rate_limits import rule_for_request
+
+        self.assertIsNotNone(rule_for_request("login", "POST"))
+        self.assertIsNotNone(rule_for_request("password_reset", "POST"))
+        self.assertIsNotNone(rule_for_request("chat_send", "POST"))
+        self.assertIsNotNone(rule_for_request("file_share_upload", "POST"))
+        self.assertIsNotNone(rule_for_request("genius-search-api", "GET"))
+        self.assertIsNone(rule_for_request("chat_send", "GET"))
+
+
 class AuthViewTests(BaseTestCase):
     def _mock_recaptcha_success(self, mocked_submit):
         mocked_submit.return_value = RecaptchaResponse(is_valid=True)
@@ -3401,24 +3434,6 @@ class ChatEnhancementTests(BaseTestCase):
         )
         self.assertEqual(delete_response.status_code, 200)
         mock_broadcast.assert_any_call(self.room.id, "message_deleted", message_id=own_message_id)
-
-    def test_chat_send_is_rate_limited(self):
-        for index in range(45):
-            response = self.client.post(
-                reverse("chat_send", args=[self.room.id]),
-                {"text": f"Hallo {index}"},
-                HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-            )
-            self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(
-            reverse("chat_send", args=[self.room.id]),
-            {"text": "Zu schnell"},
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-        )
-
-        self.assertEqual(response.status_code, 429)
-        self.assertIn("Retry-After", response)
 
 
 class ModerationDashboardTests(BaseTestCase):

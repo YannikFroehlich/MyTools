@@ -761,6 +761,12 @@ Kompletter lokaler Qualitätslauf:
 python scripts/verify.py
 ```
 
+Schneller fokussierter Lauf für Media-/Security-/PWA-Änderungen:
+
+```bash
+python scripts/verify.py --quick
+```
+
 Nur Django-Tests:
 
 ```bash
