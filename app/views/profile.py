@@ -1,11 +1,12 @@
 import base64
+import mimetypes
 import re
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 from django.db.models import Count, Max, Q, Sum
-from django.http import JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.timesince import timesince
@@ -1052,6 +1053,33 @@ def public_profile_view(request, user_id):
         "gallery_images": ProfileGalleryImage.objects.filter(user=profile_user, is_public=True)[:12] if not viewer_blocked else [],
         "skribble_stats": SkribbleStats.objects.filter(user=profile_user).first(),
     })
+
+
+@login_required
+@require_GET
+def profile_gallery_image_view(request, image_id):
+    image = get_object_or_404(ProfileGalleryImage.objects.select_related("user"), id=image_id)
+    if image.user_id != request.user.id:
+        blocked_between_users = UserBlock.objects.filter(
+            Q(blocker=request.user, blocked=image.user) | Q(blocker=image.user, blocked=request.user)
+        ).exists()
+        if blocked_between_users or not image.is_public:
+            raise Http404
+
+    if not image.image:
+        raise Http404
+
+    content_type, _encoding = mimetypes.guess_type(image.image.name)
+    response = FileResponse(
+        image.image.open("rb"),
+        as_attachment=False,
+        filename=image.image.name.rsplit("/", 1)[-1],
+    )
+    if content_type:
+        response["Content-Type"] = content_type
+    response["Cache-Control"] = "private, max-age=300" if image.user_id == request.user.id else "public, max-age=86400"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response
 
 
 @login_required

@@ -3,7 +3,7 @@
 {% load i18n %}
 {% load media_performance %}
 
-{% block title %}{% translate "Chat" %} | MyTools{% endblock %}
+{% block title %}{% translate "Chat" %} • MyTools{% endblock %}
 
 {% block body_class %}chat-page-body{% endblock %}
 
@@ -332,9 +332,10 @@
                                 {% if message.attachments.all %}
                                     <div class="chat-attachments">
                                         {% for attachment in message.attachments.all %}
-                                            <a href="{{ attachment.file.url }}" class="chat-attachment {% if attachment.is_image %}is-image{% endif %}" target="_blank" rel="noopener">
+                                            {% url 'chat_attachment_download' attachment.id as attachment_download_url %}
+                                            <a href="{{ attachment_download_url }}" class="chat-attachment {% if attachment.is_image %}is-image{% endif %}" target="_blank" rel="noopener">
                                                 {% if attachment.is_image %}
-                                                    <img src="{{ attachment.file|media_thumb:'preview' }}" srcset="{{ attachment.file|media_srcset:'preview-small 480w, preview 960w' }}" sizes="(max-width: 700px) 92vw, 640px" alt="{{ attachment.filename }}" loading="lazy" decoding="async">
+                                                    <img src="{{ attachment_download_url }}?preview=1" alt="{{ attachment.filename }}" loading="lazy" decoding="async">
                                                 {% else %}
                                                     <i class="fa-solid fa-paperclip"></i>
                                                 {% endif %}

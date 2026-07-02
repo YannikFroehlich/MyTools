@@ -32,6 +32,7 @@ services:
     restart: unless-stopped
     command: >
       sh -c "python manage.py migrate &&
+             python manage.py compilemessages &&
              python manage.py collectstatic --noinput &&
              daphne -b 0.0.0.0 -p 8000 MyTools.asgi:application"
     env_file:

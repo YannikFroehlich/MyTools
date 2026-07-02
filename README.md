@@ -266,7 +266,7 @@ Die Genius Search nutzt die **Genius API**.
 Benötigter `.env`-Wert:
 
 ```env
-GENIUS_ACCESS_TOKEN=dein_genius_access_token
+GENIUS_API_KEY=dein_genius_api_key
 ```
 
 ---
@@ -428,6 +428,14 @@ Unter `/security/`:
 - andere Sitzungen beenden
 - Security-Historie
 
+### Uploads und Medien
+
+- Caddy und der lokale Static-Fallback liefern nur explizit öffentliche Medienordner aus.
+- Private Uploads wie Chat-Anhänge, Datei-Shares und eigene Timer-Sounds laufen über Django-Views mit Berechtigungsprüfung.
+- Neue private Uploads werden unter `media/private/` gespeichert.
+- Profilbilder, Shortcut-Icons und Avatar-Wiki-Bilder bleiben öffentliche Medien.
+- Profil-Galeriebilder werden über eine Django-View ausgeliefert, damit private Galerieeinträge nicht direkt über `/media/` erreichbar sind.
+
 ### Moderation
 
 Unter `/moderation/` für Staff-Nutzer:
@@ -517,6 +525,8 @@ MyTools ist als installierbare Web-App vorbereitet.
 - Caching statischer Dateien
 - keine aggressive Vorab-Caches für private HTML-Seiten oder API-Antworten
 
+Der Service Worker liegt bewusst als Template unter `app/templates/app/pwa/service-worker.js`, weil Django dort Cache-Version, Offline-URL und Precache-URLs einsetzt. Die öffentliche URL bleibt trotzdem `/service-worker.js`.
+
 Nach dem Deployment prüfen:
 
 ```text
@@ -536,9 +546,12 @@ Beispiel:
 ```env
 DEBUG=False
 SECRET_KEY=dein_secret_key
+RUNSERVER_SERVE_STATIC=True
 DOMAIN=mytools.example.de
 ALLOWED_HOSTS=localhost,127.0.0.1,mytools.example.de
 CSRF_TRUSTED_ORIGINS=https://mytools.example.de
+USE_SQLITE=False
+USE_LOCAL_CACHE=False
 
 DB_NAME=mytools
 DB_USER=mytools
@@ -550,7 +563,14 @@ REDIS_URL=redis://redis:6379/0
 
 OPENWEATHER_API_KEY=dein_openweather_api_key
 TANKERKOENIG_API_KEY=dein_tankerkoenig_api_key
-GENIUS_ACCESS_TOKEN=dein_genius_access_token
+GENIUS_API_KEY=dein_genius_api_key
+
+SPOTIFY_CLIENT_ID=deine_spotify_client_id
+SPOTIFY_REDIRECT_URI=https://mytools.example.de/stream-deck/
+
+VOICEMOD_API_KEY=dein_voicemod_api_key
+VOICEMOD_HOST=127.0.0.1
+VOICEMOD_PORTS=59129,20000,39273
 
 FONTAWESOME_KIT_KEY=dein_fontawesome_kit_key
 USE_FONTAWESOME_KIT=False
@@ -559,6 +579,8 @@ RECAPTCHA_PUBLIC_KEY=dein_recaptcha_public_key
 RECAPTCHA_PRIVATE_KEY=dein_recaptcha_private_key
 
 GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
+CSP_REPORT_ONLY=True
+CSP_POLICY=
 
 EMAIL_BACKEND_MODE=smtp
 EMAIL_HOST=smtp.example.de
@@ -576,12 +598,20 @@ CLOUDFLARE_TUNNEL_TOKEN=dein_cloudflare_tunnel_token
 Hinweise:
 
 - `GOOGLE_ANALYTICS_ID` muss eine **GA4 Measurement ID** sein und mit `G-` beginnen.
+- `GENIUS_API_KEY` ist der im Code verwendete Genius-Schlüssel.
+- `CSP_REPORT_ONLY=True` ist der sichere Startmodus für die vorbereitete Content Security Policy.
 - In Tests werden bei fehlenden reCAPTCHA-Keys automatisch Googles Test-Keys verwendet.
 - Secrets gehören nicht ins Repository.
 
 ---
 
 ## 🧑‍💻 Lokale Entwicklung
+
+Voraussetzungen:
+
+- Python 3.12 empfohlen
+- Node.js optional, aber empfohlen für `node --check` in `scripts/verify.py`
+- gettext optional für `python manage.py compilemessages`
 
 ### 1. Virtuelle Umgebung erstellen
 
@@ -608,6 +638,10 @@ pip install -r requirements.txt
 
 ### 3. `.env` für lokale Entwicklung anlegen
 
+```powershell
+copy .env.example .env
+```
+
 Minimal lokal mit SQLite:
 
 ```env
@@ -622,8 +656,10 @@ OPENWEATHER_API_KEY=
 
 ### 4. Datenbank vorbereiten
 
-```bash
+```powershell
 python manage.py migrate
+python manage.py compilemessages
+python manage.py collectstatic --noinput
 python manage.py createsuperuser
 ```
 
@@ -669,6 +705,12 @@ Statische Dateien sammeln:
 
 ```bash
 docker compose exec web python manage.py collectstatic --noinput
+```
+
+Übersetzungen kompilieren:
+
+```bash
+docker compose exec web python manage.py compilemessages
 ```
 
 Logs ansehen:
@@ -719,6 +761,12 @@ Kompletter lokaler Qualitätslauf:
 python scripts/verify.py
 ```
 
+Schneller fokussierter Lauf für Media-/Security-/PWA-Änderungen:
+
+```bash
+python scripts/verify.py --quick
+```
+
 Nur Django-Tests:
 
 ```bash
@@ -759,6 +807,9 @@ MyTools/
 │   └── wsgi.py
 ├── app/
 │   ├── templates/app/
+│   │   ├── pwa/
+│   │   ├── includes/
+│   │   └── partials/
 │   ├── static/app/css/
 │   ├── static/app/js/
 │   ├── static/app/img/

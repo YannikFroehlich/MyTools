@@ -99,7 +99,7 @@ def pwa_service_worker_view(request):
     ]
     response = render(
         request,
-        "app/service-worker.js",
+        "app/pwa/service-worker.js",
         {
             "cache_version": PWA_CACHE_VERSION,
             "offline_url": reverse("offline"),
@@ -114,6 +114,6 @@ def pwa_service_worker_view(request):
 
 
 def offline_view(request):
-    response = render(request, "app/offline.html")
+    response = render(request, "app/pwa/offline.html")
     response["Cache-Control"] = "public, max-age=300"
     return response
