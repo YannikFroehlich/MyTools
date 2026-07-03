@@ -7487,8 +7487,8 @@ msgid "Audit-Log"
 msgstr "Audit-Log"
 
 #: .\app\templates\app\moderation.html:371
-msgid "Keine Audit-EintrÃ¤ge."
-msgstr "Keine Audit-EintrÃ¤ge."
+msgid "Keine Audit-Einträge."
+msgstr "Keine Audit-Einträge."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:21
 #, fuzzy
@@ -14401,9 +14401,9 @@ msgstr ""
 
 #: .\app\views\performance_tools.py:228
 #, fuzzy, python-format
-#| msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
+#| msgid "Cookie Cosmos · %(upgrades)s Upgrades"
 msgid "Prestige %(level)s · %(upgrades)s Upgrades"
-msgstr "Cookie Cosmos Â· %(upgrades)s Upgrades"
+msgstr "Cookie Cosmos · %(upgrades)s Upgrades"
 
 #: .\app\views\performance_tools.py:252
 #, python-format
@@ -14417,9 +14417,9 @@ msgstr "Siege · %(score)s Punkte"
 
 #: .\app\views\performance_tools.py:350
 #, fuzzy, python-format
-#| msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
+#| msgid "Cookie Cosmos · %(upgrades)s Upgrades"
 msgid "Cookie Cosmos · %(upgrades)s Upgrades"
-msgstr "Cookie Cosmos Â· %(upgrades)s Upgrades"
+msgstr "Cookie Cosmos · %(upgrades)s Upgrades"
 
 #: .\app\views\performance_tools.py:366 .\app\views\profile.py:399
 msgid "Gesamtpunkte"
@@ -15879,10 +15879,6 @@ msgstr "Skribble-Lobby wurde gelöscht."
 
 #~ msgid "Schilde"
 #~ msgstr "Schilde"
-
-#, python-format
-#~ msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
-#~ msgstr "Cookie Cosmos Â· %(upgrades)s Upgrades"
 
 #~ msgid ""
 #~ "MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, "

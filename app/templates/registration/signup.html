@@ -93,6 +93,27 @@
                 </div>
             {% endif %}
 
+            {% if google_oauth_enabled and not access_locked %}
+                <form method="post" class="auth-social-form" action="{% url 'google_oauth_login' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="process" value="login">
+                    {% if request.GET.next %}
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
+                    {% endif %}
+                    <div class="auth-captcha">
+                        {{ google_captcha_form.captcha }}
+                    </div>
+                    <button type="submit" class="auth-google-button">
+                        <span class="auth-google-mark" aria-hidden="true">G</span>
+                        {% translate 'Mit Google registrieren' %}
+                    </button>
+                </form>
+
+                <div class="auth-divider" aria-hidden="true">
+                    <span>{% translate 'oder' %}</span>
+                </div>
+            {% endif %}
+
             {% if not access_locked %}
             <form method="post" class="auth-form">
                 {% csrf_token %}

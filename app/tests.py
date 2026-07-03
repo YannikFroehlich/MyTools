@@ -87,6 +87,23 @@ from app.totp_utils import current_totp
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
 
+TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APPS": [
+            {
+                "client_id": "test-client-id",
+                "secret": "test-client-secret",
+                "key": "",
+            }
+        ],
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+        "OAUTH_PKCE_ENABLED": True,
+        "EMAIL_AUTHENTICATION": True,
+        "EMAIL_AUTHENTICATION_AUTO_CONNECT": True,
+    }
+}
+
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class BaseTestCase(TestCase):
@@ -895,6 +912,98 @@ class AuthViewTests(BaseTestCase):
         response = self.client.get(reverse("login"))
 
         self.assertContains(response, "g-recaptcha")
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
+    )
+    def test_login_page_contains_google_oauth_button_when_configured(self):
+        self.client.logout()
+
+        response = self.client.get(reverse("login"))
+
+        self.assertContains(response, "Mit Google anmelden")
+        self.assertContains(response, "/accounts/google/login/")
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
+    )
+    def test_signup_page_contains_google_oauth_button_when_configured(self):
+        self.client.logout()
+
+        response = self.client.get(reverse("signup"))
+
+        self.assertContains(response, "Mit Google registrieren")
+        self.assertContains(response, "/accounts/google/login/")
+
+    def test_google_social_signup_respects_access_lock(self):
+        from app.adapters import MyToolsSocialAccountAdapter
+
+        self.client.logout()
+        SiteAccessSettings.objects.update_or_create(pk=1, defaults={"login_registration_locked": True})
+        request = RequestFactory().get(reverse("login"))
+
+        self.assertFalse(MyToolsSocialAccountAdapter().is_open_for_signup(request, Mock()))
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
+    )
+    @patch("django_recaptcha.fields.client.submit")
+    def test_google_oauth_login_requires_successful_recaptcha(self, mocked_submit):
+        mocked_submit.return_value = RecaptchaResponse(is_valid=False)
+        self.client.logout()
+
+        response = self.client.post(reverse("google_oauth_login"), {
+            "process": "login",
+            "g-recaptcha-response": "FAILED",
+        })
+
+        self.assertRedirects(response, reverse("login"), fetch_redirect_response=False)
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
+    )
+    @patch("django_recaptcha.fields.client.submit")
+    def test_google_oauth_login_redirects_to_google_after_recaptcha(self, mocked_submit):
+        self._mock_recaptcha_success(mocked_submit)
+        self.client.logout()
+
+        response = self.client.post(reverse("google_oauth_login"), {
+            "process": "login",
+            "g-recaptcha-response": "PASSED",
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response["Location"].startswith("https://accounts.google.com/"))
+
+    def test_google_social_login_lock_blocks_normal_users_but_allows_staff(self):
+        from allauth.core.exceptions import ImmediateHttpResponse
+        from app.adapters import MyToolsSocialAccountAdapter
+
+        self.client.logout()
+        SiteAccessSettings.objects.update_or_create(pk=1, defaults={"login_registration_locked": True})
+        normal_user = get_user_model().objects.create_user(
+            username="google-normal",
+            email="normal@example.com",
+            password="testpass-123",
+        )
+        staff_user = get_user_model().objects.create_user(
+            username="google-staff",
+            email="staff@example.com",
+            password="testpass-123",
+            is_staff=True,
+        )
+        request = RequestFactory().get(reverse("login"))
+        request._messages = Mock()
+        adapter = MyToolsSocialAccountAdapter()
+
+        with self.assertRaises(ImmediateHttpResponse):
+            adapter.pre_social_login(request, Mock(user=normal_user, account=Mock(user=normal_user)))
+
+        adapter.pre_social_login(request, Mock(user=staff_user, account=Mock(user=staff_user)))
 
     @patch("django_recaptcha.fields.client.submit")
     def test_login_without_two_factor_logs_in_directly(self, mocked_submit):
@@ -3464,6 +3573,23 @@ class ModerationDashboardTests(BaseTestCase):
         suspension.refresh_from_db()
         self.assertFalse(suspension.is_active)
         self.assertTrue(ModerationAuditLog.objects.filter(action=ModerationAuditLog.ACTION_USER_UNSUSPENDED, target_user=self.target).exists())
+
+    def test_suspended_account_page_escapes_reason(self):
+        UserSuspension.objects.create(
+            user=self.target,
+            moderator=self.user,
+            reason="<script>alert(1)</script>",
+            starts_at=timezone.now() - timedelta(minutes=1),
+            ends_at=timezone.now() + timedelta(hours=1),
+        )
+        self.client.force_login(self.target)
+
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, "app/account_suspended.html")
+        self.assertContains(response, "&lt;script&gt;alert(1)&lt;/script&gt;", status_code=403)
+        self.assertNotContains(response, "<script>alert(1)</script>", status_code=403)
 
 
 class WeatherViewTests(BaseTestCase):

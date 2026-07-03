@@ -39,6 +39,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from ..models import Note, SiteAccessSettings
 from ..forms import SignUpForm
+from .auth import GoogleOAuthCaptchaForm
 from ..platform_utils import resolve_tools
 from ..presence_utils import clear_active_game, mark_active_game
 from ..voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
@@ -325,6 +326,7 @@ def signup(request):
             messages.error(request, _("Registrierungen sind aktuell gesperrt."))
         return render(request, "registration/signup.html", {
             "form": SignUpForm(),
+            "google_captcha_form": GoogleOAuthCaptchaForm(),
             "access_settings": access_settings,
             "access_locked": True,
         }, status=403 if request.method == "POST" else 200)
@@ -334,7 +336,7 @@ def signup(request):
 
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             messages.success(request, _("Dein Account wurde erstellt."))
             return redirect("home")
     else:
@@ -342,6 +344,7 @@ def signup(request):
 
     return render(request, "registration/signup.html", {
         "form": form,
+        "google_captcha_form": GoogleOAuthCaptchaForm(),
         "access_settings": access_settings,
         "access_locked": False,
     })

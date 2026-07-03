@@ -2,8 +2,8 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
-from django.http import HttpResponseForbidden, JsonResponse
-from django.shortcuts import redirect
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
 from django.urls import Resolver404, resolve, reverse
 from django.utils.translation import gettext as _
 
@@ -64,17 +64,11 @@ class LoginRequiredMiddleware:
 
                 suspension = UserSuspension.active_for_user(request.user)
                 if suspension and not request.user.is_staff:
-                    return HttpResponseForbidden(
-                        (
-                            "<!doctype html><html><head><meta charset='utf-8'>"
-                            "<title>Account gesperrt</title></head><body>"
-                            "<main style='font-family:system-ui;margin:10vh auto;max-width:640px;padding:24px'>"
-                            "<h1>Account gesperrt</h1>"
-                            f"<p>Dein Account ist bis {suspension.ends_at:%d.%m.%Y %H:%M} gesperrt.</p>"
-                            f"<p>{suspension.reason or 'Kein Grund angegeben.'}</p>"
-                            "<p>Du kannst dich ueber das Browser-Menue oder nach Ablauf der Sperre erneut anmelden.</p>"
-                            "</main></body></html>"
-                        )
+                    return render(
+                        request,
+                        "app/account_suspended.html",
+                        {"suspension": suspension},
+                        status=403,
                     )
             response = self.get_response(request)
             if request.user.is_authenticated:
