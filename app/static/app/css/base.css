@@ -3970,6 +3970,43 @@ body.dark-mode .theme-editor-panel .theme-remaster-button:focus-visible {
         inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
 }
 
+body:not(.theme-lunora-mode) .theme-toggle-option.is-active {
+    color: var(--theme-accent-text) !important;
+    border-color: rgba(var(--theme-accent-end-rgb), 0.72) !important;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.04)),
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--theme-accent-start) 88%, #ffffff 12%),
+            color-mix(in srgb, var(--theme-accent-start) 62%, var(--theme-accent-end) 38%)
+        ) !important;
+    box-shadow:
+        0 14px 28px rgba(var(--theme-accent-rgb), 0.26),
+        0 0 0 3px rgba(var(--theme-accent-end-rgb), 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.12) !important;
+}
+
+body:not(.theme-lunora-mode) .theme-toggle-option.is-active i {
+    color: var(--theme-accent-text) !important;
+}
+
+body.dark-mode:not(.theme-lunora-mode) .theme-toggle-option.is-active {
+    border-color: rgba(var(--theme-accent-end-rgb), 0.84) !important;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.03)),
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--theme-accent-start) 82%, #ffffff 18%),
+            color-mix(in srgb, var(--theme-accent-start) 58%, var(--theme-accent-end) 42%)
+        ) !important;
+    box-shadow:
+        0 14px 30px rgba(var(--theme-accent-rgb), 0.34),
+        0 0 0 3px rgba(var(--theme-accent-end-rgb), 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.18) !important;
+}
+
 body.theme-lunora-mode:not(.dark-mode) .theme-editor-panel .theme-remaster-button {
     color: #493929 !important;
     border-color: var(--lunora-theme-border) !important;

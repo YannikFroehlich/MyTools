@@ -243,6 +243,78 @@ html.auth-dark .auth-panel,
     gap: 0.9rem;
 }
 
+.auth-social-form {
+    margin: 0 0 1rem;
+}
+
+.auth-form .auth-google-button,
+.auth-social-form .auth-google-button,
+.auth-google-button {
+    width: 100%;
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    color: var(--auth-text);
+    background: color-mix(in srgb, var(--auth-panel) 90%, #ffffff 10%);
+    border: 1px solid var(--auth-input-border);
+    border-radius: 999px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 800;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.auth-form .auth-google-button:hover,
+.auth-social-form .auth-google-button:hover,
+.auth-google-button:hover {
+    border-color: var(--auth-input-focus);
+    background: color-mix(in srgb, var(--auth-panel) 82%, var(--theme-accent-start) 18%);
+    box-shadow: 0 14px 26px rgba(var(--theme-accent-rgb), 0.14);
+    transform: translateY(-1px);
+}
+
+.auth-form .auth-google-button:active,
+.auth-social-form .auth-google-button:active,
+.auth-google-button:active {
+    transform: scale(0.98);
+}
+
+.auth-google-mark {
+    width: 24px;
+    height: 24px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    color: #ffffff;
+    background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0);
+    border-radius: 50%;
+    font-size: 0.86rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 1rem;
+    color: var(--auth-muted);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: var(--auth-input-border);
+}
+
 .auth-form label {
     display: grid;
     gap: 0.4rem;

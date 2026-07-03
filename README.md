@@ -578,6 +578,9 @@ USE_FONTAWESOME_KIT=False
 RECAPTCHA_PUBLIC_KEY=dein_recaptcha_public_key
 RECAPTCHA_PRIVATE_KEY=dein_recaptcha_private_key
 
+GOOGLE_OAUTH_CLIENT_ID=deine_google_oauth_client_id
+GOOGLE_OAUTH_CLIENT_SECRET=dein_google_oauth_client_secret
+
 GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
 CSP_REPORT_ONLY=True
 CSP_POLICY=
@@ -597,6 +600,7 @@ CLOUDFLARE_TUNNEL_TOKEN=dein_cloudflare_tunnel_token
 
 Hinweise:
 
+- Google Login wird erst angezeigt, wenn `GOOGLE_OAUTH_CLIENT_ID` und `GOOGLE_OAUTH_CLIENT_SECRET` gesetzt sind. Die OAuth-Redirect-URI lautet lokal z. B. `http://127.0.0.1:8090/accounts/google/login/callback/` und produktiv `https://deine-domain/accounts/google/login/callback/`.
 - `GOOGLE_ANALYTICS_ID` muss eine **GA4 Measurement ID** sein und mit `G-` beginnen.
 - `GENIUS_API_KEY` ist der im Code verwendete Genius-Schlüssel.
 - `CSP_REPORT_ONLY=True` ist der sichere Startmodus für die vorbereitete Content Security Policy.

@@ -23,7 +23,7 @@ from django.conf import settings
 from django.views.static import serve as media_serve
 from django.contrib.staticfiles.views import serve as staticfiles_serve
 from app.views.media import media_thumbnail
-from app.views.auth import AccessAwareLoginView
+from app.views.auth import AccessAwareLoginView, google_oauth_login_view
 
 PUBLIC_MEDIA_PATH_PATTERN = r"^media/(?P<path>(?:public|profile_pictures|profile_banners|shortcut_icons|avatar_characters)/.*)$"
 
@@ -64,7 +64,9 @@ urlpatterns = [
     ),
 
     path('accounts/login/', AccessAwareLoginView.as_view(), name='login'),
+    path('accounts/google/login/', google_oauth_login_view, name='google_oauth_login'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('allauth.urls')),
     path('', include('app.urls')),
     path('i18n/setlang/', set_language, name='set_language'),
     path('media-thumb/<str:spec>/<path:source>', media_thumbnail, name='media_thumbnail'),

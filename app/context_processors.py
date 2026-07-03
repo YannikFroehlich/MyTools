@@ -22,6 +22,12 @@ def analytics_settings(request):
     }
 
 
+def google_oauth_settings(request):
+    return {
+        "google_oauth_enabled": getattr(settings, "GOOGLE_OAUTH_ENABLED", False),
+    }
+
+
 def access_control_status(request):
     if not request.user.is_authenticated:
         return {
