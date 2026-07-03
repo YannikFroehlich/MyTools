@@ -1,0 +1,32 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:'de' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% translate "Account gesperrt" %} - MyTools</title>
+</head>
+<body>
+    <main>
+        <h1>{% translate "Account gesperrt" %}</h1>
+        <p>
+            {% blocktranslate with ends_at=suspension.ends_at|date:"d.m.Y H:i" %}
+                Dein Account ist bis {{ ends_at }} gesperrt.
+            {% endblocktranslate %}
+        </p>
+        <p>
+            {% if suspension.reason %}
+                {{ suspension.reason }}
+            {% else %}
+                {% translate "Kein Grund angegeben." %}
+            {% endif %}
+        </p>
+        <p>{% translate "Du kannst dich ueber das Browser-Menue oder nach Ablauf der Sperre erneut anmelden." %}</p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">{% translate "Abmelden" %}</button>
+        </form>
+    </main>
+</body>
+</html>

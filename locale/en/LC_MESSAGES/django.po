@@ -7486,7 +7486,7 @@ msgid "Audit-Log"
 msgstr "Audit log"
 
 #: .\app\templates\app\moderation.html:371
-msgid "Keine Audit-EintrÃ¤ge."
+msgid "Keine Audit-Einträge."
 msgstr "No audit entries."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:21
@@ -14192,7 +14192,7 @@ msgstr "Wins"
 msgid "Kachel %(tile)s · %(games)s Runs"
 msgstr ""
 
-# | msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
+# | msgid "Cookie Cosmos · %(upgrades)s Upgrades"
 #: .\app\views\performance_tools.py:228
 #, fuzzy, python-format
 msgid "Prestige %(level)s · %(upgrades)s Upgrades"
@@ -14208,7 +14208,7 @@ msgstr ""
 msgid "Siege · %(score)s Punkte"
 msgstr "Wins · %(score)s points"
 
-# | msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
+# | msgid "Cookie Cosmos · %(upgrades)s Upgrades"
 #: .\app\views\performance_tools.py:350
 #, fuzzy, python-format
 msgid "Cookie Cosmos · %(upgrades)s Upgrades"
@@ -15534,10 +15534,6 @@ msgstr "Skribble lobby was deleted."
 #~ msgid "Notiz wurde gelöscht."
 #~ msgstr "Note deleted."
 
-#, python-format
-#~ msgid "Cookie Cosmos Â· %(upgrades)s Upgrades"
-#~ msgstr "Cookie Cosmos · %(upgrades)s upgrades"
-
 #~ msgid "Datei wurde gelöscht."
 #~ msgstr "File deleted."
 
@@ -16114,9 +16110,6 @@ msgstr "Skribble lobby was deleted."
 
 #~ msgid "Kommentare"
 #~ msgstr "Comments"
-
-#~ msgid "Keine Audit-Einträge."
-#~ msgstr "No audit entries."
 
 #~ msgid "Benutzername oder Passwort stimmt nicht."
 #~ msgstr "Username or password is incorrect."
