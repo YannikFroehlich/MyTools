@@ -1484,7 +1484,7 @@ msgstr "Favoriten"
 #: .\app\models.py:1020 .\app\templates\app\inbox.html:5
 #: .\app\templates\app\inbox.html:13
 msgid "Inbox"
-msgstr "Inbox"
+msgstr "Posteingang"
 
 #: .\app\models.py:1021
 msgid "Changelog"
@@ -6824,13 +6824,11 @@ msgstr "Gesamt"
 
 #: .\app\templates\app\home.html:768
 msgid "Deine Inbox ist leer."
-msgstr "Deine Inbox ist leer."
+msgstr "Dein Posteingang ist leer."
 
 #: .\app\templates\app\home.html:773
-#, fuzzy
-#| msgid "Dashboard öffnen"
 msgid "Inbox öffnen"
-msgstr "Dashboard öffnen"
+msgstr "Posteingang öffnen"
 
 #: .\app\templates\app\home.html:801
 #, fuzzy

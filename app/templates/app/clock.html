@@ -5,7 +5,7 @@
 {% block title %}{% translate 'Uhr' %} • MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/clock.css' %}?v=20260701-clock-scrollbar">
+    <link rel="stylesheet" href="{% static 'app/css/clock.css' %}?v=20260704-timer-stepper">
 {% endblock %}
 
 {% block content %}
@@ -162,15 +162,45 @@
             <div class="timer-quick-set">
                 <label>
                     <span>{% translate 'Stunden' %}</span>
-                    <input type="number" min="0" max="23" value="0" data-timer-hours>
+                    <span class="timer-number-shell">
+                        <input type="number" min="0" max="23" value="0" data-timer-hours>
+                        <span class="timer-stepper">
+                            <button type="button" class="timer-stepper-button" data-timer-step="up" aria-label="+">
+                                <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="timer-stepper-button" data-timer-step="down" aria-label="-">
+                                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                            </button>
+                        </span>
+                    </span>
                 </label>
                 <label>
                     <span>{% translate 'Minuten' %}</span>
-                    <input type="number" min="0" max="59" value="5" data-timer-minutes>
+                    <span class="timer-number-shell">
+                        <input type="number" min="0" max="59" value="5" data-timer-minutes>
+                        <span class="timer-stepper">
+                            <button type="button" class="timer-stepper-button" data-timer-step="up" aria-label="+">
+                                <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="timer-stepper-button" data-timer-step="down" aria-label="-">
+                                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                            </button>
+                        </span>
+                    </span>
                 </label>
                 <label>
                     <span>{% translate 'Sekunden' %}</span>
-                    <input type="number" min="0" max="59" value="0" data-timer-seconds>
+                    <span class="timer-number-shell">
+                        <input type="number" min="0" max="59" value="0" data-timer-seconds>
+                        <span class="timer-stepper">
+                            <button type="button" class="timer-stepper-button" data-timer-step="up" aria-label="+">
+                                <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="timer-stepper-button" data-timer-step="down" aria-label="-">
+                                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                            </button>
+                        </span>
+                    </span>
                 </label>
             </div>
 
@@ -329,5 +359,5 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/clock.js' %}" defer></script>
+    <script src="{% static 'app/js/clock.js' %}?v=20260704-timer-stepper" defer></script>
 {% endblock %}
