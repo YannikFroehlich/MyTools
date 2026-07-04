@@ -780,10 +780,25 @@ class PwaTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("application/manifest+json", response["Content-Type"])
+        self.assertEqual(response.json()["lang"], "de-DE")
+        self.assertEqual(response.json()["description"], "Private Tools, Widgets und Spiele in einer installierbaren Web-App.")
         self.assertEqual(response.json()["display"], "standalone")
         self.assertEqual(response.json()["scope"], "/")
         self.assertTrue(any(icon["sizes"] == "512x512" for icon in response.json()["icons"]))
         self.assertTrue(any(icon["purpose"] == "maskable" for icon in response.json()["icons"]))
+
+    def test_manifest_uses_active_language(self):
+        self.client.logout()
+        response = self.client.get(reverse("pwa_manifest"), HTTP_ACCEPT_LANGUAGE="en")
+
+        manifest = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(manifest["lang"], "en-US")
+        self.assertEqual(manifest["description"], "Private tools, widgets, and games in an installable web app.")
+        self.assertEqual(manifest["shortcuts"][0]["name"], "Home")
+        self.assertEqual(manifest["shortcuts"][0]["description"], "Open dashboard")
+        self.assertEqual(manifest["shortcuts"][1]["description"], "Open notes")
+        self.assertEqual(manifest["shortcuts"][2]["description"], "Open chats")
 
     def test_service_worker_is_public_and_allowed_for_root_scope(self):
         self.client.logout()
@@ -803,6 +818,7 @@ class PwaTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Du bist offline")
         self.assertContains(response, "Erneut versuchen")
+        self.assertContains(response, '<html lang="de"', html=False)
 
     def test_base_template_links_manifest_and_pwa_assets(self):
         response = self.client.get(reverse("home"))
@@ -2911,6 +2927,9 @@ class StaticPageTests(BaseTestCase):
 
                 self.assertEqual(response.status_code, 200)
                 self.assertTemplateUsed(response, template)
+                if url_name == "drift-circuit":
+                    self.assertContains(response, 'id="drift-i18n"')
+                    self.assertContains(response, "modeTimeTrial")
 
     def test_calculator_page_contains_scientific_controls(self):
         response = self.client.get(reverse("calculator"))
@@ -5243,6 +5262,20 @@ class TicTacToeTests(BaseTestCase):
         self.assertEqual(game.player_o, other_user)
         self.assertEqual(game.status, TicTacToeGame.STATUS_PLAYING)
 
+    def test_lobby_exposes_translated_frontend_labels(self):
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+
+        response = self.client.get(reverse("tictactoe_lobby", args=[game.code]), HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-text-you-won="You won!"')
+        self.assertContains(response, 'data-text-winner-line="{symbol} has three cells in a row."')
+
     def test_move_api_rejects_wrong_turn_and_detects_win(self):
         other_user = get_user_model().objects.create_user(
             username="gegner",
@@ -5569,6 +5602,15 @@ class ConnectFourTests(BaseTestCase):
         self.assertRedirects(response, reverse("connectfour_home"))
         self.assertFalse(ConnectFourGame.objects.filter(code=game.code).exists())
 
+    def test_lobby_exposes_translated_frontend_labels(self):
+        game = self.create_game()
+
+        response = self.client.get(reverse("connectfour_lobby", args=[game.code]), HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-text-you-won="You won!"')
+        self.assertContains(response, 'data-text-field-label="Cell {row}, {column}"')
+
     def test_non_host_cannot_delete_game(self):
         other_user = get_user_model().objects.create_user(
             username="gegner",
@@ -5838,6 +5880,15 @@ class BattleshipTests(BaseTestCase):
         game.refresh_from_db()
         self.assertEqual(game.player_b, other_user)
         self.assertEqual(game.status, BattleshipGame.STATUS_SETUP)
+
+    def test_lobby_exposes_translated_frontend_labels(self):
+        game = self.create_game()
+
+        response = self.client.get(reverse("battleship_lobby", args=[game.code]), HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-text-victory-title="Victory!"')
+        self.assertContains(response, 'data-text-defeat-text="{name} sank all your ships."')
 
     def test_full_game_rejects_additional_invites_and_third_join(self):
         second_user = get_user_model().objects.create_user(
@@ -6408,6 +6459,15 @@ class PongMultiplayerTests(TestCase):
         game.refresh_from_db()
         self.assertEqual(game.player_right, self.friend)
         self.assertEqual(game.status, PongGame.STATUS_PLAYING)
+
+    def test_lobby_exposes_translated_frontend_labels(self):
+        game = PongGame.objects.create(owner=self.user, player_left=self.user, name="Pong", code="PNG123")
+
+        response = self.client.get(reverse("pong_lobby", args=[game.code]), HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-text-side-left="Left side"')
+        self.assertContains(response, 'data-text-result-score="{left}:{right} - Best rally: {best}"')
 
     def test_pong_invite_counts_in_notifications(self):
         game = PongGame.objects.create(owner=self.user, player_left=self.user, name="Pong", code="INV123")

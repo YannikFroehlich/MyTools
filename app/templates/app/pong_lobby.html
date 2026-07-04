@@ -17,7 +17,23 @@
       data-state-url="{% url 'pong_state_api' game.code %}"
       data-paddle-url="{% url 'pong_paddle_api' game.code %}"
       data-reset-url="{% url 'pong_reset_api' game.code %}"
-      data-ws-url="/ws/pong/{{ game.code }}/">
+      data-ws-url="/ws/pong/{{ game.code }}/"
+      data-text-confirm-delete="{% translate 'Wirklich löschen?' %}"
+      data-text-link-copied="{% translate 'Link kopiert' %}"
+      data-text-action-failed="{% translate 'Aktion fehlgeschlagen' %}"
+      data-text-waiting="{% translate 'Wartet...' %}"
+      data-text-side-left="{% translate 'Linke Seite' %}"
+      data-text-side-right="{% translate 'Rechte Seite' %}"
+      data-text-spectator="{% translate 'Zuschauer' %}"
+      data-text-won-kicker="{% translate 'Gewonnen' %}"
+      data-text-ended-kicker="{% translate 'Spiel beendet' %}"
+      data-text-you-won="{% translate 'Du hast gewonnen!' %}"
+      data-text-player-won="{% translate '{name} hat gewonnen' %}"
+      data-text-player-fallback="{% translate 'Ein Spieler' %}"
+      data-text-result-score="{% translate '{left}:{right} - Beste Rally: {best}' %}"
+      data-text-connecting="{% translate 'Verbinde mit Pong...' %}"
+      data-text-waiting-player="{% translate 'Warte auf zweiten Spieler' %}"
+      data-text-deleted-room="{% translate 'Dieser Raum wurde gelöscht.' %}">
     <section class="pong-lobby-top">
         <div>
             <a class="pong-back" href="{% url 'pong_home' %}"><i class="fa-solid fa-arrow-left"></i> {% translate 'Zur Übersicht' %}</a>
