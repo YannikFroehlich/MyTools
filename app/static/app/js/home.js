@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const labels = labelsElement ? JSON.parse(labelsElement.textContent) : {};
     const deleteUndoRegion = document.querySelector("[data-delete-undo-region]");
     const deleteUndoDelay = 7000;
+    const pendingDeleteRecords = new Set();
     const onboardingModal = document.getElementById("onboarding-modal");
     const onboardingDialog = document.getElementById("onboarding-dialog");
 
@@ -225,12 +226,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateClockWidgets() {
         const now = new Date();
         const locale = getCurrentLocale();
-
-        const time = new Intl.DateTimeFormat(locale, {
+        const timeFormatter = new Intl.DateTimeFormat(locale, {
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
-        }).format(now);
+        });
+
+        const time = timeFormatter.format(now);
         const date = new Intl.DateTimeFormat(locale, {
             day: "2-digit",
             month: "long",
@@ -249,7 +251,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const hourDegrees = ((hours % 12) * 30) + (minutes * 0.5);
 
         document.querySelectorAll("[data-clock-widget]").forEach(clock => {
-            clock.querySelector("[data-clock-time]").textContent = time;
+            const timeElement = clock.querySelector("[data-clock-time]");
+            const timeParts = timeFormatter.formatToParts(now);
+            const dayPeriod = timeParts.find(part => part.type === "dayPeriod")?.value;
+
+            if (timeElement && dayPeriod) {
+                const timeWithoutPeriod = timeParts
+                    .filter(part => part.type !== "dayPeriod")
+                    .map(part => part.value)
+                    .join("")
+                    .trim();
+                const periodElement = document.createElement("span");
+                periodElement.className = "clock-time-period";
+                periodElement.textContent = dayPeriod;
+                timeElement.replaceChildren(document.createTextNode(timeWithoutPeriod), periodElement);
+            } else if (timeElement) {
+                timeElement.textContent = time;
+            }
+
             clock.querySelector("[data-clock-date]").textContent = date;
             clock.querySelector("[data-clock-weekday]").textContent = weekday;
 
@@ -989,19 +1008,67 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    async function commitPendingDeletion(deleteForm, target, toastParts, returnFocus) {
+    function buildDeleteFormData(deleteForm) {
+        const formData = new FormData(deleteForm);
+        const csrfToken = getCsrfToken();
+        if (csrfToken) formData.set("csrfmiddlewaretoken", csrfToken);
+        return { formData, csrfToken };
+    }
+
+    function getDeleteActionUrl(deleteForm) {
+        return deleteForm.getAttribute("action") || window.location.href;
+    }
+
+    function sendPendingDeletion(record) {
+        if (record.committed) return false;
+
+        record.committed = true;
+        pendingDeleteRecords.delete(record);
+        window.clearTimeout(record.timer);
+
+        const { formData, csrfToken } = buildDeleteFormData(record.deleteForm);
+        const url = getDeleteActionUrl(record.deleteForm);
+
+        if (navigator.sendBeacon?.(url, formData)) {
+            return true;
+        }
+
+        fetch(url, {
+            method: "POST",
+            body: formData,
+            credentials: "same-origin",
+            keepalive: true,
+            headers: {
+                "Accept": "application/json",
+                "X-CSRFToken": csrfToken,
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        }).catch(error => {
+            console.error("Loeschen konnte beim Seitenwechsel nicht abgeschlossen werden:", error);
+        });
+
+        return true;
+    }
+
+    async function commitPendingDeletion(record) {
+        if (record.committed) return;
+
+        record.committed = true;
+        pendingDeleteRecords.delete(record);
+        window.clearTimeout(record.timer);
+
+        const { deleteForm, target, toastParts, returnFocus } = record;
         toastParts?.toast.classList.add("is-committing");
         if (toastParts?.undoButton) toastParts.undoButton.disabled = true;
 
         try {
-            const formData = new FormData(deleteForm);
-            const csrfToken = getCsrfToken();
-            if (csrfToken) formData.set("csrfmiddlewaretoken", csrfToken);
+            const { formData, csrfToken } = buildDeleteFormData(deleteForm);
 
-            const response = await fetch(deleteForm.getAttribute("action") || window.location.href, {
+            const response = await fetch(getDeleteActionUrl(deleteForm), {
                 method: "POST",
                 body: formData,
                 credentials: "same-origin",
+                keepalive: true,
                 headers: {
                     "Accept": "application/json",
                     "X-CSRFToken": csrfToken,
@@ -1064,14 +1131,29 @@ document.addEventListener("DOMContentLoaded", () => {
         target.hidden = true;
         refreshDeleteEmptyStates();
 
-        const timer = window.setTimeout(() => {
-            commitPendingDeletion(deleteForm, target, toastParts, returnFocus);
+        const deleteRecord = {
+            deleteForm,
+            target,
+            toastParts,
+            returnFocus,
+            timer: 0,
+            committed: false,
+        };
+
+        deleteRecord.timer = window.setTimeout(() => {
+            commitPendingDeletion(deleteRecord);
         }, deleteUndoDelay);
+        pendingDeleteRecords.add(deleteRecord);
 
         toastParts?.undoButton.addEventListener("click", () => {
-            window.clearTimeout(timer);
+            window.clearTimeout(deleteRecord.timer);
+            pendingDeleteRecords.delete(deleteRecord);
             restorePendingDeletion(target, toastParts, returnFocus);
         }, { once: true });
+    });
+
+    window.addEventListener("pagehide", () => {
+        pendingDeleteRecords.forEach(sendPendingDeletion);
     });
 
     updateWidgetEmptyState();
@@ -1186,14 +1268,34 @@ document.addEventListener("DOMContentLoaded", () => {
         return target?.closest(selector) || null;
     }
 
-    function getShortcutInsertBefore(grid, clientY) {
+    function getGridAtPoint(clientX, clientY) {
+        const elementGrid = getElementUnderPointer(clientX, clientY, ".shortcuts-grid");
+        if (elementGrid) {
+            return elementGrid;
+        }
+
+        return [...document.querySelectorAll(".shortcuts-grid")].find(grid => {
+            const box = grid.getBoundingClientRect();
+            const tolerance = 24;
+            return (
+                clientX >= box.left - tolerance
+                && clientX <= box.right + tolerance
+                && clientY >= box.top - tolerance
+                && clientY <= box.bottom + tolerance
+            );
+        }) || null;
+    }
+
+    function getShortcutInsertBefore(grid, clientX, clientY) {
         const cards = [...grid.querySelectorAll(".shortcut-card:not(.pointer-dragging)")];
 
         for (const card of cards) {
             const box = card.getBoundingClientRect();
-            const middle = box.top + box.height / 2;
+            const horizontalMiddle = box.left + box.width / 2;
+            const verticalMiddle = box.top + box.height / 2;
+            const isWithinRow = clientY >= box.top && clientY <= box.bottom;
 
-            if (clientY < middle) {
+            if ((isWithinRow && clientX < horizontalMiddle) || (!isWithinRow && clientY < verticalMiddle)) {
                 return card;
             }
         }
@@ -1231,6 +1333,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         event.preventDefault();
         hideSuggestions();
+        card.classList.remove("actions-open");
+        card.querySelector(".shortcut-menu-toggle")?.setAttribute("aria-expanded", "false");
+        try {
+            handle.setPointerCapture?.(event.pointerId);
+        } catch (error) {
+        }
 
         const rect = card.getBoundingClientRect();
         const offsetX = event.clientX - rect.left;
@@ -1248,7 +1356,7 @@ document.addEventListener("DOMContentLoaded", () => {
             autoScrollDuringDrag(moveEvent.clientY);
             moveFloatingElement(card, moveEvent.clientX, moveEvent.clientY, offsetX, offsetY);
 
-            const grid = getElementUnderPointer(moveEvent.clientX, moveEvent.clientY, ".shortcuts-grid");
+            const grid = getGridAtPoint(moveEvent.clientX, moveEvent.clientY);
 
             document.querySelectorAll(".shortcuts-grid").forEach(item => {
                 item.classList.toggle("drag-over", item === grid);
@@ -1263,7 +1371,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 emptyState.hidden = true;
             }
 
-            const before = getShortcutInsertBefore(grid, moveEvent.clientY);
+            const before = getShortcutInsertBefore(grid, moveEvent.clientX, moveEvent.clientY);
 
             if (before) {
                 grid.insertBefore(placeholder, before);

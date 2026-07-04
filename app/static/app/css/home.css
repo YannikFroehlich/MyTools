@@ -3177,13 +3177,23 @@ body.dark-mode .shortcuts-grid.drag-over {
 }
 
 .clock-time {
-    display: block;
+    display: inline-flex;
+    align-items: baseline;
+    max-width: 100%;
+    gap: 0.16em;
     font-size: clamp(2.15rem, 4vw, 3.35rem);
     line-height: 1;
     font-weight: 950;
     letter-spacing: 0;
     color: var(--theme-text);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.clock-time-period {
+    flex: 0 0 auto;
+    font-size: 0.54em;
+    line-height: 1;
 }
 
 .clock-date {
@@ -4699,6 +4709,7 @@ body.dark-mode .shortcut-favorite {
 .clock-style-split .clock-time {
     grid-column: 2;
     grid-row: 1;
+    justify-content: flex-end;
     text-align: right;
 }
 
