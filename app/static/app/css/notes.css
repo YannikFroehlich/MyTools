@@ -787,12 +787,24 @@ body.dark-mode .notes-empty p {
     margin-bottom: 1.5rem;
     padding: 2rem;
     border-radius: 2rem;
+    text-align: left;
     background:
         radial-gradient(circle at top left, rgba(var(--theme-accent-rgb), 0.18), transparent 34%),
         rgba(255, 255, 255, 0.62);
     border: 1px solid rgba(17, 24, 39, 0.08);
     box-shadow: 0 20px 65px rgba(15, 23, 42, 0.08);
     backdrop-filter: blur(18px);
+}
+
+.notes-form-header .notes-header-content {
+    justify-items: start;
+}
+
+.notes-form-header .notes-header-text,
+.notes-form-header .notes-eyebrow,
+.notes-form-header h1,
+.notes-form-header .notes-subtitle {
+    text-align: left;
 }
 
 body.dark-mode .notes-form-header {

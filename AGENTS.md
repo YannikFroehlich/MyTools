@@ -12,6 +12,7 @@ This is a Django 5.2 project named `MyTools`. Project configuration lives in `My
 - `python manage.py runserver 127.0.0.1:8090`: run the local Django development server.
 - `python manage.py test app`: run the Django test suite for the app.
 - `python scripts/verify.py --test-label app`: run the quality gate: Django check, migration drift check, tests, collectstatic dry-run, and JS syntax checks when Node is available.
+- `python scripts/verify.py --quick`: run the focused quick quality gate for common security, media, PWA, rate-limit, chat, and file-share checks.
 - `docker compose up -d --build`: build and start the production-like stack.
 
 ## Coding Style & Naming Conventions

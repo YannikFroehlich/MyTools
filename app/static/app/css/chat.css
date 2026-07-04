@@ -2497,3 +2497,26 @@ body.theme-lunora-mode .chat-search-form input {
     background: transparent !important;
     background-color: transparent !important;
 }
+
+.chat-message.is-deleted .chat-bubble,
+.chat-message.is-own.is-deleted .chat-bubble,
+body.dark-mode .chat-message.is-deleted .chat-bubble,
+body.dark-mode .chat-message.is-own.is-deleted .chat-bubble,
+body.theme-lunora-mode .chat-message.is-deleted .chat-bubble,
+body.theme-lunora-mode .chat-message.is-own.is-deleted .chat-bubble {
+    color: #94a3b8;
+    background: rgba(148, 163, 184, .12);
+    border: 1px dashed rgba(148, 163, 184, .30);
+    box-shadow: none;
+}
+
+.chat-message.is-deleted .chat-message-avatar {
+    opacity: .42;
+    filter: grayscale(1);
+}
+
+.chat-message-deleted {
+    color: inherit;
+    font-style: italic;
+    font-weight: 800;
+}
