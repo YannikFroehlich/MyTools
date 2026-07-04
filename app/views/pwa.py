@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.urls import reverse
+from django.utils import translation
+from django.utils.translation import gettext as _, pgettext
 
 
 PWA_THEME_COLOR = "#1a56d6"
@@ -11,12 +13,17 @@ PWA_BACKGROUND_COLOR = "#dce5f5"
 PWA_CACHE_VERSION = "mytools-pwa-v16"
 
 
+def _manifest_language():
+    current_language = translation.get_language() or "de"
+    return "en-US" if current_language.startswith("en") else "de-DE"
+
+
 def pwa_manifest_view(request):
     """Return the installable web app manifest for MyTools."""
     manifest = {
         "name": "MyTools",
         "short_name": "MyTools",
-        "description": "Private Tools, Widgets und Spiele in einer installierbaren Web-App.",
+        "description": _("Private Tools, Widgets und Spiele in einer installierbaren Web-App."),
         "id": reverse("home"),
         "start_url": reverse("home"),
         "scope": "/",
@@ -26,7 +33,7 @@ def pwa_manifest_view(request):
         "theme_color": PWA_THEME_COLOR,
         "background_color": PWA_BACKGROUND_COLOR,
         "categories": ["productivity", "utilities", "games"],
-        "lang": "de-DE",
+        "lang": _manifest_language(),
         "icons": [
             {
                 "src": static("app/icons/pwa-icon-192.png"),
@@ -55,23 +62,23 @@ def pwa_manifest_view(request):
         ],
         "shortcuts": [
             {
-                "name": "Startseite",
-                "short_name": "Start",
-                "description": "Dashboard öffnen",
+                "name": pgettext("PWA manifest shortcut", "Startseite"),
+                "short_name": pgettext("PWA manifest shortcut", "Start"),
+                "description": pgettext("PWA manifest shortcut", "Dashboard öffnen"),
                 "url": reverse("home"),
                 "icons": [{"src": static("app/icons/pwa-icon-192.png"), "sizes": "192x192"}],
             },
             {
-                "name": "Notizen",
-                "short_name": "Notizen",
-                "description": "Notizen öffnen",
+                "name": pgettext("PWA manifest shortcut", "Notizen"),
+                "short_name": pgettext("PWA manifest shortcut", "Notizen"),
+                "description": pgettext("PWA manifest shortcut", "Notizen öffnen"),
                 "url": reverse("notes"),
                 "icons": [{"src": static("app/icons/pwa-icon-192.png"), "sizes": "192x192"}],
             },
             {
-                "name": "Chat",
-                "short_name": "Chat",
-                "description": "Chats öffnen",
+                "name": pgettext("PWA manifest shortcut", "Chat"),
+                "short_name": pgettext("PWA manifest shortcut", "Chat"),
+                "description": pgettext("PWA manifest shortcut", "Chats öffnen"),
                 "url": reverse("chat"),
                 "icons": [{"src": static("app/icons/pwa-icon-192.png"), "sizes": "192x192"}],
             },

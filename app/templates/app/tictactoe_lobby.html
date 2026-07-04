@@ -16,7 +16,23 @@
 <main class="ttt-page ttt-lobby-page"
       data-state-url="{% url 'tictactoe_state_api' game.code %}"
       data-move-url="{% url 'tictactoe_move_api' game.code %}"
-      data-reset-url="{% url 'tictactoe_reset_api' game.code %}">
+      data-reset-url="{% url 'tictactoe_reset_api' game.code %}"
+      data-text-confirm-delete="{% translate 'Wirklich löschen?' %}"
+      data-text-link-copied="{% translate 'Link kopiert' %}"
+      data-text-action-failed="{% translate 'Aktion fehlgeschlagen' %}"
+      data-text-action-failed-status="{% translate 'Aktion fehlgeschlagen ({status})' %}"
+      data-text-server-error="{% translate 'Serverfehler {status}. Bitte Logs prüfen.' %}"
+      data-text-waiting="{% translate 'Wartet...' %}"
+      data-text-spectator="{% translate 'Zuschauer' %}"
+      data-text-deleted-room="{% translate 'Dieser Raum wurde gelöscht.' %}"
+      data-text-draw-kicker="{% translate 'Unentschieden' %}"
+      data-text-draw-title="{% translate 'Keiner hat gewonnen' %}"
+      data-text-draw-text="{% translate 'Alle Felder sind voll. Der Host kann eine neue Runde starten.' %}"
+      data-text-won-kicker="{% translate 'Gewonnen' %}"
+      data-text-ended-kicker="{% translate 'Spiel beendet' %}"
+      data-text-you-won="{% translate 'Du hast gewonnen!' %}"
+      data-text-player-won="{% translate '{name} hat gewonnen' %}"
+      data-text-winner-line="{% translate '{symbol} hat drei Felder in einer Reihe.' %}">
     <section class="ttt-lobby-top">
         <div>
             <a class="ttt-back" href="{% url 'tictactoe_home' %}">

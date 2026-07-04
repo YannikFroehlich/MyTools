@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 
-{% block title %}Drift Circuit Pro • MyTools{% endblock %}
+{% block title %}{% translate "Drift Circuit Pro" %} • MyTools{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/drift_circuit.css' %}">
@@ -12,40 +12,40 @@
 <div class="drift-page">
 <div class="game-shell">
     <div class="game-frame" id="gameFrame">
-        <canvas id="gameCanvas" class="drift-game-canvas" width="1280" height="720" aria-label="Drift Circuit Pro Spielfeld"></canvas>
+        <canvas id="gameCanvas" class="drift-game-canvas" width="1280" height="720" aria-label="{% translate 'Drift Circuit Pro Spielfeld' %}"></canvas>
 
         <div class="top-hud">
             <section class="brand-card">
                 <div class="brand-mark">DC</div>
                 <div>
-                    <div class="game-title">Drift Circuit Pro</div>
-                    <div class="game-subtitle" id="modeLabel">Time Trial · 3 Runden</div>
+                    <div class="game-title">{% translate "Drift Circuit Pro" %}</div>
+                    <div class="game-subtitle" id="modeLabel">{% translate "Time Trial · 3 Runden" %}</div>
                 </div>
             </section>
 
             <section class="stats-grid">
                 <article class="stat-card">
-                    <span>Map</span>
+                    <span>{% translate "Map" %}</span>
                     <strong id="mapDisplay">Neon Bay</strong>
                 </article>
                 <article class="stat-card">
-                    <span>Runde</span>
+                    <span>{% translate "Runde" %}</span>
                     <strong id="lapDisplay">1 / 3</strong>
                 </article>
                 <article class="stat-card">
-                    <span>Zeit</span>
+                    <span>{% translate "Zeit" %}</span>
                     <strong id="timeDisplay">00:00.000</strong>
                 </article>
                 <article class="stat-card">
-                    <span>Bestzeit</span>
+                    <span>{% translate "Bestzeit" %}</span>
                     <strong id="bestDisplay">--:--.---</strong>
                 </article>
                 <article class="stat-card accent">
-                    <span>Speed</span>
+                    <span>{% translate "Speed" %}</span>
                     <strong id="speedDisplay">0 km/h</strong>
                 </article>
                 <article class="stat-card hide-small">
-                    <span>Drift</span>
+                    <span>{% translate "Drift" %}</span>
                     <strong id="driftDisplay">0</strong>
                 </article>
             </section>
@@ -53,122 +53,125 @@
 
         <div class="side-hud">
             <div class="meter-card">
-                <div class="meter-title">Nitro</div>
+                <div class="meter-title">{% translate "Nitro" %}</div>
                 <div class="meter"><i id="nitroFill"></i></div>
             </div>
             <div class="meter-card">
-                <div class="meter-title">Grip</div>
+                <div class="meter-title">{% translate "Grip" %}</div>
                 <div class="meter"><i id="gripFill"></i></div>
             </div>
         </div>
 
-        <div id="toast" class="toast hidden">Checkpoint!</div>
+        <div id="toast" class="toast hidden">{% translate "Checkpoint!" %}</div>
         <div id="countdown" class="countdown hidden">3</div>
 
         <div class="control-hint">
-            <span><kbd>W</kbd>/<kbd>↑</kbd> Gas</span>
-            <span><kbd>S</kbd>/<kbd>↓</kbd> Bremse</span>
-            <span><kbd>A</kbd>/<kbd>D</kbd> Lenken</span>
-            <span><kbd>Space</kbd> Drift</span>
-            <span><kbd>Shift</kbd> Nitro</span>
-            <span><kbd>M</kbd> Map</span>
-            <span><kbd>P</kbd> Pause</span>
-            <span><kbd>R</kbd> Reset</span>
+            <span><kbd>W</kbd>/<kbd>↑</kbd> {% translate "Gas" %}</span>
+            <span><kbd>S</kbd>/<kbd>↓</kbd> {% translate "Bremse" %}</span>
+            <span><kbd>A</kbd>/<kbd>D</kbd> {% translate "Lenken" %}</span>
+            <span><kbd>Space</kbd> {% translate "Drift" %}</span>
+            <span><kbd>Shift</kbd> {% translate "Nitro" %}</span>
+            <span><kbd>M</kbd> {% translate "Map" %}</span>
+            <span><kbd>P</kbd> {% translate "Pause" %}</span>
+            <span><kbd>R</kbd> {% translate "Reset" %}</span>
         </div>
 
         <div class="touch-controls" aria-hidden="true">
             <button class="touch-btn" data-key="arrowleft">←</button>
             <button class="touch-btn" data-key="arrowup">▲</button>
             <button class="touch-btn" data-key="arrowright">→</button>
-            <button class="touch-btn wide" data-key=" ">DRIFT</button>
-            <button class="touch-btn wide" data-key="shift">NITRO</button>
+            <button class="touch-btn wide" data-key=" ">{% translate "DRIFT" %}</button>
+            <button class="touch-btn wide" data-key="shift">{% translate "NITRO" %}</button>
         </div>
 
         <div id="menuOverlay" class="overlay">
             <div class="menu-panel start-panel">
                 <div class="hero-badge">🏎️</div>
-                <p class="eyebrow">Arcade Racing · größere Maps · Kamera-Follow</p>
-                <h1>Drift Circuit Pro</h1>
+                <p class="eyebrow">{% translate "Arcade Racing · größere Maps · Kamera-Follow" %}</p>
+                <h1>{% translate "Drift Circuit Pro" %}</h1>
                 <p class="lead">
-                    Jetzt mit 3 großen Maps, weicher Kamera, Minimap, mehr Strecke zum Beschleunigen,
-                    Nitro, Drift-Score, Checkpoints und deutlich freierem Fahrgefühl.
+                    {% blocktranslate trimmed %}
+                        Jetzt mit 3 großen Maps, weicher Kamera, Minimap, mehr Strecke zum Beschleunigen,
+                        Nitro, Drift-Score, Checkpoints und deutlich freierem Fahrgefühl.
+                    {% endblocktranslate %}
                 </p>
 
                 <div class="option-grid">
                     <label>
-                        Map
+                        {% translate "Map" %}
                         <select id="mapSelect">
-                            <option value="neonBay">Neon Bay · City Flow mit weiten Kurven</option>
-                            <option value="desertRush">Desert Rush · Snake Rally mit S-Kurven</option>
-                            <option value="snowPeak">Snow Peak · Hairpin Mountain technisch</option>
+                            <option value="neonBay">{% translate "Neon Bay · City Flow mit weiten Kurven" %}</option>
+                            <option value="desertRush">{% translate "Desert Rush · Snake Rally mit S-Kurven" %}</option>
+                            <option value="snowPeak">{% translate "Snow Peak · Hairpin Mountain technisch" %}</option>
                         </select>
                     </label>
                     <label>
-                        Modus
+                        {% translate "Modus" %}
                         <select id="modeSelect">
-                            <option value="timeTrial">Time Trial · 3 Runden</option>
-                            <option value="checkpointRush">Checkpoint Rush · 90 Sekunden</option>
-                            <option value="zen">Zen Drive · Freies Fahren</option>
+                            <option value="timeTrial">{% translate "Time Trial · 3 Runden" %}</option>
+                            <option value="checkpointRush">{% translate "Checkpoint Rush · 90 Sekunden" %}</option>
+                            <option value="zen">{% translate "Zen Drive · Freies Fahren" %}</option>
                         </select>
                     </label>
                     <label>
-                        Fahrgefühl
+                        {% translate "Fahrgefühl" %}
                         <select id="difficultySelect">
-                            <option value="normal">Normal</option>
-                            <option value="arcade">Arcade Grip</option>
-                            <option value="drift">Drift King</option>
+                            <option value="normal">{% translate "Normal" %}</option>
+                            <option value="arcade">{% translate "Arcade Grip" %}</option>
+                            <option value="drift">{% translate "Drift King" %}</option>
                         </select>
                     </label>
                     <label>
-                        Fahrzeugfarbe
+                        {% translate "Fahrzeugfarbe" %}
                         <select id="colorSelect">
-                            <option value="#ff4d6d">Neon Rot</option>
-                            <option value="#38bdf8">Cyber Blau</option>
-                            <option value="#a78bfa">Violett</option>
-                            <option value="#22c55e">Giftgrün</option>
-                            <option value="#f97316">Orange</option>
-                            <option value="#f8fafc">Storm Weiß</option>
+                            <option value="#ff4d6d">{% translate "Neon Rot" %}</option>
+                            <option value="#38bdf8">{% translate "Cyber Blau" %}</option>
+                            <option value="#a78bfa">{% translate "Violett" %}</option>
+                            <option value="#22c55e">{% translate "Giftgrün" %}</option>
+                            <option value="#f97316">{% translate "Orange" %}</option>
+                            <option value="#f8fafc">{% translate "Storm Weiß" %}</option>
                         </select>
                     </label>
                 </div>
 
                 <div class="feature-list">
-                    <span>✓ Kamera folgt dem Auto</span>
-                    <span>✓ 2600–3400px große Welten</span>
-                    <span>✓ Mapwechsel mit M</span>
-                    <span>✓ Minimap unten rechts</span>
-                    <span>✓ Mehr Zeit zum Beschleunigen</span>
-                    <span>✓ Mobile Buttons</span>
+                    <span>✓ {% translate "Kamera folgt dem Auto" %}</span>
+                    <span>✓ {% translate "2600–3400px große Welten" %}</span>
+                    <span>✓ {% translate "Mapwechsel mit M" %}</span>
+                    <span>✓ {% translate "Minimap unten rechts" %}</span>
+                    <span>✓ {% translate "Mehr Zeit zum Beschleunigen" %}</span>
+                    <span>✓ {% translate "Mobile Buttons" %}</span>
                 </div>
 
-                <button id="startButton" class="primary-btn">Rennen starten</button>
+                <button id="startButton" class="primary-btn">{% translate "Rennen starten" %}</button>
             </div>
         </div>
 
         <div id="pauseOverlay" class="overlay hidden soft">
             <div class="menu-panel compact-panel">
                 <div class="hero-badge">⏸️</div>
-                <h1>Pausiert</h1>
-                <p class="lead">Drücke <kbd>P</kbd>, um weiterzufahren.</p>
-                <button id="resumeButton" class="primary-btn">Weiterfahren</button>
-                <button id="menuButton" class="ghost-btn">Zum Menü</button>
+                <h1>{% translate "Pausiert" %}</h1>
+                <p class="lead">{% blocktranslate trimmed %}Drücke <kbd>P</kbd>, um weiterzufahren.{% endblocktranslate %}</p>
+                <button id="resumeButton" class="primary-btn">{% translate "Weiterfahren" %}</button>
+                <button id="menuButton" class="ghost-btn">{% translate "Zum Menü" %}</button>
             </div>
         </div>
 
         <div id="finishOverlay" class="overlay hidden">
             <div class="menu-panel compact-panel">
                 <div class="hero-badge">🏁</div>
-                <p class="eyebrow">Ergebnis</p>
-                <h1 id="finishTitle">Rennen beendet</h1>
-                <p id="finishText" class="lead">Deine Zeit:</p>
+                <p class="eyebrow">{% translate "Ergebnis" %}</p>
+                <h1 id="finishTitle">{% translate "Rennen beendet" %}</h1>
+                <p id="finishText" class="lead">{% translate "Deine Zeit:" %}</p>
                 <div id="finalTime" class="final-time">00:00.000</div>
                 <div id="finalStats" class="result-grid"></div>
-                <button id="restartButton" class="primary-btn">Nochmal fahren</button>
-                <button id="finishMenuButton" class="ghost-btn">Setup ändern</button>
+                <button id="restartButton" class="primary-btn">{% translate "Nochmal fahren" %}</button>
+                <button id="finishMenuButton" class="ghost-btn">{% translate "Setup ändern" %}</button>
             </div>
         </div>
     </div>
 </div>
+{{ drift_i18n|json_script:"drift-i18n" }}
 </div>
 {% endblock %}
 

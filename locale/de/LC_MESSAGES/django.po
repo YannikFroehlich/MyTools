@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-01 14:47+0200\n"
+"POT-Creation-Date: 2026-07-04 13:12+0200\n"
 "PO-Revision-Date: 2026-06-12 18:30+0200\n"
 "Last-Translator: Yunnik\n"
 "Language-Team: German\n"
@@ -17,64 +17,64 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\app\access_control.py:9 .\app\achievement_utils.py:38 .\app\models.py:2956
+#: .\app\access_control.py:9 .\app\achievement_utils.py:38 .\app\models.py:2965
 #: .\app\platform_utils.py:9 .\app\templates\app\about.html:235
 #: .\app\templates\app\achievement_center.html:51
 #: .\app\templates\app\base.html:951 .\app\templates\app\base.html:1035
 #: .\app\templates\app\base.html:1077 .\app\templates\app\chat.html:6
 #: .\app\templates\app\chat.html:20 .\app\templates\app\inbox.html:22
 #: .\app\templates\app\stream_deck.html:296 .\app\templates\app\users.html:51
-#: .\app\views\profile.py:684
+#: .\app\views\profile.py:685
 msgid "Chat"
 msgstr "Chat"
 
-#: .\app\access_control.py:10 .\app\access_control.py:34
-#: .\app\access_control.py:49 .\app\access_control.py:65
-#: .\app\access_control.py:73 .\app\access_control.py:81
-#: .\app\access_control.py:89 .\app\access_control.py:97
-#: .\app\access_control.py:105 .\app\access_control.py:113
-#: .\app\access_control.py:121 .\app\access_control.py:129
-#: .\app\access_control.py:137 .\app\access_control.py:145
-#: .\app\access_control.py:153 .\app\access_control.py:161
-#: .\app\access_control.py:169 .\app\access_control.py:177
-#: .\app\access_control.py:185 .\app\access_control.py:193
-#: .\app\access_control.py:201 .\app\access_control.py:209
-#: .\app\access_control.py:217 .\app\forms\platform.py:10 .\app\models.py:3046
+#: .\app\access_control.py:10 .\app\access_control.py:35
+#: .\app\access_control.py:50 .\app\access_control.py:66
+#: .\app\access_control.py:74 .\app\access_control.py:82
+#: .\app\access_control.py:90 .\app\access_control.py:98
+#: .\app\access_control.py:106 .\app\access_control.py:114
+#: .\app\access_control.py:122 .\app\access_control.py:130
+#: .\app\access_control.py:138 .\app\access_control.py:146
+#: .\app\access_control.py:154 .\app\access_control.py:162
+#: .\app\access_control.py:170 .\app\access_control.py:178
+#: .\app\access_control.py:186 .\app\access_control.py:194
+#: .\app\access_control.py:202 .\app\access_control.py:210
+#: .\app\access_control.py:218 .\app\forms\platform.py:10 .\app\models.py:3055
 #: .\app\views\platform.py:84
 msgid "Tool"
 msgstr "Tool"
 
-#: .\app\access_control.py:11 .\app\access_control.py:35
+#: .\app\access_control.py:11 .\app\access_control.py:36
 #: .\app\platform_utils.py:9 .\app\platform_utils.py:10
 #: .\app\platform_utils.py:33 .\app\platform_utils.py:39
 #: .\app\templates\app\werewolf_lobby.html:37
 msgid "Kommunikation"
 msgstr "Kommunikation"
 
-#: .\app\access_control.py:33 .\app\platform_utils.py:10
+#: .\app\access_control.py:34 .\app\platform_utils.py:10
 #: .\app\templates\app\base.html:940 .\app\templates\app\base.html:1072
 #: .\app\templates\app\leaderboard.html:36
 #: .\app\templates\app\moderation.html:242 .\app\templates\app\users.html:6
 #: .\app\templates\app\users.html:19 .\app\templates\app\users.html:59
-#: .\app\views\core.py:1826 .\app\views\platform.py:138
+#: .\app\views\core.py:1852 .\app\views\platform.py:138
 msgid "Nutzer"
 msgstr "Nutzer"
 
-#: .\app\access_control.py:48 .\app\achievement_utils.py:37
-#: .\app\models.py:1004 .\app\platform_utils.py:11 .\app\platform_utils.py:68
+#: .\app\access_control.py:49 .\app\achievement_utils.py:37
+#: .\app\models.py:1005 .\app\platform_utils.py:11 .\app\platform_utils.py:68
 #: .\app\templates\app\about.html:120
 #: .\app\templates\app\achievement_center.html:51
 #: .\app\templates\app\base.html:512 .\app\templates\app\base.html:515
 #: .\app\templates\app\base.html:1082 .\app\templates\app\home.html:823
 #: .\app\templates\app\notes.html:4 .\app\templates\app\notes.html:21
 #: .\app\templates\app\trash.html:33 .\app\views\community.py:485
-#: .\app\views\core.py:871 .\app\views\core.py:896 .\app\views\profile.py:168
+#: .\app\views\core.py:892 .\app\views\core.py:917 .\app\views\profile.py:169
 msgid "Notizen"
 msgstr "Notizen"
 
-#: .\app\access_control.py:50 .\app\access_control.py:66
-#: .\app\access_control.py:74 .\app\access_control.py:82
-#: .\app\access_control.py:90 .\app\access_control.py:106
+#: .\app\access_control.py:51 .\app\access_control.py:67
+#: .\app\access_control.py:75 .\app\access_control.py:83
+#: .\app\access_control.py:91 .\app\access_control.py:107
 #: .\app\platform_utils.py:7 .\app\platform_utils.py:8
 #: .\app\platform_utils.py:11 .\app\platform_utils.py:12
 #: .\app\platform_utils.py:36 .\app\platform_utils.py:37
@@ -82,44 +82,44 @@ msgstr "Notizen"
 msgid "Alltag"
 msgstr "Alltag"
 
-#: .\app\access_control.py:64 .\app\models.py:1007 .\app\platform_utils.py:12
+#: .\app\access_control.py:65 .\app\models.py:1008 .\app\platform_utils.py:12
 #: .\app\platform_utils.py:69 .\app\templates\app\base.html:504
 #: .\app\templates\app\base.html:507 .\app\templates\app\clock.html:5
-#: .\app\templates\app\clock.html:31 .\app\views\core.py:869
-#: .\app\views\core.py:897
+#: .\app\templates\app\clock.html:31 .\app\views\core.py:890
+#: .\app\views\core.py:918
 msgid "Uhr"
 msgstr "Uhr"
 
-#: .\app\access_control.py:72 .\app\models.py:1015 .\app\platform_utils.py:33
+#: .\app\access_control.py:73 .\app\models.py:1016 .\app\platform_utils.py:33
 #: .\app\platform_utils.py:83 .\app\templates\app\about.html:125
 #: .\app\templates\app\base.html:520 .\app\templates\app\base.html:523
 #: .\app\templates\app\file_share.html:4 .\app\templates\app\file_share.html:12
-#: .\app\views\profile.py:176
+#: .\app\views\profile.py:177
 msgid "Datei-Share"
 msgstr "Datei-Share"
 
-#: .\app\access_control.py:80 .\app\models.py:2959 .\app\models.py:2987
+#: .\app\access_control.py:81 .\app\models.py:2968 .\app\models.py:2996
 #: .\app\templates\app\base.html:528 .\app\templates\app\base.html:531
 #: .\app\templates\app\feedback.html:5 .\app\templates\app\feedback.html:12
 #: .\app\templates\app\moderation.html:184 .\app\views\community.py:502
 msgid "Feedback"
 msgstr "Feedback"
 
-#: .\app\access_control.py:88 .\app\models.py:1018 .\app\platform_utils.py:39
+#: .\app\access_control.py:89 .\app\models.py:1019 .\app\platform_utils.py:39
 #: .\app\templates\app\base.html:536 .\app\templates\app\base.html:539
 #: .\app\templates\app\roadmap.html:4 .\app\templates\app\roadmap.html:14
 #: .\app\views\platform.py:153
 msgid "Roadmap"
 msgstr "Roadmap"
 
-#: .\app\access_control.py:96 .\app\platform_utils.py:40
+#: .\app\access_control.py:97 .\app\platform_utils.py:40
 #: .\app\platform_utils.py:77 .\app\templates\app\about.html:250
 #: .\app\templates\app\achievement_center.html:14
 #: .\app\templates\app\base.html:935
 msgid "Achievement-Center"
 msgstr "Achievement-Center"
 
-#: .\app\access_control.py:98 .\app\achievement_utils.py:39
+#: .\app\access_control.py:99 .\app\achievement_utils.py:39
 #: .\app\platform_utils.py:40 .\app\platform_utils.py:52
 #: .\app\templates\app\achievement_center.html:51
 #: .\app\templates\app\base.html:1036 .\app\templates\app\chat.html:319
@@ -128,40 +128,40 @@ msgstr "Achievement-Center"
 msgid "Profil"
 msgstr "Profil"
 
-#: .\app\access_control.py:104 .\app\models.py:1003 .\app\platform_utils.py:8
+#: .\app\access_control.py:105 .\app\models.py:1004 .\app\platform_utils.py:8
 #: .\app\platform_utils.py:67 .\app\templates\app\about.html:110
 #: .\app\templates\app\base.html:68 .\app\templates\app\base.html:1067
-#: .\app\templates\app\weather.html:5 .\app\views\core.py:870
+#: .\app\templates\app\weather.html:5 .\app\views\core.py:891
 msgid "Wetter"
 msgstr "Wetter"
 
-#: .\app\access_control.py:112 .\app\platform_utils.py:26
+#: .\app\access_control.py:113 .\app\platform_utils.py:26
 #: .\app\platform_utils.py:70 .\app\templates\app\base.html:579
 #: .\app\templates\app\base.html:582
 msgid "Rechner"
 msgstr "Rechner"
 
-#: .\app\access_control.py:114 .\app\access_control.py:122
-#: .\app\access_control.py:130 .\app\access_control.py:138
-#: .\app\access_control.py:146 .\app\access_control.py:154
+#: .\app\access_control.py:115 .\app\access_control.py:123
+#: .\app\access_control.py:131 .\app\access_control.py:139
+#: .\app\access_control.py:147 .\app\access_control.py:155
 #: .\app\templates\app\base.html:575
 msgid "Rechner & Helfer"
 msgstr "Rechner & Helfer"
 
-#: .\app\access_control.py:120 .\app\platform_utils.py:36
+#: .\app\access_control.py:121 .\app\platform_utils.py:36
 #: .\app\platform_utils.py:73 .\app\templates\app\about.html:155
 #: .\app\templates\app\base.html:587 .\app\templates\app\base.html:590
 msgid "Spritkosten"
 msgstr "Spritkosten"
 
-#: .\app\access_control.py:128 .\app\platform_utils.py:37
+#: .\app\access_control.py:129 .\app\platform_utils.py:37
 #: .\app\platform_utils.py:74 .\app\templates\app\about.html:160
 #: .\app\templates\app\budget_tracker.html:4
 #: .\app\templates\app\budget_tracker.html:15
 msgid "Budget-Tracker"
 msgstr "Budget-Tracker"
 
-#: .\app\access_control.py:136 .\app\platform_utils.py:27
+#: .\app\access_control.py:137 .\app\platform_utils.py:27
 #: .\app\platform_utils.py:71 .\app\templates\app\about.html:170
 #: .\app\templates\app\base.html:595 .\app\templates\app\base.html:598
 #: .\app\templates\app\unit_converter.html:4
@@ -169,14 +169,14 @@ msgstr "Budget-Tracker"
 msgid "Einheitenrechner"
 msgstr "Einheitenrechner"
 
-#: .\app\access_control.py:144 .\app\platform_utils.py:28
+#: .\app\access_control.py:145 .\app\platform_utils.py:28
 #: .\app\platform_utils.py:72 .\app\templates\app\base.html:603
 #: .\app\templates\app\base.html:606
 #: .\app\templates\app\randomizer_tools.html:5
 msgid "Randomizer"
 msgstr "Randomizer"
 
-#: .\app\access_control.py:152 .\app\platform_utils.py:38
+#: .\app\access_control.py:153 .\app\platform_utils.py:38
 #: .\app\platform_utils.py:75 .\app\templates\app\about.html:175
 #: .\app\templates\app\base.html:611 .\app\templates\app\base.html:614
 #: .\app\templates\app\qr_code_tool.html:5
@@ -184,7 +184,7 @@ msgstr "Randomizer"
 msgid "QR-Code Tool"
 msgstr "QR-Code Tool"
 
-#: .\app\access_control.py:160 .\app\platform_utils.py:29
+#: .\app\access_control.py:161 .\app\platform_utils.py:29
 #: .\app\platform_utils.py:79 .\app\templates\app\about.html:165
 #: .\app\templates\app\base.html:628 .\app\templates\app\base.html:631
 #: .\app\templates\app\genius_search.html:5
@@ -192,21 +192,21 @@ msgstr "QR-Code Tool"
 msgid "Genius Search"
 msgstr "Genius Search"
 
-#: .\app\access_control.py:162 .\app\access_control.py:170
-#: .\app\access_control.py:178 .\app\access_control.py:186
-#: .\app\access_control.py:194 .\app\access_control.py:202
+#: .\app\access_control.py:163 .\app\access_control.py:171
+#: .\app\access_control.py:179 .\app\access_control.py:187
+#: .\app\access_control.py:195 .\app\access_control.py:203
 #: .\app\templates\app\base.html:624
 msgid "Medien & Design"
 msgstr "Medien & Design"
 
-#: .\app\access_control.py:168 .\app\platform_utils.py:31
+#: .\app\access_control.py:169 .\app\platform_utils.py:31
 #: .\app\platform_utils.py:81 .\app\templates\app\about.html:180
 #: .\app\templates\app\base.html:636 .\app\templates\app\base.html:639
 #: .\app\templates\app\image_tools.html:4
 msgid "Bild Tools"
 msgstr "Bild Tools"
 
-#: .\app\access_control.py:176 .\app\platform_utils.py:32
+#: .\app\access_control.py:177 .\app\platform_utils.py:32
 #: .\app\platform_utils.py:82 .\app\templates\app\about.html:185
 #: .\app\templates\app\base.html:644 .\app\templates\app\base.html:647
 #: .\app\templates\app\file_converter.html:5
@@ -216,36 +216,36 @@ msgstr "Bild Tools"
 msgid "Datei-Konverter"
 msgstr "Datei-Verteiler"
 
-#: .\app\access_control.py:184 .\app\templates\app\base.html:655
+#: .\app\access_control.py:185 .\app\templates\app\base.html:655
 msgid "Color Palette"
 msgstr "Color Palette"
 
-#: .\app\access_control.py:192 .\app\templates\app\base.html:660
+#: .\app\access_control.py:193 .\app\templates\app\base.html:660
 #: .\app\templates\app\base.html:663
 #: .\app\templates\app\profile_card_designer.html:6
 msgid "Profilkarten-Designer"
 msgstr "Profilkarten-Designer"
 
-#: .\app\access_control.py:200 .\app\platform_utils.py:30
+#: .\app\access_control.py:201 .\app\platform_utils.py:30
 #: .\app\platform_utils.py:80 .\app\templates\app\avatar_wiki.html:5
 #: .\app\templates\app\avatar_wiki.html:21 .\app\templates\app\base.html:668
 #: .\app\templates\app\base.html:671
 msgid "Avatar Wiki"
 msgstr "Avatar Wiki"
 
-#: .\app\access_control.py:208 .\app\platform_utils.py:34
+#: .\app\access_control.py:209 .\app\platform_utils.py:34
 #: .\app\platform_utils.py:84 .\app\templates\app\about.html:145
 #: .\app\templates\app\base.html:685 .\app\templates\app\base.html:688
 msgid "Stream Deck"
 msgstr "Stream Deck"
 
-#: .\app\access_control.py:210 .\app\access_control.py:218
+#: .\app\access_control.py:211 .\app\access_control.py:219
 #: .\app\platform_utils.py:34 .\app\platform_utils.py:35
 #: .\app\templates\app\base.html:681 .\app\templates\app\base.html:697
 msgid "Streaming"
 msgstr "Streaming"
 
-#: .\app\access_control.py:216 .\app\platform_utils.py:35
+#: .\app\access_control.py:217 .\app\platform_utils.py:35
 #: .\app\platform_utils.py:85 .\app\templates\app\about.html:140
 #: .\app\templates\app\base.html:693 .\app\templates\app\base.html:696
 #: .\app\templates\app\obs-dashboard.html:5
@@ -253,23 +253,11 @@ msgstr "Streaming"
 msgid "OBS Dashboard"
 msgstr "OBS Dashboard"
 
-#: .\app\access_control.py:224 .\app\platform_utils.py:20
+#: .\app\access_control.py:225 .\app\platform_utils.py:20
 #: .\app\platform_utils.py:62 .\app\templates\app\base.html:93
 #: .\app\templates\app\leaderboard.html:4
 msgid "Leaderboard"
 msgstr "Leaderboard"
-
-#: .\app\access_control.py:225 .\app\access_control.py:233
-#: .\app\access_control.py:241 .\app\access_control.py:249
-#: .\app\access_control.py:257 .\app\access_control.py:265
-#: .\app\access_control.py:273 .\app\access_control.py:281
-#: .\app\access_control.py:293 .\app\access_control.py:312
-#: .\app\access_control.py:331 .\app\access_control.py:351
-#: .\app\access_control.py:374 .\app\access_control.py:396
-#: .\app\access_control.py:418 .\app\access_control.py:442
-#: .\app\access_control.py:463 .\app\access_control.py:482 .\app\models.py:3047
-msgid "Spiel"
-msgstr "Spiel"
 
 #: .\app\access_control.py:226 .\app\access_control.py:234
 #: .\app\access_control.py:242 .\app\access_control.py:250
@@ -279,7 +267,19 @@ msgstr "Spiel"
 #: .\app\access_control.py:332 .\app\access_control.py:352
 #: .\app\access_control.py:375 .\app\access_control.py:397
 #: .\app\access_control.py:419 .\app\access_control.py:443
-#: .\app\access_control.py:464 .\app\access_control.py:483
+#: .\app\access_control.py:464 .\app\access_control.py:483 .\app\models.py:3056
+msgid "Spiel"
+msgstr "Spiel"
+
+#: .\app\access_control.py:227 .\app\access_control.py:235
+#: .\app\access_control.py:243 .\app\access_control.py:251
+#: .\app\access_control.py:259 .\app\access_control.py:267
+#: .\app\access_control.py:275 .\app\access_control.py:283
+#: .\app\access_control.py:295 .\app\access_control.py:314
+#: .\app\access_control.py:333 .\app\access_control.py:353
+#: .\app\access_control.py:376 .\app\access_control.py:398
+#: .\app\access_control.py:420 .\app\access_control.py:444
+#: .\app\access_control.py:465 .\app\access_control.py:484
 #: .\app\achievement_utils.py:36 .\app\platform_utils.py:13
 #: .\app\platform_utils.py:14 .\app\platform_utils.py:15
 #: .\app\platform_utils.py:16 .\app\platform_utils.py:17
@@ -288,71 +288,73 @@ msgstr "Spiel"
 #: .\app\platform_utils.py:22 .\app\platform_utils.py:23
 #: .\app\platform_utils.py:24 .\app\platform_utils.py:25
 #: .\app\templates\app\achievement_center.html:51
-#: .\app\templates\app\base.html:79 .\app\views\profile.py:284
-#: .\app\views\profile.py:351 .\app\views\profile.py:378
-#: .\app\views\profile.py:397 .\app\views\profile.py:414
-#: .\app\views\profile.py:495
+#: .\app\templates\app\base.html:79 .\app\views\profile.py:285
+#: .\app\views\profile.py:352 .\app\views\profile.py:379
+#: .\app\views\profile.py:398 .\app\views\profile.py:415
+#: .\app\views\profile.py:496
 msgid "Spiele"
 msgstr "Spiele"
 
-#: .\app\access_control.py:232 .\app\models.py:1005 .\app\platform_utils.py:18
+#: .\app\access_control.py:233 .\app\models.py:1006 .\app\platform_utils.py:18
 #: .\app\platform_utils.py:60 .\app\templates\app\about.html:200
 #: .\app\templates\app\base.html:112 .\app\templates\app\base.html:115
 #: .\app\templates\app\human_benchmark.html:5
-#: .\app\templates\app\human_benchmark.html:19 .\app\views\core.py:885
+#: .\app\templates\app\human_benchmark.html:19 .\app\views\core.py:906
 msgid "Human Benchmark"
 msgstr "Human Benchmark"
 
-#: .\app\access_control.py:240 .\app\platform_utils.py:21
+#: .\app\access_control.py:241 .\app\platform_utils.py:21
 #: .\app\platform_utils.py:86 .\app\templates\app\base.html:120
 #: .\app\templates\app\base.html:123
 msgid "Racing Game"
 msgstr "Racing Game"
 
-#: .\app\access_control.py:248 .\app\platform_utils.py:19
+#: .\app\access_control.py:249 .\app\platform_utils.py:19
 #: .\app\platform_utils.py:61 .\app\views\performance_tools.py:210
 msgid "2048"
 msgstr "2048"
 
-#: .\app\access_control.py:256 .\app\platform_utils.py:22
+#: .\app\access_control.py:257 .\app\platform_utils.py:22
 #: .\app\platform_utils.py:66 .\app\templates\app\base.html:136
 #: .\app\templates\app\base.html:139
 msgid "Snake"
 msgstr ""
 
-#: .\app\access_control.py:264 .\app\platform_utils.py:23
+#: .\app\access_control.py:265 .\app\platform_utils.py:23
 #: .\app\platform_utils.py:63 .\app\templates\app\about.html:205
 #: .\app\templates\app\base.html:144 .\app\templates\app\base.html:147
 #: .\app\views\performance_tools.py:353
 msgid "Cookie Cosmos"
 msgstr "Cookie Cosmos"
 
-#: .\app\access_control.py:272 .\app\platform_utils.py:24
+#: .\app\access_control.py:273 .\app\platform_utils.py:24
 #: .\app\platform_utils.py:64 .\app\views\performance_tools.py:234
 #, fuzzy
 #| msgid "Cookie Cosmos"
 msgid "Cookie Cosmos V2"
 msgstr "Cookie Cosmos"
 
-#: .\app\access_control.py:280 .\app\platform_utils.py:25
+#: .\app\access_control.py:281 .\app\platform_utils.py:25
 #: .\app\platform_utils.py:65 .\app\templates\app\about.html:210
 #: .\app\templates\app\nebula_forge_tycoon.html:5
 #: .\app\templates\app\nebula_forge_tycoon.html:504
 #: .\app\views\performance_tools.py:258
+#, fuzzy
+#| msgid "Nebula Forge Tycoon Update"
 msgid "Nebula Forge Tycoon"
-msgstr ""
+msgstr "Nebula Forge Tycoon Update"
 
-#: .\app\access_control.py:292 .\app\models.py:1011
+#: .\app\access_control.py:293 .\app\models.py:1012
 #: .\app\notification_utils.py:257 .\app\templates\app\base.html:190
 #: .\app\templates\app\base.html:193 .\app\templates\app\tictactoe_home.html:4
 #: .\app\templates\app\tictactoe_home.html:27
 #: .\app\templates\app\tictactoe_home.html:44
-#: .\app\templates\app\tictactoe_lobby.html:4 .\app\views\core.py:884
+#: .\app\templates\app\tictactoe_lobby.html:4 .\app\views\core.py:905
 #: .\app\views\performance_tools.py:384 .\app\views\tictactoe.py:298
 msgid "Tic Tac Toe"
 msgstr "Tic Tac Toe"
 
-#: .\app\access_control.py:311 .\app\notification_utils.py:270
+#: .\app\access_control.py:312 .\app\notification_utils.py:270
 #: .\app\templates\app\base.html:216 .\app\templates\app\base.html:219
 #: .\app\templates\app\connectfour_home.html:4
 #: .\app\templates\app\connectfour_home.html:27
@@ -362,7 +364,7 @@ msgstr "Tic Tac Toe"
 msgid "Vier gewinnt"
 msgstr "Vier gewinnt"
 
-#: .\app\access_control.py:330 .\app\notification_utils.py:286
+#: .\app\access_control.py:331 .\app\notification_utils.py:286
 #: .\app\notification_utils.py:297 .\app\templates\app\base.html:203
 #: .\app\templates\app\base.html:206 .\app\templates\app\battleship_home.html:4
 #: .\app\templates\app\battleship_home.html:27
@@ -372,7 +374,7 @@ msgstr "Vier gewinnt"
 msgid "Schiffe versenken"
 msgstr "Schiffe versenken"
 
-#: .\app\access_control.py:350 .\app\models.py:1012
+#: .\app\access_control.py:351 .\app\models.py:1013
 #: .\app\notification_utils.py:347 .\app\templates\app\base.html:229
 #: .\app\templates\app\base.html:232
 #: .\app\templates\app\stadtlandfluss_home.html:4
@@ -383,7 +385,7 @@ msgstr "Schiffe versenken"
 msgid "Stadt Land Fluss"
 msgstr "Stadt Land Fluss"
 
-#: .\app\access_control.py:373 .\app\platform_utils.py:16
+#: .\app\access_control.py:374 .\app\platform_utils.py:16
 #: .\app\platform_utils.py:58 .\app\templates\app\base.html:287
 #: .\app\templates\app\base.html:290 .\app\templates\app\hangman_home.html:4
 #: .\app\templates\app\hangman_home.html:14
@@ -393,25 +395,27 @@ msgstr "Stadt Land Fluss"
 msgid "Hangman"
 msgstr "Hangman"
 
-#: .\app\access_control.py:395 .\app\models.py:3712 .\app\platform_utils.py:17
+#: .\app\access_control.py:396 .\app\models.py:3721 .\app\platform_utils.py:17
 #: .\app\platform_utils.py:59 .\app\templates\app\base.html:177
 #: .\app\templates\app\base.html:180 .\app\templates\app\werewolf_home.html:4
 #: .\app\templates\app\werewolf_home.html:13
 #: .\app\templates\app\werewolf_lobby.html:4
+#, fuzzy
+#| msgid "ein Werwolf"
 msgid "Werwolf"
-msgstr ""
+msgstr "ein Werwolf"
 
-#: .\app\access_control.py:417 .\app\models.py:1013
+#: .\app\access_control.py:418 .\app\models.py:1014
 #: .\app\notification_utils.py:311 .\app\platform_utils.py:14
 #: .\app\platform_utils.py:56 .\app\templates\app\base.html:242
-#: .\app\templates\app\base.html:246 .\app\templates\app\uno_home.html:4
+#: .\app\templates\app\base.html:245 .\app\templates\app\uno_home.html:4
 #: .\app\templates\app\uno_home.html:27 .\app\templates\app\uno_home.html:46
 #: .\app\templates\app\uno_lobby.html:4 .\app\views\performance_tools.py:396
 #: .\app\views\uno.py:536
 msgid "Uno"
 msgstr "Uno"
 
-#: .\app\access_control.py:441 .\app\models.py:1014
+#: .\app\access_control.py:442 .\app\models.py:1015
 #: .\app\notification_utils.py:325 .\app\platform_utils.py:15
 #: .\app\platform_utils.py:57 .\app\templates\app\base.html:258
 #: .\app\templates\app\base.html:261 .\app\templates\app\kniffel_home.html:4
@@ -422,14 +426,14 @@ msgstr "Uno"
 msgid "Kniffel"
 msgstr "Kniffel"
 
-#: .\app\access_control.py:462 .\app\templates\app\base.html:271
+#: .\app\access_control.py:463 .\app\templates\app\base.html:271
 #: .\app\templates\app\base.html:274 .\app\templates\app\pong_home.html:4
 #: .\app\templates\app\pong_home.html:43 .\app\templates\app\pong_lobby.html:4
 #: .\app\views\performance_tools.py:402 .\app\views\pong.py:337
 msgid "Pong"
 msgstr "Pong"
 
-#: .\app\access_control.py:481 .\app\models.py:1010 .\app\models.py:2958
+#: .\app\access_control.py:482 .\app\models.py:1011 .\app\models.py:2967
 #: .\app\notification_utils.py:362 .\app\platform_utils.py:13
 #: .\app\platform_utils.py:55 .\app\templates\app\about.html:255
 #: .\app\templates\app\base.html:300 .\app\templates\app\base.html:303
@@ -442,7 +446,7 @@ msgid "Skribble"
 msgstr "Skribble"
 
 #: .\app\achievement_utils.py:40 .\app\templates\app\achievement_center.html:51
-#: .\app\templates\app\moderation.html:51 .\app\views\profile.py:174
+#: .\app\templates\app\moderation.html:51 .\app\views\profile.py:175
 msgid "Uploads"
 msgstr "Uploads"
 
@@ -780,6 +784,12 @@ msgstr "Lobby-Veteran"
 msgid "50 Multiplayer-Teilnahmen gesammelt."
 msgstr "50 Multiplayer-Teilnahmen gesammelt."
 
+#: .\app\adapters.py:22
+#, fuzzy
+#| msgid "Der Login ist aktuell für normale Nutzer gesperrt."
+msgid "Der Login ist aktuell fuer normale Nutzer gesperrt."
+msgstr "Der Login ist aktuell für normale Nutzer gesperrt."
+
 #: .\app\admin.py:158 .\app\admin.py:159
 #: .\app\templates\app\two_factor_settings.html:5
 #: .\app\templates\app\two_factor_settings.html:16
@@ -832,40 +842,40 @@ msgstr "Nur der Host kann eine neue Runde starten."
 msgid "Dieser Pong-Raum wurde gelöscht."
 msgstr "Dieser Pong-Raum wurde gelöscht."
 
-#: .\app\forms\core.py:49 .\app\models.py:604 .\app\models.py:735
-#: .\app\models.py:1079 .\app\templates\app\base.html:762
+#: .\app\forms\core.py:49 .\app\models.py:605 .\app\models.py:736
+#: .\app\models.py:1080 .\app\templates\app\base.html:762
 #: .\app\templates\app\uno_lobby.html:186 .\app\views\uno.py:26
 msgid "Blau"
 msgstr "Blau"
 
-#: .\app\forms\core.py:50 .\app\models.py:612 .\app\models.py:736
-#: .\app\models.py:1087
+#: .\app\forms\core.py:50 .\app\models.py:613 .\app\models.py:737
+#: .\app\models.py:1095
 msgid "Lila"
 msgstr "Lila"
 
-#: .\app\forms\core.py:51 .\app\models.py:607 .\app\models.py:737
-#: .\app\models.py:1082 .\app\views\uno.py:25
+#: .\app\forms\core.py:51 .\app\models.py:608 .\app\models.py:738
+#: .\app\models.py:1085 .\app\views\uno.py:25
 msgid "Grün"
 msgstr "Grün"
 
-#: .\app\forms\core.py:52 .\app\models.py:609 .\app\models.py:738
-#: .\app\models.py:1084
+#: .\app\forms\core.py:52 .\app\models.py:610 .\app\models.py:739
+#: .\app\models.py:1089 .\app\templates\app\drift_circuit.html:131
 msgid "Orange"
 msgstr "Orange"
 
-#: .\app\forms\core.py:53 .\app\models.py:610 .\app\models.py:739
-#: .\app\models.py:1085 .\app\models.py:1550
+#: .\app\forms\core.py:53 .\app\models.py:611 .\app\models.py:740
+#: .\app\models.py:1090 .\app\models.py:1559
 #: .\app\templates\app\uno_lobby.html:183 .\app\views\uno.py:23
 msgid "Rot"
 msgstr "Rot"
 
-#: .\app\forms\core.py:54 .\app\models.py:614 .\app\models.py:1089
+#: .\app\forms\core.py:54 .\app\models.py:615 .\app\models.py:1098
 msgid "Grau"
 msgstr "Grau"
 
 #: .\app\forms\core.py:61 .\app\forms\profile.py:31
 #: .\app\templates\app\qr_code_tool.html:113
-#: .\app\templates\registration\signup.html:106
+#: .\app\templates\registration\signup.html:127
 msgid "E-Mail"
 msgstr "E-Mail"
 
@@ -887,8 +897,8 @@ msgstr "Diese E-Mail-Adresse wird bereits verwendet."
 
 #: .\app\forms\core.py:89 .\app\forms\profile.py:39 .\app\forms\profile.py:44
 #: .\app\templates\app\public_profile.html:97
-#: .\app\templates\registration\login.html:97
-#: .\app\templates\registration\signup.html:101 .\app\views\auth.py:43
+#: .\app\templates\registration\login.html:98
+#: .\app\templates\registration\signup.html:122 .\app\views\auth.py:44
 msgid "Benutzername"
 msgstr "Benutzername"
 
@@ -898,14 +908,14 @@ msgstr "Benutzername"
 #: .\app\templates\app\stream_deck.html:37
 #: .\app\templates\app\stream_deck.html:39
 #: .\app\templates\app\werewolf_home.html:27
-#: .\app\templates\registration\login.html:102
-#: .\app\templates\registration\signup.html:111 .\app\views\auth.py:47
+#: .\app\templates\registration\login.html:103
+#: .\app\templates\registration\signup.html:132 .\app\views\auth.py:48
 msgid "Passwort"
 msgstr "Passwort"
 
 #: .\app\forms\core.py:97
 #: .\app\templates\app\auth\password_reset_confirm.html:70
-#: .\app\templates\registration\signup.html:116
+#: .\app\templates\registration\signup.html:137
 msgid "Passwort wiederholen"
 msgstr "Passwort wiederholen"
 
@@ -934,7 +944,7 @@ msgstr "Inhalt"
 msgid "Tags"
 msgstr "Tags"
 
-#: .\app\forms\core.py:162 .\app\models.py:756
+#: .\app\forms\core.py:162 .\app\models.py:757
 #: .\app\templates\app\note_form.html:150
 msgid "Erinnerung"
 msgstr "Erinnerung"
@@ -1105,7 +1115,7 @@ msgstr "Roadmap-Updates"
 #: .\app\templates\app\achievement_center.html:35
 #: .\app\templates\app\achievement_center.html:116
 #: .\app\templates\app\includes\achievement_panel.html:7
-#: .\app\views\profile.py:144
+#: .\app\views\profile.py:145
 msgid "Achievements"
 msgstr "Achievements"
 
@@ -1179,6 +1189,10 @@ msgstr "Nachricht"
 msgid "Beschreibe kurz, was passiert ist..."
 msgstr "Beschreibe kurz, was passiert ist..."
 
+#: .\app\middleware.py:38
+msgid "Zu viele Anfragen. Bitte warte kurz und versuche es erneut."
+msgstr ""
+
 #: .\app\models.py:83 .\app\templates\app\chat.html:47
 #: .\app\templates\app\chat.html:164 .\app\templates\app\chat.html:236
 #: .\app\templates\app\friends.html:63 .\app\templates\app\friends.html:100
@@ -1186,7 +1200,7 @@ msgstr "Beschreibe kurz, was passiert ist..."
 #: .\app\templates\app\public_profile.html:63 .\app\templates\app\users.html:81
 #: .\app\templates\app\users.html:118 .\app\views\community.py:353
 #: .\app\views\community.py:364 .\app\views\community.py:467
-#: .\app\views\notification.py:74 .\app\views\profile.py:744
+#: .\app\views\notification.py:74 .\app\views\profile.py:745
 msgid "Online"
 msgstr "Online"
 
@@ -1218,7 +1232,7 @@ msgstr "100 MB"
 msgid "500 MB"
 msgstr "500 MB"
 
-#: .\app\models.py:119 .\app\models.py:248 .\app\models.py:3516
+#: .\app\models.py:119 .\app\models.py:248 .\app\models.py:3525
 #: .\app\templates\app\file_share.html:87
 msgid "Unbegrenzt"
 msgstr "Unbegrenzt"
@@ -1227,11 +1241,11 @@ msgstr "Unbegrenzt"
 msgid "Datei-Share Upload-Limit"
 msgstr "Datei-Share Upload-Limit"
 
-#: .\app\models.py:136 .\app\models.py:1031 .\app\models.py:1059
+#: .\app\models.py:136 .\app\models.py:1032 .\app\models.py:1060
 msgid "Glass"
 msgstr "Glass"
 
-#: .\app\models.py:137 .\app\models.py:1032
+#: .\app\models.py:137 .\app\models.py:1033
 msgid "Neon"
 msgstr "Neon"
 
@@ -1243,7 +1257,7 @@ msgstr "Gamer"
 msgid "Soft"
 msgstr "Soft"
 
-#: .\app\models.py:140 .\app\models.py:1030
+#: .\app\models.py:140 .\app\models.py:1031
 msgid "Minimal"
 msgstr "Minimal"
 
@@ -1271,7 +1285,7 @@ msgstr "Orbs"
 msgid "Leicht rund"
 msgstr "Leicht rund"
 
-#: .\app\models.py:164 .\app\models.py:2346
+#: .\app\models.py:164 .\app\models.py:2355
 msgid "Rund"
 msgstr "Rund"
 
@@ -1299,10 +1313,11 @@ msgstr "Quadrat"
 msgid "Hexagon"
 msgstr "Hexagon"
 
-#: .\app\models.py:187 .\app\models.py:199 .\app\models.py:3060
+#: .\app\models.py:187 .\app\models.py:199 .\app\models.py:3069
+#: .\app\templates\app\drift_circuit.html:119
 #: .\app\templates\app\note_form.html:105
 #: .\app\templates\app\note_form.html:115
-#: .\app\templates\app\snake_powerups.html:110 .\app\views\core.py:2338
+#: .\app\templates\app\snake_powerups.html:110 .\app\views\core.py:2395
 msgid "Normal"
 msgstr "Normal"
 
@@ -1369,7 +1384,7 @@ msgid "Gruppe"
 msgstr "Gruppe"
 
 #: .\app\models.py:410 .\app\templates\app\snake_powerups.html:130
-#: .\app\views\core.py:2344
+#: .\app\views\core.py:2401
 msgid "Standard"
 msgstr "Standard"
 
@@ -1381,7 +1396,7 @@ msgstr "Ocean"
 msgid "Forest"
 msgstr "Forest"
 
-#: .\app\models.py:413 .\app\models.py:1061 .\app\templates\app\base.html:782
+#: .\app\models.py:413 .\app\models.py:1062 .\app\templates\app\base.html:782
 msgid "Sunset"
 msgstr "Sunset"
 
@@ -1393,52 +1408,52 @@ msgstr "Grape"
 msgid "Graphite"
 msgstr "Graphite"
 
-#: .\app\models.py:535
+#: .\app\models.py:536
 msgid "Anhänge dürfen maximal 8 MB groß sein."
 msgstr "Anhänge dürfen maximal 8 MB groß sein."
 
-#: .\app\models.py:603 .\app\models.py:1078 .\app\templates\app\base.html:664
+#: .\app\models.py:604 .\app\models.py:1079 .\app\templates\app\base.html:664
 #: .\app\templates\app\qr_code_tool.html:127
 msgid "Design"
 msgstr "Design"
 
-#: .\app\models.py:605 .\app\models.py:1080
+#: .\app\models.py:606 .\app\models.py:1082
 msgid "Cyan"
 msgstr ""
 
-#: .\app\models.py:606 .\app\models.py:1081
+#: .\app\models.py:607 .\app\models.py:1083
 msgid "Türkis"
 msgstr ""
 
-#: .\app\models.py:608 .\app\models.py:1083 .\app\models.py:1551
+#: .\app\models.py:609 .\app\models.py:1087 .\app\models.py:1560
 #: .\app\templates\app\uno_lobby.html:184 .\app\views\uno.py:24
 msgid "Gelb"
 msgstr "Gelb"
 
-#: .\app\models.py:611 .\app\models.py:1086
+#: .\app\models.py:612 .\app\models.py:1092
 msgid "Pink"
 msgstr ""
 
-#: .\app\models.py:613 .\app\models.py:1088
+#: .\app\models.py:614 .\app\models.py:1096
 msgid "Indigo"
 msgstr ""
 
-#: .\app\models.py:762
+#: .\app\models.py:763
 msgid "Geteilt mit"
 msgstr "Geteilt mit"
 
-#: .\app\models.py:1006 .\app\views\core.py:872 .\app\views\core.py:895
+#: .\app\models.py:1007 .\app\views\core.py:893 .\app\views\core.py:916
 msgid "Schnellstatistiken"
 msgstr "Schnellstatistiken"
 
-#: .\app\models.py:1008 .\app\platform_utils.py:54
+#: .\app\models.py:1009 .\app\platform_utils.py:54
 #: .\app\templates\app\chat.html:27 .\app\templates\app\home.html:260
 #: .\app\templates\app\profile.html:77
-#: .\app\templates\app\public_profile.html:74 .\app\views\core.py:882
+#: .\app\templates\app\public_profile.html:74 .\app\views\core.py:903
 msgid "Chats"
 msgstr "Chats"
 
-#: .\app\models.py:1009 .\app\models.py:2957 .\app\templates\app\base.html:945
+#: .\app\models.py:1010 .\app\models.py:2966 .\app\templates\app\base.html:945
 #: .\app\templates\app\friends.html:6 .\app\templates\app\friends.html:27
 #: .\app\templates\app\friends.html:44 .\app\templates\app\home.html:306
 #: .\app\templates\app\inbox.html:23 .\app\templates\app\profile.html:73
@@ -1447,18 +1462,18 @@ msgstr "Chats"
 #: .\app\templates\app\public_profile.html:72
 #: .\app\templates\app\public_profile.html:182
 #: .\app\templates\app\public_profile.html:294
-#: .\app\templates\app\public_profile.html:295 .\app\views\core.py:883
-#: .\app\views\profile.py:152
+#: .\app\templates\app\public_profile.html:295 .\app\views\core.py:904
+#: .\app\views\profile.py:153
 msgid "Freunde"
 msgstr "Freunde"
 
-#: .\app\models.py:1016
+#: .\app\models.py:1017
 #, fuzzy
 #| msgid "Widget"
 msgid "Budget"
 msgstr "Widget"
 
-#: .\app\models.py:1017 .\app\platform_utils.py:49
+#: .\app\models.py:1018 .\app\platform_utils.py:49
 #: .\app\templates\app\favorites.html:5 .\app\templates\app\favorites.html:13
 #: .\app\templates\app\home.html:668
 #: .\app\templates\app\public_profile.html:235
@@ -1466,110 +1481,149 @@ msgstr "Widget"
 msgid "Favoriten"
 msgstr "Favoriten"
 
-#: .\app\models.py:1019 .\app\templates\app\inbox.html:5
+#: .\app\models.py:1020 .\app\templates\app\inbox.html:5
 #: .\app\templates\app\inbox.html:13
 msgid "Inbox"
 msgstr "Inbox"
 
-#: .\app\models.py:1020
+#: .\app\models.py:1021
 msgid "Changelog"
 msgstr "Changelog"
 
-#: .\app\models.py:1033
+#: .\app\models.py:1034
 msgid "Flip"
 msgstr "Flip"
 
-#: .\app\models.py:1034
+#: .\app\models.py:1035
 msgid "Terminal"
 msgstr "Terminal"
 
-#: .\app\models.py:1044 .\app\models.py:1071
+#: .\app\models.py:1045 .\app\models.py:1072
 msgid "Klassisch"
 msgstr "Klassisch"
 
-#: .\app\models.py:1045 .\app\models.py:1073
+#: .\app\models.py:1046 .\app\models.py:1074
 msgid "Kompakt"
 msgstr "Kompakt"
 
-#: .\app\models.py:1046
+#: .\app\models.py:1047
 msgid "Datum links"
 msgstr "Datum links"
 
-#: .\app\models.py:1047
+#: .\app\models.py:1048
 msgid "Analog"
 msgstr "Analog"
 
-#: .\app\models.py:1048
+#: .\app\models.py:1049
 msgid "Analog + Digital"
 msgstr "Analog + Digital"
 
-#: .\app\models.py:1058
+#: .\app\models.py:1059
 msgid "Clean"
 msgstr "Clean"
 
-#: .\app\models.py:1060
+#: .\app\models.py:1061
 msgid "Aurora"
 msgstr "Aurora"
 
-#: .\app\models.py:1062
+#: .\app\models.py:1063
 msgid "Night"
 msgstr "Night"
 
-#: .\app\models.py:1072 .\app\templates\app\note_form.html:116
+#: .\app\models.py:1073 .\app\templates\app\note_form.html:116
 #: .\app\templates\app\snake_powerups.html:101
 msgid "Groß"
 msgstr "Groß"
 
-#: .\app\models.py:1074 .\app\templates\app\home.html:580
+#: .\app\models.py:1075 .\app\templates\app\home.html:580
 #: .\app\templates\app\notes.html:116
 msgid "Geteilt"
 msgstr "Geteilt"
 
-#: .\app\models.py:1169 .\app\templates\app\human_benchmark.html:23
-#: .\app\views\core.py:1725 .\app\views\performance_tools.py:306
+#: .\app\models.py:1081
+msgid "Himmel"
+msgstr ""
+
+#: .\app\models.py:1084
+msgid "Smaragd"
+msgstr ""
+
+#: .\app\models.py:1086
+#, fuzzy
+#| msgid "Wetter"
+msgid "Limette"
+msgstr "Wetter"
+
+#: .\app\models.py:1088
+msgid "Bernstein"
+msgstr ""
+
+#: .\app\models.py:1091 .\app\templates\app\base.html:770
+msgid "Rose"
+msgstr "Rose"
+
+#: .\app\models.py:1093
+#, fuzzy
+#| msgid "Buchstabe"
+msgid "Fuchsia"
+msgstr "Buchstabe"
+
+#: .\app\models.py:1094 .\app\templates\app\base.html:778
+#: .\app\templates\app\drift_circuit.html:129
+msgid "Violett"
+msgstr "Violett"
+
+#: .\app\models.py:1097
+#, fuzzy
+#| msgid "Schilde"
+msgid "Schiefer"
+msgstr "Schilde"
+
+#: .\app\models.py:1178 .\app\templates\app\human_benchmark.html:23
+#: .\app\views\core.py:1751 .\app\views\performance_tools.py:306
 msgid "Reaktion"
 msgstr "Reaktion"
 
-#: .\app\models.py:1170 .\app\views\performance_tools.py:307
+#: .\app\models.py:1179 .\app\views\performance_tools.py:307
 #, fuzzy
 #| msgid "Aim Trainer"
 msgid "Zieltrainer"
 msgstr "Aim Trainer"
 
-#: .\app\models.py:1171 .\app\views\performance_tools.py:308
+#: .\app\models.py:1180 .\app\views\performance_tools.py:308
 #, fuzzy
 #| msgid "Tipp wartet"
 msgid "Tipptest"
 msgstr "Tipp wartet"
 
-#: .\app\models.py:1172 .\app\views\performance_tools.py:309
+#: .\app\models.py:1181 .\app\views\performance_tools.py:309
 msgid "Visuelles Gedächtnis"
 msgstr ""
 
-#: .\app\models.py:1406 .\app\models.py:1541 .\app\models.py:1678
-#: .\app\models.py:1816 .\app\models.py:1964 .\app\models.py:2102
-#: .\app\models.py:2277 .\app\models.py:3142 .\app\models.py:3528
-#: .\app\models.py:3648
+#: .\app\models.py:1415 .\app\models.py:1550 .\app\models.py:1687
+#: .\app\models.py:1825 .\app\models.py:1973 .\app\models.py:2111
+#: .\app\models.py:2286 .\app\models.py:3151 .\app\models.py:3537
+#: .\app\models.py:3657
 msgid "Wartet"
 msgstr "Wartet"
 
-#: .\app\models.py:1407 .\app\models.py:1542 .\app\models.py:1680
-#: .\app\models.py:1817 .\app\models.py:1965 .\app\models.py:2103
-#: .\app\models.py:2278 .\app\models.py:3143 .\app\models.py:3529
+#: .\app\models.py:1416 .\app\models.py:1551 .\app\models.py:1689
+#: .\app\models.py:1826 .\app\models.py:1974 .\app\models.py:2112
+#: .\app\models.py:2287 .\app\models.py:3152 .\app\models.py:3538
 msgid "Läuft"
 msgstr "Läuft"
 
-#: .\app\models.py:1408 .\app\models.py:1543 .\app\models.py:1681
-#: .\app\models.py:1818 .\app\models.py:1966 .\app\models.py:2105
-#: .\app\models.py:2280 .\app\models.py:3144 .\app\models.py:3531
-#: .\app\models.py:3651
+#: .\app\models.py:1417 .\app\models.py:1552 .\app\models.py:1690
+#: .\app\models.py:1827 .\app\models.py:1975 .\app\models.py:2114
+#: .\app\models.py:2289 .\app\models.py:3153 .\app\models.py:3540
+#: .\app\models.py:3660
 msgid "Beendet"
 msgstr "Beendet"
 
-#: .\app\models.py:1494 .\app\models.py:1630 .\app\models.py:1769
-#: .\app\models.py:1917 .\app\models.py:2054 .\app\models.py:2229
-#: .\app\models.py:2400 .\app\models.py:2997 .\app\models.py:3247
-#: .\app\models.py:3613 .\app\models.py:3759
+#: .\app\models.py:1503 .\app\models.py:1639 .\app\models.py:1778
+#: .\app\models.py:1926 .\app\models.py:2063 .\app\models.py:2238
+#: .\app\models.py:2409 .\app\models.py:3006 .\app\models.py:3256
+#: .\app\models.py:3622 .\app\models.py:3768
 #: .\app\templates\app\friends.html:83 .\app\templates\app\home.html:705
 #: .\app\templates\app\moderation.html:62
 #: .\app\templates\app\nebula_forge_tycoon.html:427
@@ -1577,365 +1631,367 @@ msgstr "Beendet"
 msgid "Offen"
 msgstr "Offen"
 
-#: .\app\models.py:1495 .\app\models.py:1631 .\app\models.py:1770
-#: .\app\models.py:1918 .\app\models.py:2055 .\app\models.py:2230
-#: .\app\models.py:2401 .\app\models.py:3248 .\app\models.py:3614
-#: .\app\models.py:3760
+#: .\app\models.py:1504 .\app\models.py:1640 .\app\models.py:1779
+#: .\app\models.py:1927 .\app\models.py:2064 .\app\models.py:2239
+#: .\app\models.py:2410 .\app\models.py:3257 .\app\models.py:3623
+#: .\app\models.py:3769
 msgid "Angenommen"
 msgstr "Angenommen"
 
-#: .\app\models.py:1496 .\app\models.py:1632 .\app\models.py:1771
-#: .\app\models.py:1919 .\app\models.py:2056 .\app\models.py:2231
-#: .\app\models.py:2402 .\app\models.py:3035 .\app\models.py:3249
-#: .\app\models.py:3615 .\app\models.py:3761
+#: .\app\models.py:1505 .\app\models.py:1641 .\app\models.py:1780
+#: .\app\models.py:1928 .\app\models.py:2065 .\app\models.py:2240
+#: .\app\models.py:2411 .\app\models.py:3044 .\app\models.py:3258
+#: .\app\models.py:3624 .\app\models.py:3770
 msgid "Abgelehnt"
 msgstr "Abgelehnt"
 
-#: .\app\models.py:1679
+#: .\app\models.py:1688
 msgid "Flottenaufbau"
 msgstr "Flottenaufbau"
 
-#: .\app\models.py:2104
+#: .\app\models.py:2113
 msgid "Rundenauswertung"
 msgstr "Rundenauswertung"
 
-#: .\app\models.py:2279
+#: .\app\models.py:2288
 msgid "Rundenübersicht"
 msgstr "Rundenübersicht"
 
-#: .\app\models.py:2347
+#: .\app\models.py:2356
 msgid "Eckig"
 msgstr "Eckig"
 
-#: .\app\models.py:2348
+#: .\app\models.py:2357
 msgid "Roboter"
 msgstr "Roboter"
 
-#: .\app\models.py:2349
+#: .\app\models.py:2358
 msgid "Katze"
 msgstr "Katze"
 
-#: .\app\models.py:2350
+#: .\app\models.py:2359
 msgid "Geist"
 msgstr "Geist"
 
-#: .\app\models.py:2351
+#: .\app\models.py:2360
 msgid "Ninja"
 msgstr "Ninja"
 
-#: .\app\models.py:2557
+#: .\app\models.py:2566
 msgid "Spam"
 msgstr "Spam"
 
-#: .\app\models.py:2558
+#: .\app\models.py:2567
 msgid "Belästigung"
 msgstr "Belästigung"
 
-#: .\app\models.py:2559
+#: .\app\models.py:2568
 msgid "Unpassende Inhalte"
 msgstr "Unpassende Inhalte"
 
-#: .\app\models.py:2560 .\app\models.py:3051
+#: .\app\models.py:2569 .\app\models.py:3060
 msgid "Sonstiges"
 msgstr "Sonstiges"
 
-#: .\app\models.py:2638
+#: .\app\models.py:2647
 msgid "Veröffentlicht"
 msgstr "Veröffentlicht"
 
-#: .\app\models.py:2639 .\app\platform_utils.py:121
+#: .\app\models.py:2648 .\app\platform_utils.py:121
 #: .\app\templates\app\base.html:47
 msgid "Unveröffentlicht"
 msgstr "Unveröffentlicht"
 
-#: .\app\models.py:2640 .\app\platform_utils.py:121
+#: .\app\models.py:2649 .\app\platform_utils.py:121
 #: .\app\templates\app\base.html:47
 msgid "Versteckt"
 msgstr "Versteckt"
 
-#: .\app\models.py:2733
+#: .\app\models.py:2742
 msgid "Login erfolgreich"
 msgstr "Login erfolgreich"
 
-#: .\app\models.py:2734
+#: .\app\models.py:2743
 msgid "Login fehlgeschlagen"
 msgstr "Login fehlgeschlagen"
 
-#: .\app\models.py:2735
+#: .\app\models.py:2744
 msgid "Logout"
 msgstr "Logout"
 
-#: .\app\models.py:2736
+#: .\app\models.py:2745
 msgid "2FA aktiviert"
 msgstr "2FA aktiviert"
 
-#: .\app\models.py:2737
+#: .\app\models.py:2746
 msgid "2FA deaktiviert"
 msgstr "2FA deaktiviert"
 
-#: .\app\models.py:2738
+#: .\app\models.py:2747
 msgid "Sitzung beendet"
 msgstr "Sitzung beendet"
 
-#: .\app\models.py:2739
+#: .\app\models.py:2748
 msgid "Andere Sitzungen beendet"
 msgstr "Andere Sitzungen beendet"
 
-#: .\app\models.py:2748
+#: .\app\models.py:2757
 msgid "Info"
 msgstr "Info"
 
-#: .\app\models.py:2749
+#: .\app\models.py:2758
 msgid "Erfolg"
 msgstr "Erfolg"
 
-#: .\app\models.py:2750
+#: .\app\models.py:2759
 msgid "Warnung"
 msgstr "Warnung"
 
-#: .\app\models.py:2751
+#: .\app\models.py:2760
 msgid "Gefahr"
 msgstr "Gefahr"
 
-#: .\app\models.py:2776
+#: .\app\models.py:2785
 msgid "Sicherheitsereignis"
 msgstr "Sicherheitsereignis"
 
-#: .\app\models.py:2777
+#: .\app\models.py:2786
 msgid "Sicherheitsereignisse"
 msgstr "Sicherheitsereignisse"
 
-#: .\app\models.py:2780
+#: .\app\models.py:2789
 msgid "unbekannter Nutzer"
 msgstr "unbekannter Nutzer"
 
-#: .\app\models.py:2834 .\app\views\security.py:131 .\app\views\security.py:135
+#: .\app\models.py:2843 .\app\views\security.py:131 .\app\views\security.py:135
 #, python-format
 msgid "%(count)s andere Sitzung(en) wurden beendet."
 msgstr "%(count)s andere Sitzung(en) wurden beendet."
 
-#: .\app\models.py:2862
+#: .\app\models.py:2871
 msgid "Meldung erledigt"
 msgstr "Meldung erledigt"
 
-#: .\app\models.py:2863
+#: .\app\models.py:2872
 msgid "Meldung wieder geoeffnet"
 msgstr "Meldung wieder geoeffnet"
 
-#: .\app\models.py:2864
+#: .\app\models.py:2873
 msgid "Feedback-Status geaendert"
 msgstr "Feedback-Status geaendert"
 
-#: .\app\models.py:2865
+#: .\app\models.py:2874
 msgid "Datei-Freigabe geloescht"
 msgstr "Datei-Freigabe geloescht"
 
-#: .\app\models.py:2866
+#: .\app\models.py:2875
 msgid "Nutzer gesperrt"
 msgstr "Nutzer gesperrt"
 
-#: .\app\models.py:2867
+#: .\app\models.py:2876
 msgid "Nutzersperre aufgehoben"
 msgstr "Nutzersperre aufgehoben"
 
-#: .\app\models.py:2868
+#: .\app\models.py:2877
 msgid "Nutzer aktiviert"
 msgstr "Nutzer aktiviert"
 
-#: .\app\models.py:2869
+#: .\app\models.py:2878
 msgid "Nutzer deaktiviert"
 msgstr "Nutzer deaktiviert"
 
-#: .\app\models.py:2870
+#: .\app\models.py:2879
 msgid "Login und Registrierung gesperrt"
 msgstr "Login und Registrierung gesperrt"
 
-#: .\app\models.py:2871
+#: .\app\models.py:2880
 msgid "Login und Registrierung entsperrt"
 msgstr "Login und Registrierung entsperrt"
 
-#: .\app\models.py:2872
+#: .\app\models.py:2881
 msgid "Tool-Zugriffe geaendert"
 msgstr ""
 
-#: .\app\models.py:2873
+#: .\app\models.py:2882
 msgid "Medien komprimiert"
 msgstr "Medien komprimiert"
 
-#: .\app\models.py:2955 .\app\models.py:3795
+#: .\app\models.py:2964 .\app\models.py:3804
 #: .\app\templates\app\stream_deck.html:221
 msgid "System"
 msgstr "System"
 
-#: .\app\models.py:2988
+#: .\app\models.py:2997
 msgid "Bug"
 msgstr "Bug"
 
-#: .\app\models.py:2989
+#: .\app\models.py:2998
 msgid "Feature-Idee"
 msgstr "Feature-Idee"
 
-#: .\app\models.py:2998 .\app\models.py:3032
+#: .\app\models.py:3007 .\app\models.py:3041
 msgid "Geplant"
 msgstr "Geplant"
 
-#: .\app\models.py:2999 .\app\templates\app\nebula_forge_tycoon.html:426
+#: .\app\models.py:3008 .\app\templates\app\nebula_forge_tycoon.html:426
 msgid "Erledigt"
 msgstr "Erledigt"
 
-#: .\app\models.py:3031
+#: .\app\models.py:3040
 msgid "Vorgeschlagen"
 msgstr "Vorgeschlagen"
 
-#: .\app\models.py:3033 .\app\templates\app\home.html:709
+#: .\app\models.py:3042 .\app\templates\app\home.html:709
 #: .\app\templates\app\roadmap.html:21
 msgid "In Arbeit"
 msgstr "In Arbeit"
 
-#: .\app\models.py:3034 .\app\templates\app\nebula_forge_tycoon.html:425
+#: .\app\models.py:3043 .\app\templates\app\nebula_forge_tycoon.html:425
 #: .\app\templates\app\roadmap.html:22
 msgid "Fertig"
 msgstr "Fertig"
 
-#: .\app\models.py:3048
+#: .\app\models.py:3057
 msgid "Design / UI"
 msgstr "Design / UI"
 
-#: .\app\models.py:3049 .\app\templates\app\two_factor_settings.html:15
+#: .\app\models.py:3058 .\app\templates\app\two_factor_settings.html:15
 msgid "Sicherheit"
 msgstr "Sicherheit"
 
-#: .\app\models.py:3050
+#: .\app\models.py:3059
 msgid "Performance"
 msgstr "Performance"
 
-#: .\app\models.py:3059
+#: .\app\models.py:3068
 msgid "Niedrig"
 msgstr "Niedrig"
 
-#: .\app\models.py:3061 .\app\templates\app\image_tools.html:105
-#: .\app\templates\app\snake_powerups.html:131 .\app\views\core.py:2345
+#: .\app\models.py:3070 .\app\templates\app\image_tools.html:105
+#: .\app\templates\app\snake_powerups.html:131 .\app\views\core.py:2402
 msgid "Hoch"
 msgstr "Hoch"
 
-#: .\app\models.py:3293 .\app\models.py:3359
+#: .\app\models.py:3302 .\app\models.py:3368
 #: .\app\templates\app\budget_tracker.html:95
 #: .\app\templates\app\budget_tracker.html:327
 msgid "Einnahme"
 msgstr "Einnahme"
 
-#: .\app\models.py:3294 .\app\models.py:3360
+#: .\app\models.py:3303 .\app\models.py:3369
 #: .\app\templates\app\budget_tracker.html:91
 #: .\app\templates\app\budget_tracker.html:326
 #: .\app\templates\app\image_tools.html:149
 msgid "Ausgabe"
 msgstr "Ausgabe"
 
-#: .\app\models.py:3367
+#: .\app\models.py:3376
 msgid "Einmalig"
 msgstr "Einmalig"
 
-#: .\app\models.py:3368
+#: .\app\models.py:3377
 msgid "Monatlich"
 msgstr "Monatlich"
 
-#: .\app\models.py:3506 .\app\templates\app\clock.html:23
+#: .\app\models.py:3515 .\app\templates\app\clock.html:23
 #, fuzzy
 #| msgid "Abgelehnt"
 msgid "Abgelaufen"
 msgstr "Abgelehnt"
 
-#: .\app\models.py:3508
+#: .\app\models.py:3517
 #, fuzzy
 #| msgid "Limit Rest"
 msgid "Limit erreicht"
 msgstr "Limit Rest"
 
-#: .\app\models.py:3510
+#: .\app\models.py:3519
 #, fuzzy, python-format
 #| msgid "Basisdaten"
 msgid "Bis %(date)s"
 msgstr "Basisdaten"
 
-#: .\app\models.py:3511
+#: .\app\models.py:3520
 #, fuzzy
 #| msgid "Kein Ablauf"
 msgid "Ohne Ablauf"
 msgstr "Kein Ablauf"
 
-#: .\app\models.py:3518
+#: .\app\models.py:3527
 #, python-format
 msgid "%(remaining)s von %(total)s übrig"
 msgstr ""
 
-#: .\app\models.py:3530 .\app\templates\app\clock.html:20
-#: .\app\views\core.py:2316
+#: .\app\models.py:3539 .\app\templates\app\clock.html:20
+#: .\app\templates\app\drift_circuit.html:153 .\app\views\core.py:2373
 msgid "Pausiert"
 msgstr "Pausiert"
 
-#: .\app\models.py:3538 .\app\templates\app\home.html:815
+#: .\app\models.py:3547 .\app\templates\app\home.html:815
 msgid "Links"
 msgstr "Links"
 
-#: .\app\models.py:3539
+#: .\app\models.py:3548
 msgid "Rechts"
 msgstr "Rechts"
 
-#: .\app\models.py:3649
+#: .\app\models.py:3658
 #, fuzzy
 #| msgid "Nach"
 msgid "Nacht"
 msgstr "Nach"
 
-#: .\app\models.py:3650
+#: .\app\models.py:3659
 #, fuzzy
 #| msgid "Tags"
 msgid "Tag"
 msgstr "Tags"
 
-#: .\app\models.py:3658 .\app\templates\app\werewolf_home.html:26
+#: .\app\models.py:3667 .\app\templates\app\werewolf_home.html:26
 #, fuzzy
 #| msgid "Veröffentlicht"
 msgid "Öffentlich"
 msgstr "Veröffentlicht"
 
-#: .\app\models.py:3659 .\app\templates\app\werewolf_home.html:26
+#: .\app\models.py:3668 .\app\templates\app\werewolf_home.html:26
 #, fuzzy
 #| msgid "Nutzer / Freunde"
 msgid "Nur Freunde"
 msgstr "Nutzer / Freunde"
 
-#: .\app\models.py:3660 .\app\templates\app\werewolf_home.html:26
+#: .\app\models.py:3669 .\app\templates\app\werewolf_home.html:26
 msgid "Privat mit Passwort"
 msgstr ""
 
-#: .\app\models.py:3711 .\app\templates\app\werewolf_lobby.html:27
+#: .\app\models.py:3720 .\app\templates\app\werewolf_lobby.html:27
+#: .\app\views\werewolf.py:107
 msgid "Dorfbewohner"
-msgstr ""
+msgstr "Dorfbewohner"
 
-#: .\app\models.py:3713 .\app\templates\app\werewolf_home.html:32
+#: .\app\models.py:3722 .\app\templates\app\werewolf_home.html:32
+#: .\app\views\werewolf.py:65
 msgid "Seherin"
-msgstr ""
+msgstr "Seherin"
 
-#: .\app\models.py:3714 .\app\templates\app\werewolf_home.html:33
+#: .\app\models.py:3723 .\app\templates\app\werewolf_home.html:33
+#: .\app\views\werewolf.py:66
 msgid "Hexe"
-msgstr ""
+msgstr "Hexe"
 
-#: .\app\models.py:3715 .\app\templates\app\werewolf_home.html:34
-#, fuzzy
-#| msgid "Beschäftigt"
+#: .\app\models.py:3724 .\app\templates\app\werewolf_home.html:34
+#: .\app\views\werewolf.py:67
 msgid "Beschützer"
-msgstr "Beschäftigt"
+msgstr "Beschützer"
 
-#: .\app\models.py:3793 .\app\templates\app\werewolf_lobby.html:37
+#: .\app\models.py:3802 .\app\templates\app\werewolf_lobby.html:37
 #: .\app\templates\app\werewolf_lobby.html:42
 msgid "Dorf"
-msgstr ""
+msgstr "Dorf"
 
-#: .\app\models.py:3794 .\app\templates\app\werewolf_home.html:29
-#: .\app\templates\app\werewolf_lobby.html:42
+#: .\app\models.py:3803 .\app\templates\app\werewolf_home.html:29
+#: .\app\templates\app\werewolf_lobby.html:42 .\app\views\werewolf.py:64
 msgid "Werwölfe"
-msgstr ""
+msgstr "Werwölfe"
 
 #: .\app\notification_utils.py:133 .\app\templates\app\battleship_home.html:64
 #: .\app\templates\app\connectfour_home.html:64
@@ -1959,7 +2015,7 @@ msgstr "Zum Spiel"
 #: .\app\templates\app\note_detail.html:5
 #: .\app\templates\app\note_detail.html:38
 #: .\app\templates\app\partials\note_card.html:38 .\app\views\notes.py:40
-#: .\app\views\platform.py:104 .\app\views\profile.py:659
+#: .\app\views\platform.py:104 .\app\views\profile.py:660
 #: .\app\views\trash.py:39
 msgid "Unbenannte Notiz"
 msgstr "Unbenannte Notiz"
@@ -2093,7 +2149,7 @@ msgstr "Uno-Einladung"
 #: .\app\templates\app\base.html:1062
 #: .\app\templates\app\human_benchmark.html:98
 #: .\app\templates\app\randomizer_tools.html:120
-#: .\app\templates\app\snake_powerups.html:70 .\app\views\core.py:2320
+#: .\app\templates\app\snake_powerups.html:70 .\app\views\core.py:2377
 msgid "Start"
 msgstr "Start"
 
@@ -2191,8 +2247,10 @@ msgid "spielt Cookie Cosmos V2"
 msgstr "Cookie Cosmos"
 
 #: .\app\presence_utils.py:25
+#, fuzzy
+#| msgid "Nebula Forge Tycoon Update"
 msgid "spielt Nebula Forge Tycoon"
-msgstr ""
+msgstr "Nebula Forge Tycoon Update"
 
 #: .\app\presence_utils.py:26
 #, fuzzy
@@ -2454,7 +2512,9 @@ msgid ""
 "Export und vollständig übersetzbarer Oberfläche."
 msgstr ""
 
-#: .\app\templates\app\about.html:215
+#: .\app\templates\app\about.html:215 .\app\templates\app\drift_circuit.html:5
+#: .\app\templates\app\drift_circuit.html:21
+#: .\app\templates\app\drift_circuit.html:91
 msgid "Drift Circuit Pro"
 msgstr "Drift Circuit Pro"
 
@@ -2690,6 +2750,38 @@ msgstr "Mehr Startseiten-Statistiken und Aktivitätsverlauf ergänzen"
 msgid "Design-System, Kontrastmodus und mobile Bedienung weiter verfeinern"
 msgstr "Design-System und mobile Bedienung weiter verfeinern"
 
+#: .\app\templates\app\account_suspended.html:8
+#: .\app\templates\app\account_suspended.html:12
+#, fuzzy
+#| msgid "Nutzer gesperrt"
+msgid "Account gesperrt"
+msgstr "Nutzer gesperrt"
+
+#: .\app\templates\app\account_suspended.html:14
+#, python-format
+msgid ""
+"\n"
+"                Dein Account ist bis %(ends_at)s gesperrt.\n"
+"            "
+msgstr ""
+
+#: .\app\templates\app\account_suspended.html:22
+#, fuzzy
+#| msgid "Dein Freund hat gewonnen."
+msgid "Kein Grund angegeben."
+msgstr "Dein Freund hat gewonnen."
+
+#: .\app\templates\app\account_suspended.html:25
+msgid ""
+"Du kannst dich ueber das Browser-Menue oder nach Ablauf der Sperre erneut "
+"anmelden."
+msgstr ""
+
+#: .\app\templates\app\account_suspended.html:28
+#: .\app\templates\app\base.html:972
+msgid "Abmelden"
+msgstr "Abmelden"
+
 #: .\app\templates\app\achievement_center.html:16
 msgid ""
 "Sieh deine freigeschalteten Achievements, deine nächsten Ziele und deinen "
@@ -2702,7 +2794,7 @@ msgstr ""
 #: .\app\templates\app\achievement_center.html:116
 #: .\app\templates\app\human_benchmark.html:90
 #: .\app\templates\app\includes\achievement_panel.html:8
-#: .\app\views\profile.py:138
+#: .\app\views\profile.py:139
 msgid "Level"
 msgstr "Level"
 
@@ -2854,7 +2946,7 @@ msgid "Passwort zurücksetzen"
 msgstr "Passwort zurücksetzen"
 
 #: .\app\templates\app\auth\password_reset_form.html:42
-#: .\app\templates\registration\login.html:117
+#: .\app\templates\registration\login.html:135
 msgid "Passwort vergessen?"
 msgstr "Passwort vergessen?"
 
@@ -3163,7 +3255,7 @@ msgstr[1] "%(count)s offene Stadt-Land-Fluss-Einladungen"
 msgid "Mehrspieler Karten Party Einladung Beta Testphase"
 msgstr "Mehrspieler Karten Party Einladung Beta Testphase"
 
-#: .\app\templates\app\base.html:249 .\app\templates\app\base.html:368
+#: .\app\templates\app\base.html:247 .\app\templates\app\base.html:368
 msgid "Karten"
 msgstr "Karten"
 
@@ -3388,7 +3480,7 @@ msgid "Dateien"
 msgstr "Dateien"
 
 #: .\app\templates\app\base.html:421 .\app\templates\app\base.html:424
-#: .\app\views\core.py:876
+#: .\app\views\core.py:897
 msgid "Kalender"
 msgstr "Kalender"
 
@@ -3679,17 +3771,9 @@ msgstr "Aktuelle Farbe"
 msgid "Gr&uuml;n"
 msgstr "Gr&uuml;n"
 
-#: .\app\templates\app\base.html:770
-msgid "Rose"
-msgstr "Rose"
-
 #: .\app\templates\app\base.html:774
 msgid "Graphit"
 msgstr "Graphit"
-
-#: .\app\templates\app\base.html:778
-msgid "Violett"
-msgstr "Violett"
 
 #: .\app\templates\app\base.html:792
 msgid "Lunora Theme"
@@ -3773,8 +3857,10 @@ msgstr "Sicherheits-Dashboard"
 
 #: .\app\templates\app\base.html:930 .\app\templates\app\trash.html:4
 #: .\app\templates\app\trash.html:15
+#, fuzzy
+#| msgid "Platzierung leeren"
 msgid "Papierkorb"
-msgstr ""
+msgstr "Platzierung leeren"
 
 #: .\app\templates\app\base.html:953
 msgid "ungelesene Nachricht"
@@ -3805,10 +3891,6 @@ msgid "%(count)s offene Freundschaftsanfrage"
 msgid_plural "%(count)s offene Freundschaftsanfragen"
 msgstr[0] "%(count)s offene Freundschaftsanfrage"
 msgstr[1] "%(count)s offene Freundschaftsanfragen"
-
-#: .\app\templates\app\base.html:972
-msgid "Abmelden"
-msgstr "Abmelden"
 
 #: .\app\templates\app\base.html:988 .\app\templates\app\base.html:998
 #, fuzzy
@@ -3941,6 +4023,7 @@ msgstr "Ablehnen"
 #: .\app\templates\app\connectfour_home.html:23
 #: .\app\templates\app\connectfour_home.html:121
 #: .\app\templates\app\connectfour_lobby.html:121
+#: .\app\templates\app\drift_circuit.html:32
 #: .\app\templates\app\hangman_home.html:10
 #: .\app\templates\app\hangman_home.html:63
 #: .\app\templates\app\hangman_lobby.html:132
@@ -4164,7 +4247,7 @@ msgstr "Raum wirklich löschen?"
 #: .\app\templates\app\hangman_lobby.html:64
 #: .\app\templates\app\kniffel_lobby.html:62
 #: .\app\templates\app\moderation.html:232
-#: .\app\templates\app\partials\home_section_card.html:146
+#: .\app\templates\app\partials\home_section_card.html:131
 #: .\app\templates\app\partials\note_card.html:105
 #: .\app\templates\app\pong_lobby.html:33
 #: .\app\templates\app\pong_lobby.html:35
@@ -4384,7 +4467,7 @@ msgstr "z. B. Arbeit Essen, Gehalt, Einkauf"
 msgid "Betrag"
 msgstr "Betrag"
 
-#: .\app\templates\app\budget_tracker.html:109 .\app\views\core.py:1828
+#: .\app\templates\app\budget_tracker.html:109 .\app\views\core.py:1854
 msgid "Datum"
 msgstr "Datum"
 
@@ -4394,7 +4477,7 @@ msgid "Kategorie"
 msgstr "Kategorie"
 
 #: .\app\templates\app\budget_tracker.html:126 .\app\views\platform.py:103
-#: .\app\views\profile.py:659 .\app\views\trash.py:19
+#: .\app\views\profile.py:660 .\app\views\trash.py:19
 msgid "Notiz"
 msgstr "Notiz"
 
@@ -4576,7 +4659,7 @@ msgstr "Rechenausdruck"
 #: .\app\templates\app\clock.html:154
 #: .\app\templates\app\cookie_clicker.html:90
 #: .\app\templates\app\snake_powerups.html:65 .\app\views\community.py:471
-#: .\app\views\core.py:2314
+#: .\app\views\core.py:2371
 msgid "Bereit"
 msgstr "Bereit"
 
@@ -4842,7 +4925,7 @@ msgid "Für Direktchats brauchst du erst Freunde."
 msgstr "Für Direktchats brauchst du erst Freunde."
 
 #: .\app\templates\app\chat.html:104 .\app\templates\app\chat.html:140
-#: .\app\templates\app\chat.html:380 .\app\templates\app\friends.html:156
+#: .\app\templates\app\chat.html:381 .\app\templates\app\friends.html:156
 msgid "Nutzer suchen"
 msgstr "Nutzer suchen"
 
@@ -4919,31 +5002,31 @@ msgstr "Bearbeiten"
 msgid "Emoji auswählen"
 msgstr "Emoji auswählen"
 
-#: .\app\templates\app\chat.html:346
+#: .\app\templates\app\chat.html:347
 msgid "Bearbeitet"
 msgstr "Bearbeitet"
 
-#: .\app\templates\app\chat.html:358
+#: .\app\templates\app\chat.html:359
 msgid "Starte die Unterhaltung"
 msgstr "Starte die Unterhaltung"
 
-#: .\app\templates\app\chat.html:359
+#: .\app\templates\app\chat.html:360
 msgid "Schreibe die erste Nachricht in diesem Chat."
 msgstr "Schreibe die erste Nachricht in diesem Chat."
 
-#: .\app\templates\app\chat.html:366
+#: .\app\templates\app\chat.html:367
 msgid "Anhang hinzufügen"
 msgstr "Anhang hinzufügen"
 
-#: .\app\templates\app\chat.html:370
+#: .\app\templates\app\chat.html:371
 msgid "Nachricht schreiben..."
 msgstr "Nachricht schreiben..."
 
-#: .\app\templates\app\chat.html:378
+#: .\app\templates\app\chat.html:379
 msgid "Noch kein Chat ausgewählt"
 msgstr "Noch kein Chat ausgewählt"
 
-#: .\app\templates\app\chat.html:379
+#: .\app\templates\app\chat.html:380
 msgid ""
 "Öffne ein Nutzerprofil und starte einen Direktchat oder erstelle links eine "
 "Gruppe."
@@ -4989,7 +5072,7 @@ msgstr "Bitte gib einen Text ein."
 msgid "Bitte stelle erst eine Timer-Zeit ein."
 msgstr "Bitte gib einen Text ein."
 
-#: .\app\templates\app\clock.html:26 .\app\views\core.py:258
+#: .\app\templates\app\clock.html:26 .\app\views\core.py:259
 msgid "Der eigene Klingelton darf maximal 5 MB groß sein."
 msgstr "Der eigene Klingelton darf maximal 5 MB groß sein."
 
@@ -5065,15 +5148,15 @@ msgid "Noch keine Runden gespeichert."
 msgstr "Noch keine Runden gespeichert."
 
 #: .\app\templates\app\clock.html:164
-#: .\app\templates\app\unit_converter.html:101 .\app\views\core.py:2221
+#: .\app\templates\app\unit_converter.html:101 .\app\views\core.py:2247
 msgid "Stunden"
 msgstr "Stunden"
 
-#: .\app\templates\app\clock.html:168 .\app\views\core.py:2220
+#: .\app\templates\app\clock.html:168 .\app\views\core.py:2246
 msgid "Minuten"
 msgstr "Minuten"
 
-#: .\app\templates\app\clock.html:172 .\app\views\core.py:2219
+#: .\app\templates\app\clock.html:172 .\app\views\core.py:2245
 msgid "Sekunden"
 msgstr "Sekunden"
 
@@ -5161,8 +5244,10 @@ msgid "Kopiert"
 msgstr "Blockiert"
 
 #: .\app\templates\app\color_palette_tool.html:20
+#, fuzzy
+#| msgid "Division durch 0 ist nicht möglich."
 msgid "Kopieren nicht möglich"
-msgstr ""
+msgstr "Division durch 0 ist nicht möglich."
 
 #: .\app\templates\app\color_palette_tool.html:21
 #, fuzzy
@@ -5171,8 +5256,10 @@ msgid "Großer Text"
 msgstr "Weißer Text"
 
 #: .\app\templates\app\color_palette_tool.html:22
+#, fuzzy
+#| msgid "Nachtwache"
 msgid "Schwach"
-msgstr ""
+msgstr "Nachtwache"
 
 #: .\app\templates\app\color_palette_tool.html:23
 #: .\app\templates\app\color_palette_tool.html:178
@@ -5406,7 +5493,7 @@ msgstr "Vier-gewinnt-Spielfeld"
 
 #: .\app\templates\app\connectfour_lobby.html:137
 #: .\app\templates\app\pong_lobby.html:72
-#: .\app\templates\app\tictactoe_lobby.html:137
+#: .\app\templates\app\tictactoe_lobby.html:137 .\app\views\werewolf.py:48
 msgid "Spiel beendet"
 msgstr "Spiel beendet"
 
@@ -5444,6 +5531,7 @@ msgid "Import"
 msgstr "Export"
 
 #: .\app\templates\app\cookie_clicker.html:36
+#: .\app\templates\app\drift_circuit.html:76
 msgid "Reset"
 msgstr "Reset"
 
@@ -5502,7 +5590,7 @@ msgid "Backstube"
 msgstr "Backstube"
 
 #: .\app\templates\app\cookie_clicker.html:125
-#: .\app\templates\app\nebula_forge_tycoon.html:210 .\app\views\profile.py:309
+#: .\app\templates\app\nebula_forge_tycoon.html:210 .\app\views\profile.py:310
 msgid "Upgrades"
 msgstr "Upgrades"
 
@@ -5534,6 +5622,215 @@ msgstr "0 freigeschaltet"
 #: .\app\templates\app\cookie_clicker.html:158
 msgid "0 erledigt"
 msgstr "0 erledigt"
+
+#: .\app\templates\app\drift_circuit.html:15
+msgid "Drift Circuit Pro Spielfeld"
+msgstr "Drift Circuit Pro Spielfeld"
+
+#: .\app\templates\app\drift_circuit.html:22
+#: .\app\templates\app\drift_circuit.html:111 .\app\views\core.py:2275
+msgid "Time Trial · 3 Runden"
+msgstr "Time Trial · 3 Runden"
+
+#: .\app\templates\app\drift_circuit.html:28
+#: .\app\templates\app\drift_circuit.html:74
+#: .\app\templates\app\drift_circuit.html:101 .\app\views\core.py:2290
+msgid "Map"
+msgstr "Map"
+
+#: .\app\templates\app\drift_circuit.html:36
+#: .\app\templates\app\game_2048.html:68
+#: .\app\templates\app\human_benchmark.html:42
+#: .\app\templates\app\human_benchmark.html:52
+#: .\app\templates\app\human_benchmark.html:68
+#: .\app\templates\app\stadtlandfluss_home.html:36
+#: .\app\templates\app\unit_converter.html:37 .\app\views\profile.py:284
+msgid "Zeit"
+msgstr "Zeit"
+
+#: .\app\templates\app\drift_circuit.html:40
+msgid "Bestzeit"
+msgstr "Bestzeit"
+
+#: .\app\templates\app\drift_circuit.html:44
+msgid "Speed"
+msgstr "Speed"
+
+#: .\app\templates\app\drift_circuit.html:48
+#: .\app\templates\app\drift_circuit.html:72 .\app\views\core.py:2298
+msgid "Drift"
+msgstr "Drift"
+
+#: .\app\templates\app\drift_circuit.html:56
+#: .\app\templates\app\drift_circuit.html:73
+msgid "Nitro"
+msgstr "Nitro"
+
+#: .\app\templates\app\drift_circuit.html:60
+msgid "Grip"
+msgstr "Grip"
+
+#: .\app\templates\app\drift_circuit.html:65
+msgid "Checkpoint!"
+msgstr "Checkpoint!"
+
+#: .\app\templates\app\drift_circuit.html:69
+msgid "Gas"
+msgstr "Gas"
+
+#: .\app\templates\app\drift_circuit.html:70
+msgid "Bremse"
+msgstr "Bremse"
+
+#: .\app\templates\app\drift_circuit.html:71
+msgid "Lenken"
+msgstr "Lenken"
+
+#: .\app\templates\app\drift_circuit.html:75
+#: .\app\templates\app\stream_deck.html:308
+#: .\app\templates\app\stream_deck.html:417 .\app\views\core.py:2374
+msgid "Pause"
+msgstr "Pause"
+
+#: .\app\templates\app\drift_circuit.html:83
+msgid "DRIFT"
+msgstr "DRIFT"
+
+#: .\app\templates\app\drift_circuit.html:84
+msgid "NITRO"
+msgstr "NITRO"
+
+#: .\app\templates\app\drift_circuit.html:90
+msgid "Arcade Racing · größere Maps · Kamera-Follow"
+msgstr "Arcade Racing · größere Maps · Kamera-Follow"
+
+#: .\app\templates\app\drift_circuit.html:93
+msgid ""
+"Jetzt mit 3 großen Maps, weicher Kamera, Minimap, mehr Strecke zum "
+"Beschleunigen, Nitro, Drift-Score, Checkpoints und deutlich freierem "
+"Fahrgefühl."
+msgstr ""
+"Jetzt mit 3 großen Maps, weicher Kamera, Minimap, mehr Strecke zum "
+"Beschleunigen, Nitro, Drift-Score, Checkpoints und deutlich freierem "
+"Fahrgefühl."
+
+#: .\app\templates\app\drift_circuit.html:103
+msgid "Neon Bay · City Flow mit weiten Kurven"
+msgstr "Neon Bay · City Flow mit weiten Kurven"
+
+#: .\app\templates\app\drift_circuit.html:104
+msgid "Desert Rush · Snake Rally mit S-Kurven"
+msgstr "Desert Rush · Snake Rally mit S-Kurven"
+
+#: .\app\templates\app\drift_circuit.html:105
+msgid "Snow Peak · Hairpin Mountain technisch"
+msgstr "Snow Peak · Hairpin Mountain technisch"
+
+#: .\app\templates\app\drift_circuit.html:109
+msgid "Modus"
+msgstr "Modus"
+
+#: .\app\templates\app\drift_circuit.html:112 .\app\views\core.py:2276
+msgid "Checkpoint Rush · 90 Sekunden"
+msgstr "Checkpoint Rush · 90 Sekunden"
+
+#: .\app\templates\app\drift_circuit.html:113 .\app\views\core.py:2277
+msgid "Zen Drive · Freies Fahren"
+msgstr "Zen Drive · Freies Fahren"
+
+#: .\app\templates\app\drift_circuit.html:117
+msgid "Fahrgefühl"
+msgstr "Fahrgefühl"
+
+#: .\app\templates\app\drift_circuit.html:120
+msgid "Arcade Grip"
+msgstr "Arcade Grip"
+
+#: .\app\templates\app\drift_circuit.html:121
+msgid "Drift King"
+msgstr "Drift King"
+
+#: .\app\templates\app\drift_circuit.html:125
+msgid "Fahrzeugfarbe"
+msgstr "Fahrzeugfarbe"
+
+#: .\app\templates\app\drift_circuit.html:127
+msgid "Neon Rot"
+msgstr "Neon Rot"
+
+#: .\app\templates\app\drift_circuit.html:128
+msgid "Cyber Blau"
+msgstr "Cyber Blau"
+
+#: .\app\templates\app\drift_circuit.html:130
+msgid "Giftgrün"
+msgstr "Giftgrün"
+
+#: .\app\templates\app\drift_circuit.html:132
+msgid "Storm Weiß"
+msgstr "Storm Weiß"
+
+#: .\app\templates\app\drift_circuit.html:138
+msgid "Kamera folgt dem Auto"
+msgstr "Kamera folgt dem Auto"
+
+#: .\app\templates\app\drift_circuit.html:139
+msgid "2600–3400px große Welten"
+msgstr "2600–3400px große Welten"
+
+#: .\app\templates\app\drift_circuit.html:140
+msgid "Mapwechsel mit M"
+msgstr "Mapwechsel mit M"
+
+#: .\app\templates\app\drift_circuit.html:141
+msgid "Minimap unten rechts"
+msgstr "Minimap unten rechts"
+
+#: .\app\templates\app\drift_circuit.html:142
+msgid "Mehr Zeit zum Beschleunigen"
+msgstr "Mehr Zeit zum Beschleunigen"
+
+#: .\app\templates\app\drift_circuit.html:143
+msgid "Mobile Buttons"
+msgstr "Mobile Buttons"
+
+#: .\app\templates\app\drift_circuit.html:146
+msgid "Rennen starten"
+msgstr "Rennen starten"
+
+#: .\app\templates\app\drift_circuit.html:154
+msgid "Drücke <kbd>P</kbd>, um weiterzufahren."
+msgstr "Drücke <kbd>P</kbd>, um weiterzufahren."
+
+#: .\app\templates\app\drift_circuit.html:155
+msgid "Weiterfahren"
+msgstr "Weiterfahren"
+
+#: .\app\templates\app\drift_circuit.html:156
+msgid "Zum Menü"
+msgstr "Zum Menü"
+
+#: .\app\templates\app\drift_circuit.html:163
+#: .\app\templates\app\human_benchmark.html:50
+#: .\app\templates\app\unit_converter.html:81
+msgid "Ergebnis"
+msgstr "Ergebnis"
+
+#: .\app\templates\app\drift_circuit.html:164 .\app\views\core.py:2287
+msgid "Rennen beendet"
+msgstr "Rennen beendet"
+
+#: .\app\templates\app\drift_circuit.html:165 .\app\views\core.py:2288
+msgid "Deine Zeit:"
+msgstr "Deine Zeit:"
+
+#: .\app\templates\app\drift_circuit.html:168
+msgid "Nochmal fahren"
+msgstr "Nochmal fahren"
+
+#: .\app\templates\app\drift_circuit.html:169
+msgid "Setup ändern"
+msgstr "Setup ändern"
 
 #: .\app\templates\app\favorites.html:12
 msgid "App-Launcher"
@@ -5745,7 +6042,7 @@ msgid "ausgewählte Dateien"
 msgstr "ausgewählte Dateien"
 
 #: .\app\templates\app\file_share.html:24 .\app\views\platform.py:120
-#: .\app\views\profile.py:669 .\app\views\trash.py:20
+#: .\app\views\profile.py:670 .\app\views\trash.py:20
 msgid "Datei"
 msgstr "Datei"
 
@@ -5993,6 +6290,7 @@ msgid "Zurück zum Profil"
 msgstr "Zurück zum Profil"
 
 #: .\app\templates\app\friends.html:77 .\app\templates\app\users.html:95
+#: .\app\views\werewolf.py:60
 msgid "Du"
 msgstr "Du"
 
@@ -6003,14 +6301,14 @@ msgstr "Angefragt"
 #: .\app\templates\app\friends.html:102
 #: .\app\templates\app\public_profile.html:65
 #: .\app\templates\app\users.html:120 .\app\views\notification.py:77
-#: .\app\views\profile.py:747
+#: .\app\views\profile.py:748
 msgid "Zuletzt online"
 msgstr "Zuletzt online"
 
 #: .\app\templates\app\friends.html:104
 #: .\app\templates\app\public_profile.html:67
 #: .\app\templates\app\users.html:122 .\app\views\notification.py:79
-#: .\app\views\profile.py:749
+#: .\app\views\profile.py:750
 msgid "Offline"
 msgstr "Offline"
 
@@ -6047,15 +6345,16 @@ msgid "2048 Punktestand"
 msgstr "2048 Punktestand"
 
 #: .\app\templates\app\game_2048.html:22
-#: .\app\templates\app\snake_powerups.html:43 .\app\views\core.py:1827
+#: .\app\templates\app\snake_powerups.html:43 .\app\views\core.py:1853
+#: .\app\views\core.py:2292
 msgid "Score"
 msgstr "Score"
 
 #: .\app\templates\app\game_2048.html:26
 #: .\app\templates\app\snake_powerups.html:47
 #: .\app\views\performance_tools.py:227 .\app\views\performance_tools.py:251
-#: .\app\views\performance_tools.py:349 .\app\views\profile.py:267
-#: .\app\views\profile.py:291 .\app\views\profile.py:479
+#: .\app\views\performance_tools.py:349 .\app\views\profile.py:268
+#: .\app\views\profile.py:292 .\app\views\profile.py:480
 msgid "Highscore"
 msgstr "Highscore"
 
@@ -6084,22 +6383,13 @@ msgstr "Nochmal"
 msgid "Dein Highscore"
 msgstr "Dein Highscore"
 
-#: .\app\templates\app\game_2048.html:66 .\app\views\profile.py:281
+#: .\app\templates\app\game_2048.html:66 .\app\views\profile.py:282
 msgid "Beste Kachel"
 msgstr "Beste Kachel"
 
-#: .\app\templates\app\game_2048.html:67 .\app\views\profile.py:282
+#: .\app\templates\app\game_2048.html:67 .\app\views\profile.py:283
 msgid "Züge"
 msgstr "Züge"
-
-#: .\app\templates\app\game_2048.html:68
-#: .\app\templates\app\human_benchmark.html:42
-#: .\app\templates\app\human_benchmark.html:52
-#: .\app\templates\app\human_benchmark.html:68
-#: .\app\templates\app\stadtlandfluss_home.html:36
-#: .\app\templates\app\unit_converter.html:37 .\app\views\profile.py:283
-msgid "Zeit"
-msgstr "Zeit"
 
 #: .\app\templates\app\game_2048.html:69
 #: .\app\templates\app\skribble_home.html:49
@@ -6354,7 +6644,7 @@ msgid "Widget-Bereich verschieben"
 msgstr "Widget-Bereich verschieben"
 
 #: .\app\templates\app\home.html:65 .\app\templates\app\home.html:1073
-#: .\app\views\core.py:963
+#: .\app\views\core.py:984
 msgid "Widget hinzufügen"
 msgstr "Widget hinzufügen"
 
@@ -6362,7 +6652,7 @@ msgstr "Widget hinzufügen"
 msgid "Widget verschieben"
 msgstr "Widget verschieben"
 
-#: .\app\templates\app\home.html:123 .\app\views\core.py:962
+#: .\app\templates\app\home.html:123 .\app\views\core.py:983
 msgid "Widget bearbeiten"
 msgstr "Widget bearbeiten"
 
@@ -6528,7 +6818,7 @@ msgstr "Ungelesen"
 
 #: .\app\templates\app\home.html:746
 #: .\app\templates\app\nebula_forge_tycoon.html:268
-#: .\app\templates\app\nebula_forge_tycoon.html:582 .\app\views\profile.py:349
+#: .\app\templates\app\nebula_forge_tycoon.html:582 .\app\views\profile.py:350
 msgid "Gesamt"
 msgstr "Gesamt"
 
@@ -6648,7 +6938,7 @@ msgid ""
 "Alle Inhalte lassen sich anschließend verschieben, bearbeiten oder löschen."
 msgstr ""
 
-#: .\app\templates\app\home.html:986 .\app\views\core.py:961
+#: .\app\templates\app\home.html:986 .\app\views\core.py:982
 msgid "Neues Widget"
 msgstr "Neues Widget"
 
@@ -6702,7 +6992,7 @@ msgstr "Hier wählst du die Anordnung, zum Beispiel digital oder analog."
 msgid "Widget-Farbe"
 msgstr "Widget-Farbe"
 
-#: .\app\templates\app\home.html:1084 .\app\views\core.py:951
+#: .\app\templates\app\home.html:1084 .\app\views\core.py:972
 msgid "Neue Verknüpfung"
 msgstr "Neue Verknüpfung"
 
@@ -6754,7 +7044,7 @@ msgstr "Eigenes Bild, falls du kein Icon nutzen möchtest"
 msgid "Bild auswählen"
 msgstr "Bild auswählen"
 
-#: .\app\templates\app\home.html:1223 .\app\views\core.py:959
+#: .\app\templates\app\home.html:1223 .\app\views\core.py:980
 msgid "Keine Datei ausgewählt"
 msgstr "Keine Datei ausgewählt"
 
@@ -6766,7 +7056,7 @@ msgstr "Aktuelles Bild entfernen"
 msgid "Beispiele:"
 msgstr "Beispiele:"
 
-#: .\app\templates\app\home.html:1250 .\app\views\core.py:955
+#: .\app\templates\app\home.html:1250 .\app\views\core.py:976
 msgid "Neuer Bereich"
 msgstr "Neuer Bereich"
 
@@ -6784,7 +7074,7 @@ msgstr "Bereichsname"
 msgid "Bereichsfarbe"
 msgstr "Bereichsfarbe"
 
-#: .\app\templates\app\home.html:1281 .\app\views\core.py:956
+#: .\app\templates\app\home.html:1281 .\app\views\core.py:977
 msgid "Bereich erstellen"
 msgstr "Bereich erstellen"
 
@@ -6796,17 +7086,17 @@ msgstr "Zum Reaktionstest wechseln"
 msgid "Benchmark Tests"
 msgstr "Benchmark Tests"
 
-#: .\app\templates\app\human_benchmark.html:24 .\app\views\core.py:1726
+#: .\app\templates\app\human_benchmark.html:24 .\app\views\core.py:1752
 msgid "Aim Trainer"
 msgstr "Aim Trainer"
 
 #: .\app\templates\app\human_benchmark.html:25
-#: .\app\templates\app\human_benchmark.html:112 .\app\views\core.py:1727
+#: .\app\templates\app\human_benchmark.html:112 .\app\views\core.py:1753
 msgid "Typing Test"
 msgstr "Typing Test"
 
 #: .\app\templates\app\human_benchmark.html:26
-#: .\app\templates\app\human_benchmark.html:96 .\app\views\core.py:1728
+#: .\app\templates\app\human_benchmark.html:96 .\app\views\core.py:1754
 msgid "Visual Memory"
 msgstr "Visual Memory"
 
@@ -6830,11 +7120,6 @@ msgstr "Präzision"
 msgid "Start Aim Trainer"
 msgstr "Start Aim Trainer"
 
-#: .\app\templates\app\human_benchmark.html:50
-#: .\app\templates\app\unit_converter.html:81
-msgid "Ergebnis"
-msgstr "Ergebnis"
-
 #: .\app\templates\app\human_benchmark.html:53
 msgid "Genauigkeit"
 msgstr "Genauigkeit"
@@ -6844,7 +7129,7 @@ msgid "Misses"
 msgstr "Misses"
 
 #: .\app\templates\app\human_benchmark.html:56
-#: .\app\templates\app\offline.html:117
+#: .\app\templates\app\pwa\offline.html:117
 msgid "Erneut versuchen"
 msgstr "Erneut versuchen"
 
@@ -6864,7 +7149,7 @@ msgstr "Klicke auf Start, um den Test zu beginnen."
 msgid "Warte auf Start..."
 msgstr "Warte auf Start..."
 
-#: .\app\templates\app\human_benchmark.html:79 .\app\views\core.py:1821
+#: .\app\templates\app\human_benchmark.html:79 .\app\views\core.py:1847
 msgid "Test starten"
 msgstr "Test starten"
 
@@ -6898,7 +7183,7 @@ msgid "Letzte 10 Ergebnisse"
 msgstr "Letzte 10 Ergebnisse"
 
 #: .\app\templates\app\human_benchmark.html:137
-#: .\app\templates\app\human_benchmark.html:147 .\app\views\core.py:1824
+#: .\app\templates\app\human_benchmark.html:147 .\app\views\core.py:1850
 msgid "Noch keine Ergebnisse."
 msgstr "Noch keine Ergebnisse."
 
@@ -6943,7 +7228,7 @@ msgstr "Größe"
 msgid "Format"
 msgstr "Format"
 
-#: .\app\templates\app\image_tools.html:44
+#: .\app\templates\app\image_tools.html:44 .\app\views\werewolf.py:73
 msgid "Auflösung"
 msgstr "Auflösung"
 
@@ -7013,7 +7298,7 @@ msgid "Mittel"
 msgstr "Mittel"
 
 #: .\app\templates\app\image_tools.html:107
-#: .\app\templates\app\snake_powerups.html:111 .\app\views\core.py:2339
+#: .\app\templates\app\snake_powerups.html:111 .\app\views\core.py:2396
 msgid "Schnell"
 msgstr "Schnell"
 
@@ -7077,7 +7362,7 @@ msgstr "Alles gelesen"
 msgid "Aktuelle Hinweise"
 msgstr "Aktuelle Hinweise"
 
-#: .\app\templates\app\inbox.html:71 .\app\views\chat.py:453
+#: .\app\templates\app\inbox.html:71 .\app\views\chat.py:454
 msgid "Gelesen"
 msgstr "Gelesen"
 
@@ -7569,8 +7854,10 @@ msgid "Galaxie-Neustart"
 msgstr "Neustart"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:72
+#, fuzzy
+#| msgid "Neue Gruppe"
 msgid "Prestige: neue Galaxie"
-msgstr ""
+msgstr "Neue Gruppe"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:75
 #: .\app\templates\app\nebula_forge_tycoon.html:577
@@ -7693,8 +7980,10 @@ msgstr ""
 #: .\app\templates\app\nebula_forge_tycoon.html:144
 #: .\app\templates\app\nebula_forge_tycoon.html:181
 #: .\app\templates\app\nebula_forge_tycoon.html:395
+#, fuzzy
+#| msgid "Erster Kontakt"
 msgid "Kryo-Takt"
-msgstr ""
+msgstr "Erster Kontakt"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:145
 #: .\app\templates\app\nebula_forge_tycoon.html:408
@@ -7734,8 +8023,10 @@ msgid "Kryo stoppen"
 msgstr "Stream stoppen"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:196
+#, fuzzy
+#| msgid "Sprache auswählen"
 msgid "Schichtmodus"
-msgstr ""
+msgstr "Sprache auswählen"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:197
 msgid "Wähle, wie du farmen willst"
@@ -7757,6 +8048,7 @@ msgstr ""
 #: .\app\templates\app\security_dashboard.html:39
 #: .\app\templates\app\two_factor_settings.html:21 .\app\views\community.py:470
 #: .\app\views\community.py:535 .\app\views\moderation.py:391
+#: .\app\views\werewolf.py:61
 msgid "Aktiv"
 msgstr "Aktiv"
 
@@ -7788,7 +8080,7 @@ msgstr "Geräteverwaltung"
 msgid "Tycoon Bereiche"
 msgstr "Bereiche"
 
-#: .\app\templates\app\nebula_forge_tycoon.html:209 .\app\views\profile.py:310
+#: .\app\templates\app\nebula_forge_tycoon.html:209 .\app\views\profile.py:311
 msgid "Anlagen"
 msgstr "Anlagen"
 
@@ -7907,8 +8199,10 @@ msgid "Dyson-Gitter"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:304
+#, fuzzy
+#| msgid "Wissensarchitekt"
 msgid "Galaxie-Drucker"
-msgstr ""
+msgstr "Wissensarchitekt"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:305
 msgid "Plasma-Handschuhe"
@@ -7921,8 +8215,10 @@ msgid "AFK-Protokoll"
 msgstr "Protokoll"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:307
+#, fuzzy
+#| msgid "Technik"
 msgid "Kryo-Kühlkreis"
-msgstr ""
+msgstr "Technik"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:308
 msgid "Combo-Matrix"
@@ -7961,8 +8257,10 @@ msgid "Stellar-Logistik"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:316
+#, fuzzy
+#| msgid "Translator"
 msgid "Harmonischer Kondensator"
-msgstr ""
+msgstr "Translator"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:317
 msgid "Auto-Kalibrator"
@@ -8149,8 +8447,10 @@ msgid "Versiegle 8 Flux-Risse."
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:360
+#, fuzzy
+#| msgid "Erster Kontakt"
 msgid "Treffe 5 perfekte Kryo-Takte."
-msgstr ""
+msgstr "Erster Kontakt"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:361
 msgid "Nutze den Sammelimpuls 30 Mal."
@@ -8265,8 +8565,10 @@ msgid "Speichert..."
 msgstr "Speicher"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:387
+#, fuzzy
+#| msgid "Aktivität"
 msgid "AFK-Shift"
-msgstr ""
+msgstr "Aktivität"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:388
 #, fuzzy
@@ -8275,8 +8577,10 @@ msgid "Aktiv-Shift"
 msgstr "Aktivität"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:389
+#, fuzzy
+#| msgid "Sprache auswählen"
 msgid "Schichtmodus geändert"
-msgstr ""
+msgstr "Sprache auswählen"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:391
 #, fuzzy
@@ -8387,9 +8691,10 @@ msgid "Es fehlen {amount} Flux"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:419
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "Overdrive"
 msgid "fehlen {amount}"
-msgstr ""
+msgstr "Overdrive"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:420
 #, python-brace-format
@@ -8429,12 +8734,16 @@ msgid "Der Browser hat den lokalen Spielstand blockiert."
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:432
+#, fuzzy
+#| msgid "Einladung wurde abgelehnt."
 msgid "Datenbank-Spielstand geladen"
-msgstr ""
+msgstr "Einladung wurde abgelehnt."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:433
+#, fuzzy
+#| msgid "Einladung wurde abgelehnt."
 msgid "Dein gespeicherter Nebula-Forge-Stand wurde geladen."
-msgstr ""
+msgstr "Einladung wurde abgelehnt."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:434
 #, fuzzy
@@ -8449,8 +8758,10 @@ msgid "Speichern nicht verfügbar"
 msgstr "Nicht verfügbar"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:436
+#, fuzzy
+#| msgid "Einladung wurde abgelehnt."
 msgid "Die Datenbank-Speicherroute fehlt."
-msgstr ""
+msgstr "Einladung wurde abgelehnt."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:437
 #, fuzzy
@@ -8477,8 +8788,10 @@ msgid "Datenbank gespeichert"
 msgstr "Feedback gespeichert"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:441
+#, fuzzy
+#| msgid "Einladung wurde abgelehnt."
 msgid "Dein Spielstand wurde gespeichert. Nächster DB-Save in 60s."
-msgstr ""
+msgstr "Einladung wurde abgelehnt."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:442
 #, fuzzy
@@ -8487,8 +8800,10 @@ msgid "Der Datenbank-Save konnte nicht gesendet werden."
 msgstr "Die Meldung konnte nicht gespeichert werden."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:443
+#, fuzzy
+#| msgid "Nutzer gesamt"
 msgid "AFK-Ertrag eingesammelt"
-msgstr ""
+msgstr "Nutzer gesamt"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:444
 #, python-brace-format
@@ -8501,9 +8816,10 @@ msgid "Takt-Burst +{amount}"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:446
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "Overdrive"
 msgid "+{amount}"
-msgstr ""
+msgstr "Overdrive"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:447
 #, python-brace-format
@@ -8517,18 +8833,22 @@ msgid "Overdrive +{amount}"
 msgstr "Overdrive"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:449
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "Overdrive"
 msgid "Meteor +{amount}"
-msgstr ""
+msgstr "Overdrive"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:450
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "Overdrive"
 msgid "{label} +{amount}"
-msgstr ""
+msgstr "Overdrive"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:451
+#, fuzzy
+#| msgid "Sammlung"
 msgid "Sammelimpuls lädt"
-msgstr ""
+msgstr "Sammlung"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:452
 #, python-brace-format
@@ -8564,8 +8884,10 @@ msgid "Passive Produktion x2,4 für {duration}."
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:459
+#, fuzzy
+#| msgid "Diagonal rechts"
 msgid "Signal lädt"
-msgstr ""
+msgstr "Diagonal rechts"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:460
 msgid "Perfekt"
@@ -8576,16 +8898,22 @@ msgid "Treffer"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:462
+#, fuzzy
+#| msgid "Stream stoppen"
 msgid "Signal"
-msgstr ""
+msgstr "Stream stoppen"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:463
+#, fuzzy
+#| msgid "Erster Kontakt"
 msgid "Perfekter Signal-Raid"
-msgstr ""
+msgstr "Erster Kontakt"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:464
+#, fuzzy
+#| msgid "Stream stoppen"
 msgid "Signal getroffen"
-msgstr ""
+msgstr "Stream stoppen"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:465
 #, fuzzy
@@ -8615,8 +8943,10 @@ msgid "Streifschuss"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:471
+#, fuzzy
+#| msgid "Widget verschieben"
 msgid "Flux-Riss perfekt versiegelt"
-msgstr ""
+msgstr "Widget verschieben"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:472
 msgid "Flux-Riss stabilisiert"
@@ -8770,8 +9100,10 @@ msgid "Die Datei konnte nicht gelesen werden."
 msgstr "Speicherplatz konnte nicht gelesen werden."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:501
+#, fuzzy
+#| msgid "Buchung wurde hinzugefügt."
 msgid "Nebula Forge Tycoon wirklich komplett zurücksetzen?"
-msgstr ""
+msgstr "Buchung wurde hinzugefügt."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:502
 #, fuzzy
@@ -8870,9 +9202,10 @@ msgid "Nutze Prestige-Erfahrung für stabilere Galaxie-Neustarts."
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:535
-#, python-format
+#, fuzzy, python-format
+#| msgid "Test starten"
 msgid "Prestige-Bonus +8%%."
-msgstr ""
+msgstr "Test starten"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:536
 #, fuzzy
@@ -8998,9 +9331,10 @@ msgid "Labor ist belegt"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:559
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "Schreibe die erste Nachricht in diesem Chat."
 msgid "Schließe zuerst {name} ab."
-msgstr ""
+msgstr "Schreibe die erste Nachricht in diesem Chat."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:560
 msgid "Voraussetzung fehlt"
@@ -9013,14 +9347,16 @@ msgid "Noch nicht freigeschaltet: {hint}."
 msgstr "Noch keine Achievements freigeschaltet."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:562
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "{name} erwartet {count} Wert(e)."
 msgid "{item} benötigt {cost} Flux."
-msgstr ""
+msgstr "{name} erwartet {count} Wert(e)."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:563
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "Forschung"
 msgid "Noch {duration} Forschungszeit."
-msgstr ""
+msgstr "Forschung"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:564
 #, fuzzy
@@ -9063,8 +9399,10 @@ msgid "3 Flux-Risse oder 5 Meteore"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:572
+#, fuzzy
+#| msgid "Test starten"
 msgid "Prestige-Level 2"
-msgstr ""
+msgstr "Test starten"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:573
 #, fuzzy
@@ -9166,9 +9504,10 @@ msgid "Prestige-Erfahrung beschleunigt zukünftige Forschungsprojekte."
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:601
-#, python-format
+#, fuzzy, python-format
+#| msgid "Forschung"
 msgid "Forschungszeit -5%% pro Level."
-msgstr ""
+msgstr "Forschung"
 
 #: .\app\templates\app\nebula_forge_tycoon.html:602
 msgid "Event-Harmonik"
@@ -9248,9 +9587,10 @@ msgid "Prestige-Knoten aktiviert"
 msgstr ""
 
 #: .\app\templates\app\nebula_forge_tycoon.html:621
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid "{name} ist {result}."
 msgid "{name} ist jetzt Level {level}."
-msgstr ""
+msgstr "{name} ist {result}."
 
 #: .\app\templates\app\nebula_forge_tycoon.html:622
 #, python-brace-format
@@ -9715,7 +10055,7 @@ msgid "Stream"
 msgstr "Stream"
 
 #: .\app\templates\app\obs-dashboard.html:138
-#: .\app\templates\app\offline.html:118
+#: .\app\templates\app\pwa\offline.html:118
 msgid "Neu laden"
 msgstr "Neu laden"
 
@@ -9744,29 +10084,11 @@ msgstr "0 Audioquellen"
 msgid "Verbinde dich mit OBS, um Audioquellen zu laden."
 msgstr "Verbinde dich mit OBS, um Audioquellen zu laden."
 
-#: .\app\templates\app\offline.html:9
-msgid "Offline · MyTools"
-msgstr "Offline · MyTools"
-
-#: .\app\templates\app\offline.html:114
-msgid "Du bist offline."
-msgstr "Du bist offline."
-
-#: .\app\templates\app\offline.html:115
-msgid ""
-"MyTools ist als App vorbereitet, aber diese Seite braucht gerade eine "
-"Internetverbindung. Sobald du wieder online bist, kannst du normal "
-"weiterarbeiten."
-msgstr ""
-"MyTools ist als App vorbereitet, aber diese Seite braucht gerade eine "
-"Internetverbindung. Sobald du wieder online bist, kannst du normal "
-"weiterarbeiten."
-
 #: .\app\templates\app\partials\home_section_card.html:8
 #: .\app\templates\app\partials\home_section_card.html:18
 #: .\app\templates\app\partials\home_section_card.html:45
 #: .\app\templates\app\partials\home_section_card.html:69
-#: .\app\templates\app\partials\home_section_card.html:177
+#: .\app\templates\app\partials\home_section_card.html:162
 #: .\app\templates\app\trash.html:36
 msgid "Verknüpfungen"
 msgstr "Verknüpfungen"
@@ -9780,7 +10102,7 @@ msgid "Bereich verschieben"
 msgstr "Bereich verschieben"
 
 #: .\app\templates\app\partials\home_section_card.html:43
-#: .\app\views\core.py:957
+#: .\app\views\core.py:978
 msgid "Bereich bearbeiten"
 msgstr "Bereich bearbeiten"
 
@@ -9811,23 +10133,15 @@ msgstr "Optionen öffnen"
 msgid "Verschieben"
 msgstr "Verschieben"
 
-#: .\app\templates\app\partials\home_section_card.html:131
-msgid "Favorit entfernen"
-msgstr "Favorit entfernen"
-
-#: .\app\templates\app\partials\home_section_card.html:134
-msgid "Als Favorit markieren"
-msgstr "Als Favorit markieren"
-
-#: .\app\templates\app\partials\home_section_card.html:171
+#: .\app\templates\app\partials\home_section_card.html:156
 msgid "Noch keine Verknüpfungen"
 msgstr "Noch keine Verknüpfungen"
 
-#: .\app\templates\app\partials\home_section_card.html:172
+#: .\app\templates\app\partials\home_section_card.html:157
 msgid "Erstelle deine erste Schnellverknüpfung für diesen Bereich."
 msgstr "Erstelle deine erste Schnellverknüpfung für diesen Bereich."
 
-#: .\app\templates\app\partials\home_section_card.html:180
+#: .\app\templates\app\partials\home_section_card.html:165
 #, fuzzy
 #| msgid "Verknüpfungen"
 msgid "Verknüpfung hinzufügen"
@@ -9887,7 +10201,7 @@ msgstr "Match"
 msgid "Rally"
 msgstr "Rally"
 
-#: .\app\templates\app\pong_lobby.html:46 .\app\views\profile.py:436
+#: .\app\templates\app\pong_lobby.html:46 .\app\views\profile.py:437
 msgid "Beste Rally"
 msgstr "Beste Rally"
 
@@ -9912,8 +10226,8 @@ msgstr ""
 #: .\app\templates\app\profile.html:81
 #: .\app\templates\app\profile_card_designer.html:180
 #: .\app\templates\app\public_profile.html:73
-#: .\app\templates\app\snake_powerups.html:150 .\app\views\profile.py:158
-#: .\app\views\profile.py:317 .\app\views\profile.py:626
+#: .\app\templates\app\snake_powerups.html:150 .\app\views\profile.py:159
+#: .\app\views\profile.py:318 .\app\views\profile.py:627
 msgid "Highscores"
 msgstr "Highscores"
 
@@ -9923,8 +10237,10 @@ msgid "Profil erstellt"
 msgstr "Profil erstellt"
 
 #: .\app\templates\app\profile.html:110
+#, fuzzy
+#| msgid "Deine Erinnerung ist fällig."
 msgid "Kein eigener Statustext gesetzt."
-msgstr ""
+msgstr "Deine Erinnerung ist fällig."
 
 #: .\app\templates\app\profile.html:117
 #: .\app\templates\app\public_profile.html:234
@@ -10269,6 +10585,63 @@ msgstr "Hier sind noch keine Freunde sichtbar."
 #: .\app\templates\app\public_profile.html:340
 msgid "Freundesaktivität"
 msgstr "Freundesaktivität"
+
+#: .\app\views\pwa.py:26
+msgid "Private Tools, Widgets und Spiele in einer installierbaren Web-App."
+msgstr "Private Tools, Widgets und Spiele in einer installierbaren Web-App."
+
+#: .\app\views\pwa.py:65
+msgctxt "PWA manifest shortcut"
+msgid "Startseite"
+msgstr "Startseite"
+
+#: .\app\views\pwa.py:66
+msgctxt "PWA manifest shortcut"
+msgid "Start"
+msgstr "Start"
+
+#: .\app\views\pwa.py:67
+msgctxt "PWA manifest shortcut"
+msgid "Dashboard öffnen"
+msgstr "Dashboard öffnen"
+
+#: .\app\views\pwa.py:72 .\app\views\pwa.py:73
+msgctxt "PWA manifest shortcut"
+msgid "Notizen"
+msgstr "Notizen"
+
+#: .\app\views\pwa.py:74
+msgctxt "PWA manifest shortcut"
+msgid "Notizen öffnen"
+msgstr "Notizen öffnen"
+
+#: .\app\views\pwa.py:79 .\app\views\pwa.py:80
+msgctxt "PWA manifest shortcut"
+msgid "Chat"
+msgstr "Chat"
+
+#: .\app\views\pwa.py:81
+msgctxt "PWA manifest shortcut"
+msgid "Chats öffnen"
+msgstr "Chats öffnen"
+
+#: .\app\templates\app\pwa\offline.html:10
+msgid "Offline • MyTools"
+msgstr "Offline • MyTools"
+
+#: .\app\templates\app\pwa\offline.html:115
+msgid "Du bist offline."
+msgstr "Du bist offline."
+
+#: .\app\templates\app\pwa\offline.html:116
+msgid ""
+"MyTools ist als App vorbereitet, aber diese Seite braucht gerade eine "
+"Internetverbindung. Sobald du wieder online bist, kannst du normal "
+"weiterarbeiten."
+msgstr ""
+"MyTools ist als App vorbereitet, aber diese Seite braucht gerade eine "
+"Internetverbindung. Sobald du wieder online bist, kannst du normal "
+"weiterarbeiten."
 
 #: .\app\templates\app\qr_code_tool.html:22
 msgid ""
@@ -10768,7 +11141,7 @@ msgstr "Belegung des Projekt-Laufwerks."
 msgid "Belegt"
 msgstr "Belegt"
 
-#: .\app\templates\app\server_status.html:60
+#: .\app\templates\app\server_status.html:60 .\app\views\core.py:2296
 msgid "Frei"
 msgstr "Frei"
 
@@ -10976,7 +11349,7 @@ msgstr "Lobby"
 msgid "Lobby-Code"
 msgstr "Lobby-Code"
 
-#: .\app\templates\app\skribble_lobby.html:43 .\app\views\werewolf.py:464
+#: .\app\templates\app\skribble_lobby.html:43 .\app\views\werewolf.py:565
 msgid "Nur der Host kann das Spiel starten."
 msgstr "Nur der Host kann das Spiel starten."
 
@@ -11092,7 +11465,7 @@ msgstr "Spiel-Funktionen"
 msgid "Neues Spiel"
 msgstr "Zum Spiel"
 
-#: .\app\templates\app\snake_powerups.html:34 .\app\views\core.py:2321
+#: .\app\templates\app\snake_powerups.html:34 .\app\views\core.py:2378
 #, fuzzy
 #| msgid "Pausiert"
 msgid "Pausieren"
@@ -11104,15 +11477,15 @@ msgstr "Pausiert"
 msgid "Snake Spielbereich"
 msgstr "Max. Spieler"
 
-#: .\app\templates\app\snake_powerups.html:51 .\app\views\core.py:2333
-#: .\app\views\profile.py:493
+#: .\app\templates\app\snake_powerups.html:51 .\app\views\core.py:2390
+#: .\app\views\profile.py:494
 #, fuzzy
 #| msgid "Empfänger"
 msgid "Länge"
 msgstr "Empfänger"
 
-#: .\app\templates\app\snake_powerups.html:55 .\app\views\core.py:2332
-#: .\app\views\profile.py:473 .\app\views\profile.py:494
+#: .\app\templates\app\snake_powerups.html:55 .\app\views\core.py:2389
+#: .\app\views\profile.py:474 .\app\views\profile.py:495
 msgid "Früchte"
 msgstr ""
 
@@ -11122,7 +11495,7 @@ msgstr ""
 msgid "Snake Spielfeld"
 msgstr "Snake Powerups Spielfeld"
 
-#: .\app\templates\app\snake_powerups.html:67 .\app\views\core.py:2315
+#: .\app\templates\app\snake_powerups.html:67 .\app\views\core.py:2372
 msgid ""
 "Starte ein schlichtes Snake ohne Effekte. Die Lüfter sollten dabei deutlich "
 "ruhiger bleiben."
@@ -11140,7 +11513,7 @@ msgstr "Nach links"
 msgid "Nach rechts"
 msgstr "Nach rechts"
 
-#: .\app\templates\app\snake_powerups.html:90 .\app\views\core.py:2323
+#: .\app\templates\app\snake_powerups.html:90 .\app\views\core.py:2380
 msgid "Änderungen gelten ab dem nächsten Start."
 msgstr ""
 
@@ -11160,11 +11533,11 @@ msgstr "klein"
 msgid "Tempo"
 msgstr "Tempo"
 
-#: .\app\templates\app\snake_powerups.html:109 .\app\views\core.py:2337
+#: .\app\templates\app\snake_powerups.html:109 .\app\views\core.py:2394
 msgid "Entspannt"
 msgstr ""
 
-#: .\app\templates\app\snake_powerups.html:112 .\app\views\core.py:2340
+#: .\app\templates\app\snake_powerups.html:112 .\app\views\core.py:2397
 msgid "Turbo"
 msgstr ""
 
@@ -11178,20 +11551,20 @@ msgstr ""
 msgid "Spawnrate"
 msgstr "Winrate"
 
-#: .\app\templates\app\snake_powerups.html:129 .\app\views\core.py:2343
+#: .\app\templates\app\snake_powerups.html:129 .\app\views\core.py:2400
 msgid "Ruhig"
 msgstr ""
 
-#: .\app\templates\app\snake_powerups.html:132 .\app\views\core.py:2346
+#: .\app\templates\app\snake_powerups.html:132 .\app\views\core.py:2403
 msgid "Sofort"
 msgstr ""
 
 #: .\app\templates\app\snake_powerups.html:139
-#: .\app\templates\app\snake_powerups.html:158 .\app\views\core.py:2349
+#: .\app\templates\app\snake_powerups.html:158 .\app\views\core.py:2406
 msgid "Durchlaufen"
 msgstr ""
 
-#: .\app\templates\app\snake_powerups.html:140 .\app\views\core.py:2350
+#: .\app\templates\app\snake_powerups.html:140 .\app\views\core.py:2407
 msgid "Wände"
 msgstr ""
 
@@ -11205,8 +11578,8 @@ msgstr ""
 msgid "Aktuelle Einstellung"
 msgstr "Aktuelle Sitzung"
 
-#: .\app\templates\app\snake_powerups.html:157 .\app\views\core.py:2334
-#: .\app\views\profile.py:333
+#: .\app\templates\app\snake_powerups.html:157 .\app\views\core.py:2391
+#: .\app\views\profile.py:334
 msgid "Noch kein Highscore"
 msgstr "Noch kein Highscore"
 
@@ -11459,13 +11832,17 @@ msgstr ""
 
 #: .\app\templates\app\stream_deck.html:186
 #: .\app\templates\app\stream_deck.html:439
+#, fuzzy
+#| msgid "Neu laden"
 msgid "Voice"
-msgstr ""
+msgstr "Neu laden"
 
 #: .\app\templates\app\stream_deck.html:188
 #: .\app\templates\app\stream_deck.html:442
+#, fuzzy
+#| msgid "Neu laden"
 msgid "Voices laden..."
-msgstr ""
+msgstr "Neu laden"
 
 #: .\app\templates\app\stream_deck.html:193
 #: .\app\templates\app\stream_deck.html:429
@@ -11475,8 +11852,10 @@ msgid "Voice Changer umschalten"
 msgstr "Vote umschalten"
 
 #: .\app\templates\app\stream_deck.html:193
+#, fuzzy
+#| msgid "Vote umschalten"
 msgid "Voice Changer"
-msgstr ""
+msgstr "Vote umschalten"
 
 #: .\app\templates\app\stream_deck.html:196
 #: .\app\templates\app\stream_deck.html:430
@@ -11486,8 +11865,10 @@ msgid "Hear Myself umschalten"
 msgstr "Dark Mode umschalten"
 
 #: .\app\templates\app\stream_deck.html:196
+#, fuzzy
+#| msgid "Dark Mode umschalten"
 msgid "Hear Myself"
-msgstr ""
+msgstr "Dark Mode umschalten"
 
 #: .\app\templates\app\stream_deck.html:199
 #, fuzzy
@@ -11542,7 +11923,7 @@ msgid "Letzte Aktion"
 msgstr "Letzte Aktion"
 
 #: .\app\templates\app\stream_deck.html:251 .\app\views\community.py:535
-#: .\app\views\moderation.py:391
+#: .\app\views\moderation.py:391 .\app\views\werewolf.py:62
 msgid "Aus"
 msgstr "Aus"
 
@@ -11593,11 +11974,6 @@ msgstr "Stumm"
 #: .\app\templates\app\stream_deck.html:307
 msgid "Krone"
 msgstr "Krone"
-
-#: .\app\templates\app\stream_deck.html:308
-#: .\app\templates\app\stream_deck.html:417 .\app\views\core.py:2317
-msgid "Pause"
-msgstr "Pause"
 
 #: .\app\templates\app\stream_deck.html:309
 msgid "Stopp"
@@ -11910,8 +12286,10 @@ msgid ""
 msgstr ""
 
 #: .\app\templates\app\trash.html:20
+#, fuzzy
+#| msgid "Inhalt kopieren"
 msgid "Einträge im Papierkorb"
-msgstr ""
+msgstr "Inhalt kopieren"
 
 #: .\app\templates\app\trash.html:22
 #, fuzzy
@@ -11930,8 +12308,10 @@ msgid "Widgets"
 msgstr "Widgets"
 
 #: .\app\templates\app\trash.html:42
+#, fuzzy
+#| msgid "gelöschter Nutzer · %(date)s"
 msgid "Gelöschte Inhalte"
-msgstr ""
+msgstr "gelöschter Nutzer · %(date)s"
 
 #: .\app\templates\app\trash.html:43
 msgid "Stelle Inhalte wieder her oder lösche sie sofort endgültig."
@@ -12105,7 +12485,7 @@ msgstr "Einheiten tauschen"
 msgid "Nach"
 msgstr "Nach"
 
-#: .\app\templates\app\unit_converter.html:83 .\app\views\core.py:2238
+#: .\app\templates\app\unit_converter.html:83 .\app\views\core.py:2264
 msgid "Gib einen Wert ein, um die Umrechnung zu starten."
 msgstr "Gib einen Wert ein, um die Umrechnung zu starten."
 
@@ -12117,7 +12497,7 @@ msgstr "Schnellbeispiele"
 msgid "Häufige Umrechnungen"
 msgstr "Häufige Umrechnungen"
 
-#: .\app\templates\app\unit_converter.html:106 .\app\views\core.py:2229
+#: .\app\templates\app\unit_converter.html:106 .\app\views\core.py:2255
 msgid "Meilen"
 msgstr "Meilen"
 
@@ -12328,30 +12708,36 @@ msgid "Rollen & Regeln"
 msgstr "7-0 Regel"
 
 #: .\app\templates\app\werewolf_home.html:32
+#, fuzzy
+#| msgid "Prüfe eine Person"
 msgid "Prüft nachts eine Person."
-msgstr ""
+msgstr "Prüfe eine Person"
 
 #: .\app\templates\app\werewolf_home.html:33
+#, fuzzy
+#| msgid "Du besitzt genau einen Heiltrank und einen Gifttrank."
 msgid "Besitzt Heil- und Gifttrank."
-msgstr ""
+msgstr "Du besitzt genau einen Heiltrank und einen Gifttrank."
 
 #: .\app\templates\app\werewolf_home.html:34
+#, fuzzy
+#| msgid "Beschütze eine Person"
 msgid "Schützt nachts eine Person."
-msgstr ""
+msgstr "Beschütze eine Person"
 
 #: .\app\templates\app\werewolf_home.html:35
+#, fuzzy
+#| msgid "Rollen aufdecken"
 msgid "Rolle aufdecken"
-msgstr ""
+msgstr "Rollen aufdecken"
 
 #: .\app\templates\app\werewolf_home.html:35
 msgid "Zeigt die Rolle ausgeschiedener Spieler."
 msgstr ""
 
-#: .\app\templates\app\werewolf_home.html:36
-#, fuzzy
-#| msgid "Geheimes Wort eingeben"
+#: .\app\templates\app\werewolf_home.html:36 .\app\views\werewolf.py:69
 msgid "Geheime Stimmen"
-msgstr "Geheimes Wort eingeben"
+msgstr "Geheime Stimmen"
 
 #: .\app\templates\app\werewolf_home.html:36
 msgid "Verbirgt, wer schon abgestimmt hat."
@@ -12419,20 +12805,19 @@ msgid "Du bist noch in keiner Werwolf-Lobby."
 msgstr "Du bist noch in keiner Lobby."
 
 #: .\app\templates\app\werewolf_lobby.html:17
+#, fuzzy
+#| msgid "Uno-Einladung"
 msgid "Werwolf-Runde"
-msgstr ""
+msgstr "Uno-Einladung"
 
-#: .\app\templates\app\werewolf_lobby.html:21
-#, fuzzy
-#| msgid "Wertung"
+#: .\app\templates\app\werewolf_lobby.html:21 .\app\views\werewolf.py:37
+#: .\app\views\werewolf.py:70
 msgid "Vorbereitung"
-msgstr "Wertung"
+msgstr "Vorbereitung"
 
-#: .\app\templates\app\werewolf_lobby.html:21
-#, fuzzy
-#| msgid "Warte auf das Spiel..."
+#: .\app\templates\app\werewolf_lobby.html:21 .\app\views\werewolf.py:38
 msgid "Warten auf Spieler"
-msgstr "Warte auf das Spiel..."
+msgstr "Warten auf Spieler"
 
 #: .\app\templates\app\werewolf_lobby.html:21
 msgid "Der Host startet, sobald das Dorf vollständig ist."
@@ -12451,8 +12836,10 @@ msgid "Noch unbekannt"
 msgstr "Browser unbekannt"
 
 #: .\app\templates\app\werewolf_lobby.html:25
+#, fuzzy
+#| msgid "Deine Rolle wird beim Start geheim verteilt."
 msgid "Deine Rolle wird beim Start verdeckt verteilt."
-msgstr ""
+msgstr "Deine Rolle wird beim Start geheim verteilt."
 
 #: .\app\templates\app\werewolf_lobby.html:25
 msgid "Rolle zeigen/verbergen"
@@ -12464,9 +12851,9 @@ msgstr ""
 msgid "Regeln"
 msgstr "7-0 Regel"
 
-#: .\app\templates\app\werewolf_lobby.html:33
+#: .\app\templates\app\werewolf_lobby.html:33 .\app\views\werewolf.py:71
 msgid "Versammelt das Dorf"
-msgstr ""
+msgstr "Versammelt das Dorf"
 
 #: .\app\templates\app\werewolf_lobby.html:33
 msgid "Nach dem Start erscheint hier deine persönliche Aufgabe."
@@ -12489,12 +12876,16 @@ msgid "Starte die Runde, wenn mindestens fünf Spieler bereit sind."
 msgstr ""
 
 #: .\app\templates\app\werewolf_lobby.html:35
+#, fuzzy
+#| msgid "Nacht auswerten"
 msgid "Phase auswerten"
-msgstr ""
+msgstr "Nacht auswerten"
 
 #: .\app\templates\app\werewolf_lobby.html:37
+#, fuzzy
+#| msgid "Dorf"
 msgid "Dorfplatz"
-msgstr ""
+msgstr "Dorf"
 
 #: .\app\templates\app\werewolf_lobby.html:37
 msgid "Rudel"
@@ -12555,19 +12946,30 @@ msgstr ""
 "Normale Nutzer können sich aktuell nicht einloggen. Admins können sich "
 "weiterhin anmelden."
 
-#: .\app\templates\registration\login.html:112
-#: .\app\templates\registration\signup.html:129
+#: .\app\templates\registration\login.html:120
+#, fuzzy
+#| msgid "Bei Google suchen..."
+msgid "Mit Google anmelden"
+msgstr "Bei Google suchen..."
+
+#: .\app\templates\registration\login.html:124
+#: .\app\templates\registration\signup.html:113
+msgid "oder"
+msgstr ""
+
+#: .\app\templates\registration\login.html:130
+#: .\app\templates\registration\signup.html:150
 msgid "Einloggen"
 msgstr "Einloggen"
 
-#: .\app\templates\registration\login.html:122
+#: .\app\templates\registration\login.html:140
 msgid "Noch keinen Account?"
 msgstr "Noch keinen Account?"
 
-#: .\app\templates\registration\login.html:123
+#: .\app\templates\registration\login.html:141
 #: .\app\templates\registration\signup.html:8
 #: .\app\templates\registration\signup.html:56
-#: .\app\templates\registration\signup.html:122
+#: .\app\templates\registration\signup.html:143
 msgid "Account erstellen"
 msgstr "Account erstellen"
 
@@ -12583,7 +12985,13 @@ msgstr "Registrierung vorübergehend gesperrt"
 msgid "Neue Accounts können aktuell nicht erstellt werden."
 msgstr "Neue Accounts können aktuell nicht erstellt werden."
 
-#: .\app\templates\registration\signup.html:128
+#: .\app\templates\registration\signup.html:108
+#, fuzzy
+#| msgid "Mit Code beitreten"
+msgid "Mit Google registrieren"
+msgstr "Mit Code beitreten"
+
+#: .\app\templates\registration\signup.html:149
 msgid "Schon einen Account?"
 msgstr "Schon einen Account?"
 
@@ -12609,65 +13017,73 @@ msgstr "Authenticator-Code"
 msgid "Login bestätigen"
 msgstr "Login bestätigen"
 
-#: .\app\views\auth.py:30
+#: .\app\views\auth.py:31 .\app\views\auth.py:65
 msgid "Bitte bestätige, dass du kein Roboter bist."
 msgstr "Bitte bestätige, dass du kein Roboter bist."
 
-#: .\app\views\auth.py:55 .\app\views\auth.py:94
+#: .\app\views\auth.py:56 .\app\views\auth.py:109
 msgid "Der Login ist aktuell für normale Nutzer gesperrt."
 msgstr "Der Login ist aktuell für normale Nutzer gesperrt."
 
-#: .\app\views\auth.py:62
+#: .\app\views\auth.py:77
 msgid "Authentifizierungs-Code"
 msgstr "Authentifizierungs-Code"
 
-#: .\app\views\auth.py:76
+#: .\app\views\auth.py:91
 msgid "Bitte gib einen 6-stelligen Code ein."
 msgstr "Bitte gib einen 6-stelligen Code ein."
 
-#: .\app\views\auth.py:111
+#: .\app\views\auth.py:126
 msgid "Login ohne 2FA abgeschlossen."
 msgstr "Login ohne 2FA abgeschlossen."
 
-#: .\app\views\auth.py:127
+#: .\app\views\auth.py:142
 msgid "Login-Versuch wurde abgelehnt."
 msgstr "Login-Versuch wurde abgelehnt."
 
-#: .\app\views\auth.py:160
+#: .\app\views\auth.py:150
+msgid "Google Login ist noch nicht konfiguriert."
+msgstr ""
+
+#: .\app\views\auth.py:155
+msgid "Bitte bestätige reCAPTCHA, bevor du Google Login nutzt."
+msgstr ""
+
+#: .\app\views\auth.py:192
 msgid "Login mit 2FA bestätigt."
 msgstr "Login mit 2FA bestätigt."
 
-#: .\app\views\auth.py:165
+#: .\app\views\auth.py:197
 msgid "Der Code ist ungültig oder abgelaufen."
 msgstr "Der Code ist ungültig oder abgelaufen."
 
-#: .\app\views\auth.py:196
+#: .\app\views\auth.py:228
 msgid ""
 "Scanne den QR-Code und bestätige die Einrichtung mit einem 6-stelligen Code."
 msgstr ""
 "Scanne den QR-Code und bestätige die Einrichtung mit einem 6-stelligen Code."
 
-#: .\app\views\auth.py:210
+#: .\app\views\auth.py:242
 msgid "2FA wurde für den Account aktiviert."
 msgstr "2FA wurde für den Account aktiviert."
 
-#: .\app\views\auth.py:212
+#: .\app\views\auth.py:244
 msgid "Zwei-Faktor-Authentifizierung wurde aktiviert."
 msgstr "Zwei-Faktor-Authentifizierung wurde aktiviert."
 
-#: .\app\views\auth.py:214
+#: .\app\views\auth.py:246
 msgid "Der Code konnte nicht bestätigt werden."
 msgstr "Der Code konnte nicht bestätigt werden."
 
-#: .\app\views\auth.py:228
+#: .\app\views\auth.py:260
 msgid "2FA wurde für den Account deaktiviert."
 msgstr "2FA wurde für den Account deaktiviert."
 
-#: .\app\views\auth.py:230
+#: .\app\views\auth.py:262
 msgid "Zwei-Faktor-Authentifizierung wurde deaktiviert."
 msgstr "Zwei-Faktor-Authentifizierung wurde deaktiviert."
 
-#: .\app\views\auth.py:232
+#: .\app\views\auth.py:264
 msgid "Der Code ist ungültig. 2FA wurde nicht deaktiviert."
 msgstr "Der Code ist ungültig. 2FA wurde nicht deaktiviert."
 
@@ -12785,7 +13201,7 @@ msgstr "Dieser Raum hat bereits zwei Spieler."
 #: .\app\views\hangman.py:528 .\app\views\kniffel.py:565
 #: .\app\views\pong.py:409 .\app\views\skribble.py:577
 #: .\app\views\stadtlandfluss.py:568 .\app\views\tictactoe.py:380
-#: .\app\views\uno.py:586 .\app\views\werewolf.py:415
+#: .\app\views\uno.py:586 .\app\views\werewolf.py:516
 msgid "Du kannst nur Freunde einladen."
 msgstr "Du kannst nur Freunde einladen."
 
@@ -12793,7 +13209,7 @@ msgstr "Du kannst nur Freunde einladen."
 #: .\app\views\hangman.py:538 .\app\views\kniffel.py:572
 #: .\app\views\pong.py:415 .\app\views\skribble.py:585
 #: .\app\views\stadtlandfluss.py:576 .\app\views\tictactoe.py:392
-#: .\app\views\uno.py:589 .\app\views\werewolf.py:423
+#: .\app\views\uno.py:589 .\app\views\werewolf.py:524
 msgid "Einladung wurde gesendet."
 msgstr "Einladung wurde gesendet."
 
@@ -12899,141 +13315,141 @@ msgstr "%(count)s wiederkehrende Buchung(en) wurden übernommen."
 msgid "Es wurden keine neuen wiederkehrenden Buchungen gefunden."
 msgstr "Es wurden keine neuen wiederkehrenden Buchungen gefunden."
 
-#: .\app\views\chat.py:126
+#: .\app\views\chat.py:127
 msgid "Heute"
 msgstr "Heute"
 
-#: .\app\views\chat.py:128
+#: .\app\views\chat.py:129
 msgid "Gestern"
 msgstr "Gestern"
 
-#: .\app\views\chat.py:180
+#: .\app\views\chat.py:181
 msgid "Du wurdest erwaehnt"
 msgstr "Du wurdest erwaehnt"
 
-#: .\app\views\chat.py:181
+#: .\app\views\chat.py:182
 #, python-format
 msgid "%(user)s hat dich im Chat erwaehnt."
 msgstr "%(user)s hat dich im Chat erwaehnt."
 
-#: .\app\views\chat.py:300
+#: .\app\views\chat.py:301
 msgid "Das ist dein eigenes Profil."
 msgstr "Das ist dein eigenes Profil."
 
-#: .\app\views\chat.py:305
+#: .\app\views\chat.py:306
 msgid "Du kannst nur mit Freunden einen Direktchat starten."
 msgstr "Du kannst nur mit Freunden einen Direktchat starten."
 
-#: .\app\views\chat.py:311
+#: .\app\views\chat.py:312
 msgid "Dieser Chat ist wegen einer Blockierung nicht möglich."
 msgstr "Dieser Chat ist wegen einer Blockierung nicht möglich."
 
-#: .\app\views\chat.py:323
+#: .\app\views\chat.py:324
 msgid "Gib der Gruppe einen Namen."
 msgstr "Gib der Gruppe einen Namen."
 
-#: .\app\views\chat.py:332
+#: .\app\views\chat.py:333
 msgid "Wähle mindestens einen Freund für die Gruppe aus."
 msgstr "Wähle mindestens einen Freund für die Gruppe aus."
 
-#: .\app\views\chat.py:347 .\app\views\chat.py:682
+#: .\app\views\chat.py:348 .\app\views\chat.py:708
 msgid "Neue Chatgruppe"
 msgstr "Neue Chatgruppe"
 
-#: .\app\views\chat.py:348
+#: .\app\views\chat.py:349
 msgid "Du wurdest zu einer neuen Gruppe hinzugefügt."
 msgstr "Du wurdest zu einer neuen Gruppe hinzugefügt."
 
-#: .\app\views\chat.py:356
+#: .\app\views\chat.py:357
 msgid "Gruppe erstellt."
 msgstr "Gruppe erstellt."
 
-#: .\app\views\chat.py:358
+#: .\app\views\chat.py:359
 msgid "Gruppe wurde erstellt."
 msgstr "Gruppe wurde erstellt."
 
-#: .\app\views\chat.py:371 .\app\views\chat.py:372 .\app\views\chat.py:575
+#: .\app\views\chat.py:372 .\app\views\chat.py:373 .\app\views\chat.py:601
 msgid "Nachricht darf nicht leer sein."
 msgstr "Nachricht darf nicht leer sein."
 
-#: .\app\views\chat.py:378 .\app\views\chat.py:379
+#: .\app\views\chat.py:379 .\app\views\chat.py:380
 msgid "Der Anhang darf maximal 8 MB gross sein."
 msgstr "Der Anhang darf maximal 8 MB gross sein."
 
-#: .\app\views\chat.py:413
+#: .\app\views\chat.py:414
 msgid "Neue Chatnachricht"
 msgstr "Neue Chatnachricht"
 
-#: .\app\views\chat.py:414
+#: .\app\views\chat.py:415
 msgid "Neuer Anhang"
 msgstr "Neuer Anhang"
 
-#: .\app\views\chat.py:455
+#: .\app\views\chat.py:456
 #, python-format
 msgid "Gelesen von %(count)s"
 msgstr "Gelesen von %(count)s"
 
-#: .\app\views\chat.py:456
+#: .\app\views\chat.py:457
 msgid "Gesendet"
 msgstr "Gesendet"
 
-#: .\app\views\chat.py:559
+#: .\app\views\chat.py:585
 msgid "Nachricht wurde gelöscht."
 msgstr "Nachricht wurde gelöscht."
 
-#: .\app\views\chat.py:621
+#: .\app\views\chat.py:647
 msgid "Diese Reaktion ist nicht erlaubt."
 msgstr "Diese Reaktion ist nicht erlaubt."
 
-#: .\app\views\chat.py:660
+#: .\app\views\chat.py:686
 msgid "Nachricht wurde angepinnt."
 msgstr "Nachricht wurde angepinnt."
 
-#: .\app\views\chat.py:660
+#: .\app\views\chat.py:686
 msgid "Angeheftete Nachricht wurde entfernt."
 msgstr "Angeheftete Nachricht wurde entfernt."
 
-#: .\app\views\chat.py:670
+#: .\app\views\chat.py:696
 msgid "Nur Gruppenadmins können die Gruppe bearbeiten."
 msgstr "Nur Gruppenadmins können die Gruppe bearbeiten."
 
-#: .\app\views\chat.py:681
+#: .\app\views\chat.py:707
 msgid "Zur Gruppe hinzugefügt"
 msgstr "Zur Gruppe hinzugefügt"
 
-#: .\app\views\chat.py:686
+#: .\app\views\chat.py:712
 msgid "Gruppeneinstellungen gespeichert."
 msgstr "Gruppeneinstellungen gespeichert."
 
-#: .\app\views\chat.py:688
+#: .\app\views\chat.py:714
 msgid "Die Gruppeneinstellungen konnten nicht gespeichert werden."
 msgstr "Die Gruppeneinstellungen konnten nicht gespeichert werden."
 
-#: .\app\views\chat.py:698
+#: .\app\views\chat.py:724
 msgid "Nur Gruppenadmins können Mitglieder verwalten."
 msgstr "Nur Gruppenadmins können Mitglieder verwalten."
 
-#: .\app\views\chat.py:703
+#: .\app\views\chat.py:729
 msgid "Du kannst dich hier nicht selbst entfernen."
 msgstr "Du kannst dich hier nicht selbst entfernen."
 
-#: .\app\views\chat.py:707
+#: .\app\views\chat.py:733
 msgid "Mitglied ist jetzt Gruppenadmin."
 msgstr "Mitglied ist jetzt Gruppenadmin."
 
-#: .\app\views\chat.py:710
+#: .\app\views\chat.py:736
 msgid "Mitglied entfernt."
 msgstr "Mitglied entfernt."
 
-#: .\app\views\chat.py:712
+#: .\app\views\chat.py:738
 msgid "Unbekannte Gruppenaktion."
 msgstr "Unbekannte Gruppenaktion."
 
-#: .\app\views\chat.py:723
+#: .\app\views\chat.py:749
 msgid "Gruppe gelöscht."
 msgstr "Gruppe gelöscht."
 
-#: .\app\views\chat.py:731
+#: .\app\views\chat.py:757
 msgid "Du hast die Gruppe verlassen."
 msgstr "Du hast die Gruppe verlassen."
 
@@ -13312,454 +13728,529 @@ msgstr "Diese Spalte ist voll."
 msgid "Vier-gewinnt-Raum wurde gelöscht."
 msgstr "Vier-gewinnt-Raum wurde gelöscht."
 
-#: .\app\views\core.py:57
+#: .\app\views\core.py:58
 #, python-format
 msgid "%(name)s fehlt in der .env."
 msgstr "%(name)s fehlt in der .env."
 
-#: .\app\views\core.py:198
+#: .\app\views\core.py:199
 msgid "Weltuhr-Ort wurde hinzugefügt."
 msgstr "Weltuhr-Ort wurde hinzugefügt."
 
-#: .\app\views\core.py:200
+#: .\app\views\core.py:201
 msgid "Bitte wähle einen gültigen Ort aus."
 msgstr "Bitte wähle einen gültigen Ort aus."
 
-#: .\app\views\core.py:207
+#: .\app\views\core.py:208
 msgid "Weltuhr-Ort wurde gelöscht."
 msgstr "Weltuhr-Ort wurde gelöscht."
 
-#: .\app\views\core.py:231
+#: .\app\views\core.py:232
 msgid "Timer wurde gespeichert."
 msgstr "Timer wurde gespeichert."
 
-#: .\app\views\core.py:233
+#: .\app\views\core.py:234
 msgid "Bitte gib einen Namen und eine Dauer größer als 0 Sekunden ein."
 msgstr "Bitte gib einen Namen und eine Dauer größer als 0 Sekunden ein."
 
-#: .\app\views\core.py:240
+#: .\app\views\core.py:241
 msgid "Timer wurde gelöscht."
 msgstr "Timer wurde gelöscht."
 
-#: .\app\views\core.py:263
+#: .\app\views\core.py:264
 msgid "Bitte lade eine Audio-Datei hoch."
 msgstr "Bitte lade eine Audio-Datei hoch."
 
-#: .\app\views\core.py:270
+#: .\app\views\core.py:271
 msgid "Uhr-Einstellungen wurden gespeichert."
 msgstr "Uhr-Einstellungen wurden gespeichert."
 
-#: .\app\views\core.py:280
+#: .\app\views\core.py:281
 msgid "Eigener Klingelton wurde gelöscht."
 msgstr "Eigener Klingelton wurde gelöscht."
 
-#: .\app\views\core.py:307
+#: .\app\views\core.py:326
 msgid "Registrierungen sind aktuell gesperrt."
 msgstr "Registrierungen sind aktuell gesperrt."
 
-#: .\app\views\core.py:320
+#: .\app\views\core.py:340
 msgid "Dein Account wurde erstellt."
 msgstr "Dein Account wurde erstellt."
 
-#: .\app\views\core.py:373 .\app\views\core.py:397
+#: .\app\views\core.py:394 .\app\views\core.py:418
 msgid "Wetter konnte nicht geladen werden."
 msgstr "Wetter konnte nicht geladen werden."
 
-#: .\app\views\core.py:384
+#: .\app\views\core.py:405
 msgid "Keine Beschreibung"
 msgstr "Keine Beschreibung"
 
-#: .\app\views\core.py:952
+#: .\app\views\core.py:973
 #, python-format
 msgid "für \"%(section)s\""
 msgstr "für \"%(section)s\""
 
-#: .\app\views\core.py:953
+#: .\app\views\core.py:974
 msgid "Verknüpfung bearbeiten"
 msgstr "Verknüpfung bearbeiten"
 
-#: .\app\views\core.py:954
+#: .\app\views\core.py:975
 #, python-format
 msgid "in \"%(section)s\""
 msgstr "in \"%(section)s\""
 
-#: .\app\views\core.py:958 .\app\views\notes.py:162
+#: .\app\views\core.py:979 .\app\views\notes.py:162
 msgid "Änderungen speichern"
 msgstr "Änderungen speichern"
 
-#: .\app\views\core.py:960
+#: .\app\views\core.py:981
 #, fuzzy
 #| msgid "Aktuelles Bild entfernen"
 msgid "Aktuelles Bild vorhanden"
 msgstr "Aktuelles Bild entfernen"
 
-#: .\app\views\core.py:964
+#: .\app\views\core.py:985
 msgid "Widget speichern"
 msgstr "Widget speichern"
 
-#: .\app\views\core.py:965
+#: .\app\views\core.py:986
 #, fuzzy
 #| msgid "Widget löschen"
 msgid "Widget gelöscht"
 msgstr "Widget löschen"
 
-#: .\app\views\core.py:966
+#: .\app\views\core.py:987
 #, fuzzy
 #| msgid "Bereich löschen"
 msgid "Bereich gelöscht"
 msgstr "Bereich löschen"
 
-#: .\app\views\core.py:967
+#: .\app\views\core.py:988
 #, fuzzy
 #| msgid "Verknüpfungen"
 msgid "Verknüpfung gelöscht"
 msgstr "Verknüpfungen"
 
-#: .\app\views\core.py:968
+#: .\app\views\core.py:989
+#, fuzzy
+#| msgid "Timer wurde gelöscht."
 msgid "Wird in wenigen Sekunden endgültig gelöscht."
-msgstr ""
+msgstr "Timer wurde gelöscht."
 
-#: .\app\views\core.py:969
+#: .\app\views\core.py:990
 msgid "Rückgängig"
 msgstr ""
 
-#: .\app\views\core.py:970
+#: .\app\views\core.py:991
 #, fuzzy
 #| msgid "Login fehlgeschlagen"
 msgid "Löschen fehlgeschlagen"
 msgstr "Login fehlgeschlagen"
 
-#: .\app\views\core.py:971
+#: .\app\views\core.py:992
 msgid "Bitte versuche es noch einmal."
 msgstr ""
 
-#: .\app\views\core.py:990
+#: .\app\views\core.py:1011
 msgid "Ungültiges JSON"
 msgstr "Ungültiges JSON"
 
-#: .\app\views\core.py:1063
+#: .\app\views\core.py:1084
 msgid "Unbekannte Aktion"
 msgstr "Unbekannte Aktion"
 
-#: .\app\views\core.py:1098 .\app\views\core.py:1152 .\app\views\trash.py:21
+#: .\app\views\core.py:1119 .\app\views\core.py:1173 .\app\views\trash.py:21
 msgid "Widget"
 msgstr "Widget"
 
-#: .\app\views\core.py:1542 .\app\views\core.py:1559 .\app\views\core.py:1693
+#: .\app\views\core.py:1568 .\app\views\core.py:1585 .\app\views\core.py:1719
 msgid "Ungültige Antwort der OpenWeather API."
 msgstr "Ungültige Antwort der OpenWeather API."
 
-#: .\app\views\core.py:1568
+#: .\app\views\core.py:1594
 msgid "Wettervorhersage konnte nicht geladen werden."
 msgstr "Wettervorhersage konnte nicht geladen werden."
 
-#: .\app\views\core.py:1661
+#: .\app\views\core.py:1687
 msgid "OpenWeather API-Key ist ungültig."
 msgstr "OpenWeather API-Key ist ungültig."
 
-#: .\app\views\core.py:1667 .\app\views\core.py:1679
+#: .\app\views\core.py:1693 .\app\views\core.py:1705
 msgid "Standort nicht gefunden."
 msgstr "Standort nicht gefunden."
 
-#: .\app\views\core.py:1673
+#: .\app\views\core.py:1699
 #, python-format
 msgid "OpenWeather Fehler: %(message)s"
 msgstr "OpenWeather Fehler: %(message)s"
 
-#: .\app\views\core.py:1686 .\app\views\core.py:1700
+#: .\app\views\core.py:1712 .\app\views\core.py:1726
 #, python-format
 msgid "Verbindungsfehler: %(error)s"
 msgstr "Verbindungsfehler: %(error)s"
 
-#: .\app\views\core.py:1817
+#: .\app\views\core.py:1843
 msgid "Lade Text..."
 msgstr "Lade Text..."
 
-#: .\app\views\core.py:1818
+#: .\app\views\core.py:1844
 msgid "Übersetze..."
 msgstr "Übersetze..."
 
-#: .\app\views\core.py:1819
+#: .\app\views\core.py:1845
 msgid "Nächster Test"
 msgstr "Nächster Test"
 
-#: .\app\views\core.py:1820
+#: .\app\views\core.py:1846
 msgid "Lädt..."
 msgstr "Lädt..."
 
-#: .\app\views\core.py:1822 .\app\views\core.py:2327
+#: .\app\views\core.py:1848 .\app\views\core.py:2384
 msgid "Neuer Highscore!"
 msgstr "Neuer Highscore!"
 
-#: .\app\views\core.py:1823
+#: .\app\views\core.py:1849
 msgid "Ergebnis gespeichert."
 msgstr "Ergebnis gespeichert."
 
-#: .\app\views\core.py:1825
+#: .\app\views\core.py:1851
 msgid "Platz"
 msgstr "Platz"
 
-#: .\app\views\core.py:1843 .\app\views\core.py:2506 .\app\views\core.py:2779
+#: .\app\views\core.py:1869 .\app\views\core.py:2563 .\app\views\core.py:2836
 msgid "Ungültige Anfrage."
 msgstr "Ungültige Anfrage."
 
-#: .\app\views\core.py:1848
+#: .\app\views\core.py:1874
 msgid "Unbekannter Spielmodus."
 msgstr "Unbekannter Spielmodus."
 
-#: .\app\views\core.py:1853 .\app\views\core.py:1856
+#: .\app\views\core.py:1879 .\app\views\core.py:1882
 msgid "Ungültiger Score."
 msgstr "Ungültiger Score."
 
-#: .\app\views\core.py:1932 .\app\views\core.py:1998
+#: .\app\views\core.py:1958 .\app\views\core.py:2024
 msgid ""
 "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
 msgstr ""
 "Datenbanktabelle fehlt. Bitte Migration ausführen: python manage.py migrate"
 
-#: .\app\views\core.py:1942
+#: .\app\views\core.py:1968
 msgid "Ungültiges JSON."
 msgstr "Ungültiges JSON."
 
-#: .\app\views\core.py:1955 .\app\views\werewolf.py:546
+#: .\app\views\core.py:1981 .\app\views\werewolf.py:647
 msgid "Unbekannte Aktion."
 msgstr "Unbekannte Aktion."
 
-#: .\app\views\core.py:1969 .\app\views\core.py:2026
+#: .\app\views\core.py:1995 .\app\views\core.py:2052
 msgid "Name fehlt."
 msgstr "Name fehlt."
 
-#: .\app\views\core.py:1975 .\app\views\core.py:2032
+#: .\app\views\core.py:2001 .\app\views\core.py:2058
 msgid "Ungültige Nation."
 msgstr "Ungültige Nation."
 
-#: .\app\views\core.py:1981
+#: .\app\views\core.py:2007
 msgid "Bild fehlt."
 msgstr "Bild fehlt."
 
-#: .\app\views\core.py:2008 .\app\views\core.py:2055
+#: .\app\views\core.py:2034 .\app\views\core.py:2081
 msgid "Methode nicht erlaubt."
 msgstr "Methode nicht erlaubt."
 
-#: .\app\views\core.py:2073
+#: .\app\views\core.py:2099
 msgid "Suchbegriff fehlt."
 msgstr "Suchbegriff fehlt."
 
-#: .\app\views\core.py:2087
+#: .\app\views\core.py:2113
 msgid "Pagination-Parameter sind ungültig."
 msgstr "Pagination-Parameter sind ungültig."
 
-#: .\app\views\core.py:2108 .\app\views\core.py:2141
+#: .\app\views\core.py:2134 .\app\views\core.py:2167
 msgid "Ungültige Antwort der Genius API."
 msgstr "Ungültige Antwort der Genius API."
 
-#: .\app\views\core.py:2114
+#: .\app\views\core.py:2140
 msgid "Genius API Fehler."
 msgstr "Genius API Fehler."
 
-#: .\app\views\core.py:2136
+#: .\app\views\core.py:2162
 msgid "Genius API konnte nicht erreicht werden."
 msgstr "Genius API konnte nicht erreicht werden."
 
-#: .\app\views\core.py:2152
+#: .\app\views\core.py:2178
 msgid "Latitude und Longitude fehlen."
 msgstr "Latitude und Longitude fehlen."
 
-#: .\app\views\core.py:2161
+#: .\app\views\core.py:2187
 msgid "Latitude und Longitude müssen Zahlen sein."
 msgstr "Latitude und Longitude müssen Zahlen sein."
 
-#: .\app\views\core.py:2185 .\app\views\core.py:2202
+#: .\app\views\core.py:2211 .\app\views\core.py:2228
 msgid "Ungültige Antwort der Tankerkönig API."
 msgstr "Ungültige Antwort der Tankerkönig API."
 
-#: .\app\views\core.py:2189
+#: .\app\views\core.py:2215
 msgid "Tankerkönig API Fehler."
 msgstr "Tankerkönig API Fehler."
 
-#: .\app\views\core.py:2197
+#: .\app\views\core.py:2223
 msgid "Tankerkönig API konnte nicht erreicht werden."
 msgstr "Tankerkönig API konnte nicht erreicht werden."
 
-#: .\app\views\core.py:2213
+#: .\app\views\core.py:2239
 msgid "Kilobyte (KB)"
 msgstr "Kilobyte (KB)"
 
-#: .\app\views\core.py:2214
+#: .\app\views\core.py:2240
 msgid "Megabyte (MB)"
 msgstr "Megabyte (MB)"
 
-#: .\app\views\core.py:2215
+#: .\app\views\core.py:2241
 msgid "Gigabyte (GB)"
 msgstr "Gigabyte (GB)"
 
-#: .\app\views\core.py:2216
+#: .\app\views\core.py:2242
 msgid "Terabyte (TB)"
 msgstr "Terabyte (TB)"
 
-#: .\app\views\core.py:2222
+#: .\app\views\core.py:2248
 msgid "Tage"
 msgstr "Tage"
 
-#: .\app\views\core.py:2225
+#: .\app\views\core.py:2251
 msgid "Millimeter"
 msgstr "Millimeter"
 
-#: .\app\views\core.py:2226
+#: .\app\views\core.py:2252
 msgid "Zentimeter"
 msgstr "Zentimeter"
 
-#: .\app\views\core.py:2227
+#: .\app\views\core.py:2253
 msgid "Meter"
 msgstr "Meter"
 
-#: .\app\views\core.py:2228
+#: .\app\views\core.py:2254
 msgid "Kilometer"
 msgstr "Kilometer"
 
-#: .\app\views\core.py:2232
+#: .\app\views\core.py:2258
 msgid "Euro pro Tag"
 msgstr "Euro pro Tag"
 
-#: .\app\views\core.py:2233
+#: .\app\views\core.py:2259
 msgid "Euro pro Woche"
 msgstr "Euro pro Woche"
 
-#: .\app\views\core.py:2234
+#: .\app\views\core.py:2260
 msgid "Euro pro Monat"
 msgstr "Euro pro Monat"
 
-#: .\app\views\core.py:2235
+#: .\app\views\core.py:2261
 msgid "Euro pro Jahr"
 msgstr "Euro pro Jahr"
 
-#: .\app\views\core.py:2318
+#: .\app\views\core.py:2278
+msgid "City Flow"
+msgstr "City Flow"
+
+#: .\app\views\core.py:2279
+msgid "Snake Rally"
+msgstr "Snake Rally"
+
+#: .\app\views\core.py:2280
+msgid "Hairpin Mountain"
+msgstr "Hairpin Mountain"
+
+#: .\app\views\core.py:2281
+msgid "Start/Ziel"
+msgstr "Start/Ziel"
+
+#: .\app\views\core.py:2282
+#, python-brace-format
+msgid "Checkpoint {number}"
+msgstr "Checkpoint {number}"
+
+#: .\app\views\core.py:2283
+msgid "GO!"
+msgstr "GO!"
+
+#: .\app\views\core.py:2284
+#, python-brace-format
+msgid "Runde {current} / {total}"
+msgstr "Runde {current} / {total}"
+
+#: .\app\views\core.py:2285
+msgid "Zeit abgelaufen"
+msgstr "Zeit abgelaufen"
+
+#: .\app\views\core.py:2286
+msgid "Checkpoint Rush beendet:"
+msgstr "Checkpoint Rush beendet:"
+
+#: .\app\views\core.py:2289
+#, python-brace-format
+msgid "{count} Checkpoints"
+msgstr "{count} Checkpoints"
+
+#: .\app\views\core.py:2291
+msgid "Layout"
+msgstr "Layout"
+
+#: .\app\views\core.py:2293
+msgid "Driftpunkte"
+msgstr "Driftpunkte"
+
+#: .\app\views\core.py:2294
+msgid "Checkpoints"
+msgstr "Checkpoints"
+
+#: .\app\views\core.py:2295
+msgid "CHECKPOINT"
+msgstr "CHECKPOINT"
+
+#: .\app\views\core.py:2297
+msgid "CP"
+msgstr "CP"
+
+#: .\app\views\core.py:2375
 msgid "Drücke Fortsetzen oder die Leertaste."
 msgstr ""
 
-#: .\app\views\core.py:2319
+#: .\app\views\core.py:2376
 #, fuzzy
 #| msgid "Wort setzen"
 msgid "Fortsetzen"
 msgstr "Wort setzen"
 
-#: .\app\views\core.py:2322
+#: .\app\views\core.py:2379
 #, fuzzy
 #| msgid "Uhr-Einstellungen wurden gespeichert."
 msgid "Einstellungen sind während des Runs gesperrt."
 msgstr "Uhr-Einstellungen wurden gespeichert."
 
-#: .\app\views\core.py:2324
+#: .\app\views\core.py:2381
 #, fuzzy
 #| msgid "Der Link ist ungültig oder abgelaufen."
 msgid "Die Snake ist gegen die Wand gelaufen."
 msgstr "Der Link ist ungültig oder abgelaufen."
 
-#: .\app\views\core.py:2325
+#: .\app\views\core.py:2382
 msgid "Die Snake hat sich selbst erwischt."
 msgstr ""
 
-#: .\app\views\core.py:2326
+#: .\app\views\core.py:2383
 msgid "Das Spielfeld ist voll. Stark gespielt!"
 msgstr ""
 
-#: .\app\views\core.py:2328 .\app\views\core.py:2329
+#: .\app\views\core.py:2385 .\app\views\core.py:2386
 #, fuzzy
 #| msgid "Gamer"
 msgid "Game Over"
 msgstr "Gamer"
 
-#: .\app\views\core.py:2330
+#: .\app\views\core.py:2387
 #, fuzzy
 #| msgid "Dein Profil wurde gespeichert."
 msgid "Dein Score wurde gespeichert."
 msgstr "Dein Profil wurde gespeichert."
 
-#: .\app\views\core.py:2331 .\app\views\profile.py:473
+#: .\app\views\core.py:2388 .\app\views\profile.py:474
 msgid "Frucht"
 msgstr ""
 
-#: .\app\views\core.py:2335
+#: .\app\views\core.py:2392
 #, fuzzy
 #| msgid "Noch kein 2048-Highscore gespeichert."
 msgid "Noch keine Highscores gespielt."
 msgstr "Noch kein 2048-Highscore gespeichert."
 
-#: .\app\views\core.py:2372 .\app\views\core.py:2626 .\app\views\core.py:2857
-#: .\app\views\core.py:2971
+#: .\app\views\core.py:2429 .\app\views\core.py:2683 .\app\views\core.py:2914
+#: .\app\views\core.py:3028
 msgid "Ungueltige Anfrage."
 msgstr "Ungueltige Anfrage."
 
-#: .\app\views\core.py:2385
+#: .\app\views\core.py:2442
 #, fuzzy
 #| msgid "Ungueltiger 2048-Score."
 msgid "Ungueltiger Snake-Score."
 msgstr "Ungueltiger 2048-Score."
 
-#: .\app\views\core.py:2510 .\app\views\core.py:2515
+#: .\app\views\core.py:2567 .\app\views\core.py:2572
 #, fuzzy
 #| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Ungültiger Nebula-Forge-Spielstand."
 msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views\core.py:2518
+#: .\app\views\core.py:2575
+#, fuzzy
+#| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Der Nebula-Forge-Spielstand ist zu groß."
-msgstr ""
+msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views\core.py:2532 .\app\views\core.py:2536 .\app\views\core.py:2539
+#: .\app\views\core.py:2589 .\app\views\core.py:2593 .\app\views\core.py:2596
 #, fuzzy
 #| msgid "Ungültige Flotte."
 msgid "Ungültige Nebula-Forge-Werte."
 msgstr "Ungültige Flotte."
 
-#: .\app\views\core.py:2546
+#: .\app\views\core.py:2603
+#, fuzzy
+#| msgid "Du kannst weitere Orte auf der Wetterseite speichern."
 msgid ""
 "Du kannst Nebula Forge Tycoon nur einmal pro Minute in der Datenbank "
 "speichern."
-msgstr ""
+msgstr "Du kannst weitere Orte auf der Wetterseite speichern."
 
-#: .\app\views\core.py:2634 .\app\views\core.py:2638
+#: .\app\views\core.py:2691 .\app\views\core.py:2695
 msgid "Ungueltiger 2048-Score."
 msgstr "Ungueltiger 2048-Score."
 
-#: .\app\views\core.py:2783 .\app\views\core.py:2788
+#: .\app\views\core.py:2840 .\app\views\core.py:2845
 #, fuzzy
 #| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Ungültiger Cookie-Cosmos-V2-Spielstand."
 msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views\core.py:2791
+#: .\app\views\core.py:2848
+#, fuzzy
+#| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Der Cookie-Cosmos-V2-Spielstand ist zu groß."
-msgstr ""
+msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views\core.py:2804 .\app\views\core.py:2808 .\app\views\core.py:2811
+#: .\app\views\core.py:2861 .\app\views\core.py:2865 .\app\views\core.py:2868
 #, fuzzy
 #| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Ungültige Cookie-Cosmos-V2-Werte."
 msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views\core.py:2818
+#: .\app\views\core.py:2875
+#, fuzzy
+#| msgid "Du kannst weitere Orte auf der Wetterseite speichern."
 msgid ""
 "Du kannst Cookie Cosmos V2 nur einmal pro Minute in der Datenbank speichern."
-msgstr ""
+msgstr "Du kannst weitere Orte auf der Wetterseite speichern."
 
-#: .\app\views\core.py:2869 .\app\views\core.py:2872
+#: .\app\views\core.py:2926 .\app\views\core.py:2929
 #, fuzzy
 #| msgid "Ungueltiger Cookie-Cosmos-Score."
 msgid "Ungültiger Cookie-Cosmos-Score."
 msgstr "Ungueltiger Cookie-Cosmos-Score."
 
-#: .\app\views\core.py:2976
+#: .\app\views\core.py:3033
 #, fuzzy
 #| msgid "Unbekannte Aktion."
 msgid "Unbekannte Voicemod Aktion."
 msgstr "Unbekannte Aktion."
 
-#: .\app\views\core.py:2981
+#: .\app\views\core.py:3038
+#, fuzzy
+#| msgid "Audio-Aktion"
 msgid "Voicemod Aktion unvollstaendig."
-msgstr ""
+msgstr "Audio-Aktion"
 
-#: .\app\views\core.py:2987
+#: .\app\views\core.py:3044
 msgid "Kein Voicemod API-Key verbunden."
 msgstr ""
 
@@ -14003,7 +14494,7 @@ msgstr "Das ist nicht das gesuchte Wort."
 msgid "Das ist das Wort. Markiere es als richtig."
 msgstr "Das ist das Wort. Markiere es als richtig."
 
-#: .\app\views\hangman.py:837 .\app\views\werewolf.py:592
+#: .\app\views\hangman.py:837 .\app\views\werewolf.py:693
 msgid "Nur der Host kann eine neue Runde vorbereiten."
 msgstr "Nur der Host kann eine neue Runde vorbereiten."
 
@@ -14389,8 +14880,8 @@ msgid "Mio."
 msgstr ""
 
 #: .\app\views\performance_tools.py:157 .\app\views\performance_tools.py:283
-#: .\app\views\profile.py:352 .\app\views\profile.py:376
-#: .\app\views\profile.py:398 .\app\views\profile.py:412
+#: .\app\views\profile.py:353 .\app\views\profile.py:377
+#: .\app\views\profile.py:399 .\app\views\profile.py:413
 msgid "Siege"
 msgstr "Siege"
 
@@ -14406,9 +14897,10 @@ msgid "Prestige %(level)s · %(upgrades)s Upgrades"
 msgstr "Cookie Cosmos · %(upgrades)s Upgrades"
 
 #: .\app\views\performance_tools.py:252
-#, python-format
+#, fuzzy, python-format
+#| msgid "Cookie Cosmos · %(upgrades)s Upgrades"
 msgid "Prestige %(level)s · %(buildings)s Anlagen"
-msgstr ""
+msgstr "Cookie Cosmos · %(upgrades)s Upgrades"
 
 #: .\app\views\performance_tools.py:324
 #, python-format
@@ -14421,7 +14913,7 @@ msgstr "Siege · %(score)s Punkte"
 msgid "Cookie Cosmos · %(upgrades)s Upgrades"
 msgstr "Cookie Cosmos · %(upgrades)s Upgrades"
 
-#: .\app\views\performance_tools.py:366 .\app\views\profile.py:399
+#: .\app\views\performance_tools.py:366 .\app\views\profile.py:400
 msgid "Gesamtpunkte"
 msgstr "Gesamtpunkte"
 
@@ -14470,8 +14962,10 @@ msgid "Kein Zugriff auf dieses Tool."
 msgstr "Kein Zugriff."
 
 #: .\app\views\platform.py:40
+#, fuzzy
+#| msgid "Kein Zugriff."
 msgid "Du hast keinen Zugriff auf dieses Tool."
-msgstr ""
+msgstr "Kein Zugriff."
 
 #: .\app\views\platform.py:52
 msgid "Favoriten wurden aktualisiert."
@@ -14522,266 +15016,266 @@ msgstr "Ungültige Position."
 msgid "Pong-Raum wurde gelöscht."
 msgstr "Pong-Raum wurde gelöscht."
 
-#: .\app\views\profile.py:140
+#: .\app\views\profile.py:141
 #, python-format
 msgid "%(xp)s XP"
 msgstr ""
 
-#: .\app\views\profile.py:146
+#: .\app\views\profile.py:147
 #, python-format
 msgid "%(total)s gesamt"
 msgstr ""
 
-#: .\app\views\profile.py:154
+#: .\app\views\profile.py:155
 msgid "Netzwerk"
 msgstr ""
 
-#: .\app\views\profile.py:160
+#: .\app\views\profile.py:161
 msgid "sichtbar im Profil"
 msgstr ""
 
-#: .\app\views\profile.py:170
+#: .\app\views\profile.py:171
 #, fuzzy
 #| msgid "aktive Konten"
 msgid "aktive Einträge"
 msgstr "aktive Konten"
 
-#: .\app\views\profile.py:254
+#: .\app\views\profile.py:255
 msgid "Statistiken"
 msgstr "Statistiken"
 
-#: .\app\views\profile.py:260
+#: .\app\views\profile.py:261
 msgid "Noch keine Statistik gespeichert."
 msgstr "Noch keine Statistik gespeichert."
 
-#: .\app\views\profile.py:268
+#: .\app\views\profile.py:269
 msgid "Noch kein 2048-Highscore gespeichert."
 msgstr "Noch kein 2048-Highscore gespeichert."
 
-#: .\app\views\profile.py:276 .\app\views\profile.py:395
-#: .\app\views\profile.py:488
+#: .\app\views\profile.py:277 .\app\views\profile.py:396
+#: .\app\views\profile.py:489
 msgid "Bester Score"
 msgstr "Bester Score"
 
-#: .\app\views\profile.py:292
+#: .\app\views\profile.py:293
 msgid "Noch kein Cookie-Cosmos-Highscore gespeichert."
 msgstr "Noch kein Cookie-Cosmos-Highscore gespeichert."
 
-#: .\app\views\profile.py:300
+#: .\app\views\profile.py:301
 msgid "Bester Lauf"
 msgstr "Bester Lauf"
 
-#: .\app\views\profile.py:306
+#: .\app\views\profile.py:307
 msgid "Klickpower"
 msgstr "Klickpower"
 
-#: .\app\views\profile.py:308
+#: .\app\views\profile.py:309
 msgid "Transzendenzen"
 msgstr "Transzendenzen"
 
-#: .\app\views\profile.py:321
+#: .\app\views\profile.py:322
 msgid "Noch kein Human-Benchmark-Highscore gespeichert."
 msgstr "Noch kein Human-Benchmark-Highscore gespeichert."
 
-#: .\app\views\profile.py:346
+#: .\app\views\profile.py:347
 msgid "Noch keine Skribble-Statistik gespeichert."
 msgstr "Noch keine Skribble-Statistik gespeichert."
 
-#: .\app\views\profile.py:349
+#: .\app\views\profile.py:350
 msgid "Punkte"
 msgstr "Punkte"
 
-#: .\app\views\profile.py:353
+#: .\app\views\profile.py:354
 msgid "Erraten"
 msgstr "Erraten"
 
-#: .\app\views\profile.py:354
+#: .\app\views\profile.py:355
 msgid "Gezeichnet"
 msgstr "Gezeichnet"
 
-#: .\app\views\profile.py:355 .\app\views\profile.py:415
+#: .\app\views\profile.py:356 .\app\views\profile.py:416
 msgid "Winrate"
 msgstr "Winrate"
 
-#: .\app\views\profile.py:376 .\app\views\profile.py:412
+#: .\app\views\profile.py:377 .\app\views\profile.py:413
 msgid "Gewonnene Spiele"
 msgstr "Gewonnene Spiele"
 
-#: .\app\views\profile.py:379
+#: .\app\views\profile.py:380
 msgid "Remis"
 msgstr "Remis"
 
-#: .\app\views\profile.py:395
+#: .\app\views\profile.py:396
 msgid "Persoenliche Bestleistung"
 msgstr "Persoenliche Bestleistung"
 
-#: .\app\views\profile.py:425
+#: .\app\views\profile.py:426
 msgid "Noch keine Pong-Statistik gespeichert."
 msgstr "Noch keine Pong-Statistik gespeichert."
 
-#: .\app\views\profile.py:434
+#: .\app\views\profile.py:435
 msgid "Arcade-Duell"
 msgstr "Arcade-Duell"
 
-#: .\app\views\profile.py:437
+#: .\app\views\profile.py:438
 msgid "Top-Score"
 msgstr "Top-Score"
 
-#: .\app\views\profile.py:480
+#: .\app\views\profile.py:481
 #, fuzzy
 #| msgid "Noch kein 2048-Highscore gespeichert."
 msgid "Noch kein Snake-Highscore gespeichert."
 msgstr "Noch kein 2048-Highscore gespeichert."
 
-#: .\app\views\profile.py:496
+#: .\app\views\profile.py:497
 #, fuzzy
 #| msgid "Einstellungen"
 msgid "Einstellung"
 msgstr "Einstellungen"
 
-#: .\app\views\profile.py:623
+#: .\app\views\profile.py:624
 msgid "Aktive Chats"
 msgstr "Aktive Chats"
 
-#: .\app\views\profile.py:660
+#: .\app\views\profile.py:661
 #, fuzzy
 #| msgid "Notiz wurde aktualisiert."
 msgid "Notiz aktualisiert"
 msgstr "Notiz wurde aktualisiert."
 
-#: .\app\views\profile.py:670
+#: .\app\views\profile.py:671
 #, fuzzy
 #| msgid "Galeriebild hochgeladen."
 msgid "Datei hochgeladen"
 msgstr "Galeriebild hochgeladen."
 
-#: .\app\views\profile.py:685
+#: .\app\views\profile.py:686
 #, fuzzy
 #| msgid "Nachricht schreiben"
 msgid "Chatnachricht geschrieben"
 msgstr "Nachricht schreiben"
 
-#: .\app\views\profile.py:703
+#: .\app\views\profile.py:704
 msgid "Tool favorisiert"
 msgstr ""
 
-#: .\app\views\profile.py:811
+#: .\app\views\profile.py:812
 msgid "Deine Profil-Spielkarten wurden gespeichert."
 msgstr "Deine Profil-Spielkarten wurden gespeichert."
 
-#: .\app\views\profile.py:848 .\app\views\profile.py:869
+#: .\app\views\profile.py:849 .\app\views\profile.py:870
 msgid "Das Profilbild konnte nicht verarbeitet werden."
 msgstr "Das Profilbild konnte nicht verarbeitet werden."
 
-#: .\app\views\profile.py:891
+#: .\app\views\profile.py:892
 msgid "Dein Profil wurde gespeichert."
 msgstr "Dein Profil wurde gespeichert."
 
-#: .\app\views\profile.py:1062
+#: .\app\views\profile.py:1090
 msgid "Diese Freundesliste ist privat."
 msgstr "Diese Freundesliste ist privat."
 
-#: .\app\views\profile.py:1086
+#: .\app\views\profile.py:1114
 msgid "Du kannst dir selbst keine Freundschaftsanfrage senden."
 msgstr "Du kannst dir selbst keine Freundschaftsanfrage senden."
 
-#: .\app\views\profile.py:1090
+#: .\app\views\profile.py:1118
 msgid "Diese Aktion ist wegen einer Blockierung nicht möglich."
 msgstr "Diese Aktion ist wegen einer Blockierung nicht möglich."
 
-#: .\app\views\profile.py:1098
+#: .\app\views\profile.py:1126
 msgid "Ihr seid bereits befreundet."
 msgstr "Ihr seid bereits befreundet."
 
-#: .\app\views\profile.py:1100
+#: .\app\views\profile.py:1128
 msgid "Deine Freundschaftsanfrage ist bereits offen."
 msgstr "Deine Freundschaftsanfrage ist bereits offen."
 
-#: .\app\views\profile.py:1104 .\app\views\profile.py:1124
+#: .\app\views\profile.py:1132 .\app\views\profile.py:1152
 msgid "Freundschaftsanfrage angenommen."
 msgstr "Freundschaftsanfrage angenommen."
 
-#: .\app\views\profile.py:1113
+#: .\app\views\profile.py:1141
 msgid "Neue Freundschaftsanfrage"
 msgstr "Neue Freundschaftsanfrage"
 
-#: .\app\views\profile.py:1118
+#: .\app\views\profile.py:1146
 msgid "Freundschaftsanfrage gesendet."
 msgstr "Freundschaftsanfrage gesendet."
 
-#: .\app\views\profile.py:1126
+#: .\app\views\profile.py:1154
 msgid "Diese Freundschaftsanfrage konnte nicht angenommen werden."
 msgstr "Diese Freundschaftsanfrage konnte nicht angenommen werden."
 
-#: .\app\views\profile.py:1131
+#: .\app\views\profile.py:1159
 msgid "Diese Freundschaftsanfrage kannst du nicht ablehnen."
 msgstr "Diese Freundschaftsanfrage kannst du nicht ablehnen."
 
-#: .\app\views\profile.py:1133
+#: .\app\views\profile.py:1161
 msgid "Diese Freundschaftsanfrage kannst du nicht zurückziehen."
 msgstr "Diese Freundschaftsanfrage kannst du nicht zurückziehen."
 
-#: .\app\views\profile.py:1136
+#: .\app\views\profile.py:1164
 msgid "Freundschaftsanfrage entfernt."
 msgstr "Freundschaftsanfrage entfernt."
 
-#: .\app\views\profile.py:1138
+#: .\app\views\profile.py:1166
 msgid "Es gibt keine offene Freundschaftsanfrage."
 msgstr "Es gibt keine offene Freundschaftsanfrage."
 
-#: .\app\views\profile.py:1143
+#: .\app\views\profile.py:1171
 msgid "Freundschaft entfernt."
 msgstr "Freundschaft entfernt."
 
-#: .\app\views\profile.py:1145
+#: .\app\views\profile.py:1173
 msgid "Ihr seid aktuell nicht befreundet."
 msgstr "Ihr seid aktuell nicht befreundet."
 
-#: .\app\views\profile.py:1148
+#: .\app\views\profile.py:1176
 msgid "Unbekannte Freundschafts-Aktion."
 msgstr "Unbekannte Freundschafts-Aktion."
 
-#: .\app\views\profile.py:1176
+#: .\app\views\profile.py:1204
 msgid "Das Galeriebild konnte nicht verarbeitet werden."
 msgstr "Das Galeriebild konnte nicht verarbeitet werden."
 
-#: .\app\views\profile.py:1180
+#: .\app\views\profile.py:1208
 msgid "Galeriebild hochgeladen."
 msgstr "Galeriebild hochgeladen."
 
-#: .\app\views\profile.py:1182
+#: .\app\views\profile.py:1210
 msgid "Das Galeriebild konnte nicht hochgeladen werden."
 msgstr "Das Galeriebild konnte nicht hochgeladen werden."
 
-#: .\app\views\profile.py:1192
+#: .\app\views\profile.py:1220
 msgid "Galeriebild gelöscht."
 msgstr "Galeriebild gelöscht."
 
-#: .\app\views\profile.py:1202
+#: .\app\views\profile.py:1230
 msgid "Du kannst dich nicht selbst blockieren."
 msgstr "Du kannst dich nicht selbst blockieren."
 
-#: .\app\views\profile.py:1207
+#: .\app\views\profile.py:1235
 msgid "Blockierung aufgehoben."
 msgstr "Blockierung aufgehoben."
 
-#: .\app\views\profile.py:1211
+#: .\app\views\profile.py:1239
 msgid "Nutzer blockiert."
 msgstr "Nutzer blockiert."
 
-#: .\app\views\profile.py:1221
+#: .\app\views\profile.py:1249
 msgid "Du kannst dich nicht selbst melden."
 msgstr "Du kannst dich nicht selbst melden."
 
-#: .\app\views\profile.py:1229
+#: .\app\views\profile.py:1257
 msgid "Meldung wurde gespeichert."
 msgstr "Meldung wurde gespeichert."
 
-#: .\app\views\profile.py:1231
+#: .\app\views\profile.py:1259
 msgid "Die Meldung konnte nicht gespeichert werden."
 msgstr "Die Meldung konnte nicht gespeichert werden."
 
-#: .\app\views\profile.py:1327
+#: .\app\views\profile.py:1355
 msgid "Profilkarte wurde gespeichert."
 msgstr "Profilkarte wurde gespeichert."
 
@@ -15185,259 +15679,747 @@ msgstr "Uno vergessen: +2 Strafkarten."
 msgid "Uno-Raum wurde gelöscht."
 msgstr "Uno-Raum wurde gelöscht."
 
+#: .\app\views\werewolf.py:30
+msgid "Finde durch Diskussion und Abstimmung alle Werwölfe."
+msgstr "Finde durch Diskussion und Abstimmung alle Werwölfe."
+
+#: .\app\views\werewolf.py:31
+msgid "Wähle nachts mit deinem Rudel ein Opfer und bleibe am Tag unerkannt."
+msgstr "Wähle nachts mit deinem Rudel ein Opfer und bleibe am Tag unerkannt."
+
+#: .\app\views\werewolf.py:32
+msgid "Prüfe jede Nacht die Gesinnung eines Dorfbewohners."
+msgstr "Prüfe jede Nacht die Gesinnung eines Dorfbewohners."
+
+#: .\app\views\werewolf.py:33
+msgid "Du besitzt genau einen Heiltrank und einen Gifttrank."
+msgstr "Du besitzt genau einen Heiltrank und einen Gifttrank."
+
+#: .\app\views\werewolf.py:34
+msgid "Beschütze nachts eine Person, aber nicht zweimal nacheinander dieselbe."
+msgstr ""
+"Beschütze nachts eine Person, aber nicht zweimal nacheinander dieselbe."
+
+#: .\app\views\werewolf.py:35
+msgid "Der Server hat keine gültige Antwort gesendet."
+msgstr "Der Server hat keine gültige Antwort gesendet."
+
+#: .\app\views\werewolf.py:36
+msgid "Aktion fehlgeschlagen."
+msgstr "Aktion fehlgeschlagen."
+
+#: .\app\views\werewolf.py:39
+#, python-brace-format
+msgid "Aktuell {count} von {max} Spielern. Mindestens {min} werden benötigt."
+msgstr "Aktuell {count} von {max} Spielern. Mindestens {min} werden benötigt."
+
+#: .\app\views\werewolf.py:40
+msgid "Das Dorf schläft"
+msgstr "Das Dorf schläft"
+
+#: .\app\views\werewolf.py:41
+#, python-brace-format
+msgid "Nacht {day}"
+msgstr "Nacht {day}"
+
+#: .\app\views\werewolf.py:42
+msgid "Die Nachtrollen wählen im Verborgenen ihre Aktionen."
+msgstr "Die Nachtrollen wählen im Verborgenen ihre Aktionen."
+
+#: .\app\views\werewolf.py:43
+#, python-brace-format
+msgid "NACHT {day}"
+msgstr "NACHT {day}"
+
+#: .\app\views\werewolf.py:44
+msgid "Das Dorf erwacht"
+msgstr "Das Dorf erwacht"
+
+#: .\app\views\werewolf.py:45
+#, python-brace-format
+msgid "Tag {day}"
+msgstr "Tag {day}"
+
+#: .\app\views\werewolf.py:46
+msgid "Diskutiert, verdächtigt und stimmt über eine Verbannung ab."
+msgstr "Diskutiert, verdächtigt und stimmt über eine Verbannung ab."
+
+#: .\app\views\werewolf.py:47
+#, python-brace-format
+msgid "TAG {day}"
+msgstr "TAG {day}"
+
+#: .\app\views\werewolf.py:49 .\app\views\werewolf.py:200
+msgid "Das Dorf gewinnt!"
+msgstr "Das Dorf gewinnt!"
+
+#: .\app\views\werewolf.py:50 .\app\views\werewolf.py:200
+msgid "Die Werwölfe gewinnen!"
+msgstr "Die Werwölfe gewinnen!"
+
+#: .\app\views\werewolf.py:51
+msgid "Alle Werwölfe wurden entlarvt."
+msgstr "Alle Werwölfe wurden entlarvt."
+
+#: .\app\views\werewolf.py:52
+msgid "Das Rudel hat die Kontrolle über das Dorf übernommen."
+msgstr "Das Rudel hat die Kontrolle über das Dorf übernommen."
+
+#: .\app\views\werewolf.py:53
+msgid "ENDE"
+msgstr "ENDE"
+
 #: .\app\views\werewolf.py:54
+msgid "–"
+msgstr "–"
+
+#: .\app\views\werewolf.py:55
+msgid "Deine Rolle wird beim Start geheim verteilt."
+msgstr "Deine Rolle wird beim Start geheim verteilt."
+
+#: .\app\views\werewolf.py:56
+msgid "Host"
+msgstr "Host"
+
+#: .\app\views\werewolf.py:57
+msgid "Hat abgestimmt"
+msgstr "Hat abgestimmt"
+
+#: .\app\views\werewolf.py:58
+msgid "Lebt"
+msgstr "Lebt"
+
+#: .\app\views\werewolf.py:59
+msgid "Ausgeschieden"
+msgstr "Ausgeschieden"
+
+#: .\app\views\werewolf.py:63
+msgid "Spielerlimit"
+msgstr "Spielerlimit"
+
+#: .\app\views\werewolf.py:68
+msgid "Rollen aufdecken"
+msgstr "Rollen aufdecken"
+
+#: .\app\views\werewolf.py:72
+msgid ""
+"Lade Freunde ein oder teile den Lobby-Code. Ab fünf Spielern kann der Host "
+"starten."
+msgstr ""
+"Lade Freunde ein oder teile den Lobby-Code. Ab fünf Spielern kann der Host "
+"starten."
+
+#: .\app\views\werewolf.py:74
+msgid "Alle Rollen sind sichtbar"
+msgstr "Alle Rollen sind sichtbar"
+
+#: .\app\views\werewolf.py:75
+msgid "Der Host kann dieselbe Lobby für eine neue Runde zurücksetzen."
+msgstr "Der Host kann dieselbe Lobby für eine neue Runde zurücksetzen."
+
+#: .\app\views\werewolf.py:76
+msgid "Zuschauer"
+msgstr "Zuschauer"
+
+#: .\app\views\werewolf.py:77
+msgid "Du bist ausgeschieden"
+msgstr "Du bist ausgeschieden"
+
+#: .\app\views\werewolf.py:78
+msgid ""
+"Beobachte den weiteren Spielverlauf. Deine Informationen bleiben geheim."
+msgstr ""
+"Beobachte den weiteren Spielverlauf. Deine Informationen bleiben geheim."
+
+#: .\app\views\werewolf.py:79
+msgid "Dorfabstimmung"
+msgstr "Dorfabstimmung"
+
+#: .\app\views\werewolf.py:80
+msgid "Wen wollt ihr verbannen?"
+msgstr "Wen wollt ihr verbannen?"
+
+#: .\app\views\werewolf.py:81
+msgid ""
+"Wähle einen Verdächtigen. Du kannst deine Stimme bis zur Auswertung ändern."
+msgstr ""
+"Wähle einen Verdächtigen. Du kannst deine Stimme bis zur Auswertung ändern."
+
+#: .\app\views\werewolf.py:82
+#, python-brace-format
+msgid "{count} Stimme(n)"
+msgstr "{count} Stimme(n)"
+
+#: .\app\views\werewolf.py:83
+msgid "Verdächtigen"
+msgstr "Verdächtigen"
+
+#: .\app\views\werewolf.py:84
+msgid "Geheime Rudelwahl"
+msgstr "Geheime Rudelwahl"
+
+#: .\app\views\werewolf.py:85
+msgid "Wählt euer Nachtopfer"
+msgstr "Wählt euer Nachtopfer"
+
+#: .\app\views\werewolf.py:86
+msgid "Stimmt euch im Rudel-Chat ab. Bei Gleichstand stirbt niemand."
+msgstr "Stimmt euch im Rudel-Chat ab. Bei Gleichstand stirbt niemand."
+
+#: .\app\views\werewolf.py:87
+msgid "Als Opfer wählen"
+msgstr "Als Opfer wählen"
+
+#: .\app\views\werewolf.py:88
+msgid "Seherblick"
+msgstr "Seherblick"
+
+#: .\app\views\werewolf.py:89
+msgid "Prüfe eine Person"
+msgstr "Prüfe eine Person"
+
+#: .\app\views\werewolf.py:90
+msgid "Du erfährst, ob diese Person ein Werwolf ist."
+msgstr "Du erfährst, ob diese Person ein Werwolf ist."
+
+#: .\app\views\werewolf.py:91
+#, python-brace-format
+msgid "{name} ist {result}."
+msgstr "{name} ist {result}."
+
+#: .\app\views\werewolf.py:92
+msgid "ein Werwolf"
+msgstr "ein Werwolf"
+
+#: .\app\views\werewolf.py:93
+msgid "kein Werwolf"
+msgstr "kein Werwolf"
+
+#: .\app\views\werewolf.py:94
+msgid "Gesinnung prüfen"
+msgstr "Gesinnung prüfen"
+
+#: .\app\views\werewolf.py:95
+msgid "Nachtwache"
+msgstr "Nachtwache"
+
+#: .\app\views\werewolf.py:96
+msgid "Beschütze eine Person"
+msgstr "Beschütze eine Person"
+
+#: .\app\views\werewolf.py:97
+msgid ""
+"Das gewählte Ziel überlebt den Angriff der Werwölfe. Nicht zweimal "
+"nacheinander dieselbe Person."
+msgstr ""
+"Das gewählte Ziel überlebt den Angriff der Werwölfe. Nicht zweimal "
+"nacheinander dieselbe Person."
+
+#: .\app\views\werewolf.py:98
+msgid "Diese Nacht schützen"
+msgstr "Diese Nacht schützen"
+
+#: .\app\views\werewolf.py:99
+msgid "Hexenküche"
+msgstr "Hexenküche"
+
+#: .\app\views\werewolf.py:100
+msgid "Nutze deine Tränke mit Bedacht"
+msgstr "Nutze deine Tränke mit Bedacht"
+
+#: .\app\views\werewolf.py:101
+#, python-brace-format
+msgid "Das aktuelle Ziel des Rudels ist {name}."
+msgstr "Das aktuelle Ziel des Rudels ist {name}."
+
+#: .\app\views\werewolf.py:102
+msgid "Das Rudel hat noch kein eindeutiges Opfer gewählt."
+msgstr "Das Rudel hat noch kein eindeutiges Opfer gewählt."
+
+#: .\app\views\werewolf.py:103
+msgid "Mit Gift ausschalten"
+msgstr "Mit Gift ausschalten"
+
+#: .\app\views\werewolf.py:104
+#, python-brace-format
+msgid "{name} heilen"
+msgstr "{name} heilen"
+
+#: .\app\views\werewolf.py:105
+msgid "Kein Opfer zu heilen"
+msgstr "Kein Opfer zu heilen"
+
+#: .\app\views\werewolf.py:106
+msgid "Nichts tun"
+msgstr "Nichts tun"
+
+#: .\app\views\werewolf.py:108
+msgid "Du schläfst"
+msgstr "Du schläfst"
+
+#: .\app\views\werewolf.py:109
+msgid "In der Nacht hast du keine Aktion. Am nächsten Tag zählt deine Stimme."
+msgstr "In der Nacht hast du keine Aktion. Am nächsten Tag zählt deine Stimme."
+
+#: .\app\views\werewolf.py:110
+#, python-brace-format
+msgid "Noch {count} Spieler benötigt."
+msgstr "Noch {count} Spieler benötigt."
+
+#: .\app\views\werewolf.py:111
+msgid "Das Dorf ist bereit. Rollen werden beim Start geheim verteilt."
+msgstr "Das Dorf ist bereit. Rollen werden beim Start geheim verteilt."
+
+#: .\app\views\werewolf.py:112
+msgid "Beende die Nacht, sobald alle Nachtrollen gewählt haben."
+msgstr "Beende die Nacht, sobald alle Nachtrollen gewählt haben."
+
+#: .\app\views\werewolf.py:113
+msgid "Nacht auswerten"
+msgstr "Nacht auswerten"
+
+#: .\app\views\werewolf.py:114
+msgid "Beende den Tag nach Diskussion und Abstimmung."
+msgstr "Beende den Tag nach Diskussion und Abstimmung."
+
+#: .\app\views\werewolf.py:115
+msgid "Abstimmung auswerten"
+msgstr "Abstimmung auswerten"
+
+#: .\app\views\werewolf.py:116
+msgid "Bereite dieselbe Lobby für eine neue Runde vor."
+msgstr "Bereite dieselbe Lobby für eine neue Runde vor."
+
+#: .\app\views\werewolf.py:117
+msgid "Noch keine Nachrichten."
+msgstr "Noch keine Nachrichten."
+
+#: .\app\views\werewolf.py:118
+msgid "Status konnte nicht geladen werden."
+msgstr "Status konnte nicht geladen werden."
+
+#: .\app\views\werewolf.py:119
+msgid "Lobby-Link kopiert."
+msgstr "Lobby-Link kopiert."
+
+#: .\app\views\werewolf.py:120
+#, python-brace-format
+msgid "Lobby-Code: {code}"
+msgstr "Lobby-Code: {code}"
+
+#: .\app\views\werewolf.py:150
 #, fuzzy
 #| msgid "Diese Runde läuft bereits."
 msgid "Dieses Spiel läuft bereits."
 msgstr "Diese Runde läuft bereits."
 
-#: .\app\views\werewolf.py:56
+#: .\app\views\werewolf.py:152
 #, fuzzy
 #| msgid "Diese Lobby ist bereits voll."
 msgid "Die Lobby ist voll."
 msgstr "Diese Lobby ist bereits voll."
 
-#: .\app\views\werewolf.py:59
+#: .\app\views\werewolf.py:155
 msgid "Dieser Raum ist nur für Freunde des Hosts."
 msgstr ""
 
-#: .\app\views\werewolf.py:62
+#: .\app\views\werewolf.py:158
 #, fuzzy
 #| msgid "Das Passwort ist nicht korrekt."
 msgid "Das Lobby-Passwort ist falsch."
 msgstr "Das Passwort ist nicht korrekt."
 
-#: .\app\views\werewolf.py:104
-#, fuzzy
-#| msgid "Vier gewinnt"
-msgid "Das Dorf gewinnt!"
-msgstr "Vier gewinnt"
-
-#: .\app\views\werewolf.py:104
-msgid "Die Werwölfe gewinnen!"
-msgstr ""
-
-#: .\app\views\werewolf.py:154
+#: .\app\views\werewolf.py:250
 #, fuzzy, python-format
 #| msgid "%(name)s legt %(card)s."
 msgid "%(name)s ist gestorben (%(role)s)."
 msgstr "%(name)s legt %(card)s."
 
-#: .\app\views\werewolf.py:156
+#: .\app\views\werewolf.py:252
 #, fuzzy, python-format
 #| msgid "%(name)s sagt Uno."
 msgid "%(name)s ist gestorben."
 msgstr "%(name)s sagt Uno."
 
-#: .\app\views\werewolf.py:201
+#: .\app\views\werewolf.py:297
 msgid "Die Nacht endet ohne Opfer."
 msgstr ""
 
-#: .\app\views\werewolf.py:203
+#: .\app\views\werewolf.py:299
 msgid "Jemand wurde in dieser Nacht gerettet."
 msgstr ""
 
-#: .\app\views\werewolf.py:210
+#: .\app\views\werewolf.py:306
 #, python-format
 msgid "Tag %(day)s beginnt. Diskutiert und stimmt ab."
 msgstr ""
 
-#: .\app\views\werewolf.py:220
+#: .\app\views\werewolf.py:316
 msgid "Die Abstimmung endet ohne eindeutige Mehrheit."
 msgstr ""
 
-#: .\app\views\werewolf.py:227
+#: .\app\views\werewolf.py:323
 #, python-format
 msgid "Nacht %(day)s beginnt. Das Dorf schläft ein."
 msgstr ""
 
-#: .\app\views\werewolf.py:304
+#: .\app\views\werewolf.py:400
 #, fuzzy
 #| msgid "Noch kein QR-Code"
 msgid "Noch keine Rolle"
 msgstr "Noch kein QR-Code"
 
-#: .\app\views\werewolf.py:340
+#: .\app\views\werewolf.py:437
 #, fuzzy
 #| msgid "Das Passwort ist nicht korrekt."
 msgid "Das Passwort muss mindestens 4 Zeichen haben."
 msgstr "Das Passwort ist nicht korrekt."
 
-#: .\app\views\werewolf.py:344
+#: .\app\views\werewolf.py:441
+#, fuzzy
+#| msgid "ein Werwolf"
 msgid "Werwolf-Dorf"
-msgstr ""
+msgstr "ein Werwolf"
 
-#: .\app\views\werewolf.py:357
+#: .\app\views\werewolf.py:454
 #, fuzzy
 #| msgid "Lobby wurde erstellt."
 msgid "Die Lobby wurde erstellt."
 msgstr "Lobby wurde erstellt."
 
-#: .\app\views\werewolf.py:363
+#: .\app\views\werewolf.py:460
 msgid "Keine Werwolf-Lobby mit diesem Code gefunden."
 msgstr ""
 
-#: .\app\views\werewolf.py:371 .\app\views\werewolf.py:402
-#: .\app\views\werewolf.py:435
-#, python-format
+#: .\app\views\werewolf.py:468 .\app\views\werewolf.py:503
+#: .\app\views\werewolf.py:536
+#, fuzzy, python-format
+#| msgid "%(name)s sagt Uno."
 msgid "%(name)s ist der Lobby beigetreten."
-msgstr ""
+msgstr "%(name)s sagt Uno."
 
-#: .\app\views\werewolf.py:384
+#: .\app\views\werewolf.py:481
 #, fuzzy
 #| msgid "Du bist nicht in dieser Lobby."
 msgid "Du bist kein Mitglied dieser Lobby."
 msgstr "Du bist nicht in dieser Lobby."
 
-#: .\app\views\werewolf.py:411
+#: .\app\views\werewolf.py:512
 #, fuzzy
 #| msgid ""
 #| "Der Raum ist voll. Es können keine weiteren Freunde eingeladen werden."
 msgid "Während des Spiels können keine Spieler eingeladen werden."
 msgstr "Der Raum ist voll. Es können keine weiteren Freunde eingeladen werden."
 
-#: .\app\views\werewolf.py:453
+#: .\app\views\werewolf.py:554
 #, fuzzy
 #| msgid "Kein Zugriff."
 msgid "Kein Zugriff auf diese Lobby."
 msgstr "Kein Zugriff."
 
-#: .\app\views\werewolf.py:466
+#: .\app\views\werewolf.py:567
 #, fuzzy
 #| msgid "Spiel gestartet"
 msgid "Das Spiel wurde bereits gestartet."
 msgstr "Spiel gestartet"
 
-#: .\app\views\werewolf.py:469
+#: .\app\views\werewolf.py:570
 #, fuzzy, python-format
 #| msgid "Du brauchst mindestens 2 Spieler."
 msgid "Werwolf benötigt mindestens %(count)s Spieler."
 msgstr "Du brauchst mindestens 2 Spieler."
 
-#: .\app\views\werewolf.py:476
+#: .\app\views\werewolf.py:577
 msgid "Nacht 1 beginnt. Schaut euch eure geheime Rolle an."
 msgstr ""
 
-#: .\app\views\werewolf.py:487
+#: .\app\views\werewolf.py:588
 #, fuzzy
 #| msgid "Dieser Spieler kann nicht bestraft werden."
 msgid "Ausgeschiedene Spieler können nicht mehr handeln."
 msgstr "Dieser Spieler kann nicht bestraft werden."
 
-#: .\app\views\werewolf.py:494
+#: .\app\views\werewolf.py:595
 #, fuzzy
 #| msgid "Division durch 0 ist nicht möglich."
 msgid "Diese Abstimmung ist nicht möglich."
 msgstr "Division durch 0 ist nicht möglich."
 
-#: .\app\views\werewolf.py:499 .\app\views\werewolf.py:506
-#: .\app\views\werewolf.py:518 .\app\views\werewolf.py:527
+#: .\app\views\werewolf.py:600 .\app\views\werewolf.py:607
+#: .\app\views\werewolf.py:619 .\app\views\werewolf.py:628
 #, fuzzy
 #| msgid "Diese Reaktion ist nicht erlaubt."
 msgid "Diese Nachtaktion ist nicht möglich."
 msgstr "Diese Reaktion ist nicht erlaubt."
 
-#: .\app\views\werewolf.py:501
+#: .\app\views\werewolf.py:602
 msgid "Werwölfe müssen einen lebenden Nicht-Werwolf wählen."
 msgstr ""
 
-#: .\app\views\werewolf.py:508
+#: .\app\views\werewolf.py:609
 #, fuzzy
 #| msgid "Wähle einen Spieler."
 msgid "Wähle einen anderen lebenden Spieler."
 msgstr "Wähle einen Spieler."
 
-#: .\app\views\werewolf.py:511
+#: .\app\views\werewolf.py:612
 #, fuzzy
 #| msgid "Du hast schon dreimal gewürfelt."
 msgid "Du hast in dieser Nacht bereits jemanden geprüft."
 msgstr "Du hast schon dreimal gewürfelt."
 
-#: .\app\views\werewolf.py:520
+#: .\app\views\werewolf.py:621
 #, fuzzy
 #| msgid "Wähle einen Spieler."
 msgid "Wähle einen lebenden Spieler."
 msgstr "Wähle einen Spieler."
 
-#: .\app\views\werewolf.py:522
+#: .\app\views\werewolf.py:623
 msgid "Du kannst nicht zweimal hintereinander dieselbe Person schützen."
 msgstr ""
 
-#: .\app\views\werewolf.py:531
+#: .\app\views\werewolf.py:632
+#, fuzzy
+#| msgid "Spiel gestartet"
 msgid "Der Heiltrank wurde bereits benutzt."
-msgstr ""
+msgstr "Spiel gestartet"
 
-#: .\app\views\werewolf.py:534
+#: .\app\views\werewolf.py:635
+#, fuzzy
+#| msgid "Spiel gestartet"
 msgid "Der Gifttrank wurde bereits benutzt."
-msgstr ""
+msgstr "Spiel gestartet"
 
-#: .\app\views\werewolf.py:536
+#: .\app\views\werewolf.py:637
 #, fuzzy
 #| msgid "Bitte wähle einen gültigen Ort aus."
 msgid "Wähle ein gültiges Gift-Opfer."
 msgstr "Bitte wähle einen gültigen Ort aus."
 
-#: .\app\views\werewolf.py:541
+#: .\app\views\werewolf.py:642
 #, fuzzy
 #| msgid "Unbekannte Aktion."
 msgid "Unbekannte Hexen-Aktion."
 msgstr "Unbekannte Aktion."
 
-#: .\app\views\werewolf.py:556
+#: .\app\views\werewolf.py:657
 #, fuzzy
 #| msgid "Nur der Host kann die Runde starten."
 msgid "Nur der Host kann die Phase beenden."
 msgstr "Nur der Host kann die Runde starten."
 
-#: .\app\views\werewolf.py:562
+#: .\app\views\werewolf.py:663
 #, fuzzy
 #| msgid "Dieser Spieler kann nicht bestraft werden."
 msgid "Diese Phase kann nicht beendet werden."
 msgstr "Dieser Spieler kann nicht bestraft werden."
 
-#: .\app\views\werewolf.py:574
+#: .\app\views\werewolf.py:675
 #, fuzzy
 #| msgid "Schreibe die erste Nachricht in diesem Chat."
 msgid "Schreibe zuerst eine Nachricht."
 msgstr "Schreibe die erste Nachricht in diesem Chat."
 
-#: .\app\views\werewolf.py:576
+#: .\app\views\werewolf.py:677
+#, fuzzy
+#| msgid "Dieser Spieler kann nicht bestraft werden."
 msgid "Ausgeschiedene Spieler können nur noch zuschauen."
-msgstr ""
+msgstr "Dieser Spieler kann nicht bestraft werden."
 
-#: .\app\views\werewolf.py:579
+#: .\app\views\werewolf.py:680
 #, fuzzy
 #| msgid "Kein Zugriff."
 msgid "Kein Zugriff auf den Werwolf-Chat."
 msgstr "Kein Zugriff."
 
-#: .\app\views\werewolf.py:581
+#: .\app\views\werewolf.py:682
 #, fuzzy
 #| msgid "Unbekannte Aktion."
 msgid "Unbekannter Chat-Kanal."
 msgstr "Unbekannte Aktion."
 
-#: .\app\views\werewolf.py:600
+#: .\app\views\werewolf.py:701
 msgid "Eine neue Runde kann beginnen."
 msgstr ""
 
-#: .\app\views\werewolf.py:617
+#: .\app\views\werewolf.py:718
 #, fuzzy, python-format
 #| msgid "Du hast die Gruppe verlassen."
 msgid "%(name)s hat das Spiel verlassen."
 msgstr "Du hast die Gruppe verlassen."
 
-#: .\app\views\werewolf.py:634
+#: .\app\views\werewolf.py:735
 #, fuzzy
 #| msgid "Nur der Host kann diese Lobby löschen."
 msgid "Nur der Host kann die Lobby löschen."
 msgstr "Nur der Host kann diese Lobby löschen."
 
-#: .\app\views\werewolf.py:637
+#: .\app\views\werewolf.py:738
 #, fuzzy
 #| msgid "Skribble-Lobby wurde gelöscht."
 msgid "Werwolf-Lobby wurde gelöscht."
 msgstr "Skribble-Lobby wurde gelöscht."
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Wirklich löschen?"
+msgstr "Wirklich löschen?"
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Link kopiert"
+msgstr "Link kopiert"
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Aktion fehlgeschlagen"
+msgstr "Aktion fehlgeschlagen"
+
+#: .\app\templates\app\tictactoe_lobby.html
+#, python-brace-format
+msgid "Aktion fehlgeschlagen ({status})"
+msgstr "Aktion fehlgeschlagen ({status})"
+
+#: .\app\templates\app\tictactoe_lobby.html
+#, python-brace-format
+msgid "Serverfehler {status}. Bitte Logs prüfen."
+msgstr "Serverfehler {status}. Bitte Logs prüfen."
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Wartet..."
+msgstr "Wartet..."
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Dieser Raum wurde gelöscht."
+msgstr "Dieser Raum wurde gelöscht."
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Unentschieden"
+msgstr "Unentschieden"
+
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Keiner hat gewonnen"
+msgstr "Keiner hat gewonnen"
+
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Alle Felder sind voll. Der Host kann eine neue Runde starten."
+msgstr "Alle Felder sind voll. Der Host kann eine neue Runde starten."
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Gewonnen"
+msgstr "Gewonnen"
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+msgid "Du hast gewonnen!"
+msgstr "Du hast gewonnen!"
+
+#: .\app\templates\app\connectfour_lobby.html
+#: .\app\templates\app\tictactoe_lobby.html
+#, python-brace-format
+msgid "{name} hat gewonnen"
+msgstr "{name} hat gewonnen"
+
+#: .\app\templates\app\tictactoe_lobby.html
+#, python-brace-format
+msgid "{symbol} hat drei Felder in einer Reihe."
+msgstr "{symbol} hat drei Felder in einer Reihe."
+
+#: .\app\templates\app\connectfour_lobby.html
+msgid "Keiner gewinnt diese Runde"
+msgstr "Keiner gewinnt diese Runde"
+
+#: .\app\templates\app\connectfour_lobby.html
+msgid "Das Board ist voll. Startet eine neue Runde und klärt das."
+msgstr "Das Board ist voll. Startet eine neue Runde und klärt das."
+
+#: .\app\templates\app\connectfour_lobby.html
+#, python-brace-format
+msgid "{disc} verbindet vier Steine."
+msgstr "{disc} verbindet vier Steine."
+
+#: .\app\templates\app\connectfour_lobby.html
+#, python-brace-format
+msgid "Feld {row}, {column}"
+msgstr "Feld {row}, {column}"
+
+#: .\app\templates\app\pong_lobby.html
+msgid "Linke Seite"
+msgstr "Linke Seite"
+
+#: .\app\templates\app\pong_lobby.html
+msgid "Rechte Seite"
+msgstr "Rechte Seite"
+
+#: .\app\templates\app\pong_lobby.html
+msgid "Ein Spieler"
+msgstr "Ein Spieler"
+
+#: .\app\templates\app\pong_lobby.html
+#, python-brace-format
+msgid "{left}:{right} - Beste Rally: {best}"
+msgstr "{left}:{right} - Beste Rally: {best}"
+
+#: .\app\templates\app\pong_lobby.html
+msgid "Verbinde mit Pong..."
+msgstr "Verbinde mit Pong..."
+
+#: .\app\templates\app\pong_lobby.html
+msgid "Warte auf zweiten Spieler"
+msgstr "Warte auf zweiten Spieler"
+
+#: .\app\templates\app\battleship_lobby.html
+msgid "Platziere erst alle Schiffe."
+msgstr "Platziere erst alle Schiffe."
+
+#: .\app\templates\app\battleship_lobby.html
+msgid "Horizontal platzieren"
+msgstr "Horizontal platzieren"
+
+#: .\app\templates\app\battleship_lobby.html
+msgid "Vertikal platzieren"
+msgstr "Vertikal platzieren"
+
+#: .\app\templates\app\battleship_lobby.html
+#, python-brace-format
+msgid "Zug {side}"
+msgstr "Zug {side}"
+
+#: .\app\templates\app\battleship_lobby.html
+msgid "Nicht bereit"
+msgstr "Nicht bereit"
+
+#: .\app\templates\app\battleship_lobby.html
+#, python-brace-format
+msgid "Spieler {side}"
+msgstr "Spieler {side}"
+
+#: .\app\templates\app\battleship_lobby.html
+msgid "Sieg!"
+msgstr "Sieg!"
+
+#: .\app\templates\app\battleship_lobby.html
+msgid "Flotte verloren"
+msgstr "Flotte verloren"
+
+#: .\app\templates\app\battleship_lobby.html
+msgid "Du hast alle gegnerischen Schiffe versenkt."
+msgstr "Du hast alle gegnerischen Schiffe versenkt."
+
+#: .\app\templates\app\battleship_lobby.html
+#, python-brace-format
+msgid "{name} hat alle deine Schiffe versenkt."
+msgstr "{name} hat alle deine Schiffe versenkt."
+
+#~ msgid "Favorit entfernen"
+#~ msgstr "Favorit entfernen"
+
+#~ msgid "Als Favorit markieren"
+#~ msgstr "Als Favorit markieren"
 
 #~ msgid "Snake Powerups"
 #~ msgstr "Snake Powerups"
@@ -15447,9 +16429,6 @@ msgstr "Skribble-Lobby wurde gelöscht."
 
 #~ msgid "Chat-Theme gespeichert."
 #~ msgstr "Chat-Theme gespeichert."
-
-#~ msgid "Nebula Forge Tycoon Update"
-#~ msgstr "Nebula Forge Tycoon Update"
 
 #~ msgid ""
 #~ "Nebula Forge Tycoon wurde überarbeitet, neue Animationen wurden ergänzt "
@@ -15493,11 +16472,6 @@ msgstr "Skribble-Lobby wurde gelöscht."
 #~| msgid "Eigenes Spielfeld"
 #~ msgid "Nebula Forge Tycoon Release"
 #~ msgstr "Eigenes Spielfeld"
-
-#, fuzzy
-#~| msgid "Buchung wurde hinzugefügt."
-#~ msgid "Nebula Forge Tycoon wurde hinzugefügt."
-#~ msgstr "Buchung wurde hinzugefügt."
 
 #, fuzzy
 #~| msgid "Stream-Deck-Steuerung"
@@ -15850,12 +16824,6 @@ msgstr "Skribble-Lobby wurde gelöscht."
 #~ msgid "Modus und Spielgefuehl"
 #~ msgstr "Modus und Spielgefuehl"
 
-#~ msgid "Modus"
-#~ msgstr "Modus"
-
-#~ msgid "Neon Run"
-#~ msgstr "Neon Run"
-
 #~ msgid "Classic Walls"
 #~ msgstr "Classic Walls"
 
@@ -15876,9 +16844,6 @@ msgstr "Skribble-Lobby wurde gelöscht."
 
 #~ msgid "Aepfel"
 #~ msgstr "Aepfel"
-
-#~ msgid "Schilde"
-#~ msgstr "Schilde"
 
 #~ msgid ""
 #~ "MyTools ist eine private Django-Plattform für Schnellzugriffe, Widgets, "
