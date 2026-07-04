@@ -61,6 +61,8 @@ class WerewolfGameTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, lobby.name)
         self.assertContains(response, reverse("werewolf_state_api", args=[lobby.code]))
+        self.assertContains(response, 'id="ww-i18n"')
+        self.assertContains(response, "waitingPhaseText")
 
     def test_friends_only_lobby_allows_friend_and_rejects_stranger(self):
         lobby = self.create_lobby(visibility="friends")
@@ -88,6 +90,7 @@ class WerewolfGameTests(TestCase):
         villager = lobby.players.exclude(role=WerewolfPlayer.ROLE_WEREWOLF).first()
         self.client.force_login(villager.user)
         payload = self.client.get(reverse("werewolf_state_api", args=[lobby.code])).json()
+        self.assertEqual(payload["rules"]["minPlayers"], 5)
         opponent_rows = [row for row in payload["players"] if not row["isMe"]]
         self.assertTrue(all(row["role"] == "" for row in opponent_rows))
 

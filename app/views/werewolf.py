@@ -25,6 +25,102 @@ MAX_PLAYERS = 20
 ROLE_LABELS = dict(WerewolfPlayer.ROLE_CHOICES)
 
 
+def _werewolf_frontend_i18n():
+    return {
+        "roleVillager": _("Finde durch Diskussion und Abstimmung alle Werwölfe."),
+        "roleWerewolf": _("Wähle nachts mit deinem Rudel ein Opfer und bleibe am Tag unerkannt."),
+        "roleSeer": _("Prüfe jede Nacht die Gesinnung eines Dorfbewohners."),
+        "roleWitch": _("Du besitzt genau einen Heiltrank und einen Gifttrank."),
+        "roleGuard": _("Beschütze nachts eine Person, aber nicht zweimal nacheinander dieselbe."),
+        "invalidServerResponse": _("Der Server hat keine gültige Antwort gesendet."),
+        "actionFailed": _("Aktion fehlgeschlagen."),
+        "waitingPhaseKicker": _("Vorbereitung"),
+        "waitingPhaseTitle": _("Warten auf Spieler"),
+        "waitingPhaseText": _("Aktuell {count} von {max} Spielern. Mindestens {min} werden benötigt."),
+        "nightPhaseKicker": _("Das Dorf schläft"),
+        "nightPhaseTitle": _("Nacht {day}"),
+        "nightPhaseText": _("Die Nachtrollen wählen im Verborgenen ihre Aktionen."),
+        "nightBadge": _("NACHT {day}"),
+        "dayPhaseKicker": _("Das Dorf erwacht"),
+        "dayPhaseTitle": _("Tag {day}"),
+        "dayPhaseText": _("Diskutiert, verdächtigt und stimmt über eine Verbannung ab."),
+        "dayBadge": _("TAG {day}"),
+        "finishedPhaseKicker": _("Spiel beendet"),
+        "villageWonTitle": _("Das Dorf gewinnt!"),
+        "wolvesWonTitle": _("Die Werwölfe gewinnen!"),
+        "villageWonText": _("Alle Werwölfe wurden entlarvt."),
+        "wolvesWonText": _("Das Rudel hat die Kontrolle über das Dorf übernommen."),
+        "endBadge": _("ENDE"),
+        "dash": _("–"),
+        "unknownRoleDescription": _("Deine Rolle wird beim Start geheim verteilt."),
+        "hostTitle": _("Host"),
+        "votedTitle": _("Hat abgestimmt"),
+        "alive": _("Lebt"),
+        "eliminated": _("Ausgeschieden"),
+        "you": _("Du"),
+        "active": _("Aktiv"),
+        "inactive": _("Aus"),
+        "playerLimit": _("Spielerlimit"),
+        "werewolves": _("Werwölfe"),
+        "seer": _("Seherin"),
+        "witch": _("Hexe"),
+        "guard": _("Beschützer"),
+        "revealRoles": _("Rollen aufdecken"),
+        "anonymousVotes": _("Geheime Stimmen"),
+        "actionWaitingKicker": _("Vorbereitung"),
+        "actionWaitingTitle": _("Versammelt das Dorf"),
+        "actionWaitingHelp": _("Lade Freunde ein oder teile den Lobby-Code. Ab fünf Spielern kann der Host starten."),
+        "actionFinishedKicker": _("Auflösung"),
+        "actionFinishedTitle": _("Alle Rollen sind sichtbar"),
+        "actionFinishedHelp": _("Der Host kann dieselbe Lobby für eine neue Runde zurücksetzen."),
+        "spectatorKicker": _("Zuschauer"),
+        "spectatorTitle": _("Du bist ausgeschieden"),
+        "spectatorHelp": _("Beobachte den weiteren Spielverlauf. Deine Informationen bleiben geheim."),
+        "dayActionKicker": _("Dorfabstimmung"),
+        "dayActionTitle": _("Wen wollt ihr verbannen?"),
+        "dayActionHelp": _("Wähle einen Verdächtigen. Du kannst deine Stimme bis zur Auswertung ändern."),
+        "voteCountLabel": _("{count} Stimme(n)"),
+        "suspectLabel": _("Verdächtigen"),
+        "werewolfActionKicker": _("Geheime Rudelwahl"),
+        "werewolfActionTitle": _("Wählt euer Nachtopfer"),
+        "werewolfActionHelp": _("Stimmt euch im Rudel-Chat ab. Bei Gleichstand stirbt niemand."),
+        "victimLabel": _("Als Opfer wählen"),
+        "seerActionKicker": _("Seherblick"),
+        "seerActionTitle": _("Prüfe eine Person"),
+        "seerActionHelp": _("Du erfährst, ob diese Person ein Werwolf ist."),
+        "inspectionResult": _("{name} ist {result}."),
+        "isWerewolf": _("ein Werwolf"),
+        "isNotWerewolf": _("kein Werwolf"),
+        "inspectLabel": _("Gesinnung prüfen"),
+        "guardActionKicker": _("Nachtwache"),
+        "guardActionTitle": _("Beschütze eine Person"),
+        "guardActionHelp": _("Das gewählte Ziel überlebt den Angriff der Werwölfe. Nicht zweimal nacheinander dieselbe Person."),
+        "protectLabel": _("Diese Nacht schützen"),
+        "witchActionKicker": _("Hexenküche"),
+        "witchActionTitle": _("Nutze deine Tränke mit Bedacht"),
+        "witchHelpWithVictim": _("Das aktuelle Ziel des Rudels ist {name}."),
+        "witchHelpNoVictim": _("Das Rudel hat noch kein eindeutiges Opfer gewählt."),
+        "poisonLabel": _("Mit Gift ausschalten"),
+        "healVictimLabel": _("{name} heilen"),
+        "noVictimToHeal": _("Kein Opfer zu heilen"),
+        "doNothing": _("Nichts tun"),
+        "villagerActionKicker": _("Dorfbewohner"),
+        "villagerActionTitle": _("Du schläfst"),
+        "villagerActionHelp": _("In der Nacht hast du keine Aktion. Am nächsten Tag zählt deine Stimme."),
+        "playersNeeded": _("Noch {count} Spieler benötigt."),
+        "hostReady": _("Das Dorf ist bereit. Rollen werden beim Start geheim verteilt."),
+        "hostNightHelp": _("Beende die Nacht, sobald alle Nachtrollen gewählt haben."),
+        "resolveNight": _("Nacht auswerten"),
+        "hostDayHelp": _("Beende den Tag nach Diskussion und Abstimmung."),
+        "resolveVote": _("Abstimmung auswerten"),
+        "hostResetHelp": _("Bereite dieselbe Lobby für eine neue Runde vor."),
+        "noMessages": _("Noch keine Nachrichten."),
+        "stateLoadFailed": _("Status konnte nicht geladen werden."),
+        "lobbyLinkCopied": _("Lobby-Link kopiert."),
+        "lobbyCode": _("Lobby-Code: {code}"),
+    }
+
+
 def _json_error(text, status=400):
     return JsonResponse({"ok": False, "error": str(text)}, status=status)
 
@@ -311,6 +407,7 @@ def _serialize_lobby(lobby, user):
         "messages": _serialize_messages(lobby, viewer),
         "rules": {
             "maxPlayers": lobby.max_players,
+            "minPlayers": MIN_PLAYERS,
             "werewolfCount": lobby.werewolf_count,
             "seer": lobby.include_seer,
             "witch": lobby.include_witch,
@@ -383,7 +480,11 @@ def werewolf_lobby(request, code):
     if not lobby.players.filter(user=request.user).exists():
         messages.error(request, _("Du bist kein Mitglied dieser Lobby."))
         return redirect("werewolf_home")
-    return render(request, "app/werewolf_lobby.html", {"lobby": lobby, "friend_invite_rows": _friend_invite_rows(lobby, request.user)})
+    return render(request, "app/werewolf_lobby.html", {
+        "lobby": lobby,
+        "friend_invite_rows": _friend_invite_rows(lobby, request.user),
+        "frontend_i18n": _werewolf_frontend_i18n(),
+    })
 
 
 @login_required

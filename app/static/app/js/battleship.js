@@ -11,6 +11,24 @@ document.addEventListener("DOMContentLoaded", () => {
         attack: root.dataset.attackUrl,
         reset: root.dataset.resetUrl,
     };
+    const labels = {
+        confirmDelete: root.dataset.textConfirmDelete || "Really delete?",
+        placeAllShips: root.dataset.textPlaceAllShips || "Place all ships first.",
+        horizontal: root.dataset.textHorizontal || "Place horizontally",
+        vertical: root.dataset.textVertical || "Place vertically",
+        linkCopied: root.dataset.textLinkCopied || "Link copied",
+        actionFailed: root.dataset.textActionFailed || "Action failed",
+        waiting: root.dataset.textWaiting || "Waiting...",
+        turn: root.dataset.textTurn || "Turn {side}",
+        ready: root.dataset.textReady || "Ready",
+        notReady: root.dataset.textNotReady || "Not ready",
+        playerFallback: root.dataset.textPlayerFallback || "Player {side}",
+        victoryTitle: root.dataset.textVictoryTitle || "Victory!",
+        defeatTitle: root.dataset.textDefeatTitle || "Fleet lost",
+        victoryText: root.dataset.textVictoryText || "You sank all enemy ships.",
+        defeatText: root.dataset.textDefeatText || "{name} sank all your ships.",
+        deletedRoom: root.dataset.textDeletedRoom || "This room was deleted.",
+    };
     const csrfToken = getCookie("csrftoken");
     const ownBoard = document.getElementById("bs-own-board");
     const enemyBoard = document.getElementById("bs-enemy-board");
@@ -34,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function bindLobbyEvents() {
         document.querySelectorAll("form[data-confirm]").forEach((form) => {
             form.addEventListener("submit", (event) => {
-                if (!window.confirm(form.dataset.confirm || "Wirklich löschen?")) {
+                if (!window.confirm(form.dataset.confirm || labels.confirmDelete)) {
                     event.preventDefault();
                 }
             });
@@ -44,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (isPosting || !game?.canPlace) return;
             const fleet = serializePlacedFleet();
             if (!fleet) {
-                showToast("Platziere erst alle Schiffe.");
+                showToast(labels.placeAllShips);
                 playSound("error");
                 return;
             }
@@ -55,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
             orientation = orientation === "horizontal" ? "vertical" : "horizontal";
             const rotateButton = document.getElementById("bs-rotate");
             if (rotateButton) {
-                const label = orientation === "horizontal" ? "Horizontal platzieren" : "Vertikal platzieren";
+                const label = orientation === "horizontal" ? labels.horizontal : labels.vertical;
                 rotateButton.title = label;
                 rotateButton.setAttribute("aria-label", label);
                 rotateButton.classList.toggle("is-vertical", orientation === "vertical");
@@ -85,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("bs-copy-link")?.addEventListener("click", async () => {
             await navigator.clipboard?.writeText(window.location.href);
-            showToast("Link kopiert");
+            showToast(labels.linkCopied);
         });
     }
 
@@ -151,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             if (!response.ok || !json.ok) {
-                showToast(json.error || "Aktion fehlgeschlagen");
+                showToast(json.error || labels.actionFailed);
                 return;
             }
             game = json.game;
@@ -162,12 +180,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderLobby() {
-        document.getElementById("bs-player-a").textContent = game.players.A || "Wartet...";
-        document.getElementById("bs-player-b").textContent = game.players.B || "Wartet...";
+        document.getElementById("bs-player-a").textContent = game.players.A || labels.waiting;
+        document.getElementById("bs-player-b").textContent = game.players.B || labels.waiting;
         document.getElementById("bs-status").textContent = game.statusLabel;
         document.getElementById("bs-message").textContent = game.message;
-        document.getElementById("bs-turn").textContent = game.currentTurn ? `Zug ${game.currentTurn}` : "-";
-        document.getElementById("bs-own-ready").textContent = game.readiness[game.side] ? "Bereit" : "Nicht bereit";
+        document.getElementById("bs-turn").textContent = game.currentTurn ? text("turn", {side: game.currentTurn}) : "-";
+        document.getElementById("bs-own-ready").textContent = game.readiness[game.side] ? labels.ready : labels.notReady;
         syncPlacementState();
         renderShipPicker();
 
@@ -248,15 +266,23 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!isFinished) return;
 
         const won = game.winnerSide === game.side;
-        const winnerName = game.players[game.winnerSide] || `Spieler ${game.winnerSide}`;
-        title.textContent = won ? "Sieg!" : "Flotte verloren";
+        const winnerName = game.players[game.winnerSide] || text("playerFallback", {side: game.winnerSide});
+        title.textContent = won ? labels.victoryTitle : labels.defeatTitle;
         text.textContent = won
-            ? "Du hast alle gegnerischen Schiffe versenkt."
-            : `${winnerName} hat alle deine Schiffe versenkt.`;
+            ? labels.victoryText
+            : text("defeatText", {name: winnerName});
 
         if (won) {
             playSound("victory");
         }
+    }
+
+    function text(key, replacements = {}) {
+        let template = labels[key] || key;
+        Object.entries(replacements).forEach(([name, value]) => {
+            template = template.replaceAll(`{${name}}`, value);
+        });
+        return template;
     }
 
     function setCellState(cell, state) {
@@ -593,7 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function handleDeletedGame(payload) {
-        showToast(payload.error || "Dieser Raum wurde gelöscht.");
+        showToast(payload.error || labels.deletedRoom);
         window.setTimeout(() => {
             window.location.href = payload.redirectUrl || "/schiffe-versenken/";
         }, 900);

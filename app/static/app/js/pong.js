@@ -11,6 +11,24 @@ document.addEventListener("DOMContentLoaded", () => {
         reset: root.dataset.resetUrl,
         ws: root.dataset.wsUrl,
     };
+    const labels = {
+        confirmDelete: root.dataset.textConfirmDelete || "Really delete?",
+        linkCopied: root.dataset.textLinkCopied || "Link copied",
+        actionFailed: root.dataset.textActionFailed || "Action failed",
+        waiting: root.dataset.textWaiting || "Waiting...",
+        sideLeft: root.dataset.textSideLeft || "Left side",
+        sideRight: root.dataset.textSideRight || "Right side",
+        spectator: root.dataset.textSpectator || "Spectator",
+        wonKicker: root.dataset.textWonKicker || "Won",
+        endedKicker: root.dataset.textEndedKicker || "Game over",
+        youWon: root.dataset.textYouWon || "You won!",
+        playerWon: root.dataset.textPlayerWon || "{name} won",
+        playerFallback: root.dataset.textPlayerFallback || "A player",
+        resultScore: root.dataset.textResultScore || "{left}:{right} - Best rally: {best}",
+        connecting: root.dataset.textConnecting || "Connecting to Pong...",
+        waitingPlayer: root.dataset.textWaitingPlayer || "Waiting for second player",
+        deletedRoom: root.dataset.textDeletedRoom || "This room was deleted.",
+    };
 
     const csrfToken = getCookie("csrftoken");
     const canvas = document.getElementById("pong-canvas");
@@ -41,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.querySelectorAll("form[data-confirm]").forEach((form) => {
             form.addEventListener("submit", (event) => {
-                if (!window.confirm(form.dataset.confirm || "Wirklich löschen?")) {
+                if (!window.confirm(form.dataset.confirm || labels.confirmDelete)) {
                     event.preventDefault();
                 }
             });
@@ -69,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("pong-result-reset")?.addEventListener("click", () => resetRound());
         document.getElementById("pong-copy-link")?.addEventListener("click", async () => {
             await navigator.clipboard?.writeText(window.location.href);
-            showToast("Link kopiert");
+            showToast(labels.linkCopied);
         });
     }
 
@@ -109,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (payload.type === "error") {
-                showToast(payload.error || "Aktion fehlgeschlagen");
+                showToast(payload.error || labels.actionFailed);
             }
         });
 
@@ -200,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(url, {method: "POST", headers: {"X-CSRFToken": csrfToken}, body: formData});
             const json = await response.json().catch(() => ({ok: false}));
             if (!response.ok || !json.ok) {
-                showToast(json.error || "Aktion fehlgeschlagen");
+                showToast(json.error || labels.actionFailed);
                 return;
             }
             receiveServerState(json.game);
@@ -252,13 +270,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const right = document.getElementById("pong-player-right");
         if (!left || !game) return;
 
-        left.textContent = game.players.left || "Wartet...";
-        right.textContent = game.players.right || "Wartet...";
+        left.textContent = game.players.left || labels.waiting;
+        right.textContent = game.players.right || labels.waiting;
         document.getElementById("pong-score-left").textContent = game.score.left;
         document.getElementById("pong-score-right").textContent = game.score.right;
         document.getElementById("pong-status").textContent = game.statusLabel;
         document.getElementById("pong-message").textContent = game.message;
-        document.getElementById("pong-side").textContent = game.playerSide === "left" ? "Links" : game.playerSide === "right" ? "Rechts" : "Zuschauer";
+        document.getElementById("pong-side").textContent = game.playerSide === "left" ? labels.sideLeft : game.playerSide === "right" ? labels.sideRight : labels.spectator;
         document.getElementById("pong-rally").textContent = game.rallyHits || 0;
         document.getElementById("pong-best-rally").textContent = game.bestRally || 0;
         document.getElementById("pong-target").textContent = game.targetScore;
@@ -277,9 +295,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!isFinished) return;
 
         const playerWon = game.playerSide && game.playerSide === game.winnerSide;
-        document.getElementById("pong-result-kicker").textContent = playerWon ? "Gewonnen" : "Spiel beendet";
-        document.getElementById("pong-result-title").textContent = playerWon ? "Du hast gewonnen!" : `${game.winnerName || "Ein Spieler"} hat gewonnen`;
-        document.getElementById("pong-result-text").textContent = `${game.score.left}:${game.score.right} · Beste Rally: ${game.bestRally || 0}`;
+        document.getElementById("pong-result-kicker").textContent = playerWon ? labels.wonKicker : labels.endedKicker;
+        document.getElementById("pong-result-title").textContent = playerWon ? labels.youWon : text("playerWon", {name: game.winnerName || labels.playerFallback});
+        document.getElementById("pong-result-text").textContent = text("resultScore", {
+            left: game.score.left,
+            right: game.score.right,
+            best: game.bestRally || 0,
+        });
+    }
+
+    function text(key, replacements = {}) {
+        let template = labels[key] || key;
+        Object.entries(replacements).forEach(([name, value]) => {
+            template = template.replaceAll(`{${name}}`, value);
+        });
+        return template;
     }
 
     function loop(now) {
@@ -373,7 +403,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const state = renderState || game;
         if (!state) {
-            drawCentered("Verbinde mit Pong...");
+            drawCentered(labels.connecting);
             return;
         }
 
@@ -382,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
         drawBall(state.ball.x, state.ball.y);
 
         if (state.status === "waiting") {
-            drawCentered("Warte auf zweiten Spieler");
+            drawCentered(labels.waitingPlayer);
         }
     }
 
@@ -470,7 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function handleDeletedGame(payload) {
-        showToast(payload.error || "Dieser Raum wurde gelöscht.");
+        showToast(payload.error || labels.deletedRoom);
         window.setTimeout(() => {
             window.location.href = payload.redirectUrl || "/pong/";
         }, 900);

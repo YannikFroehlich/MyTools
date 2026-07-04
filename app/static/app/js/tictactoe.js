@@ -12,6 +12,24 @@ document.addEventListener("DOMContentLoaded", () => {
         move: root.dataset.moveUrl,
         reset: root.dataset.resetUrl,
     };
+    const labels = {
+        confirmDelete: root.dataset.textConfirmDelete || "Really delete?",
+        linkCopied: root.dataset.textLinkCopied || "Link copied",
+        actionFailed: root.dataset.textActionFailed || "Action failed",
+        actionFailedStatus: root.dataset.textActionFailedStatus || "Action failed ({status})",
+        serverError: root.dataset.textServerError || "Server error {status}. Please check the logs.",
+        waiting: root.dataset.textWaiting || "Waiting...",
+        spectator: root.dataset.textSpectator || "Spectator",
+        deletedRoom: root.dataset.textDeletedRoom || "This room was deleted.",
+        drawKicker: root.dataset.textDrawKicker || "Draw",
+        drawTitle: root.dataset.textDrawTitle || "No one won",
+        drawText: root.dataset.textDrawText || "All cells are full. The host can start a new round.",
+        wonKicker: root.dataset.textWonKicker || "Won",
+        endedKicker: root.dataset.textEndedKicker || "Game over",
+        youWon: root.dataset.textYouWon || "You won!",
+        playerWon: root.dataset.textPlayerWon || "{name} won",
+        winnerLine: root.dataset.textWinnerLine || "{symbol} has three cells in a row.",
+    };
     const csrfToken = getCookie("csrftoken");
     const board = document.getElementById("ttt-board");
     const cells = Array.from(document.querySelectorAll(".ttt-cell"));
@@ -26,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function bindEvents() {
         document.querySelectorAll("form[data-confirm]").forEach((form) => {
             form.addEventListener("submit", (event) => {
-                if (!window.confirm(form.dataset.confirm || "Wirklich löschen?")) {
+                if (!window.confirm(form.dataset.confirm || labels.confirmDelete)) {
                     event.preventDefault();
                 }
             });
@@ -53,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("ttt-copy-link")?.addEventListener("click", async () => {
             await navigator.clipboard?.writeText(window.location.href);
-            showToast("Link kopiert");
+            showToast(labels.linkCopied);
         });
     }
 
@@ -114,8 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!response.ok || !json.ok) {
                 const fallback = response.status >= 500
-                    ? `Serverfehler ${response.status}. Bitte Logs prüfen.`
-                    : `Aktion fehlgeschlagen (${response.status})`;
+                    ? text("serverError", {status: response.status})
+                    : text("actionFailedStatus", {status: response.status});
                 showToast(json.error || fallback);
                 return;
             }
@@ -123,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
             render();
         } catch (error) {
             console.warn("Tic Tac Toe post failed", error);
-            showToast("Aktion fehlgeschlagen");
+            showToast(labels.actionFailed);
         } finally {
             isPosting = false;
             syncHostControls();
@@ -131,12 +149,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function render() {
-        document.getElementById("ttt-player-x").textContent = game.players.X || "Wartet...";
-        document.getElementById("ttt-player-o").textContent = game.players.O || "Wartet...";
+        document.getElementById("ttt-player-x").textContent = game.players.X || labels.waiting;
+        document.getElementById("ttt-player-o").textContent = game.players.O || labels.waiting;
         document.getElementById("ttt-status").textContent = game.statusLabel;
         document.getElementById("ttt-message").textContent = game.message;
         document.getElementById("ttt-round").textContent = game.roundNumber;
-        document.getElementById("ttt-symbol").textContent = game.playerSymbol || "Zuschauer";
+        document.getElementById("ttt-symbol").textContent = game.playerSymbol || labels.spectator;
         document.getElementById("ttt-current").textContent = game.currentSymbol;
 
         const winningLine = new Set(game.winningLine || []);
@@ -176,17 +194,25 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.classList.toggle("is-draw", !game.winnerSymbol);
 
         if (!game.winnerSymbol) {
-            kicker.textContent = "Unentschieden";
-            title.textContent = "Keiner hat gewonnen";
-            text.textContent = "Alle Felder sind voll. Der Host kann eine neue Runde starten.";
+            kicker.textContent = labels.drawKicker;
+            title.textContent = labels.drawTitle;
+            text.textContent = labels.drawText;
             return;
         }
 
         const winnerName = game.players[game.winnerSymbol] || game.winnerSymbol;
         const playerWon = game.playerSymbol && game.playerSymbol === game.winnerSymbol;
-        kicker.textContent = playerWon ? "Gewonnen" : "Spiel beendet";
-        title.textContent = playerWon ? "Du hast gewonnen!" : `${winnerName} hat gewonnen`;
-        text.textContent = `${game.winnerSymbol} hat drei Felder in einer Reihe.`;
+        kicker.textContent = playerWon ? labels.wonKicker : labels.endedKicker;
+        title.textContent = playerWon ? labels.youWon : text("playerWon", {name: winnerName});
+        text.textContent = text("winnerLine", {symbol: game.winnerSymbol});
+    }
+
+    function text(key, replacements = {}) {
+        let template = labels[key] || key;
+        Object.entries(replacements).forEach(([name, value]) => {
+            template = template.replaceAll(`{${name}}`, value);
+        });
+        return template;
     }
 
     function getCookie(name) {
@@ -209,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function handleDeletedGame(payload) {
-        showToast(payload.error || "Dieser Raum wurde gelöscht.");
+        showToast(payload.error || labels.deletedRoom);
         window.setTimeout(() => {
             window.location.href = payload.redirectUrl || "/tic-tac-toe/";
         }, 900);
