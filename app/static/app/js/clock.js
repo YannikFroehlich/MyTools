@@ -470,7 +470,7 @@
     document.querySelectorAll('[data-load-timer]').forEach((button) => {
         button.addEventListener('click', () => {
             loadTimer(button.dataset.timerSeconds);
-            document.querySelector('[data-timer-toggle]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            timerPanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
 
