@@ -627,6 +627,7 @@ body.dark-mode .clock-settings-button {
 .timer-panel {
     position: relative;
     overflow: hidden;
+    scroll-margin-top: 28px;
 }
 
 .timer-panel::before {

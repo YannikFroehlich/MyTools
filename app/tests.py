@@ -3730,7 +3730,7 @@ class WeatherViewTests(BaseTestCase):
         css = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "weather.css").read_text(encoding="utf-8")
         template = (settings.BASE_DIR / "app" / "templates" / "app" / "weather.html").read_text(encoding="utf-8")
 
-        self.assertIn("20260627-weather-surface-theme", template)
+        self.assertIn("20260705-hourly-list-bg-reset", template)
         self.assertIn("Theme-driven weather unit select cleanup", css)
         self.assertIn("Theme-driven weather search input and full select hit area", css)
         self.assertIn("Theme-driven weather surfaces refresh", css)
