@@ -361,7 +361,7 @@ urlpatterns = [
     path('weather-icon/<str:icon_code>/<str:size>/', weather_icon_view, name='weather_icon'),
     path('obs-dashboard/', obs_dashboard, name='obs-dashboard'),
     path('spritkostenrechner/', spritkostenrechner, name='spritkostenrechner'),
-    path('urlaubsplaner/', vacation_planner_view, name='vacation_planner'),
+    path('tools/urlaub/', vacation_planner_view, name='vacation_planner'),
     path('budget/', budget_tracker_view, name='budget_tracker'),
     path('budget/export/', budget_tracker_export_csv, name='budget_tracker_export'),
 

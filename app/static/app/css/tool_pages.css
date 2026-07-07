@@ -20,7 +20,8 @@
     .profile-designer-page,
     .avatar-page,
     .stream-deck-page,
-    .obs-dashboard-page
+    .obs-dashboard-page,
+    .vacation-page
 ) {
     --tool-card-bg: var(--theme-card-bg, var(--surface-strong, rgba(255, 255, 255, 0.9)));
     --tool-card-text: var(--theme-card-text, var(--theme-text));
@@ -54,7 +55,8 @@ body.dark-mode :where(
     .profile-designer-page,
     .avatar-page,
     .stream-deck-page,
-    .obs-dashboard-page
+    .obs-dashboard-page,
+    .vacation-page
 ) {
     --tool-muted: color-mix(in srgb, var(--tool-card-text) 88%, transparent);
     --tool-accent-readable: color-mix(in srgb, var(--theme-accent-end) 28%, #ffffff 72%);

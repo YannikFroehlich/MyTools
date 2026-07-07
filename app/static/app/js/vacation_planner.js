@@ -1,50 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const root = document.querySelector("[data-vacation-root]");
+    if (!root) {
+        return;
+    }
+
     const holidaysElement = document.getElementById("vacation-holidays-data");
     const labelsElement = document.getElementById("vacation-planner-labels");
-    const holidays = holidaysElement ? JSON.parse(holidaysElement.textContent) : [];
-    const labels = labelsElement ? JSON.parse(labelsElement.textContent) : {};
-
-    const startInput = document.getElementById("vacation-start-date");
-    const endInput = document.getElementById("vacation-end-date");
-    const calculateButton = document.getElementById("vacation-calculate");
-    const daysNeeded = document.getElementById("vacation-days-needed");
-    const calendarDays = document.getElementById("vacation-calendar-days");
-    const weekendDays = document.getElementById("vacation-weekend-days");
-    const holidayDays = document.getElementById("vacation-holiday-days");
-    const message = document.getElementById("vacation-message");
-    const timeline = document.getElementById("vacation-timeline");
-    const hitList = document.getElementById("vacation-holiday-hit-list");
-    const coverage = document.getElementById("vacation-year-coverage");
-    const clearForm = document.querySelector("[data-vacation-clear-form]");
-    const saveStartInput = document.getElementById("vacation-save-start");
-    const saveEndInput = document.getElementById("vacation-save-end");
-    const locale = document.documentElement.lang || "de";
+    const holidays = holidaysElement ? JSON.parse(holidaysElement.textContent || "[]") : [];
+    const labels = labelsElement ? JSON.parse(labelsElement.textContent || "{}") : {};
+    const locale = document.documentElement.lang || navigator.language || "de-DE";
+    const numberFormatter = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
 
     const holidayMap = new Map();
-    const savedYears = new Set();
-
     holidays.forEach((holiday) => {
         if (!holiday.date) {
             return;
         }
-
         if (!holidayMap.has(holiday.date)) {
             holidayMap.set(holiday.date, []);
         }
-        holidayMap.get(holiday.date).push(holiday.name || "Feiertag");
-        savedYears.add(Number(holiday.year || holiday.date.slice(0, 4)));
-    });
-
-    const dateFormatter = new Intl.DateTimeFormat(locale, {
-        timeZone: "UTC",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
-
-    const weekdayFormatter = new Intl.DateTimeFormat(locale, {
-        timeZone: "UTC",
-        weekday: "short",
+        holidayMap.get(holiday.date).push({
+            name: holiday.name || "Feiertag",
+            deduction: Number(holiday.deduction || (holiday.is_half_day ? 0.5 : 1)),
+        });
     });
 
     function parseDate(value) {
@@ -52,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
             return null;
         }
-
         return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
     }
 
@@ -69,194 +46,107 @@ document.addEventListener("DOMContentLoaded", () => {
         return next;
     }
 
-    function setMessage(text, state = "") {
-        message.textContent = text;
-        message.classList.toggle("is-error", state === "error");
-        message.classList.toggle("is-warning", state === "warning");
+    function vacationStats(startDate, endDate) {
+        const totalDays = Math.floor((endDate - startDate) / 86400000) + 1;
+        let vacationDays = 0;
+        let weekends = 0;
+        let holidayDays = 0;
+
+        for (let offset = 0; offset < totalDays; offset += 1) {
+            const current = addDays(startDate, offset);
+            const weekday = current.getUTCDay();
+            const isWeekend = weekday === 0 || weekday === 6;
+            const holidayEntries = holidayMap.get(dateKey(current)) || [];
+            const holidayDeduction = Math.min(1, holidayEntries.reduce((sum, holiday) => {
+                const deduction = Number.isFinite(holiday.deduction) ? holiday.deduction : 1;
+                return sum + Math.max(0, deduction);
+            }, 0));
+
+            if (isWeekend) {
+                weekends += 1;
+            } else if (holidayDeduction > 0) {
+                holidayDays += holidayDeduction;
+                vacationDays += Math.max(0, 1 - holidayDeduction);
+            } else {
+                vacationDays += 1;
+            }
+        }
+
+        return { totalDays, vacationDays, weekends, holidayDays };
     }
 
-    function resetResults() {
-        daysNeeded.textContent = "0";
-        calendarDays.textContent = "0";
-        weekendDays.textContent = "0";
-        holidayDays.textContent = "0";
-        timeline.innerHTML = "";
-        renderHolidayHits([]);
+    function formatCount(value) {
+        return numberFormatter.format(value);
     }
 
-    function renderHolidayHits(records) {
-        const holidayRecords = records.filter((record) => record.isHolidayWeekday);
-        hitList.innerHTML = "";
-
-        if (!holidayRecords.length) {
-            const empty = document.createElement("div");
-            empty.className = "vacation-empty-state";
-            empty.innerHTML = `<i class="fa-regular fa-calendar"></i><span>${labels.noHolidays || "Keine gespeicherten Feiertage im Zeitraum."}</span>`;
-            hitList.appendChild(empty);
+    function updatePreview(form) {
+        const output = form.querySelector("[data-vacation-preview]");
+        const startInput = form.querySelector("[data-vacation-start]");
+        const endInput = form.querySelector("[data-vacation-end]");
+        if (!output || !startInput || !endInput) {
             return;
         }
 
-        holidayRecords.forEach((record) => {
-            const item = document.createElement("article");
-            item.className = "vacation-holiday-hit";
-
-            const copy = document.createElement("div");
-            const title = document.createElement("strong");
-            title.textContent = record.holidayNames.join(", ");
-            const date = document.createElement("span");
-            date.textContent = `${dateFormatter.format(record.date)} · ${weekdayFormatter.format(record.date)}`;
-            copy.append(title, date);
-
-            const icon = document.createElement("i");
-            icon.className = "fa-solid fa-calendar-check";
-            icon.setAttribute("aria-hidden", "true");
-
-            item.append(copy, icon);
-            hitList.appendChild(item);
-        });
-    }
-
-    function renderTimeline(records) {
-        timeline.innerHTML = "";
-        const visibleRecords = records.slice(0, 180);
-
-        visibleRecords.forEach((record) => {
-            const chip = document.createElement("div");
-            chip.className = "vacation-day-chip";
-
-            if (record.isWeekend) {
-                chip.classList.add("is-weekend");
-                chip.title = labels.weekend || "Wochenende";
-            } else if (record.isHolidayWeekday) {
-                chip.classList.add("is-holiday");
-                chip.title = `${labels.savedHoliday || "Gespeicherter Feiertag"}: ${record.holidayNames.join(", ")}`;
-            } else {
-                chip.classList.add("is-vacation");
-                chip.title = labels.vacation || "Urlaubstag";
-            }
-
-            const day = document.createElement("span");
-            day.textContent = String(record.date.getUTCDate()).padStart(2, "0");
-            const meta = document.createElement("small");
-            meta.textContent = weekdayFormatter.format(record.date);
-            chip.append(day, meta);
-            timeline.appendChild(chip);
-        });
-
-        if (records.length > visibleRecords.length) {
-            const more = document.createElement("div");
-            more.className = "vacation-day-chip";
-            more.textContent = `+${records.length - visibleRecords.length}`;
-            timeline.appendChild(more);
-        }
-    }
-
-    function updateCoverage(yearsInRange) {
-        const missingYears = Array.from(yearsInRange)
-            .filter((year) => !savedYears.has(year))
-            .sort((a, b) => a - b);
-
-        if (missingYears.length) {
-            coverage.classList.add("is-warning");
-            coverage.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${labels.missingYearPrefix || "Noch keine Feiertage gespeichert fuer"} ${missingYears.join(", ")}`;
-            return missingYears;
-        }
-
-        coverage.classList.remove("is-warning");
-        coverage.innerHTML = `<i class="fa-solid fa-calendar-days"></i> ${Array.from(yearsInRange).sort((a, b) => a - b).join(", ")}`;
-        return [];
-    }
-
-    function calculateVacation() {
         const startDate = parseDate(startInput.value);
         const endDate = parseDate(endInput.value);
 
+        output.classList.remove("is-error");
         if (!startDate || !endDate) {
-            resetResults();
-            setMessage(labels.missingDates || "Bitte Start- und Enddatum ausfuellen.", "error");
+            output.textContent = labels.ready || "Zeitraum auswählen, um die Urlaubstage zu prüfen.";
             return;
         }
 
         if (endDate < startDate) {
-            resetResults();
-            setMessage(labels.invalidRange || "Das Enddatum muss nach dem Startdatum liegen.", "error");
+            output.textContent = labels.invalidRange || "Das Enddatum darf nicht vor dem Startdatum liegen.";
+            output.classList.add("is-error");
             return;
         }
 
-        const totalDays = Math.floor((endDate - startDate) / 86400000) + 1;
-        let weekends = 0;
-        let holidaysOnWeekdays = 0;
-        let requiredVacationDays = 0;
-        const records = [];
-        const yearsInRange = new Set();
+        const stats = vacationStats(startDate, endDate);
+        output.textContent = `${formatCount(stats.vacationDays)} ${labels.vacationDays || "Urlaubstage"} | ${formatCount(stats.totalDays)} ${labels.calendarDays || "Kalendertage"} | ${formatCount(stats.weekends)} ${labels.weekends || "Wochenenden"} | ${formatCount(stats.holidayDays)} ${labels.holidays || "Feiertage"}`;
+    }
 
-        for (let offset = 0; offset < totalDays; offset += 1) {
-            const current = addDays(startDate, offset);
-            const key = dateKey(current);
-            const day = current.getUTCDay();
-            const isWeekend = day === 0 || day === 6;
-            const holidayNames = holidayMap.get(key) || [];
-            const isHolidayWeekday = !isWeekend && holidayNames.length > 0;
-            yearsInRange.add(current.getUTCFullYear());
+    root.querySelectorAll("[data-vacation-range-form]").forEach((form) => {
+        form.querySelectorAll("input").forEach((input) => {
+            input.addEventListener("input", () => updatePreview(form));
+            input.addEventListener("change", () => updatePreview(form));
+        });
+        updatePreview(form);
+    });
 
-            if (isWeekend) {
-                weekends += 1;
-            } else if (isHolidayWeekday) {
-                holidaysOnWeekdays += 1;
-            } else {
-                requiredVacationDays += 1;
+    root.querySelectorAll("[data-edit-toggle]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const container = button.closest("[data-edit-container]");
+            const form = container?.querySelector(".vacation-edit-form");
+            if (!form) {
+                return;
             }
-
-            records.push({
-                date: current,
-                isWeekend,
-                holidayNames,
-                isHolidayWeekday,
-            });
-        }
-
-        daysNeeded.textContent = requiredVacationDays;
-        calendarDays.textContent = totalDays;
-        weekendDays.textContent = weekends;
-        holidayDays.textContent = holidaysOnWeekdays;
-
-        const missingYears = updateCoverage(yearsInRange);
-        if (missingYears.length) {
-            setMessage(`${labels.missingYearPrefix || "Noch keine Feiertage gespeichert fuer"} ${missingYears.join(", ")}.`, "warning");
-        } else {
-            setMessage(`${requiredVacationDays} ${labels.vacationDays || "benoetigte Urlaubstage"} · ${totalDays} ${labels.calendarDays || "Kalendertage"} · ${weekends} ${labels.weekends || "Wochenendtage"} · ${holidaysOnWeekdays} ${labels.holidays || "Feiertage auf Werktagen"}`);
-        }
-
-        renderHolidayHits(records);
-        renderTimeline(records);
-    }
-
-    function syncSaveRange() {
-        if (saveStartInput && startInput?.value) {
-            saveStartInput.value = startInput.value;
-        }
-        if (saveEndInput && endInput?.value) {
-            saveEndInput.value = endInput.value;
-        }
-    }
-
-    calculateButton?.addEventListener("click", calculateVacation);
-    startInput?.addEventListener("change", () => {
-        syncSaveRange();
-        calculateVacation();
-    });
-    endInput?.addEventListener("change", () => {
-        syncSaveRange();
-        calculateVacation();
+            const isOpening = form.hidden;
+            form.hidden = !isOpening;
+            button.setAttribute("aria-expanded", String(isOpening));
+            if (isOpening) {
+                updatePreview(form);
+                form.querySelector("input:not([type='hidden'])")?.focus();
+            }
+        });
     });
 
-    clearForm?.addEventListener("submit", (event) => {
-        const confirmed = window.confirm(labels.clearConfirm || "Alle Feiertage fuer dieses Jahr loeschen?");
-        if (!confirmed) {
-            event.preventDefault();
-        }
+    root.querySelectorAll("[data-edit-cancel]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const form = button.closest(".vacation-edit-form");
+            if (form) {
+                form.hidden = true;
+            }
+        });
     });
 
-    syncSaveRange();
-    calculateVacation();
+    root.querySelectorAll("form[data-confirm]").forEach((form) => {
+        form.addEventListener("submit", (event) => {
+            const message = form.dataset.confirm || "";
+            if (message && !window.confirm(message)) {
+                event.preventDefault();
+            }
+        });
+    });
 });
+
