@@ -977,3 +977,102 @@ body:not(.dark-mode) .stream-deck-page select option {
     }
 }
 
+/* Theme sync: editor modals should follow the active MyTools card palette. */
+.stream-deck-page {
+    --bg-panel: color-mix(in srgb, var(--theme-card-bg, rgba(255, 255, 255, 0.9)) 90%, var(--theme-accent-start, #4e63ff) 10%);
+    --bg-panel-solid: var(--theme-card-bg, #101522);
+    --bg-card: color-mix(in srgb, var(--theme-card-bg, #101522) 88%, var(--theme-accent-start, #4e63ff) 12%);
+    --bg-input: color-mix(in srgb, var(--theme-card-bg, #101522) 84%, var(--theme-accent-start, #4e63ff) 16%);
+    --bg-hover: color-mix(in srgb, var(--theme-card-bg, #101522) 72%, var(--theme-accent-start, #4e63ff) 28%);
+    --text-main: var(--theme-card-text, var(--theme-text, #f5f7ff));
+    --text-soft: color-mix(in srgb, var(--text-main) 76%, transparent);
+    --border: rgba(var(--theme-accent-rgb, 78, 99, 255), 0.24);
+    --shadow: rgba(var(--theme-accent-rgb, 78, 99, 255), 0.14);
+    --blue: var(--theme-accent-start, #4e63ff);
+    --blue-2: var(--theme-accent-end, #3452ff);
+}
+
+.stream-deck-page .modal-backdrop {
+    background: color-mix(in srgb, var(--theme-page-bg, #05070d) 62%, #000000 38%);
+}
+
+.stream-deck-page .modal-dialog {
+    color: var(--text-main);
+    border-color: rgba(var(--theme-accent-rgb, 78, 99, 255), 0.34);
+    background:
+        radial-gradient(circle at 8% 0%, rgba(var(--theme-accent-rgb, 78, 99, 255), 0.14), transparent 34%),
+        radial-gradient(circle at 100% 14%, rgba(var(--theme-accent-end-rgb, 52, 82, 255), 0.12), transparent 32%),
+        var(--bg-panel-solid);
+    box-shadow: 0 28px 76px rgba(var(--theme-accent-rgb, 78, 99, 255), 0.16);
+}
+
+.stream-deck-page .modal-header,
+.stream-deck-page .modal-footer {
+    border-color: var(--border);
+    background: color-mix(in srgb, var(--theme-card-bg, transparent) 84%, var(--theme-accent-start, #4e63ff) 16%);
+}
+
+.stream-deck-page .modal-header h3 {
+    color: var(--text-main);
+}
+
+.stream-deck-page .modal-header p,
+.stream-deck-page .field label {
+    color: var(--text-soft);
+}
+
+.stream-deck-page input,
+.stream-deck-page select,
+.stream-deck-page textarea {
+    border-color: var(--border);
+    background: var(--bg-input);
+    color: var(--text-main);
+}
+
+.stream-deck-page input:focus,
+.stream-deck-page select:focus,
+.stream-deck-page textarea:focus {
+    border-color: rgba(var(--theme-accent-end-rgb, 52, 82, 255), 0.68);
+    background: var(--bg-hover);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb, 78, 99, 255), 0.14);
+}
+
+.stream-deck-page input[type="color"] {
+    padding: 5px 14px;
+}
+
+.stream-deck-page .dynamic-section {
+    border-color: rgba(var(--theme-accent-rgb, 78, 99, 255), 0.30);
+    background: color-mix(in srgb, var(--theme-card-bg, transparent) 82%, var(--theme-accent-start, #4e63ff) 18%);
+}
+
+.stream-deck-page .ghost-icon-btn,
+.stream-deck-page .outline-btn,
+.stream-deck-page .small-btn,
+.stream-deck-page .sidebar-btn {
+    color: var(--text-main);
+    border-color: var(--border);
+    background: color-mix(in srgb, var(--theme-card-bg, transparent) 78%, var(--theme-accent-start, #4e63ff) 22%);
+}
+
+.stream-deck-page .ghost-icon-btn:hover,
+.stream-deck-page .outline-btn:hover,
+.stream-deck-page .small-btn:hover,
+.stream-deck-page .sidebar-btn:hover {
+    border-color: rgba(var(--theme-accent-end-rgb, 52, 82, 255), 0.46);
+    background: var(--bg-hover);
+    box-shadow: 0 10px 24px rgba(var(--theme-accent-rgb, 78, 99, 255), 0.14);
+}
+
+.stream-deck-page .primary-btn {
+    color: var(--theme-accent-text, #ffffff);
+    border-color: rgba(var(--theme-accent-end-rgb, 52, 82, 255), 0.58);
+    background: linear-gradient(135deg, var(--theme-accent-start, #4e63ff), var(--theme-accent-end, #3452ff));
+    box-shadow: 0 14px 30px rgba(var(--theme-accent-rgb, 78, 99, 255), 0.24);
+}
+
+.stream-deck-page select option {
+    background: var(--bg-panel-solid);
+    color: var(--text-main);
+}
+

@@ -279,8 +279,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function applyDeletedMessages(deletedIds = []) {
         deletedIds.forEach((id) => {
-            messagesBox.querySelector(`.chat-message[data-message-id="${CSS.escape(String(id))}"]`)?.remove();
+            const message = messagesBox.querySelector(`.chat-message[data-message-id="${CSS.escape(String(id))}"]`);
+            if (message) markMessageDeleted(message);
         });
+    }
+
+    function markMessageDeleted(message) {
+        if (!message || message.classList.contains("is-deleted")) return;
+
+        const bubble = message.querySelector(".chat-bubble");
+        message.classList.remove("is-menu-open", "is-emoji-open", "is-pinned");
+        message.classList.add("is-deleted");
+        message.removeAttribute("data-delete-url");
+        message.removeAttribute("data-edit-url");
+        message.removeAttribute("data-pin-url");
+        message.removeAttribute("data-react-url");
+
+        if (bubble) {
+            bubble.innerHTML = '<p class="chat-message-deleted">Diese Nachricht wurde gel&ouml;scht</p>';
+        }
     }
 
     function updateMessageState(messageElement, update) {
@@ -598,7 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 try {
                     const response = await fetch(deleteUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}, body: formData});
                     const data = await response.json();
-                    if (data.ok) message.remove();
+                    if (data.ok) markMessageDeleted(message);
                 } catch (error) {
                     console.warn("Message delete failed", error);
                 }

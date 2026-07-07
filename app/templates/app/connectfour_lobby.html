@@ -16,7 +16,24 @@
 <main class="c4-page c4-lobby-page"
       data-state-url="{% url 'connectfour_state_api' game.code %}"
       data-move-url="{% url 'connectfour_move_api' game.code %}"
-      data-reset-url="{% url 'connectfour_reset_api' game.code %}">
+      data-reset-url="{% url 'connectfour_reset_api' game.code %}"
+      data-text-confirm-delete="{% translate 'Wirklich löschen?' %}"
+      data-text-link-copied="{% translate 'Link kopiert' %}"
+      data-text-action-failed="{% translate 'Aktion fehlgeschlagen' %}"
+      data-text-waiting="{% translate 'Wartet...' %}"
+      data-text-spectator="{% translate 'Zuschauer' %}"
+      data-text-deleted-room="{% translate 'Dieser Raum wurde gelöscht.' %}"
+      data-text-draw-kicker="{% translate 'Unentschieden' %}"
+      data-text-draw-title="{% translate 'Keiner gewinnt diese Runde' %}"
+      data-text-draw-text="{% translate 'Das Board ist voll. Startet eine neue Runde und klärt das.' %}"
+      data-text-won-kicker="{% translate 'Gewonnen' %}"
+      data-text-ended-kicker="{% translate 'Spiel beendet' %}"
+      data-text-you-won="{% translate 'Du hast gewonnen!' %}"
+      data-text-player-won="{% translate '{name} hat gewonnen' %}"
+      data-text-winner-line="{% translate '{disc} verbindet vier Steine.' %}"
+      data-text-field-label="{% translate 'Feld {row}, {column}' %}"
+      data-text-red="{% translate 'Rot' %}"
+      data-text-yellow="{% translate 'Gelb' %}">
     <section class="c4-lobby-top">
         <div>
             <a class="c4-back" href="{% url 'connectfour_home' %}">

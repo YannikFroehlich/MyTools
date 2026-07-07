@@ -14,7 +14,8 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
+from allauth.socialaccount.providers.google.views import oauth2_login as google_oauth2_login
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
@@ -55,6 +56,20 @@ class AccessLockedAuthenticationForm(AuthenticationForm):
                 _("Der Login ist aktuell für normale Nutzer gesperrt."),
                 code="login_locked",
             )
+
+
+class GoogleOAuthCaptchaForm(forms.Form):
+    captcha = ReCaptchaField(
+        label="",
+        error_messages={
+            "required": _("Bitte bestätige, dass du kein Roboter bist."),
+        },
+        widget=ReCaptchaV2Checkbox(
+            attrs={
+                "data-size": "normal",
+            }
+        ),
+    )
 
 
 class TwoFactorTokenForm(forms.Form):
@@ -127,6 +142,23 @@ class AccessAwareLoginView(LoginView):
                     note=_("Login-Versuch wurde abgelehnt."),
                 )
         return super().form_invalid(form)
+
+
+@require_POST
+def google_oauth_login_view(request):
+    if not settings.GOOGLE_OAUTH_ENABLED:
+        messages.error(request, _("Google Login ist noch nicht konfiguriert."))
+        return redirect("login")
+
+    form = GoogleOAuthCaptchaForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, _("Bitte bestätige reCAPTCHA, bevor du Google Login nutzt."))
+        redirect_to = request.META.get("HTTP_REFERER") or reverse("login")
+        if not url_has_allowed_host_and_scheme(redirect_to, allowed_hosts={request.get_host()}):
+            redirect_to = reverse("login")
+        return HttpResponseRedirect(redirect_to)
+
+    return google_oauth2_login(request)
 
 
 @require_http_methods(["GET", "POST"])

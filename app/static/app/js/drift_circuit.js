@@ -7,6 +7,31 @@
 
 const ctx = canvas.getContext("2d", { alpha: false });
 
+function readI18n() {
+    const script = document.getElementById("drift-i18n");
+    if (!script) return {};
+    try {
+        return JSON.parse(script.textContent || "{}");
+    } catch (_error) {
+        return {};
+    }
+}
+
+const i18n = readI18n();
+const locale = (document.documentElement.lang || "de").toLowerCase().startsWith("en") ? "en-US" : "de-DE";
+
+function text(key, replacements) {
+    const template = i18n[key] || key;
+    return String(template).replace(/\{([a-zA-Z0-9_]+)\}/g, (_match, name) => {
+        if (!replacements || replacements[name] == null) return "";
+        return String(replacements[name]);
+    });
+}
+
+function formatNumber(value) {
+    return Number(value).toLocaleString(locale);
+}
+
 const ui = {
     map: document.getElementById("mapDisplay"),
     lap: document.getElementById("lapDisplay"),
@@ -47,9 +72,9 @@ const keys = Object.create(null);
 const blockedKeys = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Spacebar"]);
 
 const modes = {
-    timeTrial: { label: "Time Trial · 3 Runden", laps: 3, countdown: 0, finishByLaps: true },
-    checkpointRush: { label: "Checkpoint Rush · 90 Sekunden", laps: 99, countdown: 90000, finishByLaps: false },
-    zen: { label: "Zen Drive · Freies Fahren", laps: 999, countdown: 0, finishByLaps: false }
+    timeTrial: { label: text("modeTimeTrial"), laps: 3, countdown: 0, finishByLaps: true },
+    checkpointRush: { label: text("modeCheckpointRush"), laps: 99, countdown: 90000, finishByLaps: false },
+    zen: { label: text("modeZen"), laps: 999, countdown: 0, finishByLaps: false }
 };
 
 const difficultyProfiles = {
@@ -62,7 +87,7 @@ const maps = {
     neonBay: {
         id: "neonBay",
         name: "Neon Bay",
-        layoutName: "City Flow",
+        layoutName: text("layoutCityFlow"),
         world: { width: 3300, height: 2100 },
         trackWidth: 250,
         checkpointRadius: 155,
@@ -108,7 +133,7 @@ const maps = {
     desertRush: {
         id: "desertRush",
         name: "Desert Rush",
-        layoutName: "Snake Rally",
+        layoutName: text("layoutSnakeRally"),
         world: { width: 3900, height: 2300 },
         trackWidth: 240,
         checkpointRadius: 150,
@@ -157,7 +182,7 @@ const maps = {
     snowPeak: {
         id: "snowPeak",
         name: "Snow Peak",
-        layoutName: "Hairpin Mountain",
+        layoutName: text("layoutHairpinMountain"),
         world: { width: 3500, height: 2450 },
         trackWidth: 225,
         checkpointRadius: 145,
@@ -460,7 +485,7 @@ function buildTrackData() {
             y: p.y,
             radius: activeMap.checkpointRadius,
             angle,
-            name: order === 0 ? "Start/Ziel" : `Checkpoint ${order}`,
+            name: order === 0 ? text("startFinish") : text("checkpoint", { number: order }),
             bonus: 650 + order * 90
         };
     });
@@ -590,7 +615,7 @@ function update(now, dt) {
 
     const mode = modes[game.mode];
     if (mode.countdown && game.elapsed >= mode.countdown) {
-        finishRace("Zeit abgelaufen", "Checkpoint Rush beendet:");
+        finishRace(text("timeExpired"), text("checkpointRushFinished"));
         return;
     }
 
@@ -605,7 +630,7 @@ function update(now, dt) {
 function updateCountdown(now) {
     const passed = now - game.countdownStart;
     const left = 3 - Math.floor(passed / 800);
-    const shown = left > 0 ? String(left) : "GO!";
+    const shown = left > 0 ? String(left) : text("go");
 
     if (shown !== ui.countdown.textContent) {
         ui.countdown.textContent = shown;
@@ -716,7 +741,7 @@ function updateCarPhysics(dt) {
         if (game.frame % 2 === 0) spawnSmoke(2, onRoad ? activeMap.theme.dust : "rgba(120,90,55,.36)");
     } else {
         if (game.driftCombo > 1.1) {
-            addFloatingText(car.x, car.y - 40, `+${Math.floor(game.driftCombo * 75)} Drift`, "#65f29a");
+            addFloatingText(car.x, car.y - 40, `+${Math.floor(game.driftCombo * 75)} ${text("drift")}`, "#65f29a");
             game.score += Math.floor(game.driftCombo * 75);
         }
         game.driftCombo = Math.max(0, game.driftCombo - 0.10 * dt);
@@ -813,18 +838,18 @@ function handleCheckpoints() {
             game.currentLap++;
             game.lapTimes.push(performance.now() - game.lastLapStart);
             game.lastLapStart = performance.now();
-            showToast(`Runde ${Math.min(game.currentLap, game.totalLaps)} / ${game.totalLaps}`);
+            showToast(text("lap", { current: Math.min(game.currentLap, game.totalLaps), total: game.totalLaps }));
 
-            if (modes[game.mode].finishByLaps && game.currentLap > game.totalLaps) finishRace("Rennen beendet", "Deine Zeit:");
+            if (modes[game.mode].finishByLaps && game.currentLap > game.totalLaps) finishRace(text("raceFinished"), text("yourTime"));
         }
     }
 }
 
-function finishRace(title = "Rennen beendet", text = "Deine Zeit:") {
+function finishRace(title = text("raceFinished"), subtitle = text("yourTime")) {
     game.state = "finished";
     ui.finishTitle.textContent = title;
-    ui.finishText.textContent = text;
-    ui.finalTime.textContent = game.mode === "checkpointRush" ? `${game.checkpointHits} Checkpoints` : formatTime(game.elapsed);
+    ui.finishText.textContent = subtitle;
+    ui.finalTime.textContent = game.mode === "checkpointRush" ? text("checkpoints", { count: game.checkpointHits }) : formatTime(game.elapsed);
 
     const bestKey = getBestKey();
     if (game.mode !== "zen") {
@@ -835,11 +860,11 @@ function finishRace(title = "Rennen beendet", text = "Deine Zeit:") {
     }
 
     ui.finalStats.innerHTML = `
-        <div><span>Map</span><strong>${activeMap.name}</strong></div>
-        <div><span>Layout</span><strong>${activeMap.layoutName}</strong></div>
-        <div><span>Score</span><strong>${game.score.toLocaleString("de-DE")}</strong></div>
-        <div><span>Driftpunkte</span><strong>${Math.floor(game.driftScore).toLocaleString("de-DE")}</strong></div>
-        <div><span>Checkpoints</span><strong>${game.checkpointHits}</strong></div>
+        <div><span>${text("statMap")}</span><strong>${activeMap.name}</strong></div>
+        <div><span>${text("statLayout")}</span><strong>${activeMap.layoutName}</strong></div>
+        <div><span>${text("statScore")}</span><strong>${formatNumber(game.score)}</strong></div>
+        <div><span>${text("statDriftPoints")}</span><strong>${formatNumber(Math.floor(game.driftScore))}</strong></div>
+        <div><span>${text("statCheckpoints")}</span><strong>${game.checkpointHits}</strong></div>
     `;
     updateBestDisplay();
     ui.overlays.finish.classList.remove("hidden");
@@ -1302,7 +1327,7 @@ function drawCheckpoints() {
             ctx.fillStyle = "#65f29a";
             ctx.font = "900 15px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("CHECKPOINT", 0, -checkpoint.radius / 2 - 16);
+            ctx.fillText(text("checkpointGate"), 0, -checkpoint.radius / 2 - 16);
 
             ctx.beginPath();
             ctx.moveTo(0, -checkpoint.radius / 2 - 35 + Math.sin(game.frame * .12) * 5);
@@ -1630,7 +1655,7 @@ function updateUI() {
     }
 
     ui.speed.textContent = `${speed} km/h`;
-    ui.drift.textContent = Math.floor(game.driftScore).toLocaleString("de-DE");
+    ui.drift.textContent = formatNumber(Math.floor(game.driftScore));
     ui.nitro.style.transform = `scaleX(${clamp(car.nitro / car.maxNitro, 0, 1)})`;
 
     const profile = getProfile();
@@ -1642,10 +1667,10 @@ function updateBestDisplay() {
     const key = getBestKey();
     const value = localStorage.getItem(key);
     if (!value || game.mode === "zen") {
-        ui.best.textContent = game.mode === "zen" ? "Free" : "--:--.---";
+        ui.best.textContent = game.mode === "zen" ? text("free") : "--:--.---";
         return;
     }
-    ui.best.textContent = game.mode === "checkpointRush" ? `${value} CP` : formatTime(Number(value));
+    ui.best.textContent = game.mode === "checkpointRush" ? `${value} ${text("checkpointAbbr")}` : formatTime(Number(value));
 }
 
 function getBestKey() {

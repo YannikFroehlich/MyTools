@@ -2095,3 +2095,24 @@ body.dark.theme-lunora-mode .compact-location-delete {
     background: rgba(255, 240, 221, 0.04);
     color: rgba(255, 240, 221, 0.52);
 }
+
+.weather-page .hourly-card::after,
+.weather-page .forecast-card::after {
+    display: none;
+}
+
+.weather-page .hourly-list,
+.weather-page .forecast-list {
+    border: 0;
+    background: transparent !important;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.weather-page .hourly-list::before,
+.weather-page .hourly-list::after,
+.weather-page .forecast-list::before,
+.weather-page .forecast-list::after {
+    display: none;
+}

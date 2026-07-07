@@ -4,7 +4,7 @@
 {% block title %}{{ form_title }}{% endblock %} • MyTools
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'app/css/notes.css' %}?v=20260625-notes-theme-panels-v2">
+<link rel="stylesheet" href="{% static 'app/css/notes.css' %}?v=20260704-note-form-left-header">
 {% endblock %}
 
 {% block content %}
@@ -21,7 +21,7 @@
                     <i class="fa-regular fa-note-sticky"></i>
                 </div>
 
-                <div>
+                <div class="notes-header-text">
                     <p class="notes-eyebrow">{% translate "MyTools Workspace" %}</p>
                     <h1>{{ form_title }}</h1>
                     <p class="notes-subtitle">

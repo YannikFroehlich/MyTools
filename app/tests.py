@@ -87,6 +87,23 @@ from app.totp_utils import current_totp
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
 
+TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APPS": [
+            {
+                "client_id": "test-client-id",
+                "secret": "test-client-secret",
+                "key": "",
+            }
+        ],
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+        "OAUTH_PKCE_ENABLED": True,
+        "EMAIL_AUTHENTICATION": True,
+        "EMAIL_AUTHENTICATION_AUTO_CONNECT": True,
+    }
+}
+
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class BaseTestCase(TestCase):
@@ -763,10 +780,25 @@ class PwaTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("application/manifest+json", response["Content-Type"])
+        self.assertEqual(response.json()["lang"], "de-DE")
+        self.assertEqual(response.json()["description"], "Private Tools, Widgets und Spiele in einer installierbaren Web-App.")
         self.assertEqual(response.json()["display"], "standalone")
         self.assertEqual(response.json()["scope"], "/")
         self.assertTrue(any(icon["sizes"] == "512x512" for icon in response.json()["icons"]))
         self.assertTrue(any(icon["purpose"] == "maskable" for icon in response.json()["icons"]))
+
+    def test_manifest_uses_active_language(self):
+        self.client.logout()
+        response = self.client.get(reverse("pwa_manifest"), HTTP_ACCEPT_LANGUAGE="en")
+
+        manifest = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(manifest["lang"], "en-US")
+        self.assertEqual(manifest["description"], "Private tools, widgets, and games in an installable web app.")
+        self.assertEqual(manifest["shortcuts"][0]["name"], "Home")
+        self.assertEqual(manifest["shortcuts"][0]["description"], "Open dashboard")
+        self.assertEqual(manifest["shortcuts"][1]["description"], "Open notes")
+        self.assertEqual(manifest["shortcuts"][2]["description"], "Open chats")
 
     def test_service_worker_is_public_and_allowed_for_root_scope(self):
         self.client.logout()
@@ -786,6 +818,7 @@ class PwaTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Du bist offline")
         self.assertContains(response, "Erneut versuchen")
+        self.assertContains(response, '<html lang="de"', html=False)
 
     def test_base_template_links_manifest_and_pwa_assets(self):
         response = self.client.get(reverse("home"))
@@ -895,6 +928,98 @@ class AuthViewTests(BaseTestCase):
         response = self.client.get(reverse("login"))
 
         self.assertContains(response, "g-recaptcha")
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
+    )
+    def test_login_page_contains_google_oauth_button_when_configured(self):
+        self.client.logout()
+
+        response = self.client.get(reverse("login"))
+
+        self.assertContains(response, "Mit Google anmelden")
+        self.assertContains(response, "/accounts/google/login/")
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
+    )
+    def test_signup_page_contains_google_oauth_button_when_configured(self):
+        self.client.logout()
+
+        response = self.client.get(reverse("signup"))
+
+        self.assertContains(response, "Mit Google registrieren")
+        self.assertContains(response, "/accounts/google/login/")
+
+    def test_google_social_signup_respects_access_lock(self):
+        from app.adapters import MyToolsSocialAccountAdapter
+
+        self.client.logout()
+        SiteAccessSettings.objects.update_or_create(pk=1, defaults={"login_registration_locked": True})
+        request = RequestFactory().get(reverse("login"))
+
+        self.assertFalse(MyToolsSocialAccountAdapter().is_open_for_signup(request, Mock()))
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
+    )
+    @patch("django_recaptcha.fields.client.submit")
+    def test_google_oauth_login_requires_successful_recaptcha(self, mocked_submit):
+        mocked_submit.return_value = RecaptchaResponse(is_valid=False)
+        self.client.logout()
+
+        response = self.client.post(reverse("google_oauth_login"), {
+            "process": "login",
+            "g-recaptcha-response": "FAILED",
+        })
+
+        self.assertRedirects(response, reverse("login"), fetch_redirect_response=False)
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
+    )
+    @patch("django_recaptcha.fields.client.submit")
+    def test_google_oauth_login_redirects_to_google_after_recaptcha(self, mocked_submit):
+        self._mock_recaptcha_success(mocked_submit)
+        self.client.logout()
+
+        response = self.client.post(reverse("google_oauth_login"), {
+            "process": "login",
+            "g-recaptcha-response": "PASSED",
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response["Location"].startswith("https://accounts.google.com/"))
+
+    def test_google_social_login_lock_blocks_normal_users_but_allows_staff(self):
+        from allauth.core.exceptions import ImmediateHttpResponse
+        from app.adapters import MyToolsSocialAccountAdapter
+
+        self.client.logout()
+        SiteAccessSettings.objects.update_or_create(pk=1, defaults={"login_registration_locked": True})
+        normal_user = get_user_model().objects.create_user(
+            username="google-normal",
+            email="normal@example.com",
+            password="testpass-123",
+        )
+        staff_user = get_user_model().objects.create_user(
+            username="google-staff",
+            email="staff@example.com",
+            password="testpass-123",
+            is_staff=True,
+        )
+        request = RequestFactory().get(reverse("login"))
+        request._messages = Mock()
+        adapter = MyToolsSocialAccountAdapter()
+
+        with self.assertRaises(ImmediateHttpResponse):
+            adapter.pre_social_login(request, Mock(user=normal_user, account=Mock(user=normal_user)))
+
+        adapter.pre_social_login(request, Mock(user=staff_user, account=Mock(user=staff_user)))
 
     @patch("django_recaptcha.fields.client.submit")
     def test_login_without_two_factor_logs_in_directly(self, mocked_submit):
@@ -2802,6 +2927,9 @@ class StaticPageTests(BaseTestCase):
 
                 self.assertEqual(response.status_code, 200)
                 self.assertTemplateUsed(response, template)
+                if url_name == "drift-circuit":
+                    self.assertContains(response, 'id="drift-i18n"')
+                    self.assertContains(response, "modeTimeTrial")
 
     def test_calculator_page_contains_scientific_controls(self):
         response = self.client.get(reverse("calculator"))
@@ -3465,6 +3593,23 @@ class ModerationDashboardTests(BaseTestCase):
         self.assertFalse(suspension.is_active)
         self.assertTrue(ModerationAuditLog.objects.filter(action=ModerationAuditLog.ACTION_USER_UNSUSPENDED, target_user=self.target).exists())
 
+    def test_suspended_account_page_escapes_reason(self):
+        UserSuspension.objects.create(
+            user=self.target,
+            moderator=self.user,
+            reason="<script>alert(1)</script>",
+            starts_at=timezone.now() - timedelta(minutes=1),
+            ends_at=timezone.now() + timedelta(hours=1),
+        )
+        self.client.force_login(self.target)
+
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, "app/account_suspended.html")
+        self.assertContains(response, "&lt;script&gt;alert(1)&lt;/script&gt;", status_code=403)
+        self.assertNotContains(response, "<script>alert(1)</script>", status_code=403)
+
 
 class WeatherViewTests(BaseTestCase):
     def setUp(self):
@@ -3585,7 +3730,7 @@ class WeatherViewTests(BaseTestCase):
         css = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "weather.css").read_text(encoding="utf-8")
         template = (settings.BASE_DIR / "app" / "templates" / "app" / "weather.html").read_text(encoding="utf-8")
 
-        self.assertIn("20260627-weather-surface-theme", template)
+        self.assertIn("20260705-hourly-list-bg-reset", template)
         self.assertIn("Theme-driven weather unit select cleanup", css)
         self.assertIn("Theme-driven weather search input and full select hit area", css)
         self.assertIn("Theme-driven weather surfaces refresh", css)
@@ -5117,6 +5262,20 @@ class TicTacToeTests(BaseTestCase):
         self.assertEqual(game.player_o, other_user)
         self.assertEqual(game.status, TicTacToeGame.STATUS_PLAYING)
 
+    def test_lobby_exposes_translated_frontend_labels(self):
+        game = TicTacToeGame.objects.create(
+            owner=self.user,
+            player_x=self.user,
+            code="TTT123",
+            board=[""] * 9,
+        )
+
+        response = self.client.get(reverse("tictactoe_lobby", args=[game.code]), HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-text-you-won="You won!"')
+        self.assertContains(response, 'data-text-winner-line="{symbol} has three cells in a row."')
+
     def test_move_api_rejects_wrong_turn_and_detects_win(self):
         other_user = get_user_model().objects.create_user(
             username="gegner",
@@ -5443,6 +5602,15 @@ class ConnectFourTests(BaseTestCase):
         self.assertRedirects(response, reverse("connectfour_home"))
         self.assertFalse(ConnectFourGame.objects.filter(code=game.code).exists())
 
+    def test_lobby_exposes_translated_frontend_labels(self):
+        game = self.create_game()
+
+        response = self.client.get(reverse("connectfour_lobby", args=[game.code]), HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-text-you-won="You won!"')
+        self.assertContains(response, 'data-text-field-label="Cell {row}, {column}"')
+
     def test_non_host_cannot_delete_game(self):
         other_user = get_user_model().objects.create_user(
             username="gegner",
@@ -5712,6 +5880,15 @@ class BattleshipTests(BaseTestCase):
         game.refresh_from_db()
         self.assertEqual(game.player_b, other_user)
         self.assertEqual(game.status, BattleshipGame.STATUS_SETUP)
+
+    def test_lobby_exposes_translated_frontend_labels(self):
+        game = self.create_game()
+
+        response = self.client.get(reverse("battleship_lobby", args=[game.code]), HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-text-victory-title="Victory!"')
+        self.assertContains(response, 'data-text-defeat-text="{name} sank all your ships."')
 
     def test_full_game_rejects_additional_invites_and_third_join(self):
         second_user = get_user_model().objects.create_user(
@@ -6282,6 +6459,15 @@ class PongMultiplayerTests(TestCase):
         game.refresh_from_db()
         self.assertEqual(game.player_right, self.friend)
         self.assertEqual(game.status, PongGame.STATUS_PLAYING)
+
+    def test_lobby_exposes_translated_frontend_labels(self):
+        game = PongGame.objects.create(owner=self.user, player_left=self.user, name="Pong", code="PNG123")
+
+        response = self.client.get(reverse("pong_lobby", args=[game.code]), HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-text-side-left="Left side"')
+        self.assertContains(response, 'data-text-result-score="{left}:{right} - Best rally: {best}"')
 
     def test_pong_invite_counts_in_notifications(self):
         game = PongGame.objects.create(owner=self.user, player_left=self.user, name="Pong", code="INV123")

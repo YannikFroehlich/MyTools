@@ -451,10 +451,26 @@
         });
     });
 
+    document.querySelectorAll('[data-timer-step]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const input = button.closest('.timer-number-shell')?.querySelector('input[type="number"]');
+            if (!input) return;
+
+            if (button.dataset.timerStep === 'up') {
+                input.stepUp();
+            } else {
+                input.stepDown();
+            }
+
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.focus({ preventScroll: true });
+        });
+    });
+
     document.querySelectorAll('[data-load-timer]').forEach((button) => {
         button.addEventListener('click', () => {
             loadTimer(button.dataset.timerSeconds);
-            document.querySelector('[data-timer-toggle]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            timerPanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
 

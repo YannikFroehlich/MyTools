@@ -92,6 +92,7 @@
             <form method="post" class="auth-form">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next }}">
+                <input type="hidden" name="process" value="login">
 
                 <label for="{{ form.username.id_for_label }}">
                     <span>{% translate 'Benutzername' %}</span>
@@ -106,6 +107,23 @@
                 <div class="auth-captcha">
                     {{ form.captcha }}
                 </div>
+
+                {% if google_oauth_enabled %}
+                    <button
+                        type="submit"
+                        class="auth-google-button"
+                        formaction="{% url 'google_oauth_login' %}"
+                        formmethod="post"
+                        formnovalidate
+                    >
+                        <span class="auth-google-mark" aria-hidden="true">G</span>
+                        {% translate 'Mit Google anmelden' %}
+                    </button>
+
+                    <div class="auth-divider" aria-hidden="true">
+                        <span>{% translate 'oder' %}</span>
+                    </div>
+                {% endif %}
 
                 <button type="submit">
                     <i class="fa-solid fa-right-to-bracket"></i>

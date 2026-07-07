@@ -10,6 +10,25 @@ document.addEventListener("DOMContentLoaded", () => {
         move: root.dataset.moveUrl,
         reset: root.dataset.resetUrl,
     };
+    const labels = {
+        confirmDelete: root.dataset.textConfirmDelete || "Really delete?",
+        linkCopied: root.dataset.textLinkCopied || "Link copied",
+        actionFailed: root.dataset.textActionFailed || "Action failed",
+        waiting: root.dataset.textWaiting || "Waiting...",
+        spectator: root.dataset.textSpectator || "Spectator",
+        deletedRoom: root.dataset.textDeletedRoom || "This room was deleted.",
+        drawKicker: root.dataset.textDrawKicker || "Draw",
+        drawTitle: root.dataset.textDrawTitle || "No one wins this round",
+        drawText: root.dataset.textDrawText || "The board is full. Start a new round and settle it.",
+        wonKicker: root.dataset.textWonKicker || "Won",
+        endedKicker: root.dataset.textEndedKicker || "Game over",
+        youWon: root.dataset.textYouWon || "You won!",
+        playerWon: root.dataset.textPlayerWon || "{name} won",
+        winnerLine: root.dataset.textWinnerLine || "{disc} connects four pieces.",
+        fieldLabel: root.dataset.textFieldLabel || "Cell {row}, {column}",
+        red: root.dataset.textRed || "Red",
+        yellow: root.dataset.textYellow || "Yellow",
+    };
     const csrfToken = getCookie("csrftoken");
     const board = document.getElementById("c4-board");
     const dropZone = document.getElementById("c4-drop-zone");
@@ -36,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cell.dataset.index = String(index);
                 cell.dataset.row = String(row);
                 cell.dataset.column = String(column);
-                cell.setAttribute("aria-label", `Feld ${row + 1}, ${column + 1}`);
+                cell.setAttribute("aria-label", text("fieldLabel", {row: row + 1, column: column + 1}));
                 board.appendChild(cell);
                 cells.push(cell);
             }
@@ -46,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function bindEvents() {
         document.querySelectorAll("form[data-confirm]").forEach((form) => {
             form.addEventListener("submit", (event) => {
-                if (!window.confirm(form.dataset.confirm || "Wirklich löschen?")) {
+                if (!window.confirm(form.dataset.confirm || labels.confirmDelete)) {
                     event.preventDefault();
                 }
             });
@@ -80,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("c4-copy-link")?.addEventListener("click", async () => {
             await navigator.clipboard?.writeText(window.location.href);
-            showToast("Link kopiert");
+            showToast(labels.linkCopied);
         });
     }
 
@@ -115,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             const json = await response.json().catch(() => ({ok: false}));
             if (!response.ok || !json.ok) {
-                showToast(json.error || "Aktion fehlgeschlagen");
+                showToast(json.error || labels.actionFailed);
                 return;
             }
             game = json.game;
@@ -126,12 +145,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function render(force = false) {
-        document.getElementById("c4-player-red").textContent = game.players.R || "Wartet...";
-        document.getElementById("c4-player-yellow").textContent = game.players.Y || "Wartet...";
+        document.getElementById("c4-player-red").textContent = game.players.R || labels.waiting;
+        document.getElementById("c4-player-yellow").textContent = game.players.Y || labels.waiting;
         document.getElementById("c4-status").textContent = game.statusLabel;
         document.getElementById("c4-message").textContent = game.message;
         document.getElementById("c4-round").textContent = game.roundNumber;
-        document.getElementById("c4-disc").textContent = discLabel(game.playerDisc) || "Zuschauer";
+        document.getElementById("c4-disc").textContent = discLabel(game.playerDisc) || labels.spectator;
         document.getElementById("c4-current").textContent = discLabel(game.currentDisc);
 
         const winningLine = new Set(game.winningLine || []);
@@ -187,17 +206,25 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.classList.toggle("is-draw", !game.winnerDisc);
 
         if (!game.winnerDisc) {
-            kicker.textContent = "Unentschieden";
-            title.textContent = "Keiner gewinnt diese Runde";
-            text.textContent = "Das Board ist voll. Startet eine neue Runde und klärt das.";
+            kicker.textContent = labels.drawKicker;
+            title.textContent = labels.drawTitle;
+            text.textContent = labels.drawText;
             return;
         }
 
         const winnerName = game.players[game.winnerDisc] || discLabel(game.winnerDisc);
         const playerWon = game.playerDisc && game.playerDisc === game.winnerDisc;
-        kicker.textContent = playerWon ? "Gewonnen" : "Spiel beendet";
-        title.textContent = playerWon ? "Du hast gewonnen!" : `${winnerName} hat gewonnen`;
-        text.textContent = `${discLabel(game.winnerDisc)} verbindet vier Steine.`;
+        kicker.textContent = playerWon ? labels.wonKicker : labels.endedKicker;
+        title.textContent = playerWon ? labels.youWon : text("playerWon", {name: winnerName});
+        text.textContent = text("winnerLine", {disc: discLabel(game.winnerDisc)});
+    }
+
+    function text(key, replacements = {}) {
+        let template = labels[key] || key;
+        Object.entries(replacements).forEach(([name, value]) => {
+            template = template.replaceAll(`{${name}}`, value);
+        });
+        return template;
     }
 
     function animateLastMove() {
@@ -229,8 +256,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function discLabel(disc) {
-        if (disc === "R") return "Rot";
-        if (disc === "Y") return "Gelb";
+        if (disc === "R") return labels.red;
+        if (disc === "Y") return labels.yellow;
         return "";
     }
 
@@ -254,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function handleDeletedGame(payload) {
-        showToast(payload.error || "Dieser Raum wurde gelöscht.");
+        showToast(payload.error || labels.deletedRoom);
         window.setTimeout(() => {
             window.location.href = payload.redirectUrl || "/vier-gewinnt/";
         }, 900);
@@ -265,12 +292,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!stateUrl) return;
         const csrfToken = getCookie("csrftoken");
         const labels = {
-            emptyInvites: rootElement.dataset.emptyInvitesLabel || "Keine Einladungen.",
-            emptyGames: rootElement.dataset.emptyGamesLabel || "Keine Räume.",
-            from: rootElement.dataset.fromLabel || "von",
-            accept: rootElement.dataset.acceptLabel || "Annehmen",
-            decline: rootElement.dataset.declineLabel || "Ablehnen",
-            round: rootElement.dataset.roundLabel || "Runde",
+            emptyInvites: rootElement.dataset.emptyInvitesLabel || "No pending invitations.",
+            emptyGames: rootElement.dataset.emptyGamesLabel || "No rooms.",
+            from: rootElement.dataset.fromLabel || "from",
+            accept: rootElement.dataset.acceptLabel || "Accept",
+            decline: rootElement.dataset.declineLabel || "Decline",
+            round: rootElement.dataset.roundLabel || "Round",
         };
         let lastSignature = "";
         refreshHomeState();
