@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("weather.js geladen");
-
     /* ───────────────── SEARCH FOCUS ───────────────── */
 
     const searchInput = document.querySelector(".weather-search-form input");

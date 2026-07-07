@@ -971,10 +971,11 @@ class AuthViewTests(BaseTestCase):
         mocked_submit.return_value = RecaptchaResponse(is_valid=False)
         self.client.logout()
 
-        response = self.client.post(reverse("google_oauth_login"), {
-            "process": "login",
-            "g-recaptcha-response": "FAILED",
-        })
+        with self.assertLogs("django_recaptcha.fields", level="WARNING"):
+            response = self.client.post(reverse("google_oauth_login"), {
+                "process": "login",
+                "g-recaptcha-response": "FAILED",
+            })
 
         self.assertRedirects(response, reverse("login"), fetch_redirect_response=False)
 
