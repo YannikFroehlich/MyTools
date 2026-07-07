@@ -2953,6 +2953,55 @@ class ToolFavorite(models.Model):
         return f"{self.user} · {self.tool_key}"
 
 
+class VacationHoliday(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="vacation_holidays")
+    date = models.DateField(db_index=True)
+    name = models.CharField(max_length=100, default="Feiertag")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["date", "name"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "date"], name="unique_vacation_holiday_per_user_date")
+        ]
+        indexes = [models.Index(fields=["user", "date"])]
+        verbose_name = "Urlaubsplaner-Feiertag"
+        verbose_name_plural = "Urlaubsplaner-Feiertage"
+
+    @property
+    def year(self):
+        return self.date.year
+
+    def __str__(self):
+        return f"{self.date:%Y-%m-%d} - {self.name}"
+
+
+class VacationPeriod(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="vacation_periods")
+    title = models.CharField(max_length=100, default="Urlaub")
+    start_date = models.DateField(db_index=True)
+    end_date = models.DateField(db_index=True)
+    note = models.TextField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-start_date", "-created_at"]
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(end_date__gte=models.F("start_date")),
+                name="vacation_period_end_after_start",
+            )
+        ]
+        indexes = [models.Index(fields=["user", "start_date", "end_date"])]
+        verbose_name = "Urlaubsplaner-Urlaub"
+        verbose_name_plural = "Urlaubsplaner-Urlaube"
+
+    def __str__(self):
+        return f"{self.title}: {self.start_date:%Y-%m-%d} - {self.end_date:%Y-%m-%d}"
+
+
 class InboxItem(models.Model):
     TYPE_SYSTEM = "system"
     TYPE_CHAT = "chat"

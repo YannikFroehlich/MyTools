@@ -56,6 +56,8 @@ from .models import (
     UserProfile,
     UserSuspension,
     UserTwoFactorSettings,
+    VacationHoliday,
+    VacationPeriod,
     WeatherLocation,
     WerewolfInvite,
     WerewolfLobby,
@@ -542,6 +544,24 @@ class ToolFavoriteAdmin(admin.ModelAdmin):
     list_display = ("user", "tool_key", "created_at")
     list_filter = ("tool_key",)
     search_fields = ("user__username", "tool_key")
+
+
+@admin.register(VacationHoliday)
+class VacationHolidayAdmin(admin.ModelAdmin):
+    list_display = ("name", "date", "user", "updated_at")
+    list_filter = ("date",)
+    search_fields = ("name", "user__username", "user__email")
+    date_hierarchy = "date"
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(VacationPeriod)
+class VacationPeriodAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "start_date", "end_date", "updated_at")
+    list_filter = ("start_date", "end_date")
+    search_fields = ("title", "note", "user__username", "user__email")
+    date_hierarchy = "start_date"
+    readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(InboxItem)

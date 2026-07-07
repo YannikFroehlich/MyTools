@@ -1,0 +1,321 @@
+{% extends "app/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% translate "Urlaubsplaner" %} • MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/vacation_planner.css' %}?v=20260707-vacation-planner">
+{% endblock %}
+
+{% block body_class %}vacation-planner-body{% endblock %}
+
+{% block content %}
+    <section class="vacation-page" aria-labelledby="vacation-title">
+        <header class="vacation-hero">
+            <div class="vacation-hero-main">
+                <span class="vacation-hero-icon" aria-hidden="true">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </span>
+                <div>
+                    <p class="vacation-eyebrow">MyTools Leave</p>
+                    <h1 id="vacation-title">{% translate "Urlaubsplaner" %}</h1>
+                    <p>{% translate "Berechnet Urlaubstage ohne Samstage, Sonntage und deine gespeicherten Feiertage." %}</p>
+                </div>
+            </div>
+            <div class="vacation-hero-stats" aria-label="{% translate 'Urlaubstage im Jahr' %}">
+                <span>{% translate "Urlaubstage im Jahr" %}</span>
+                <strong>{{ vacation_summary.total_days }}</strong>
+                <small>{{ vacation_summary.taken_days }} {% translate "genommen" %} · {{ vacation_summary.planned_days }} {% translate "geplant" %}</small>
+            </div>
+        </header>
+
+        <div class="vacation-layout">
+            <section class="vacation-panel vacation-calculator" aria-labelledby="vacation-calc-title">
+                <div class="vacation-panel-head">
+                    <div>
+                        <p class="vacation-section-kicker">{% translate "Zeitraum" %}</p>
+                        <h2 id="vacation-calc-title">{% translate "Urlaub berechnen" %}</h2>
+                    </div>
+                    <span class="vacation-panel-badge" id="vacation-year-coverage">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        {% translate "Bereit" %}
+                    </span>
+                </div>
+
+                <div class="vacation-date-grid">
+                    <label class="vacation-field" for="vacation-start-date">
+                        <span>{% translate "Startdatum" %}</span>
+                        <input id="vacation-start-date" type="date" value="{{ today }}">
+                    </label>
+                    <label class="vacation-field" for="vacation-end-date">
+                        <span>{% translate "Enddatum" %}</span>
+                        <input id="vacation-end-date" type="date" value="{{ today }}">
+                    </label>
+                    <button class="vacation-primary-button" id="vacation-calculate" type="button">
+                        <i class="fa-solid fa-calculator"></i>
+                        {% translate "Berechnen" %}
+                    </button>
+                </div>
+
+                <div class="vacation-result-grid" aria-live="polite">
+                    <article class="vacation-result-card is-primary">
+                        <span>{% translate "Urlaubstage" %}</span>
+                        <strong id="vacation-days-needed">0</strong>
+                        <small>{% translate "benötigt" %}</small>
+                    </article>
+                    <article class="vacation-result-card">
+                        <span>{% translate "Kalendertage" %}</span>
+                        <strong id="vacation-calendar-days">0</strong>
+                        <small>{% translate "inklusive Start und Ende" %}</small>
+                    </article>
+                    <article class="vacation-result-card">
+                        <span>{% translate "Wochenenden" %}</span>
+                        <strong id="vacation-weekend-days">0</strong>
+                        <small>{% translate "Samstag und Sonntag" %}</small>
+                    </article>
+                    <article class="vacation-result-card">
+                        <span>{% translate "Feiertage" %}</span>
+                        <strong id="vacation-holiday-days">0</strong>
+                        <small>{% translate "auf Werktagen" %}</small>
+                    </article>
+                </div>
+
+                <div class="vacation-message" id="vacation-message">
+                    {% translate "Gib Start und Ende ein, um deine Urlaubstage zu berechnen." %}
+                </div>
+
+                <div class="vacation-timeline" id="vacation-timeline" aria-label="{% translate 'Kalenderübersicht' %}"></div>
+            </section>
+
+            <aside class="vacation-panel vacation-holiday-summary" aria-labelledby="vacation-holiday-hit-title">
+                <div class="vacation-panel-head compact">
+                    <div>
+                        <p class="vacation-section-kicker">{% translate "Abzug" %}</p>
+                        <h2 id="vacation-holiday-hit-title">{% translate "Feiertage im Zeitraum" %}</h2>
+                    </div>
+                </div>
+                <div class="vacation-holiday-hit-list" id="vacation-holiday-hit-list">
+                    <div class="vacation-empty-state">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span>{% translate "Keine gespeicherten Feiertage im Zeitraum." %}</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <section class="vacation-panel vacation-period-manager" aria-labelledby="vacation-periods-title">
+            <div class="vacation-panel-head">
+                <div>
+                    <p class="vacation-section-kicker">{% translate "Account" %}</p>
+                    <h2 id="vacation-periods-title">{% translate "Gespeicherter Urlaub" %}</h2>
+                </div>
+                <form method="get" class="vacation-year-form">
+                    <label class="sr-only" for="vacation-year-periods">{% translate "Jahr anzeigen" %}</label>
+                    <select id="vacation-year-periods" name="year" onchange="this.form.submit()">
+                        {% for year in year_options %}
+                            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <div class="vacation-summary-grid" aria-label="{% translate 'Verbrauch' %}">
+                <article class="vacation-result-card is-primary">
+                    <span>{% translate "Gesamt" %}</span>
+                    <strong>{{ vacation_summary.total_days }}</strong>
+                    <small>{% translate "Urlaubstage" %}</small>
+                </article>
+                <article class="vacation-result-card">
+                    <span>{% translate "Bereits genommen" %}</span>
+                    <strong>{{ vacation_summary.taken_days }}</strong>
+                    <small>{% translate "bis heute" %}</small>
+                </article>
+                <article class="vacation-result-card">
+                    <span>{% translate "Geplant" %}</span>
+                    <strong>{{ vacation_summary.planned_days }}</strong>
+                    <small>{% translate "ab morgen" %}</small>
+                </article>
+                <article class="vacation-result-card">
+                    <span>{% translate "Einträge" %}</span>
+                    <strong>{{ vacation_summary.period_count }}</strong>
+                    <small>{{ selected_year }}</small>
+                </article>
+            </div>
+
+            <div class="vacation-manager-grid vacation-period-grid">
+                <form method="post" class="vacation-form vacation-period-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_vacation">
+                    <input type="hidden" name="year" value="{{ selected_year }}">
+
+                    <label class="vacation-field" for="vacation-save-title">
+                        <span>{% translate "Titel" %}</span>
+                        <input id="vacation-save-title" name="vacation_title" type="text" maxlength="100" placeholder="{% translate 'Sommerurlaub' %}" required>
+                    </label>
+                    <div class="vacation-inline-fields">
+                        <label class="vacation-field" for="vacation-save-start">
+                            <span>{% translate "Von" %}</span>
+                            <input id="vacation-save-start" name="vacation_start" type="date" value="{{ today }}" required>
+                        </label>
+                        <label class="vacation-field" for="vacation-save-end">
+                            <span>{% translate "Bis" %}</span>
+                            <input id="vacation-save-end" name="vacation_end" type="date" value="{{ today }}" required>
+                        </label>
+                    </div>
+                    <label class="vacation-field" for="vacation-save-note">
+                        <span>{% translate "Notiz" %} <small>{% translate "optional" %}</small></span>
+                        <textarea id="vacation-save-note" name="vacation_note" rows="3" maxlength="500" placeholder="{% translate 'z.B. Familienurlaub oder Brückentage' %}"></textarea>
+                    </label>
+                    <button class="vacation-secondary-button" type="submit">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        {% translate "Urlaub im Account speichern" %}
+                    </button>
+                </form>
+
+                <div class="vacation-period-list-wrap">
+                    {% if vacation_period_rows %}
+                        <div class="vacation-period-list">
+                            {% for row in vacation_period_rows %}
+                                <article class="vacation-period-row status-{{ row.status_key }}">
+                                    <div class="vacation-period-main">
+                                        <div class="vacation-period-title-row">
+                                            <strong>{{ row.period.title }}</strong>
+                                            <span class="vacation-status-badge status-{{ row.status_key }}">{{ row.status_label }}</span>
+                                        </div>
+                                        <span>{{ row.period.start_date|date:"d.m.Y" }} – {{ row.period.end_date|date:"d.m.Y" }}</span>
+                                        {% if row.period.start_date != row.clipped_start or row.period.end_date != row.clipped_end %}
+                                            <small>{% blocktranslate with year=selected_year %}Anteil {{ year }}{% endblocktranslate %}: {{ row.clipped_start|date:"d.m.Y" }} – {{ row.clipped_end|date:"d.m.Y" }}</small>
+                                        {% endif %}
+                                        {% if row.period.note %}
+                                            <p>{{ row.period.note }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="vacation-period-meta">
+                                        <span><strong>{{ row.vacation_days }}</strong> {% translate "Urlaubstage" %}</span>
+                                        <span>{{ row.taken_days }} {% translate "genommen" %}</span>
+                                        <span>{{ row.planned_days }} {% translate "geplant" %}</span>
+                                    </div>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete_vacation">
+                                        <input type="hidden" name="vacation_id" value="{{ row.period.id }}">
+                                        <input type="hidden" name="year" value="{{ selected_year }}">
+                                        <button type="submit" class="vacation-icon-button" title="{% translate 'Urlaub löschen' %}" aria-label="{% translate 'Urlaub löschen' %}">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="vacation-empty-state large">
+                            <i class="fa-regular fa-calendar-check"></i>
+                            <strong>{% translate "Noch kein Urlaub gespeichert" %}</strong>
+                            <span>{% translate "Speichere deine Urlaubstage, damit du später siehst, wann du frei hattest." %}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <section class="vacation-panel vacation-holiday-manager" aria-labelledby="vacation-holidays-title">
+            <div class="vacation-panel-head">
+                <div>
+                    <p class="vacation-section-kicker">{% translate "Feiertage" %}</p>
+                    <h2 id="vacation-holidays-title">{% translate "Gespeicherte Feiertage" %}</h2>
+                </div>
+                <form method="get" class="vacation-year-form">
+                    <label class="sr-only" for="vacation-year">{% translate "Jahr auswählen" %}</label>
+                    <select id="vacation-year" name="year" onchange="this.form.submit()">
+                        {% for year in year_options %}
+                            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <div class="vacation-manager-grid">
+                <div class="vacation-form-stack">
+                    <form method="post" class="vacation-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add_holiday">
+                        <input type="hidden" name="year" value="{{ selected_year }}">
+
+                        <label class="vacation-field" for="holiday-name">
+                            <span>{% translate "Name" %}</span>
+                            <input id="holiday-name" name="holiday_name" type="text" maxlength="100" placeholder="{% translate 'Neujahr' %}" required>
+                        </label>
+                        <label class="vacation-field" for="holiday-date">
+                            <span>{% translate "Datum" %}</span>
+                            <input id="holiday-date" name="holiday_date" type="date" required>
+                        </label>
+                        <button class="vacation-secondary-button" type="submit">
+                            <i class="fa-solid fa-plus"></i>
+                            {% translate "Feiertag speichern" %}
+                        </button>
+                    </form>
+
+                    <form method="post" class="vacation-form vacation-bulk-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="bulk_add_holidays">
+                        <input type="hidden" name="year" value="{{ selected_year }}">
+
+                        <label class="vacation-field" for="bulk-holidays">
+                            <span>{% translate "Mehrere Feiertage" %}</span>
+                            <textarea id="bulk-holidays" name="bulk_holidays" rows="7" placeholder="{% translate '2026-01-01 Neujahr' %}&#10;{% translate '03.10. Tag der Deutschen Einheit' %}"></textarea>
+                        </label>
+                        <button class="vacation-secondary-button" type="submit">
+                            <i class="fa-solid fa-list-check"></i>
+                            {% translate "Liste speichern" %}
+                        </button>
+                    </form>
+                </div>
+
+                <div class="vacation-holiday-list-wrap">
+                    {% if holidays %}
+                        <div class="vacation-holiday-list">
+                            {% for holiday in holidays %}
+                                <article class="vacation-holiday-row">
+                                    <div>
+                                        <strong>{{ holiday.name }}</strong>
+                                        <span>{{ holiday.date|date:"d.m.Y" }}</span>
+                                    </div>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete_holiday">
+                                        <input type="hidden" name="holiday_id" value="{{ holiday.id }}">
+                                        <input type="hidden" name="year" value="{{ selected_year }}">
+                                        <button type="submit" class="vacation-icon-button" title="{% translate 'Feiertag löschen' %}" aria-label="{% translate 'Feiertag löschen' %}">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </article>
+                            {% endfor %}
+                        </div>
+                        <form method="post" class="vacation-clear-form" data-vacation-clear-form>
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="clear_year">
+                            <input type="hidden" name="year" value="{{ selected_year }}">
+                            <button type="submit" class="vacation-danger-button">
+                                <i class="fa-solid fa-calendar-xmark"></i>
+                                {% translate "Jahr leeren" %}
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="vacation-empty-state large">
+                            <i class="fa-regular fa-calendar-plus"></i>
+                            <strong>{% translate "Noch keine Feiertage gespeichert" %}</strong>
+                            <span>{% translate "Speichere Feiertage für dieses Jahr oder füge direkt Daten aus einem anderen Jahr ein." %}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    {{ all_holidays|json_script:"vacation-holidays-data" }}
+    {{ planner_labels|json_script:"vacation-planner-labels" }}
+    <script src="{% static 'app/js/vacation_planner.js' %}?v=20260707-vacation-planner" defer></script>
+{% endblock %}

@@ -1926,18 +1926,18 @@ class HomeViewTests(BaseTestCase):
         response = self.client.get(reverse("home"))
         content = response.content.decode()
 
-        self.assertContains(response, "data-tool-theme=", count=19)
+        self.assertContains(response, "data-tool-theme=", count=20)
         for theme in (
             "clock", "notes", "file-share", "feedback", "roadmap", "changelog",
-            "calculator", "fuel", "units", "randomizer", "qr", "genius", "images",
-            "converter", "palette", "profile-card", "avatar", "stream-deck", "obs",
+            "vacation", "calculator", "fuel", "units", "randomizer", "qr", "genius",
+            "images", "converter", "palette", "profile-card", "avatar", "stream-deck", "obs",
         ):
             self.assertIn(f'data-tool-theme="{theme}"', content)
 
         self.user.is_staff = True
         self.user.save(update_fields=["is_staff"])
         staff_response = self.client.get(reverse("home"))
-        self.assertContains(staff_response, "data-tool-theme=", count=21)
+        self.assertContains(staff_response, "data-tool-theme=", count=22)
         self.assertContains(staff_response, 'data-tool-theme="moderation"')
         self.assertContains(staff_response, 'data-tool-theme="server"')
 
