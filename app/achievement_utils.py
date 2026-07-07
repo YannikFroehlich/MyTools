@@ -1,3 +1,7 @@
+from functools import lru_cache
+
+from django.conf import settings
+from django.core.cache import cache
 from django.db.models import Max, Q, Sum
 from django.db.models.functions import TruncDate
 from django.urls import reverse
@@ -32,6 +36,10 @@ from .models import (
 )
 
 
+ACHIEVEMENT_METRICS_CACHE_TIMEOUT = 60
+ACHIEVEMENT_METRICS_CACHE_VERSION = 1
+
+
 CATEGORY_META = {
     "games": {"label": _("Spiele"), "icon": "fa-solid fa-gamepad"},
     "notes": {"label": _("Notizen"), "icon": "fa-regular fa-note-sticky"},
@@ -42,6 +50,7 @@ CATEGORY_META = {
 }
 
 
+@lru_cache(maxsize=1)
 def achievement_definitions():
     return [
         {
@@ -461,8 +470,15 @@ def _safe_count(queryset):
     return queryset.count()
 
 
-def _profile_field_count(user):
-    profile = UserProfile.objects.filter(user=user).first()
+def _profile_for_user(user):
+    try:
+        return user.profile
+    except (AttributeError, UserProfile.DoesNotExist):
+        return UserProfile.objects.filter(user=user).first()
+
+
+def _profile_field_count(user, profile=None):
+    profile = profile if profile is not None else _profile_for_user(user)
     if not profile:
         return 0
 
@@ -473,8 +489,8 @@ def _profile_field_count(user):
     ])
 
 
-def _profile_card_customized(user):
-    profile = UserProfile.objects.filter(user=user).first()
+def _profile_card_customized(user, profile=None):
+    profile = profile if profile is not None else _profile_for_user(user)
     if not profile:
         return 0
 
@@ -554,6 +570,7 @@ def _active_days_for_user(user, include_private=True, include_games=True):
 
 
 def collect_achievement_metrics(user, include_private=True, include_games=True):
+    profile = _profile_for_user(user)
     friends_count = Friendship.accepted_for_user(user).count()
     gallery_items = ProfileGalleryImage.objects.filter(user=user)
     if not include_private:
@@ -561,10 +578,10 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
     gallery_count = gallery_items.count()
 
     metrics = {
-        "profile_fields": _profile_field_count(user),
+        "profile_fields": _profile_field_count(user, profile),
         "friends_count": friends_count,
         "gallery_count": gallery_count,
-        "profile_card_customized": _profile_card_customized(user),
+        "profile_card_customized": _profile_card_customized(user, profile),
         "notes_count": 0,
         "note_reminders": 0,
         "notes_shared": 0,
@@ -689,6 +706,31 @@ def collect_achievement_metrics(user, include_private=True, include_games=True):
     return metrics
 
 
+def _achievement_metrics_cache_key(user, include_private, include_games):
+    return (
+        f"achievement-metrics:v{ACHIEVEMENT_METRICS_CACHE_VERSION}:"
+        f"{user.pk}:{int(include_private)}:{int(include_games)}"
+    )
+
+
+def _can_cache_achievement_metrics():
+    return not getattr(settings, "IS_TESTING", False)
+
+
+def get_achievement_metrics(user, include_private=True, include_games=True):
+    if not _can_cache_achievement_metrics():
+        return collect_achievement_metrics(user, include_private=include_private, include_games=include_games)
+
+    cache_key = _achievement_metrics_cache_key(user, include_private, include_games)
+    metrics = cache.get(cache_key)
+    if metrics is not None:
+        return metrics
+
+    metrics = collect_achievement_metrics(user, include_private=include_private, include_games=include_games)
+    cache.set(cache_key, metrics, timeout=ACHIEVEMENT_METRICS_CACHE_TIMEOUT)
+    return metrics
+
+
 def _format_metric(value):
     return f"{int(value):,}".replace(",", ".")
 
@@ -713,7 +755,7 @@ def _level_from_xp(xp):
 
 
 def get_achievement_summary(user, include_private=True, include_games=True):
-    metrics = collect_achievement_metrics(
+    metrics = get_achievement_metrics(
         user,
         include_private=include_private,
         include_games=include_games,

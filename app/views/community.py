@@ -25,6 +25,7 @@ from ..models import ChatMessage, FeatureComment, FeatureIdea, FeatureVote, File
 
 
 STARTED_AT = timezone.now()
+SERVER_STATUS_SIZE_CACHE_TIMEOUT = 60
 
 
 def get_git_changelog():
@@ -300,8 +301,14 @@ def achievement_center_view(request):
     UserModel = get_user_model()
     leaderboard_entries = []
 
-    for user in UserModel.objects.filter(is_active=True).order_by("username")[:100]:
-        user_summary = get_achievement_summary(user)
+    leaderboard_users = (
+        UserModel.objects
+        .filter(is_active=True)
+        .select_related("profile")
+        .order_by("username")[:100]
+    )
+    for user in leaderboard_users:
+        user_summary = summary if user.id == request.user.id else get_achievement_summary(user)
         leaderboard_entries.append({
             "user": user,
             "summary": user_summary,
@@ -407,20 +414,39 @@ def _path_size(path):
     return total
 
 
+def _short_cache_get_or_set(key, builder, timeout=SERVER_STATUS_SIZE_CACHE_TIMEOUT):
+    if getattr(settings, "IS_TESTING", False):
+        return builder()
+
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+
+    value = builder()
+    cache.set(key, value, timeout=timeout)
+    return value
+
+
 def _database_size_label():
-    database_settings = settings.DATABASES.get("default", {})
-    database_name = database_settings.get("NAME")
-    if database_name and database_settings.get("ENGINE", "").endswith("sqlite3"):
-        return _human_bytes(_path_size(database_name))
-    return _("Nicht verfügbar")
+    def build_label():
+        database_settings = settings.DATABASES.get("default", {})
+        database_name = database_settings.get("NAME")
+        if database_name and database_settings.get("ENGINE", "").endswith("sqlite3"):
+            return _human_bytes(_path_size(database_name))
+        return _("Nicht verfügbar")
+
+    return _short_cache_get_or_set("server-status:database-size-label:v1", build_label)
 
 
 def _media_usage_summary():
-    media_root = getattr(settings, "MEDIA_ROOT", "")
-    if not media_root:
-        return {"label": _("Nicht gesetzt"), "bytes": 0}
-    size = _path_size(media_root)
-    return {"label": _human_bytes(size), "bytes": size}
+    def build_summary():
+        media_root = getattr(settings, "MEDIA_ROOT", "")
+        if not media_root:
+            return {"label": _("Nicht gesetzt"), "bytes": 0}
+        size = _path_size(media_root)
+        return {"label": _human_bytes(size), "bytes": size}
+
+    return _short_cache_get_or_set("server-status:media-usage:v1", build_summary)
 
 
 def _process_memory_label():
