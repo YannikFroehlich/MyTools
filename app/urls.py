@@ -252,6 +252,7 @@ from .views.platform import (
 from .views.security import qr_code_tool_view, security_dashboard_view
 from .views.trash import trash_delete_view, trash_empty_view, trash_restore_view, trash_view
 from .views.community import achievement_center_view, changelog_view, roadmap_view, server_status_view
+from .views.vacation import vacation_planner_view
 from .views.moderation import (
     moderation_access_toggle_view,
     moderation_dashboard_view,
@@ -360,6 +361,7 @@ urlpatterns = [
     path('weather-icon/<str:icon_code>/<str:size>/', weather_icon_view, name='weather_icon'),
     path('obs-dashboard/', obs_dashboard, name='obs-dashboard'),
     path('spritkostenrechner/', spritkostenrechner, name='spritkostenrechner'),
+    path('tools/urlaub/', vacation_planner_view, name='vacation_planner'),
     path('budget/', budget_tracker_view, name='budget_tracker'),
     path('budget/export/', budget_tracker_export_csv, name='budget_tracker_export'),
 

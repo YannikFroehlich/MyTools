@@ -15981,6 +15981,325 @@ msgstr "Only the host can delete this lobby."
 msgid "Werwolf-Lobby wurde gelöscht."
 msgstr "Skribble lobby was deleted."
 
+#: .\app\platform_utils.py:37 .\app\platform_utils.py:75
+#: .\app\templates\app\about.html:165 .\app\templates\app\base.html:529
+#: .\app\templates\app\vacation_planner.html:4
+#: .\app\templates\app\vacation_planner.html:21
+msgid "Urlaubsplaner"
+msgstr "Vacation planner"
+
+#: .\app\templates\app\vacation_planner.html:22
+msgid "Berechnet Urlaubstage ohne Samstage, Sonntage und deine gespeicherten Feiertage."
+msgstr "Calculates vacation days excluding Saturdays, Sundays, and your saved holidays."
+
+#: .\app\templates\app\vacation_planner.html:25
+#: .\app\templates\app\vacation_planner.html:116
+msgid "Gespeicherte Feiertage"
+msgstr "Saved holidays"
+
+#: .\app\templates\app\vacation_planner.html:29
+#, python-format
+msgid "%(count)s Feiertag gespeichert"
+msgid_plural "%(count)s Feiertage gespeichert"
+msgstr[0] "%(count)s holiday saved"
+msgstr[1] "%(count)s holidays saved"
+
+#: .\app\templates\app\vacation_planner.html:43
+msgid "Urlaub berechnen"
+msgstr "Calculate leave"
+
+#: .\app\templates\app\vacation_planner.html:53
+msgid "Startdatum"
+msgstr "Start date"
+
+#: .\app\templates\app\vacation_planner.html:57
+msgid "Enddatum"
+msgstr "End date"
+
+#: .\app\templates\app\vacation_planner.html:62
+msgid "Berechnen"
+msgstr "Calculate"
+
+#: .\app\templates\app\vacation_planner.html:68
+msgid "Urlaubstage"
+msgstr "Vacation days"
+
+#: .\app\templates\app\vacation_planner.html:70
+msgid "benötigt"
+msgstr "needed"
+
+#: .\app\templates\app\vacation_planner.html:73 .\app\views\vacation.py:207
+msgid "Kalendertage"
+msgstr "Calendar days"
+
+#: .\app\templates\app\vacation_planner.html:75
+msgid "inklusive Start und Ende"
+msgstr "including start and end"
+
+#: .\app\templates\app\vacation_planner.html:78
+msgid "Wochenenden"
+msgstr "Weekends"
+
+#: .\app\templates\app\vacation_planner.html:80
+msgid "Samstag und Sonntag"
+msgstr "Saturday and Sunday"
+
+#: .\app\templates\app\vacation_planner.html:83
+msgid "Feiertage"
+msgstr "Holidays"
+
+#: .\app\templates\app\vacation_planner.html:85
+msgid "auf Werktagen"
+msgstr "on weekdays"
+
+#: .\app\templates\app\vacation_planner.html:90 .\app\views\vacation.py:205
+msgid "Gib Start und Ende ein, um deine Urlaubstage zu berechnen."
+msgstr "Enter a start and end date to calculate your vacation days."
+
+#: .\app\templates\app\vacation_planner.html:93
+msgid "Kalenderübersicht"
+msgstr "Calendar overview"
+
+#: .\app\templates\app\vacation_planner.html:99
+msgid "Abzug"
+msgstr "Deduction"
+
+#: .\app\templates\app\vacation_planner.html:100
+msgid "Feiertage im Zeitraum"
+msgstr "Holidays in range"
+
+#: .\app\templates\app\vacation_planner.html:106 .\app\views\vacation.py:210
+msgid "Keine gespeicherten Feiertage im Zeitraum."
+msgstr "No saved holidays in this range."
+
+#: .\app\templates\app\vacation_planner.html:119
+msgid "Jahr auswählen"
+msgstr "Select year"
+
+#: .\app\templates\app\vacation_planner.html:137
+msgid "Neujahr"
+msgstr "New Year's Day"
+
+#: .\app\templates\app\vacation_planner.html:145
+msgid "Feiertag speichern"
+msgstr "Save holiday"
+
+#: .\app\templates\app\vacation_planner.html:155
+msgid "Mehrere Feiertage"
+msgstr "Multiple holidays"
+
+#: .\app\templates\app\vacation_planner.html:156
+msgid "2026-01-01 Neujahr"
+msgstr "2026-01-01 New Year's Day"
+
+#: .\app\templates\app\vacation_planner.html:156
+msgid "03.10. Tag der Deutschen Einheit"
+msgstr "10-03 German Unity Day"
+
+#: .\app\templates\app\vacation_planner.html:160
+msgid "Liste speichern"
+msgstr "Save list"
+
+#: .\app\templates\app\vacation_planner.html:179
+msgid "Feiertag löschen"
+msgstr "Delete holiday"
+
+#: .\app\templates\app\vacation_planner.html:192
+msgid "Jahr leeren"
+msgstr "Clear year"
+
+#: .\app\templates\app\vacation_planner.html:198
+msgid "Noch keine Feiertage gespeichert"
+msgstr "No holidays saved yet"
+
+#: .\app\templates\app\vacation_planner.html:199
+msgid "Speichere Feiertage für dieses Jahr oder füge direkt Daten aus einem anderen Jahr ein."
+msgstr "Save holidays for this year or add dates from another year directly."
+
+#: .\app\templates\app\base.html:529
+msgid "Urlaub Ferien Feiertage Arbeitstage Planung Kalender"
+msgstr "vacation leave holidays workdays planning calendar"
+
+#: .\app\templates\app\base.html:533
+msgid "Planung"
+msgstr "Planning"
+
+#: .\app\templates\app\about.html:166
+msgid "Urlaubszeiträume mit gespeicherten Feiertagen, Wochenenden und benötigten Urlaubstagen berechnen."
+msgstr "Calculate leave periods with saved holidays, weekends, and required vacation days."
+
+#: .\app\views\vacation.py:62 .\app\views\vacation.py:105
+msgid "Feiertag"
+msgstr "Holiday"
+
+#: .\app\views\vacation.py:109
+msgid "Bitte gib ein gueltiges Feiertagsdatum ein."
+msgstr "Please enter a valid holiday date."
+
+#: .\app\views\vacation.py:117
+msgid "Feiertag wurde gespeichert."
+msgstr "Holiday saved."
+
+#: .\app\views\vacation.py:149
+#, python-format
+msgid "%(count)s Feiertag wurde gespeichert."
+msgstr "%(count)s holiday was saved."
+
+#: .\app\views\vacation.py:151
+#, python-format
+msgid "%(count)s Feiertage wurden gespeichert."
+msgstr "%(count)s holidays were saved."
+
+#: .\app\views\vacation.py:157
+#, python-format
+msgid "Einige Zeilen konnten nicht gelesen werden: %(lines)s."
+msgstr "Some lines could not be read: %(lines)s."
+
+#: .\app\views\vacation.py:163
+msgid "Keine Feiertage zum Speichern gefunden."
+msgstr "No holidays found to save."
+
+#: .\app\views\vacation.py:171
+msgid "Feiertag wurde geloescht."
+msgstr "Holiday deleted."
+
+#: .\app\views\vacation.py:177
+msgid "Feiertage fuer dieses Jahr wurden geloescht."
+msgstr "Holidays for this year were deleted."
+
+#: .\app\views\vacation.py:179
+msgid "Fuer dieses Jahr waren keine Feiertage gespeichert."
+msgstr "No holidays were saved for this year."
+
+#: .\app\views\vacation.py:203
+msgid "Bitte Start- und Enddatum ausfuellen."
+msgstr "Please fill in the start and end date."
+
+#: .\app\views\vacation.py:204
+msgid "Das Enddatum muss nach dem Startdatum liegen."
+msgstr "The end date must be after the start date."
+
+#: .\app\views\vacation.py:206
+msgid "benoetigte Urlaubstage"
+msgstr "required vacation days"
+
+#: .\app\views\vacation.py:208
+msgid "Wochenendtage"
+msgstr "weekend days"
+
+#: .\app\views\vacation.py:209
+msgid "Feiertage auf Werktagen"
+msgstr "holidays on weekdays"
+
+#: .\app\views\vacation.py:211
+msgid "Gespeicherter Feiertag"
+msgstr "Saved holiday"
+
+#: .\app\views\vacation.py:212
+msgid "Wochenende"
+msgstr "Weekend"
+
+#: .\app\views\vacation.py:213
+msgid "Urlaubstag"
+msgstr "Vacation day"
+
+#: .\app\views\vacation.py:214
+msgid "Noch keine Feiertage gespeichert fuer"
+msgstr "No holidays saved for"
+
+#: .\app\views\vacation.py:215
+msgid "Alle Feiertage fuer dieses Jahr loeschen?"
+msgstr "Delete all holidays for this year?"
+
+#: .\app\templates\app\vacation_planner.html:25
+msgid "Urlaubstage im Jahr"
+msgstr "Vacation days this year"
+
+#: .\app\templates\app\vacation_planner.html:28
+#: .\app\templates\app\vacation_planner.html:202
+msgid "geplant"
+msgstr "planned"
+
+#: .\app\templates\app\vacation_planner.html:115
+msgid "Gespeicherter Urlaub"
+msgstr "Saved vacation"
+
+#: .\app\templates\app\vacation_planner.html:118
+msgid "Jahr anzeigen"
+msgstr "Show year"
+
+#: .\app\templates\app\vacation_planner.html:128
+msgid "Verbrauch"
+msgstr "Usage"
+
+#: .\app\templates\app\vacation_planner.html:136
+msgid "Bereits genommen"
+msgstr "Already taken"
+
+#: .\app\templates\app\vacation_planner.html:138
+msgid "bis heute"
+msgstr "through today"
+
+#: .\app\templates\app\vacation_planner.html:143
+msgid "ab morgen"
+msgstr "from tomorrow"
+
+#: .\app\templates\app\vacation_planner.html:161
+msgid "Sommerurlaub"
+msgstr "Summer vacation"
+
+#: .\app\templates\app\vacation_planner.html:169
+msgid "Bis"
+msgstr "To"
+
+#: .\app\templates\app\vacation_planner.html:174
+msgid "optional"
+msgstr "optional"
+
+#: .\app\templates\app\vacation_planner.html:175
+msgid "z.B. Familienurlaub oder Brückentage"
+msgstr "e.g. family vacation or bridge days"
+
+#: .\app\templates\app\vacation_planner.html:179
+msgid "Urlaub im Account speichern"
+msgstr "Save vacation to account"
+
+#: .\app\templates\app\vacation_planner.html:192
+#, python-format
+msgid "Anteil %(year)s"
+msgstr "%(year)s share"
+
+#: .\app\templates\app\vacation_planner.html:209
+msgid "Urlaub löschen"
+msgstr "Delete vacation"
+
+#: .\app\templates\app\vacation_planner.html:218
+msgid "Noch kein Urlaub gespeichert"
+msgstr "No vacation saved yet"
+
+#: .\app\templates\app\vacation_planner.html:219
+msgid "Speichere deine Urlaubstage, damit du später siehst, wann du frei hattest."
+msgstr "Save your vacation days so you can later see when you had time off."
+
+#: .\app\views\vacation.py:103
+msgid "Genommen"
+msgstr "Taken"
+
+#: .\app\views\vacation.py:104
+msgid "Aktuell"
+msgstr "Current"
+
+#: .\app\views\vacation.py:170
+msgid "Bitte gib einen gueltigen Urlaubszeitraum ein."
+msgstr "Please enter a valid vacation period."
+
+#: .\app\views\vacation.py:185
+msgid "Urlaub wurde gespeichert."
+msgstr "Vacation saved."
+
+#: .\app\views\vacation.py:242
+msgid "Urlaub wurde geloescht."
+msgstr "Vacation deleted."
 #: .\app\templates\app\connectfour_lobby.html
 #: .\app\templates\app\tictactoe_lobby.html
 msgid "Wirklich löschen?"
@@ -16553,9 +16872,6 @@ msgstr "{name} sank all your ships."
 #~ msgstr ""
 #~ "All visible new features, usability updates and major platform "
 #~ "improvements in one place."
-
-#~ msgid "Aktuell"
-#~ msgstr "Current"
 
 #~ msgid ""
 #~ "Kurzer Blick auf die letzten Update-Pakete und Bedienungsverbesserungen."
