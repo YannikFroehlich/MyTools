@@ -88,6 +88,7 @@ Unterstützte Widget-Typen:
 - Kniffel
 - Datei-Share
 - Budget
+- Urlaubsplaner
 - Favoriten
 - Roadmap
 - Inbox
@@ -235,6 +236,18 @@ OPENWEATHER_API_KEY=dein_openweather_api_key
 - Summen, Restbudget und Fortschritt
 - CSV-Export
 - Budget-Widget auf der Startseite
+
+---
+
+### Urlaubsplaner
+
+- Feiertage pro Nutzer und Datum speichern
+- mehrere Feiertage per Textliste importieren
+- Start- und Enddatum fuer Urlaubszeitraeume berechnen
+- Samstage, Sonntage und gespeicherte Feiertage werden nicht als Urlaubstage gezaehlt
+- Urlaubszeitraeume mit Titel und Notiz im eigenen Account speichern
+- Jahresuebersicht mit genommenen, geplanten und gesamten Urlaubstagen
+- Jahresfilter fuer aktuelle, vergangene und kommende Jahre
 
 ---
 
@@ -489,6 +502,7 @@ Gemeinsame Tool-Styles gelten unter anderem für:
 - Rechner
 - Randomizer
 - Notizen
+- Urlaubsplaner
 
 ---
 
