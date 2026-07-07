@@ -1,7 +1,5 @@
 import OBSWebSocket from "https://cdn.jsdelivr.net/npm/obs-websocket-js@5.0.6/+esm";
 
-console.log("script.js wurde geladen");
-
 const obs = new OBSWebSocket();
 const obsDashboardPage = document.querySelector(".obs-dashboard-page");
 const USER_STORAGE_SUFFIX = obsDashboardPage?.dataset.userId ? `_user_${obsDashboardPage.dataset.userId}` : "";
@@ -393,14 +391,10 @@ function renderAudioMixer(audioInputs) {
 
 async function setInputVolumeDb(inputName, dbValue) {
     try {
-        console.log("Setze Lautstärke:", inputName, dbValue, "dB");
-
         await obs.call("SetInputVolume", {
             inputName: inputName,
             inputVolumeDb: dbValue
         });
-
-        console.log("Lautstärke gesetzt");
 
     } catch (error) {
         console.error("Lautstärke konnte nicht gesetzt werden:", inputName, error);

@@ -4,7 +4,7 @@
 
 Die App bündelt eigene Startseiten-Verknüpfungen, Widgets, Profile, Freunde, Chats, Notizen, Datei-Share, Rechner, Konverter, API-Tools, Spiele, Roadmap, Achievements, Moderation und Admin-/Security-Funktionen in einer modernen Oberfläche mit **Dark Mode**, **Theme-Anpassung**, **PWA-Support** und **deutscher/englischer Oberfläche**.
 
-Stand dieser README: **24.06.2026**
+Stand dieser README: **07.07.2026**
 
 ---
 
@@ -31,6 +31,8 @@ Produktiv läuft der Web-Container aktuell über **Daphne** (`MyTools.asgi:appli
 - **Git-Changelog statt manueller Einträge**: Die Seite `/changelog/` zeigt nur noch Änderungen aus dem Git-Repository. Die JSON-Datei wird über `scripts/generate_git_changelog.py` erzeugt.
 - **Changelog-Paginierung**: Git-Änderungen werden mit **20 Commits pro Seite** angezeigt. Die Seitennavigation sitzt unten im Changelog-Bereich und nicht im normalen Header.
 - **Umlaut-/Mojibake-Fix**: Git-Commit-Texte werden beim Anzeigen bereinigt, damit kaputte Zeichen wie `Ã¼` nicht mehr sichtbar sind.
+- **Urlaubsplaner erweitert**: Die Seite ist übersetzt, hat Tests für Berechnung und CRUD-Aktionen und passt Icons sowie Eingabefelder sauber an aktive Themes an.
+- **Theme-Farben für Formularfelder**: Eigene Farbthemes färben Fokus, Caret und Auswahlzustände von Eingabefeldern passend zum Theme statt im Standardblau.
 - **Shortcut-Farben**: Jede Home-Verknüpfung kann eine eigene Farbe bekommen, unabhängig von der Bereichsfarbe.
 - **Erweiterte Home-Widgets**: Neben Wetter, Uhr, Notizen und Statistik gibt es Widgets für Chat, Freunde, Skribble, Tic Tac Toe, Stadt Land Fluss, Uno, Kniffel, Datei-Share, Budget, Favoriten, Roadmap, Inbox und Changelog.
 - **Home-Onboarding**: Neue Nutzer können beim ersten Start eine Vorlage wählen, z. B. Alltag, Gaming oder Homelab.
@@ -243,11 +245,12 @@ OPENWEATHER_API_KEY=dein_openweather_api_key
 
 - Feiertage pro Nutzer und Datum speichern
 - mehrere Feiertage per Textliste importieren
-- Start- und Enddatum fuer Urlaubszeitraeume berechnen
-- Samstage, Sonntage und gespeicherte Feiertage werden nicht als Urlaubstage gezaehlt
-- Urlaubszeitraeume mit Titel und Notiz im eigenen Account speichern
-- Jahresuebersicht mit genommenen, geplanten und gesamten Urlaubstagen
-- Jahresfilter fuer aktuelle, vergangene und kommende Jahre
+- Start- und Enddatum für Urlaubszeiträume berechnen
+- Samstage, Sonntage und gespeicherte Feiertage werden nicht als Urlaubstage gezählt
+- Urlaubszeiträume mit optionaler Bezeichnung und Notiz im eigenen Account speichern
+- Jahresübersicht mit genommenen, geplanten und gesamten Urlaubstagen
+- Jahresfilter für aktuelle, vergangene und kommende Jahre
+- deutsch- und englischsprachige Oberfläche mit theme-passenden Formularfeldern
 
 ---
 

@@ -2479,8 +2479,8 @@ msgid ""
 "Wurzeln, Potenzen, Logarithmen, Trigonometrie, Speicher und Verlauf wie bei "
 "einem Casio-Rechner."
 msgstr ""
-"Wurzeln, Potenzen, Logarithmen, Trigonometrie, Speicher und Verlauf wie bei "
-"einem Casio-Rechner."
+"Roots, powers, logarithms, trigonometry, memory, and history like on a "
+"Casio calculator."
 
 #: .\app\templates\app\about.html:156
 msgid "Tankstellen und Preise per Standort oder Stadtsuche prüfen."
@@ -2491,8 +2491,8 @@ msgid ""
 "Monatsbudget, Einnahmen, Ausgaben, Fixkosten, Kategorien und CSV-Export "
 "verwalten."
 msgstr ""
-"Monatsbudget, Einnahmen, Ausgaben, Fixkosten, Kategorien und CSV-Export "
-"verwalten."
+"Manage monthly budget, income, expenses, fixed costs, categories, and CSV "
+"export."
 
 #: .\app\templates\app\about.html:166
 msgid "Songs und Künstler über die Genius API finden."
@@ -2509,19 +2509,15 @@ msgstr ""
 
 #: .\app\templates\app\about.html:181
 msgid "Bilder komprimieren, konvertieren und direkt als Download vorbereiten."
-msgstr ""
+msgstr "Compress, convert, and prepare images directly as downloads."
 
 #: .\app\templates\app\about.html:186
-#, fuzzy
-#| msgid ""
-#| "Datei-Konverter für DOCX, Tabellen, Präsentationen, Textdateien und "
-#| "Bilder ergänzt."
 msgid ""
 "DOCX, Tabellen, Präsentationen, Textdateien und Bilder in PDF oder "
 "Bildformate umwandeln."
 msgstr ""
-"Added a file converter for DOCX files, spreadsheets, presentations, text "
-"files and images."
+"Convert DOCX files, spreadsheets, presentations, text files, and images to "
+"PDF or image formats."
 
 #: .\app\templates\app\about.html:194
 msgid "Spiele & Highscores"
@@ -2587,12 +2583,11 @@ msgid ""
 "Feature-Ideen einreichen, voten, kommentieren und den Umsetzungsstatus "
 "verfolgen."
 msgstr ""
-"Feature-Ideen einreichen, voten, kommentieren und den Umsetzungsstatus "
-"verfolgen."
+"Submit feature ideas, vote, comment, and track implementation status."
 
 #: .\app\templates\app\about.html:251
 msgid "Level, XP, Fortschritt und Ranking über MyTools-Aktivitäten anzeigen."
-msgstr "Level, XP, Fortschritt und Ranking ueber MyTools-activeitaeten show."
+msgstr "View levels, XP, progress, and ranking across MyTools activities."
 
 #: .\app\templates\app\about.html:256
 msgid "Zeichnen, raten, Freunde einladen und Punkte nach jeder Runde ansehen."
@@ -2625,34 +2620,27 @@ msgstr ""
 
 #: .\app\templates\app\about.html:280
 msgid "Mobile Bedienung"
-msgstr ""
+msgstr "Mobile usability"
 
-# | msgid ""
-# | "Mobile Bottom-Navigation für Start, Suche, Tools, Chat und Profil "
-# | "eingebaut."
 #: .\app\templates\app\about.html:281
-#, fuzzy
 msgid ""
 "Bottom-Navigation für Start, Suche, Tools, Header, Chat und Profil; der "
 "Header lässt sich bei Bedarf einblenden."
 msgstr ""
-"Added mobile bottom navigation for home, search, tools, chat and profile."
+"Bottom navigation for home, search, tools, header, chat, and profile; the "
+"header can be shown when needed."
 
 #: .\app\templates\app\about.html:285
 msgid "Design-Einstellungen"
 msgstr "Design settings"
 
-# | msgid ""
-# | "Kompaktmodus, große Schrift, hoher Kontrast, weniger Bewegung und "
-# | "Hintergrundeffekte im Browser speichern."
 #: .\app\templates\app\about.html:286
-#, fuzzy
 msgid ""
 "Eigene Farben, Rundungen, hohen Kontrast, weniger Bewegung und verbesserte "
 "Hintergrundeffekte im Browser speichern."
 msgstr ""
-"Save compact mode, large text, high contrast, reduced motion and background "
-"effects in the browser."
+"Save custom colors, rounding, high contrast, reduced motion, and improved "
+"background effects in the browser."
 
 #: .\app\templates\app\about.html:290 .\app\templates\app\base.html:544
 #: .\app\templates\app\base.html:547 .\app\templates\app\changelog.html:4
@@ -2710,20 +2698,16 @@ msgstr ""
 
 #: .\app\templates\app\about.html:319
 msgid ""
-"PostgreSQL, Redis, Gunicorn und Caddy sind für Docker-Deployment vorbereitet."
+"Daphne, PostgreSQL, Redis und Caddy sind für Docker-Deployment vorbereitet."
 msgstr ""
-"PostgreSQL, Redis, Gunicorn, and Caddy are prepared for Docker deployment."
+"Daphne, PostgreSQL, Redis, and Caddy are prepared for Docker deployment."
 
 #: .\app\templates\app\about.html:320
-#, fuzzy
-#| msgid ""
-#| "Live-Status und Benachrichtigungszähler nutzen WebSocket-Updates mit HTTP-"
-#| "Fallback."
 msgid ""
 "WebSocket-Updates halten Benachrichtigungen und Präsenz schneller aktuell, "
 "mit HTTP-Fallback."
 msgstr ""
-"Live status and notification counters use WebSocket updates with an HTTP "
+"WebSocket updates keep notifications and presence fresher, with an HTTP "
 "fallback."
 
 #: .\app\templates\app\about.html:321
@@ -2749,10 +2733,10 @@ msgstr ""
 
 #: .\app\templates\app\about.html:324
 msgid ""
-"Nebula Forge Tycoon nutzt übersetzbare Template- und JavaScript-Texte für "
-"die Django-PO-Dateien."
+"Neue Tools und JavaScript-lastige Bereiche halten sichtbare Texte in den "
+"Django-PO-Dateien übersetzbar."
 msgstr ""
-"Nebula Forge Tycoon uses translatable template and JavaScript text for the "
+"New tools and JavaScript-heavy areas keep visible text translatable in the "
 "Django PO files."
 
 #: .\app\templates\app\about.html:325
@@ -2760,8 +2744,8 @@ msgid ""
 "PWA-Unterstützung mit Manifest, Service Worker, App-Icons und Offline-"
 "Fallback ist vorbereitet."
 msgstr ""
-"PWA-Unterstuetzung mit Manifest, Service Worker, App-Icons und Offline-"
-"Fallback ist vorbereitet."
+"PWA support with manifest, service worker, app icons, and offline fallback "
+"is prepared."
 
 #: .\app\templates\app\about.html:331
 msgid "Ausblick"
@@ -16300,6 +16284,222 @@ msgstr "Vacation saved."
 #: .\app\views\vacation.py:242
 msgid "Urlaub wurde geloescht."
 msgstr "Vacation deleted."
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Urlaubstage pro Jahr"
+msgstr "Vacation days per year"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Urlaubstage speichern"
+msgstr "Save vacation days"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Urlaub"
+msgstr "Vacation"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Übersicht"
+msgstr "Overview"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Gesamturlaub"
+msgstr "Total vacation"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Verplant"
+msgstr "Planned"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Resturlaub"
+msgstr "Remaining vacation"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Urlaub hinzufügen"
+msgstr "Add vacation"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Neuer Zeitraum"
+msgstr "New period"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Bezeichnung"
+msgstr "Title"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "z. B. Sommerferien oder Brückentag"
+msgstr "e.g. summer break or bridge day"
+
+#: .\app\templates\app\vacation_planner.html .\app\views\vacation.py
+msgid "Zeitraum auswählen, um die Urlaubstage zu prüfen."
+msgstr "Select a period to check the vacation days."
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Urlaub speichern"
+msgstr "Save vacation"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Meine Urlaube"
+msgstr "My vacations"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Gespeicherte Zeiträume"
+msgstr "Saved periods"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Aktionen"
+msgstr "Actions"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Urlaub bearbeiten"
+msgstr "Edit vacation"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Füge oben deinen ersten Zeitraum hinzu."
+msgstr "Add your first period above."
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Nicht angerechnet"
+msgstr "Not counted"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Halber Feiertag"
+msgstr "Half-day holiday"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Hinzufügen"
+msgstr "Add"
+
+#: .\app\templates\app\vacation_planner.html .\app\views\vacation.py
+msgid "halber Feiertag"
+msgstr "half-day holiday"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Feiertag bearbeiten"
+msgstr "Edit holiday"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Noch keine Feiertage für dieses Jahr gespeichert."
+msgstr "No holidays saved for this year yet."
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Tagen"
+msgstr "days"
+
+#: .\app\templates\app\vacation_planner.html
+msgid "Du hast mehr Urlaub verplant, als für dieses Jahr hinterlegt ist."
+msgstr "You have planned more vacation than is stored for this year."
+
+#: .\app\views\vacation.py
+msgid "%(name)s (halber Feiertag)"
+msgstr "%(name)s (half-day holiday)"
+
+#: .\app\views\vacation.py
+msgid "Hinweis: Dieser Urlaub überschneidet sich mit einem vorhandenen Eintrag."
+msgstr "Note: This vacation overlaps with an existing entry."
+
+#: .\app\views\vacation.py
+msgid "Urlaub: %(titles)s"
+msgstr "Vacation: %(titles)s"
+
+#: .\app\views\vacation.py
+msgid "Feiertag: %(names)s"
+msgstr "Holiday: %(names)s"
+
+#: .\app\views\vacation.py
+msgid "Bitte gib Urlaubstage zwischen 0 und 366 ein."
+msgstr "Please enter vacation days between 0 and 366."
+
+#: .\app\views\vacation.py
+msgid "Urlaubstage für das Jahr wurden gespeichert."
+msgstr "Vacation days for the year were saved."
+
+#: .\app\views\vacation.py
+msgid "Bitte gib einen Namen für den Feiertag ein."
+msgstr "Please enter a name for the holiday."
+
+#: .\app\views\vacation.py
+msgid "Bitte gib ein gültiges Feiertagsdatum ein."
+msgstr "Please enter a valid holiday date."
+
+#: .\app\views\vacation.py
+msgid "Für dieses Datum existiert bereits ein Feiertag."
+msgstr "A holiday already exists for this date."
+
+#: .\app\views\vacation.py
+msgid "Feiertag wurde aktualisiert."
+msgstr "Holiday updated."
+
+#: .\app\views\vacation.py
+msgid "Feiertag wurde gelöscht."
+msgstr "Holiday deleted."
+
+#: .\app\views\vacation.py
+msgid "Bitte gib eine Bezeichnung für den Urlaub ein."
+msgstr "Please enter a title for the vacation."
+
+#: .\app\views\vacation.py
+msgid "Bitte gib einen gültigen Urlaubszeitraum ein."
+msgstr "Please enter a valid vacation period."
+
+#: .\app\views\vacation.py
+msgid "Das Enddatum darf nicht vor dem Startdatum liegen."
+msgstr "The end date cannot be before the start date."
+
+#: .\app\views\vacation.py
+msgid "Bitte prüfe deine Eingaben."
+msgstr "Please check your entries."
+
+#: .\app\views\vacation.py
+msgid "Urlaub wurde aktualisiert."
+msgstr "Vacation updated."
+
+#: .\app\views\vacation.py
+msgid "Urlaub wurde gelöscht."
+msgstr "Vacation deleted."
+
+#: .\app\views\vacation.py
+msgid "Bitte Start- und Enddatum ausfüllen."
+msgstr "Please fill in the start and end date."
+
+#: .\app\views\vacation.py
+msgid "Urlaub wirklich löschen?"
+msgstr "Really delete this vacation?"
+
+#: .\app\views\vacation.py
+msgid "Feiertag wirklich löschen?"
+msgstr "Really delete this holiday?"
+
+#: .\app\views\vacation.py
+msgid "Überschneidung mit einem gespeicherten Urlaub möglich."
+msgstr "Possible overlap with a saved vacation."
+
+#: .\app\views\vacation.py
+msgid "Mo"
+msgstr "Mon"
+
+#: .\app\views\vacation.py
+msgid "Di"
+msgstr "Tue"
+
+#: .\app\views\vacation.py
+msgid "Mi"
+msgstr "Wed"
+
+#: .\app\views\vacation.py
+msgid "Do"
+msgstr "Thu"
+
+#: .\app\views\vacation.py
+msgid "Fr"
+msgstr "Fri"
+
+#: .\app\views\vacation.py
+msgid "Sa"
+msgstr "Sat"
+
+#: .\app\views\vacation.py
+msgid "So"
+msgstr "Sun"
 #: .\app\templates\app\connectfour_lobby.html
 #: .\app\templates\app\tictactoe_lobby.html
 msgid "Wirklich löschen?"
