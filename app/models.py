@@ -2953,6 +2953,84 @@ class ToolFavorite(models.Model):
         return f"{self.user} · {self.tool_key}"
 
 
+class VacationYearSetting(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="vacation_year_settings")
+    year = models.PositiveSmallIntegerField(db_index=True)
+    total_days = models.PositiveSmallIntegerField(default=30)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-year"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "year"], name="unique_vacation_year_setting_per_user_year")
+        ]
+        indexes = [models.Index(fields=["user", "year"], name="vac_year_user_year_idx")]
+        verbose_name = "Urlaubsplaner-Jahreseinstellung"
+        verbose_name_plural = "Urlaubsplaner-Jahreseinstellungen"
+
+    def __str__(self):
+        return f"{self.user} - {self.year}: {self.total_days} Tage"
+
+
+class VacationHoliday(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="vacation_holidays")
+    year = models.PositiveSmallIntegerField(db_index=True, editable=False)
+    date = models.DateField(db_index=True)
+    name = models.CharField(max_length=100, default="Feiertag")
+    is_half_day = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["date", "name"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "year", "date"], name="unique_vacation_holiday_per_user_year_date")
+        ]
+        indexes = [models.Index(fields=["user", "year", "date"], name="vac_hol_user_year_date_idx")]
+        verbose_name = "Urlaubsplaner-Feiertag"
+        verbose_name_plural = "Urlaubsplaner-Feiertage"
+
+    def save(self, *args, **kwargs):
+        if self.date:
+            self.year = self.date.year
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.date:%Y-%m-%d} - {self.name}"
+
+
+class VacationPeriod(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="vacation_periods")
+    year = models.PositiveSmallIntegerField(db_index=True, editable=False)
+    title = models.CharField(max_length=100, default="Urlaub")
+    start_date = models.DateField(db_index=True)
+    end_date = models.DateField(db_index=True)
+    note = models.TextField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-start_date", "-created_at"]
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(end_date__gte=models.F("start_date")),
+                name="vacation_period_end_after_start",
+            )
+        ]
+        indexes = [models.Index(fields=["user", "year", "start_date", "end_date"], name="vac_per_user_year_range_idx")]
+        verbose_name = "Urlaubsplaner-Urlaub"
+        verbose_name_plural = "Urlaubsplaner-Urlaube"
+
+    def save(self, *args, **kwargs):
+        if self.start_date:
+            self.year = self.start_date.year
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.title}: {self.start_date:%Y-%m-%d} - {self.end_date:%Y-%m-%d}"
+
+
 class InboxItem(models.Model):
     TYPE_SYSTEM = "system"
     TYPE_CHAT = "chat"

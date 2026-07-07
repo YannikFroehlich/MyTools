@@ -125,6 +125,14 @@ ACCESS_CONTROL_ITEMS = (
         "url_names": ("spritkostenrechner", "tankstellen-api"),
     },
     {
+        "key": "vacation_planner",
+        "label": _("Urlaubsplaner"),
+        "kind": _("Tool"),
+        "category": _("Alltag"),
+        "icon": "fa-solid fa-calendar-check",
+        "url_names": ("vacation_planner",),
+    },
+    {
         "key": "budget_tracker",
         "label": _("Budget-Tracker"),
         "kind": _("Tool"),
