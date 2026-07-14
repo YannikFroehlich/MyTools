@@ -1,5 +1,6 @@
 {% load i18n l10n %}
-<article class="shopping-item{% if completed %} is-completed{% endif %}{% if planned %} is-planned{% endif %}">
+<article class="shopping-item{% if completed %} is-completed{% endif %}{% if planned %} is-planned{% endif %}"
+         data-shopping-item-id="{{ item.id }}" data-shopping-state="{% if completed %}completed{% elif planned %}planned{% else %}active{% endif %}">
     <div class="shopping-item-row">
         {% if planned %}
             <form method="post" action="{% url 'shopping_item_activate' item.id %}" class="shopping-toggle-form">
@@ -34,34 +35,53 @@
                 {% endif %}
             </div>
             <div class="shopping-item-meta">
-                <span><strong>{{ item.quantity|floatformat:"-2" }}</strong> {{ item.get_unit_display }}</span>
+                <span><strong data-shopping-quantity-display>{{ item.quantity|floatformat:"-2" }}</strong> {{ item.get_unit_display }}</span>
                 {% if planned and item.next_due_date %}<span class="shopping-due-date"><i class="fa-regular fa-calendar"></i> {{ item.next_due_date|date:"DATE_FORMAT" }}</span>{% endif %}
                 {% if item.brand %}<span>{{ item.brand }}</span>{% endif %}
                 {% if item.product_quantity %}<span>{{ item.product_quantity }}</span>{% endif %}
                 {% if item.barcode %}<span><i class="fa-solid fa-barcode"></i> {{ item.barcode }}</span>{% endif %}
             </div>
             {% if item.note %}<p>{{ item.note }}</p>{% endif %}
+
+            {% if not completed and not planned %}
+                <form method="post" action="{% url 'shopping_item_update' item.id %}" class="shopping-inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="inline" value="1">
+                    <label>
+                        <span>{% translate "Menge" %}</span>
+                        <input type="number" name="quantity" value="{{ item.quantity|unlocalize }}" min="0.01" max="999999.99" step="0.01" required inputmode="decimal" aria-label="{% translate 'Menge' %}">
+                        <small>{{ item.get_unit_display }}</small>
+                    </label>
+                    <label>
+                        <span>{% translate "Preis" %}</span>
+                        <input type="text" name="unit_price" value="{% if item.unit_price is not None %}{{ item.unit_price|unlocalize }}{% endif %}" inputmode="decimal" maxlength="13" placeholder="–" aria-label="{% translate 'Einzelpreis' %}">
+                        <small>€</small>
+                    </label>
+                    <button type="submit" class="shopping-inline-save" aria-label="{% translate 'Menge und Preis speichern' %}" title="{% translate 'Speichern' %}">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </form>
+            {% endif %}
         </div>
 
         <div class="shopping-item-price">
             {% if item.unit_price is not None %}
-                <strong>{{ item.line_total|floatformat:2 }} €</strong>
-                <small>{{ item.unit_price|floatformat:2 }} € / {{ item.get_unit_display }}</small>
+                <strong data-shopping-line-total>{{ item.line_total|floatformat:2 }} €</strong>
+                <small data-shopping-unit-price>{{ item.unit_price|floatformat:2 }} € / {{ item.get_unit_display }}</small>
             {% else %}
-                <span>—</span>
-                <small>{% translate "Kein Preis" %}</small>
+                <span data-shopping-line-total>—</span>
+                <small data-shopping-unit-price>{% translate "Kein Preis" %}</small>
             {% endif %}
         </div>
 
         <div class="shopping-item-actions">
             {% if not completed %}
                 <button type="button" class="shopping-icon-button shopping-edit-toggle" data-edit-target="shopping-edit-{{ item.id }}"
-                        aria-expanded="false" aria-label="{% translate 'Artikel bearbeiten' %}" title="{% translate 'Bearbeiten' %}">
-                    <i class="fa-solid fa-pen"></i>
+                        aria-expanded="false" aria-label="{% translate 'Weitere Artikeldaten bearbeiten' %}" title="{% translate 'Weitere Details' %}">
+                    <i class="fa-solid fa-ellipsis"></i>
                 </button>
             {% endif %}
-            <form method="post" action="{% url 'shopping_item_delete' item.id %}" class="shopping-confirm-form"
-                  data-confirm="{% translate 'Diesen Artikel wirklich löschen?' %}">
+            <form method="post" action="{% url 'shopping_item_delete' item.id %}" class="shopping-delete-form" data-item-name="{{ item.name }}">
                 {% csrf_token %}
                 <button type="submit" class="shopping-icon-button is-danger" aria-label="{% translate 'Artikel löschen' %}" title="{% translate 'Löschen' %}">
                     <i class="fa-solid fa-trash"></i>
@@ -74,50 +94,14 @@
         <form method="post" action="{% url 'shopping_item_update' item.id %}" class="shopping-edit-form" id="shopping-edit-{{ item.id }}" hidden>
             {% csrf_token %}
             <div class="shopping-edit-grid">
-                <label class="shopping-field shopping-field-name">
-                    <span>{% translate "Artikelname" %}</span>
-                    <input type="text" name="name" value="{{ item.name }}" maxlength="160" required>
-                </label>
-                <label class="shopping-field">
-                    <span>{% translate "Menge" %}</span>
-                    <input type="number" name="quantity" value="{{ item.quantity|unlocalize }}" min="0.01" max="999999.99" step="0.01" required>
-                </label>
-                <label class="shopping-field">
-                    <span>{% translate "Einheit" %}</span>
-                    <select name="unit">
-                        {% for value, label in unit_choices %}
-                            <option value="{{ value }}"{% if item.unit == value %} selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                <label class="shopping-field">
-                    <span>{% translate "Einzelpreis" %}</span>
-                    <input type="text" name="unit_price" value="{% if item.unit_price is not None %}{{ item.unit_price|unlocalize }}{% endif %}" inputmode="decimal" maxlength="13">
-                </label>
-                <label class="shopping-field">
-                    <span>{% translate "Kategorie" %}</span>
-                    <select name="category">
-                        {% for value, label in category_choices %}
-                            <option value="{{ value }}"{% if item.category == value %} selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                <label class="shopping-field">
-                    <span>{% translate "Wiederholung" %}</span>
-                    <select name="recurrence">
-                        {% for value, label in recurrence_choices %}
-                            <option value="{{ value }}"{% if item.recurrence == value %} selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                <label class="shopping-field">
-                    <span>{% translate "Barcode" %}</span>
-                    <input type="text" name="barcode" value="{{ item.barcode }}" inputmode="numeric" maxlength="17">
-                </label>
-                <label class="shopping-field shopping-field-note">
-                    <span>{% translate "Notiz" %}</span>
-                    <input type="text" name="note" value="{{ item.note }}" maxlength="1000">
-                </label>
+                <label class="shopping-field shopping-field-name"><span>{% translate "Artikelname" %}</span><input type="text" name="name" value="{{ item.name }}" maxlength="160" required></label>
+                <label class="shopping-field"><span>{% translate "Menge" %}</span><input type="number" name="quantity" value="{{ item.quantity|unlocalize }}" min="0.01" max="999999.99" step="0.01" required></label>
+                <label class="shopping-field"><span>{% translate "Einheit" %}</span><select name="unit">{% for value, label in unit_choices %}<option value="{{ value }}"{% if item.unit == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+                <label class="shopping-field"><span>{% translate "Einzelpreis" %}</span><input type="text" name="unit_price" value="{% if item.unit_price is not None %}{{ item.unit_price|unlocalize }}{% endif %}" inputmode="decimal" maxlength="13"></label>
+                <label class="shopping-field"><span>{% translate "Kategorie" %}</span><select name="category">{% for value, label in category_choices %}<option value="{{ value }}"{% if item.category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+                <label class="shopping-field"><span>{% translate "Wiederholung" %}</span><select name="recurrence">{% for value, label in recurrence_choices %}<option value="{{ value }}"{% if item.recurrence == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+                <label class="shopping-field"><span>{% translate "Barcode" %}</span><input type="text" name="barcode" value="{{ item.barcode }}" inputmode="numeric" maxlength="17"></label>
+                <label class="shopping-field shopping-field-note"><span>{% translate "Notiz" %}</span><input type="text" name="note" value="{{ item.note }}" maxlength="1000"></label>
             </div>
             <input type="hidden" name="brand" value="{{ item.brand }}">
             <input type="hidden" name="product_quantity" value="{{ item.product_quantity }}">

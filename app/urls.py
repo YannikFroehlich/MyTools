@@ -236,6 +236,7 @@ from .views.shopping import (
     shopping_clear_completed_view,
     shopping_item_activate_view,
     shopping_item_delete_view,
+    shopping_item_restore_view,
     shopping_item_toggle_view,
     shopping_item_update_view,
     shopping_list_view,
@@ -378,6 +379,7 @@ urlpatterns = [
     path('einkaufszettel/artikel/<int:item_id>/abhaken/', shopping_item_toggle_view, name='shopping_item_toggle'),
     path('einkaufszettel/artikel/<int:item_id>/jetzt/', shopping_item_activate_view, name='shopping_item_activate'),
     path('einkaufszettel/artikel/<int:item_id>/loeschen/', shopping_item_delete_view, name='shopping_item_delete'),
+    path('einkaufszettel/artikel/wiederherstellen/', shopping_item_restore_view, name='shopping_item_restore'),
     path('einkaufszettel/erledigte-entfernen/', shopping_clear_completed_view, name='shopping_clear_completed'),
     path('api/einkaufszettel/produkt/<str:barcode>/', shopping_product_api, name='shopping-product-api'),
 

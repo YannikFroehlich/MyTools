@@ -152,6 +152,7 @@ ACCESS_CONTROL_ITEMS = (
             "shopping_item_toggle",
             "shopping_item_activate",
             "shopping_item_delete",
+            "shopping_item_restore",
             "shopping_clear_completed",
             "shopping-product-api",
         ),

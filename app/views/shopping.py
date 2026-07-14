@@ -5,11 +5,13 @@ from urllib.parse import urlparse
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Max
+from django.core import signing
+from django.db.models import Max, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dateparse import parse_date, parse_datetime
 from django.utils.formats import date_format
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
@@ -22,6 +24,18 @@ DECIMAL_STEP = Decimal("0.01")
 MAX_QUANTITY = Decimal("999999.99")
 MAX_PRICE = Decimal("99999999.99")
 ALLOWED_IMAGE_HOSTS = {"images.openfoodfacts.org", "static.openfoodfacts.org"}
+SHOPPING_UNDO_WINDOW_SECONDS = 30
+SHOPPING_UNDO_SALT = "shopping-item-undo"
+CATEGORY_ICONS = {
+    ShoppingItem.CATEGORY_FRUIT_VEG: "fa-solid fa-carrot",
+    ShoppingItem.CATEGORY_BAKERY: "fa-solid fa-bread-slice",
+    ShoppingItem.CATEGORY_CHILLED: "fa-solid fa-snowflake",
+    ShoppingItem.CATEGORY_PANTRY: "fa-solid fa-box-open",
+    ShoppingItem.CATEGORY_DRINKS: "fa-solid fa-bottle-water",
+    ShoppingItem.CATEGORY_FROZEN: "fa-solid fa-icicles",
+    ShoppingItem.CATEGORY_HOUSEHOLD: "fa-solid fa-house",
+    ShoppingItem.CATEGORY_OTHER: "fa-solid fa-basket-shopping",
+}
 
 
 def _default_list(user):
@@ -145,6 +159,136 @@ def _redirect_to_list():
     return redirect(reverse("shopping_list"))
 
 
+def _wants_json(request):
+    return (
+        "application/json" in request.headers.get("Accept", "")
+        or request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    )
+
+
+def _decimal_input(value):
+    if value is None:
+        return ""
+    return format(value.normalize(), "f")
+
+
+def _item_json(item):
+    line_total = item.line_total
+    return {
+        "id": item.id,
+        "name": item.name,
+        "quantity": _decimal_input(item.quantity),
+        "unit": item.unit,
+        "unit_label": str(item.get_unit_display()),
+        "unit_price": _decimal_input(item.unit_price),
+        "line_total": format(line_total.quantize(DECIMAL_STEP, rounding=ROUND_HALF_UP), ".2f") if line_total is not None else None,
+        "category": item.category,
+        "category_label": str(item.get_category_display()),
+        "barcode": item.barcode,
+        "is_completed": item.is_completed,
+        "is_planned": item.next_due_date is not None,
+    }
+
+
+def _suggestion_payload(item, usage_count=1):
+    return {
+        "name": item.name,
+        "quantity": _decimal_input(item.quantity),
+        "unit": item.unit,
+        "unit_price": _decimal_input(item.unit_price),
+        "category": item.category,
+        "recurrence": item.recurrence,
+        "barcode": item.barcode,
+        "brand": item.brand,
+        "product_quantity": item.product_quantity,
+        "image_url": item.image_url,
+        "usage_count": usage_count,
+        "kind": "frequent" if usage_count > 1 else "recent",
+    }
+
+
+def _shopping_suggestions(completed_items, active_items, limit=8):
+    active_names = {item.name.strip().casefold() for item in active_items}
+    grouped = {}
+    for item in sorted(completed_items, key=lambda value: value.updated_at, reverse=True):
+        key = item.name.strip().casefold()
+        if not key or key in active_names:
+            continue
+        entry = grouped.setdefault(key, {"item": item, "count": 0})
+        entry["count"] += 1
+
+    ranked = sorted(
+        grouped.values(),
+        key=lambda entry: (-entry["count"], -entry["item"].updated_at.timestamp()),
+    )
+    return [
+        _suggestion_payload(entry["item"], entry["count"])
+        for entry in ranked[:limit]
+    ]
+
+
+def _starter_suggestions():
+    defaults = (
+        (_("Milch"), ShoppingItem.CATEGORY_CHILLED, ShoppingItem.UNIT_PIECE),
+        (_("Brot"), ShoppingItem.CATEGORY_BAKERY, ShoppingItem.UNIT_PIECE),
+        (_("Bananen"), ShoppingItem.CATEGORY_FRUIT_VEG, ShoppingItem.UNIT_PIECE),
+        (_("Wasser"), ShoppingItem.CATEGORY_DRINKS, ShoppingItem.UNIT_PACK),
+        (_("Nudeln"), ShoppingItem.CATEGORY_PANTRY, ShoppingItem.UNIT_PACK),
+        (_("Spülmittel"), ShoppingItem.CATEGORY_HOUSEHOLD, ShoppingItem.UNIT_PIECE),
+    )
+    return [
+        {
+            "name": str(name),
+            "quantity": "1",
+            "unit": unit,
+            "unit_price": "",
+            "category": category,
+            "recurrence": ShoppingItem.RECURRENCE_NONE,
+            "barcode": "",
+            "brand": "",
+            "product_quantity": "",
+            "image_url": "",
+            "usage_count": 0,
+            "kind": "starter",
+        }
+        for name, category, unit in defaults
+    ]
+
+
+def _duplicate_item(shopping_list, data):
+    duplicate_query = Q(name__iexact=data["name"])
+    if data["barcode"]:
+        duplicate_query |= Q(barcode=data["barcode"])
+    return shopping_list.items.filter(
+        is_completed=False,
+        next_due_date__isnull=True,
+    ).filter(duplicate_query).first()
+
+
+def _delete_snapshot(item):
+    return {
+        "owner_id": item.shopping_list.owner_id,
+        "shopping_list_id": item.shopping_list_id,
+        "item": {
+            "name": item.name,
+            "quantity": str(item.quantity),
+            "unit": item.unit,
+            "unit_price": str(item.unit_price) if item.unit_price is not None else None,
+            "category": item.category,
+            "note": item.note,
+            "barcode": item.barcode,
+            "brand": item.brand,
+            "product_quantity": item.product_quantity,
+            "image_url": item.image_url,
+            "recurrence": item.recurrence,
+            "next_due_date": item.next_due_date.isoformat() if item.next_due_date else None,
+            "is_completed": item.is_completed,
+            "completed_at": item.completed_at.isoformat() if item.completed_at else None,
+            "position": item.position,
+        },
+    }
+
+
 @login_required
 def shopping_list_view(request):
     shopping_list = _default_list(request.user)
@@ -152,15 +296,32 @@ def shopping_list_view(request):
     if request.method == "POST":
         data, error = _item_data(request)
         if error:
+            if _wants_json(request):
+                return JsonResponse({"ok": False, "error": error}, status=400)
             messages.error(request, error)
             return _redirect_to_list()
 
+        duplicate = _duplicate_item(shopping_list, data)
+        if duplicate and _wants_json(request) and request.POST.get("allow_duplicate") != "1":
+            return JsonResponse({
+                "ok": False,
+                "duplicate": True,
+                "error": _("%(name)s steht bereits auf deiner Liste.") % {"name": duplicate.name},
+                "item": _item_json(duplicate),
+            }, status=409)
+
         last_position = shopping_list.items.aggregate(max_position=Max("position"))["max_position"] or 0
-        ShoppingItem.objects.create(
+        item = ShoppingItem.objects.create(
             shopping_list=shopping_list,
             position=last_position + 1,
             **data,
         )
+        if _wants_json(request):
+            return JsonResponse({
+                "ok": True,
+                "message": _("Artikel wurde hinzugefügt."),
+                "item": _item_json(item),
+            }, status=201)
         messages.success(request, _("Artikel wurde hinzugefügt."))
         return _redirect_to_list()
 
@@ -183,6 +344,19 @@ def shopping_list_view(request):
         key=lambda item: (item.next_due_date, item.position, item.created_at),
     )
     completed_items = [item for item in items if item.is_completed]
+    active_groups = []
+    for category, label in ShoppingItem.CATEGORY_CHOICES:
+        category_items = [item for item in active_items if item.category == category]
+        if category_items:
+            active_groups.append({
+                "category": category,
+                "label": label,
+                "icon": CATEGORY_ICONS.get(category, CATEGORY_ICONS[ShoppingItem.CATEGORY_OTHER]),
+                "items": category_items,
+            })
+
+    historical_suggestions = _shopping_suggestions(completed_items, active_items)
+    shopping_suggestions = historical_suggestions or _starter_suggestions()
     estimated_total = sum(
         (item.line_total for item in active_items if item.line_total is not None),
         Decimal("0.00"),
@@ -192,8 +366,12 @@ def shopping_list_view(request):
     return render(request, "app/shopping_list.html", {
         "shopping_list": shopping_list,
         "active_items": active_items,
+        "active_groups": active_groups,
         "planned_items": planned_items,
         "completed_items": completed_items,
+        "shopping_suggestions": shopping_suggestions,
+        "has_historical_suggestions": bool(historical_suggestions),
+        "existing_items": [_item_json(item) for item in active_items],
         "active_count": len(active_items),
         "planned_count": len(planned_items),
         "completed_count": len(completed_items),
@@ -213,8 +391,38 @@ def shopping_item_update_view(request, item_id):
         id=item_id,
         shopping_list__owner=request.user,
     )
+    if request.POST.get("inline") == "1":
+        try:
+            quantity = _parse_decimal(request.POST.get("quantity"), required=True, maximum=MAX_QUANTITY)
+        except ValueError:
+            error = _("Die Menge muss größer als 0 sein.")
+            if _wants_json(request):
+                return JsonResponse({"ok": False, "error": error}, status=400)
+            messages.error(request, error)
+            return _redirect_to_list()
+
+        try:
+            unit_price = _parse_optional_price(request.POST.get("unit_price"))
+        except ValueError:
+            error = _("Bitte gib einen gültigen Preis ein.")
+            if _wants_json(request):
+                return JsonResponse({"ok": False, "error": error}, status=400)
+            messages.error(request, error)
+            return _redirect_to_list()
+
+        item.quantity = quantity
+        item.unit_price = unit_price
+        item.save(update_fields=["quantity", "unit_price", "updated_at"])
+        message = _("Menge und Preis wurden gespeichert.")
+        if _wants_json(request):
+            return JsonResponse({"ok": True, "message": message, "item": _item_json(item)})
+        messages.success(request, message)
+        return _redirect_to_list()
+
     data, error = _item_data(request)
     if error:
+        if _wants_json(request):
+            return JsonResponse({"ok": False, "error": error}, status=400)
         messages.error(request, error)
         return _redirect_to_list()
 
@@ -225,6 +433,12 @@ def shopping_item_update_view(request, item_id):
         item.next_due_date = None
         update_fields.append("next_due_date")
     item.save(update_fields=update_fields)
+    if _wants_json(request):
+        return JsonResponse({
+            "ok": True,
+            "message": _("Artikel wurde aktualisiert."),
+            "item": _item_json(item),
+        })
     messages.success(request, _("Artikel wurde aktualisiert."))
     return _redirect_to_list()
 
@@ -289,8 +503,78 @@ def shopping_item_delete_view(request, item_id):
         id=item_id,
         shopping_list__owner=request.user,
     )
+    restore_token = signing.dumps(
+        _delete_snapshot(item),
+        salt=SHOPPING_UNDO_SALT,
+        compress=True,
+    )
     item.delete()
+    if _wants_json(request):
+        return JsonResponse({
+            "ok": True,
+            "message": _("Artikel wurde gelöscht."),
+            "restore_url": reverse("shopping_item_restore"),
+            "restore_token": restore_token,
+        })
     messages.success(request, _("Artikel wurde gelöscht."))
+    return _redirect_to_list()
+
+
+@login_required
+@require_POST
+def shopping_item_restore_view(request):
+    expired_message = _("Dieser Artikel kann nicht mehr wiederhergestellt werden.")
+    restore_token = request.POST.get("token") or ""
+    try:
+        snapshot = signing.loads(
+            restore_token,
+            salt=SHOPPING_UNDO_SALT,
+            max_age=SHOPPING_UNDO_WINDOW_SECONDS,
+        )
+    except (signing.BadSignature, signing.SignatureExpired):
+        if _wants_json(request):
+            return JsonResponse({"ok": False, "error": expired_message}, status=410)
+        messages.error(request, expired_message)
+        return _redirect_to_list()
+
+    try:
+        if int(snapshot["owner_id"]) != request.user.pk:
+            raise ValueError
+
+        shopping_list = get_object_or_404(
+            ShoppingList,
+            id=int(snapshot["shopping_list_id"]),
+            owner=request.user,
+        )
+        stored = snapshot["item"]
+        item = ShoppingItem.objects.create(
+            shopping_list=shopping_list,
+            name=stored["name"],
+            quantity=Decimal(stored["quantity"]),
+            unit=stored["unit"],
+            unit_price=Decimal(stored["unit_price"]) if stored["unit_price"] is not None else None,
+            category=stored["category"],
+            note=stored["note"],
+            barcode=stored["barcode"],
+            brand=stored["brand"],
+            product_quantity=stored["product_quantity"],
+            image_url=stored["image_url"],
+            recurrence=stored["recurrence"],
+            next_due_date=parse_date(stored["next_due_date"]) if stored["next_due_date"] else None,
+            is_completed=bool(stored["is_completed"]),
+            completed_at=parse_datetime(stored["completed_at"]) if stored["completed_at"] else None,
+            position=int(stored["position"]),
+        )
+    except (InvalidOperation, KeyError, TypeError, ValueError):
+        if _wants_json(request):
+            return JsonResponse({"ok": False, "error": expired_message}, status=410)
+        messages.error(request, expired_message)
+        return _redirect_to_list()
+
+    message = _("Artikel wurde wiederhergestellt.")
+    if _wants_json(request):
+        return JsonResponse({"ok": True, "message": message, "item": _item_json(item)})
+    messages.success(request, message)
     return _redirect_to_list()
 
 
