@@ -19,14 +19,6 @@
         <p>{% translate "Baue dir eine eigene Profilkarte mit Farben, Muster, Glow und Badge. Die Karte wird in deinem Profil und auf öffentlichen Profilen angezeigt." %}</p>
     </div>
 
-    {% if messages %}
-        <div class="profile-messages">
-            {% for message in messages %}
-                <div class="profile-message profile-message-{{ message.tags }}"><i class="fa-solid fa-circle-check"></i>{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="profile-designer-layout">
         <form method="post" class="profile-card profile-designer-form" id="profile-card-designer-form">
             {% csrf_token %}

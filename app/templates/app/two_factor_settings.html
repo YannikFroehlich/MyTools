@@ -25,14 +25,6 @@
         </span>
     </div>
 
-    {% if messages %}
-        <div class="security-messages">
-            {% for message in messages %}
-                <p class="{{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="security-card-grid">
         <article class="security-card">
             <h2>{% translate 'So funktioniert es' %}</h2>

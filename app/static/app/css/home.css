@@ -100,6 +100,19 @@
     color: #8a94a6;
 }
 
+/* The rounded wrapper owns the visible focus ring. Global theme input styles
+   must not draw a second, rectangular ring inside the search control. */
+#google-search-input:is(:focus, :focus-visible, :active) {
+    outline: none;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+}
+
+.search-wrapper:focus-within .search-icon {
+    color: var(--theme-accent-end);
+}
+
 .search-button {
     border: none;
     background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));

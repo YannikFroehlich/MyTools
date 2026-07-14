@@ -3,7 +3,6 @@ import re
 from io import BytesIO
 
 from django.contrib import messages
-from django.contrib.messages import get_messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.models import Session
@@ -137,11 +136,6 @@ def security_dashboard_view(request):
             )
             return redirect("security_dashboard")
 
-    security_messages = [
-        message for message in get_messages(request)
-        if "security" in message.tags.split()
-    ]
-
     two_factor_settings = UserTwoFactorSettings.objects.filter(user=request.user).first()
     two_factor_enabled = bool(two_factor_settings and two_factor_settings.is_enabled and two_factor_settings.secret_key)
     active_sessions = _active_sessions_for_user(request.user, current_session_key)
@@ -153,7 +147,6 @@ def security_dashboard_view(request):
         "active_sessions": active_sessions,
         "current_session_key": current_session_key,
         "security_events": events,
-        "security_messages": security_messages,
         "login_success_count": SecurityEvent.objects.filter(user=request.user, event_type=SecurityEvent.EVENT_LOGIN_SUCCESS).count(),
         "login_failed_count": SecurityEvent.objects.filter(user=request.user, event_type=SecurityEvent.EVENT_LOGIN_FAILED).count(),
     }

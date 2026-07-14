@@ -29,14 +29,6 @@
         </form>
     </div>
 
-    {% if messages %}
-        <div class="platform-messages moderation-messages">
-            {% for message in messages %}
-                <div>{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="moderation-stats">
         {% for stat in stats %}
             <article class="moderation-stat is-{{ stat.tone }}">
