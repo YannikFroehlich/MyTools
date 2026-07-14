@@ -829,6 +829,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationList = document.querySelector('.js-notification-list');
     const notificationTotal = document.querySelector('.js-notification-total');
     const notificationClearAllButton = document.querySelector('.js-notification-clear-all');
+    const notificationTotalBadge = document.querySelector('.js-notification-badge[data-notification-key="total_notifications"]');
+    let transientNotificationItems = [];
+    let latestServerNotificationCounts = {
+        total_notifications: Number(notificationTotalBadge?.textContent.trim() || 0),
+    };
+    let latestServerNotificationItems = [];
 
     function escapeHtml(value) {
         return String(value ?? '')
@@ -1023,13 +1029,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function hydrateServerToasts() {
-        document.querySelectorAll('[data-toast-message]').forEach((element) => {
+        const source = document.getElementById('app-toast-source');
+        if (!source) {
+            return;
+        }
+
+        const titleByLevel = {
+            success: source.dataset.titleSuccess || 'Erfolg',
+            error: source.dataset.titleError || 'Fehler',
+            warning: source.dataset.titleWarning || 'Warnung',
+            info: source.dataset.titleInfo || 'Hinweis',
+        };
+        const iconByLevel = {
+            success: 'fa-solid fa-circle-check',
+            error: 'fa-solid fa-triangle-exclamation',
+            warning: 'fa-solid fa-circle-exclamation',
+            info: 'fa-solid fa-circle-info',
+        };
+
+        transientNotificationItems = Array.from(source.querySelectorAll('[data-toast-message]')).map((element, index) => {
             const undoAction = parseUndoAction(element.dataset.toastTags || '');
+            const level = normalizeToastLevel(element.dataset.toastLevel || element.dataset.toastTags);
+            const text = String(element.textContent || '').trim();
             showAppToast(element.textContent, {
-                level: element.dataset.toastLevel || element.dataset.toastTags,
+                level,
                 actionLabel: undoAction ? 'Rückgängig' : '',
                 onAction: undoAction ? () => restoreTrashItemFromToast(undoAction) : null,
             });
+
+            return {
+                key: `page-message-${element.dataset.toastId || index}`,
+                type: `system-${level}`,
+                title: titleByLevel[level],
+                text,
+                icon: iconByLevel[level],
+                action_label: '',
+                badge: 1,
+                url: '',
+                is_transient: true,
+            };
         });
     }
 
@@ -1040,8 +1078,6 @@ document.addEventListener('DOMContentLoaded', () => {
         warning: (message, options = {}) => showAppToast(message, { ...options, level: 'warning' }),
         info: (message, options = {}) => showAppToast(message, { ...options, level: 'info' }),
     };
-
-    hydrateServerToasts();
 
     async function postNotificationAction(url, data = {}) {
         if (!url) return;
@@ -1064,8 +1100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const payload = await response.json();
 
         if (payload.ok) {
-            updateNotificationBadges(payload.counts);
-            updateNotificationCenter(payload.counts, payload.items);
+            applyNotificationState(payload.counts, payload.items);
         }
     }
 
@@ -1082,9 +1117,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        notificationList.innerHTML = items.map((item) => `
-            <div class="notification-center-item is-${escapeHtml(item.type)}" data-notification-key="${escapeHtml(item.key || '')}">
-                <a class="notification-center-item-link" href="${escapeHtml(item.url || '#')}">
+        notificationList.innerHTML = items.map((item) => {
+            const content = `
                     <span class="notification-center-item-icon"><i class="${escapeHtml(item.icon || 'fa-solid fa-bell')}"></i></span>
                     <span class="notification-center-item-main">
                         <strong>${escapeHtml(item.title)}</strong>
@@ -1092,12 +1126,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     </span>
                     ${item.action_label ? `<em>${escapeHtml(item.action_label)}</em>` : ''}
                     ${Number(item.badge || 0) > 1 ? `<b>${escapeHtml(item.badge)}</b>` : ''}
-                </a>
+            `;
+            const itemContent = item.url
+                ? `<a class="notification-center-item-link" href="${escapeHtml(item.url)}">${content}</a>`
+                : `<div class="notification-center-item-link">${content}</div>`;
+
+            return `
+            <div
+                class="notification-center-item is-${escapeHtml(item.type || 'system')}"
+                data-notification-key="${escapeHtml(item.key || '')}"
+                data-notification-transient="${item.is_transient ? 'true' : 'false'}"
+            >
+                ${itemContent}
                 <button class="notification-item-delete js-notification-delete" type="button" title="Benachrichtigung löschen" aria-label="Benachrichtigung löschen">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     function renderNotificationSkeleton() {
@@ -1126,13 +1172,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function notificationCountsWithTransientItems(counts = latestServerNotificationCounts) {
+        const combinedCounts = { ...(counts || {}) };
+        combinedCounts.total_notifications = Number(combinedCounts.total_notifications || 0) + transientNotificationItems.length;
+        return combinedCounts;
+    }
+
+    function combinedNotificationItems(items = latestServerNotificationItems) {
+        return [...transientNotificationItems, ...(Array.isArray(items) ? items : [])];
+    }
+
+    function refreshTransientNotificationDisplay() {
+        const counts = notificationCountsWithTransientItems();
+        updateNotificationBadges(counts);
+        updateNotificationCenter(counts, combinedNotificationItems());
+    }
+
+    function applyNotificationState(counts, items) {
+        if (counts) {
+            latestServerNotificationCounts = { ...counts };
+        }
+        if (Array.isArray(items)) {
+            latestServerNotificationItems = items;
+        }
+
+        const combinedCounts = notificationCountsWithTransientItems();
+        updateNotificationBadges(combinedCounts);
+        updateNotificationCenter(
+            combinedCounts,
+            Array.isArray(items) ? combinedNotificationItems() : undefined,
+        );
+    }
+
+    hydrateServerToasts();
+    refreshTransientNotificationDisplay();
+
     function applyLiveStatusPayload(data) {
         if (!data?.ok) {
             return;
         }
 
-        updateNotificationBadges(data.counts);
-        updateNotificationCenter(data.counts, data.items);
+        applyNotificationState(data.counts, data.items);
         updatePresenceProfiles(data.profiles);
     }
 
@@ -1252,6 +1332,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = item?.dataset.notificationKey || '';
             if (!key) return;
 
+            if (item.dataset.notificationTransient === 'true') {
+                transientNotificationItems = transientNotificationItems.filter((notification) => notification.key !== key);
+                refreshTransientNotificationDisplay();
+                return;
+            }
+
             deleteButton.disabled = true;
             postNotificationAction(notificationDismissUrl, { key }).catch(() => {
                 deleteButton.disabled = false;
@@ -1264,6 +1350,8 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             event.stopPropagation();
 
+            transientNotificationItems = [];
+            refreshTransientNotificationDisplay();
             notificationClearAllButton.disabled = true;
             postNotificationAction(notificationDismissAllUrl).catch(() => {
                 notificationClearAllButton.disabled = false;

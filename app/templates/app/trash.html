@@ -23,12 +23,6 @@
         </div>
     </header>
 
-    {% if messages %}
-        <div class="trash-messages" aria-live="polite">
-            {% for message in messages %}<p class="{{ message.tags }}">{{ message }}</p>{% endfor %}
-        </div>
-    {% endif %}
-
     <div class="trash-summary" aria-label="{% translate 'Inhalte im Papierkorb' %}">
         <span><i class="fa-regular fa-note-sticky" aria-hidden="true"></i><strong>{{ trash_counts.note }}</strong>{% translate "Notizen" %}</span>
         <span><i class="fa-regular fa-file" aria-hidden="true"></i><strong>{{ trash_counts.file }}</strong>{% translate "Dateien" %}</span>

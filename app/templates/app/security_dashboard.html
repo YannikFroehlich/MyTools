@@ -22,14 +22,6 @@
         </a>
     </header>
 
-    {% if security_messages %}
-        <div class="security-dashboard-messages">
-            {% for message in security_messages %}
-                <p class="{{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="security-dashboard-grid">
         <article class="security-dashboard-card security-dashboard-status-card">
             <span class="security-dashboard-card-icon is-blue"><i class="fa-solid fa-fingerprint"></i></span>

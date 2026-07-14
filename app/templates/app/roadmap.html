@@ -23,14 +23,6 @@
         </div>
     </div>
 
-    {% if messages %}
-        <div class="feature-messages">
-            {% for message in messages %}
-                <div class="feature-message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="feature-layout two-columns">
         <aside id="roadmap-new-idea" class="feature-card idea-form-card">
             <div class="feature-card-heading">
