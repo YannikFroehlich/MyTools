@@ -27,14 +27,6 @@
         </div>
     </header>
 
-    {% if messages %}
-        <div class="qr-tool-messages">
-            {% for message in messages %}
-                <p class="{{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="qr-tool-layout">
         <form method="post" class="qr-tool-card qr-tool-form" id="qr-code-form">
             {% csrf_token %}

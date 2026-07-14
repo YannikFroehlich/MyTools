@@ -1911,6 +1911,43 @@ class HomeViewTests(BaseTestCase):
         self.assertRegex(stylesheet, r"nav#site-header \.logo\s*\{[^}]*flex: 0 0 auto")
         self.assertIn("nav#site-header .navigation > a.active", stylesheet)
 
+    def test_django_messages_use_global_toast_and_header_notifications(self):
+        response = self.client.post(reverse("clock"), {
+            "action": "add_timer_preset",
+            "timer_name": "",
+            "hours": 0,
+            "minutes": 0,
+            "seconds": 0,
+        }, follow=True)
+        script = (settings.BASE_DIR / "app" / "static" / "app" / "js" / "base.js").read_text(encoding="utf-8")
+
+        self.assertContains(response, 'id="app-toast-source"')
+        self.assertContains(response, "data-toast-message")
+        self.assertContains(response, "Bitte gib einen Namen und eine Dauer größer als 0 Sekunden ein.", count=1)
+        self.assertContains(response, 'data-title-error="Fehler"')
+        self.assertIn("transientNotificationItems", script)
+        self.assertIn("notificationCountsWithTransientItems", script)
+        self.assertIn('data-notification-transient="${item.is_transient ? \'true\' : \'false\'}"', script)
+
+    def test_feature_pages_do_not_render_messages_inside_page_content(self):
+        template_names = (
+            "file_converter.html",
+            "moderation.html",
+            "profile.html",
+            "profile_card_designer.html",
+            "qr_code_tool.html",
+            "roadmap.html",
+            "security_dashboard.html",
+            "trash.html",
+            "two_factor_settings.html",
+        )
+
+        for template_name in template_names:
+            template = (settings.BASE_DIR / "app" / "templates" / "app" / template_name).read_text(encoding="utf-8")
+            self.assertNotIn("{% if messages %}", template, template_name)
+            self.assertNotIn("{% if profile_messages %}", template, template_name)
+            self.assertNotIn("{% if security_messages %}", template, template_name)
+
     def test_games_menu_has_an_individual_theme_for_every_game(self):
         response = self.client.get(reverse("home"))
         content = response.content.decode()
@@ -1997,6 +2034,18 @@ class HomeViewTests(BaseTestCase):
         self.assertContains(response, 'aria-controls="suggestions-box"')
         self.assertContains(response, 'aria-expanded="false"')
         self.assertContains(response, 'role="listbox"')
+
+    def test_home_search_uses_only_the_rounded_wrapper_focus_ring(self):
+        response = self.client.get(reverse("home"))
+        styles = (settings.BASE_DIR / "app" / "static" / "app" / "css" / "home.css").read_text(encoding="utf-8")
+
+        self.assertContains(response, "20260714-search-focus-state")
+        self.assertIn("#google-search-input:is(:focus, :focus-visible, :active)", styles)
+        self.assertRegex(
+            styles,
+            r"#google-search-input:is\(:focus, :focus-visible, :active\)\s*\{[^}]*box-shadow:\s*none",
+        )
+        self.assertIn(".search-wrapper:focus-within .search-icon", styles)
 
     def test_home_modals_have_accessible_dialog_semantics(self):
         response = self.client.get(reverse("home"))
@@ -3204,17 +3253,17 @@ class SecurityDashboardAndQrToolTests(BaseTestCase):
         self.assertContains(response, "Aktive Sitzungen")
         self.assertContains(response, reverse("two_factor_settings"))
 
-    def test_security_dashboard_does_not_show_profile_messages(self):
-        session = self.client.session
-        session["_messages"] = MessageEncoder().encode([
-            Message(message_constants.SUCCESS, "Dein Profil wurde gespeichert."),
-        ])
-        session.save()
-
-        response = self.client.get(reverse("security_dashboard"))
+    def test_security_dashboard_routes_messages_to_global_notification_ui(self):
+        response = self.client.post(
+            reverse("security_dashboard"),
+            {"action": "revoke_session"},
+            follow=True,
+        )
 
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Dein Profil wurde gespeichert.")
+        self.assertContains(response, "Es wurde keine Sitzung", count=1)
+        self.assertContains(response, "data-toast-message")
+        self.assertNotContains(response, "security-dashboard-messages")
 
     def test_security_dashboard_still_shows_security_messages(self):
         response = self.client.post(
@@ -6573,13 +6622,16 @@ class RoadmapAchievementAndServerStatusTests(TestCase):
         self.assertEqual(idea.author, self.user)
         self.assertEqual(idea.status, FeatureIdea.STATUS_SUGGESTED)
 
-        vote_response = self.client.post(reverse("roadmap"), {"action": "vote", "idea_id": idea.id})
+        vote_response = self.client.post(reverse("roadmap"), {"action": "vote", "idea_id": idea.id}, follow=True)
         self.assertRedirects(vote_response, reverse("roadmap"))
         self.assertTrue(FeatureVote.objects.filter(idea=idea, user=self.user).exists())
 
-        unvote_response = self.client.post(reverse("roadmap"), {"action": "vote", "idea_id": idea.id})
+        unvote_response = self.client.post(reverse("roadmap"), {"action": "vote", "idea_id": idea.id}, follow=True)
         self.assertRedirects(unvote_response, reverse("roadmap"))
         self.assertFalse(FeatureVote.objects.filter(idea=idea, user=self.user).exists())
+        self.assertContains(unvote_response, "Vote entfernt.", count=1)
+        self.assertContains(unvote_response, "data-toast-message")
+        self.assertNotContains(unvote_response, "feature-messages")
 
     def test_roadmap_comments_and_staff_status_update(self):
         idea = FeatureIdea.objects.create(author=self.user, title="Serverstatus", description="Admin Monitor")

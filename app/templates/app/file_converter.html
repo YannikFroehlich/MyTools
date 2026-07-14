@@ -38,14 +38,6 @@
         </div>
     </header>
 
-    {% if messages %}
-        <div class="file-converter-messages">
-            {% for message in messages %}
-                <p class="{{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="file-converter-layout">
         <form method="post" enctype="multipart/form-data" class="file-converter-card file-converter-form">
             {% csrf_token %}

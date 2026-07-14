@@ -37,17 +37,6 @@
         </div>
     </div>
 
-    {% if profile_messages %}
-        <div class="profile-messages">
-            {% for message in profile_messages %}
-                <div class="profile-message profile-message-{{ message.tags }}">
-                    <i class="fa-solid fa-circle-check"></i>
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <div class="profile-layout">
         <aside class="profile-card profile-summary-card">
             <div class="profile-summary-avatar">
