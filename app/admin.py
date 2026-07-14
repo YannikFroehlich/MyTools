@@ -44,6 +44,8 @@ from .models import (
     PongGame,
     PongInvite,
     SecurityEvent,
+    ShoppingItem,
+    ShoppingList,
     Shortcut,
     ShortcutSection,
     SiteAccessSettings,
@@ -571,6 +573,25 @@ class VacationYearSettingAdmin(admin.ModelAdmin):
     list_filter = ("year",)
     search_fields = ("user__username", "user__email")
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(ShoppingList)
+class ShoppingListAdmin(admin.ModelAdmin):
+    list_display = ("name", "owner", "is_default", "created_at", "updated_at")
+    list_filter = ("is_default", "created_at", "updated_at")
+    search_fields = ("name", "owner__username", "owner__email")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(ShoppingItem)
+class ShoppingItemAdmin(admin.ModelAdmin):
+    list_display = (
+        "name", "shopping_list", "quantity", "unit", "unit_price", "category",
+        "recurrence", "next_due_date", "is_completed",
+    )
+    list_filter = ("category", "unit", "recurrence", "is_completed", "created_at")
+    search_fields = ("name", "brand", "barcode", "note", "shopping_list__owner__username")
+    readonly_fields = ("created_at", "updated_at", "completed_at")
 
 
 @admin.register(InboxItem)

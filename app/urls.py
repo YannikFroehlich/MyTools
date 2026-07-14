@@ -232,6 +232,15 @@ from .views.budget import (
     budget_tracker_export_csv,
     budget_tracker_view,
 )
+from .views.shopping import (
+    shopping_clear_completed_view,
+    shopping_item_activate_view,
+    shopping_item_delete_view,
+    shopping_item_toggle_view,
+    shopping_item_update_view,
+    shopping_list_view,
+    shopping_product_api,
+)
 from .views.file_converter import file_converter_view
 from .views.performance_tools import (
     file_share_delete_view,
@@ -364,6 +373,13 @@ urlpatterns = [
     path('tools/urlaub/', vacation_planner_view, name='vacation_planner'),
     path('budget/', budget_tracker_view, name='budget_tracker'),
     path('budget/export/', budget_tracker_export_csv, name='budget_tracker_export'),
+    path('einkaufszettel/', shopping_list_view, name='shopping_list'),
+    path('einkaufszettel/artikel/<int:item_id>/bearbeiten/', shopping_item_update_view, name='shopping_item_update'),
+    path('einkaufszettel/artikel/<int:item_id>/abhaken/', shopping_item_toggle_view, name='shopping_item_toggle'),
+    path('einkaufszettel/artikel/<int:item_id>/jetzt/', shopping_item_activate_view, name='shopping_item_activate'),
+    path('einkaufszettel/artikel/<int:item_id>/loeschen/', shopping_item_delete_view, name='shopping_item_delete'),
+    path('einkaufszettel/erledigte-entfernen/', shopping_clear_completed_view, name='shopping_clear_completed'),
+    path('api/einkaufszettel/produkt/<str:barcode>/', shopping_product_api, name='shopping-product-api'),
 
     path('human-benchmark/', human_benchmark, name='human-benchmark'),
     path('api/human-benchmark/scores/', human_benchmark_score_api, name='human-benchmark-score-api'),

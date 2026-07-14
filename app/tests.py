@@ -1927,10 +1927,10 @@ class HomeViewTests(BaseTestCase):
         response = self.client.get(reverse("home"))
         content = response.content.decode()
 
-        self.assertContains(response, "data-tool-theme=", count=20)
+        self.assertContains(response, "data-tool-theme=", count=21)
         for theme in (
-            "clock", "notes", "file-share", "feedback", "roadmap", "changelog",
-            "vacation", "calculator", "fuel", "units", "randomizer", "qr", "genius",
+            "clock", "notes", "file-share", "vacation", "shopping-list", "feedback", "roadmap", "changelog",
+            "calculator", "fuel", "units", "randomizer", "qr", "genius",
             "images", "converter", "palette", "profile-card", "avatar", "stream-deck", "obs",
         ):
             self.assertIn(f'data-tool-theme="{theme}"', content)
@@ -1938,7 +1938,7 @@ class HomeViewTests(BaseTestCase):
         self.user.is_staff = True
         self.user.save(update_fields=["is_staff"])
         staff_response = self.client.get(reverse("home"))
-        self.assertContains(staff_response, "data-tool-theme=", count=22)
+        self.assertContains(staff_response, "data-tool-theme=", count=23)
         self.assertContains(staff_response, 'data-tool-theme="moderation"')
         self.assertContains(staff_response, 'data-tool-theme="server"')
 
@@ -2854,6 +2854,14 @@ class StaticPageTests(BaseTestCase):
         self.assertContains(response, "Budget-Tracker")
         self.assertContains(response, "Monatsbudget, Einnahmen, Ausgaben, Fixkosten")
 
+    def test_about_page_links_shopping_list(self):
+        response = self.client.get(reverse("about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("shopping_list"))
+        self.assertContains(response, "Einkaufszettel")
+        self.assertContains(response, "Artikel, Mengen, Kategorien und optionale Preise")
+
     def test_about_page_mentions_stream_deck_voicemod(self):
         response = self.client.get(reverse("about"))
 
@@ -2908,6 +2916,7 @@ class StaticPageTests(BaseTestCase):
             ("obs-dashboard", "app/obs-dashboard.html"),
             ("spritkostenrechner", "app/spritkostenrechner.html"),
             ("budget_tracker", "app/budget_tracker.html"),
+            ("shopping_list", "app/shopping_list.html"),
             ("calculator", "app/calculator.html"),
             ("human-benchmark", "app/human_benchmark.html"),
             ("genius-search", "app/genius_search.html"),
