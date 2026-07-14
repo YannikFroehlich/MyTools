@@ -32,6 +32,7 @@ RATE_LIMIT_RULES = {
     "roadmap": RateLimitRule("roadmap", 30, 60 * 60, frozenset({"POST"})),
     "genius-search-api": RateLimitRule("genius-api", 60, 10 * 60, frozenset({"GET"})),
     "tankstellen-api": RateLimitRule("fuel-api", 60, 10 * 60, frozenset({"GET"})),
+    "shopping-product-api": RateLimitRule("shopping-product-api", 10, 60, frozenset({"GET"})),
 }
 
 DEFAULT_POST_API_RULE = RateLimitRule("post-api", 300, 60, frozenset({"POST"}))

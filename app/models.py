@@ -3490,6 +3490,146 @@ class BudgetEntry(models.Model):
     def __str__(self):
         return f"{self.title} · {self.amount} €"
 
+
+class ShoppingList(models.Model):
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="shopping_lists",
+    )
+    name = models.CharField(max_length=120, default=_("Mein Einkaufszettel"))
+    is_default = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-is_default", "name", "created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["owner"],
+                condition=models.Q(is_default=True),
+                name="uniq_default_shoplist_owner",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["owner", "is_default"]),
+        ]
+        verbose_name = _("Einkaufszettel")
+        verbose_name_plural = _("Einkaufszettel")
+
+    def __str__(self):
+        return f"{self.owner} · {self.name}"
+
+
+class ShoppingItem(models.Model):
+    UNIT_PIECE = "piece"
+    UNIT_PACK = "pack"
+    UNIT_KILOGRAM = "kg"
+    UNIT_GRAM = "g"
+    UNIT_LITER = "l"
+    UNIT_MILLILITER = "ml"
+
+    UNIT_CHOICES = [
+        (UNIT_PIECE, _("Stück")),
+        (UNIT_PACK, _("Packung")),
+        (UNIT_KILOGRAM, _("kg")),
+        (UNIT_GRAM, _("g")),
+        (UNIT_LITER, _("Liter")),
+        (UNIT_MILLILITER, _("ml")),
+    ]
+
+    CATEGORY_FRUIT_VEG = "fruit_veg"
+    CATEGORY_BAKERY = "bakery"
+    CATEGORY_CHILLED = "chilled"
+    CATEGORY_PANTRY = "pantry"
+    CATEGORY_DRINKS = "drinks"
+    CATEGORY_FROZEN = "frozen"
+    CATEGORY_HOUSEHOLD = "household"
+    CATEGORY_OTHER = "other"
+
+    CATEGORY_CHOICES = [
+        (CATEGORY_FRUIT_VEG, _("Obst & Gemüse")),
+        (CATEGORY_BAKERY, _("Backwaren")),
+        (CATEGORY_CHILLED, _("Kühlregal")),
+        (CATEGORY_PANTRY, _("Vorrat")),
+        (CATEGORY_DRINKS, _("Getränke")),
+        (CATEGORY_FROZEN, _("Tiefkühl")),
+        (CATEGORY_HOUSEHOLD, _("Haushalt")),
+        (CATEGORY_OTHER, _("Sonstiges")),
+    ]
+
+    RECURRENCE_NONE = "none"
+    RECURRENCE_WEEKLY = "weekly"
+    RECURRENCE_BIWEEKLY = "biweekly"
+    RECURRENCE_MONTHLY = "monthly"
+
+    RECURRENCE_CHOICES = [
+        (RECURRENCE_NONE, _("Nicht wiederholen")),
+        (RECURRENCE_WEEKLY, _("Wöchentlich")),
+        (RECURRENCE_BIWEEKLY, _("Alle zwei Wochen")),
+        (RECURRENCE_MONTHLY, _("Monatlich")),
+    ]
+
+    shopping_list = models.ForeignKey(
+        ShoppingList,
+        on_delete=models.CASCADE,
+        related_name="items",
+    )
+    name = models.CharField(max_length=160)
+    quantity = models.DecimalField(max_digits=8, decimal_places=2, default=1)
+    unit = models.CharField(max_length=20, choices=UNIT_CHOICES, default=UNIT_PIECE)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    category = models.CharField(max_length=24, choices=CATEGORY_CHOICES, default=CATEGORY_OTHER)
+    note = models.TextField(blank=True)
+    barcode = models.CharField(max_length=32, blank=True)
+    brand = models.CharField(max_length=120, blank=True)
+    product_quantity = models.CharField(max_length=80, blank=True)
+    image_url = models.URLField(max_length=500, blank=True)
+    recurrence = models.CharField(
+        max_length=20,
+        choices=RECURRENCE_CHOICES,
+        default=RECURRENCE_NONE,
+    )
+    next_due_date = models.DateField(null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    position = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["is_completed", "position", "created_at"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(quantity__gt=0),
+                name="shopitem_qty_gt_zero",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(unit_price__isnull=True) | models.Q(unit_price__gte=0),
+                name="shopitem_price_nonnegative",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["shopping_list", "is_completed", "position"]),
+            models.Index(fields=["shopping_list", "barcode"]),
+            models.Index(
+                fields=["shopping_list", "next_due_date"],
+                name="shopping_due_date_idx",
+            ),
+        ]
+        verbose_name = _("Einkaufsartikel")
+        verbose_name_plural = _("Einkaufsartikel")
+
+    @property
+    def line_total(self):
+        if self.unit_price is None:
+            return None
+        return self.quantity * self.unit_price
+
+    def __str__(self):
+        return f"{self.name} · {self.quantity} {self.get_unit_display()}"
+
+
 def file_share_upload_path(instance, filename):
     safe_name = get_valid_filename(filename.rsplit("/", 1)[-1])[:180] or "datei"
     return f"private/file_shares/user_{instance.owner_id}/{instance.token}_{safe_name}"

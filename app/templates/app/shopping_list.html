@@ -1,0 +1,240 @@
+{% extends 'app/base.html' %}
+{% load static i18n l10n %}
+
+{% block title %}{% translate "Einkaufszettel" %} • MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/shopping_list.css' %}?v=20260714-shopping-mobile">
+{% endblock %}
+
+{% block content %}
+<main class="shopping-page">
+    <section class="shopping-hero">
+        <div class="shopping-hero-copy">
+            <p class="shopping-eyebrow"><i class="fa-solid fa-basket-shopping"></i> MyTools Alltag</p>
+            <h1>{% translate "Einkaufszettel" %}</h1>
+            <p>{% translate "Plane deinen Einkauf, hake Artikel unterwegs ab und behalte den geschätzten Gesamtpreis im Blick." %}</p>
+        </div>
+        <div class="shopping-summary" aria-label="{% translate 'Zusammenfassung' %}">
+            <div class="shopping-summary-item">
+                <span>{% translate "Offen" %}</span>
+                <strong>{{ active_count }}</strong>
+            </div>
+            <div class="shopping-summary-item is-planned">
+                <span>{% translate "Geplant" %}</span>
+                <strong>{{ planned_count }}</strong>
+            </div>
+            <div class="shopping-summary-item">
+                <span>{% translate "Erledigt" %}</span>
+                <strong>{{ completed_count }}</strong>
+            </div>
+            <div class="shopping-summary-item is-total">
+                <span>{% translate "Geschätzt" %}</span>
+                <strong>{{ estimated_total|floatformat:2 }} €</strong>
+                <small>{% blocktranslate count count=priced_items_count %}für {{ count }} Artikel{% plural %}für {{ count }} Artikel{% endblocktranslate %}</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="shopping-layout">
+        <aside class="shopping-add-card shopping-card" id="shopping-add-card">
+            <button type="button" class="shopping-card-heading shopping-add-toggle" id="shopping-add-toggle"
+                    aria-expanded="true" aria-controls="shopping-add-panel">
+                <span class="shopping-heading-icon"><i class="fa-solid fa-plus"></i></span>
+                <span class="shopping-add-toggle-copy">
+                    <span class="shopping-kicker">{% translate "Schnell hinzufügen" %}</span>
+                    <span class="shopping-add-title">{% translate "Neuer Artikel" %}</span>
+                </span>
+                <span class="shopping-add-chevron" aria-hidden="true"><i class="fa-solid fa-chevron-down"></i></span>
+            </button>
+
+            <div class="shopping-add-panel" id="shopping-add-panel">
+              <form method="post" class="shopping-add-form" id="shopping-add-form"
+                    data-product-url="{% url 'shopping-product-api' '00000000' %}">
+                {% csrf_token %}
+                <label class="shopping-field shopping-field-wide">
+                    <span>{% translate "Artikelname" %}</span>
+                    <input type="text" name="name" id="shopping-name" maxlength="160" required
+                           placeholder="{% translate 'z. B. Milch' %}" autocomplete="off">
+                </label>
+
+                <div class="shopping-form-grid">
+                    <label class="shopping-field">
+                        <span>{% translate "Menge" %}</span>
+                        <input type="number" name="quantity" value="1" min="0.01" max="999999.99" step="0.01" required inputmode="decimal">
+                    </label>
+                    <label class="shopping-field">
+                        <span>{% translate "Einheit" %}</span>
+                        <select name="unit">
+                            {% for value, label in unit_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label class="shopping-field">
+                        <span>{% translate "Einzelpreis" %} <small>{% translate "optional" %}</small></span>
+                        <div class="shopping-price-input">
+                            <input type="text" name="unit_price" inputmode="decimal" placeholder="0,00" maxlength="13">
+                            <span>€</span>
+                        </div>
+                    </label>
+                    <label class="shopping-field">
+                        <span>{% translate "Kategorie" %}</span>
+                        <select name="category">
+                            {% for value, label in category_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label class="shopping-field shopping-field-wide">
+                        <span>{% translate "Wiederholung" %}</span>
+                        <select name="recurrence">
+                            {% for value, label in recurrence_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+
+                <label class="shopping-field shopping-field-wide">
+                    <span>{% translate "Barcode" %} <small>{% translate "optional" %}</small></span>
+                    <div class="shopping-barcode-row">
+                        <input type="text" name="barcode" id="shopping-barcode" inputmode="numeric" maxlength="17"
+                               placeholder="{% translate '8–14 Ziffern' %}" autocomplete="off">
+                        <button type="button" class="shopping-button shopping-button-soft" id="shopping-product-lookup">
+                            <i class="fa-solid fa-barcode"></i>
+                            <span>{% translate "Produkt suchen" %}</span>
+                        </button>
+                        <button type="button" class="shopping-button shopping-button-camera" id="shopping-camera-open">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>{% translate "Scannen" %}</span>
+                        </button>
+                    </div>
+                    <small class="shopping-field-help">{% translate "Scanne den Barcode mit der Kamera oder gib ihn manuell ein. Open Food Facts ergänzt nach Möglichkeit die Produktdaten." %}</small>
+                </label>
+
+                <div class="shopping-lookup-status" id="shopping-lookup-status" role="status" aria-live="polite"></div>
+                <div class="shopping-product-preview" id="shopping-product-preview" hidden>
+                    <img id="shopping-product-image" alt="" hidden>
+                    <span class="shopping-product-placeholder" id="shopping-product-placeholder"><i class="fa-solid fa-box-open"></i></span>
+                    <div>
+                        <strong id="shopping-product-title"></strong>
+                        <span id="shopping-product-meta"></span>
+                    </div>
+                </div>
+
+                <input type="hidden" name="brand" id="shopping-brand">
+                <input type="hidden" name="product_quantity" id="shopping-product-quantity">
+                <input type="hidden" name="image_url" id="shopping-image-url">
+
+                <label class="shopping-field shopping-field-wide">
+                    <span>{% translate "Notiz" %} <small>{% translate "optional" %}</small></span>
+                    <textarea name="note" rows="2" maxlength="1000" placeholder="{% translate 'Sorte, Geschäft oder Erinnerung' %}"></textarea>
+                </label>
+
+                <button type="submit" class="shopping-button shopping-button-primary shopping-submit">
+                    <i class="fa-solid fa-plus"></i>
+                    {% translate "Zur Liste hinzufügen" %}
+                </button>
+              </form>
+            </div>
+        </aside>
+
+        <section class="shopping-list-column">
+            <article class="shopping-card shopping-items-card">
+                <div class="shopping-list-heading">
+                    <div>
+                        <p class="shopping-kicker">{{ shopping_list.name }}</p>
+                        <h2>{% translate "Noch einzukaufen" %}</h2>
+                    </div>
+                    <span class="shopping-count-badge">{{ active_count }}</span>
+                </div>
+
+                {% if active_items %}
+                    <div class="shopping-item-list">
+                        {% for item in active_items %}
+                            {% include 'app/includes/shopping_item.html' with completed=False planned=False %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="shopping-empty-state">
+                        <span><i class="fa-solid fa-basket-shopping"></i></span>
+                        <h3>{% translate "Alles erledigt" %}</h3>
+                        <p>{% translate "Füge links einen Artikel hinzu und starte deinen nächsten Einkauf." %}</p>
+                    </div>
+                {% endif %}
+            </article>
+
+            {% if planned_items %}
+                <article class="shopping-card shopping-items-card shopping-planned-card">
+                    <div class="shopping-list-heading">
+                        <div>
+                            <p class="shopping-kicker">{% translate "Wiederkehrend" %}</p>
+                            <h2>{% translate "Geplante Artikel" %}</h2>
+                        </div>
+                        <span class="shopping-count-badge is-planned">{{ planned_count }}</span>
+                    </div>
+                    <div class="shopping-item-list is-planned">
+                        {% for item in planned_items %}
+                            {% include 'app/includes/shopping_item.html' with completed=False planned=True %}
+                        {% endfor %}
+                    </div>
+                </article>
+            {% endif %}
+
+            {% if completed_items %}
+                <article class="shopping-card shopping-items-card shopping-completed-card">
+                    <div class="shopping-list-heading">
+                        <div>
+                            <p class="shopping-kicker">{% translate "Geschafft" %}</p>
+                            <h2>{% translate "Erledigte Artikel" %}</h2>
+                        </div>
+                        <form method="post" action="{% url 'shopping_clear_completed' %}" class="shopping-confirm-form"
+                              data-confirm="{% translate 'Alle erledigten Artikel entfernen?' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="shopping-button shopping-button-soft">
+                                <i class="fa-solid fa-broom"></i>
+                                {% translate "Liste aufräumen" %}
+                            </button>
+                        </form>
+                    </div>
+                    <div class="shopping-item-list is-completed">
+                        {% for item in completed_items %}
+                            {% include 'app/includes/shopping_item.html' with completed=True planned=False %}
+                        {% endfor %}
+                    </div>
+                </article>
+            {% endif %}
+        </section>
+    </section>
+
+    <dialog class="shopping-scanner-dialog" id="shopping-scanner-dialog" aria-labelledby="shopping-scanner-title" aria-describedby="shopping-scanner-help">
+        <div class="shopping-scanner-shell">
+            <header class="shopping-scanner-header">
+                <div>
+                    <p class="shopping-kicker">{% translate "Kamera" %}</p>
+                    <h2 id="shopping-scanner-title">{% translate "Barcode scannen" %}</h2>
+                </div>
+                <button type="button" class="shopping-icon-button" id="shopping-camera-close" aria-label="{% translate 'Scanner schließen' %}">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </header>
+            <div class="shopping-camera-stage">
+                <video id="shopping-camera-video" playsinline muted aria-label="{% translate 'Kameravorschau für den Barcode-Scanner' %}"></video>
+                <div class="shopping-camera-guide" aria-hidden="true"><span></span></div>
+            </div>
+            <p class="shopping-scanner-status" id="shopping-scanner-status" role="status" aria-live="polite">
+                {% translate "Kamera wird vorbereitet …" %}
+            </p>
+            <p class="shopping-scanner-help" id="shopping-scanner-help">
+                {% translate "Halte den Strichcode ruhig und vollständig in den Rahmen. Du kannst jederzeit schließen und den Code manuell eingeben." %}
+            </p>
+        </div>
+    </dialog>
+</main>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'app/js/shopping_list.js' %}?v=20260714-shopping-mobile" defer></script>
+{% endblock %}
