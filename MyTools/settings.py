@@ -72,6 +72,10 @@ for csrf_host in [*ALLOWED_HOSTS, DOMAIN]:
 
 FONTAWESOME_KIT_KEY = os.getenv("FONTAWESOME_KIT_KEY", "")
 USE_FONTAWESOME_KIT = os.getenv("USE_FONTAWESOME_KIT", "False").lower() in {"1", "true", "yes", "on"}
+OPEN_FOOD_FACTS_USER_AGENT = os.getenv(
+    "OPEN_FOOD_FACTS_USER_AGENT",
+    "MyTools/1.0 (shopping-list)",
+).strip()
 
 if IS_TESTING or os.getenv("USE_SQLITE", "False") == "True":
     DATABASES = {

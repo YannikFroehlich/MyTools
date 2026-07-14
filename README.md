@@ -241,6 +241,26 @@ OPENWEATHER_API_KEY=dein_openweather_api_key
 
 ---
 
+### 🛒 Einkaufszettel
+
+- persönlicher, nutzergebundener Einkaufszettel
+- Artikel mit Menge, Einheit, Kategorie, Notiz und optionalem Einzelpreis
+- offene und erledigte Artikel mit geschätzter Gesamtsumme
+- wiederkehrende Artikel im Wochen-, Zweiwochen- oder Monatsrhythmus mit eigener Planung
+- Kamera-Barcode-Scanner in unterstützten Browsern sowie manuelle Barcode-Eingabe als Fallback
+- optionale Barcode-Abfrage für Produktname, Marke, Packungsgröße und Bild über Open Food Facts
+- vollständige manuelle Nutzung, wenn der externe Dienst nicht erreichbar ist
+
+Der Kamera-Scanner benötigt HTTPS oder `localhost` und einen Browser mit nativer Barcode-Erkennung. Der Kamerazugriff wird erst nach einem Klick auf **Scannen** angefragt.
+
+Open Food Facts benötigt keinen API-Key. Für einen identifizierbaren API-Zugriff sollte in `.env` ein Kontakt oder eine öffentliche Projektadresse hinterlegt werden:
+
+```env
+OPEN_FOOD_FACTS_USER_AGENT=MyTools/1.0 (https://deine-domain.example oder kontakt@example.com)
+```
+
+---
+
 ### Urlaubsplaner
 
 - Feiertage pro Nutzer und Datum speichern

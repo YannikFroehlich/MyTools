@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}MyTools{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260707-theme-field-accents">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260714-mobile-tools-sheet">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -530,6 +530,14 @@
                                     <span class="game-menu-copy">
                                         <strong>{% translate 'Urlaubsplaner' %}</strong>
                                         <small>{% translate 'Planung' %}</small>
+                                    </span>
+                                </a>
+
+                                <a href="{% url 'shopping_list' %}" class="game-menu-card is-green" data-menu-card data-tool-theme="shopping-list" data-tool-mark="✓ LIST" data-menu-name="{% translate 'Einkaufszettel' %}" data-menu-category="{% translate 'Einkauf Liste Artikel Lebensmittel Preise Barcode Kamera Wiederkehrend Alltag' %}">
+                                    <span class="game-menu-icon"><i class="fa-solid fa-basket-shopping"></i></span>
+                                    <span class="game-menu-copy">
+                                        <strong>{% translate 'Einkaufszettel' %}</strong>
+                                        <small>{% translate 'Einkaufen' %}</small>
                                     </span>
                                 </a>
 

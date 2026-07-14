@@ -141,6 +141,22 @@ ACCESS_CONTROL_ITEMS = (
         "url_names": ("budget_tracker", "budget_tracker_export"),
     },
     {
+        "key": "shopping_list",
+        "label": _("Einkaufszettel"),
+        "kind": _("Tool"),
+        "category": _("Alltag"),
+        "icon": "fa-solid fa-basket-shopping",
+        "url_names": (
+            "shopping_list",
+            "shopping_item_update",
+            "shopping_item_toggle",
+            "shopping_item_activate",
+            "shopping_item_delete",
+            "shopping_clear_completed",
+            "shopping-product-api",
+        ),
+    },
+    {
         "key": "unit_converter",
         "label": _("Einheitenrechner"),
         "kind": _("Tool"),
