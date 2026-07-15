@@ -3499,6 +3499,7 @@ class ShoppingList(models.Model):
     )
     name = models.CharField(max_length=120, default=_("Mein Einkaufszettel"))
     is_default = models.BooleanField(default=True)
+    category_order = models.JSONField(default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
