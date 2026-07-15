@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _, pgettext
 
 PWA_THEME_COLOR = "#1a56d6"
 PWA_BACKGROUND_COLOR = "#dce5f5"
-PWA_CACHE_VERSION = "mytools-pwa-v16"
+PWA_CACHE_VERSION = "mytools-pwa-v18"
 
 
 def _manifest_language():
@@ -95,8 +95,12 @@ def pwa_service_worker_view(request):
     """Serve the Service Worker from the origin root so it can control the whole app."""
     precache_urls = [
         reverse("offline"),
+        reverse("shopping_offline"),
         static("app/css/core.css"),
+        static("app/css/shopping_list.css"),
         static("app/js/base.js"),
+        static("app/js/shopping_offline.js"),
+        static("app/js/shopping_offline_shell.js"),
         static("app/icons/cloud-solid.png"),
         static("app/icons/pwa-icon-180.png"),
         static("app/icons/pwa-icon-192.png"),
@@ -110,6 +114,8 @@ def pwa_service_worker_view(request):
         {
             "cache_version": PWA_CACHE_VERSION,
             "offline_url": reverse("offline"),
+            "shopping_offline_url": reverse("shopping_offline"),
+            "shopping_list_url": reverse("shopping_list"),
             "precache_urls_json": json.dumps(precache_urls, ensure_ascii=False),
         },
         content_type="application/javascript; charset=utf-8",
@@ -122,5 +128,11 @@ def pwa_service_worker_view(request):
 
 def offline_view(request):
     response = render(request, "app/pwa/offline.html")
+    response["Cache-Control"] = "public, max-age=300"
+    return response
+
+
+def shopping_offline_view(request):
+    response = render(request, "app/pwa/shopping_offline.html")
     response["Cache-Control"] = "public, max-age=300"
     return response
