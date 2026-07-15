@@ -53,7 +53,7 @@ from .views.notes import (
     note_toggle_pin_view,
     notes_view,
 )
-from .views.pwa import offline_view, pwa_manifest_view, pwa_service_worker_view
+from .views.pwa import offline_view, pwa_manifest_view, pwa_service_worker_view, shopping_offline_view
 from .views.profile import (
     block_user_view,
     delete_gallery_image_view,
@@ -241,6 +241,8 @@ from .views.shopping import (
     shopping_item_update_view,
     shopping_list_view,
     shopping_product_api,
+    shopping_reorder_view,
+    shopping_state_api,
 )
 from .views.file_converter import file_converter_view
 from .views.performance_tools import (
@@ -278,6 +280,7 @@ urlpatterns = [
     path('manifest.webmanifest', pwa_manifest_view, name='pwa_manifest'),
     path('service-worker.js', pwa_service_worker_view, name='pwa_service_worker'),
     path('offline/', offline_view, name='offline'),
+    path('offline/einkaufszettel/', shopping_offline_view, name='shopping_offline'),
     path('color-palette/', color_palette_tool_view, name='color_palette_tool'),
     path('signup/', signup, name='signup'),
     path('accounts/2fa/', two_factor_verify_view, name='two_factor_verify'),
@@ -381,6 +384,8 @@ urlpatterns = [
     path('einkaufszettel/artikel/<int:item_id>/loeschen/', shopping_item_delete_view, name='shopping_item_delete'),
     path('einkaufszettel/artikel/wiederherstellen/', shopping_item_restore_view, name='shopping_item_restore'),
     path('einkaufszettel/erledigte-entfernen/', shopping_clear_completed_view, name='shopping_clear_completed'),
+    path('api/einkaufszettel/status/', shopping_state_api, name='shopping_state_api'),
+    path('api/einkaufszettel/sortierung/', shopping_reorder_view, name='shopping_reorder'),
     path('api/einkaufszettel/produkt/<str:barcode>/', shopping_product_api, name='shopping-product-api'),
 
     path('human-benchmark/', human_benchmark, name='human-benchmark'),

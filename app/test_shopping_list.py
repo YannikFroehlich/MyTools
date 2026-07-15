@@ -1,3 +1,4 @@
+import json
 from datetime import date
 from decimal import Decimal
 from unittest.mock import Mock, patch
@@ -59,6 +60,9 @@ class ShoppingListViewTests(TestCase):
         self.assertContains(response, 'id="shopping-advanced-toggle"')
         self.assertContains(response, 'id="shopping-mode-toolbar"')
         self.assertContains(response, 'id="shopping-suggestions-data"')
+        self.assertContains(response, 'id="shopping-sync-status"')
+        self.assertContains(response, 'class="shopping-button shopping-button-soft shopping-reorder-toggle"')
+        self.assertContains(response, "/static/app/js/shopping_offline.js")
         self.assertContains(response, 'name="recurrence"')
         self.assertTrue(ShoppingList.objects.filter(owner=self.user, is_default=True).exists())
 
@@ -173,6 +177,31 @@ class ShoppingListViewTests(TestCase):
         self.assertEqual(confirmed.status_code, 201)
         self.assertEqual(ShoppingItem.objects.filter(shopping_list__owner=self.user).count(), 2)
 
+    def test_duplicate_can_increase_existing_quantity(self):
+        item = self.create_item(name="Milch", quantity=Decimal("2.00"), unit=ShoppingItem.UNIT_PACK)
+        self.login()
+
+        response = self.client.post(
+            reverse("shopping_list"),
+            {
+                "name": "Milch",
+                "quantity": "3",
+                "unit": ShoppingItem.UNIT_PIECE,
+                "category": ShoppingItem.CATEGORY_CHILLED,
+                "duplicate_action": "merge",
+            },
+            HTTP_ACCEPT="application/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["merged"])
+        self.assertIn("list_html", response.json())
+        item.refresh_from_db()
+        self.assertEqual(item.quantity, Decimal("5.00"))
+        self.assertEqual(item.unit, ShoppingItem.UNIT_PACK)
+        self.assertEqual(ShoppingItem.objects.filter(shopping_list__owner=self.user).count(), 1)
+
     def test_inline_update_only_changes_quantity_and_price(self):
         item = self.create_item(note="Bleibt erhalten", barcode="12345678")
         self.login()
@@ -253,6 +282,78 @@ class ShoppingListViewTests(TestCase):
         delete_response = self.client.post(reverse("shopping_item_delete", args=[item.id]))
         self.assertRedirects(delete_response, reverse("shopping_list"))
         self.assertFalse(ShoppingItem.objects.filter(id=item.id).exists())
+
+    def test_json_toggle_returns_live_list_state(self):
+        item = self.create_item()
+        self.login()
+
+        response = self.client.post(
+            reverse("shopping_item_toggle", args=[item.id]),
+            HTTP_ACCEPT="application/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["summary"]["active"], 0)
+        self.assertEqual(response.json()["summary"]["completed"], 1)
+        self.assertIn("shopping-completed-card", response.json()["list_html"])
+        self.assertIn("Milch", response.json()["list_html"])
+
+    def test_store_order_can_reorder_categories_and_items(self):
+        first = self.create_item(name="Brot", category=ShoppingItem.CATEGORY_BAKERY, position=1)
+        chilled = self.create_item(name="Joghurt", category=ShoppingItem.CATEGORY_CHILLED, position=2)
+        second = self.create_item(name="Brötchen", category=ShoppingItem.CATEGORY_BAKERY, position=3)
+        self.login()
+
+        response = self.client.post(
+            reverse("shopping_reorder"),
+            data=json.dumps({
+                "categories": [ShoppingItem.CATEGORY_CHILLED, ShoppingItem.CATEGORY_BAKERY],
+                "items": [
+                    {"id": chilled.id, "category": ShoppingItem.CATEGORY_CHILLED},
+                    {"id": second.id, "category": ShoppingItem.CATEGORY_BAKERY},
+                    {"id": first.id, "category": ShoppingItem.CATEGORY_BAKERY},
+                ],
+            }),
+            content_type="application/json",
+            HTTP_ACCEPT="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        shopping_list = ShoppingList.objects.get(owner=self.user, is_default=True)
+        self.assertEqual(shopping_list.category_order[:2], [
+            ShoppingItem.CATEGORY_CHILLED,
+            ShoppingItem.CATEGORY_BAKERY,
+        ])
+        chilled.refresh_from_db()
+        second.refresh_from_db()
+        first.refresh_from_db()
+        self.assertEqual([chilled.position, second.position, first.position], [1, 2, 3])
+
+        page = self.client.get(reverse("shopping_list"))
+        self.assertEqual([group["category"] for group in page.context["active_groups"][:2]], [
+            ShoppingItem.CATEGORY_CHILLED,
+            ShoppingItem.CATEGORY_BAKERY,
+        ])
+        self.assertEqual(page.context["active_groups"][1]["items"], [second, first])
+
+    def test_store_order_rejects_foreign_items(self):
+        own_item = self.create_item(name="Eigen")
+        foreign_item = self.create_item(owner=self.other_user, name="Fremd")
+        self.login()
+
+        response = self.client.post(
+            reverse("shopping_reorder"),
+            data=json.dumps({
+                "categories": [ShoppingItem.CATEGORY_OTHER],
+                "items": [{"id": own_item.id, "category": own_item.category}, {"id": foreign_item.id, "category": foreign_item.category}],
+            }),
+            content_type="application/json",
+            HTTP_ACCEPT="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(ShoppingList.objects.get(owner=self.user, is_default=True).category_order, [])
 
     def test_items_are_isolated_between_users(self):
         own_item = self.create_item()
@@ -354,6 +455,20 @@ class ShoppingListViewTests(TestCase):
         self.assertEqual(access_key_for_url_name("shopping-product-api"), "shopping_list")
         self.assertEqual(access_key_for_url_name("shopping_item_activate"), "shopping_list")
         self.assertEqual(access_key_for_url_name("shopping_item_restore"), "shopping_list")
+        self.assertEqual(access_key_for_url_name("shopping_state_api"), "shopping_list")
+        self.assertEqual(access_key_for_url_name("shopping_reorder"), "shopping_list")
+
+    def test_offline_shopping_shell_and_service_worker_are_public(self):
+        self.client.logout()
+
+        shell = self.client.get(reverse("shopping_offline"))
+        worker = self.client.get(reverse("pwa_service_worker"))
+
+        self.assertEqual(shell.status_code, 200)
+        self.assertContains(shell, "shopping-offline-content")
+        self.assertEqual(worker.status_code, 200)
+        self.assertContains(worker, reverse("shopping_offline"))
+        self.assertContains(worker, "mytools-shopping-sync")
 
 
 class ShoppingProductApiTests(TestCase):

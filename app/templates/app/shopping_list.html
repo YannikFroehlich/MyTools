@@ -4,11 +4,11 @@
 {% block title %}{% translate "Einkaufszettel" %} • MyTools{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/shopping_list.css' %}?v=20260714-shopping-workflow-3">
+    <link rel="stylesheet" href="{% static 'app/css/shopping_list.css' %}?v=20260715-shopping-mode-spacing-2">
 {% endblock %}
 
 {% block content %}
-<main class="shopping-page">
+<main class="shopping-page" data-shopping-list-id="{{ shopping_list.id }}" data-shopping-user-id="{{ request.user.id }}">
     <section class="shopping-hero">
         <div class="shopping-hero-copy">
             <p class="shopping-eyebrow"><i class="fa-solid fa-basket-shopping"></i> MyTools Alltag</p>
@@ -40,11 +40,13 @@
             </div>
             <div class="shopping-summary-item is-total">
                 <span>{% translate "Geschätzt" %}</span>
-                <strong>{{ estimated_total|floatformat:2 }} €</strong>
-                <small>{% blocktranslate count count=priced_items_count %}für {{ count }} Artikel{% plural %}für {{ count }} Artikel{% endblocktranslate %}</small>
+                <strong data-shopping-estimated-total>{{ estimated_total|floatformat:2 }} €</strong>
+                <small data-shopping-priced-count>{% blocktranslate count count=priced_items_count %}für {{ count }} Artikel{% plural %}für {{ count }} Artikel{% endblocktranslate %}</small>
             </div>
         </div>
     </section>
+
+    <div class="shopping-sync-status" id="shopping-sync-status" role="status" aria-live="polite" hidden></div>
 
     <section class="shopping-mode-toolbar" id="shopping-mode-toolbar" hidden aria-label="{% translate 'Einkaufsmodus' %}">
         <button type="button" class="shopping-mode-exit" id="shopping-mode-exit" aria-label="{% translate 'Einkaufsmodus beenden' %}">
@@ -76,6 +78,7 @@
                       data-product-url="{% url 'shopping-product-api' '00000000' %}">
                     {% csrf_token %}
                     <input type="hidden" name="allow_duplicate" id="shopping-allow-duplicate" value="0">
+                    <input type="hidden" name="duplicate_action" id="shopping-duplicate-action" value="">
 
                     <div class="shopping-quick-fields">
                         <label class="shopping-field shopping-field-name shopping-field-wide">
@@ -91,7 +94,7 @@
                         </label>
                         <label class="shopping-field shopping-quick-quantity">
                             <span>{% translate "Menge" %}</span>
-                            <input type="number" name="quantity" value="1" min="0.01" max="999999.99" step="0.01" required inputmode="decimal">
+                            <input type="number" name="quantity" value="1" min="1" max="999999" step="1" required inputmode="numeric">
                         </label>
                         <button type="submit" class="shopping-button shopping-button-primary shopping-quick-submit">
                             <i class="fa-solid fa-plus"></i>
@@ -102,7 +105,11 @@
                     <div class="shopping-duplicate-warning" id="shopping-duplicate-warning" role="alert" hidden>
                         <i class="fa-solid fa-clone"></i>
                         <p><strong>{% translate "Schon auf der Liste" %}</strong><span id="shopping-duplicate-copy"></span></p>
-                        <button type="button" id="shopping-add-duplicate">{% translate "Trotzdem hinzufügen" %}</button>
+                        <div class="shopping-duplicate-actions">
+                            <button type="button" id="shopping-merge-duplicate"><i class="fa-solid fa-plus-minus"></i> {% translate "Menge erhöhen" %}</button>
+                            <button type="button" id="shopping-edit-duplicate"><i class="fa-solid fa-pen"></i> {% translate "Bearbeiten" %}</button>
+                            <button type="button" id="shopping-add-duplicate">{% translate "Separat hinzufügen" %}</button>
+                        </div>
                     </div>
 
                     <button type="button" class="shopping-advanced-toggle" id="shopping-advanced-toggle"
@@ -185,89 +192,8 @@
             </div>
         </aside>
 
-        <section class="shopping-list-column">
-            <article class="shopping-card shopping-items-card" data-shopping-card-state="active">
-                <div class="shopping-list-heading">
-                    <div>
-                        <p class="shopping-kicker">{{ shopping_list.name }}</p>
-                        <h2>{% translate "Noch einzukaufen" %}</h2>
-                    </div>
-                    <div class="shopping-list-actions">
-                        <button type="button" class="shopping-button shopping-button-soft shopping-mode-trigger">
-                            <i class="fa-solid fa-person-walking"></i>
-                            <span>{% translate "Einkaufsmodus" %}</span>
-                        </button>
-                        <span class="shopping-count-badge" data-shopping-count="active">{{ active_count }}</span>
-                    </div>
-                </div>
-
-                <div class="shopping-category-groups" id="shopping-category-groups"{% if not active_items %} hidden{% endif %}>
-                    {% for group in active_groups %}
-                        <section class="shopping-category-group category-{{ group.category }}" data-shopping-category="{{ group.category }}">
-                            <header class="shopping-category-heading">
-                                <span><i class="{{ group.icon }}"></i></span>
-                                <strong>{{ group.label }}</strong>
-                                <small data-shopping-category-count>{{ group.items|length }}</small>
-                            </header>
-                            <div class="shopping-item-list">
-                                {% for item in group.items %}
-                                    {% include 'app/includes/shopping_item.html' with completed=False planned=False %}
-                                {% endfor %}
-                            </div>
-                        </section>
-                    {% endfor %}
-                </div>
-
-                <div class="shopping-empty-state" id="shopping-empty-state"{% if active_items %} hidden{% endif %}>
-                    <span><i class="fa-solid fa-basket-shopping"></i></span>
-                    <h3>{% translate "Bereit für den nächsten Einkauf" %}</h3>
-                    <p>{% if has_historical_suggestions %}{% translate "Füge häufig gekaufte Artikel mit einem Klick wieder hinzu." %}{% else %}{% translate "Starte mit einem Vorschlag oder füge deinen ersten eigenen Artikel hinzu." %}{% endif %}</p>
-                    <div class="shopping-empty-suggestions" aria-label="{% translate 'Schnellvorschläge' %}">
-                        {% for suggestion in shopping_suggestions|slice:":6" %}
-                            <button type="button" data-shopping-suggestion-index="{{ forloop.counter0 }}">
-                                <i class="fa-solid fa-plus"></i>
-                                {{ suggestion.name }}
-                            </button>
-                        {% endfor %}
-                    </div>
-                    <button type="button" class="shopping-button shopping-button-primary shopping-focus-add">
-                        <i class="fa-solid fa-pen"></i>
-                        {% translate "Eigenen Artikel hinzufügen" %}
-                    </button>
-                </div>
-            </article>
-
-            {% if planned_items %}
-                <article class="shopping-card shopping-items-card shopping-planned-card" data-shopping-card-state="planned">
-                    <div class="shopping-list-heading">
-                        <div><p class="shopping-kicker">{% translate "Wiederkehrend" %}</p><h2>{% translate "Geplante Artikel" %}</h2></div>
-                        <span class="shopping-count-badge is-planned" data-shopping-count="planned">{{ planned_count }}</span>
-                    </div>
-                    <div class="shopping-item-list is-planned">
-                        {% for item in planned_items %}
-                            {% include 'app/includes/shopping_item.html' with completed=False planned=True %}
-                        {% endfor %}
-                    </div>
-                </article>
-            {% endif %}
-
-            {% if completed_items %}
-                <article class="shopping-card shopping-items-card shopping-completed-card" data-shopping-card-state="completed">
-                    <div class="shopping-list-heading">
-                        <div><p class="shopping-kicker">{% translate "Geschafft" %}</p><h2>{% translate "Erledigte Artikel" %}</h2></div>
-                        <form method="post" action="{% url 'shopping_clear_completed' %}" class="shopping-confirm-form"
-                              data-confirm="{% translate 'Alle erledigten Artikel entfernen?' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="shopping-button shopping-button-soft"><i class="fa-solid fa-broom"></i> {% translate "Liste aufräumen" %}</button>
-                        </form>
-                    </div>
-                    <div class="shopping-item-list is-completed">
-                        {% for item in completed_items %}
-                            {% include 'app/includes/shopping_item.html' with completed=True planned=False %}
-                        {% endfor %}
-                    </div>
-                </article>
-            {% endif %}
+        <section class="shopping-list-column" data-shopping-state-url="{% url 'shopping_state_api' %}" data-shopping-reorder-url="{% url 'shopping_reorder' %}">
+            {% include 'app/includes/shopping_list_content.html' %}
         </section>
     </section>
 
@@ -293,5 +219,6 @@
 
 {% block scripts %}
     {{ block.super }}
-    <script src="{% static 'app/js/shopping_list.js' %}?v=20260714-shopping-workflow-3" defer></script>
+    <script src="{% static 'app/js/shopping_offline.js' %}?v=20260715-shopping-offline-1" defer></script>
+    <script src="{% static 'app/js/shopping_list.js' %}?v=20260715-shopping-workflow-7" defer></script>
 {% endblock %}

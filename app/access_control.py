@@ -154,6 +154,8 @@ ACCESS_CONTROL_ITEMS = (
             "shopping_item_delete",
             "shopping_item_restore",
             "shopping_clear_completed",
+            "shopping_state_api",
+            "shopping_reorder",
             "shopping-product-api",
         ),
     },

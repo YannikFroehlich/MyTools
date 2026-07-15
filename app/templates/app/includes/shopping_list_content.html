@@ -1,0 +1,88 @@
+{% load i18n %}
+<article class="shopping-card shopping-items-card" data-shopping-card-state="active">
+    <div class="shopping-list-heading">
+        <div>
+            <p class="shopping-kicker">{{ shopping_list.name }}</p>
+            <h2>{% translate "Noch einzukaufen" %}</h2>
+        </div>
+        <div class="shopping-list-actions">
+            <button type="button" class="shopping-button shopping-button-soft shopping-reorder-toggle" aria-pressed="false">
+                <i class="fa-solid fa-arrow-down-up-across-line"></i>
+                <span>{% translate "Sortieren" %}</span>
+            </button>
+            <button type="button" class="shopping-button shopping-button-soft shopping-mode-trigger">
+                <i class="fa-solid fa-person-walking"></i>
+                <span>{% translate "Einkaufsmodus" %}</span>
+            </button>
+            <span class="shopping-count-badge" data-shopping-count="active">{{ active_count }}</span>
+        </div>
+    </div>
+
+    <p class="shopping-reorder-help" hidden>{% translate "Verschiebe Kategorien und Artikel per Ziehen oder mit den Pfeiltasten." %}</p>
+    <div class="shopping-category-groups" id="shopping-category-groups"{% if not active_items %} hidden{% endif %}>
+        {% for group in active_groups %}
+            <section class="shopping-category-group category-{{ group.category }}" data-shopping-category="{{ group.category }}" data-shopping-order-index="{{ group.order_index }}">
+                <header class="shopping-category-heading">
+                    <span class="shopping-drag-handle" aria-hidden="true"><i class="{{ group.icon }}"></i></span>
+                    <strong>{{ group.label }}</strong>
+                    <small data-shopping-category-count>{{ group.items|length }}</small>
+                    <span class="shopping-order-controls" aria-label="{% translate 'Kategorie verschieben' %}">
+                        <button type="button" data-shopping-move="category-up" aria-label="{% translate 'Kategorie nach oben' %}"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" data-shopping-move="category-down" aria-label="{% translate 'Kategorie nach unten' %}"><i class="fa-solid fa-arrow-down"></i></button>
+                    </span>
+                </header>
+                <div class="shopping-item-list" data-shopping-dropzone="{{ group.category }}">
+                    {% for item in group.items %}
+                        {% include 'app/includes/shopping_item.html' with completed=False planned=False %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endfor %}
+    </div>
+
+    <div class="shopping-empty-state" id="shopping-empty-state"{% if active_items %} hidden{% endif %}>
+        <span><i class="fa-solid fa-basket-shopping"></i></span>
+        <h3>{% translate "Bereit für den nächsten Einkauf" %}</h3>
+        <p>{% if has_historical_suggestions %}{% translate "Füge häufig gekaufte Artikel mit einem Klick wieder hinzu." %}{% else %}{% translate "Starte mit einem Vorschlag oder füge deinen ersten eigenen Artikel hinzu." %}{% endif %}</p>
+        <div class="shopping-empty-suggestions" aria-label="{% translate 'Schnellvorschläge' %}">
+            {% for suggestion in shopping_suggestions|slice:":6" %}
+                <button type="button" data-shopping-suggestion-index="{{ forloop.counter0 }}">
+                    <i class="fa-solid fa-plus"></i>
+                    {{ suggestion.name }}
+                </button>
+            {% endfor %}
+        </div>
+        <button type="button" class="shopping-button shopping-button-primary shopping-focus-add">
+            <i class="fa-solid fa-pen"></i>
+            {% translate "Eigenen Artikel hinzufügen" %}
+        </button>
+    </div>
+</article>
+
+<article class="shopping-card shopping-items-card shopping-planned-card" data-shopping-card-state="planned"{% if not planned_items %} hidden{% endif %}>
+    <div class="shopping-list-heading">
+        <div><p class="shopping-kicker">{% translate "Wiederkehrend" %}</p><h2>{% translate "Geplante Artikel" %}</h2></div>
+        <span class="shopping-count-badge is-planned" data-shopping-count="planned">{{ planned_count }}</span>
+    </div>
+    <div class="shopping-item-list is-planned">
+        {% for item in planned_items %}
+            {% include 'app/includes/shopping_item.html' with completed=False planned=True %}
+        {% endfor %}
+    </div>
+</article>
+
+<article class="shopping-card shopping-items-card shopping-completed-card" data-shopping-card-state="completed"{% if not completed_items %} hidden{% endif %}>
+    <div class="shopping-list-heading">
+        <div><p class="shopping-kicker">{% translate "Geschafft" %}</p><h2>{% translate "Erledigte Artikel" %}</h2></div>
+        <form method="post" action="{% url 'shopping_clear_completed' %}" class="shopping-confirm-form"
+              data-confirm="{% translate 'Alle erledigten Artikel entfernen?' %}">
+            {% csrf_token %}
+            <button type="submit" class="shopping-button shopping-button-soft"><i class="fa-solid fa-broom"></i> {% translate "Liste aufräumen" %}</button>
+        </form>
+    </div>
+    <div class="shopping-item-list is-completed">
+        {% for item in completed_items %}
+            {% include 'app/includes/shopping_item.html' with completed=True planned=False %}
+        {% endfor %}
+    </div>
+</article>

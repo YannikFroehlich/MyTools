@@ -1,4 +1,5 @@
 import calendar
+import json
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from urllib.parse import urlparse
@@ -6,9 +7,11 @@ from urllib.parse import urlparse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core import signing
+from django.db import transaction
 from django.db.models import Max, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
@@ -185,6 +188,7 @@ def _item_json(item):
         "category": item.category,
         "category_label": str(item.get_category_display()),
         "barcode": item.barcode,
+        "position": item.position,
         "is_completed": item.is_completed,
         "is_planned": item.next_due_date is not None,
     }
@@ -255,6 +259,121 @@ def _starter_suggestions():
     ]
 
 
+def _normalized_category_order(shopping_list, proposed_order=None):
+    valid_order = [value for value, _label in ShoppingItem.CATEGORY_CHOICES]
+    raw_order = proposed_order if proposed_order is not None else shopping_list.category_order
+    if not isinstance(raw_order, list):
+        raw_order = []
+
+    normalized = []
+    for value in raw_order:
+        if value in valid_order and value not in normalized:
+            normalized.append(value)
+    normalized.extend(value for value in valid_order if value not in normalized)
+    return normalized
+
+
+def _shopping_context(shopping_list, *, include_suggestions=False):
+    today = timezone.localdate()
+    shopping_list.items.filter(
+        is_completed=False,
+        next_due_date__lte=today,
+    ).update(next_due_date=None)
+
+    category_order = _normalized_category_order(shopping_list)
+    category_rank = {category: index for index, category in enumerate(category_order)}
+    items = list(shopping_list.items.all())
+    active_items = sorted(
+        (
+            item for item in items
+            if not item.is_completed and item.next_due_date is None
+        ),
+        key=lambda item: (
+            category_rank.get(item.category, len(category_rank)),
+            item.position,
+            item.created_at,
+        ),
+    )
+    planned_items = sorted(
+        (
+            item for item in items
+            if not item.is_completed and item.next_due_date is not None
+        ),
+        key=lambda item: (item.next_due_date, item.position, item.created_at),
+    )
+    completed_items = [item for item in items if item.is_completed]
+    choices_by_category = dict(ShoppingItem.CATEGORY_CHOICES)
+    active_groups = []
+    for category in category_order:
+        category_items = [item for item in active_items if item.category == category]
+        if category_items:
+            active_groups.append({
+                "category": category,
+                "label": choices_by_category[category],
+                "icon": CATEGORY_ICONS.get(category, CATEGORY_ICONS[ShoppingItem.CATEGORY_OTHER]),
+                "items": category_items,
+                "order_index": category_rank[category],
+            })
+
+    estimated_total = sum(
+        (item.line_total for item in active_items if item.line_total is not None),
+        Decimal("0.00"),
+    )
+    context = {
+        "shopping_list": shopping_list,
+        "active_items": active_items,
+        "active_groups": active_groups,
+        "planned_items": planned_items,
+        "completed_items": completed_items,
+        "active_count": len(active_items),
+        "planned_count": len(planned_items),
+        "completed_count": len(completed_items),
+        "estimated_total": estimated_total,
+        "priced_items_count": sum(item.unit_price is not None for item in active_items),
+        "category_order": category_order,
+        "unit_choices": ShoppingItem.UNIT_CHOICES,
+        "category_choices": ShoppingItem.CATEGORY_CHOICES,
+        "recurrence_choices": ShoppingItem.RECURRENCE_CHOICES,
+    }
+    if include_suggestions:
+        historical_suggestions = _shopping_suggestions(completed_items, active_items)
+        context.update({
+            "shopping_suggestions": historical_suggestions or _starter_suggestions(),
+            "has_historical_suggestions": bool(historical_suggestions),
+            "existing_items": [_item_json(item) for item in active_items],
+        })
+    return context
+
+
+def _shopping_state_payload(request, shopping_list, *, context=None):
+    context = context or _shopping_context(shopping_list, include_suggestions=True)
+    estimated_total = context["estimated_total"].quantize(DECIMAL_STEP, rounding=ROUND_HALF_UP)
+    return {
+        "summary": {
+            "active": context["active_count"],
+            "planned": context["planned_count"],
+            "completed": context["completed_count"],
+            "estimated_total": format(estimated_total, ".2f"),
+            "priced_items_count": context["priced_items_count"],
+        },
+        "category_order": context["category_order"],
+        "existing_items": [_item_json(item) for item in context["active_items"]],
+        "list_html": render_to_string(
+            "app/includes/shopping_list_content.html",
+            context,
+            request=request,
+        ),
+    }
+
+
+def _json_with_shopping_state(request, shopping_list, payload=None, *, status=200):
+    response_payload = {"ok": True}
+    if payload:
+        response_payload.update(payload)
+    response_payload.update(_shopping_state_payload(request, shopping_list))
+    return JsonResponse(response_payload, status=status)
+
+
 def _duplicate_item(shopping_list, data):
     duplicate_query = Q(name__iexact=data["name"])
     if data["barcode"]:
@@ -302,6 +421,20 @@ def shopping_list_view(request):
             return _redirect_to_list()
 
         duplicate = _duplicate_item(shopping_list, data)
+        duplicate_action = request.POST.get("duplicate_action") or ""
+        if duplicate and duplicate_action == "merge":
+            duplicate.quantity = min(MAX_QUANTITY, duplicate.quantity + data["quantity"])
+            duplicate.save(update_fields=["quantity", "updated_at"])
+            message = _("Die Menge von %(name)s wurde erhöht.") % {"name": duplicate.name}
+            if _wants_json(request):
+                return _json_with_shopping_state(
+                    request,
+                    shopping_list,
+                    {"message": message, "merged": True, "item": _item_json(duplicate)},
+                )
+            messages.success(request, message)
+            return _redirect_to_list()
+
         if duplicate and _wants_json(request) and request.POST.get("allow_duplicate") != "1":
             return JsonResponse({
                 "ok": False,
@@ -317,70 +450,20 @@ def shopping_list_view(request):
             **data,
         )
         if _wants_json(request):
-            return JsonResponse({
-                "ok": True,
-                "message": _("Artikel wurde hinzugefügt."),
-                "item": _item_json(item),
-            }, status=201)
+            return _json_with_shopping_state(
+                request,
+                shopping_list,
+                {
+                    "message": _("Artikel wurde hinzugefügt."),
+                    "item": _item_json(item),
+                },
+                status=201,
+            )
         messages.success(request, _("Artikel wurde hinzugefügt."))
         return _redirect_to_list()
 
-    today = timezone.localdate()
-    shopping_list.items.filter(
-        is_completed=False,
-        next_due_date__lte=today,
-    ).update(next_due_date=None)
-
-    items = list(shopping_list.items.all())
-    active_items = [
-        item for item in items
-        if not item.is_completed and item.next_due_date is None
-    ]
-    planned_items = sorted(
-        (
-            item for item in items
-            if not item.is_completed and item.next_due_date is not None
-        ),
-        key=lambda item: (item.next_due_date, item.position, item.created_at),
-    )
-    completed_items = [item for item in items if item.is_completed]
-    active_groups = []
-    for category, label in ShoppingItem.CATEGORY_CHOICES:
-        category_items = [item for item in active_items if item.category == category]
-        if category_items:
-            active_groups.append({
-                "category": category,
-                "label": label,
-                "icon": CATEGORY_ICONS.get(category, CATEGORY_ICONS[ShoppingItem.CATEGORY_OTHER]),
-                "items": category_items,
-            })
-
-    historical_suggestions = _shopping_suggestions(completed_items, active_items)
-    shopping_suggestions = historical_suggestions or _starter_suggestions()
-    estimated_total = sum(
-        (item.line_total for item in active_items if item.line_total is not None),
-        Decimal("0.00"),
-    )
-    priced_items_count = sum(item.unit_price is not None for item in active_items)
-
-    return render(request, "app/shopping_list.html", {
-        "shopping_list": shopping_list,
-        "active_items": active_items,
-        "active_groups": active_groups,
-        "planned_items": planned_items,
-        "completed_items": completed_items,
-        "shopping_suggestions": shopping_suggestions,
-        "has_historical_suggestions": bool(historical_suggestions),
-        "existing_items": [_item_json(item) for item in active_items],
-        "active_count": len(active_items),
-        "planned_count": len(planned_items),
-        "completed_count": len(completed_items),
-        "estimated_total": estimated_total,
-        "priced_items_count": priced_items_count,
-        "unit_choices": ShoppingItem.UNIT_CHOICES,
-        "category_choices": ShoppingItem.CATEGORY_CHOICES,
-        "recurrence_choices": ShoppingItem.RECURRENCE_CHOICES,
-    })
+    context = _shopping_context(shopping_list, include_suggestions=True)
+    return render(request, "app/shopping_list.html", context)
 
 
 @login_required
@@ -415,7 +498,11 @@ def shopping_item_update_view(request, item_id):
         item.save(update_fields=["quantity", "unit_price", "updated_at"])
         message = _("Menge und Preis wurden gespeichert.")
         if _wants_json(request):
-            return JsonResponse({"ok": True, "message": message, "item": _item_json(item)})
+            return _json_with_shopping_state(
+                request,
+                item.shopping_list,
+                {"message": message, "item": _item_json(item)},
+            )
         messages.success(request, message)
         return _redirect_to_list()
 
@@ -434,11 +521,14 @@ def shopping_item_update_view(request, item_id):
         update_fields.append("next_due_date")
     item.save(update_fields=update_fields)
     if _wants_json(request):
-        return JsonResponse({
-            "ok": True,
-            "message": _("Artikel wurde aktualisiert."),
-            "item": _item_json(item),
-        })
+        return _json_with_shopping_state(
+            request,
+            item.shopping_list,
+            {
+                "message": _("Artikel wurde aktualisiert."),
+                "item": _item_json(item),
+            },
+        )
     messages.success(request, _("Artikel wurde aktualisiert."))
     return _redirect_to_list()
 
@@ -456,19 +546,31 @@ def shopping_item_toggle_view(request, item_id):
         and item.recurrence != ShoppingItem.RECURRENCE_NONE
     ):
         if item.next_due_date and item.next_due_date > timezone.localdate():
-            messages.info(request, _("Der Artikel ist bereits für später eingeplant."))
+            message = _("Der Artikel ist bereits für später eingeplant.")
+            if _wants_json(request):
+                return _json_with_shopping_state(
+                    request,
+                    item.shopping_list,
+                    {"message": message},
+                    status=409,
+                )
+            messages.info(request, message)
             return _redirect_to_list()
 
         next_due_date = _next_recurrence_date(item.recurrence, timezone.localdate())
         item.next_due_date = next_due_date
         item.completed_at = None
         item.save(update_fields=["next_due_date", "completed_at", "updated_at"])
-        messages.success(
-            request,
-            _("Artikel ist bis %(date)s eingeplant.") % {
-                "date": date_format(next_due_date, "DATE_FORMAT"),
-            },
-        )
+        message = _("Artikel ist bis %(date)s eingeplant.") % {
+            "date": date_format(next_due_date, "DATE_FORMAT"),
+        }
+        if _wants_json(request):
+            return _json_with_shopping_state(
+                request,
+                item.shopping_list,
+                {"message": message, "item": _item_json(item)},
+            )
+        messages.success(request, message)
         return _redirect_to_list()
 
     item.is_completed = not item.is_completed
@@ -476,6 +578,13 @@ def shopping_item_toggle_view(request, item_id):
     if not item.is_completed:
         item.next_due_date = None
     item.save(update_fields=["is_completed", "completed_at", "next_due_date", "updated_at"])
+    if _wants_json(request):
+        message = _("Artikel wurde erledigt.") if item.is_completed else _("Artikel ist wieder offen.")
+        return _json_with_shopping_state(
+            request,
+            item.shopping_list,
+            {"message": message, "item": _item_json(item)},
+        )
     return _redirect_to_list()
 
 
@@ -491,7 +600,14 @@ def shopping_item_activate_view(request, item_id):
     item.is_completed = False
     item.completed_at = None
     item.save(update_fields=["next_due_date", "is_completed", "completed_at", "updated_at"])
-    messages.success(request, _("Artikel wurde auf die aktuelle Liste gesetzt."))
+    message = _("Artikel wurde auf die aktuelle Liste gesetzt.")
+    if _wants_json(request):
+        return _json_with_shopping_state(
+            request,
+            item.shopping_list,
+            {"message": message, "item": _item_json(item)},
+        )
+    messages.success(request, message)
     return _redirect_to_list()
 
 
@@ -510,12 +626,15 @@ def shopping_item_delete_view(request, item_id):
     )
     item.delete()
     if _wants_json(request):
-        return JsonResponse({
-            "ok": True,
-            "message": _("Artikel wurde gelöscht."),
-            "restore_url": reverse("shopping_item_restore"),
-            "restore_token": restore_token,
-        })
+        return _json_with_shopping_state(
+            request,
+            item.shopping_list,
+            {
+                "message": _("Artikel wurde gelöscht."),
+                "restore_url": reverse("shopping_item_restore"),
+                "restore_token": restore_token,
+            },
+        )
     messages.success(request, _("Artikel wurde gelöscht."))
     return _redirect_to_list()
 
@@ -573,7 +692,11 @@ def shopping_item_restore_view(request):
 
     message = _("Artikel wurde wiederhergestellt.")
     if _wants_json(request):
-        return JsonResponse({"ok": True, "message": message, "item": _item_json(item)})
+        return _json_with_shopping_state(
+            request,
+            shopping_list,
+            {"message": message, "item": _item_json(item)},
+        )
     messages.success(request, message)
     return _redirect_to_list()
 
@@ -583,11 +706,92 @@ def shopping_item_restore_view(request):
 def shopping_clear_completed_view(request):
     shopping_list = _default_list(request.user)
     deleted_count, _details = shopping_list.items.filter(is_completed=True).delete()
+    message = _("Erledigte Artikel wurden entfernt.") if deleted_count else _("Es gibt keine erledigten Artikel.")
+    if _wants_json(request):
+        return _json_with_shopping_state(request, shopping_list, {"message": message})
     if deleted_count:
-        messages.success(request, _("Erledigte Artikel wurden entfernt."))
+        messages.success(request, message)
     else:
-        messages.info(request, _("Es gibt keine erledigten Artikel."))
+        messages.info(request, message)
     return _redirect_to_list()
+
+
+@login_required
+@require_GET
+def shopping_state_api(request):
+    shopping_list = _default_list(request.user)
+    return _json_with_shopping_state(request, shopping_list)
+
+
+@login_required
+@require_POST
+def shopping_reorder_view(request):
+    shopping_list = _default_list(request.user)
+    try:
+        if request.content_type == "application/json":
+            payload = json.loads(request.body.decode("utf-8"))
+        else:
+            payload = json.loads(request.POST.get("payload") or "")
+    except (json.JSONDecodeError, UnicodeDecodeError, TypeError):
+        return JsonResponse({"ok": False, "error": _("Die Sortierung ist ungültig.")}, status=400)
+
+    category_order = payload.get("categories")
+    item_entries = payload.get("items")
+    if not isinstance(category_order, list) or not isinstance(item_entries, list):
+        return JsonResponse({"ok": False, "error": _("Die Sortierung ist unvollständig.")}, status=400)
+
+    valid_categories = {value for value, _label in ShoppingItem.CATEGORY_CHOICES}
+    normalized_entries = []
+    seen_ids = set()
+    try:
+        for raw_entry in item_entries:
+            if isinstance(raw_entry, dict):
+                item_id = int(raw_entry["id"])
+                category = raw_entry["category"]
+            else:
+                item_id = int(raw_entry)
+                category = None
+            if item_id <= 0 or item_id in seen_ids:
+                raise ValueError
+            if category is not None and category not in valid_categories:
+                raise ValueError
+            seen_ids.add(item_id)
+            normalized_entries.append((item_id, category))
+    except (KeyError, TypeError, ValueError):
+        return JsonResponse({"ok": False, "error": _("Die Artikelsortierung ist ungültig.")}, status=400)
+
+    with transaction.atomic():
+        shopping_list = ShoppingList.objects.select_for_update().get(pk=shopping_list.pk)
+        active_items = list(shopping_list.items.select_for_update().filter(
+            is_completed=False,
+            next_due_date__isnull=True,
+        ))
+        items_by_id = {item.id: item for item in active_items}
+        if not seen_ids.issubset(items_by_id):
+            return JsonResponse({"ok": False, "error": _("Mindestens ein Artikel gehört nicht zu dieser Liste.")}, status=400)
+
+        shopping_list.category_order = _normalized_category_order(shopping_list, category_order)
+        shopping_list.save(update_fields=["category_order", "updated_at"])
+
+        ordered_items = []
+        for item_id, category in normalized_entries:
+            item = items_by_id.pop(item_id)
+            if category is not None:
+                item.category = category
+            ordered_items.append(item)
+        ordered_items.extend(sorted(items_by_id.values(), key=lambda item: (item.position, item.created_at)))
+        updated_at = timezone.now()
+        for position, item in enumerate(ordered_items, 1):
+            item.position = position
+            item.updated_at = updated_at
+        if ordered_items:
+            ShoppingItem.objects.bulk_update(ordered_items, ["position", "category", "updated_at"])
+
+    return _json_with_shopping_state(
+        request,
+        shopping_list,
+        {"message": _("Ladenreihenfolge wurde gespeichert.")},
+    )
 
 
 @login_required

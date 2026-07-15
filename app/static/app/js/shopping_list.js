@@ -10,7 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const duplicateWarning = document.getElementById("shopping-duplicate-warning");
     const duplicateCopy = document.getElementById("shopping-duplicate-copy");
     const addDuplicateButton = document.getElementById("shopping-add-duplicate");
+    const mergeDuplicateButton = document.getElementById("shopping-merge-duplicate");
+    const editDuplicateButton = document.getElementById("shopping-edit-duplicate");
     const allowDuplicateInput = document.getElementById("shopping-allow-duplicate");
+    const duplicateActionInput = document.getElementById("shopping-duplicate-action");
     const formStatus = document.getElementById("shopping-form-status");
     const barcodeInput = document.getElementById("shopping-barcode");
     const lookupButton = document.getElementById("shopping-product-lookup");
@@ -27,8 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const scannerStatus = document.getElementById("shopping-scanner-status");
     const modeToolbar = document.getElementById("shopping-mode-toolbar");
     const modeExitButton = document.getElementById("shopping-mode-exit");
-    const categoryGroups = document.getElementById("shopping-category-groups");
-    const emptyState = document.getElementById("shopping-empty-state");
+    const shoppingPage = document.querySelector(".shopping-page");
+    const listColumn = document.querySelector(".shopping-list-column");
+    const syncStatus = document.getElementById("shopping-sync-status");
+    let categoryGroups = document.getElementById("shopping-category-groups");
+    let emptyState = document.getElementById("shopping-empty-state");
 
     const parseJsonScript = (id) => {
         const source = document.getElementById(id);
@@ -49,6 +55,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let scanning = false;
     let scanFrameId = null;
     let lastScanAt = 0;
+    let currentDuplicate = null;
+    let reorderMode = false;
+    let draggedElement = null;
+    const csrfToken = addForm?.elements.namedItem("csrfmiddlewaretoken")?.value || "";
+    const offlineStore = window.MyToolsShoppingOffline?.create({
+        userId: shoppingPage?.dataset.shoppingUserId || "anonymous",
+        listId: shoppingPage?.dataset.shoppingListId || "default",
+        statusElement: syncStatus,
+    });
 
     const showToast = (message, level = "info", options = {}) => {
         if (window.MyToolsToast?.show) {
@@ -104,6 +119,97 @@ document.addEventListener("DOMContentLoaded", () => {
             return await response.json();
         } catch (_error) {
             return {ok: false, error: "Die Antwort konnte nicht verarbeitet werden."};
+        }
+    };
+
+    const summaryFromDom = () => ({
+        active: getActiveCount(),
+        planned: Number.parseInt(document.querySelector('[data-shopping-count="planned"]')?.textContent || "0", 10) || 0,
+        completed: Number.parseInt(document.querySelector('[data-shopping-count="completed"]')?.textContent || "0", 10) || 0,
+        estimated_total: document.querySelector("[data-shopping-estimated-total]")?.textContent?.replace("€", "").trim().replace(",", ".") || "0.00",
+        priced_items_count: existingItems.filter((item) => item.unit_price !== "").length,
+    });
+
+    const saveCurrentSnapshot = () => {
+        if (!offlineStore || !listColumn) return;
+        offlineStore.saveSnapshot({
+            listHtml: listColumn.innerHTML,
+            summary: summaryFromDom(),
+            csrfToken,
+        }).catch(() => {});
+    };
+
+    const updateSummary = (summary) => {
+        if (!summary) return;
+        ["active", "planned", "completed"].forEach((state) => {
+            document.querySelectorAll(`[data-shopping-count="${state}"]`).forEach((counter) => {
+                counter.textContent = String(summary[state] ?? 0);
+            });
+        });
+        const estimatedTotal = document.querySelector("[data-shopping-estimated-total]");
+        if (estimatedTotal) {
+            estimatedTotal.textContent = `${Number(summary.estimated_total || 0).toLocaleString("de-DE", {minimumFractionDigits: 2, maximumFractionDigits: 2})} €`;
+        }
+        const pricedCount = document.querySelector("[data-shopping-priced-count]");
+        if (pricedCount) pricedCount.textContent = `für ${summary.priced_items_count || 0} Artikel`;
+    };
+
+    const applyShoppingState = (payload, {preserveFocus = false} = {}) => {
+        if (!payload) return;
+        const previousScrollY = window.scrollY;
+        const activeElementId = preserveFocus ? document.activeElement?.id : "";
+        if (listColumn && typeof payload.list_html === "string") {
+            listColumn.innerHTML = payload.list_html;
+            categoryGroups = document.getElementById("shopping-category-groups");
+            emptyState = document.getElementById("shopping-empty-state");
+            bindDynamicContent(listColumn);
+            setReorderMode(reorderMode, false);
+        }
+        if (Array.isArray(payload.existing_items)) existingItems = payload.existing_items;
+        updateSummary(payload.summary);
+        saveCurrentSnapshot();
+        window.scrollTo({top: previousScrollY, left: window.scrollX, behavior: "auto"});
+        if (activeElementId) document.getElementById(activeElementId)?.focus({preventScroll: true});
+    };
+
+    const refreshShoppingState = async () => {
+        if (!listColumn?.dataset.shoppingStateUrl || !navigator.onLine) return false;
+        const response = await fetch(listColumn.dataset.shoppingStateUrl, {
+            headers: {"Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
+            credentials: "same-origin",
+        });
+        const payload = await readJsonResponse(response);
+        if (!response.ok || !payload.ok) throw new Error(payload.error || "Einkaufsliste konnte nicht aktualisiert werden.");
+        applyShoppingState(payload);
+        return true;
+    };
+
+    const requestOrQueue = async (form, kind, {body = null, url = null} = {}) => {
+        const serializedBody = body || offlineStore?.serializeForm(form) || new URLSearchParams(new FormData(form)).toString();
+        const targetUrl = url || form.action;
+        if (!navigator.onLine && offlineStore) {
+            await offlineStore.enqueue({url: targetUrl, body: serializedBody, kind});
+            return {queued: true, payload: {ok: true, message: "Änderung wurde offline gespeichert."}};
+        }
+        try {
+            const response = await fetch(targetUrl, {
+                method: "POST",
+                body: serializedBody,
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                credentials: "same-origin",
+            });
+            const payload = await readJsonResponse(response);
+            return {queued: false, response, payload};
+        } catch (error) {
+            if (offlineStore) {
+                await offlineStore.enqueue({url: targetUrl, body: serializedBody, kind});
+                return {queued: true, payload: {ok: true, message: "Verbindung unterbrochen – Änderung wurde offline gespeichert."}};
+            }
+            throw error;
         }
     };
 
@@ -184,16 +290,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (active) window.scrollTo({top: 0, behavior: "smooth"});
     };
 
-    document.querySelectorAll(".shopping-mode-trigger").forEach((button) => {
-        button.addEventListener("click", () => {
-            if (getActiveCount() < 1) {
-                showToast("Füge zuerst einen Artikel hinzu.", "info");
-                setAddPanelOpen(true, true);
-                return;
-            }
-            setShoppingMode(true);
+    const bindModeTriggers = (root = document) => {
+        root.querySelectorAll(".shopping-mode-trigger").forEach((button) => {
+            if (button.dataset.shoppingBound === "1") return;
+            button.dataset.shoppingBound = "1";
+            button.addEventListener("click", () => {
+                if (getActiveCount() < 1) {
+                    showToast("Füge zuerst einen Artikel hinzu.", "info");
+                    setAddPanelOpen(true, true);
+                    return;
+                }
+                setShoppingMode(true);
+            });
         });
-    });
+    };
+    bindModeTriggers();
     modeExitButton?.addEventListener("click", () => setShoppingMode(false));
 
     try {
@@ -210,12 +321,17 @@ document.addEventListener("DOMContentLoaded", () => {
         window.setTimeout(() => nameInput?.focus(), 80);
     };
 
-    document.querySelectorAll(".shopping-focus-add").forEach((button) => {
-        button.addEventListener("click", (event) => {
-            event.preventDefault();
-            focusAddForm();
+    const bindFocusAddButtons = (root = document) => {
+        root.querySelectorAll(".shopping-focus-add").forEach((button) => {
+            if (button.dataset.shoppingBound === "1") return;
+            button.dataset.shoppingBound = "1";
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                focusAddForm();
+            });
         });
-    });
+    };
+    bindFocusAddButtons();
 
     const normalize = (value) => String(value || "").trim().toLocaleLowerCase("de-DE");
 
@@ -299,12 +415,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!event.target.closest(".shopping-field-name")) hideSuggestions();
     });
 
-    document.querySelectorAll("[data-shopping-suggestion-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-            const suggestion = suggestions[Number.parseInt(button.dataset.shoppingSuggestionIndex, 10)];
-            if (suggestion) applySuggestion(suggestion, true);
+    const bindStarterSuggestions = (root = document) => {
+        root.querySelectorAll("[data-shopping-suggestion-index]").forEach((button) => {
+            if (button.dataset.shoppingBound === "1") return;
+            button.dataset.shoppingBound = "1";
+            button.addEventListener("click", () => {
+                const suggestion = suggestions[Number.parseInt(button.dataset.shoppingSuggestionIndex, 10)];
+                if (suggestion) applySuggestion(suggestion, true);
+            });
         });
-    });
+    };
+    bindStarterSuggestions();
 
     const findDuplicate = () => {
         if (!addForm) return null;
@@ -317,6 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateDuplicateWarning(forcedDuplicate = null) {
         if (!duplicateWarning) return null;
         const duplicate = forcedDuplicate || findDuplicate();
+        currentDuplicate = duplicate;
         duplicateWarning.hidden = !duplicate;
         if (duplicate && duplicateCopy) duplicateCopy.textContent = `${duplicate.name} ist bereits vorhanden.`;
         return duplicate;
@@ -330,14 +452,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     addDuplicateButton?.addEventListener("click", () => {
         if (allowDuplicateInput) allowDuplicateInput.value = "1";
+        if (duplicateActionInput) duplicateActionInput.value = "";
         if (duplicateWarning) duplicateWarning.hidden = true;
         addForm?.requestSubmit();
+    });
+
+    mergeDuplicateButton?.addEventListener("click", () => {
+        if (allowDuplicateInput) allowDuplicateInput.value = "0";
+        if (duplicateActionInput) duplicateActionInput.value = "merge";
+        if (currentDuplicate?.unit) setNamedField("unit", currentDuplicate.unit);
+        if (duplicateWarning) duplicateWarning.hidden = true;
+        addForm?.requestSubmit();
+    });
+
+    editDuplicateButton?.addEventListener("click", () => {
+        if (!currentDuplicate) return;
+        const article = document.querySelector(`[data-shopping-item-id="${currentDuplicate.id}"]`);
+        const editButton = article?.querySelector(".shopping-edit-toggle");
+        if (editButton?.dataset.editTarget) setEditPanel(editButton.dataset.editTarget, true);
+        article?.scrollIntoView({behavior: "smooth", block: "center"});
+        if (duplicateWarning) duplicateWarning.hidden = true;
     });
 
     addForm?.addEventListener("submit", async (event) => {
         event.preventDefault();
         hideSuggestions();
-        if (allowDuplicateInput?.value !== "1" && updateDuplicateWarning()) {
+        if (allowDuplicateInput?.value !== "1" && duplicateActionInput?.value !== "merge" && updateDuplicateWarning()) {
             setFormStatus("Prüfe den vorhandenen Artikel oder füge ihn bewusst doppelt hinzu.", "error");
             duplicateWarning?.scrollIntoView({behavior: "smooth", block: "nearest"});
             return;
@@ -348,26 +488,30 @@ document.addEventListener("DOMContentLoaded", () => {
         setFormStatus("Artikel wird hinzugefügt …", "loading");
 
         try {
-            const response = await fetch(addForm.action || window.location.href, {
-                method: "POST",
-                body: new FormData(addForm),
-                headers: {"Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
-                credentials: "same-origin",
+            const result = await requestOrQueue(addForm, duplicateActionInput?.value === "merge" ? "merge" : "add", {
+                url: addForm.action || window.location.href,
             });
-            const payload = await readJsonResponse(response);
-            if (response.status === 409 && payload.duplicate) {
+            const {response, payload, queued} = result;
+            if (response?.status === 409 && payload.duplicate) {
                 updateDuplicateWarning(payload.item);
                 throw new Error(payload.error || "Der Artikel ist bereits vorhanden.");
             }
-            if (!response.ok || !payload.ok) throw new Error(payload.error || "Artikel konnte nicht hinzugefügt werden.");
+            if (!queued && (!response?.ok || !payload.ok)) throw new Error(payload.error || "Artikel konnte nicht hinzugefügt werden.");
 
-            existingItems.push(payload.item);
+            if (!queued) applyShoppingState(payload);
             setFormStatus(payload.message, "success");
-            showToast(payload.message, "success");
-            window.setTimeout(() => window.location.reload(), 420);
+            showToast(payload.message, queued ? "info" : "success");
+            addForm.reset();
+            setNamedField("quantity", "1");
+            if (allowDuplicateInput) allowDuplicateInput.value = "0";
+            if (duplicateActionInput) duplicateActionInput.value = "";
+            currentDuplicate = null;
+            if (duplicateWarning) duplicateWarning.hidden = true;
+            clearProductData();
         } catch (error) {
             setFormStatus(error.message || "Artikel konnte nicht hinzugefügt werden.", "error");
             showToast(error.message || "Artikel konnte nicht hinzugefügt werden.", "error");
+        } finally {
             setButtonLoading(submitButton, false);
         }
     });
@@ -436,43 +580,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     lookupButton?.addEventListener("click", lookupProduct);
 
-    document.querySelectorAll(".shopping-inline-form").forEach((form) => {
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            const button = form.querySelector('button[type="submit"]');
-            const article = form.closest(".shopping-item");
-            setButtonLoading(button, true);
-            try {
-                const response = await fetch(form.action, {
-                    method: "POST",
-                    body: new FormData(form),
-                    headers: {"Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
-                    credentials: "same-origin",
-                });
-                const payload = await readJsonResponse(response);
-                if (!response.ok || !payload.ok) throw new Error(payload.error || "Änderungen konnten nicht gespeichert werden.");
-
-                const item = payload.item;
-                const quantityDisplay = article?.querySelector("[data-shopping-quantity-display]");
-                const totalDisplay = article?.querySelector("[data-shopping-line-total]");
-                const unitPriceDisplay = article?.querySelector("[data-shopping-unit-price]");
-                if (quantityDisplay) quantityDisplay.textContent = item.quantity.replace(".", ",");
-                if (item.line_total !== null) {
-                    if (totalDisplay) totalDisplay.textContent = `${Number(item.line_total).toLocaleString("de-DE", {minimumFractionDigits: 2, maximumFractionDigits: 2})} €`;
-                    if (unitPriceDisplay) unitPriceDisplay.textContent = `${Number(item.unit_price).toLocaleString("de-DE", {minimumFractionDigits: 2, maximumFractionDigits: 2})} € / ${item.unit_label}`;
-                } else {
-                    if (totalDisplay) totalDisplay.textContent = "—";
-                    if (unitPriceDisplay) unitPriceDisplay.textContent = "Kein Preis";
-                }
-                showToast(payload.message, "success");
-            } catch (error) {
-                showToast(error.message || "Änderungen konnten nicht gespeichert werden.", "error");
-            } finally {
-                setButtonLoading(button, false);
-            }
-        });
-    });
-
     const updateCount = (state, delta) => {
         let nextValue = 0;
         document.querySelectorAll(`[data-shopping-count="${state}"]`).forEach((counter) => {
@@ -502,58 +609,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (emptyState) emptyState.hidden = false;
                 setShoppingMode(false);
             } else if (state !== "active" && card && !card.querySelector(".shopping-item")) {
-                card.remove();
+                card.hidden = true;
             }
+            saveCurrentSnapshot();
         }, 180);
     };
 
-    document.querySelectorAll(".shopping-delete-form").forEach((form) => {
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            const button = form.querySelector('button[type="submit"]');
-            const article = form.closest(".shopping-item");
-            const csrfToken = form.elements.namedItem("csrfmiddlewaretoken")?.value || "";
-            setButtonLoading(button, true);
-            try {
-                const response = await fetch(form.action, {
-                    method: "POST",
-                    body: new FormData(form),
-                    headers: {"Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
-                    credentials: "same-origin",
-                });
-                const payload = await readJsonResponse(response);
-                if (!response.ok || !payload.ok) throw new Error(payload.error || "Artikel konnte nicht gelöscht werden.");
-                removeArticleFromView(article);
-                showToast(payload.message, "success", {
-                    actionLabel: "Rückgängig",
-                    duration: 9000,
-                    onAction: async () => {
-                        const body = new FormData();
-                        body.append("csrfmiddlewaretoken", csrfToken);
-                        body.append("token", payload.restore_token);
-                        const restoreResponse = await fetch(payload.restore_url, {
-                            method: "POST",
-                            body,
-                            headers: {"Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
-                            credentials: "same-origin",
-                        });
-                        const restorePayload = await readJsonResponse(restoreResponse);
-                        if (!restoreResponse.ok || !restorePayload.ok) {
-                            showToast(restorePayload.error || "Wiederherstellen fehlgeschlagen.", "error");
-                            return;
-                        }
-                        showToast(restorePayload.message, "success");
-                        window.setTimeout(() => window.location.reload(), 260);
-                    },
-                });
-            } catch (error) {
-                setButtonLoading(button, false);
-                showToast(error.message || "Artikel konnte nicht gelöscht werden.", "error");
-            }
-        });
-    });
+    const optimisticTransition = (article, kind) => {
+        if (!article) return;
+        const fromState = article.dataset.shoppingState;
+        let toState = null;
+        if (kind === "toggle") {
+            toState = fromState === "active"
+                ? (article.querySelector(".shopping-recurrence-badge") ? "planned" : "completed")
+                : "active";
+        } else if (kind === "activate") {
+            toState = "active";
+        }
+        if (toState) updateCount(toState, 1);
+        removeArticleFromView(article);
+    };
 
-    const setEditPanel = (targetId, shouldOpen) => {
+    function setEditPanel(targetId, shouldOpen) {
         const panel = document.getElementById(targetId);
         if (!panel) return;
         panel.hidden = !shouldOpen;
@@ -561,22 +638,279 @@ document.addEventListener("DOMContentLoaded", () => {
             if (button.classList.contains("shopping-edit-toggle")) button.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
         });
         if (shouldOpen) panel.querySelector("input")?.focus();
+    }
+
+    const bindPostForm = (form, kind, handler) => {
+        if (form.dataset.shoppingBound === "1") return;
+        form.dataset.shoppingBound = "1";
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const message = form.dataset.confirm;
+            if (message && !window.confirm(message)) return;
+            const button = form.querySelector('button[type="submit"]');
+            setButtonLoading(button, true);
+            try {
+                const result = await requestOrQueue(form, kind);
+                if (!result.queued && (!result.response?.ok || !result.payload.ok)) {
+                    throw new Error(result.payload.error || "Änderung konnte nicht gespeichert werden.");
+                }
+                await handler(result, form);
+            } catch (error) {
+                showToast(error.message || "Änderung konnte nicht gespeichert werden.", "error");
+            } finally {
+                setButtonLoading(button, false);
+            }
+        });
     };
 
-    document.querySelectorAll(".shopping-edit-toggle").forEach((button) => {
-        button.addEventListener("click", () => {
-            const panel = document.getElementById(button.dataset.editTarget);
-            setEditPanel(button.dataset.editTarget, Boolean(panel?.hidden));
+    function bindDynamicContent(root = document) {
+        bindModeTriggers(root);
+        bindFocusAddButtons(root);
+        bindStarterSuggestions(root);
+        bindReorderControls(root);
+
+        root.querySelectorAll(".shopping-toggle-form").forEach((form) => {
+            const kind = form.closest('[data-shopping-state="planned"]') ? "activate" : "toggle";
+            bindPostForm(form, kind, async ({queued, payload}) => {
+                const article = form.closest(".shopping-item");
+                if (queued) optimisticTransition(article, kind);
+                else applyShoppingState(payload);
+                showToast(payload.message, queued ? "info" : "success");
+            });
         });
-    });
-    document.querySelectorAll(".shopping-edit-cancel").forEach((button) => {
-        button.addEventListener("click", () => setEditPanel(button.dataset.editTarget, false));
-    });
-    document.querySelectorAll(".shopping-confirm-form").forEach((form) => {
-        form.addEventListener("submit", (event) => {
-            const message = form.dataset.confirm;
-            if (message && !window.confirm(message)) event.preventDefault();
+
+        root.querySelectorAll(".shopping-inline-form, .shopping-edit-form").forEach((form) => {
+            bindPostForm(form, "update", async ({queued, payload}) => {
+                if (queued) {
+                    const article = form.closest(".shopping-item");
+                    const quantity = form.elements.namedItem("quantity")?.value || "";
+                    const price = form.elements.namedItem("unit_price")?.value || "";
+                    const quantityDisplay = article?.querySelector("[data-shopping-quantity-display]");
+                    if (quantityDisplay) quantityDisplay.textContent = quantity.replace(".", ",");
+                    if (price) article?.querySelector("[data-shopping-unit-price]")?.replaceChildren(`${price.replace(".", ",")} €`);
+                    saveCurrentSnapshot();
+                } else {
+                    applyShoppingState(payload);
+                }
+                showToast(payload.message, queued ? "info" : "success");
+            });
         });
+
+        root.querySelectorAll(".shopping-delete-form").forEach((form) => {
+            bindPostForm(form, "delete", async ({queued, payload}) => {
+                const article = form.closest(".shopping-item");
+                if (queued) {
+                    optimisticTransition(article, "delete");
+                    showToast(payload.message, "info");
+                    return;
+                }
+                applyShoppingState(payload);
+                showToast(payload.message, "success", {
+                    actionLabel: "Rückgängig",
+                    duration: 9000,
+                    onAction: async () => {
+                        const restoreBody = new URLSearchParams({csrfmiddlewaretoken: csrfToken, token: payload.restore_token}).toString();
+                        const restoreResponse = await fetch(payload.restore_url, {
+                            method: "POST",
+                            body: restoreBody,
+                            headers: {
+                                "Accept": "application/json",
+                                "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                                "X-Requested-With": "XMLHttpRequest",
+                            },
+                            credentials: "same-origin",
+                        });
+                        const restorePayload = await readJsonResponse(restoreResponse);
+                        if (!restoreResponse.ok || !restorePayload.ok) {
+                            showToast(restorePayload.error || "Wiederherstellen fehlgeschlagen.", "error");
+                            return;
+                        }
+                        applyShoppingState(restorePayload);
+                        showToast(restorePayload.message, "success");
+                    },
+                });
+            });
+        });
+
+        root.querySelectorAll(".shopping-confirm-form").forEach((form) => {
+            bindPostForm(form, "clear-completed", async ({queued, payload}) => {
+                if (queued) {
+                    form.closest("[data-shopping-card-state]")?.setAttribute("hidden", "");
+                    document.querySelectorAll('[data-shopping-count="completed"]').forEach((counter) => { counter.textContent = "0"; });
+                } else {
+                    applyShoppingState(payload);
+                }
+                showToast(payload.message, queued ? "info" : "success");
+            });
+        });
+
+        root.querySelectorAll(".shopping-edit-toggle").forEach((button) => {
+            if (button.dataset.shoppingBound === "1") return;
+            button.dataset.shoppingBound = "1";
+            button.addEventListener("click", () => {
+                const panel = document.getElementById(button.dataset.editTarget);
+                setEditPanel(button.dataset.editTarget, Boolean(panel?.hidden));
+            });
+        });
+        root.querySelectorAll(".shopping-edit-cancel").forEach((button) => {
+            if (button.dataset.shoppingBound === "1") return;
+            button.dataset.shoppingBound = "1";
+            button.addEventListener("click", () => setEditPanel(button.dataset.editTarget, false));
+        });
+    }
+
+    const currentOrderPayload = () => ({
+        categories: [...document.querySelectorAll(".shopping-category-group")].map((group) => group.dataset.shoppingCategory),
+        items: [...document.querySelectorAll('[data-shopping-state="active"]')].map((article) => ({
+            id: Number.parseInt(article.dataset.shoppingItemId, 10),
+            category: article.closest(".shopping-category-group")?.dataset.shoppingCategory || article.dataset.shoppingCategory,
+        })).filter((item) => Number.isInteger(item.id) && item.id > 0),
+    });
+
+    const saveOrder = async () => {
+        if (!listColumn?.dataset.shoppingReorderUrl) return;
+        const body = new URLSearchParams({
+            csrfmiddlewaretoken: csrfToken,
+            payload: JSON.stringify(currentOrderPayload()),
+        }).toString();
+        try {
+            const result = await requestOrQueue(addForm, "reorder", {body, url: listColumn.dataset.shoppingReorderUrl});
+            if (!result.queued && (!result.response?.ok || !result.payload.ok)) {
+                throw new Error(result.payload.error || "Ladenreihenfolge konnte nicht gespeichert werden.");
+            }
+            if (!result.queued) applyShoppingState(result.payload);
+            else saveCurrentSnapshot();
+            showToast(result.payload.message, result.queued ? "info" : "success");
+        } catch (error) {
+            showToast(error.message || "Ladenreihenfolge konnte nicht gespeichert werden.", "error");
+            if (navigator.onLine) refreshShoppingState().catch(() => {});
+        }
+    };
+
+    function setReorderMode(active, announce = true) {
+        reorderMode = Boolean(active && getActiveCount() > 0);
+        listColumn?.classList.toggle("is-reordering", reorderMode);
+        document.querySelectorAll(".shopping-reorder-toggle").forEach((button) => {
+            button.setAttribute("aria-pressed", reorderMode ? "true" : "false");
+            const label = button.querySelector("span");
+            if (label) label.textContent = reorderMode ? "Fertig" : "Sortieren";
+        });
+        document.querySelectorAll(".shopping-reorder-help").forEach((help) => { help.hidden = !reorderMode; });
+        document.querySelectorAll(".shopping-category-group, [data-shopping-state=\"active\"]").forEach((element) => {
+            element.draggable = reorderMode;
+        });
+        if (reorderMode) setShoppingMode(false);
+        if (announce) showToast(reorderMode ? "Sortiermodus aktiviert." : "Sortierung beendet.", "info");
+    }
+
+    const moveElement = (button) => {
+        const direction = button.dataset.shoppingMove;
+        if (direction?.startsWith("category")) {
+            const group = button.closest(".shopping-category-group");
+            const sibling = direction.endsWith("up") ? group?.previousElementSibling : group?.nextElementSibling;
+            if (!group || !sibling) return false;
+            if (direction.endsWith("up")) group.parentElement.insertBefore(group, sibling);
+            else group.parentElement.insertBefore(sibling, group);
+            return true;
+        }
+
+        const article = button.closest(".shopping-item");
+        const list = article?.parentElement;
+        if (!article || !list) return false;
+        if (direction === "item-up") {
+            if (article.previousElementSibling) list.insertBefore(article, article.previousElementSibling);
+            else {
+                const previousGroup = list.closest(".shopping-category-group")?.previousElementSibling;
+                previousGroup?.querySelector(".shopping-item-list")?.appendChild(article);
+            }
+        } else if (direction === "item-down") {
+            if (article.nextElementSibling) list.insertBefore(article.nextElementSibling, article);
+            else {
+                const nextGroup = list.closest(".shopping-category-group")?.nextElementSibling;
+                const nextList = nextGroup?.querySelector(".shopping-item-list");
+                if (nextList) nextList.insertBefore(article, nextList.firstElementChild);
+            }
+        }
+        return article.parentElement !== list || article.previousElementSibling || article.nextElementSibling;
+    };
+
+    function bindReorderControls(root = document) {
+        root.querySelectorAll(".shopping-reorder-toggle").forEach((button) => {
+            if (button.dataset.shoppingBound === "1") return;
+            button.dataset.shoppingBound = "1";
+            button.addEventListener("click", () => setReorderMode(!reorderMode));
+        });
+        root.querySelectorAll("[data-shopping-move]").forEach((button) => {
+            if (button.dataset.shoppingBound === "1") return;
+            button.dataset.shoppingBound = "1";
+            button.addEventListener("click", async () => {
+                if (!reorderMode || !moveElement(button)) return;
+                await saveOrder();
+            });
+        });
+    }
+
+    if (listColumn) {
+        listColumn.addEventListener("dragstart", (event) => {
+            if (!reorderMode) {
+                event.preventDefault();
+                return;
+            }
+            draggedElement = event.target.closest(".shopping-category-group, [data-shopping-state=\"active\"]");
+            if (!draggedElement) return;
+            draggedElement.classList.add("is-dragging");
+            event.dataTransfer.effectAllowed = "move";
+        });
+        listColumn.addEventListener("dragover", (event) => {
+            if (!draggedElement) return;
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+            if (draggedElement.classList.contains("shopping-category-group")) {
+                const target = event.target.closest(".shopping-category-group");
+                if (!target || target === draggedElement) return;
+                const rect = target.getBoundingClientRect();
+                target.parentElement.insertBefore(draggedElement, event.clientY < rect.top + rect.height / 2 ? target : target.nextElementSibling);
+                return;
+            }
+            const targetArticle = event.target.closest('[data-shopping-state="active"]');
+            const targetList = event.target.closest(".shopping-item-list");
+            if (targetArticle && targetArticle !== draggedElement) {
+                const rect = targetArticle.getBoundingClientRect();
+                targetArticle.parentElement.insertBefore(draggedElement, event.clientY < rect.top + rect.height / 2 ? targetArticle : targetArticle.nextElementSibling);
+            } else if (targetList && !targetArticle) {
+                targetList.appendChild(draggedElement);
+            }
+        });
+        listColumn.addEventListener("drop", async (event) => {
+            if (!draggedElement) return;
+            event.preventDefault();
+            draggedElement.classList.remove("is-dragging");
+            draggedElement = null;
+            await saveOrder();
+        });
+        listColumn.addEventListener("dragend", () => {
+            draggedElement?.classList.remove("is-dragging");
+            draggedElement = null;
+        });
+    }
+
+    bindDynamicContent();
+    saveCurrentSnapshot();
+    offlineStore?.updateStatus().catch(() => {});
+    const flushOfflineQueue = () => {
+        offlineStore?.flush({
+            onSynced: async (payload) => {
+                if (payload?.list_html) applyShoppingState(payload);
+                else await refreshShoppingState();
+            },
+            onError: (error) => showToast(error.message, "error"),
+        });
+    };
+    if (navigator.onLine) flushOfflineQueue();
+    window.addEventListener("online", flushOfflineQueue);
+    window.addEventListener("offline", () => offlineStore?.updateStatus().catch(() => {}));
+    navigator.serviceWorker?.addEventListener("message", (event) => {
+        if (event.data?.type === "shopping-sync-requested") window.dispatchEvent(new Event("online"));
     });
 
     const stopCamera = () => {

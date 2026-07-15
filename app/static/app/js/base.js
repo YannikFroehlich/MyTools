@@ -2550,3 +2550,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPwaInstallPrompt();
 
 });
+document.addEventListener("submit", (event) => {
+    const form = event.target.closest?.("form");
+    if (!form || !form.action.includes("/accounts/logout/")) return;
+    window.MyToolsShoppingOffline?.clearAll?.();
+    if (!("indexedDB" in window) || window.MyToolsShoppingOffline) return;
+    indexedDB.deleteDatabase("mytools-shopping-v1");
+}, {capture: true});

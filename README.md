@@ -246,6 +246,10 @@ OPENWEATHER_API_KEY=dein_openweather_api_key
 - persönlicher, nutzergebundener Einkaufszettel
 - Artikel mit Menge, Einheit, Kategorie, Notiz und optionalem Einzelpreis
 - offene und erledigte Artikel mit geschätzter Gesamtsumme
+- direkte Aktualisierungen ohne Seitenwechsel beim Hinzufügen, Bearbeiten und Abhaken
+- Offline-Liste mit lokalem Stand, Änderungswarteschlange und automatischer Synchronisierung
+- frei speicherbare Reihenfolge von Kategorien und Artikeln per Drag-and-drop oder Pfeiltasten
+- Duplikatprüfung mit Zusammenführen der Menge, Bearbeiten oder separatem Hinzufügen
 - wiederkehrende Artikel im Wochen-, Zweiwochen- oder Monatsrhythmus mit eigener Planung
 - Kamera-Barcode-Scanner in unterstützten Browsern sowie manuelle Barcode-Eingabe als Fallback
 - optionale Barcode-Abfrage für Produktname, Marke, Packungsgröße und Bild über Open Food Facts

@@ -1,6 +1,7 @@
 {% load i18n l10n %}
 <article class="shopping-item{% if completed %} is-completed{% endif %}{% if planned %} is-planned{% endif %}"
-         data-shopping-item-id="{{ item.id }}" data-shopping-state="{% if completed %}completed{% elif planned %}planned{% else %}active{% endif %}">
+         data-shopping-item-id="{{ item.id }}" data-shopping-category="{{ item.category }}"
+         data-shopping-state="{% if completed %}completed{% elif planned %}planned{% else %}active{% endif %}">
     <div class="shopping-item-row">
         {% if planned %}
             <form method="post" action="{% url 'shopping_item_activate' item.id %}" class="shopping-toggle-form">
@@ -49,7 +50,7 @@
                     <input type="hidden" name="inline" value="1">
                     <label>
                         <span>{% translate "Menge" %}</span>
-                        <input type="number" name="quantity" value="{{ item.quantity|unlocalize }}" min="0.01" max="999999.99" step="0.01" required inputmode="decimal" aria-label="{% translate 'Menge' %}">
+                        <input type="number" name="quantity" value="{{ item.quantity|unlocalize }}" min="1" max="999999" step="1" required inputmode="numeric" aria-label="{% translate 'Menge' %}">
                         <small>{{ item.get_unit_display }}</small>
                     </label>
                     <label>
@@ -75,6 +76,13 @@
         </div>
 
         <div class="shopping-item-actions">
+            {% if not completed and not planned %}
+                <span class="shopping-item-order-controls" role="group" aria-label="{% translate 'Artikel verschieben' %}">
+                    <span class="shopping-item-drag-handle" aria-hidden="true"><i class="fa-solid fa-grip-vertical"></i></span>
+                    <button type="button" data-shopping-move="item-up" aria-label="{% translate 'Artikel nach oben' %}"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button type="button" data-shopping-move="item-down" aria-label="{% translate 'Artikel nach unten' %}"><i class="fa-solid fa-arrow-down"></i></button>
+                </span>
+            {% endif %}
             {% if not completed %}
                 <button type="button" class="shopping-icon-button shopping-edit-toggle" data-edit-target="shopping-edit-{{ item.id }}"
                         aria-expanded="false" aria-label="{% translate 'Weitere Artikeldaten bearbeiten' %}" title="{% translate 'Weitere Details' %}">
@@ -95,7 +103,7 @@
             {% csrf_token %}
             <div class="shopping-edit-grid">
                 <label class="shopping-field shopping-field-name"><span>{% translate "Artikelname" %}</span><input type="text" name="name" value="{{ item.name }}" maxlength="160" required></label>
-                <label class="shopping-field"><span>{% translate "Menge" %}</span><input type="number" name="quantity" value="{{ item.quantity|unlocalize }}" min="0.01" max="999999.99" step="0.01" required></label>
+                <label class="shopping-field"><span>{% translate "Menge" %}</span><input type="number" name="quantity" value="{{ item.quantity|unlocalize }}" min="1" max="999999" step="1" required inputmode="numeric"></label>
                 <label class="shopping-field"><span>{% translate "Einheit" %}</span><select name="unit">{% for value, label in unit_choices %}<option value="{{ value }}"{% if item.unit == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
                 <label class="shopping-field"><span>{% translate "Einzelpreis" %}</span><input type="text" name="unit_price" value="{% if item.unit_price is not None %}{{ item.unit_price|unlocalize }}{% endif %}" inputmode="decimal" maxlength="13"></label>
                 <label class="shopping-field"><span>{% translate "Kategorie" %}</span><select name="category">{% for value, label in category_choices %}<option value="{{ value }}"{% if item.category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
