@@ -46,6 +46,13 @@
         eventLog: document.getElementById("cc2EventLog"),
         achievementSummary: document.getElementById("cc2AchievementSummary"),
         achievementList: document.getElementById("cc2AchievementList"),
+        lifetimeCount: document.getElementById("cc2LifetimeCount"),
+        totalClicks: document.getElementById("cc2TotalClicks"),
+        achievementCount: document.getElementById("cc2AchievementCount"),
+        confirmDialog: document.getElementById("cc2ConfirmDialog"),
+        confirmTitle: document.getElementById("cc2ConfirmTitle"),
+        confirmText: document.getElementById("cc2ConfirmText"),
+        confirmSubmit: document.getElementById("cc2ConfirmSubmit"),
     };
 
     const STORAGE_KEY = root.dataset.saveKey || "mytools-cookie-cosmos-v2";
@@ -61,6 +68,7 @@
     const COMBO_CAP = 100;
     const COMBO_DECAY_PER_SECOND = 36;
     const COMBO_GRACE_MS = 1450;
+    const BACKGROUND_PROGRESS_CAP_SECONDS = 15 * 60;
 
     const PRESTIGE_RECIPES = [
         { level: 1, name: "Klassischer Keks", accent: "#f2b15b", crumb: "#5d2e13", dough: "#d58a38", shine: "#ffe2a5", className: "recipe-1" },
@@ -137,6 +145,7 @@
     let eventTimers = createEventTimers(Date.now());
     let renderQueued = false;
     let gameStarted = false;
+    let lastVisibilityAt = Date.now();
 
     preloadAssets().then(() => startGame());
 
@@ -213,15 +222,23 @@
 
         document.querySelectorAll("[data-cc2-tab]").forEach(button => {
             button.addEventListener("click", () => switchTab(button.dataset.cc2Tab));
+            button.addEventListener("keydown", handleTabKeydown);
         });
 
         document.querySelectorAll("[data-cc2-buy]").forEach(button => {
             button.addEventListener("click", () => {
                 buyMode = button.dataset.cc2Buy || "1";
-                document.querySelectorAll("[data-cc2-buy]").forEach(item => item.classList.toggle("is-active", item === button));
+                document.querySelectorAll("[data-cc2-buy]").forEach(item => {
+                    const active = item === button;
+                    item.classList.toggle("is-active", active);
+                    item.setAttribute("aria-pressed", String(active));
+                });
                 render(true);
             });
         });
+
+        window.addEventListener("pagehide", () => saveLocalState(true));
+        document.addEventListener("visibilitychange", handleVisibilityChange);
     }
 
     function createDefaultState() {
@@ -349,9 +366,11 @@
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
             ui.saveHint.textContent = `Lokal gespeichert · ${new Date(now).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}`;
+            ui.saveHint.classList.remove("is-error");
         } catch (error) {
             console.warn("Cookie Cosmos V2 konnte nicht lokal speichern.", error);
             ui.saveHint.textContent = "Lokaler Speicher voll oder blockiert";
+            ui.saveHint.classList.add("is-error");
         }
     }
 
@@ -424,6 +443,16 @@
         if (!response || !response.save_data) {
             if (showMessages) showToast("Kein DB-Spielstand", "Es wurde noch kein Cookie Cosmos V2 Save in der Datenbank gefunden.");
             return;
+        }
+        const hasLocalProgress = state.lifetimeCookies > 0 || state.totalClicks > 0 || getTotalBuildings(state) > 0;
+        if (showMessages && hasLocalProgress) {
+            const confirmed = await requestConfirmation({
+                title: "DB-Spielstand laden?",
+                text: "Dein aktueller lokaler Spielstand wird durch den Stand aus der Datenbank ersetzt.",
+                confirmLabel: "DB-Stand laden",
+                danger: true,
+            });
+            if (!confirmed) return;
         }
         state = normalizeState(response.save_data);
         applyOfflineProgress();
@@ -503,6 +532,14 @@
     function updateCloudSaveButton(data) {
         if (!ui.cloudSaveButton) return;
 
+        if (ui.cloudLoadButton) {
+            ui.cloudLoadButton.disabled = !IS_AUTHENTICATED;
+            ui.cloudLoadButton.setAttribute(
+                "aria-label",
+                IS_AUTHENTICATED ? "Spielstand aus der Datenbank laden" : "Login zum Laden eines Datenbank-Spielstands nötig"
+            );
+        }
+
         if (!IS_AUTHENTICATED) {
             ui.cloudSaveButton.disabled = true;
             ui.cloudSaveButton.innerHTML = `<i class="fa-solid fa-lock"></i><span>Login nötig</span>`;
@@ -519,19 +556,30 @@
             ui.cloudSaveButton.innerHTML = `<i class="fa-solid fa-hourglass-half"></i><span>${remaining}s</span>`;
         } else {
             ui.cloudSaveButton.disabled = false;
-            ui.cloudSaveButton.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i><span>DB speichern</span>`;
+            ui.cloudSaveButton.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i><span>DB-Save</span>`;
         }
     }
 
     function tick() {
         const now = Date.now();
-        const dt = Math.min(1, Math.max(0, (now - lastTick) / 1000));
+        if (document.hidden) {
+            lastTick = now;
+            saveLocalState(false);
+            return;
+        }
+        const elapsed = Math.max(0, (now - lastTick) / 1000);
+        const dt = Math.min(1, elapsed);
         lastTick = now;
 
         expireBuffs(now);
         decayCombo(now, dt);
         const cps = computeCps(state);
-        if (cps > 0 && dt > 0) addCookies(cps * dt, { manual: false });
+        if (cps > 0 && elapsed > 0) {
+            const creditedSeconds = elapsed > 2
+                ? Math.min(elapsed, BACKGROUND_PROGRESS_CAP_SECONDS)
+                : dt;
+            addCookies(cps * creditedSeconds, { manual: false });
+        }
 
         handleEventTimers(now);
         checkAchievements();
@@ -539,6 +587,25 @@
 
         if (now - lastRender > RENDER_INTERVAL) {
             scheduleRender();
+        }
+    }
+
+    function handleVisibilityChange() {
+        const now = Date.now();
+        if (document.hidden) {
+            lastVisibilityAt = now;
+            saveLocalState(true);
+            return;
+        }
+
+        const elapsed = Math.min(BACKGROUND_PROGRESS_CAP_SECONDS, Math.max(0, (now - lastVisibilityAt) / 1000));
+        lastTick = now;
+        if (elapsed < 2) return;
+        const gain = computeCps(state) * elapsed;
+        if (gain > 0) {
+            addCookies(gain, { manual: false });
+            showToast("Fabrik weitergelaufen", `+${format(gain)} Cookies aus ${formatDuration(elapsed)}.`);
+            scheduleRender(true);
         }
     }
 
@@ -604,7 +671,6 @@
 
         if (eventTimers.orbitActive < 4 && now >= eventTimers.nextOrbitAt) {
             spawnOrbitCookie();
-            eventTimers.orbitActive += 1;
             eventTimers.nextOrbitAt = now + randomBetween(13000, 26000) * mods.orbitFrequency;
         }
 
@@ -670,6 +736,8 @@
     }
 
     function spawnOrbitCookie() {
+        if (eventTimers.orbitActive >= 4) return;
+        eventTimers.orbitActive += 1;
         const button = document.createElement("button");
         button.type = "button";
         button.className = "cc2-event-cookie is-orbit";
@@ -748,10 +816,10 @@
 
     function randomStagePosition(size) {
         const rect = ui.stage.getBoundingClientRect();
-        const padding = Math.max(18, size / 2);
+        const padding = 18;
         return {
-            x: randomBetween(padding, Math.max(padding, rect.width - padding)),
-            y: randomBetween(padding, Math.max(padding, rect.height - padding - 90)),
+            x: randomBetween(padding, Math.max(padding, rect.width - size - padding)),
+            y: randomBetween(padding, Math.max(padding, rect.height - size - 90)),
         };
     }
 
@@ -762,17 +830,25 @@
         const centerX = rect.width / 2;
         const centerY = rect.height * 0.47;
         return {
-            x: centerX + Math.cos(angle) * radius,
-            y: centerY + Math.sin(angle) * radius,
+            x: Math.min(Math.max(12, centerX + Math.cos(angle) * radius), Math.max(12, rect.width - 62)),
+            y: Math.min(Math.max(12, centerY + Math.sin(angle) * radius), Math.max(12, rect.height - 120)),
         };
     }
 
-    function handlePrestige() {
+    async function handlePrestige() {
         const cost = getPrestigeCost(state.prestigeLevel);
         if (state.cookies < cost) {
             showToast("Prestige noch nicht bereit", `Du brauchst ${format(cost)} Cookies für das nächste Rezept.`);
             return;
         }
+
+        const nextRecipe = getPrestigeRecipe(state.prestigeLevel + 1);
+        const confirmed = await requestConfirmation({
+            title: `Zu ${nextRecipe.name} aufsteigen?`,
+            text: "Cookies, Anlagen, Upgrades und aktive Buffs werden zurückgesetzt. Prestige, Cosmic Crumbs, Erfolge und Lifetime-Fortschritt bleiben erhalten.",
+            confirmLabel: "Prestige starten",
+        });
+        if (!confirmed) return;
 
         const oldLevel = state.prestigeLevel;
         state.prestigeLevel += 1;
@@ -783,14 +859,14 @@
         state.upgrades = [];
         state.activeBuffs = [];
         eventTimers = createEventTimers(Date.now());
+        const recipe = getPrestigeRecipe(state.prestigeLevel);
+        addEventLog("Prestige Upgrade", `Level ${oldLevel} → ${state.prestigeLevel}: ${recipe.name}.`, "fa-solid fa-rocket");
         updateRecipeVisuals();
         saveLocalState(true);
         checkAchievements();
         render(true);
 
-        const recipe = getPrestigeRecipe(state.prestigeLevel);
         showToast("Prestige Upgrade!", `Level ${state.prestigeLevel}: ${recipe.name}. +${gainedCrumbs} Cosmic Crumbs.`);
-        addEventLog("Prestige Upgrade", `Level ${oldLevel} → ${state.prestigeLevel}: ${recipe.name}.`, "fa-solid fa-rocket");
     }
 
     function getPrestigeCost(level) {
@@ -988,7 +1064,9 @@
         renderPrestige();
         renderBuffs();
 
-        if (force || now - lastShopRender > SHOP_RENDER_INTERVAL) {
+        const activeElement = document.activeElement;
+        const shopHasKeyboardFocus = ui.buildingList?.contains(activeElement) || ui.upgradeList?.contains(activeElement);
+        if ((force || now - lastShopRender > SHOP_RENDER_INTERVAL) && (force || !shopHasKeyboardFocus)) {
             lastShopRender = now;
             renderBuildings();
             renderUpgrades();
@@ -1019,6 +1097,9 @@
         ui.cpsCount.textContent = format(computeCps(state));
         ui.clickPower.textContent = format(computeClickPower(state) * comboMultiplier);
         ui.prestigeLevel.textContent = `Level ${state.prestigeLevel}`;
+        if (ui.lifetimeCount) ui.lifetimeCount.textContent = format(state.lifetimeCookies);
+        if (ui.totalClicks) ui.totalClicks.textContent = format(state.totalClicks);
+        if (ui.achievementCount) ui.achievementCount.textContent = `${state.achievements.length}/${ACHIEVEMENTS.length}`;
         if (ui.comboLabel) ui.comboLabel.textContent = `x${comboMultiplier.toFixed(2)}`;
         if (ui.comboBar) ui.comboBar.style.transform = `scaleX(${comboProgress})`;
         if (ui.comboMeter) ui.comboMeter.classList.toggle("is-active", comboProgress > 0.005);
@@ -1066,6 +1147,10 @@
     }
 
     function renderBuildings() {
+        const scrollTop = ui.buildingList.scrollTop;
+        const focusedId = ui.buildingList.contains(document.activeElement)
+            ? document.activeElement?.dataset?.buildingId
+            : null;
         ui.buildingList.innerHTML = BUILDINGS.map((building, index) => {
             const count = getBuildingCount(state, building.id);
             const info = getBuyInfo(building);
@@ -1079,8 +1164,7 @@
                 ? `${info.amount}x kaufen - ${format(info.cost)}`
                 : info.amount > 0
                     ? `Fehlen ${format(missing)}`
-                    : `Naechster Preis ${format(info.nextCost)}`;
-            const buyText = info.amount > 0 ? `${info.amount}x kaufen · ${format(info.cost)}` : `Nächster Preis · ${format(info.nextCost)}`;
+                    : `Nächster Preis ${format(info.nextCost)}`;
             return `
                 <article class="cc2-card cc2-shop-card cc2-building-card ${canBuy ? "can-buy" : ""}" ${cardStyle(building.accent)}>
                     ${cardFrameMarkup(frame, 8)}
@@ -1109,9 +1193,17 @@
         ui.buildingList.querySelectorAll("[data-building-id]").forEach(button => {
             button.addEventListener("click", () => buyBuilding(button.dataset.buildingId));
         });
+        ui.buildingList.scrollTop = scrollTop;
+        if (focusedId) {
+            ui.buildingList.querySelector(`[data-building-id="${focusedId}"]`)?.focus({ preventScroll: true });
+        }
     }
 
     function renderUpgrades() {
+        const scrollTop = ui.upgradeList.scrollTop;
+        const focusedId = ui.upgradeList.contains(document.activeElement)
+            ? document.activeElement?.dataset?.upgradeId
+            : null;
         const visible = UPGRADES.filter(upgrade => upgrade.requires(state) || hasUpgrade(state, upgrade.id));
         const nextLocked = UPGRADES.find(upgrade => !visible.includes(upgrade) && !hasUpgrade(state, upgrade.id));
         const cards = visible.map((upgrade, index) => {
@@ -1170,6 +1262,10 @@
         ui.upgradeList.querySelectorAll("[data-upgrade-id]").forEach(button => {
             button.addEventListener("click", () => buyUpgrade(button.dataset.upgradeId));
         });
+        ui.upgradeList.scrollTop = scrollTop;
+        if (focusedId) {
+            ui.upgradeList.querySelector(`[data-upgrade-id="${focusedId}"]`)?.focus({ preventScroll: true });
+        }
     }
 
     function renderEvents() {
@@ -1245,11 +1341,34 @@
 
     function switchTab(tab) {
         document.querySelectorAll("[data-cc2-tab]").forEach(button => {
-            button.classList.toggle("is-active", button.dataset.cc2Tab === tab);
+            const active = button.dataset.cc2Tab === tab;
+            button.classList.toggle("is-active", active);
+            button.setAttribute("aria-selected", String(active));
+            button.tabIndex = active ? 0 : -1;
         });
         document.querySelectorAll("[data-cc2-panel]").forEach(panel => {
-            panel.classList.toggle("is-active", panel.dataset.cc2Panel === tab);
+            const active = panel.dataset.cc2Panel === tab;
+            panel.classList.toggle("is-active", active);
+            panel.hidden = !active;
         });
+    }
+
+    function handleTabKeydown(event) {
+        const tabs = [...document.querySelectorAll("[data-cc2-tab]")];
+        const currentIndex = tabs.indexOf(event.currentTarget);
+        if (currentIndex < 0) return;
+
+        let nextIndex = null;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (currentIndex + 1) % tabs.length;
+        if (event.key === "ArrowLeft" || event.key === "ArrowUp") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        if (event.key === "Home") nextIndex = 0;
+        if (event.key === "End") nextIndex = tabs.length - 1;
+        if (nextIndex === null) return;
+
+        event.preventDefault();
+        const nextTab = tabs[nextIndex];
+        switchTab(nextTab.dataset.cc2Tab);
+        nextTab.focus();
     }
 
     function exportSave() {
@@ -1279,10 +1398,21 @@
         event.target.value = "";
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = async () => {
             try {
                 const payload = JSON.parse(String(reader.result || "{}"));
                 const imported = payload.format === EXPORT_FORMAT ? payload.save_data : payload;
+                if (!imported || typeof imported !== "object") throw new Error("invalid save");
+                const hasProgress = state.lifetimeCookies > 0 || state.totalClicks > 0 || getTotalBuildings(state) > 0;
+                if (hasProgress) {
+                    const confirmed = await requestConfirmation({
+                        title: "Spielstand importieren?",
+                        text: "Der aktuelle lokale Spielstand wird durch den Inhalt der ausgewählten Datei ersetzt.",
+                        confirmLabel: "Datei importieren",
+                        danger: true,
+                    });
+                    if (!confirmed) return;
+                }
                 state = normalizeState(imported);
                 updateRecipeVisuals();
                 saveLocalState(true);
@@ -1296,8 +1426,13 @@
         reader.readAsText(file);
     }
 
-    function resetSave() {
-        const confirmed = window.confirm("Cookie Cosmos V2 wirklich zurücksetzen? Dein DB-Save bleibt erhalten, bis du wieder manuell in die DB speicherst.");
+    async function resetSave() {
+        const confirmed = await requestConfirmation({
+            title: "Spielstand zurücksetzen?",
+            text: "Der lokale Fortschritt wird vollständig gelöscht. Dein letzter DB-Spielstand bleibt erhalten, bis du erneut manuell speicherst.",
+            confirmLabel: "Lokal zurücksetzen",
+            danger: true,
+        });
         if (!confirmed) return;
         state = createDefaultState();
         eventTimers = createEventTimers(Date.now());
@@ -1306,6 +1441,25 @@
         saveLocalState(true);
         render(true);
         showToast("Spielstand zurückgesetzt", "Du startest wieder bei Prestige-Level 1.");
+    }
+
+    function requestConfirmation({ title, text, confirmLabel, danger = false }) {
+        if (!ui.confirmDialog || typeof ui.confirmDialog.showModal !== "function") {
+            return Promise.resolve(window.confirm(`${title}\n\n${text}`));
+        }
+
+        ui.confirmTitle.textContent = title;
+        ui.confirmText.textContent = text;
+        ui.confirmSubmit.textContent = confirmLabel || "Bestätigen";
+        ui.confirmSubmit.classList.toggle("is-danger", danger);
+        ui.confirmDialog.returnValue = "";
+        ui.confirmDialog.showModal();
+
+        return new Promise(resolve => {
+            ui.confirmDialog.addEventListener("close", () => {
+                resolve(ui.confirmDialog.returnValue === "confirm");
+            }, { once: true });
+        });
     }
 
     function getCsrfToken() {
@@ -1322,7 +1476,8 @@
     function format(value) {
         const number = Math.max(0, safeNumber(value, 0));
         if (number < 1000) {
-            return number % 1 === 0 ? String(Math.floor(number)) : number.toFixed(number < 10 ? 1 : 0);
+            const maximumFractionDigits = number < 10 ? 2 : number < 100 ? 1 : 0;
+            return number.toLocaleString("de-DE", { maximumFractionDigits });
         }
         const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
         let scaled = number;
@@ -1332,7 +1487,7 @@
             tier += 1;
         }
         const digits = scaled >= 100 ? 0 : scaled >= 10 ? 1 : 2;
-        return `${scaled.toFixed(digits)}${suffixes[tier]}`;
+        return `${scaled.toLocaleString("de-DE", { minimumFractionDigits: digits, maximumFractionDigits: digits })}${suffixes[tier]}`;
     }
 
     function formatDuration(seconds) {

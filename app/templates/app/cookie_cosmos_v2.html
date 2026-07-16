@@ -3,8 +3,10 @@
 
 {% block title %}Cookie Cosmos V2 • MyTools{% endblock %}
 
+{% block body_class %}cookie-cosmos-v2-page{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'app/css/cookie_cosmos_v2.css' %}?v=20260617-cookie-cosmos-v2-combo-shop">
+    <link rel="stylesheet" href="{% static 'app/css/cookie_cosmos_v2.css' %}?v=20260716-cookie-cosmos-v2-overhaul">
 {% endblock %}
 
 {% block content %}
@@ -33,14 +35,14 @@
                 <div>
                     <small>Factory Incremental Clicker</small>
                     <h1><span class="cc2-brand-title-text">Cookie Cosmos</span><b>V2</b></h1>
-                    <span id="cc2SaveHint">Lokal bereit · Cloud-Save optional</span>
+                    <span class="cc2-save-hint" id="cc2SaveHint"><i aria-hidden="true"></i>Lokal bereit · Cloud-Save optional</span>
                 </div>
             </div>
 
             <div class="cc2-metrics" aria-label="Spielwerte">
                 <article class="cc2-metric is-primary">
                     <small>Kekse</small>
-                    <strong id="cc2CookieCount">0</strong>
+                    <strong id="cc2CookieCount" aria-live="polite">0</strong>
                 </article>
                 <article class="cc2-metric">
                     <small>pro Sekunde</small>
@@ -57,23 +59,23 @@
             </div>
 
             <div class="cc2-actions" aria-label="Spielstand Aktionen">
-                <button type="button" class="cc2-action-button cc2-save-button" id="cc2CloudSaveButton" title="Spielstand in der Datenbank speichern">
+                <button type="button" class="cc2-action-button cc2-save-button" id="cc2CloudSaveButton" title="Spielstand in der Datenbank speichern" aria-label="Spielstand in der Datenbank speichern">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <span>DB speichern</span>
+                    <span>DB-Save</span>
                 </button>
-                <button type="button" class="cc2-action-button" id="cc2CloudLoadButton" title="Spielstand aus Datenbank laden">
+                <button type="button" class="cc2-action-button" id="cc2CloudLoadButton" title="Spielstand aus Datenbank laden" aria-label="Spielstand aus der Datenbank laden">
                     <i class="fa-solid fa-cloud-arrow-down"></i>
                     <span>Laden</span>
                 </button>
-                <button type="button" class="cc2-action-button" id="cc2ExportButton" title="Spielstand exportieren">
+                <button type="button" class="cc2-action-button" id="cc2ExportButton" title="Spielstand exportieren" aria-label="Spielstand als Datei exportieren">
                     <i class="fa-solid fa-file-export"></i>
                     <span>Export</span>
                 </button>
-                <button type="button" class="cc2-action-button" id="cc2ImportButton" title="Spielstand importieren">
+                <button type="button" class="cc2-action-button" id="cc2ImportButton" title="Spielstand importieren" aria-label="Spielstand aus Datei importieren">
                     <i class="fa-solid fa-file-import"></i>
                     <span>Import</span>
                 </button>
-                <button type="button" class="cc2-action-button danger" id="cc2ResetButton" title="Spielstand zurücksetzen">
+                <button type="button" class="cc2-action-button danger" id="cc2ResetButton" title="Spielstand zurücksetzen" aria-label="Spielstand zurücksetzen">
                     <i class="fa-solid fa-rotate-left"></i>
                     <span>Reset</span>
                 </button>
@@ -94,7 +96,8 @@
                     </button>
                     <div class="cc2-click-plaque" aria-hidden="true">
                         <i class="fa-solid fa-hand-pointer"></i>
-                        <span>Klick mich!</span>
+                        <span>Keks backen!</span>
+                        <small>Leertaste</small>
                     </div>
                     <div class="cc2-combo-meter" id="cc2ComboMeter" aria-hidden="true">
                         <div>
@@ -107,38 +110,45 @@
                     <div class="cc2-toast-layer" id="cc2ToastLayer" aria-live="polite"></div>
                 </div>
 
-                <div class="cc2-buff-row" id="cc2BuffRow"></div>
+                <div class="cc2-stage-footer">
+                    <div class="cc2-buff-row" id="cc2BuffRow" aria-label="Aktive Verstärkungen"></div>
+                    <div class="cc2-session-stats" aria-label="Spielfortschritt">
+                        <span><small>Gesamt</small><strong id="cc2LifetimeCount">0</strong></span>
+                        <span><small>Klicks</small><strong id="cc2TotalClicks">0</strong></span>
+                        <span><small>Erfolge</small><strong id="cc2AchievementCount">0/0</strong></span>
+                    </div>
+                </div>
             </section>
 
             <aside class="cc2-side-panel" aria-label="Cookie Cosmos V2 Verwaltung">
                 <div class="cc2-panel-tabs" role="tablist" aria-label="Cookie Cosmos V2 Bereiche">
-                    <button type="button" class="is-active" data-cc2-tab="buildings" role="tab" aria-selected="true">
+                    <button type="button" class="is-active" id="cc2TabBuildings" data-cc2-tab="buildings" role="tab" aria-selected="true" aria-controls="cc2PanelBuildings" tabindex="0">
                         <i class="fa-solid fa-industry"></i><span>Anlagen</span>
                     </button>
-                    <button type="button" data-cc2-tab="upgrades" role="tab" aria-selected="false">
+                    <button type="button" id="cc2TabUpgrades" data-cc2-tab="upgrades" role="tab" aria-selected="false" aria-controls="cc2PanelUpgrades" tabindex="-1">
                         <i class="fa-solid fa-wand-magic-sparkles"></i><span>Upgrades</span>
                     </button>
-                    <button type="button" data-cc2-tab="prestige" role="tab" aria-selected="false">
+                    <button type="button" id="cc2TabPrestige" data-cc2-tab="prestige" role="tab" aria-selected="false" aria-controls="cc2PanelPrestige" tabindex="-1">
                         <i class="fa-solid fa-rocket"></i><span>Prestige</span>
                     </button>
-                    <button type="button" data-cc2-tab="achievements" role="tab" aria-selected="false">
+                    <button type="button" id="cc2TabAchievements" data-cc2-tab="achievements" role="tab" aria-selected="false" aria-controls="cc2PanelAchievements" tabindex="-1">
                         <i class="fa-solid fa-trophy"></i><span>Erfolge</span>
                     </button>
-                    <button type="button" data-cc2-tab="events" role="tab" aria-selected="false">
+                    <button type="button" id="cc2TabEvents" data-cc2-tab="events" role="tab" aria-selected="false" aria-controls="cc2PanelEvents" tabindex="-1">
                         <i class="fa-solid fa-star"></i><span>Events</span>
                     </button>
                 </div>
 
                 <div class="cc2-buy-toolbar">
                     <div class="cc2-buy-modes" aria-label="Kaufmodus">
-                        <button type="button" class="is-active" data-cc2-buy="1">1x</button>
-                        <button type="button" data-cc2-buy="10">10x</button>
-                        <button type="button" data-cc2-buy="max">Max</button>
+                        <button type="button" class="is-active" data-cc2-buy="1" aria-pressed="true">1x</button>
+                        <button type="button" data-cc2-buy="10" aria-pressed="false">10x</button>
+                        <button type="button" data-cc2-buy="max" aria-pressed="false">Max</button>
                     </div>
                     <span id="cc2OwnedSummary">0 Anlagen</span>
                 </div>
 
-                <section class="cc2-panel-section is-active" data-cc2-panel="buildings">
+                <section class="cc2-panel-section is-active" id="cc2PanelBuildings" data-cc2-panel="buildings" role="tabpanel" aria-labelledby="cc2TabBuildings">
                     <div class="cc2-section-heading">
                         <h2>Produktionslinien</h2>
                         <p>Fabrikmodule kaufen, Produktion aufbauen und den Durchsatz steigern.</p>
@@ -146,7 +156,7 @@
                     <div class="cc2-list" id="cc2BuildingList"></div>
                 </section>
 
-                <section class="cc2-panel-section" data-cc2-panel="upgrades">
+                <section class="cc2-panel-section" id="cc2PanelUpgrades" data-cc2-panel="upgrades" role="tabpanel" aria-labelledby="cc2TabUpgrades" hidden>
                     <div class="cc2-section-heading">
                         <h2>Forschung & Module</h2>
                         <p>Werkzeuge, Maschinen und Ereignisse dauerhaft verbessern.</p>
@@ -154,7 +164,7 @@
                     <div class="cc2-list" id="cc2UpgradeList"></div>
                 </section>
 
-                <section class="cc2-panel-section" data-cc2-panel="prestige">
+                <section class="cc2-panel-section" id="cc2PanelPrestige" data-cc2-panel="prestige" role="tabpanel" aria-labelledby="cc2TabPrestige" hidden>
                     <div class="cc2-section-heading">
                         <h2>Prestige</h2>
                         <p>Setze zurück, sammle Cosmic Crumbs und schalte neue Cookies frei.</p>
@@ -215,7 +225,7 @@
                     </div>
                 </section>
 
-                <section class="cc2-panel-section" data-cc2-panel="achievements">
+                <section class="cc2-panel-section" id="cc2PanelAchievements" data-cc2-panel="achievements" role="tabpanel" aria-labelledby="cc2TabAchievements" hidden>
                     <div class="cc2-section-heading">
                         <h2>Erfolge</h2>
                         <p id="cc2AchievementSummary">0 erledigt</p>
@@ -223,7 +233,7 @@
                     <div class="cc2-achievement-grid" id="cc2AchievementList"></div>
                 </section>
 
-                <section class="cc2-panel-section" data-cc2-panel="events">
+                <section class="cc2-panel-section" id="cc2PanelEvents" data-cc2-panel="events" role="tabpanel" aria-labelledby="cc2TabEvents" hidden>
                     <div class="cc2-section-heading">
                         <h2>Events</h2>
                         <p>Orbit-Cookies, goldene Cookies und Fabrik-Buffs.</p>
@@ -233,9 +243,24 @@
             </aside>
         </main>
     </div>
+
+    <dialog class="cc2-confirm-dialog" id="cc2ConfirmDialog" aria-labelledby="cc2ConfirmTitle" aria-describedby="cc2ConfirmText">
+        <form method="dialog" class="cc2-confirm-card">
+            <span class="cc2-confirm-icon" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <div>
+                <small>Sicherheitsabfrage</small>
+                <h2 id="cc2ConfirmTitle">Aktion bestätigen</h2>
+                <p id="cc2ConfirmText"></p>
+            </div>
+            <div class="cc2-confirm-actions">
+                <button type="submit" value="cancel" class="cc2-confirm-cancel">Abbrechen</button>
+                <button type="submit" value="confirm" class="cc2-confirm-submit" id="cc2ConfirmSubmit">Bestätigen</button>
+            </div>
+        </form>
+    </dialog>
 </section>
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'app/js/cookie_cosmos_v2.js' %}?v=20260617-cookie-cosmos-v2-combo-shop" defer></script>
+    <script src="{% static 'app/js/cookie_cosmos_v2.js' %}?v=20260716-cookie-cosmos-v2-overhaul" defer></script>
 {% endblock %}
