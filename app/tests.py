@@ -4126,6 +4126,23 @@ class NoteFormTests(BaseTestCase):
         self.assertIn('class="note-checklist"', form.cleaned_data["content"])
         self.assertIn('data-checked="false"', form.cleaned_data["content"])
 
+    def test_note_form_keeps_editor_generated_line_breaks(self):
+        content = (
+            'Erste Zeile<div style="text-align: center;">Zweite Zeile</div>'
+            '<div><br></div><div>Vierte Zeile</div>'
+        )
+        form = NoteForm(data={
+            "title": "Mehrzeilig",
+            "content": content,
+            "color": "blue",
+        })
+
+        self.assertTrue(form.is_valid())
+        cleaned_content = form.cleaned_data["content"]
+        self.assertIn("Erste Zeile<div", cleaned_content)
+        self.assertIn("Zweite Zeile</div><div><br></div><div>Vierte Zeile</div>", cleaned_content)
+        self.assertIn("text-align: center", cleaned_content)
+
 
 class NotesViewTests(BaseTestCase):
     def test_notes_page_loads_and_splits_pinned_and_normal_notes(self):
@@ -4233,6 +4250,25 @@ class NotesViewTests(BaseTestCase):
         note = Note.objects.get(title="Neue Notiz")
 
         self.assertEqual(note.color, "green")
+
+    def test_editor_line_breaks_survive_create_detail_and_edit(self):
+        content = "Erste Zeile<div>Zweite Zeile</div><div><br></div><div>Vierte Zeile</div>"
+
+        response = self.client.post(reverse("note_create"), {
+            "title": "Mehrzeilige Notiz",
+            "content": content,
+            "color": "blue",
+        })
+
+        self.assertRedirects(response, reverse("notes"))
+        note = Note.objects.get(title="Mehrzeilige Notiz")
+        self.assertEqual(note.content, content)
+
+        detail_response = self.client.get(reverse("note_detail", args=[note.pk]))
+        edit_response = self.client.get(reverse("note_edit", args=[note.pk]))
+
+        self.assertContains(detail_response, content)
+        self.assertContains(edit_response, content)
 
     def test_create_note_can_set_reminder_and_share_with_friend(self):
         friend = get_user_model().objects.create_user(
