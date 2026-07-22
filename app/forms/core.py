@@ -10,6 +10,7 @@ from ..models import Friendship, Note
 
 ALLOWED_TAGS = [
     "p",
+    "div",
     "br",
     "strong",
     "b",
@@ -36,6 +37,7 @@ ALLOWED_ATTRIBUTES = {
     "li": ["class", "data-checked"],
     "span": ["style"],
     "p": ["style"],
+    "div": ["style"],
     "h2": ["style"],
     "h3": ["style"],
 }

@@ -348,6 +348,7 @@ body.dark-mode .notes-stat-card small {
 .notes-section-title div {
     display: grid;
     gap: 0.2rem;
+    text-align: left;
 }
 
 .notes-section-title p {
