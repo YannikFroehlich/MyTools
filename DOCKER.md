@@ -71,7 +71,13 @@ docker compose down -v
 
 - **Web-Anwendung**: https://deine-domain.example (mit Cloudflare Tunnel)
 - **Django Admin**: https://deine-domain.example/admin
-- **Lokaler Caddy-Test**: http://localhost:8090
+- **Interner Caddy-Test**:
+  ```bash
+  docker compose exec -T caddy sh -c 'wget -q --spider --header="Host: ${DOMAIN:-localhost}" http://127.0.0.1/'
+  ```
+
+Caddy veroeffentlicht keinen Port auf dem Host. Cloudflared erreicht den Dienst
+innerhalb des Docker-Netzwerks unter `http://caddy:80`.
 
 ## Troubleshooting
 
