@@ -213,10 +213,11 @@ jobs:
           docker compose pull db redis caddy cloudflared || true
           docker compose up -d --build --remove-orphans
 
-          echo "Warte kurz bis der Webserver über Port 8090 antwortet..."
+          echo "Warte kurz bis Caddy den Webserver intern erreicht..."
 
           for i in {1..20}; do
-            if curl -fsS http://localhost:8090 > /dev/null; then
+            if docker compose exec -T caddy sh -c \
+              'wget -q --spider --header="Host: ${DOMAIN:-localhost}" http://127.0.0.1/'; then
               echo "Webserver ist erreichbar."
               break
             fi
