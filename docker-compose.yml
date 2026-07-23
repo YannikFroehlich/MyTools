@@ -54,8 +54,8 @@ services:
     image: caddy:2-alpine
     container_name: mytools_caddy
     restart: unless-stopped
-    ports:
-      - "8090:80"
+    expose:
+      - "80"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - static_volume:/app/staticfiles:ro
