@@ -833,7 +833,9 @@
                                     {% endwith %}
                                 {% endfor %}
                                 <div class="empty-widgets" {% if home_widgets %}hidden{% endif %}>
-                                    <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+                                    <div class="empty-widgets-icon">
+                                        <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+                                    </div>
                                     <h3>{% translate 'Noch keine Widgets' %}</h3>
                                     <p>{% translate 'Füge dein erstes Widget hinzu und mache die Startseite zu einem Dashboard.' %}</p>
                                     <button type="button" class="widget-empty-action" data-open-widget-modal>

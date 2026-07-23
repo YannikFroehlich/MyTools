@@ -604,7 +604,8 @@ body.dark-mode .home-quick-actions button {
     animation: homeFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.empty-shortcuts-icon {
+.empty-shortcuts-icon,
+.empty-widgets-icon {
     width: 54px;
     height: 54px;
 
@@ -619,6 +620,10 @@ body.dark-mode .home-quick-actions button {
     color: var(--theme-accent-start);
 
     font-size: 1.35rem;
+}
+
+.empty-widgets-icon {
+    margin-bottom: 0;
 }
 
 .empty-shortcuts h3 {
@@ -1499,7 +1504,8 @@ body.dark-mode .empty-shortcuts p {
     color: #cbd5e1;
 }
 
-body.dark-mode .empty-shortcuts-icon {
+body.dark-mode .empty-shortcuts-icon,
+body.dark-mode .empty-widgets-icon {
     background: rgba(255, 255, 255, 0.1);
     color: var(--theme-accent-end);
 }
@@ -3517,8 +3523,7 @@ body.dark-mode .shortcuts-grid.drag-over {
     min-height: 115px;
 }
 
-.widget-empty-state i,
-.empty-widgets i {
+.widget-empty-state i {
     width: 2.75rem;
     height: 2.75rem;
     display: inline-flex;
@@ -3551,11 +3556,27 @@ body.dark-mode .shortcuts-grid.drag-over {
     min-height: 210px;
     align-items: center;
     text-align: center;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(241, 247, 255, 0.72));
+    border: 1px dashed rgba(120, 140, 180, 0.45);
+    box-shadow:
+        0 10px 28px rgba(var(--theme-accent-rgb), 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .empty-widgets h3,
 .empty-widgets p {
     margin: 0;
+}
+
+.empty-widgets h3 {
+    color: #1f2937;
+}
+
+.empty-widgets p {
+    max-width: 420px;
+    color: #64748b;
+    line-height: 1.5;
 }
 
 .widget-empty-action {
@@ -3982,13 +4003,29 @@ body.dark-mode .clock-option-preview {
     border-color: rgba(255, 255, 255, 0.12);
 }
 
-body.dark-mode .home-widget,
-body.dark-mode .empty-widgets {
+body.dark-mode .home-widget {
     background: rgba(15, 23, 42, 0.76);
     border-color: rgba(148, 163, 184, 0.16);
     box-shadow:
         0 18px 48px rgba(0, 0, 0, 0.24),
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .empty-widgets {
+    background:
+        linear-gradient(145deg, rgba(var(--theme-accent-rgb), 0.18), rgba(0, 0, 0, 0.28));
+    border-color: rgba(var(--theme-accent-end-rgb), 0.38);
+    box-shadow:
+        0 12px 34px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .empty-widgets h3 {
+    color: #ffffff;
+}
+
+body.dark-mode .empty-widgets p {
+    color: #cbd5e1;
 }
 
 body.dark-mode .widget-actions button,
