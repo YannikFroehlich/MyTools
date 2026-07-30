@@ -3,15 +3,24 @@ import json
 from contextlib import suppress
 from types import SimpleNamespace
 
-from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from .models import ChatMessage, ChatRoom, ChatRoomMember, ChatTypingStatus, PongGame
+from .access_control import user_can_access_key
+from .chat_permissions import user_can_access_chat_room
+from .models import (
+    ChatMessage,
+    ChatRoom,
+    ChatRoomMember,
+    ChatTypingStatus,
+    PongGame,
+    UserSuspension,
+)
 from .views.chat import mark_room_messages_read, message_payload, pinned_message_for, typing_payload
 from .notification_utils import invalidate_notification_cache
 from .views.notification import _notification_payload, _presence_payload
@@ -26,7 +35,12 @@ from .views.pong import (
     _serialize_game,
     _tick_game,
 )
-from .realtime import live_presence_group_name, live_status_group_name
+from .realtime import (
+    live_presence_group_name,
+    live_status_group_name,
+    realtime_policy_group_name,
+    realtime_user_group_name,
+)
 
 
 ROOM_TICK_RATE = 1 / 45
@@ -35,7 +49,78 @@ _room_connections = {}
 _room_lock = asyncio.Lock()
 
 
-class LiveStatusConsumer(AsyncWebsocketConsumer):
+class RealtimePolicyConsumer(AsyncWebsocketConsumer):
+    """Apply HTTP-equivalent account and tool policies to open sockets."""
+
+    access_key = None
+
+    async def _initialize_realtime_access(self):
+        self.user = self.scope.get("user")
+        self._realtime_user_group = None
+        self._realtime_policy_group = None
+
+        if not self.user or not self.user.is_authenticated:
+            await self.close(code=4401)
+            return False
+        if not await self._realtime_access_allowed():
+            await self.close(code=4403)
+            return False
+
+        self._realtime_user_group = realtime_user_group_name(self.user.id)
+        self._realtime_policy_group = realtime_policy_group_name()
+        await self.channel_layer.group_add(self._realtime_user_group, self.channel_name)
+        await self.channel_layer.group_add(self._realtime_policy_group, self.channel_name)
+
+        # Close the small race between the first policy check and group joins.
+        if not await self._realtime_access_allowed():
+            await self._close_forbidden()
+            return False
+        return True
+
+    async def _ensure_realtime_access(self):
+        if await self._realtime_access_allowed():
+            return True
+        await self._close_forbidden()
+        return False
+
+    async def _close_forbidden(self):
+        await self._discard_realtime_access_groups()
+        await self.close(code=4403)
+
+    async def _discard_realtime_access_groups(self):
+        for group_name in {
+            self._realtime_user_group,
+            self._realtime_policy_group,
+        }:
+            if group_name:
+                with suppress(Exception):
+                    await self.channel_layer.group_discard(group_name, self.channel_name)
+
+    async def realtime_access_revoked(self, event):
+        await self._ensure_realtime_access()
+
+    async def realtime_policy_changed(self, event):
+        await self._ensure_realtime_access()
+
+    @database_sync_to_async
+    def _realtime_access_allowed(self):
+        user_id = getattr(self.user, "pk", None)
+        if not user_id:
+            return False
+
+        user = get_user_model().objects.filter(pk=user_id).first()
+        if not user or not user.is_active:
+            return False
+        if not user.is_staff and UserSuspension.active_for_user(user):
+            return False
+        if self.access_key and not user_can_access_key(user, self.access_key):
+            return False
+
+        self.user = user
+        return True
+
+
+class LiveStatusConsumer(RealtimePolicyConsumer):
     """Global realtime channel for header badges, notifications and presence.
 
     HTTP polling remains as a fallback in base.js. This socket pushes the same
@@ -44,12 +129,10 @@ class LiveStatusConsumer(AsyncWebsocketConsumer):
     """
 
     async def connect(self):
-        self.user = self.scope.get("user")
         self.include_items = False
         self.presence_ids = []
 
-        if not self.user or not self.user.is_authenticated:
-            await self.close(code=4401)
+        if not await self._initialize_realtime_access():
             return
 
         self.group_name = live_status_group_name(self.user.id)
@@ -70,8 +153,11 @@ class LiveStatusConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(self.group_name, self.channel_name)
         with suppress(Exception):
             await self.channel_layer.group_discard(self.presence_group_name, self.channel_name)
+        await self._discard_realtime_access_groups()
 
     async def receive(self, text_data=None, bytes_data=None):
+        if not await self._ensure_realtime_access():
+            return
         if not text_data:
             return
 
@@ -103,6 +189,8 @@ class LiveStatusConsumer(AsyncWebsocketConsumer):
         await self.send_live_status(reason=event.get("reason", "changed"))
 
     async def live_presence_changed(self, event):
+        if not await self._ensure_realtime_access():
+            return
         try:
             user_id = int(event.get("user_id"))
         except (TypeError, ValueError):
@@ -116,6 +204,8 @@ class LiveStatusConsumer(AsyncWebsocketConsumer):
             await self.send_json({"type": "presence", "profiles": profiles})
 
     async def send_live_status(self, *, reason="refresh", include_items=None):
+        if not await self._ensure_realtime_access():
+            return
         payload = await self._live_status_payload(
             self.include_items if include_items is None else bool(include_items)
         )
@@ -164,7 +254,7 @@ class LiveStatusConsumer(AsyncWebsocketConsumer):
 
 
 
-class ChatConsumer(AsyncWebsocketConsumer):
+class ChatConsumer(RealtimePolicyConsumer):
     """Realtime chat room channel with HTTP fallback.
 
     Messages are still created/edited/deleted through the existing HTTP views so
@@ -172,29 +262,34 @@ class ChatConsumer(AsyncWebsocketConsumer):
     fans out events and typing state to reduce polling.
     """
 
+    access_key = "chat"
+
     async def connect(self):
         self.room_id = int(self.scope["url_route"]["kwargs"]["room_id"])
         self.group_name = f"chat_{self.room_id}"
-        self.user = self.scope.get("user")
 
-        if not self.user or not self.user.is_authenticated:
-            await self.close(code=4401)
+        if not await self._initialize_realtime_access():
             return
 
-        if not await self._can_join_room():
-            await self.close(code=4403)
+        if not await self._ensure_room_access():
             return
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)
+        if not await self._ensure_room_access():
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+            return
         await self.accept()
         await self.send_json({"type": "connected", "roomId": self.room_id})
 
     async def disconnect(self, close_code):
         with suppress(Exception):
             await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        await self._discard_realtime_access_groups()
 
     async def receive(self, text_data=None, bytes_data=None):
         if not text_data:
+            return
+        if not await self._ensure_room_access():
             return
         try:
             payload = json.loads(text_data)
@@ -210,6 +305,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.send_json({"type": "pong"})
 
     async def chat_message_created(self, event):
+        if not await self._ensure_room_access():
+            return
         payload = await self._message_payload(event.get("message_id"))
         if not payload:
             return
@@ -218,31 +315,53 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send_json({"type": "message_created", "message": payload})
 
     async def chat_message_updated(self, event):
+        if not await self._ensure_room_access():
+            return
         payload = await self._message_payload(event.get("message_id"))
         if payload:
             await self.send_json({"type": "message_updated", "message": payload})
 
     async def chat_message_deleted(self, event):
+        if not await self._ensure_room_access():
+            return
         await self.send_json({"type": "message_deleted", "deletedIds": [event.get("message_id")]})
 
     async def chat_reaction_updated(self, event):
+        if not await self._ensure_room_access():
+            return
         update = await self._reaction_update(event.get("message_id"))
         if update:
             await self.send_json({"type": "message_updated", "message": update})
 
     async def chat_pinned_updated(self, event):
+        if not await self._ensure_room_access():
+            return
         payload = await self._pinned_payload()
         await self.send_json({"type": "pinned_updated", "pinnedMessage": payload})
 
     async def chat_typing(self, event):
+        if not await self._ensure_room_access():
+            return
         await self.send_json({"type": "typing", "typingUsers": await self._typing_payload()})
+
+    async def chat_access_revoked(self, event):
+        await self._ensure_room_access()
+
+    async def _ensure_room_access(self):
+        if not await self._ensure_realtime_access():
+            return False
+        if await self._can_join_room():
+            return True
+        await self._close_forbidden()
+        return False
 
     async def send_json(self, payload):
         await self.send(text_data=json.dumps(payload))
 
     @database_sync_to_async
     def _can_join_room(self):
-        return ChatRoomMember.objects.filter(room_id=self.room_id, user=self.user).exists()
+        room = ChatRoom.objects.filter(id=self.room_id).first()
+        return user_can_access_chat_room(self.user, room)
 
     @database_sync_to_async
     def _set_typing(self, is_typing):
@@ -315,7 +434,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             invalidate_notification_cache(self.user)
         return did_mark
 
-class PongConsumer(AsyncWebsocketConsumer):
+class PongConsumer(RealtimePolicyConsumer):
     """Realtime Pong channel.
 
     The HTTP endpoints still exist as a fallback, but active matches use this
@@ -323,13 +442,14 @@ class PongConsumer(AsyncWebsocketConsumer):
     the server instead of polling at different moments.
     """
 
+    access_key = "pong"
+
     async def connect(self):
         self.code = self.scope["url_route"]["kwargs"]["code"].upper()
         self.group_name = f"pong_{self.code}"
-        self.user = self.scope.get("user")
+        self._room_connection_registered = False
 
-        if not self.user or not self.user.is_authenticated:
-            await self.close(code=4401)
+        if not await self._initialize_realtime_access():
             return
 
         can_connect = await self._touch_player()
@@ -338,18 +458,26 @@ class PongConsumer(AsyncWebsocketConsumer):
             return
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)
+        if not await self._ensure_pong_access():
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+            return
         await self.accept()
         await self._increment_room_connections()
+        self._room_connection_registered = True
         await self._ensure_room_loop()
         await self.send_state()
 
     async def disconnect(self, close_code):
         with suppress(Exception):
             await self.channel_layer.group_discard(self.group_name, self.channel_name)
-        await self._decrement_room_connections()
+        await self._discard_realtime_access_groups()
+        if self._room_connection_registered:
+            await self._decrement_room_connections()
 
     async def receive(self, text_data=None, bytes_data=None):
         if not text_data:
+            return
+        if not await self._ensure_pong_access():
             return
         try:
             payload = json.loads(text_data)
@@ -370,6 +498,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.send_json({"type": "pong"})
 
     async def pong_state(self, event):
+        if not await self._ensure_realtime_access():
+            return
         game_payload = await self._state_for_user()
         if not game_payload:
             await self.send_json({
@@ -381,6 +511,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send_json({"type": "state", "game": game_payload})
 
     async def pong_deleted(self, event):
+        if not await self._ensure_realtime_access():
+            return
         await self.send_json({
             "type": "deleted",
             "error": event.get("error") or str(_("Dieser Pong-Raum wurde gelöscht.")),
@@ -388,9 +520,19 @@ class PongConsumer(AsyncWebsocketConsumer):
         })
 
     async def send_state(self):
+        if not await self._ensure_realtime_access():
+            return
         game_payload = await self._state_for_user()
         if game_payload:
             await self.send_json({"type": "state", "game": game_payload})
+
+    async def _ensure_pong_access(self):
+        if not await self._ensure_realtime_access():
+            return False
+        if await self._can_access_game():
+            return True
+        await self._close_forbidden()
+        return False
 
     async def send_json(self, payload):
         await self.send(text_data=json.dumps(payload))
@@ -427,9 +569,19 @@ class PongConsumer(AsyncWebsocketConsumer):
             return True
 
     @database_sync_to_async
+    def _can_access_game(self):
+        game = (
+            PongGame.objects
+            .select_related("owner", "player_left", "player_right")
+            .filter(code=self.code)
+            .first()
+        )
+        return bool(game and game.side_for_user(self.user))
+
+    @database_sync_to_async
     def _state_for_user(self):
         game = PongGame.objects.select_related("owner", "player_left", "player_right").filter(code=self.code).first()
-        if not game:
+        if not game or not game.side_for_user(self.user):
             return None
         return _serialize_game(game, self.user)
 

@@ -8,7 +8,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -20,6 +20,16 @@ from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 from ..models import SecurityEvent, SiteAccessSettings, UserTwoFactorSettings
+from ..two_factor import (
+    MAX_PENDING_ATTEMPTS,
+    PENDING_ATTEMPTS_SESSION_KEY,
+    PENDING_BACKEND_SESSION_KEY,
+    PENDING_NEXT_SESSION_KEY,
+    PENDING_USER_SESSION_KEY,
+    begin_pending_two_factor_login,
+    clear_pending_two_factor_login,
+    mark_two_factor_verified,
+)
 from .security import create_security_event
 from ..totp_utils import generate_totp_secret, provisioning_uri, verify_totp
 
@@ -111,10 +121,12 @@ class AccessAwareLoginView(LoginView):
 
         two_factor_settings = UserTwoFactorSettings.enabled_for_user(user)
         if two_factor_settings:
-            self.request.session["two_factor_user_id"] = user.pk
-            self.request.session["two_factor_backend"] = user.backend
-            self.request.session["two_factor_next"] = self.get_success_url()
-            self.request.session.set_expiry(300)
+            begin_pending_two_factor_login(
+                self.request,
+                user,
+                backend=user.backend,
+                next_url=self.get_success_url(),
+            )
             return redirect("two_factor_verify")
 
         response = super().form_valid(form)
@@ -163,7 +175,7 @@ def google_oauth_login_view(request):
 
 @require_http_methods(["GET", "POST"])
 def two_factor_verify_view(request):
-    user_id = request.session.get("two_factor_user_id")
+    user_id = request.session.get(PENDING_USER_SESSION_KEY)
     if not user_id:
         return redirect("login")
 
@@ -172,18 +184,27 @@ def two_factor_verify_view(request):
     user = get_user_model().objects.filter(pk=user_id, is_active=True).first()
     two_factor_settings = UserTwoFactorSettings.enabled_for_user(user)
     if not user or not two_factor_settings:
-        request.session.pop("two_factor_user_id", None)
-        request.session.pop("two_factor_backend", None)
-        request.session.pop("two_factor_next", None)
+        clear_pending_two_factor_login(request)
         return redirect("login")
 
     form = TwoFactorTokenForm(request.POST or None)
+    if request.method == "POST":
+        attempts = int(request.session.get(PENDING_ATTEMPTS_SESSION_KEY, 0) or 0)
+        if attempts >= MAX_PENDING_ATTEMPTS:
+            request.session.flush()
+            response = HttpResponse(_("Zu viele Versuche. Bitte melde dich erneut an."), status=429)
+            response["Retry-After"] = "300"
+            response["X-Content-Type-Options"] = "nosniff"
+            return response
+        request.session[PENDING_ATTEMPTS_SESSION_KEY] = attempts + 1
+
     if request.method == "POST" and form.is_valid():
         if verify_totp(two_factor_settings.secret_key, form.cleaned_data["token"]):
-            backend = request.session.get("two_factor_backend")
-            next_url = request.session.get("two_factor_next") or reverse("home")
+            backend = request.session.get(PENDING_BACKEND_SESSION_KEY)
+            next_url = request.session.get(PENDING_NEXT_SESSION_KEY) or reverse("home")
             request.session.flush()
             auth_login(request, user, backend=backend)
+            mark_two_factor_verified(request, user)
             create_security_event(
                 request,
                 user,
@@ -234,6 +255,7 @@ def two_factor_settings_view(request):
                 settings_obj.is_enabled = True
                 settings_obj.confirmed_at = timezone.now()
                 settings_obj.save(update_fields=["is_enabled", "confirmed_at", "updated_at"])
+                mark_two_factor_verified(request, request.user)
                 create_security_event(
                     request,
                     request.user,

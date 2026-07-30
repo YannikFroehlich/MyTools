@@ -10,8 +10,17 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
+from PIL import Image
 
 from ..forms.chat import ChatGroupSettingsForm
+from ..chat_permissions import (
+    accessible_chat_rooms_for_user,
+    blocked_user_ids_for,
+    get_accessible_chat_room_or_404,
+    user_can_access_chat_room,
+    users_blocked_between,
+)
+from ..image_optimization import FILE_SHARE_IMAGE_MAX_SIZE
 from ..models import (
     ChatAttachment,
     ChatMessage,
@@ -22,13 +31,17 @@ from ..models import (
     ChatTypingStatus,
     Friendship,
     InboxItem,
-    UserBlock,
     UserProfile,
 )
 from .profile import ensure_profiles_for_users, get_friend_profiles
 from ..notification_utils import invalidate_notification_cache
 from ..presence_utils import decorate_users_with_presence
 from ..realtime import broadcast_chat_event
+from ..upload_security import (
+    ATTACHMENT_CONTENT_TYPE,
+    SAFE_IMAGE_CONTENT_TYPE,
+    prepare_untrusted_upload,
+)
 
 User = get_user_model()
 
@@ -46,8 +59,7 @@ def user_payload(user):
 
 def room_queryset_for(user):
     return (
-        ChatRoom.objects
-        .filter(room_memberships__user=user)
+        accessible_chat_rooms_for_user(user)
         .prefetch_related("members", "members__profile")
         .annotate(last_message_at=Max("messages__created_at"), member_count=Count("members", distinct=True))
         .order_by("-last_message_at", "-updated_at")
@@ -56,6 +68,9 @@ def room_queryset_for(user):
 
 
 def get_or_create_direct_room(current_user, target_user):
+    if users_blocked_between(current_user, target_user):
+        raise PermissionError("blocked")
+
     direct_key = ChatRoom.direct_key_for_users(current_user, target_user)
     room, created = ChatRoom.objects.get_or_create(
         direct_key=direct_key,
@@ -65,20 +80,11 @@ def get_or_create_direct_room(current_user, target_user):
         },
     )
 
-    if users_blocked_between(current_user, target_user):
-        raise PermissionError("blocked")
-
     if created or not room.room_memberships.filter(user=current_user).exists():
         ChatRoomMember.objects.get_or_create(room=room, user=current_user, defaults={"is_admin": True})
     ChatRoomMember.objects.get_or_create(room=room, user=target_user)
 
     return room
-
-
-def users_blocked_between(user_a, user_b):
-    return UserBlock.objects.filter(
-        Q(blocker=user_a, blocked=user_b) | Q(blocker=user_b, blocked=user_a)
-    ).exists()
 
 
 def decorate_room(room, current_user):
@@ -326,7 +332,7 @@ def create_group_chat(request):
 
     allowed_friend_ids = set(Friendship.friend_ids_for_user(request.user))
     selected_ids = {int(member_id) for member_id in member_ids if member_id.isdigit()}
-    blocked_ids = set(UserBlock.objects.filter(blocker=request.user).values_list("blocked_id", flat=True)) | set(UserBlock.objects.filter(blocked=request.user).values_list("blocker_id", flat=True))
+    blocked_ids = blocked_user_ids_for(request.user)
     selected_ids = (selected_ids & allowed_friend_ids) - blocked_ids
 
     if not selected_ids:
@@ -363,7 +369,7 @@ def create_group_chat(request):
 @login_required
 @require_POST
 def send_chat_message(request, room_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id)
     text = request.POST.get("text", "").strip()
     uploaded_files = request.FILES.getlist("attachments") or request.FILES.getlist("attachment")
 
@@ -380,15 +386,34 @@ def send_chat_message(request, room_id):
             messages.error(request, _("Der Anhang darf maximal 8 MB gross sein."))
             return redirect("chat_room", room_id=room.id)
 
+    try:
+        prepared_files = [
+            prepare_untrusted_upload(
+                uploaded_file,
+                prefix=f"chat_{room.id}_{request.user.id}",
+                max_image_size=FILE_SHARE_IMAGE_MAX_SIZE,
+                quality=84,
+                target_bytes=450 * 1024,
+            )
+            for uploaded_file in uploaded_files
+        ]
+    except Image.DecompressionBombError:
+        error = _("Die Bildabmessungen des Anhangs sind zu gross.")
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"ok": False, "error": error}, status=413)
+        messages.error(request, error)
+        return redirect("chat_room", room_id=room.id)
+
     message = ChatMessage.objects.create(room=room, sender=request.user, text=text[:1200])
-    for uploaded_file in uploaded_files:
-        ChatAttachment.objects.create(
+    for prepared in prepared_files:
+        attachment = ChatAttachment(
             message=message,
-            file=uploaded_file,
-            original_name=uploaded_file.name[:255],
-            content_type=getattr(uploaded_file, "content_type", "") or "",
-            size=uploaded_file.size,
+            original_name=prepared.display_name[:255],
+            content_type=prepared.content_type,
+            size=prepared.size,
         )
+        attachment.file.save(prepared.stored_filename, prepared.file, save=False)
+        attachment.save()
 
     room.save(update_fields=["updated_at"])
     ChatTypingStatus.objects.update_or_create(
@@ -487,11 +512,11 @@ def message_payload(message, current_user, pinned_message_id=None):
 @require_GET
 def chat_attachment_download_view(request, attachment_id):
     attachment = get_object_or_404(
-        ChatAttachment.objects.select_related("message__room").filter(
-            message__room__room_memberships__user=request.user,
-        ),
+        ChatAttachment.objects.select_related("message__room"),
         id=attachment_id,
     )
+    if not user_can_access_chat_room(request.user, attachment.message.room):
+        raise Http404
     if not attachment.file:
         raise Http404
 
@@ -501,8 +526,7 @@ def chat_attachment_download_view(request, attachment_id):
         as_attachment=not preview,
         filename=attachment.filename,
     )
-    if attachment.content_type:
-        response["Content-Type"] = attachment.content_type
+    response["Content-Type"] = SAFE_IMAGE_CONTENT_TYPE if preview else ATTACHMENT_CONTENT_TYPE
     response["Cache-Control"] = "private, max-age=300" if preview else "private, no-store"
     response["X-Content-Type-Options"] = "nosniff"
     return response
@@ -511,7 +535,7 @@ def chat_attachment_download_view(request, attachment_id):
 @login_required
 @require_GET
 def chat_messages_api(request, room_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id)
     after_id = request.GET.get("after")
 
     qs = room.messages.select_related("sender", "sender__profile").order_by("created_at")
@@ -571,7 +595,7 @@ def chat_messages_api(request, room_id):
 @login_required
 @require_POST
 def delete_chat_message(request, room_id, message_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id)
     message = get_object_or_404(ChatMessage, id=message_id, room=room, sender=request.user)
     message.delete()
     room.save(update_fields=["updated_at"])
@@ -589,7 +613,7 @@ def delete_chat_message(request, room_id, message_id):
 @login_required
 @require_POST
 def edit_chat_message(request, room_id, message_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id)
     message = get_object_or_404(
         ChatMessage.objects.select_related("sender").prefetch_related("reactions", "attachments", "read_receipts"),
         id=message_id,
@@ -620,7 +644,7 @@ def edit_chat_message(request, room_id, message_id):
 @login_required
 @require_POST
 def chat_typing_api(request, room_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id)
     is_typing = request.POST.get("is_typing", "true") == "true"
     ChatTypingStatus.objects.update_or_create(
         room=room,
@@ -634,7 +658,7 @@ def chat_typing_api(request, room_id):
 @login_required
 @require_POST
 def react_chat_message(request, room_id, message_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id)
     message = get_object_or_404(
         ChatMessage.objects.select_related("sender").prefetch_related("reactions", "attachments", "read_receipts"),
         id=message_id,
@@ -663,7 +687,7 @@ def react_chat_message(request, room_id, message_id):
 @login_required
 @require_POST
 def pin_chat_message(request, room_id, message_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id)
     message = get_object_or_404(
         ChatMessage.objects.select_related("sender", "sender__profile").prefetch_related("reactions", "attachments", "read_receipts"),
         id=message_id,
@@ -690,7 +714,7 @@ def pin_chat_message(request, room_id, message_id):
 @login_required
 @require_POST
 def chat_group_settings_view(request, room_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_type=ChatRoom.ROOM_GROUP, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id, room_type=ChatRoom.ROOM_GROUP)
     membership = get_object_or_404(ChatRoomMember, room=room, user=request.user)
     if not membership.is_admin:
         messages.error(request, _("Nur Gruppenadmins können die Gruppe bearbeiten."))
@@ -718,7 +742,7 @@ def chat_group_settings_view(request, room_id):
 @login_required
 @require_POST
 def chat_group_member_action_view(request, room_id, user_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_type=ChatRoom.ROOM_GROUP, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id, room_type=ChatRoom.ROOM_GROUP)
     actor_membership = get_object_or_404(ChatRoomMember, room=room, user=request.user)
     if not actor_membership.is_admin:
         messages.error(request, _("Nur Gruppenadmins können Mitglieder verwalten."))
@@ -733,6 +757,7 @@ def chat_group_member_action_view(request, room_id, user_id):
         messages.success(request, _("Mitglied ist jetzt Gruppenadmin."))
     elif action == "remove":
         target_membership.delete()
+        broadcast_chat_event(room.id, "access_revoked")
         messages.success(request, _("Mitglied entfernt."))
     else:
         messages.error(request, _("Unbekannte Gruppenaktion."))
@@ -742,13 +767,16 @@ def chat_group_member_action_view(request, room_id, user_id):
 @login_required
 @require_POST
 def chat_group_leave_view(request, room_id):
-    room = get_object_or_404(ChatRoom, id=room_id, room_type=ChatRoom.ROOM_GROUP, room_memberships__user=request.user)
+    room = get_accessible_chat_room_or_404(request.user, room_id, room_type=ChatRoom.ROOM_GROUP)
     membership = get_object_or_404(ChatRoomMember, room=room, user=request.user)
+    room_id = room.id
     if room.room_memberships.count() <= 1:
         room.delete()
+        broadcast_chat_event(room_id, "access_revoked")
         messages.success(request, _("Gruppe gelöscht."))
         return redirect("chat")
     membership.delete()
+    broadcast_chat_event(room_id, "access_revoked")
     if not room.room_memberships.filter(is_admin=True).exists():
         first_member = room.room_memberships.order_by("joined_at").first()
         if first_member:

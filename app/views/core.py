@@ -72,6 +72,8 @@ from django.views.decorators.http import require_GET
 
 from ..models import Note, SiteAccessSettings
 from ..forms import SignUpForm
+from ..image_optimization import SHORTCUT_ICON_MAX_SIZE, optimize_uploaded_image
+from ..chat_permissions import accessible_chat_rooms_for_user
 from .auth import GoogleOAuthCaptchaForm
 from ..platform_utils import resolve_tools
 from ..voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
@@ -449,15 +451,18 @@ def get_home_weather_data(request, user, widget):
 
 
 def build_home_chat_widget_data(user):
+    accessible_room_ids = list(
+        accessible_chat_rooms_for_user(user).values_list("id", flat=True)
+    )
     memberships = list(
         ChatRoomMember.objects
-        .filter(user=user)
+        .filter(user=user, room_id__in=accessible_room_ids)
         .select_related("room")
         .order_by("-room__updated_at")
     )
     room_ids = [membership.room_id for membership in memberships]
     rooms = list(
-        ChatRoom.objects
+        accessible_chat_rooms_for_user(user)
         .filter(id__in=room_ids)
         .prefetch_related("members", "members__profile")
         .annotate(last_message_at=Max("messages__created_at"))
@@ -1312,22 +1317,40 @@ def home(request):
                 icon = custom_icon
 
             if name and url:
+                optimized_image = None
+                if image:
+                    try:
+                        optimized_image = optimize_uploaded_image(
+                            image,
+                            prefix=f"shortcut_{user.id}",
+                            max_size=SHORTCUT_ICON_MAX_SIZE,
+                        )
+                    except (Image.DecompressionBombError, UnidentifiedImageError, OSError, ValueError):
+                        messages.error(request, _("Das Shortcut-Bild konnte nicht verarbeitet werden."))
+                        return redirect("home")
+
                 if not url.startswith(("http://", "https://")):
                     url = "https://" + url
 
                 max_order = Shortcut.objects.filter(user=user, section=section).aggregate(Max("order"))[
                                 "order__max"] or 0
 
-                Shortcut.objects.create(
+                shortcut = Shortcut(
                     user=user,
                     section=section,
                     name=name,
                     url=url,
                     icon=icon or "fa-solid fa-link",
-                    image=image,
                     color=color,
                     order=max_order + 1
                 )
+                if optimized_image:
+                    shortcut.image.save(
+                        optimized_image.filename,
+                        optimized_image.file,
+                        save=False,
+                    )
+                shortcut.save()
 
             return redirect("home")
 
@@ -1353,6 +1376,18 @@ def home(request):
                 icon = custom_icon
 
             if name and url:
+                optimized_image = None
+                if image:
+                    try:
+                        optimized_image = optimize_uploaded_image(
+                            image,
+                            prefix=f"shortcut_{user.id}",
+                            max_size=SHORTCUT_ICON_MAX_SIZE,
+                        )
+                    except (Image.DecompressionBombError, UnidentifiedImageError, OSError, ValueError):
+                        messages.error(request, _("Das Shortcut-Bild konnte nicht verarbeitet werden."))
+                        return redirect("home")
+
                 if not url.startswith(("http://", "https://")):
                     url = "https://" + url
 
@@ -1366,10 +1401,14 @@ def home(request):
                     shortcut.image.delete(save=False)
                     shortcut.image = None
 
-                if image:
+                if optimized_image:
                     if shortcut.image:
                         shortcut.image.delete(save=False)
-                    shortcut.image = image
+                    shortcut.image.save(
+                        optimized_image.filename,
+                        optimized_image.file,
+                        save=False,
+                    )
 
                 shortcut.save()
 

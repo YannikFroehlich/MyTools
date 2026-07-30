@@ -3365,7 +3365,8 @@ class FileConverterTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "image/jpeg")
         self.assertIn('filename="avatar-konvertiert.jpg"', response["Content-Disposition"])
-        self.assertTrue(response.content.startswith(b"\xff\xd8"))
+        self.assertTrue(b"".join(response.streaming_content).startswith(b"\xff\xd8"))
+        response.close()
 
     @patch("app.views.file_converter._office_converter_binary", return_value=None)
     def test_docx_to_pdf_shows_message_when_libreoffice_is_missing(self, _binary_mock):
@@ -3404,7 +3405,8 @@ class FileConverterTests(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/pdf")
-        self.assertEqual(response.content, b"%PDF-1.4 fake pdf")
+        self.assertEqual(b"".join(response.streaming_content), b"%PDF-1.4 fake pdf")
+        response.close()
         self.assertIn('filename="bericht-konvertiert.pdf"', response["Content-Disposition"])
         run_mock.assert_called_once()
 
@@ -3538,7 +3540,7 @@ class ChatEnhancementTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         payload = response.json()["messages"][0]["attachments"][0]
         self.assertEqual(payload["url"], reverse("chat_attachment_download", args=[attachment.id]))
-        self.assertEqual(payload["preview_url"], f"{reverse('chat_attachment_download', args=[attachment.id])}?preview=1")
+        self.assertEqual(payload["preview_url"], "")
         self.assertNotIn(settings.MEDIA_URL, payload["url"])
 
     def test_user_can_edit_own_message(self):

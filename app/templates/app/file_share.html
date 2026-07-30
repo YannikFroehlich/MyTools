@@ -32,6 +32,7 @@
                     {% else %}
                         <p>{% blocktranslate %}Maximal {{ max_share_mb }} pro Datei · gespeichert als Datei, nicht in der Datenbank.{% endblocktranslate %}</p>
                     {% endif %}
+                    <p>{% blocktranslate %}Maximal {{ max_share_files }} Dateien und {{ max_share_batch }} je Upload. Speicherlimit: {{ max_share_quota }}.{% endblocktranslate %}</p>
                 </div>
             </div>
 
@@ -186,9 +187,6 @@
                             {% if share.is_public_link %}<small>{{ request.scheme }}://{{ request.get_host }}{% url 'file_share_download' share.token %}</small>{% endif %}
                         </div>
                         <div class="share-row-actions">
-                            {% if share.is_pdf %}
-                                <a href="{% url 'file_share_download' share.token %}?preview=1" target="_blank" rel="noopener" title="{% translate 'PDF ansehen' %}"><i class="fa-solid fa-eye"></i></a>
-                            {% endif %}
                             <a href="{% url 'file_share_download' share.token %}" title="{% translate 'Download' %}"><i class="fa-solid fa-download"></i></a>
                             <form method="post" action="{% url 'file_share_delete' share.id %}">
                                 {% csrf_token %}
@@ -234,9 +232,6 @@
                             </div>
                         </div>
                         <div class="share-row-actions">
-                            {% if share.is_pdf %}
-                                <a href="{% url 'file_share_download' share.token %}?preview=1" target="_blank" rel="noopener" title="{% translate 'PDF ansehen' %}"><i class="fa-solid fa-eye"></i></a>
-                            {% endif %}
                             <a href="{% url 'file_share_download' share.token %}" title="{% translate 'Download' %}"><i class="fa-solid fa-download"></i></a>
                         </div>
                     </article>

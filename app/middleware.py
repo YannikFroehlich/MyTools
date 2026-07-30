@@ -2,7 +2,8 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
-from django.http import JsonResponse
+from django.contrib.auth import BACKEND_SESSION_KEY, logout as auth_logout
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import Resolver404, resolve, reverse
 from django.utils.translation import gettext as _
@@ -10,6 +11,10 @@ from django.utils.translation import gettext as _
 from .access_control import access_key_for_url_name, user_can_access_key
 from .presence_utils import touch_user_presence
 from .rate_limits import check_rate_limit, rule_for_request
+from .two_factor import (
+    begin_pending_two_factor_login,
+    is_two_factor_verified,
+)
 
 
 class RateLimitMiddleware:
@@ -32,6 +37,13 @@ class RateLimitMiddleware:
         if result.allowed:
             return None
 
+        if url_name == "two_factor_verify":
+            request.session.flush()
+            response = HttpResponse(_("Zu viele Versuche. Bitte melde dich erneut an."), status=429)
+            response["Retry-After"] = str(result.retry_after)
+            response["X-Content-Type-Options"] = "nosniff"
+            return response
+
         return self._rate_limited_response(request, result.retry_after)
 
     def _rate_limited_response(self, request, retry_after):
@@ -49,6 +61,46 @@ class RateLimitMiddleware:
 
         response["Retry-After"] = str(retry_after)
         return response
+
+
+class TwoFactorEnforcementMiddleware:
+    """Prevent any authenticated 2FA user from bypassing the pending flow."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        pending_response = self._enforce(request)
+        if pending_response:
+            return pending_response
+
+        response = self.get_response(request)
+        pending_response = self._enforce(request, response=response)
+        return pending_response or response
+
+    def _enforce(self, request, response=None):
+        user = getattr(request, "user", None)
+        if not getattr(user, "is_authenticated", False):
+            return None
+        if request.path.startswith("/accounts/logout/"):
+            return None
+
+        from .models import UserTwoFactorSettings
+
+        if not UserTwoFactorSettings.enabled_for_user(user):
+            return None
+        if is_two_factor_verified(request, user):
+            return None
+
+        backend = request.session.get(BACKEND_SESSION_KEY) or getattr(user, "backend", None)
+        next_url = None
+        if response is not None and 300 <= response.status_code < 400:
+            next_url = response.get("Location")
+        next_url = next_url or request.get_full_path()
+
+        auth_logout(request)
+        begin_pending_two_factor_login(request, user, backend=backend, next_url=next_url)
+        return redirect("two_factor_verify")
 
 
 class LoginRequiredMiddleware:

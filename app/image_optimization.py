@@ -7,6 +7,11 @@ from django.core.files.base import ContentFile
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 
+MAX_IMAGE_PIXELS = 40_000_000
+# Keep Pillow's own decompression-bomb guard aligned with the explicit check.
+Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
+
+
 @dataclass(frozen=True)
 class OptimizedImageResult:
     file: ContentFile
@@ -35,6 +40,17 @@ FILE_SHARE_IMAGE_MAX_SIZE = (1600, 1600)
 
 
 WEBP_EXTENSION = ".webp"
+
+
+def validate_image_dimensions(image: Image.Image) -> None:
+    width = int(getattr(image, "width", 0) or 0)
+    height = int(getattr(image, "height", 0) or 0)
+    if width <= 0 or height <= 0:
+        raise ValueError("Invalid image dimensions")
+    if width * height > MAX_IMAGE_PIXELS:
+        raise Image.DecompressionBombError(
+            f"Image size of {width * height} pixels exceeds the {MAX_IMAGE_PIXELS} pixel limit"
+        )
 
 
 def _safe_webp_image(image: Image.Image) -> Image.Image:
@@ -97,6 +113,7 @@ def _convert_image_file(file_obj, *, max_size: tuple[int, int], quality: int, ta
         file_obj.seek(0)
 
     with Image.open(file_obj) as source:
+        validate_image_dimensions(source)
         image = _safe_webp_image(source)
         image = _resize_to_fit(image, max_size)
         return _save_webp(image, quality=quality, target_bytes=target_bytes)
@@ -110,7 +127,7 @@ def optimize_uploaded_image(uploaded_file, *, prefix: str, max_size: tuple[int, 
     """
     try:
         data = _convert_image_file(uploaded_file, max_size=max_size, quality=quality, target_bytes=target_bytes)
-    except (UnidentifiedImageError, OSError, ValueError):
+    except (Image.DecompressionBombError, UnidentifiedImageError, OSError, ValueError):
         if hasattr(uploaded_file, "seek"):
             uploaded_file.seek(0)
         raise
@@ -145,7 +162,7 @@ def optimize_existing_image_field(instance, field_name: str, *, max_size: tuple[
     try:
         with storage.open(old_name, "rb") as source:
             data = _convert_image_file(source, max_size=max_size, quality=quality, target_bytes=target_bytes)
-    except (UnidentifiedImageError, OSError, ValueError):
+    except (Image.DecompressionBombError, UnidentifiedImageError, OSError, ValueError):
         return ExistingImageOptimizationResult(False, True, False, old_name, old_name, old_size, old_size, 0, "unsupported")
 
     if old_name.lower().endswith(WEBP_EXTENSION) and len(data) >= old_size:
