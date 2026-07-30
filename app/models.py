@@ -560,7 +560,11 @@ class ChatAttachment(models.Model):
 
     @property
     def is_image(self):
-        return self.content_type.startswith("image/")
+        return (
+            self.content_type == "image/webp"
+            and bool(self.file)
+            and self.file.name.lower().endswith(".webp")
+        )
 
     @property
     def filename(self):
@@ -3710,7 +3714,11 @@ class FileShare(TrashableModel):
 
     @property
     def is_image(self):
-        return (self.content_type or "").startswith("image/")
+        return (
+            self.content_type == "image/webp"
+            and bool(self.file)
+            and self.file.name.lower().endswith(".webp")
+        )
 
     @property
     def is_pdf(self):

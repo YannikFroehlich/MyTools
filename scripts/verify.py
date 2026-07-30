@@ -16,6 +16,7 @@ QUICK_TEST_LABELS = [
     "app.tests.RateLimitTests",
     "app.tests.ChatEnhancementTests",
     "app.tests.FileShareTests",
+    "app.test_security_h5_h9",
 ]
 
 

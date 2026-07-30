@@ -53,6 +53,7 @@ from ..image_optimization import (
 from ..notification_utils import invalidate_notification_cache
 from ..platform_utils import resolve_tools
 from ..presence_utils import decorate_profiles_with_presence, decorate_users_with_presence
+from ..realtime import broadcast_chat_event
 
 User = get_user_model()
 
@@ -1236,6 +1237,15 @@ def block_user_view(request, user_id):
     else:
         UserBlock.objects.get_or_create(blocker=request.user, blocked=target_user)
         Friendship.objects.filter(Q(from_user=request.user, to_user=target_user) | Q(from_user=target_user, to_user=request.user)).delete()
+        direct_room_ids = (
+            ChatRoom.objects
+            .filter(room_type=ChatRoom.ROOM_DIRECT, room_memberships__user=request.user)
+            .filter(room_memberships__user=target_user)
+            .distinct()
+            .values_list("id", flat=True)
+        )
+        for room_id in direct_room_ids:
+            broadcast_chat_event(room_id, "access_revoked")
         messages.success(request, _("Nutzer blockiert."))
     return redirect(next_url)
 

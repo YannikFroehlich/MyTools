@@ -23,6 +23,7 @@ class RateLimitResult:
 
 RATE_LIMIT_RULES = {
     "login": RateLimitRule("auth-login", 10, 5 * 60, frozenset({"POST"})),
+    "two_factor_verify": RateLimitRule("auth-two-factor", 5, 5 * 60, frozenset({"POST"})),
     "signup": RateLimitRule("auth-signup", 5, 15 * 60, frozenset({"POST"})),
     "password_reset": RateLimitRule("auth-password-reset", 5, 15 * 60, frozenset({"POST"})),
     "chat_send": RateLimitRule("chat-send", 45, 60, frozenset({"POST"})),
@@ -65,6 +66,25 @@ def _client_identity(request):
     return f"ip:{request.META.get('REMOTE_ADDR', 'unknown')}"
 
 
+def _ip_identity(request):
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    if forwarded_for:
+        return f"ip:{forwarded_for.split(',', 1)[0].strip()}"
+    return f"ip:{request.META.get('REMOTE_ADDR', 'unknown')}"
+
+
+def _identities_for_rule(request, rule):
+    if rule.scope != "auth-two-factor":
+        return (_client_identity(request),)
+
+    identities = [_ip_identity(request)]
+    session = getattr(request, "session", None)
+    pending_user_id = session.get("two_factor_user_id") if session is not None else None
+    if pending_user_id:
+        identities.append(f"pending-user:{pending_user_id}")
+    return tuple(identities)
+
+
 def check_rate_limit(request, rule):
     user = getattr(request, "user", None)
     if getattr(user, "is_staff", False):
@@ -73,15 +93,19 @@ def check_rate_limit(request, rule):
     now = int(time.time())
     bucket = now // rule.window_seconds
     retry_after = max(((bucket + 1) * rule.window_seconds) - now, 1)
-    raw_key = f"{rule.scope}:{_client_identity(request)}:{bucket}"
-    key = "rate-limit:" + hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
+    counts = []
+    for identity in _identities_for_rule(request, rule):
+        raw_key = f"{rule.scope}:{identity}:{bucket}"
+        key = "rate-limit:" + hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
 
-    cache.add(key, 0, timeout=rule.window_seconds + 60)
-    try:
-        count = cache.incr(key)
-    except ValueError:
-        cache.set(key, 1, timeout=rule.window_seconds + 60)
-        count = 1
+        cache.add(key, 0, timeout=rule.window_seconds + 60)
+        try:
+            count = cache.incr(key)
+        except ValueError:
+            cache.set(key, 1, timeout=rule.window_seconds + 60)
+            count = 1
+        counts.append(count)
 
-    remaining = max(rule.limit - count, 0)
-    return RateLimitResult(count <= rule.limit, retry_after, rule.limit, remaining)
+    highest_count = max(counts, default=0)
+    remaining = max(rule.limit - highest_count, 0)
+    return RateLimitResult(highest_count <= rule.limit, retry_after, rule.limit, remaining)

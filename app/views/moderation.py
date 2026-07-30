@@ -39,6 +39,10 @@ from ..models import (
     UserReport,
     UserSuspension,
 )
+from ..realtime import (
+    broadcast_realtime_access_revoked,
+    broadcast_realtime_policy_changed,
+)
 
 
 staff_required = user_passes_test(
@@ -464,6 +468,7 @@ def moderation_tool_access_view(request):
     access_settings.set_tool_access_rules(rules)
     access_settings.updated_by = request.user
     access_settings.save(update_fields=["tool_access_rules", "updated_by", "updated_at"])
+    broadcast_realtime_policy_changed()
 
     _audit(
         request,
@@ -624,6 +629,7 @@ def moderation_user_status_view(request, user_id):
             starts_at=now,
             ends_at=now + timezone.timedelta(hours=duration_hours),
         )
+        broadcast_realtime_access_revoked(target_user)
         _audit(
             request,
             ModerationAuditLog.ACTION_USER_SUSPENDED,
@@ -653,6 +659,8 @@ def moderation_user_status_view(request, user_id):
 
     target_user.is_active = action == "activate"
     target_user.save(update_fields=["is_active"])
+    if not target_user.is_active:
+        broadcast_realtime_access_revoked(target_user)
     _audit(
         request,
         ModerationAuditLog.ACTION_USER_ACTIVATED if target_user.is_active else ModerationAuditLog.ACTION_USER_DEACTIVATED,

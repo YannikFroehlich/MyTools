@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from .chat_permissions import accessible_chat_rooms_for_user
 from .models import (
     BattleshipInvite,
     BattleshipGame,
@@ -379,7 +380,11 @@ def _collect_notification_items(user, *, limit=10, include_dismissed=False):
     items = []
 
     if profile.notify_chat and not muted_by_dnd:
-        for membership in ChatRoomMember.objects.filter(user=user).select_related("room"):
+        accessible_room_ids = accessible_chat_rooms_for_user(user).values_list("id", flat=True)
+        for membership in ChatRoomMember.objects.filter(
+            user=user,
+            room_id__in=accessible_room_ids,
+        ).select_related("room"):
             qs = ChatMessage.objects.filter(room=membership.room).exclude(sender=user).select_related("sender").order_by("-created_at")
             if membership.last_read_at:
                 qs = qs.filter(created_at__gt=membership.last_read_at)

@@ -6,7 +6,8 @@ from django.utils.translation import gettext as _
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
-from .models import SiteAccessSettings
+from .models import SiteAccessSettings, UserTwoFactorSettings
+from .two_factor import begin_pending_two_factor_login
 
 
 class MyToolsSocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -16,11 +17,19 @@ class MyToolsSocialAccountAdapter(DefaultSocialAccountAdapter):
         return super().is_open_for_signup(request, sociallogin)
 
     def pre_social_login(self, request, sociallogin):
+        user = self._resolve_user(sociallogin)
         if SiteAccessSettings.is_locked():
-            user = self._resolve_user(sociallogin)
             if not (user and user.is_staff):
                 messages.error(request, _("Der Login ist aktuell fuer normale Nutzer gesperrt."))
                 raise ImmediateHttpResponse(redirect("login"))
+
+        if user and UserTwoFactorSettings.enabled_for_user(user):
+            begin_pending_two_factor_login(
+                request,
+                user,
+                backend="allauth.account.auth_backends.AuthenticationBackend",
+            )
+            raise ImmediateHttpResponse(redirect("two_factor_verify"))
 
         return super().pre_social_login(request, sociallogin)
 

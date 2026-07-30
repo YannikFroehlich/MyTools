@@ -1,5 +1,4 @@
 import math
-from pathlib import Path
 from datetime import timedelta
 
 from django.conf import settings
@@ -9,16 +8,17 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Count, F, Max, Q, Sum, Value
 from django.db.models.functions import Coalesce
-from django.http import FileResponse, Http404, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.utils.text import get_valid_filename
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
+from PIL import Image
 
 from ..models import (
     BattleshipGame,
@@ -43,8 +43,17 @@ from ..models import (
     UnoGame,
     UserProfile,
 )
+from ..image_optimization import FILE_SHARE_IMAGE_MAX_SIZE
+from ..upload_security import (
+    ATTACHMENT_CONTENT_TYPE,
+    SAFE_IMAGE_CONTENT_TYPE,
+    prepare_untrusted_upload,
+)
 
 MAX_SHARE_RECIPIENTS = 20
+MAX_FILE_SHARE_FILES = 10
+MAX_FILE_SHARE_BATCH_BYTES = 100 * 1024 * 1024
+MAX_FILE_SHARE_USER_QUOTA_BYTES = 2 * 1024 * 1024 * 1024
 FILE_SHARE_EXPIRY_DAYS = {"1": 1, "7": 7, "30": 30}
 
 
@@ -129,6 +138,27 @@ def _file_share_limit(user):
         "label": profile.file_share_limit_label,
         "is_unlimited": profile.file_share_max_size is None,
     }
+
+
+def _file_share_batch_error(uploads):
+    if len(uploads) > MAX_FILE_SHARE_FILES:
+        return _("Pro Upload sind maximal %(count)s Dateien erlaubt.") % {
+            "count": MAX_FILE_SHARE_FILES,
+        }
+    total_size = sum(max(0, int(getattr(upload, "size", 0) or 0)) for upload in uploads)
+    if total_size > MAX_FILE_SHARE_BATCH_BYTES:
+        return _("Der gesamte Upload darf maximal %(size)s gross sein.") % {
+            "size": _human_size(MAX_FILE_SHARE_BATCH_BYTES),
+        }
+    return None
+
+
+def _file_share_limit_response(request, message):
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({"success": False, "error": str(message)}, status=413)
+    response = HttpResponse(str(message), status=413, content_type="text/plain; charset=utf-8")
+    response["Cache-Control"] = "no-store"
+    return response
 
 
 def _build_win_rows(model, cases, title, icon, limit=10):
@@ -448,6 +478,9 @@ def file_share_view(request):
         "max_share_mb": share_limit["label"],
         "max_share_bytes": share_limit["size"] or "",
         "max_share_unlimited": share_limit["is_unlimited"],
+        "max_share_files": MAX_FILE_SHARE_FILES,
+        "max_share_batch": _human_size(MAX_FILE_SHARE_BATCH_BYTES),
+        "max_share_quota": _human_size(MAX_FILE_SHARE_USER_QUOTA_BYTES),
     })
 
 
@@ -460,14 +493,22 @@ def file_share_upload_view(request):
         messages.error(request, _("Bitte wähle eine Datei aus."))
         return redirect("file_share")
 
+    batch_error = _file_share_batch_error(uploads)
+    if batch_error:
+        return _file_share_limit_response(request, batch_error)
+
     oversized = [
         upload
         for upload in uploads
         if share_limit["size"] is not None and upload.size > share_limit["size"]
     ]
     if oversized:
-        messages.error(request, _("Die Datei ist zu groß. Maximal erlaubt sind %(size)s.") % {"size": share_limit["label"]})
-        return redirect("file_share")
+        return _file_share_limit_response(
+            request,
+            _("Die Datei ist zu gross. Maximal erlaubt sind %(size)s.") % {
+                "size": share_limit["label"],
+            },
+        )
 
     selected_ids = request.POST.getlist("recipients")[:MAX_SHARE_RECIPIENTS]
     recipients = list(_friends_queryset(request.user).filter(id__in=selected_ids))
@@ -480,24 +521,66 @@ def file_share_upload_view(request):
     expires_at = _parse_share_expiry(request.POST.get("expires_in"))
     max_downloads = _parse_download_limit(request.POST.get("max_downloads"))
 
-    created_count = 0
-    for upload in uploads:
-        safe_name = get_valid_filename(Path(upload.name).name)[:180] or "datei"
-        share = FileShare.objects.create(
-            owner=request.user,
-            file=upload,
-            original_name=safe_name,
-            size=upload.size,
-            content_type=getattr(upload, "content_type", "")[:120],
-            token=get_random_string(40),
-            is_public_link=is_public,
-            password_hash=make_password(password) if password else "",
-            expires_at=expires_at,
-            max_downloads=max_downloads,
+    prepared_uploads = []
+    try:
+        for upload in uploads:
+            prepared = prepare_untrusted_upload(
+                upload,
+                prefix=f"file_share_{request.user.id}",
+                max_image_size=FILE_SHARE_IMAGE_MAX_SIZE,
+                quality=84,
+                target_bytes=450 * 1024,
+            )
+            prepared_uploads.append(prepared)
+    except Image.DecompressionBombError:
+        return _file_share_limit_response(
+            request,
+            _("Die Bildabmessungen sind zu gross."),
         )
-        if recipients:
-            share.recipients.set(recipients)
-        created_count += 1
+
+    stored_batch_size = sum(prepared.size for prepared in prepared_uploads)
+    created_files = []
+    try:
+        with transaction.atomic():
+            # Serialize quota decisions for concurrent uploads by the same user.
+            User.objects.select_for_update().only("id").get(pk=request.user.pk)
+            current_usage = (
+                FileShare.all_objects
+                .filter(owner=request.user)
+                .aggregate(total=Sum("size"))["total"]
+                or 0
+            )
+            if current_usage + stored_batch_size > MAX_FILE_SHARE_USER_QUOTA_BYTES:
+                return _file_share_limit_response(
+                    request,
+                    _("Dein Datei-Share-Speicherlimit von %(size)s ist erreicht.") % {
+                        "size": _human_size(MAX_FILE_SHARE_USER_QUOTA_BYTES),
+                    },
+                )
+
+            for prepared in prepared_uploads:
+                share = FileShare(
+                    owner=request.user,
+                    original_name=prepared.display_name,
+                    size=prepared.size,
+                    content_type=prepared.content_type,
+                    token=get_random_string(40),
+                    is_public_link=is_public,
+                    password_hash=make_password(password) if password else "",
+                    expires_at=expires_at,
+                    max_downloads=max_downloads,
+                )
+                share.file.save(prepared.stored_filename, prepared.file, save=False)
+                created_files.append((share.file.storage, share.file.name))
+                share.save()
+                if recipients:
+                    share.recipients.set(recipients)
+    except Exception:
+        for storage, stored_name in created_files:
+            storage.delete(stored_name)
+        raise
+
+    created_count = len(prepared_uploads)
 
     if created_count == 1:
         messages.success(request, _("Datei wurde geteilt."))
@@ -543,14 +626,15 @@ def file_share_download_view(request, token):
         return render(request, "app/file_share_access.html", {"share": share, "state": "password"})
     if not share.file:
         raise Http404
-    preview = request.GET.get("preview") == "1" and (share.is_image or share.is_pdf)
+    preview = request.GET.get("preview") == "1" and share.is_image
     if not preview:
         share.download_count = F("download_count") + 1
         share.last_downloaded_at = timezone.now()
         share.save(update_fields=["download_count", "last_downloaded_at"])
     response = FileResponse(share.file.open("rb"), as_attachment=not preview, filename=share.original_name)
-    if share.content_type:
-        response["Content-Type"] = share.content_type
+    response["Content-Type"] = SAFE_IMAGE_CONTENT_TYPE if preview else ATTACHMENT_CONTENT_TYPE
+    response["Cache-Control"] = "private, max-age=300" if preview else "private, no-store"
+    response["X-Content-Type-Options"] = "nosniff"
     return response
 
 
