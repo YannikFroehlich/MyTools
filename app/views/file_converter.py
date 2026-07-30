@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 import tempfile
@@ -5,14 +6,19 @@ from pathlib import Path
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.shortcuts import render
 from django.utils.text import get_valid_filename
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 from PIL import Image, UnidentifiedImageError
 
+from ..image_optimization import validate_image_dimensions
+
 MAX_CONVERTER_UPLOAD_SIZE = 25 * 1024 * 1024
+MAX_CONVERTER_OUTPUT_SIZE = 50 * 1024 * 1024
+OFFICE_CONVERTER_MEMORY_LIMIT = 768 * 1024 * 1024
+OFFICE_CONVERTER_CPU_SECONDS = 40
 OFFICE_TO_PDF_EXTENSIONS = {
     ".doc",
     ".docx",
@@ -39,6 +45,10 @@ TARGET_CONTENT_TYPES = {
 }
 
 
+class ConversionResourceLimitError(RuntimeError):
+    pass
+
+
 def _format_file_size(size):
     size = float(size or 0)
     for unit in ["B", "KB", "MB", "GB"]:
@@ -52,16 +62,42 @@ def _office_converter_binary():
 
 
 def _write_uploaded_file(uploaded_file, destination):
+    written = 0
     with destination.open("wb") as target:
         for chunk in uploaded_file.chunks():
+            written += len(chunk)
+            if written > MAX_CONVERTER_UPLOAD_SIZE:
+                raise ConversionResourceLimitError(_("Die Datei ist zu gross."))
             target.write(chunk)
 
 
-def _download_response(content, filename, target):
-    response = HttpResponse(content, content_type=TARGET_CONTENT_TYPES[target])
-    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+def _download_response(output_path, filename, target, *, cleanup):
+    response = FileResponse(
+        output_path.open("rb"),
+        as_attachment=True,
+        filename=filename,
+        content_type=TARGET_CONTENT_TYPES[target],
+    )
     response["X-Content-Type-Options"] = "nosniff"
+    response["Cache-Control"] = "private, no-store"
+    response._resource_closers.append(cleanup)
     return response
+
+
+def _resource_limited_office_command(command):
+    prlimit = shutil.which("prlimit")
+    if not prlimit:
+        return command
+    return [
+        prlimit,
+        f"--cpu={OFFICE_CONVERTER_CPU_SECONDS}",
+        f"--as={OFFICE_CONVERTER_MEMORY_LIMIT}",
+        f"--fsize={MAX_CONVERTER_OUTPUT_SIZE}",
+        "--nofile=64",
+        "--nproc=64",
+        "--",
+        *command,
+    ]
 
 
 def _convert_office_to_pdf(source_path, output_dir):
@@ -86,6 +122,17 @@ def _convert_office_to_pdf(source_path, output_dir):
         str(output_dir),
         str(source_path),
     ]
+    command = _resource_limited_office_command(command)
+    converter_env = {
+        "HOME": str(profile_dir),
+        "TMPDIR": str(output_dir),
+        "PATH": os.environ.get("PATH", ""),
+        "LANG": "C.UTF-8",
+        "SAL_USE_VCLPLUGIN": "svp",
+    }
+    for key in ("SystemRoot", "WINDIR"):
+        if os.environ.get(key):
+            converter_env[key] = os.environ[key]
 
     try:
         result = subprocess.run(
@@ -94,6 +141,7 @@ def _convert_office_to_pdf(source_path, output_dir):
             stderr=subprocess.PIPE,
             check=False,
             timeout=45,
+            env=converter_env,
         )
     except subprocess.TimeoutExpired as exc:
         raise RuntimeError(_("Die Konvertierung hat zu lange gedauert.")) from exc
@@ -102,11 +150,19 @@ def _convert_office_to_pdf(source_path, output_dir):
     created = sorted(after - before, key=lambda item: item.stat().st_mtime, reverse=True)
     expected = output_dir / f"{source_path.stem}.pdf"
 
-    if expected.exists():
-        return expected.read_bytes()
+    if result.returncode == 0 and expected.exists():
+        return expected
 
-    if created:
-        return created[0].read_bytes()
+    if result.returncode == 0 and created:
+        return created[0]
+
+    partial_outputs = [path for path in [expected, *created] if path.exists()]
+    if any(path.stat().st_size >= MAX_CONVERTER_OUTPUT_SIZE for path in partial_outputs):
+        raise ConversionResourceLimitError(
+            _("Die konvertierte Datei ist zu gross. Maximal erlaubt sind %(size)s.") % {
+                "size": _format_file_size(MAX_CONVERTER_OUTPUT_SIZE),
+            }
+        )
 
     error_text = (result.stderr or result.stdout or b"").decode("utf-8", errors="ignore").strip()
     if error_text:
@@ -117,6 +173,7 @@ def _convert_office_to_pdf(source_path, output_dir):
 def _convert_image(source_path, target):
     try:
         with Image.open(source_path) as image:
+            validate_image_dimensions(image)
             image.seek(0)
             output_extension = "jpg" if target == "jpg" else target
             output_path = source_path.with_name(f"{source_path.stem}-converted.{output_extension}")
@@ -137,10 +194,12 @@ def _convert_image(source_path, target):
                 image.save(output_path, format="PDF", resolution=100.0)
             else:
                 raise RuntimeError(_("Dieses Zielformat wird für Bilder nicht unterstützt."))
+    except Image.DecompressionBombError as exc:
+        raise ConversionResourceLimitError(_("Die Bildabmessungen sind zu gross.")) from exc
     except (UnidentifiedImageError, OSError, ValueError) as exc:
         raise RuntimeError(_("Das Bild konnte nicht gelesen oder konvertiert werden.")) from exc
 
-    return output_path.read_bytes()
+    return output_path
 
 
 def _converter_context(selected_target="pdf"):
@@ -199,17 +258,47 @@ def file_converter_view(request):
         messages.error(request, _("Diese Kombination aus Datei und Zielformat wird nicht unterstützt."))
         return render(request, "app/file_converter.html", _converter_context(target))
 
-    with tempfile.TemporaryDirectory(prefix="mytools-converter-") as temp_dir:
-        source_path = Path(temp_dir) / safe_name
+    temp_dir = tempfile.TemporaryDirectory(prefix="mytools-converter-")
+    source_path = Path(temp_dir.name) / safe_name
+    try:
         _write_uploaded_file(uploaded_file, source_path)
 
-        try:
-            output = converter(source_path, target)
-        except RuntimeError as exc:
-            messages.error(request, str(exc))
-            return render(request, "app/file_converter.html", _converter_context(target))
+        output_path = Path(converter(source_path, target))
+        output_size = output_path.stat().st_size
+        if output_size > MAX_CONVERTER_OUTPUT_SIZE:
+            messages.error(
+                request,
+                _("Die konvertierte Datei ist zu gross. Maximal erlaubt sind %(size)s.") % {
+                    "size": _format_file_size(MAX_CONVERTER_OUTPUT_SIZE),
+                },
+            )
+            temp_dir.cleanup()
+            return render(
+                request,
+                "app/file_converter.html",
+                _converter_context(target),
+                status=413,
+            )
+    except ConversionResourceLimitError as exc:
+        temp_dir.cleanup()
+        messages.error(request, str(exc))
+        return render(
+            request,
+            "app/file_converter.html",
+            _converter_context(target),
+            status=413,
+        )
+    except (OSError, RuntimeError) as exc:
+        temp_dir.cleanup()
+        messages.error(request, str(exc))
+        return render(request, "app/file_converter.html", _converter_context(target))
 
     original_stem = Path(safe_name).stem or "konvertiert"
     output_extension = "jpg" if target == "jpg" else target
     download_name = f"{original_stem}-konvertiert.{output_extension}"
-    return _download_response(output, download_name, target)
+    return _download_response(
+        output_path,
+        download_name,
+        target,
+        cleanup=temp_dir.cleanup,
+    )

@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET, require_POST
 
 from ..access_control import user_can_access_key
+from ..chat_permissions import accessible_chat_rooms_for_user
 from ..models import ChatRoom, DrawingGameInvite, FeatureIdea, FileShare, Friendship, InboxItem, Note, ToolFavorite, ToolFeedback, UserProfile
 from ..forms.platform import ToolFeedbackForm
 from ..platform_utils import resolve_tools, tool_by_key
@@ -186,7 +187,7 @@ def inbox_view(request):
 
     unread_rooms = []
     if tab in ("all", "unread", "chat"):
-        rooms = ChatRoom.objects.filter(room_memberships__user=request.user).prefetch_related("members")[:50]
+        rooms = accessible_chat_rooms_for_user(request.user).prefetch_related("members")[:50]
         for room in rooms:
             membership = room.room_memberships.filter(user=request.user).first()
             qs = room.messages.exclude(sender=request.user)

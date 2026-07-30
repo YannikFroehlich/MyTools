@@ -73,6 +73,9 @@ pnpm-debug.log*
 *.seed
 *.pid.lock
 
+# Output files
+output/
+
 # Uploaded/static user files, falls im Projekt erzeugt
 uploads/
 .ai/mcp/mcp.json

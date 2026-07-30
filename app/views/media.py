@@ -1,3 +1,4 @@
+import mimetypes
 from pathlib import Path
 
 from django.conf import settings
@@ -8,6 +9,8 @@ from django.utils._os import safe_join
 from django.utils.http import http_date
 from django.views.decorators.http import require_GET
 from PIL import Image, ImageOps, UnidentifiedImageError
+
+from ..image_optimization import validate_image_dimensions
 
 
 THUMBNAIL_SPECS = {
@@ -34,6 +37,17 @@ PUBLIC_MEDIA_PREFIXES = (
     "shortcut_icons/",
     "avatar_characters/",
 )
+ACTIVE_DOCUMENT_SUFFIXES = {
+    ".htm",
+    ".html",
+    ".mht",
+    ".mhtml",
+    ".svg",
+    ".svgz",
+    ".xht",
+    ".xhtml",
+    ".xml",
+}
 
 
 def _resolve_media_path(source):
@@ -47,6 +61,27 @@ def _resolve_media_path(source):
         raise Http404
 
     return resolved
+
+
+@require_GET
+def public_media(request, path):
+    normalized_path = str(path or "").replace("\\", "/")
+    if not normalized_path.startswith(PUBLIC_MEDIA_PREFIXES):
+        raise Http404
+
+    media_path = _resolve_media_path(normalized_path)
+    content_type, _encoding = mimetypes.guess_type(media_path.name)
+    force_attachment = media_path.suffix.lower() in ACTIVE_DOCUMENT_SUFFIXES
+    response = FileResponse(
+        media_path.open("rb"),
+        as_attachment=force_attachment,
+        filename=media_path.name,
+        content_type="application/octet-stream" if force_attachment else content_type,
+    )
+    response["Cache-Control"] = "public, max-age=86400, stale-while-revalidate=604800"
+    response["X-Content-Type-Options"] = "nosniff"
+    response["Content-Security-Policy"] = "default-src 'none'; sandbox"
+    return response
 
 
 def _authenticated_user(request):
@@ -75,13 +110,17 @@ def _user_can_access_chat_media(user, source):
     if not user:
         return False
 
+    from ..chat_permissions import user_can_access_chat_room
     from ..models import ChatAttachment, ChatRoom
 
     if source.startswith(("private/chat_attachments/", "chat_attachments/")):
-        return ChatAttachment.objects.filter(
-            file=source,
-            message__room__room_memberships__user=user,
-        ).exists()
+        attachment = (
+            ChatAttachment.objects
+            .select_related("message__room")
+            .filter(file=source)
+            .first()
+        )
+        return bool(attachment and user_can_access_chat_room(user, attachment.message.room))
 
     if source.startswith("chat_group_avatars/"):
         return ChatRoom.objects.filter(
@@ -146,6 +185,8 @@ def _thumbnail_needs_refresh(original_path, thumb_path):
 
     try:
         with Image.open(original_path) as original, Image.open(thumb_path) as thumb:
+            validate_image_dimensions(original)
+            validate_image_dimensions(thumb)
             return _has_transparency(original) and not _has_transparency(thumb)
     except (OSError, UnidentifiedImageError):
         return True
@@ -156,6 +197,7 @@ def _generate_thumbnail(original_path, thumb_path, spec):
     thumb_path.parent.mkdir(parents=True, exist_ok=True)
 
     with Image.open(original_path) as image:
+        validate_image_dimensions(image)
         image = ImageOps.exif_transpose(image)
         if _has_transparency(image):
             image = image.convert("RGBA")
@@ -184,7 +226,7 @@ def media_thumbnail(request, spec, source):
     try:
         if _thumbnail_needs_refresh(original_path, thumb_path):
             _generate_thumbnail(original_path, thumb_path, spec)
-    except (OSError, UnidentifiedImageError) as exc:
+    except (Image.DecompressionBombError, OSError, UnidentifiedImageError, ValueError) as exc:
         raise Http404 from exc
 
     stat = thumb_path.stat()

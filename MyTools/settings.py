@@ -13,6 +13,7 @@ import os
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -20,6 +21,36 @@ load_dotenv(BASE_DIR / ".env")
 
 def env_list(name, default=""):
     return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
+
+
+def env_bool(name, default=False):
+    default_value = "true" if default else "false"
+    return os.getenv(name, default_value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def validate_production_backends(
+    *,
+    debug,
+    is_testing,
+    is_management_command=False,
+    use_sqlite,
+    use_local_cache,
+):
+    if (
+        not debug
+        and not is_testing
+        and not is_management_command
+        and (use_sqlite or use_local_cache)
+    ):
+        unsafe_backends = []
+        if use_sqlite:
+            unsafe_backends.append("SQLite")
+        if use_local_cache:
+            unsafe_backends.append("LocMemCache/InMemoryChannelLayer")
+        raise ImproperlyConfigured(
+            "Produktivbetrieb benoetigt PostgreSQL und Redis; unsichere Backends: "
+            + ", ".join(unsafe_backends)
+        )
 
 
 def hostname_from_value(value):
@@ -47,6 +78,17 @@ RUNSERVER_SERVE_STATIC = (
     and os.getenv("RUNSERVER_SERVE_STATIC", "True") == "True"
 )
 IS_TESTING = "test" in sys.argv
+IS_MANAGEMENT_COMMAND = Path(sys.argv[0]).name.lower() == "manage.py"
+USE_SQLITE = IS_TESTING or env_bool("USE_SQLITE")
+USE_LOCAL_CACHE = IS_TESTING or env_bool("USE_LOCAL_CACHE")
+
+validate_production_backends(
+    debug=DEBUG,
+    is_testing=IS_TESTING,
+    is_management_command=IS_MANAGEMENT_COMMAND,
+    use_sqlite=USE_SQLITE,
+    use_local_cache=USE_LOCAL_CACHE,
+)
 
 DOMAIN = hostname_from_value(os.getenv("DOMAIN", ""))
 
@@ -77,7 +119,7 @@ OPEN_FOOD_FACTS_USER_AGENT = os.getenv(
     "MyTools/1.0 (shopping-list)",
 ).strip()
 
-if IS_TESTING or os.getenv("USE_SQLITE", "False") == "True":
+if USE_SQLITE:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -127,6 +169,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'app.middleware.TwoFactorEnforcementMiddleware',
     'app.middleware.RateLimitMiddleware',
     'app.middleware.LoginRequiredMiddleware',
     'app.middleware.PermissionsPolicyMiddleware',
@@ -285,14 +328,14 @@ if IS_TESTING and (not RECAPTCHA_PUBLIC_KEY or not RECAPTCHA_PRIVATE_KEY):
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer" if IS_TESTING or os.getenv("USE_LOCAL_CACHE", "False") == "True" else "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {} if IS_TESTING or os.getenv("USE_LOCAL_CACHE", "False") == "True" else {
+        "BACKEND": "channels.layers.InMemoryChannelLayer" if USE_LOCAL_CACHE else "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {} if USE_LOCAL_CACHE else {
             "hosts": [os.getenv("REDIS_URL", "redis://redis:6379/0")],
         },
     }
 }
 
-if IS_TESTING or os.getenv("USE_LOCAL_CACHE", "False") == "True":
+if USE_LOCAL_CACHE:
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",

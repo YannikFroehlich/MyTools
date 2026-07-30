@@ -1,6 +1,10 @@
 (mytools_static) {
     encode gzip zstd
 
+    request_body {
+        max_size 110MB
+    }
+
     handle_path /static/* {
         root * /app/staticfiles
         header {
@@ -15,10 +19,25 @@
         path /media/public/* /media/profile_pictures/* /media/profile_banners/* /media/shortcut_icons/* /media/avatar_characters/*
     }
 
+    @active_public_media path_regexp active_media (?i)^/media/(public|profile_pictures|profile_banners|shortcut_icons|avatar_characters)/.*\.(svgz?|xhtml?|html?|mhtml?|xml)$
+
+    handle @active_public_media {
+        root * /app
+        header {
+            Cache-Control "private, no-store"
+            Content-Disposition "attachment"
+            Content-Type "application/octet-stream"
+            Content-Security-Policy "default-src 'none'; sandbox"
+            X-Content-Type-Options "nosniff"
+        }
+        file_server
+    }
+
     handle @public_media {
         root * /app
         header {
             Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
+            Content-Security-Policy "default-src 'none'; sandbox"
             Vary "Accept-Encoding"
             X-Content-Type-Options "nosniff"
         }

@@ -37,6 +37,33 @@ def live_presence_group_name():
     return "live_presence_watchers"
 
 
+def realtime_user_group_name(user_id):
+    return f"realtime_access_user_{int(user_id)}"
+
+
+def realtime_policy_group_name():
+    return "realtime_access_policy"
+
+
+def broadcast_realtime_access_revoked(user_or_id):
+    """Tell all sockets of one user to re-check their account access."""
+    user_id = getattr(user_or_id, "pk", user_or_id)
+    if not user_id:
+        return False
+    return broadcast_group(
+        realtime_user_group_name(user_id),
+        {"type": "realtime.access_revoked"},
+    )
+
+
+def broadcast_realtime_policy_changed():
+    """Tell every socket to re-check its feature-specific access rule."""
+    return broadcast_group(
+        realtime_policy_group_name(),
+        {"type": "realtime.policy_changed"},
+    )
+
+
 def broadcast_live_status_event(user_or_id, event_name="changed", **payload):
     """Tell one user's open tabs to refresh their global live status payload."""
     user_id = getattr(user_or_id, "pk", user_or_id)

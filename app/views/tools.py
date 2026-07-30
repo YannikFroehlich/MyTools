@@ -2,6 +2,7 @@ import json
 import math
 
 import requests
+from PIL import Image, UnidentifiedImageError
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
 from django.db.utils import OperationalError, ProgrammingError
@@ -24,8 +25,12 @@ from app.models import (
     SnakeHighScore,
 )
 
+from ..image_optimization import WIKI_IMAGE_MAX_SIZE, optimize_uploaded_image
 from ..presence_utils import clear_active_game, mark_active_game
 from . import core as core_views
+
+
+MAX_AVATAR_WIKI_UPLOAD_SIZE = 10 * 1024 * 1024
 
 
 def get_env_value(name):
@@ -325,17 +330,45 @@ def avatar_characters_api(request):
                 "message": _("Bild fehlt.")
             }, status=400)
 
+        if image.size > MAX_AVATAR_WIKI_UPLOAD_SIZE:
+            return JsonResponse({
+                "status": "error",
+                "message": _("Das Bild darf maximal 10 MB groÃŸ sein."),
+            }, status=413)
+
+        try:
+            optimized_image = optimize_uploaded_image(
+                image,
+                prefix=f"avatar_wiki_{user.id}",
+                max_size=WIKI_IMAGE_MAX_SIZE,
+            )
+        except Image.DecompressionBombError:
+            return JsonResponse({
+                "status": "error",
+                "message": _("Die Bildabmessungen sind zu gross."),
+            }, status=413)
+        except (UnidentifiedImageError, OSError, ValueError):
+            return JsonResponse({
+                "status": "error",
+                "message": _("Das Bild konnte nicht verarbeitet werden."),
+            }, status=400)
+
         try:
             max_order = AvatarCharacter.objects.filter(user=user).aggregate(Max("order"))["order__max"]
-            character = AvatarCharacter.objects.create(
+            character = AvatarCharacter(
                 user=user,
                 name=name,
                 nation=nation,
                 link=link,
                 description=description,
-                image=image,
                 order=(max_order + 1) if max_order is not None else 0,
             )
+            character.image.save(
+                optimized_image.filename,
+                optimized_image.file,
+                save=False,
+            )
+            character.save()
         except (OperationalError, ProgrammingError):
             return JsonResponse({
                 "status": "error",
@@ -382,9 +415,34 @@ def avatar_character_detail_api(request, character_id):
         character.description = description
 
         if image:
+            if image.size > MAX_AVATAR_WIKI_UPLOAD_SIZE:
+                return JsonResponse({
+                    "status": "error",
+                    "message": _("Das Bild darf maximal 10 MB groÃŸ sein."),
+                }, status=413)
+            try:
+                optimized_image = optimize_uploaded_image(
+                    image,
+                    prefix=f"avatar_wiki_{request.user.id}",
+                    max_size=WIKI_IMAGE_MAX_SIZE,
+                )
+            except Image.DecompressionBombError:
+                return JsonResponse({
+                    "status": "error",
+                    "message": _("Die Bildabmessungen sind zu gross."),
+                }, status=413)
+            except (UnidentifiedImageError, OSError, ValueError):
+                return JsonResponse({
+                    "status": "error",
+                    "message": _("Das Bild konnte nicht verarbeitet werden."),
+                }, status=400)
             if character.image:
                 character.image.delete(save=False)
-            character.image = image
+            character.image.save(
+                optimized_image.filename,
+                optimized_image.file,
+                save=False,
+            )
 
         character.save()
 
