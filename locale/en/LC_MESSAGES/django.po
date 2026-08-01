@@ -9420,21 +9420,21 @@ msgid ""
 "Speichere Gedanken, Aufgaben, Befehle oder Ideen dauerhaft auf deinem Server."
 msgstr "Save thoughts, tasks, commands, or ideas permanently on your server"
 
-#: .\app\templates\app\note_form.html:54
-msgid "Fett"
-msgstr "Bold"
+#: .\app\templates\app\note_form.html:57
+msgid "Fett (Strg+B)"
+msgstr "Bold (Ctrl+B)"
 
-#: .\app\templates\app\note_form.html:58
-msgid "Kursiv"
-msgstr "Italic"
+#: .\app\templates\app\note_form.html:70
+msgid "Kursiv (Strg+I)"
+msgstr "Italic (Ctrl+I)"
 
-#: .\app\templates\app\note_form.html:62
-msgid "Unterstrichen"
-msgstr "Underlined"
+#: .\app\templates\app\note_form.html:83
+msgid "Unterstrichen (Strg+U)"
+msgstr "Underline (Ctrl+U)"
 
-#: .\app\templates\app\note_form.html:66
-msgid "Durchgestrichen"
-msgstr "Strikethrough"
+#: .\app\templates\app\note_form.html:96
+msgid "Durchgestrichen (Strg+Umschalt+X)"
+msgstr "Strikethrough (Ctrl+Shift+X)"
 
 #: .\app\templates\app\note_form.html:72
 msgid "Liste"

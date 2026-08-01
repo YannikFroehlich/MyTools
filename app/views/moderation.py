@@ -303,7 +303,9 @@ def moderation_dashboard_view(request):
         ["reporter__username", "reported__username", "reported__email", "message", "reason"],
     )
 
-    feedback_items = ToolFeedback.objects.select_related("user")
+    feedback_items = ToolFeedback.objects.exclude(
+        status=ToolFeedback.STATUS_DONE,
+    ).select_related("user")
     feedback_items = _filter_search(
         feedback_items,
         query,

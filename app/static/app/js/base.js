@@ -1,3 +1,7 @@
+if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (window.__myToolsBaseInitialized) {
         return;
@@ -5,6 +9,116 @@ document.addEventListener('DOMContentLoaded', () => {
     window.__myToolsBaseInitialized = true;
 
     const body = document.body;
+
+    function setupScrollPositionPersistence() {
+        if (window.location.hash) {
+            return;
+        }
+
+        const storageKey = `myToolsScrollPosition:${window.location.pathname}${window.location.search}`;
+        let restoreActive = false;
+        let restoreFrame = null;
+        let restoreObserver = null;
+        let restoreTimeout = null;
+        let saveFrame = null;
+
+        function readStoredPosition() {
+            try {
+                const position = JSON.parse(window.sessionStorage.getItem(storageKey));
+                if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) {
+                    return null;
+                }
+
+                return {
+                    x: Math.max(0, position.x),
+                    y: Math.max(0, position.y),
+                };
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function savePosition() {
+            try {
+                window.sessionStorage.setItem(storageKey, JSON.stringify({
+                    x: window.scrollX,
+                    y: window.scrollY,
+                }));
+            } catch (error) {
+            }
+        }
+
+        function cancelRestoreForScrollKey(event) {
+            if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) {
+                stopRestore();
+            }
+        }
+
+        function stopRestore() {
+            restoreActive = false;
+            window.cancelAnimationFrame(restoreFrame);
+            window.clearTimeout(restoreTimeout);
+            restoreObserver?.disconnect();
+            window.removeEventListener('keydown', cancelRestoreForScrollKey);
+        }
+
+        const storedPosition = readStoredPosition();
+
+        if (storedPosition && (storedPosition.x > 0 || storedPosition.y > 0)) {
+            restoreActive = true;
+
+            const restorePosition = () => {
+                if (!restoreActive || restoreFrame !== null) {
+                    return;
+                }
+
+                restoreFrame = window.requestAnimationFrame(() => {
+                    restoreFrame = null;
+                    if (restoreActive) {
+                        window.scrollTo({
+                            left: storedPosition.x,
+                            top: storedPosition.y,
+                            behavior: 'auto',
+                        });
+                    }
+                });
+            };
+
+            restorePosition();
+            window.addEventListener('load', restorePosition, { once: true });
+
+            if ('ResizeObserver' in window) {
+                restoreObserver = new ResizeObserver(restorePosition);
+                restoreObserver.observe(document.body);
+            }
+
+            restoreTimeout = window.setTimeout(stopRestore, 2000);
+
+            ['wheel', 'touchstart', 'pointerdown'].forEach((eventName) => {
+                window.addEventListener(eventName, stopRestore, { passive: true, once: true });
+            });
+
+            window.addEventListener('keydown', cancelRestoreForScrollKey);
+        }
+
+        window.addEventListener('scroll', () => {
+            if (restoreActive || saveFrame !== null) {
+                return;
+            }
+
+            saveFrame = window.requestAnimationFrame(() => {
+                saveFrame = null;
+                savePosition();
+            });
+        }, { passive: true });
+
+        window.addEventListener('pagehide', () => {
+            stopRestore();
+            savePosition();
+        });
+    }
+
+    setupScrollPositionPersistence();
     const mobileHeaderStorageKey = 'myToolsMobileHeaderVisible';
 
     if (body.classList.contains('has-mobile-bottom-nav')) {

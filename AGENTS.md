@@ -19,6 +19,10 @@ This is a Django 5.2 project named `MyTools`. Project configuration lives in `My
 
 Use conventional Django/Python style: 4-space indentation, `snake_case` functions and variables, `PascalCase` classes, and clear model/view names. Keep feature-specific view logic in the matching module under `app/views/`. Name templates and static assets by feature, for example `budget_tracker.html`, `budget_tracker.js`, and `budget_tracker.css`.
 
+## Mandatory UI Style Guide
+
+Before starting any repository task, read `UI_STYLEGUIDE.md` so that UI-related implications are considered consistently. For every frontend or visible UI change, follow that guide and check the result in the default theme, dark mode, the selectable color presets, and the Lunora theme where applicable. If a task introduces or deliberately changes a reusable visual convention, update `UI_STYLEGUIDE.md` in the same change so it remains the living reference for future work.
+
 ## Testing Guidelines
 
 Tests use Django's built-in `TestCase` and `SimpleTestCase`; no separate pytest setup is present. Name tests `test_<behavior>` and group related cases in descriptive classes. Mock external APIs and services such as weather, Genius, Voicemod, Redis, or Channels where practical. For model, view, permission, realtime, and template changes, add or update focused tests.

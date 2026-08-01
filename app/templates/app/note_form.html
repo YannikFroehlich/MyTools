@@ -4,7 +4,7 @@
 {% block title %}{{ form_title }}{% endblock %} • MyTools
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'app/css/notes.css' %}?v=20260722-notes-section-left">
+<link rel="stylesheet" href="{% static 'app/css/notes.css' %}?v=20260801-editor-scroll">
 {% endblock %}
 
 {% block content %}
@@ -51,51 +51,121 @@
 
                 <div class="notes-editor-shell">
                     <div class="notes-editor-toolbar">
-                        <button type="button" class="editor-btn" data-command="bold" title="{% translate 'Fett' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="bold"
+                            title="{% translate 'Fett (Strg+B)' %}"
+                            aria-label="{% translate 'Fett (Strg+B)' %}"
+                            aria-keyshortcuts="Control+B Meta+B"
+                        >
                             <i class="fa-solid fa-bold"></i>
                         </button>
 
-                        <button type="button" class="editor-btn" data-command="italic" title="{% translate 'Kursiv' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="italic"
+                            title="{% translate 'Kursiv (Strg+I)' %}"
+                            aria-label="{% translate 'Kursiv (Strg+I)' %}"
+                            aria-keyshortcuts="Control+I Meta+I"
+                        >
                             <i class="fa-solid fa-italic"></i>
                         </button>
 
-                        <button type="button" class="editor-btn" data-command="underline" title="{% translate 'Unterstrichen' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="underline"
+                            title="{% translate 'Unterstrichen (Strg+U)' %}"
+                            aria-label="{% translate 'Unterstrichen (Strg+U)' %}"
+                            aria-keyshortcuts="Control+U Meta+U"
+                        >
                             <i class="fa-solid fa-underline"></i>
                         </button>
 
-                        <button type="button" class="editor-btn" data-command="strikeThrough" title="{% translate 'Durchgestrichen' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="strikeThrough"
+                            title="{% translate 'Durchgestrichen (Strg+Umschalt+X)' %}"
+                            aria-label="{% translate 'Durchgestrichen (Strg+Umschalt+X)' %}"
+                            aria-keyshortcuts="Control+Shift+X Meta+Shift+X"
+                        >
                             <i class="fa-solid fa-strikethrough"></i>
                         </button>
 
                         <span class="editor-separator"></span>
 
-                        <button type="button" class="editor-btn" data-command="insertUnorderedList" title="{% translate 'Liste' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="insertUnorderedList"
+                            title="{% translate 'Liste' %}"
+                            aria-label="{% translate 'Liste' %}"
+                        >
                             <i class="fa-solid fa-list-ul"></i>
                         </button>
 
-                        <button type="button" class="editor-btn" data-command="insertOrderedList" title="{% translate 'Nummerierte Liste' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="insertOrderedList"
+                            title="{% translate 'Nummerierte Liste' %}"
+                            aria-label="{% translate 'Nummerierte Liste' %}"
+                        >
                             <i class="fa-solid fa-list-ol"></i>
                         </button>
 
-                        <button type="button" class="editor-btn" data-command="insertChecklist" title="{% translate 'Checkliste' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="insertChecklist"
+                            title="{% translate 'Checkliste' %}"
+                            aria-label="{% translate 'Checkliste' %}"
+                        >
                             <i class="fa-solid fa-list-check"></i>
                         </button>
 
                         <span class="editor-separator"></span>
 
-                        <button type="button" class="editor-btn" data-command="justifyLeft" title="{% translate 'Linksbündig' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="justifyLeft"
+                            title="{% translate 'Linksbündig' %}"
+                            aria-label="{% translate 'Linksbündig' %}"
+                        >
                             <i class="fa-solid fa-align-left"></i>
                         </button>
 
-                        <button type="button" class="editor-btn" data-command="justifyCenter" title="{% translate 'Zentriert' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="justifyCenter"
+                            title="{% translate 'Zentriert' %}"
+                            aria-label="{% translate 'Zentriert' %}"
+                        >
                             <i class="fa-solid fa-align-center"></i>
                         </button>
 
-                        <button type="button" class="editor-btn" data-command="justifyRight" title="{% translate 'Rechtsbündig' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="justifyRight"
+                            title="{% translate 'Rechtsbündig' %}"
+                            aria-label="{% translate 'Rechtsbündig' %}"
+                        >
                             <i class="fa-solid fa-align-right"></i>
                         </button>
 
-                        <button type="button" class="editor-btn" data-command="justifyFull" title="{% translate 'Blocksatz' %}">
+                        <button
+                            type="button"
+                            class="editor-btn"
+                            data-command="justifyFull"
+                            title="{% translate 'Blocksatz' %}"
+                            aria-label="{% translate 'Blocksatz' %}"
+                        >
                             <i class="fa-solid fa-align-justify"></i>
                         </button>
 
@@ -218,5 +288,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'app/js/notes.js' %}" defer></script>
+<script src="{% static 'app/js/notes.js' %}?v=20260801-editor-v2" defer></script>
 {% endblock %}

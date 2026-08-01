@@ -1252,7 +1252,12 @@ body.dark-mode .editor-select {
 }
 
 .notes-rich-editor {
-    min-height: 260px;
+    height: clamp(320px, 56vh, 520px);
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--theme-accent-rgb), 0.48) transparent;
     padding: 1rem;
     outline: none;
     color: #111827;
@@ -1261,6 +1266,21 @@ body.dark-mode .editor-select {
     font: inherit;
     word-break: break-word;
     text-align: left;
+}
+
+.notes-rich-editor::-webkit-scrollbar {
+    width: 10px;
+}
+
+.notes-rich-editor::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.notes-rich-editor::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background: rgba(var(--theme-accent-rgb), 0.48);
+    background-clip: padding-box;
 }
 
 .notes-rich-editor:focus {
@@ -1424,6 +1444,10 @@ body.dark-mode .note-preview {
 @media (max-width: 760px) {
     .notes-page {
         padding: 2rem 1rem 3rem;
+    }
+
+    .notes-rich-editor {
+        height: clamp(280px, 52vh, 420px);
     }
 
     .notes-dashboard-header,
