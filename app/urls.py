@@ -268,6 +268,7 @@ from .views.vacation import vacation_planner_view
 from .views.moderation import (
     moderation_access_toggle_view,
     moderation_dashboard_view,
+    moderation_feedback_list_view,
     moderation_feedback_status_view,
     moderation_file_share_delete_view,
     moderation_media_optimize_view,
@@ -304,6 +305,7 @@ urlpatterns = [
     path('achievements/', achievement_center_view, name='achievement_center'),
     path('server-status/', server_status_view, name='server_status'),
     path('moderation/', moderation_dashboard_view, name='moderation'),
+    path('moderation/feedback/', moderation_feedback_list_view, name='moderation_feedback_list'),
     path('moderation/access/', moderation_access_toggle_view, name='moderation_access_toggle'),
     path('moderation/tool-access/', moderation_tool_access_view, name='moderation_tool_access'),
     path('moderation/reports/<int:report_id>/', moderation_report_action_view, name='moderation_report_action'),
