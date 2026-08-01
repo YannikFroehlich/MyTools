@@ -4147,6 +4147,39 @@ class NoteFormTests(BaseTestCase):
 
 
 class NotesViewTests(BaseTestCase):
+    def test_note_editor_exposes_shortcuts_and_uses_internal_scrolling(self):
+        response = self.client.get(reverse("note_create"))
+
+        self.assertContains(response, 'aria-keyshortcuts="Control+B Meta+B"')
+        self.assertContains(response, 'aria-keyshortcuts="Control+I Meta+I"')
+        self.assertContains(response, 'aria-keyshortcuts="Control+U Meta+U"')
+        self.assertContains(response, 'aria-keyshortcuts="Control+Shift+X Meta+Shift+X"')
+
+        script = (
+            settings.BASE_DIR / "app" / "static" / "app" / "js" / "notes.js"
+        ).read_text(encoding="utf-8")
+        stylesheet = (
+            settings.BASE_DIR / "app" / "static" / "app" / "css" / "notes.css"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('editor.addEventListener("keydown"', script)
+        self.assertIn('b: "bold"', script)
+        self.assertIn('u: "underline"', script)
+        self.assertIn('x: "strikeThrough"', script)
+        self.assertIn("height: clamp(320px, 56vh, 520px);", stylesheet)
+        self.assertIn("overflow-y: auto;", stylesheet)
+
+    def test_note_editor_warns_only_when_form_state_has_unsaved_changes(self):
+        script = (
+            settings.BASE_DIR / "app" / "static" / "app" / "js" / "notes.js"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("const serializeFormState", script)
+        self.assertIn("const hasUnsavedChanges", script)
+        self.assertIn('window.addEventListener("beforeunload"', script)
+        self.assertIn("serializeFormState() !== initialFormState", script)
+        self.assertIn("isSubmitting = true", script)
+
     def test_notes_page_loads_and_splits_pinned_and_normal_notes(self):
         pinned = Note.objects.create(title="Angepinnt", is_pinned=True)
         normal = Note.objects.create(title="Normal", is_pinned=False)
