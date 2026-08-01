@@ -174,7 +174,10 @@
         <section class="moderation-panel">
             <div class="moderation-panel-head">
                 <h2>{% translate "Feedback" %}</h2>
-                <span>{{ feedback_items|length }}</span>
+                <div class="moderation-panel-head-actions">
+                    <a href="{% url 'moderation_feedback_list' %}">{% translate "Alle anzeigen" %}</a>
+                    <span>{{ feedback_items|length }}</span>
+                </div>
             </div>
 
             {% for item in feedback_items %}
@@ -183,7 +186,18 @@
                     <div class="moderation-copy">
                         <strong>{{ item.title }}</strong>
                         <small>{{ item.get_feedback_type_display }} &middot; {{ item.tool_key|default:"general" }} &middot; {{ item.created_at|date:"d.m.Y" }}</small>
-                        <p>{{ item.message|truncatechars:130 }}</p>
+                        {% if item.message|length > 130 %}
+                            <p>{{ item.message|truncatechars:130 }}</p>
+                            <details class="moderation-feedback-details">
+                                <summary>
+                                    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                                    {% translate "Vollständigen Text anzeigen" %}
+                                </summary>
+                                <p>{{ item.message|linebreaksbr }}</p>
+                            </details>
+                        {% else %}
+                            <p>{{ item.message|linebreaksbr }}</p>
+                        {% endif %}
                     </div>
                     <form class="moderation-status-form" method="post" action="{% url 'moderation_feedback_status' item.id %}">
                         {% csrf_token %}
@@ -198,6 +212,35 @@
                 </article>
             {% empty %}
                 <div class="platform-empty">{% translate "Kein Feedback." %}</div>
+            {% endfor %}
+        </section>
+
+        <section class="moderation-panel is-wide">
+            <div class="moderation-panel-head">
+                <h2>{% translate "Roadmap-Ideen" %}</h2>
+                <span>{{ roadmap_ideas|length }}</span>
+            </div>
+
+            {% for idea in roadmap_ideas %}
+                <article class="moderation-item roadmap-idea-row">
+                    <span class="moderation-icon is-info"><i class="fa-solid fa-lightbulb"></i></span>
+                    <div class="moderation-copy">
+                        <strong>{{ idea.title }}</strong>
+                        <small>
+                            {{ idea.get_status_display }} &middot; {{ idea.get_category_display }} &middot;
+                            {% if idea.author %}{{ idea.author.username }}{% else %}{% translate "Gelöschter Nutzer" %}{% endif %}
+                            &middot; {{ idea.created_at|date:"d.m.Y H:i" }}
+                        </small>
+                        <p>{{ idea.description|truncatechars:180 }}</p>
+                        <small>
+                            <i class="fa-solid fa-arrow-up"></i> {{ idea.vote_total }}
+                            &middot; <i class="fa-regular fa-comment"></i> {{ idea.comment_total }}
+                            {% if idea.admin_note %}&middot; {{ idea.admin_note|truncatechars:100 }}{% endif %}
+                        </small>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="platform-empty">{% translate "Keine Roadmap-Ideen." %}</div>
             {% endfor %}
         </section>
 

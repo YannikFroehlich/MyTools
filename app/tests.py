@@ -5093,6 +5093,145 @@ class ModerationTests(BaseTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("login"), response.url)
 
+    def test_feedback_management_requires_staff_and_link_is_staff_only(self):
+        list_response = self.client.get(reverse("moderation_feedback_list"))
+        feedback_response = self.client.get(reverse("feedback"))
+
+        self.assertEqual(list_response.status_code, 302)
+        self.assertIn(reverse("login"), list_response.url)
+        self.assertNotContains(feedback_response, reverse("moderation_feedback_list"))
+
+        self.make_staff()
+        staff_feedback_response = self.client.get(reverse("feedback"))
+
+        self.assertContains(staff_feedback_response, reverse("moderation_feedback_list"))
+        self.assertContains(staff_feedback_response, "Feedback verwalten")
+
+    def test_feedback_management_defaults_to_open_feedback(self):
+        self.make_staff()
+        ToolFeedback.objects.create(
+            user=self.user,
+            title="Noch offen",
+            message="Diese Rückmeldung benötigt Aufmerksamkeit.",
+            status=ToolFeedback.STATUS_OPEN,
+        )
+        ToolFeedback.objects.create(
+            user=self.user,
+            title="Schon erledigt",
+            message="Diese Rückmeldung ist abgeschlossen.",
+            status=ToolFeedback.STATUS_DONE,
+        )
+
+        response = self.client.get(reverse("moderation_feedback_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["selected_status"], ToolFeedback.STATUS_OPEN)
+        self.assertContains(response, "Noch offen")
+        self.assertNotContains(response, "Schon erledigt")
+        self.assertContains(response, 'class="moderation-header feedback-management-header"')
+        self.assertContains(response, 'class="moderation-panel feedback-filter-panel is-wide"')
+        self.assertContains(response, 'class="moderation-panel feedback-results-panel is-wide"')
+        self.assertNotContains(response, '<nav class="feedback-status-tabs"')
+        self.assertNotContains(response, '<nav class="feedback-pagination"')
+
+    def test_feedback_management_searches_and_filters_feedback(self):
+        self.make_staff()
+        author = get_user_model().objects.create_user(
+            username="feedback-author",
+            email="feedback-author@example.com",
+            password="testpass-123",
+        )
+        target = ToolFeedback.objects.create(
+            user=author,
+            tool_key="notes",
+            feedback_type=ToolFeedback.TYPE_BUG,
+            title="Formatierung verschwindet",
+            message="Der eindeutige Absatzmarker fehlt nach dem Speichern.",
+            status=ToolFeedback.STATUS_PLANNED,
+        )
+        ToolFeedback.objects.create(
+            user=self.user,
+            tool_key="chat",
+            feedback_type=ToolFeedback.TYPE_FEEDBACK,
+            title="Chat gefällt mir",
+            message="Allgemeine Rückmeldung zum Chat.",
+            status=ToolFeedback.STATUS_PLANNED,
+        )
+
+        filtered_response = self.client.get(reverse("moderation_feedback_list"), {
+            "status": ToolFeedback.STATUS_PLANNED,
+            "type": ToolFeedback.TYPE_BUG,
+            "tool": "notes",
+            "q": "Absatzmarker",
+        })
+
+        self.assertEqual(filtered_response.status_code, 200)
+        self.assertEqual(list(filtered_response.context["feedback_items"]), [target])
+        self.assertContains(filtered_response, "Formatierung verschwindet")
+        self.assertNotContains(filtered_response, "Chat gefällt mir")
+
+        for search_term in ("Formatierung", "feedback-author", "feedback-author@example.com", "Notizen"):
+            with self.subTest(search_term=search_term):
+                search_response = self.client.get(reverse("moderation_feedback_list"), {
+                    "status": "all",
+                    "q": search_term,
+                })
+                self.assertContains(search_response, "Formatierung verschwindet")
+
+    def test_feedback_management_validates_filters_and_sorts_oldest_first(self):
+        self.make_staff()
+        first = ToolFeedback.objects.create(user=self.user, title="Erster Eintrag", message="Alt")
+        second = ToolFeedback.objects.create(user=self.user, title="Zweiter Eintrag", message="Neu")
+        ToolFeedback.objects.filter(pk=first.pk).update(created_at=timezone.now() - timedelta(days=2))
+
+        response = self.client.get(reverse("moderation_feedback_list"), {
+            "status": "invalid",
+            "type": "invalid",
+            "tool": "invalid",
+            "order": "oldest",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["selected_status"], ToolFeedback.STATUS_OPEN)
+        self.assertEqual(response.context["selected_type"], "all")
+        self.assertEqual(response.context["selected_tool"], "all")
+        self.assertEqual(response.context["selected_order"], "oldest")
+        self.assertEqual(list(response.context["feedback_items"]), [first, second])
+
+    def test_feedback_management_paginates_and_preserves_filters(self):
+        self.make_staff()
+        for index in range(21):
+            ToolFeedback.objects.create(
+                user=self.user,
+                tool_key="notes",
+                feedback_type=ToolFeedback.TYPE_BUG,
+                title=f"Feedback {index:02d}",
+                message="Paginationstest",
+            )
+
+        first_page = self.client.get(reverse("moderation_feedback_list"), {
+            "status": ToolFeedback.STATUS_OPEN,
+            "type": ToolFeedback.TYPE_BUG,
+            "tool": "notes",
+            "order": "newest",
+        })
+        second_page = self.client.get(reverse("moderation_feedback_list"), {
+            "status": ToolFeedback.STATUS_OPEN,
+            "type": ToolFeedback.TYPE_BUG,
+            "tool": "notes",
+            "order": "newest",
+            "page": 2,
+        })
+
+        self.assertEqual(len(first_page.context["feedback_items"]), 20)
+        self.assertEqual(
+            first_page.context["pagination_query"],
+            "status=open&type=bug&tool=notes&order=newest",
+        )
+        self.assertContains(first_page, "page=2")
+        self.assertEqual(len(second_page.context["feedback_items"]), 1)
+        self.assertEqual(second_page.context["page_obj"].number, 2)
+
     def test_staff_dashboard_shows_moderation_sources(self):
         self.make_staff()
         other_user = get_user_model().objects.create_user(
@@ -5113,6 +5252,12 @@ class ModerationTests(BaseTestCase):
             title="Chat Fehler",
             message="Nachrichten laden langsam.",
         )
+        FeatureIdea.objects.create(
+            author=other_user,
+            title="Gemeinsame Einkaufslisten",
+            description="Listen sollen mit anderen Nutzern geteilt werden können.",
+            category=FeatureIdea.CATEGORY_TOOL,
+        )
         FileShare.objects.create(
             owner=other_user,
             file=SimpleUploadedFile("proof.txt", b"hi", content_type="text/plain"),
@@ -5130,8 +5275,50 @@ class ModerationTests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "reported-user")
         self.assertContains(response, "Chat Fehler")
+        self.assertContains(response, "Roadmap-Ideen")
+        self.assertContains(response, "Gemeinsame Einkaufslisten")
         self.assertContains(response, "proof.txt")
         self.assertContains(response, "System Hinweis")
+
+    def test_staff_can_search_roadmap_ideas_from_moderation(self):
+        self.make_staff()
+        FeatureIdea.objects.create(
+            author=self.user,
+            title="Kalender-Synchronisierung",
+            description="Termine mit externen Kalendern synchronisieren.",
+        )
+
+        response = self.client.get(reverse("moderation"), {"q": "Kalender-Synchronisierung"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Kalender-Synchronisierung")
+        self.assertEqual(list(response.context["roadmap_ideas"]), list(FeatureIdea.objects.all()))
+
+    def test_long_feedback_can_be_expanded_in_moderation(self):
+        self.make_staff()
+        message = (
+            "Beim Speichern einer umfangreichen Notiz tritt ein Darstellungsfehler auf. "
+            "Der Text wird nach dem erneuten Öffnen nicht mehr korrekt formatiert. "
+            "Dieses eindeutige Ende muss vollständig lesbar bleiben. "
+            "Zusätzlich beschreibt dieser Satz weitere Einzelheiten, damit die Nachricht sicher als langer Text gilt."
+        )
+        ToolFeedback.objects.create(
+            user=self.user,
+            tool_key="notes",
+            feedback_type=ToolFeedback.TYPE_BUG,
+            title="Lange Fehlerbeschreibung",
+            message=message,
+        )
+
+        response = self.client.get(reverse("moderation"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Vollständigen Text anzeigen")
+        self.assertContains(response, "Dieses eindeutige Ende muss vollständig lesbar bleiben.")
+
+        management_response = self.client.get(reverse("moderation_feedback_list"))
+        self.assertContains(management_response, "Vollständigen Text anzeigen")
+        self.assertContains(management_response, "damit die Nachricht sicher als langer Text gilt.")
 
     def test_staff_can_update_tool_access_rules_from_moderation(self):
         self.make_staff()
@@ -5243,6 +5430,32 @@ class ModerationTests(BaseTestCase):
         self.assertRedirects(response, reverse("moderation"))
         feedback.refresh_from_db()
         self.assertEqual(feedback.status, ToolFeedback.STATUS_PLANNED)
+
+    def test_feedback_status_action_returns_to_filtered_management_view(self):
+        self.make_staff()
+        feedback = ToolFeedback.objects.create(
+            user=self.user,
+            tool_key="notes",
+            feedback_type=ToolFeedback.TYPE_BUG,
+            title="Status ändern",
+            message="Status direkt aus der Inbox ändern.",
+        )
+        next_url = f"{reverse('moderation_feedback_list')}?status=open&type=bug&tool=notes"
+
+        response = self.client.post(
+            reverse("moderation_feedback_status", args=[feedback.id]),
+            {"status": ToolFeedback.STATUS_PLANNED, "next": next_url},
+        )
+
+        self.assertRedirects(response, next_url)
+        feedback.refresh_from_db()
+        self.assertEqual(feedback.status, ToolFeedback.STATUS_PLANNED)
+        self.assertTrue(
+            ModerationAuditLog.objects.filter(
+                action=ModerationAuditLog.ACTION_FEEDBACK_STATUS,
+                metadata__feedback_id=feedback.id,
+            ).exists()
+        )
 
     def test_file_share_delete_action_removes_share(self):
         self.make_staff()

@@ -12,6 +12,11 @@
             <p class="platform-kicker">{% translate "Feedback" %}</p>
             <h1>{% translate "Tool bewerten" %}</h1>
             <p>{% translate "Melde Bugs, Ideen oder Feedback direkt in MyTools." %}</p>
+            {% if request.user.is_staff %}
+                <a class="platform-primary" href="{% url 'moderation_feedback_list' %}">
+                    <i class="fa-solid fa-inbox"></i>{% translate "Feedback verwalten" %}
+                </a>
+            {% endif %}
         </div>
         <i class="fa-solid fa-comment-dots"></i>
     </div>
