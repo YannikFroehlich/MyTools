@@ -1,0 +1,166 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Feedback verwalten" %} • MyTools{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/platform.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/moderation.css' %}?v=20260801-feedback-list">
+    <link rel="stylesheet" href="{% static 'app/css/moderation_feedback.css' %}?v=20260801-styleguide">
+{% endblock %}
+
+{% block content %}
+<section class="platform-page moderation-page feedback-management-page">
+    <header class="moderation-header feedback-management-header">
+        <div>
+            <p class="platform-kicker">{% translate "Moderation" %}</p>
+            <h1>{% translate "Feedback verwalten" %}</h1>
+            <p class="feedback-management-subtitle">{% translate "Rückmeldungen durchsuchen, vollständig lesen und bearbeiten." %}</p>
+        </div>
+        <div class="feedback-management-header-actions">
+            <a href="{% url 'feedback' %}"><i class="fa-solid fa-arrow-left"></i>{% translate "Feedbackseite" %}</a>
+            <a class="is-primary" href="{% url 'moderation' %}"><i class="fa-solid fa-table-columns"></i>{% translate "Moderation" %}</a>
+        </div>
+    </header>
+
+    <div class="moderation-stats feedback-status-tabs" role="navigation" aria-label="{% translate 'Feedback nach Status filtern' %}">
+        {% for tab in status_tabs %}
+            <a class="moderation-stat feedback-status-tab {% if tab.key == 'open' %}is-info{% elif tab.key == 'done' %}is-success{% else %}is-neutral{% endif %} {% if selected_status == tab.key %}is-active{% endif %}"
+               href="?status={{ tab.key }}&type={{ selected_type }}&tool={{ selected_tool }}&order={{ selected_order }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+                <span><i class="{{ tab.icon }}"></i></span>
+                <strong>{{ tab.count }}</strong>
+                <small>{{ tab.label }}</small>
+            </a>
+        {% endfor %}
+    </div>
+
+    <section class="moderation-panel feedback-filter-panel is-wide">
+        <div class="moderation-panel-head">
+            <h2>{% translate "Feedback filtern" %}</h2>
+            {% if query or selected_type != "all" or selected_tool != "all" or selected_order != "newest" %}
+                <a class="feedback-filter-reset" href="{% url 'moderation_feedback_list' %}"><i class="fa-solid fa-rotate-left"></i>{% translate "Zurücksetzen" %}</a>
+            {% endif %}
+        </div>
+
+        <form class="feedback-filter-form" method="get">
+            <input type="hidden" name="status" value="{{ selected_status }}">
+            <label class="feedback-filter-search">
+                <span>{% translate "Suche" %}</span>
+                <div>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" name="q" value="{{ query }}" placeholder="{% translate 'Titel, Text, Nutzer oder Tool...' %}" autocomplete="off">
+                </div>
+            </label>
+            <label>
+                <span>{% translate "Art" %}</span>
+                <select name="type">
+                    <option value="all" {% if selected_type == "all" %}selected{% endif %}>{% translate "Alle Arten" %}</option>
+                    {% for value, label in type_choices %}
+                        <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                <span>{% translate "Tool" %}</span>
+                <select name="tool">
+                    <option value="all" {% if selected_tool == "all" %}selected{% endif %}>{% translate "Alle Tools" %}</option>
+                    {% for value, label in tool_choices %}
+                        <option value="{{ value }}" {% if selected_tool == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                <span>{% translate "Sortierung" %}</span>
+                <select name="order">
+                    {% for value, label in order_choices %}
+                        <option value="{{ value }}" {% if selected_order == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button class="feedback-filter-submit" type="submit"><i class="fa-solid fa-filter"></i>{% translate "Anwenden" %}</button>
+        </form>
+    </section>
+
+    <section class="moderation-panel feedback-results-panel is-wide">
+        <div class="moderation-panel-head">
+            <div>
+                <h2>{% translate "Feedback" %}</h2>
+                {% if query %}<p>{% blocktranslate with search=query %}Suche nach „{{ search }}“{% endblocktranslate %}</p>{% endif %}
+            </div>
+            <span>{{ result_count }}</span>
+        </div>
+
+        {% for item in feedback_items %}
+            <article class="moderation-item feedback-management-item {% if item.status == 'done' %}is-muted{% endif %}">
+                <span class="moderation-icon {% if item.feedback_type == 'bug' %}is-danger{% elif item.status == 'done' %}is-success{% else %}is-info{% endif %}">
+                    {% if item.feedback_type == "bug" %}
+                        <i class="fa-solid fa-bug"></i>
+                    {% elif item.feedback_type == "idea" %}
+                        <i class="fa-regular fa-lightbulb"></i>
+                    {% else %}
+                        <i class="fa-solid fa-comment-dots"></i>
+                    {% endif %}
+                </span>
+
+                <div class="moderation-copy">
+                    <strong>{{ item.title }}</strong>
+                    <small>
+                        {{ item.get_feedback_type_display }} &middot; {{ item.get_status_display }} &middot; {{ item.tool_label }} &middot;
+                        {% if item.user %}{{ item.user.username }}{% if item.user.email %} ({{ item.user.email }}){% endif %}{% else %}{% translate "Gelöschter Nutzer" %}{% endif %}
+                        &middot; {{ item.created_at|date:"d.m.Y H:i" }}
+                        {% if item.rating %}&middot; {{ item.rating }}/5 <i class="fa-solid fa-star"></i>{% endif %}
+                    </small>
+
+                    {% if item.message|length > 180 %}
+                        <p>{{ item.message|truncatechars:180 }}</p>
+                        <details class="moderation-feedback-details">
+                            <summary>
+                                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                                {% translate "Vollständigen Text anzeigen" %}
+                            </summary>
+                            <p>{{ item.message|linebreaksbr }}</p>
+                        </details>
+                    {% else %}
+                        <p>{{ item.message|linebreaksbr }}</p>
+                    {% endif %}
+                </div>
+
+                <form class="moderation-status-form feedback-management-status" method="post" action="{% url 'moderation_feedback_status' item.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <select name="status" aria-label="{% translate 'Status' %}">
+                        {% for status_value, status_label in status_choices %}
+                            <option value="{{ status_value }}" {% if status_value == item.status %}selected{% endif %}>{{ status_label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" title="{% translate 'Status speichern' %}"><i class="fa-solid fa-check"></i></button>
+                </form>
+            </article>
+        {% empty %}
+            <div class="platform-empty feedback-empty">
+                <i class="fa-regular fa-folder-open"></i>
+                <h2>{% translate "Kein Feedback gefunden" %}</h2>
+                <p>{% translate "Für diese Suche und Filter gibt es aktuell keine Einträge." %}</p>
+                <a href="{% url 'moderation_feedback_list' %}"><i class="fa-solid fa-rotate-left"></i>{% translate "Filter zurücksetzen" %}</a>
+            </div>
+        {% endfor %}
+    </section>
+
+    {% if page_obj.has_other_pages %}
+        <div class="feedback-pagination" role="navigation" aria-label="{% translate 'Seitennavigation' %}">
+            {% if page_obj.has_previous %}
+                <a href="?{% if pagination_query %}{{ pagination_query }}&{% endif %}page={{ page_obj.previous_page_number }}"><i class="fa-solid fa-chevron-left"></i>{% translate "Zurück" %}</a>
+            {% else %}
+                <span class="is-disabled"><i class="fa-solid fa-chevron-left"></i>{% translate "Zurück" %}</span>
+            {% endif %}
+            <strong>{% blocktranslate with current=page_obj.number total=page_obj.paginator.num_pages %}Seite {{ current }} von {{ total }}{% endblocktranslate %}</strong>
+            {% if page_obj.has_next %}
+                <a href="?{% if pagination_query %}{{ pagination_query }}&{% endif %}page={{ page_obj.next_page_number }}">{% translate "Weiter" %}<i class="fa-solid fa-chevron-right"></i></a>
+            {% else %}
+                <span class="is-disabled">{% translate "Weiter" %}<i class="fa-solid fa-chevron-right"></i></span>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

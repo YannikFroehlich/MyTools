@@ -4,7 +4,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
-from django.db.models import Q, Sum
+from django.core.paginator import Paginator
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -27,6 +28,7 @@ from ..image_optimization import (
 from ..models import (
     AvatarCharacter,
     ChatRoom,
+    FeatureIdea,
     FileShare,
     InboxItem,
     ModerationAuditLog,
@@ -43,6 +45,7 @@ from ..realtime import (
     broadcast_realtime_access_revoked,
     broadcast_realtime_policy_changed,
 )
+from ..platform_utils import get_feedback_tool_choices
 
 
 staff_required = user_passes_test(
@@ -307,6 +310,16 @@ def moderation_dashboard_view(request):
         ["title", "message", "tool_key", "user__username", "user__email"],
     )
 
+    roadmap_ideas = FeatureIdea.objects.select_related("author").annotate(
+        vote_total=Count("votes", distinct=True),
+        comment_total=Count("comments", distinct=True),
+    )
+    roadmap_ideas = _filter_search(
+        roadmap_ideas,
+        query,
+        ["title", "description", "admin_note", "author__username", "author__email"],
+    )
+
     file_shares = FileShare.objects.select_related("owner").prefetch_related("recipients")
     file_shares = _filter_search(
         file_shares,
@@ -360,6 +373,14 @@ def moderation_dashboard_view(request):
             "tone": "info",
         },
         {
+            "label": _("Offene Roadmap-Ideen"),
+            "value": FeatureIdea.objects.exclude(
+                status__in=[FeatureIdea.STATUS_DONE, FeatureIdea.STATUS_REJECTED]
+            ).count(),
+            "icon": "fa-solid fa-route",
+            "tone": "info",
+        },
+        {
             "label": _("Datei-Freigaben"),
             "value": FileShare.objects.count(),
             "icon": "fa-solid fa-share-nodes",
@@ -409,6 +430,7 @@ def moderation_dashboard_view(request):
         "stats": stats,
         "reports": reports[:12],
         "feedback_items": feedback_items[:12],
+        "roadmap_ideas": roadmap_ideas[:12],
         "file_shares": file_shares[:12],
         "blocks": blocks[:10],
         "recent_users": users,
@@ -426,6 +448,122 @@ def moderation_dashboard_view(request):
         "tool_access_choices": SiteAccessSettings.TOOL_ACCESS_CHOICES,
     }
     return render(request, "app/moderation.html", context)
+
+
+@staff_required
+def moderation_feedback_list_view(request):
+    query = request.GET.get("q", "").strip()[:120]
+
+    valid_statuses = {value for value, _label in ToolFeedback.STATUS_CHOICES}
+    selected_status = request.GET.get("status", ToolFeedback.STATUS_OPEN)
+    if selected_status != "all" and selected_status not in valid_statuses:
+        selected_status = ToolFeedback.STATUS_OPEN
+
+    valid_types = {value for value, _label in ToolFeedback.TYPE_CHOICES}
+    selected_type = request.GET.get("type", "all")
+    if selected_type != "all" and selected_type not in valid_types:
+        selected_type = "all"
+
+    tool_choices = list(get_feedback_tool_choices())
+    tool_labels = {value: str(label) for value, label in tool_choices}
+    selected_tool = request.GET.get("tool", "all")
+    if selected_tool != "all" and selected_tool not in tool_labels:
+        selected_tool = "all"
+
+    order_choices = [
+        ("newest", _("Neueste zuerst")),
+        ("oldest", _("Älteste zuerst")),
+        ("updated", _("Zuletzt aktualisiert")),
+    ]
+    order_fields = {
+        "newest": ("-created_at",),
+        "oldest": ("created_at",),
+        "updated": ("-updated_at", "-created_at"),
+    }
+    selected_order = request.GET.get("order", "newest")
+    if selected_order not in order_fields:
+        selected_order = "newest"
+
+    feedback_items = ToolFeedback.objects.select_related("user")
+    if selected_status != "all":
+        feedback_items = feedback_items.filter(status=selected_status)
+    if selected_type != "all":
+        feedback_items = feedback_items.filter(feedback_type=selected_type)
+    if selected_tool != "all":
+        feedback_items = feedback_items.filter(tool_key=selected_tool)
+    if query:
+        matching_tool_keys = [
+            value
+            for value, label in tool_labels.items()
+            if query.casefold() in label.casefold()
+        ]
+        search = (
+            Q(title__icontains=query)
+            | Q(message__icontains=query)
+            | Q(tool_key__icontains=query)
+            | Q(user__username__icontains=query)
+            | Q(user__email__icontains=query)
+        )
+        if matching_tool_keys:
+            search |= Q(tool_key__in=matching_tool_keys)
+        feedback_items = feedback_items.filter(search)
+
+    feedback_items = feedback_items.order_by(*order_fields[selected_order])
+    page_obj = Paginator(feedback_items, 20).get_page(request.GET.get("page"))
+    for item in page_obj.object_list:
+        item.tool_label = tool_labels.get(item.tool_key, item.tool_key or str(_("Allgemein")))
+
+    status_count_rows = ToolFeedback.objects.values("status").annotate(total=Count("id"))
+    status_counts = {row["status"]: row["total"] for row in status_count_rows}
+    status_tabs = [{
+        "key": ToolFeedback.STATUS_OPEN,
+        "label": _("Offen"),
+        "count": status_counts.get(ToolFeedback.STATUS_OPEN, 0),
+        "icon": "fa-solid fa-inbox",
+    }, {
+        "key": ToolFeedback.STATUS_PLANNED,
+        "label": _("Geplant"),
+        "count": status_counts.get(ToolFeedback.STATUS_PLANNED, 0),
+        "icon": "fa-solid fa-list-check",
+    }, {
+        "key": ToolFeedback.STATUS_DONE,
+        "label": _("Erledigt"),
+        "count": status_counts.get(ToolFeedback.STATUS_DONE, 0),
+        "icon": "fa-solid fa-circle-check",
+    }, {
+        "key": "all",
+        "label": _("Alle"),
+        "count": ToolFeedback.objects.count(),
+        "icon": "fa-solid fa-layer-group",
+    }]
+
+    pagination_params = request.GET.copy()
+    pagination_params["status"] = selected_status
+    pagination_params["type"] = selected_type
+    pagination_params["tool"] = selected_tool
+    pagination_params["order"] = selected_order
+    if query:
+        pagination_params["q"] = query
+    else:
+        pagination_params.pop("q", None)
+    pagination_params.pop("page", None)
+
+    return render(request, "app/moderation_feedback.html", {
+        "feedback_items": page_obj,
+        "page_obj": page_obj,
+        "result_count": page_obj.paginator.count,
+        "query": query,
+        "selected_status": selected_status,
+        "selected_type": selected_type,
+        "selected_tool": selected_tool,
+        "selected_order": selected_order,
+        "status_tabs": status_tabs,
+        "status_choices": ToolFeedback.STATUS_CHOICES,
+        "type_choices": ToolFeedback.TYPE_CHOICES,
+        "tool_choices": tool_choices,
+        "order_choices": order_choices,
+        "pagination_query": pagination_params.urlencode(),
+    })
 
 
 @staff_required
