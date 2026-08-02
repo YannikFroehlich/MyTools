@@ -59,8 +59,8 @@ def _search_match(query, *values):
     return query in haystack
 
 
-def _result(kind, title, subtitle, url, icon, badge="", theme="default"):
-    return {
+def _result(kind, title, subtitle, url, icon, badge="", theme="default", device_target="both"):
+    result = {
         "kind": kind,
         "title": str(title),
         "subtitle": str(subtitle or ""),
@@ -69,6 +69,9 @@ def _result(kind, title, subtitle, url, icon, badge="", theme="default"):
         "badge": str(badge or ""),
         "theme": theme,
     }
+    if device_target != "both":
+        result["device_target"] = device_target
+    return result
 
 
 @login_required
@@ -89,6 +92,7 @@ def global_search_api(request):
                 tool["icon"],
                 _("Favorit") if tool.get("is_favorite") else "",
                 tool["key"],
+                tool["device_target"],
             ))
 
     if query:

@@ -810,6 +810,39 @@ class PwaTests(BaseTestCase):
         self.assertContains(response, "navigationFallback")
         self.assertContains(response, reverse("offline"))
         self.assertContains(response, "/static/app/css/core.css")
+        self.assertContains(response, 'const SHOPPING_OFFLINE_ENABLED = true;')
+        self.assertContains(response, "v19")
+
+    def test_manifest_shortcuts_only_include_published_mobile_tools(self):
+        access_settings = SiteAccessSettings.get_solo()
+        access_settings.set_tool_device_rules({
+            "notes": SiteAccessSettings.TOOL_DEVICE_DESKTOP,
+            "chat": SiteAccessSettings.TOOL_DEVICE_MOBILE,
+        })
+        access_settings.save(update_fields=["tool_device_rules"])
+
+        response = self.client.get(reverse("pwa_manifest"))
+        shortcut_urls = [shortcut["url"] for shortcut in response.json()["shortcuts"]]
+
+        self.assertNotIn(reverse("notes"), shortcut_urls)
+        self.assertIn(reverse("chat"), shortcut_urls)
+
+        access_settings.set_tool_access_rules({"chat": SiteAccessSettings.TOOL_ACCESS_ADMIN})
+        access_settings.save(update_fields=["tool_access_rules"])
+        response = self.client.get(reverse("pwa_manifest"))
+        shortcut_urls = [shortcut["url"] for shortcut in response.json()["shortcuts"]]
+        self.assertNotIn(reverse("chat"), shortcut_urls)
+
+    def test_service_worker_omits_mobile_shopping_assets_for_desktop_only_tool(self):
+        access_settings = SiteAccessSettings.get_solo()
+        access_settings.set_tool_device_rules({"shopping_list": SiteAccessSettings.TOOL_DEVICE_DESKTOP})
+        access_settings.save(update_fields=["tool_device_rules"])
+
+        response = self.client.get(reverse("pwa_service_worker"))
+
+        self.assertContains(response, 'const SHOPPING_OFFLINE_ENABLED = false;')
+        self.assertNotContains(response, reverse("shopping_offline"))
+        self.assertNotContains(response, "/static/app/css/shopping_list.css")
 
     def test_offline_page_is_public(self):
         self.client.logout()
@@ -5369,6 +5402,81 @@ class ModerationTests(BaseTestCase):
         self.assertTrue(
             ModerationAuditLog.objects.filter(action=ModerationAuditLog.ACTION_TOOL_ACCESS_UPDATED).exists()
         )
+
+    def test_tool_device_rules_default_to_both_and_store_only_overrides(self):
+        settings_obj = SiteAccessSettings.get_solo()
+
+        self.assertEqual(settings_obj.get_tool_device_target("calculator"), SiteAccessSettings.TOOL_DEVICE_BOTH)
+
+        settings_obj.set_tool_device_rules({
+            "calculator": SiteAccessSettings.TOOL_DEVICE_DESKTOP,
+            "notes": SiteAccessSettings.TOOL_DEVICE_BOTH,
+            "chat": "invalid",
+        })
+
+        self.assertEqual(settings_obj.tool_device_rules, {"calculator": SiteAccessSettings.TOOL_DEVICE_DESKTOP})
+        self.assertEqual(settings_obj.get_tool_device_target("chat"), SiteAccessSettings.TOOL_DEVICE_BOTH)
+
+    def test_staff_can_update_access_and_device_rules_together(self):
+        self.make_staff()
+
+        response = self.client.post(reverse("moderation_tool_access"), {
+            "access_calculator": SiteAccessSettings.TOOL_ACCESS_ADMIN,
+            "device_calculator": SiteAccessSettings.TOOL_DEVICE_DESKTOP,
+            "access_notes": SiteAccessSettings.TOOL_ACCESS_ALL,
+            "device_notes": SiteAccessSettings.TOOL_DEVICE_MOBILE,
+        })
+
+        self.assertRedirects(response, reverse("moderation"))
+        settings_obj = SiteAccessSettings.get_solo()
+        self.assertEqual(settings_obj.get_tool_access_level("calculator"), SiteAccessSettings.TOOL_ACCESS_ADMIN)
+        self.assertEqual(settings_obj.get_tool_device_target("calculator"), SiteAccessSettings.TOOL_DEVICE_DESKTOP)
+        self.assertEqual(settings_obj.get_tool_device_target("notes"), SiteAccessSettings.TOOL_DEVICE_MOBILE)
+        self.assertEqual(settings_obj.get_tool_device_target("chat"), SiteAccessSettings.TOOL_DEVICE_BOTH)
+
+        audit = ModerationAuditLog.objects.filter(action=ModerationAuditLog.ACTION_TOOL_ACCESS_UPDATED).latest("created_at")
+        self.assertEqual(audit.metadata["device_after"], {
+            "calculator": SiteAccessSettings.TOOL_DEVICE_DESKTOP,
+            "notes": SiteAccessSettings.TOOL_DEVICE_MOBILE,
+        })
+        self.assertIn("access_before", audit.metadata)
+        self.assertIn("device_before", audit.metadata)
+
+    def test_moderation_renders_visual_access_and_device_editor(self):
+        self.make_staff()
+
+        response = self.client.get(reverse("moderation"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Tool-, Spiel- & Gerätefreigaben")
+        self.assertContains(response, 'data-tool-rule-search')
+        self.assertContains(response, 'name="access_calculator"', count=3)
+        self.assertContains(response, 'name="device_calculator"', count=3)
+        self.assertContains(response, 'data-rule-count="device:mobile"')
+        self.assertContains(response, "Ungespeicherte Änderungen")
+
+    def test_catalog_search_and_direct_page_expose_device_target(self):
+        settings_obj = SiteAccessSettings.get_solo()
+        settings_obj.set_tool_device_rules({"calculator": SiteAccessSettings.TOOL_DEVICE_DESKTOP})
+        settings_obj.save(update_fields=["tool_device_rules"])
+
+        favorites_response = self.client.get(reverse("favorites"))
+        calculator = next(tool for tool in favorites_response.context["tools"] if tool["key"] == "calculator")
+        self.assertEqual(calculator["device_target"], SiteAccessSettings.TOOL_DEVICE_DESKTOP)
+        self.assertContains(favorites_response, 'data-device-target="desktop"')
+
+        search_response = self.client.get(reverse("global_search_api"), {"q": "calculator"})
+        calculator_result = next(result for result in search_response.json()["results"] if result["url"] == reverse("calculator"))
+        self.assertEqual(calculator_result["device_target"], SiteAccessSettings.TOOL_DEVICE_DESKTOP)
+
+        direct_response = self.client.get(reverse("calculator"))
+        self.assertContains(direct_response, 'data-current-tool-device="desktop"')
+        self.assertContains(direct_response, "Dieses Tool ist für den PC vorgesehen")
+        self.assertNotContains(direct_response, "Trotzdem testen")
+
+        self.make_staff()
+        staff_response = self.client.get(reverse("calculator"))
+        self.assertContains(staff_response, "Trotzdem testen")
 
     def test_tool_access_admin_level_blocks_normal_user_and_allows_staff(self):
         settings_obj = SiteAccessSettings.get_solo()
