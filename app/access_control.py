@@ -544,6 +544,14 @@ def access_key_for_url_name(url_name):
     return ACCESS_URL_NAME_TO_KEY.get(url_name)
 
 
+def device_target_for_url_name(url_name, access_settings=None):
+    key = access_key_for_url_name(url_name)
+    if not key:
+        return SiteAccessSettings.TOOL_DEVICE_BOTH
+    access_settings = access_settings or SiteAccessSettings.get_solo()
+    return access_settings.get_tool_device_target(key)
+
+
 def user_is_staff(user):
     return bool(getattr(user, "is_active", False) and getattr(user, "is_staff", False))
 
@@ -568,9 +576,14 @@ def user_can_see_key(user, key, access_settings=None):
 
 def get_access_control_items(access_settings=None):
     access_settings = access_settings or SiteAccessSettings.get_solo()
+    access_labels = dict(SiteAccessSettings.TOOL_ACCESS_CHOICES)
+    device_labels = dict(SiteAccessSettings.TOOL_DEVICE_CHOICES)
     items = []
     for item in ACCESS_CONTROL_ITEMS:
         entry = dict(item)
         entry["access_level"] = access_settings.get_tool_access_level(item["key"])
+        entry["device_target"] = access_settings.get_tool_device_target(item["key"])
+        entry["access_label"] = access_labels[entry["access_level"]]
+        entry["device_label"] = device_labels[entry["device_target"]]
         items.append(entry)
     return items

@@ -3,7 +3,7 @@
 {% load media_performance %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:'de' }}">
+<html lang="{{ LANGUAGE_CODE|default:'de' }}" data-current-tool-device="{{ current_tool_device_target|default:'both' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -16,7 +16,7 @@
     <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
     <title>{% block title %}MyTools{% endblock %}</title>
 
-    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260714-mobile-tools-sheet">
+    <link rel="stylesheet" href="{% static 'app/css/core.css' %}?v=20260802-device-targets">
     {% if fontawesome_kit_key and use_fontawesome_kit %}
         <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin>
         <script src="https://kit.fontawesome.com/{{ fontawesome_kit_key }}.js" crossorigin="anonymous" defer></script>
@@ -41,7 +41,7 @@
     {% block extra_css %}{% endblock %}
     <link rel="stylesheet" href="{% static 'app/css/tool_pages.css' %}?v=20260623-notes-style-fix">
     {% block scripts %}
-        <script src="{% static 'app/js/base.js' %}?v=20260801-scroll-restoration" defer></script>
+        <script src="{% static 'app/js/base.js' %}?v=20260802-device-targets" defer></script>
     {% endblock %}
 </head>
 <body class="{% if request.user.is_authenticated %}has-mobile-bottom-nav {% endif %}{% block body_class %}{% endblock %}"{% if request.user.is_authenticated %} data-live-status-url="{% url 'live_status_api' %}" data-live-status-ws-url="/ws/live-status/" data-notification-counts-url="{% url 'notification_counts_api' %}" data-notification-center-url="{% url 'notification_center_api' %}" data-notification-dismiss-url="{% url 'notification_dismiss_api' %}" data-notification-dismiss-all-url="{% url 'notification_dismiss_all_api' %}" data-global-search-url="{% url 'global_search_api' %}" data-access-locked-label="{% translate 'Unveröffentlicht' %}" data-access-locked-title="{% translate 'Unveröffentlicht' %}" data-access-restricted-label="{% translate 'Unveröffentlicht' %}" data-access-restricted-title="{% translate 'Unveröffentlicht' %}" data-access-hidden-label="{% translate 'Versteckt' %}" data-access-hidden-title="{% translate 'Versteckt' %}"{% endif %}>
@@ -49,6 +49,7 @@
     {{ access_restricted_paths|json_script:"access-restricted-paths" }}
     {{ access_hidden_paths|json_script:"access-hidden-paths" }}
     {{ access_hidden_visible_paths|json_script:"access-hidden-visible-paths" }}
+    {{ tool_device_target_paths|json_script:"tool-device-target-paths" }}
     <nav id="site-header">
         <div class="header-brand-slot">
             <a class="logo" href="{% url 'home' %}" aria-label="{% translate 'Start' %}" title="{% translate 'Start' %}">
@@ -1054,8 +1055,37 @@
     {% endif %}
 
     <main>
-        {% block content %}
-        {% endblock %}
+        {% if current_tool_key and current_tool_device_target != 'both' %}
+            <section class="device-availability-notice" role="status" aria-live="polite">
+                <span class="device-availability-icon" aria-hidden="true">
+                    <i class="fa-solid fa-display device-availability-desktop-icon"></i>
+                    <i class="fa-solid fa-mobile-screen-button device-availability-mobile-icon"></i>
+                </span>
+                <div class="device-availability-copy">
+                    <p>{% translate "Gerätehinweis" %}</p>
+                    <div class="device-availability-desktop-copy">
+                        <h1 id="device-availability-title">{% translate "Dieses Tool ist für den PC vorgesehen" %}</h1>
+                        <p>{% blocktranslate with tool=current_tool_label %}{{ tool }} wurde für größere Bildschirme freigegeben. Öffne es auf einem PC oder wähle ein anderes Tool.{% endblocktranslate %}</p>
+                    </div>
+                    <div class="device-availability-mobile-copy">
+                        <h1 id="device-availability-title-mobile">{% translate "Dieses Tool ist für das Handy vorgesehen" %}</h1>
+                        <p>{% blocktranslate with tool=current_tool_label %}{{ tool }} wurde für das mobile Layout freigegeben. Öffne es auf dem Handy oder verkleinere das Browserfenster.{% endblocktranslate %}</p>
+                    </div>
+                    <div class="device-availability-actions">
+                        <a href="{% url 'favorites' %}"><i class="fa-solid fa-table-cells-large"></i>{% translate "Zur Tool-Auswahl" %}</a>
+                        {% if request.user.is_staff %}
+                            <button type="button" data-device-target-override>
+                                <i class="fa-solid fa-flask"></i>{% translate "Trotzdem testen" %}
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+        <div class="device-managed-content">
+            {% block content %}
+            {% endblock %}
+        </div>
     </main>
 
     <footer class="site-footer">

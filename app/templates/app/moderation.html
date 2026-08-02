@@ -5,7 +5,11 @@
 {% block title %}{% translate "Moderation" %} • MyTools{% endblock %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'app/css/platform.css' %}">
-    <link rel="stylesheet" href="{% static 'app/css/moderation.css' %}?v=20260619-balanced-grid">
+    <link rel="stylesheet" href="{% static 'app/css/moderation.css' %}?v=20260802-device-rules-2">
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'app/js/moderation.js' %}?v=20260802-device-rules" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -81,38 +85,113 @@
         {% endif %}
     </section>
 
-    <section class="moderation-panel moderation-tool-access-panel is-wide">
+    <section class="moderation-panel moderation-tool-access-panel is-wide" data-tool-rules-panel>
         <div class="moderation-panel-head">
-            <h2>{% translate "Tool- & Spielzugriff" %}</h2>
+            <div>
+                <h2>{% translate "Tool-, Spiel- & Gerätefreigaben" %}</h2>
+                <small>{% translate "Veröffentlichung und Zielgerät getrennt steuern" %}</small>
+            </div>
             <span><i class="fa-solid fa-sliders"></i></span>
         </div>
         <form class="moderation-tool-access-form" method="post" action="{% url 'moderation_tool_access' %}">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.get_full_path }}">
             <div class="moderation-tool-access-copy">
-                <strong>{% translate "Zugriff pro Bereich einstellen" %}</strong>
-                <p>{% translate "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich öffnen. Unveröffentlicht bedeutet: normale Nutzer sehen den Bereich noch, können ihn aber nicht öffnen. Versteckt bedeutet: normale Nutzer sehen den Bereich gar nicht mehr." %}</p>
+                <strong>{% translate "Freigabe pro Bereich einstellen" %}</strong>
+                <p>{% translate "Die Veröffentlichung regelt den Zugriff. Das Zielgerät bestimmt zusätzlich, wo ein Tool in Navigation, Favoriten und Suche erscheint. Bestehende Tools sind standardmäßig für Handy und PC freigegeben." %}</p>
             </div>
+
+            <div class="moderation-rule-summary" aria-label="{% translate 'Zusammenfassung der Tool-Regeln' %}">
+                <span class="is-published"><i class="fa-solid fa-circle-check"></i><b data-rule-count="access:all">{{ tool_rule_summary.published }}</b>{% translate "Veröffentlicht" %}</span>
+                <span class="is-unpublished"><i class="fa-solid fa-hourglass-half"></i><b data-rule-count="access:admin">{{ tool_rule_summary.unpublished }}</b>{% translate "Unveröffentlicht" %}</span>
+                <span class="is-hidden"><i class="fa-solid fa-eye-slash"></i><b data-rule-count="access:hidden">{{ tool_rule_summary.hidden }}</b>{% translate "Versteckt" %}</span>
+                <span><i class="fa-solid fa-mobile-screen-button"></i><b data-rule-count="device:mobile">{{ tool_rule_summary.mobile }}</b>{% translate "Nur Handy" %}</span>
+                <span><i class="fa-solid fa-display"></i><b data-rule-count="device:desktop">{{ tool_rule_summary.desktop }}</b>{% translate "Nur PC" %}</span>
+                <span><i class="fa-solid fa-laptop-mobile"></i><b data-rule-count="device:both">{{ tool_rule_summary.both }}</b>{% translate "Beide" %}</span>
+            </div>
+
+            <div class="moderation-rule-toolbar">
+                <label class="moderation-rule-search">
+                    <span>{% translate "Tools durchsuchen" %}</span>
+                    <span class="moderation-rule-input"><i class="fa-solid fa-magnifying-glass"></i><input type="search" data-tool-rule-search placeholder="{% translate 'Name, Typ oder Kategorie' %}" autocomplete="off"></span>
+                </label>
+                <label>
+                    <span>{% translate "Kategorie" %}</span>
+                    <select data-tool-rule-category>
+                        <option value="">{% translate "Alle Kategorien" %}</option>
+                        {% for category in tool_access_categories %}<option value="{{ category }}">{{ category }}</option>{% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>{% translate "Art" %}</span>
+                    <select data-tool-rule-kind>
+                        <option value="">{% translate "Tools und Spiele" %}</option>
+                        <option value="Tool">{% translate "Nur Tools" %}</option>
+                        <option value="Spiel">{% translate "Nur Spiele" %}</option>
+                    </select>
+                </label>
+                <button type="button" class="moderation-rule-reset" data-tool-rule-reset><i class="fa-solid fa-rotate-left"></i>{% translate "Filter löschen" %}</button>
+            </div>
+
             <div class="moderation-tool-access-list">
                 {% for item in tool_access_items %}
-                    <label class="moderation-tool-access-row is-level-{{ item.access_level }}">
-                        <span class="moderation-tool-access-icon"><i class="{{ item.icon }}"></i></span>
-                        <span class="moderation-tool-access-name">
-                            <strong>{{ item.label }}</strong>
-                            <small>{{ item.kind }} &middot; {{ item.category }}</small>
-                        </span>
-                        <select name="access_{{ item.key }}" aria-label="{% blocktranslate with label=item.label %}Zugriff für {{ label }}{% endblocktranslate %}">
-                            {% for value, label in tool_access_choices %}
-                                <option value="{{ value }}" {% if value == item.access_level %}selected{% endif %}>{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </label>
+                    <article class="moderation-tool-rule-card is-level-{{ item.access_level }} is-device-{{ item.device_target }}" data-tool-rule-card data-tool-category="{{ item.category }}" data-tool-kind="{{ item.kind }}" data-access-level="{{ item.access_level }}" data-rule-device-target="{{ item.device_target }}">
+                        <header>
+                            <span class="moderation-tool-access-icon"><i class="{{ item.icon }}"></i></span>
+                            <span class="moderation-tool-access-name">
+                                <strong>{{ item.label }}</strong>
+                                <small>{{ item.kind }} &middot; {{ item.category }}</small>
+                            </span>
+                            <span class="moderation-tool-rule-badges" aria-live="polite">
+                                <em data-access-badge>{{ item.access_label }}</em>
+                                <em data-device-badge>{{ item.device_label }}</em>
+                            </span>
+                        </header>
+                        <div class="moderation-rule-groups">
+                            <fieldset>
+                                <legend>{% translate "Veröffentlichung" %}</legend>
+                                <div class="moderation-rule-options is-access-options">
+                                    {% for value, label in tool_access_choices %}
+                                        <label>
+                                            <input type="radio" name="access_{{ item.key }}" value="{{ value }}" {% if value == item.access_level %}checked{% endif %}>
+                                            <span>
+                                                {% if value == 'all' %}<i class="fa-solid fa-circle-check"></i>{% elif value == 'admin' %}<i class="fa-solid fa-hourglass-half"></i>{% else %}<i class="fa-solid fa-eye-slash"></i>{% endif %}
+                                                <b>{{ label }}</b>
+                                            </span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <legend>{% translate "Zielgerät" %}</legend>
+                                <div class="moderation-rule-options is-device-options">
+                                    {% for value, label in tool_device_choices %}
+                                        <label>
+                                            <input type="radio" name="device_{{ item.key }}" value="{{ value }}" {% if value == item.device_target %}checked{% endif %}>
+                                            <span>
+                                                {% if value == 'both' %}<i class="fa-solid fa-laptop-mobile"></i>{% elif value == 'mobile' %}<i class="fa-solid fa-mobile-screen-button"></i>{% else %}<i class="fa-solid fa-display"></i>{% endif %}
+                                                <b>{{ label }}</b>
+                                            </span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </fieldset>
+                        </div>
+                    </article>
                 {% endfor %}
             </div>
-            <button type="submit">
-                <i class="fa-solid fa-floppy-disk"></i>
-                {% translate "Zugriffe speichern" %}
-            </button>
+            <div class="moderation-rule-empty" data-tool-rule-empty hidden>
+                <i class="fa-solid fa-filter-circle-xmark"></i>
+                <strong>{% translate "Keine passenden Tools gefunden" %}</strong>
+                <p>{% translate "Passe Suche oder Filter an, um weitere Bereiche zu sehen." %}</p>
+            </div>
+            <div class="moderation-rule-savebar">
+                <span data-tool-rule-dirty hidden><i class="fa-solid fa-circle-exclamation"></i>{% translate "Ungespeicherte Änderungen" %}</span>
+                <button type="submit">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {% translate "Freigaben speichern" %}
+                </button>
+            </div>
         </form>
     </section>
 

@@ -1684,6 +1684,83 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function readJsonScriptObject(id) {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            return {};
+        }
+
+        try {
+            const parsed = JSON.parse(element.textContent || '{}');
+            return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+        } catch (error) {
+            return {};
+        }
+    }
+
+    const toolDeviceTargetPaths = readJsonScriptObject('tool-device-target-paths');
+
+    function currentDeviceLayout() {
+        return window.matchMedia('(max-width: 820px)').matches ? 'mobile' : 'desktop';
+    }
+
+    function deviceTargetMatches(target) {
+        return !target || target === 'both' || target === currentDeviceLayout();
+    }
+
+    function setDeviceElementVisibility(element, target) {
+        const shouldHide = !deviceTargetMatches(target);
+        element.dataset.deviceTarget = target || 'both';
+        element.dataset.deviceHidden = shouldHide ? 'true' : 'false';
+
+        if (shouldHide) {
+            element.hidden = true;
+            element.setAttribute('aria-hidden', 'true');
+        } else if (!element.classList.contains('is-access-hidden')) {
+            element.hidden = false;
+            element.removeAttribute('aria-hidden');
+        }
+    }
+
+    function applyDeviceTargeting() {
+        document.documentElement.dataset.deviceLayout = currentDeviceLayout();
+
+        document.querySelectorAll('[data-device-target]').forEach((element) => {
+            setDeviceElementVisibility(element, element.dataset.deviceTarget);
+        });
+
+        document.querySelectorAll('#site-header a, .mobile-bottom-nav a, [data-device-filter-surface] a').forEach((link) => {
+            let targetPath = '';
+
+            try {
+                targetPath = new URL(link.getAttribute('href') || link.dataset.originalHref, window.location.origin).pathname;
+            } catch (error) {
+                return;
+            }
+
+            const target = toolDeviceTargetPaths[targetPath];
+            if (target) {
+                setDeviceElementVisibility(link, target);
+            }
+        });
+
+        const deviceSections = document.querySelectorAll('[data-device-filter-section]');
+        let visibleDeviceCards = 0;
+        deviceSections.forEach((section) => {
+            const visibleCards = section.querySelectorAll('[data-device-target]:not([hidden])').length;
+            section.hidden = visibleCards === 0;
+            visibleDeviceCards += visibleCards;
+        });
+        document.querySelectorAll('[data-device-filter-empty]').forEach((emptyState) => {
+            emptyState.hidden = visibleDeviceCards > 0;
+        });
+
+        document.dispatchEvent(new CustomEvent('mytools:device-target-change', {
+            detail: { layout: currentDeviceLayout() },
+        }));
+    }
+
     function addAccessBadge(link, label, icon, className) {
         if (link.querySelector('.access-locked-badge')) {
             return;
@@ -1828,7 +1905,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         card.textContent,
                     ].join(' '));
                     const isAccessHidden = card.dataset.accessHidden === 'true' || card.classList.contains('is-access-hidden');
-                    const isVisible = !isAccessHidden && (!query || searchText.includes(query));
+                    const isDeviceHidden = card.dataset.deviceHidden === 'true';
+                    const isVisible = !isAccessHidden && !isDeviceHidden && (!query || searchText.includes(query));
 
                     card.hidden = !isVisible;
 
@@ -1847,6 +1925,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             searchInput.addEventListener('input', filterMenuCards);
+            document.addEventListener('mytools:device-target-change', filterMenuCards);
             filterMenuCards();
         });
     }
@@ -1908,6 +1987,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     applyAccessLockedCards();
+    applyDeviceTargeting();
     setupLibraryMenuFilters();
     setupDropdown('games-menu-button', 'games-menu-dropdown');
     setupDropdown('google-apps-menu-button', 'google-apps-menu-dropdown');
@@ -1918,9 +1998,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (typeof mobileToolsSheetMedia.addEventListener === 'function') {
         mobileToolsSheetMedia.addEventListener('change', syncToolsSheetState);
+        mobileToolsSheetMedia.addEventListener('change', applyDeviceTargeting);
     } else {
         mobileToolsSheetMedia.addListener?.(syncToolsSheetState);
+        mobileToolsSheetMedia.addListener?.(applyDeviceTargeting);
     }
+
+    document.querySelectorAll('[data-device-target-override]').forEach((button) => {
+        button.addEventListener('click', () => {
+            body.classList.add('device-target-override');
+        });
+    });
 
     document.querySelectorAll('[data-close-tools-menu]').forEach((button) => {
         button.addEventListener('click', (event) => {
@@ -2108,7 +2196,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return true;
         }
 
-        return !globalSearchBlockedPaths.has(path) && !globalSearchHiddenPaths.has(path);
+        return !globalSearchBlockedPaths.has(path)
+            && !globalSearchHiddenPaths.has(path)
+            && deviceTargetMatches(toolDeviceTargetPaths[path]);
     }
 
     function makeCommand({
@@ -2377,7 +2467,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGlobalSearchResults(results, query = globalSearchInput?.value || '') {
         const commandResults = getCommandResults(query);
-        globalSearchItems = [...commandResults, ...(results || []).map((item) => ({ ...item, source: 'search' }))].slice(0, 24);
+        const deviceResults = (results || [])
+            .filter((item) => deviceTargetMatches(item.device_target))
+            .map((item) => ({ ...item, source: 'search' }));
+        globalSearchItems = [...commandResults, ...deviceResults].slice(0, 24);
         globalSearchActiveIndex = 0;
         if (!globalSearchResults) {
             return;

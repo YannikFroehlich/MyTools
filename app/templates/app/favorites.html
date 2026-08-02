@@ -6,7 +6,7 @@
 {% block extra_css %}<link rel="stylesheet" href="{% static 'app/css/platform.css' %}?v=20260618-access-state">{% endblock %}
 
 {% block content %}
-<section class="platform-page">
+<section class="platform-page" data-device-filter-surface>
     <div class="platform-hero">
         <div>
             <p class="platform-kicker">{% translate "App-Launcher" %}</p>
@@ -17,13 +17,13 @@
     </div>
 
     {% for category in categories %}
-        <section class="platform-card">
+        <section class="platform-card" data-device-filter-section>
             <div class="platform-section-head">
                 <h2>{{ category.name }}</h2>
             </div>
             <div class="tool-grid">
                 {% for tool in category.tools %}
-                    <article class="tool-card {% if tool.is_favorite %}is-favorite{% endif %} {% if not tool.can_access %}is-access-locked{% elif tool.is_restricted %}is-access-restricted{% endif %}">
+                    <article class="tool-card {% if tool.is_favorite %}is-favorite{% endif %} {% if not tool.can_access %}is-access-locked{% elif tool.is_restricted %}is-access-restricted{% endif %}" data-device-target="{{ tool.device_target }}">
                         {% if tool.can_access %}
                             <a href="{{ tool.url }}" class="tool-card-main">
                                 <span><i class="{{ tool.icon }}"></i></span>
@@ -60,5 +60,14 @@
             </div>
         </section>
     {% endfor %}
+    {% if categories %}
+        <section class="platform-card" data-device-filter-empty hidden>
+            <div class="platform-empty">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+                <h3>{% translate "Keine Tools für dieses Gerät" %}</h3>
+                <p>{% translate "In der Moderation können Tools für Handy, PC oder beide Geräte freigegeben werden." %}</p>
+            </div>
+        </section>
+    {% endif %}
 </section>
 {% endblock %}
