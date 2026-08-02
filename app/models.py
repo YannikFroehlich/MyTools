@@ -2652,10 +2652,19 @@ class SiteAccessSettings(models.Model):
         (TOOL_ACCESS_ADMIN, _("Unveröffentlicht")),
         (TOOL_ACCESS_HIDDEN, _("Versteckt")),
     ]
+    TOOL_DEVICE_BOTH = "both"
+    TOOL_DEVICE_MOBILE = "mobile"
+    TOOL_DEVICE_DESKTOP = "desktop"
+    TOOL_DEVICE_CHOICES = [
+        (TOOL_DEVICE_BOTH, _("Handy und PC")),
+        (TOOL_DEVICE_MOBILE, _("Nur Handy")),
+        (TOOL_DEVICE_DESKTOP, _("Nur PC")),
+    ]
 
     login_registration_locked = models.BooleanField(default=False)
     lock_message = models.CharField(max_length=240, blank=True)
     tool_access_rules = models.JSONField(default=dict, blank=True)
+    tool_device_rules = models.JSONField(default=dict, blank=True)
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -2692,6 +2701,20 @@ class SiteAccessSettings(models.Model):
             if level in valid_levels and level != self.TOOL_ACCESS_ALL:
                 clean_rules[str(key)] = level
         self.tool_access_rules = clean_rules
+
+    def get_tool_device_target(self, key):
+        rules = self.tool_device_rules if isinstance(self.tool_device_rules, dict) else {}
+        target = rules.get(key, self.TOOL_DEVICE_BOTH)
+        valid_targets = {choice[0] for choice in self.TOOL_DEVICE_CHOICES}
+        return target if target in valid_targets else self.TOOL_DEVICE_BOTH
+
+    def set_tool_device_rules(self, rules):
+        valid_targets = {choice[0] for choice in self.TOOL_DEVICE_CHOICES}
+        clean_rules = {}
+        for key, target in (rules or {}).items():
+            if target in valid_targets and target != self.TOOL_DEVICE_BOTH:
+                clean_rules[str(key)] = target
+        self.tool_device_rules = clean_rules
 
     @classmethod
     def is_locked(cls):

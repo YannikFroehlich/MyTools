@@ -120,6 +120,7 @@ def resolve_tools(request, favorite_keys=None, include_inaccessible=False):
         item["can_access"] = can_access
         item["can_see"] = can_see
         item["access_level"] = access_level
+        item["device_target"] = access_settings.get_tool_device_target(item["key"])
         item["is_restricted"] = access_level != access_settings.TOOL_ACCESS_ALL
         item["is_hidden_access"] = access_level == access_settings.TOOL_ACCESS_HIDDEN
         item["access_badge"] = _("Versteckt") if item["is_hidden_access"] else _("Unveröffentlicht")

@@ -1,7 +1,13 @@
 from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
-from .access_control import ACCESS_CONTROL_ITEMS, user_can_access_key, user_can_see_key
+from .access_control import (
+    ACCESS_CONTROL_ITEMS,
+    ACCESS_ITEM_BY_KEY,
+    access_key_for_url_name,
+    user_can_access_key,
+    user_can_see_key,
+)
 from .models import SiteAccessSettings, UserProfile
 from .notification_utils import get_notification_counts
 
@@ -36,6 +42,10 @@ def access_control_status(request):
             "access_restricted_paths": [],
             "access_hidden_paths": [],
             "access_hidden_visible_paths": [],
+            "tool_device_target_paths": {},
+            "current_tool_key": "",
+            "current_tool_label": "",
+            "current_tool_device_target": SiteAccessSettings.TOOL_DEVICE_BOTH,
         }
 
     try:
@@ -47,6 +57,10 @@ def access_control_status(request):
             "access_restricted_paths": [],
             "access_hidden_paths": [],
             "access_hidden_visible_paths": [],
+            "tool_device_target_paths": {},
+            "current_tool_key": "",
+            "current_tool_label": "",
+            "current_tool_device_target": SiteAccessSettings.TOOL_DEVICE_BOTH,
         }
 
     blocked_keys = {}
@@ -54,6 +68,7 @@ def access_control_status(request):
     restricted_paths = set()
     hidden_paths = set()
     hidden_visible_paths = set()
+    device_target_paths = {}
 
     for item in ACCESS_CONTROL_ITEMS:
         key = item["key"]
@@ -62,6 +77,7 @@ def access_control_status(request):
         is_blocked = not user_can_access_key(request.user, key, access_settings)
         is_hidden = access_level == SiteAccessSettings.TOOL_ACCESS_HIDDEN
         is_hidden_for_user = is_hidden and not user_can_see_key(request.user, key, access_settings)
+        device_target = access_settings.get_tool_device_target(key)
         blocked_keys[key] = is_blocked
 
         if is_hidden_for_user:
@@ -75,14 +91,19 @@ def access_control_status(request):
         else:
             path_bucket = None
 
-        if path_bucket is None:
-            continue
-
         for url_name in item.get("url_names", ()):
             try:
-                path_bucket.add(reverse(url_name))
+                path = reverse(url_name)
             except NoReverseMatch:
                 continue
+            if path_bucket is not None:
+                path_bucket.add(path)
+            if device_target != SiteAccessSettings.TOOL_DEVICE_BOTH:
+                device_target_paths[path] = device_target
+
+    current_url_name = getattr(getattr(request, "resolver_match", None), "url_name", None)
+    current_tool_key = access_key_for_url_name(current_url_name)
+    current_item = ACCESS_ITEM_BY_KEY.get(current_tool_key, {})
 
     return {
         "access_blocked_keys": blocked_keys,
@@ -90,6 +111,10 @@ def access_control_status(request):
         "access_restricted_paths": sorted(restricted_paths),
         "access_hidden_paths": sorted(hidden_paths),
         "access_hidden_visible_paths": sorted(hidden_visible_paths),
+        "tool_device_target_paths": device_target_paths,
+        "current_tool_key": current_tool_key or "",
+        "current_tool_label": current_item.get("label", ""),
+        "current_tool_device_target": access_settings.get_tool_device_target(current_tool_key) if current_tool_key else SiteAccessSettings.TOOL_DEVICE_BOTH,
     }
 
 

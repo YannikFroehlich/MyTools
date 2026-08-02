@@ -523,6 +523,429 @@ body.dark-mode .moderation-messages div {
     }
 }
 
+/* Moderation-specific visual rule editor */
+.moderation-tool-access-panel .moderation-panel-head > div {
+    min-width: 0;
+}
+
+.moderation-tool-access-panel .moderation-panel-head h2 {
+    margin-bottom: 3px;
+}
+
+.moderation-tool-access-panel .moderation-panel-head small {
+    color: var(--mod-muted);
+    font-weight: 800;
+}
+
+.moderation-rule-summary {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.moderation-rule-summary span {
+    min-height: 58px;
+    padding: 9px 10px;
+    border: 1px solid var(--mod-line);
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 2px 8px;
+    color: var(--mod-muted);
+    background: var(--mod-soft);
+    font-size: .76rem;
+    font-weight: 850;
+}
+
+.moderation-rule-summary span i {
+    grid-row: 1 / 3;
+    color: var(--theme-accent-start);
+}
+
+.moderation-rule-summary span b {
+    color: var(--mod-ink);
+    font-size: 1.05rem;
+    line-height: 1;
+}
+
+.moderation-rule-summary .is-published i { color: var(--mod-success); }
+.moderation-rule-summary .is-unpublished i { color: #d97706; }
+.moderation-rule-summary .is-hidden i { color: var(--mod-danger); }
+
+.moderation-rule-toolbar {
+    display: grid;
+    grid-template-columns: minmax(240px, 1.4fr) minmax(170px, .7fr) minmax(170px, .7fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.moderation-rule-toolbar label {
+    min-width: 0;
+    display: grid;
+    gap: 6px;
+    color: var(--mod-muted);
+    font-size: .78rem;
+    font-weight: 900;
+}
+
+.moderation-rule-toolbar select,
+.moderation-rule-input {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid var(--mod-line);
+    border-radius: 15px;
+    background: color-mix(in srgb, var(--mod-panel) 88%, var(--theme-accent-start) 12%);
+    color: var(--mod-ink);
+}
+
+.moderation-rule-toolbar select {
+    padding: 0 12px;
+    font: inherit;
+    font-weight: 850;
+}
+
+.moderation-rule-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.moderation-rule-input i {
+    position: absolute;
+    left: 14px;
+    color: var(--theme-accent-start);
+    pointer-events: none;
+}
+
+.moderation-rule-input input {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 12px 0 40px;
+    border: 0;
+    outline: 0;
+    color: var(--mod-ink);
+    background: transparent;
+    font: inherit;
+    font-weight: 850;
+}
+
+.moderation-rule-toolbar select:focus-visible,
+.moderation-rule-input:focus-within {
+    outline: none;
+    border-color: rgba(var(--theme-accent-end-rgb), .72);
+    box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb), .16);
+}
+
+.moderation-rule-reset {
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid rgba(var(--theme-accent-rgb), .24);
+    border-radius: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: color-mix(in srgb, var(--theme-accent-start) 36%, var(--mod-ink) 64%);
+    background: rgba(var(--theme-accent-rgb), .11);
+    font: inherit;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.moderation-tool-access-list {
+    grid-template-columns: repeat(auto-fit, minmax(470px, 1fr));
+    gap: 12px;
+}
+
+.moderation-tool-rule-card {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--mod-line);
+    border-radius: 20px;
+    background: var(--mod-soft);
+    transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.moderation-tool-rule-card.is-level-admin {
+    border-color: rgba(217, 119, 6, .42);
+    background: color-mix(in srgb, var(--mod-panel) 90%, #d97706 10%);
+}
+
+.moderation-tool-rule-card.is-level-hidden {
+    border-color: rgba(220, 38, 38, .42);
+    background: color-mix(in srgb, var(--mod-panel) 90%, #dc2626 10%);
+}
+
+.moderation-tool-rule-card > header {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.moderation-tool-rule-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.moderation-tool-rule-badges em {
+    min-height: 28px;
+    padding: 5px 9px;
+    border: 1px solid rgba(var(--theme-accent-rgb), .2);
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    color: color-mix(in srgb, var(--theme-accent-start) 36%, var(--mod-ink) 64%);
+    background: rgba(var(--theme-accent-rgb), .1);
+    font-size: .68rem;
+    font-style: normal;
+    font-weight: 900;
+}
+
+.moderation-rule-groups {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.moderation-rule-groups fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid var(--mod-line);
+    border-radius: 16px;
+}
+
+.moderation-rule-groups legend {
+    padding: 0 5px;
+    color: var(--mod-muted);
+    font-size: .72rem;
+    font-weight: 900;
+}
+
+.moderation-rule-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+}
+
+.moderation-rule-options label {
+    min-width: 0;
+    cursor: pointer;
+}
+
+.moderation-rule-options input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.moderation-rule-options label > span {
+    min-height: 60px;
+    padding: 7px 5px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: var(--mod-muted);
+    background: color-mix(in srgb, var(--mod-panel) 94%, transparent);
+    text-align: center;
+    transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.moderation-rule-options label > span i {
+    font-size: .95rem;
+}
+
+.moderation-rule-options label > span b {
+    min-width: 0;
+    font-size: .67rem;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+}
+
+.moderation-rule-options input:focus-visible + span {
+    outline: 3px solid rgba(var(--theme-accent-end-rgb), .72);
+    outline-offset: 2px;
+}
+
+.moderation-rule-options input:checked + span {
+    border-color: rgba(var(--theme-accent-end-rgb), .42);
+    color: var(--mod-ink);
+    background: rgba(var(--theme-accent-rgb), .15);
+}
+
+.is-access-options input[value="all"]:checked + span {
+    border-color: rgba(22, 163, 74, .45);
+    background: rgba(22, 163, 74, .12);
+}
+
+.is-access-options input[value="admin"]:checked + span {
+    border-color: rgba(217, 119, 6, .45);
+    background: rgba(217, 119, 6, .12);
+}
+
+.is-access-options input[value="hidden"]:checked + span {
+    border-color: rgba(220, 38, 38, .45);
+    background: rgba(220, 38, 38, .12);
+}
+
+.moderation-rule-empty {
+    padding: 28px;
+    border: 1px dashed var(--mod-line);
+    border-radius: 20px;
+    text-align: center;
+    color: var(--mod-muted);
+}
+
+.moderation-rule-empty i {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--theme-accent-start);
+    font-size: 1.5rem;
+}
+
+.moderation-rule-empty strong {
+    color: var(--mod-ink);
+}
+
+.moderation-rule-empty p {
+    margin: 5px 0 0;
+    font-weight: 750;
+}
+
+.moderation-rule-savebar {
+    position: sticky;
+    z-index: 8;
+    bottom: 12px;
+    padding: 10px;
+    border: 1px solid var(--mod-line);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    background: color-mix(in srgb, var(--mod-panel) 92%, transparent);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, .12);
+    backdrop-filter: blur(16px);
+}
+
+.moderation-rule-savebar > span {
+    margin-right: auto;
+    color: #b45309;
+    font-weight: 900;
+}
+
+.moderation-rule-savebar > span i {
+    margin-right: 6px;
+}
+
+.moderation-rule-savebar button {
+    min-height: 46px;
+    border: 0;
+    border-radius: 15px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--theme-accent-text);
+    background: linear-gradient(135deg, var(--theme-accent-start), var(--theme-accent-end));
+    font: inherit;
+    font-weight: 950;
+    cursor: pointer;
+    box-shadow: 0 14px 30px rgba(var(--theme-accent-rgb), .2);
+}
+
+body.dark-mode .moderation-rule-toolbar select option {
+    color: #f8fafc;
+    background: #0f172a;
+}
+
+body.dark-mode .moderation-rule-options label > span,
+body.dark-mode .moderation-rule-savebar {
+    background: color-mix(in srgb, var(--mod-panel) 88%, #020617 12%);
+}
+
+body.theme-high-contrast-mode .moderation-tool-rule-card,
+body.theme-high-contrast-mode .moderation-rule-groups fieldset,
+body.theme-high-contrast-mode .moderation-rule-options input:checked + span,
+body.theme-high-contrast-mode .moderation-rule-savebar {
+    border-width: 2px;
+}
+
+body.theme-reduced-motion-mode .moderation-tool-rule-card,
+body.theme-reduced-motion-mode .moderation-rule-options label > span {
+    transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .moderation-tool-rule-card,
+    .moderation-rule-options label > span {
+        transition: none !important;
+    }
+}
+
+@media (max-width: 1100px) {
+    .moderation-rule-summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .moderation-rule-toolbar {
+        grid-template-columns: minmax(220px, 1fr) minmax(160px, .6fr) minmax(160px, .6fr);
+    }
+
+    .moderation-rule-reset {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+
+    .moderation-tool-access-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .moderation-rule-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .moderation-rule-toolbar,
+    .moderation-rule-groups {
+        grid-template-columns: 1fr;
+    }
+
+    .moderation-rule-reset,
+    .moderation-rule-savebar,
+    .moderation-rule-savebar button {
+        width: 100%;
+    }
+
+    .moderation-rule-savebar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .moderation-tool-rule-card > header {
+        grid-template-columns: 42px minmax(0, 1fr);
+    }
+
+    .moderation-tool-rule-badges {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+}
+
 .moderation-access-panel {
     margin-bottom: 18px;
 }
@@ -810,5 +1233,27 @@ body.dark-mode .moderation-access-message input {
     .moderation-tool-access-row select {
         grid-column: 1 / -1;
         width: 100%;
+    }
+}
+
+/* Keep the visual rule editor authoritative over the legacy select layout above. */
+.moderation-tool-access-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.moderation-tool-access-form .moderation-rule-reset {
+    justify-self: stretch;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid rgba(var(--theme-accent-rgb), .24);
+    color: color-mix(in srgb, var(--theme-accent-start) 36%, var(--mod-ink) 64%);
+    background: rgba(var(--theme-accent-rgb), .11);
+    box-shadow: none;
+}
+
+@media (max-width: 1100px) {
+    .moderation-tool-access-list {
+        grid-template-columns: 1fr;
     }
 }

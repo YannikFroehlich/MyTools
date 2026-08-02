@@ -4,6 +4,7 @@ const RUNTIME_STATIC_CACHE = `${CACHE_VERSION}:runtime-static`;
 const OFFLINE_URL = "{{ offline_url|escapejs }}";
 const SHOPPING_OFFLINE_URL = "{{ shopping_offline_url|escapejs }}";
 const SHOPPING_LIST_URL = "{{ shopping_list_url|escapejs }}";
+const SHOPPING_OFFLINE_ENABLED = {{ shopping_offline_enabled|yesno:"true,false" }};
 const PRECACHE_URLS = {{ precache_urls_json|safe }};
 
 self.addEventListener("install", (event) => {
@@ -57,7 +58,7 @@ async function navigationFallback(request) {
         return await fetch(request);
     } catch (error) {
         const requestUrl = new URL(request.url);
-        if (requestUrl.pathname === SHOPPING_LIST_URL) {
+        if (SHOPPING_OFFLINE_ENABLED && requestUrl.pathname === SHOPPING_LIST_URL) {
             const shoppingOfflinePage = await caches.match(SHOPPING_OFFLINE_URL);
             if (shoppingOfflinePage) return shoppingOfflinePage;
         }
@@ -67,7 +68,7 @@ async function navigationFallback(request) {
 }
 
 self.addEventListener("sync", (event) => {
-    if (event.tag !== "mytools-shopping-sync") return;
+    if (!SHOPPING_OFFLINE_ENABLED || event.tag !== "mytools-shopping-sync") return;
     event.waitUntil(
         self.clients.matchAll({type: "window", includeUncontrolled: true})
             .then((clients) => clients.forEach((client) => client.postMessage({type: "shopping-sync-requested"})))

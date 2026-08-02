@@ -359,6 +359,20 @@ def moderation_dashboard_view(request):
         for item in tool_access_items
         if item["access_level"] != SiteAccessSettings.TOOL_ACCESS_ALL
     )
+    device_specific_tool_count = sum(
+        1
+        for item in tool_access_items
+        if item["device_target"] != SiteAccessSettings.TOOL_DEVICE_BOTH
+    )
+    tool_access_categories = list(dict.fromkeys(str(item["category"]) for item in tool_access_items))
+    tool_rule_summary = {
+        "published": sum(1 for item in tool_access_items if item["access_level"] == SiteAccessSettings.TOOL_ACCESS_ALL),
+        "unpublished": sum(1 for item in tool_access_items if item["access_level"] == SiteAccessSettings.TOOL_ACCESS_ADMIN),
+        "hidden": sum(1 for item in tool_access_items if item["access_level"] == SiteAccessSettings.TOOL_ACCESS_HIDDEN),
+        "both": sum(1 for item in tool_access_items if item["device_target"] == SiteAccessSettings.TOOL_DEVICE_BOTH),
+        "mobile": sum(1 for item in tool_access_items if item["device_target"] == SiteAccessSettings.TOOL_DEVICE_MOBILE),
+        "desktop": sum(1 for item in tool_access_items if item["device_target"] == SiteAccessSettings.TOOL_DEVICE_DESKTOP),
+    }
 
     total_share_size = FileShare.objects.aggregate(total=Sum("size"))["total"] or 0
     stats = [
@@ -421,9 +435,9 @@ def moderation_dashboard_view(request):
         },
         {
             "label": _("Tool-Regeln"),
-            "value": restricted_tool_count,
+            "value": restricted_tool_count + device_specific_tool_count,
             "icon": "fa-solid fa-sliders",
-            "tone": "danger" if restricted_tool_count else "success",
+            "tone": "danger" if restricted_tool_count or device_specific_tool_count else "success",
         },
     ]
 
@@ -448,6 +462,9 @@ def moderation_dashboard_view(request):
         "access_settings": access_settings,
         "tool_access_items": tool_access_items,
         "tool_access_choices": SiteAccessSettings.TOOL_ACCESS_CHOICES,
+        "tool_device_choices": SiteAccessSettings.TOOL_DEVICE_CHOICES,
+        "tool_access_categories": tool_access_categories,
+        "tool_rule_summary": tool_rule_summary,
     }
     return render(request, "app/moderation.html", context)
 
@@ -598,28 +615,35 @@ def moderation_access_toggle_view(request):
 @require_POST
 def moderation_tool_access_view(request):
     access_settings = SiteAccessSettings.get_solo()
-    rules = {}
+    access_rules = {}
+    device_rules = {}
 
     for key in ACCESS_CONTROL_KEYS:
         level = request.POST.get(f"access_{key}", SiteAccessSettings.TOOL_ACCESS_ALL)
-        rules[key] = level
+        target = request.POST.get(f"device_{key}", SiteAccessSettings.TOOL_DEVICE_BOTH)
+        access_rules[key] = level
+        device_rules[key] = target
 
-    previous_rules = access_settings.tool_access_rules if isinstance(access_settings.tool_access_rules, dict) else {}
-    access_settings.set_tool_access_rules(rules)
+    previous_access_rules = dict(access_settings.tool_access_rules) if isinstance(access_settings.tool_access_rules, dict) else {}
+    previous_device_rules = dict(access_settings.tool_device_rules) if isinstance(access_settings.tool_device_rules, dict) else {}
+    access_settings.set_tool_access_rules(access_rules)
+    access_settings.set_tool_device_rules(device_rules)
     access_settings.updated_by = request.user
-    access_settings.save(update_fields=["tool_access_rules", "updated_by", "updated_at"])
+    access_settings.save(update_fields=["tool_access_rules", "tool_device_rules", "updated_by", "updated_at"])
     broadcast_realtime_policy_changed()
 
     _audit(
         request,
         ModerationAuditLog.ACTION_TOOL_ACCESS_UPDATED,
-        "Tool- und Spielzugriffe aktualisiert",
+        "Tool-, Spiel- und Gerätefreigaben aktualisiert",
         metadata={
-            "before": previous_rules,
-            "after": access_settings.tool_access_rules,
+            "access_before": previous_access_rules,
+            "access_after": access_settings.tool_access_rules,
+            "device_before": previous_device_rules,
+            "device_after": access_settings.tool_device_rules,
         },
     )
-    messages.success(request, _("Tool- und Spielzugriffe wurden aktualisiert."))
+    messages.success(request, _("Tool-, Spiel- und Gerätefreigaben wurden aktualisiert."))
     return redirect(_safe_next(request))
 
 
