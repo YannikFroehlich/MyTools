@@ -36,7 +36,7 @@ concurrency:
 jobs:
   osv_scan:
     name: OSV Security Scan
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
 
     # OSV nur bei direkten Pushes auf Arbeits-/Feature-Branches ausfuehren.
@@ -116,7 +116,7 @@ jobs:
 
   test:
     name: Test Django App
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 25
 
     # Tests laufen vor Build/Deploy. Nur develop bleibt bewusst ausgespart.
@@ -169,7 +169,7 @@ jobs:
 
   build:
     name: Build Docker Image
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: test
     timeout-minutes: 20
 
