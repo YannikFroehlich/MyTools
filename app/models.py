@@ -1,5 +1,6 @@
 import re
 from django.conf import settings
+from django.core.cache import cache
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.utils import timezone
@@ -380,7 +381,9 @@ class Friendship(models.Model):
 
     @classmethod
     def accepted_for_user(cls, user):
-        return cls.objects.select_related("from_user", "to_user").filter(
+        return cls.objects.select_related(
+            "from_user", "from_user__profile", "to_user", "to_user__profile"
+        ).filter(
             status=cls.STATUS_ACCEPTED
         ).filter(
             models.Q(from_user=user) | models.Q(to_user=user)
@@ -2681,10 +2684,29 @@ class SiteAccessSettings(models.Model):
     def __str__(self):
         return "Login und Registrierung gesperrt" if self.login_registration_locked else "Login und Registrierung offen"
 
+    SOLO_CACHE_KEY = "site_access_settings:solo"
+    SOLO_CACHE_SECONDS = 300
+
     @classmethod
     def get_solo(cls):
-        obj, _ = cls.objects.get_or_create(pk=1)
+        # Skip the cache under the test runner: TestCase wraps each test in a
+        # rolled-back transaction, but the cache is process-global, so a cached
+        # instance from an earlier test can outlive the DB row it points to.
+        if settings.IS_TESTING:
+            obj, _created = cls.objects.get_or_create(pk=1)
+            return obj
+
+        cached = cache.get(cls.SOLO_CACHE_KEY)
+        if cached is not None:
+            return cached
+
+        obj, _created = cls.objects.get_or_create(pk=1)
+        cache.set(cls.SOLO_CACHE_KEY, obj, cls.SOLO_CACHE_SECONDS)
         return obj
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete(self.SOLO_CACHE_KEY)
 
     def get_tool_access_level(self, key):
         rules = self.tool_access_rules if isinstance(self.tool_access_rules, dict) else {}

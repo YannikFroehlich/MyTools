@@ -9,8 +9,10 @@ pillow==12.2.0
 psycopg[binary]
 python-decouple==3.8
 python-dotenv==1.2.2
+rcssmin==1.2.2
 redis==7.1.0
 requests==2.33.0
+rjsmin==1.2.5
 spotipy==2.25.2
 sqlparse==0.5.5
 tzdata==2026.1
