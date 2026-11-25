@@ -13,10 +13,17 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='siteaccesssettings',
-            name='tool_access_rules',
-            field=models.JSONField(blank=True, default=dict),
+        # The sibling 0063_siteaccesssettings_tool_access_rules already adds this column.
+        # Both run on a fresh database, so only record the field in the migration state here;
+        # a second ADD COLUMN fails on PostgreSQL ("column ... already exists").
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AddField(
+                    model_name='siteaccesssettings',
+                    name='tool_access_rules',
+                    field=models.JSONField(blank=True, default=dict),
+                ),
+            ],
         ),
         migrations.AlterField(
             model_name='moderationauditlog',
