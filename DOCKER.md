@@ -120,19 +120,11 @@ Jeder Merge auf `main` geht also live.
 
 Docker mit Compose-Plugin ist auf yfsrv1 schon installiert. Alle Befehle laufen als root (`sudo -i`).
 
-1. **Deploy-Key anlegen** (Repo ist privat). Den Public Key in GitHub unter
-   *Settings → Deploy keys* **ohne** Schreibrecht hinzufügen:
+1. **Repo klonen.** Das Repo ist öffentlich, deshalb braucht der Server weder Key noch Token:
    ```bash
-   ssh-keygen -t ed25519 -N "" -C "mytools@yfsrv1" -f /root/.ssh/mytools_deploy
-   cat /root/.ssh/mytools_deploy.pub
+   git clone --branch main https://github.com/YannikFroehlich/MyTools.git /opt/mytools
    ```
-2. **Repo klonen:**
-   ```bash
-   GIT_SSH_COMMAND="ssh -i /root/.ssh/mytools_deploy -o IdentitiesOnly=yes" \
-     git clone --branch main git@github.com:YannikFroehlich/MyTools.git /opt/mytools
-   git -C /opt/mytools config core.sshCommand "ssh -i /root/.ssh/mytools_deploy -o IdentitiesOnly=yes"
-   ```
-3. **`.env` anlegen** (neu, nichts vom alten Server übernehmen):
+2. **`.env` anlegen.** Alle Werte neu erzeugen und nichts vom alten Server übernehmen. Eine frühe `.env` steht in der öffentlichen Git-Historie:
    ```bash
    cd /opt/mytools
    cp .env.example .env && chmod 600 .env
@@ -154,11 +146,11 @@ Docker mit Compose-Plugin ist auf yfsrv1 schon installiert. Alle Befehle laufen 
    ```
    `localhost,127.0.0.1` muss in `ALLOWED_HOSTS` bleiben, sonst schlägt der Healthcheck von `web` fehl.
    E-Mail, reCAPTCHA und API-Keys nach Bedarf ergänzen.
-4. **Cloudflare Tunnel:** In Zero Trust einen Tunnel anlegen, z. B. `mytools-yfsrv1`, und den Token in `.env` eintragen.
+3. **Cloudflare Tunnel:** In Zero Trust einen Tunnel anlegen, z. B. `mytools-yfsrv1`, und den Token in `.env` eintragen.
    Als Public Hostname `mytools.yfserver.de` auf **`http://caddy:80`** setzen.
    Wenn du stattdessen den alten Tunnel weiterverwendest, auf dem alten Server vorher `docker compose down` ausführen.
    Sonst bedienen zwei Server dieselbe Domain mit getrennten Datenbanken.
-5. **Auto-Deploy installieren und ersten Deploy starten:**
+4. **Auto-Deploy installieren und ersten Deploy starten:**
    ```bash
    install -m 0644 deploy/mytools-auto-deploy.service deploy/mytools-auto-deploy.timer /etc/systemd/system/
    systemctl daemon-reload
@@ -166,11 +158,11 @@ Docker mit Compose-Plugin ist auf yfsrv1 schon installiert. Alle Befehle laufen 
    journalctl -u mytools-auto-deploy.service -n 50 --no-pager
    systemctl enable --now mytools-auto-deploy.timer
    ```
-6. **Admin anlegen:**
+5. **Admin anlegen:**
    ```bash
    docker compose exec web python manage.py createsuperuser
    ```
-7. **Prüfen:** `docker compose ps` zeigt alles als `healthy`/`running`, und https://mytools.yfserver.de lädt.
+6. **Prüfen:** `docker compose ps` zeigt alles als `healthy`/`running`, und https://mytools.yfserver.de lädt.
 
 ### Betrieb
 
