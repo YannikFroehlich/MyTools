@@ -333,7 +333,7 @@ def avatar_characters_api(request):
         if image.size > MAX_AVATAR_WIKI_UPLOAD_SIZE:
             return JsonResponse({
                 "status": "error",
-                "message": _("Das Bild darf maximal 10 MB groÃŸ sein."),
+                "message": _("Das Bild darf maximal 10 MB groß sein."),
             }, status=413)
 
         try:
@@ -418,7 +418,7 @@ def avatar_character_detail_api(request, character_id):
             if image.size > MAX_AVATAR_WIKI_UPLOAD_SIZE:
                 return JsonResponse({
                     "status": "error",
-                    "message": _("Das Bild darf maximal 10 MB groÃŸ sein."),
+                    "message": _("Das Bild darf maximal 10 MB groß sein."),
                 }, status=413)
             try:
                 optimized_image = optimize_uploaded_image(

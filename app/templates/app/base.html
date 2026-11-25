@@ -1,5 +1,6 @@
 {% load static %}
 {% load i18n %}
+{% load cache %}
 {% load media_performance %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
@@ -82,6 +83,8 @@
                 </button>
 
                 <div class="menu-dropdown games-menu-panel" id="games-menu-dropdown">
+                    {# Menu content rarely changes; caching it avoids re-evaluating ~100 {% url %}/{% translate %} tags on every request. Bump the "v1" marker below when editing this fragment to bust the cache. #}
+                    {% cache 600 games_menu_dropdown LANGUAGE_CODE request.user.is_authenticated "v1" %}
                     <div class="games-menu-top">
                         <div class="games-menu-title">
                             <span class="games-menu-kicker">
@@ -321,6 +324,7 @@
                         <i class="fa-regular fa-face-meh"></i>
                         {% translate 'Kein Spiel gefunden.' %}
                     </div>
+                    {% endcache %}
                 </div>
             </div>
             <div class="menu-wrapper">
@@ -331,6 +335,8 @@
                 </button>
 
                 <div class="menu-dropdown games-menu-panel google-library-panel" id="google-apps-menu-dropdown">
+                    {# Fully static per language - safe to cache long-term. Bump "v1" when editing. #}
+                    {% cache 3600 google_apps_menu_dropdown LANGUAGE_CODE "v1" %}
                     <div class="games-menu-top">
                         <div class="games-menu-title">
                             <span class="games-menu-kicker">
@@ -467,6 +473,7 @@
                         <i class="fa-regular fa-face-meh"></i>
                         {% translate 'Keine App gefunden.' %}
                     </div>
+                    {% endcache %}
                 </div>
             </div>
 
@@ -476,6 +483,8 @@
                 </button>
 
                 <div class="menu-dropdown games-menu-panel tools-library-panel" id="menu-dropdown">
+                    {# Only the two admin links vary per user (is_staff) - vary the cache on that. Bump "v1" when editing. #}
+                    {% cache 600 tools_menu_dropdown LANGUAGE_CODE request.user.is_staff "v1" %}
                     <div class="games-menu-top">
                         <div class="games-menu-title">
                             <span class="games-menu-kicker">
@@ -722,6 +731,7 @@
                         <i class="fa-regular fa-face-meh"></i>
                         {% translate 'Kein Tool gefunden.' %}
                     </div>
+                    {% endcache %}
                 </div>
             </div>
         </div>

@@ -512,10 +512,13 @@ def build_home_friends_widget_data(user):
     for friendship in accepted_friendships:
         other_user = friendship.other_user(user)
         if other_user:
-            UserProfile.objects.get_or_create(user=other_user)
+            try:
+                profile = other_user.profile
+            except UserProfile.DoesNotExist:
+                profile, _created = UserProfile.objects.get_or_create(user=other_user)
             friend_users.append({
                 "user": other_user,
-                "profile": other_user.profile,
+                "profile": profile,
                 "since": friendship.updated_at,
             })
 
