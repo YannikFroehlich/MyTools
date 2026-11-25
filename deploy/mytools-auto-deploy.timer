@@ -1,0 +1,11 @@
+[Unit]
+Description=Check GitHub main for a new MyTools commit every 2 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=2min
+AccuracySec=15s
+Unit=mytools-auto-deploy.service
+
+[Install]
+WantedBy=timers.target

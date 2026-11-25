@@ -1,10 +1,10 @@
-name: Test, Build and Deploy MyTools
+name: Test and Build MyTools
 
 on:
   workflow_dispatch:
 
   # Pushes sollen weiter den Workflow starten, damit Feature-Branches getestet
-  # und main nach einem Merge deployed werden kann.
+  # und main nach einem Merge gebaut wird. Deployt wird auf yfsrv1 per Auto-Pull (deploy/mytools-auto-deploy.timer).
   # develop wird ignoriert, damit dort kein zusätzlicher Lauf entsteht.
   push:
     branches:
@@ -185,78 +185,3 @@ jobs:
       - name: Docker Image bauen
         run: |
           docker compose build --pull web
-
-  deploy:
-    name: Deploy on yfserver
-    runs-on: self-hosted
-    needs: build
-    timeout-minutes: 15
-
-    # Deployment nur nach echtem Push/Merge auf main, nicht bei Pull Requests.
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: MyTools auf Server deployen
-        run: |
-          set -e
-
-          cd /opt/mytools
-
-          echo "Hole Änderungen aus main..."
-          git fetch origin main
-          git reset --hard origin/main
-
-          echo "Erzeuge Git-Changelog für die Was-ist-neu-Seite..."
-          python3 scripts/generate_git_changelog.py --limit 0 || echo "Git-Changelog konnte nicht erzeugt werden. Deployment läuft weiter."
-
-          echo "Starte Docker Deployment..."
-          docker compose pull db redis caddy cloudflared || true
-          docker compose up -d --build --remove-orphans
-
-          echo "Warte kurz bis Caddy den Webserver intern erreicht..."
-
-          for i in {1..20}; do
-            if docker compose exec -T caddy sh -c \
-              'wget -q --spider --header="Host: ${DOMAIN:-localhost}" http://127.0.0.1/'; then
-              echo "Webserver ist erreichbar."
-              break
-            fi
-
-            echo "Webserver noch nicht erreichbar, Versuch $i/20..."
-            sleep 3
-
-            if [ "$i" -eq 20 ]; then
-              echo "Fehler: Webserver ist nach dem Deployment nicht erreichbar."
-              echo ""
-              echo "Container Status:"
-              docker compose ps
-
-              echo ""
-              echo "============================================================"
-              echo "Web-Logs"
-              echo "============================================================"
-              docker compose logs --tail=100 web
-
-              echo ""
-              echo "============================================================"
-              echo "Caddy-Logs"
-              echo "============================================================"
-              docker compose logs --tail=100 caddy
-
-              echo ""
-              echo "============================================================"
-              echo "Cloudflared-Logs"
-              echo "============================================================"
-              docker compose logs --tail=100 cloudflared || true
-
-              exit 1
-            fi
-          done
-
-          echo "Container Status:"
-          docker compose ps
-
-          echo "Räume alte Docker Images auf..."
-          docker image prune -f
-
-          echo "Deployment fertig."

@@ -1,0 +1,13 @@
+[Unit]
+Description=Deploy new MyTools main commits
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+ConditionPathIsDirectory=/opt/mytools/.git
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/bin/bash /opt/mytools/scripts/auto-deploy.sh
+TimeoutStartSec=30min
+UMask=0027
