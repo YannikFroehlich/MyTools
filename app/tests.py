@@ -5614,6 +5614,7 @@ class ModerationTests(BaseTestCase):
         self.assertRedirects(response, reverse("moderation"))
         self.assertFalse(FileShare.objects.filter(id=share.id).exists())
 
+    @patch("app.views.moderation.STATIC_IMAGE_TARGETS", ())
     def test_media_optimize_action_converts_existing_profile_images_to_webp(self):
         self.make_staff()
         profile, _ = UserProfile.objects.get_or_create(user=self.user)
@@ -5658,6 +5659,7 @@ class ModerationTests(BaseTestCase):
             audit_log = ModerationAuditLog.objects.filter(action="media_optimized").latest("created_at")
             self.assertGreaterEqual(audit_log.metadata["converted"], 1)
 
+    @patch("app.views.moderation.STATIC_IMAGE_TARGETS", ())
     def test_media_optimize_action_converts_image_file_shares(self):
         self.make_staff()
         share = FileShare.objects.create(

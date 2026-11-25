@@ -1,15 +1,83 @@
 from django.conf import settings
+from django.core.cache import cache
 from django.urls import NoReverseMatch, reverse
 
 from .access_control import (
     ACCESS_CONTROL_ITEMS,
     ACCESS_ITEM_BY_KEY,
     access_key_for_url_name,
-    user_can_access_key,
-    user_can_see_key,
+    user_is_staff,
 )
 from .models import SiteAccessSettings, UserProfile
 from .notification_utils import get_notification_counts
+
+ACCESS_CONTROL_BUCKETS_CACHE_SECONDS = 300
+
+
+def _access_control_buckets(access_settings, is_staff):
+    """Compute the shared (non-per-request) parts of access_control_status.
+
+    This only depends on the current SiteAccessSettings state and whether the
+    user is staff, so it's identical for every non-staff user (and every staff
+    user) until settings change - cache it instead of re-running ~150 reverse()
+    calls on every single page load.
+    """
+    cache_key = (
+        f"access_control_buckets:{access_settings.pk}:"
+        f"{access_settings.updated_at.timestamp()}:{is_staff}"
+    )
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    blocked_keys = {}
+    blocked_paths = set()
+    restricted_paths = set()
+    hidden_paths = set()
+    hidden_visible_paths = set()
+    device_target_paths = {}
+
+    for item in ACCESS_CONTROL_ITEMS:
+        key = item["key"]
+        access_level = access_settings.get_tool_access_level(key)
+        is_restricted = access_level != SiteAccessSettings.TOOL_ACCESS_ALL
+        is_blocked = is_restricted and not is_staff
+        is_hidden = access_level == SiteAccessSettings.TOOL_ACCESS_HIDDEN
+        is_hidden_for_user = is_hidden and not is_staff
+        device_target = access_settings.get_tool_device_target(key)
+        blocked_keys[key] = is_blocked
+
+        if is_hidden_for_user:
+            path_bucket = hidden_paths
+        elif is_hidden:
+            path_bucket = hidden_visible_paths
+        elif is_blocked:
+            path_bucket = blocked_paths
+        elif is_restricted:
+            path_bucket = restricted_paths
+        else:
+            path_bucket = None
+
+        for url_name in item.get("url_names", ()):
+            try:
+                path = reverse(url_name)
+            except NoReverseMatch:
+                continue
+            if path_bucket is not None:
+                path_bucket.add(path)
+            if device_target != SiteAccessSettings.TOOL_DEVICE_BOTH:
+                device_target_paths[path] = device_target
+
+    result = {
+        "access_blocked_keys": blocked_keys,
+        "access_blocked_paths": sorted(blocked_paths),
+        "access_restricted_paths": sorted(restricted_paths),
+        "access_hidden_paths": sorted(hidden_paths),
+        "access_hidden_visible_paths": sorted(hidden_visible_paths),
+        "tool_device_target_paths": device_target_paths,
+    }
+    cache.set(cache_key, result, ACCESS_CONTROL_BUCKETS_CACHE_SECONDS)
+    return result
 
 
 def fontawesome_kit(request):
@@ -35,83 +103,34 @@ def google_oauth_settings(request):
 
 
 def access_control_status(request):
+    default_result = {
+        "access_blocked_keys": {},
+        "access_blocked_paths": [],
+        "access_restricted_paths": [],
+        "access_hidden_paths": [],
+        "access_hidden_visible_paths": [],
+        "tool_device_target_paths": {},
+        "current_tool_key": "",
+        "current_tool_label": "",
+        "current_tool_device_target": SiteAccessSettings.TOOL_DEVICE_BOTH,
+    }
+
     if not request.user.is_authenticated:
-        return {
-            "access_blocked_keys": {},
-            "access_blocked_paths": [],
-            "access_restricted_paths": [],
-            "access_hidden_paths": [],
-            "access_hidden_visible_paths": [],
-            "tool_device_target_paths": {},
-            "current_tool_key": "",
-            "current_tool_label": "",
-            "current_tool_device_target": SiteAccessSettings.TOOL_DEVICE_BOTH,
-        }
+        return default_result
 
     try:
         access_settings = SiteAccessSettings.get_solo()
     except Exception:
-        return {
-            "access_blocked_keys": {},
-            "access_blocked_paths": [],
-            "access_restricted_paths": [],
-            "access_hidden_paths": [],
-            "access_hidden_visible_paths": [],
-            "tool_device_target_paths": {},
-            "current_tool_key": "",
-            "current_tool_label": "",
-            "current_tool_device_target": SiteAccessSettings.TOOL_DEVICE_BOTH,
-        }
+        return default_result
 
-    blocked_keys = {}
-    blocked_paths = set()
-    restricted_paths = set()
-    hidden_paths = set()
-    hidden_visible_paths = set()
-    device_target_paths = {}
-
-    for item in ACCESS_CONTROL_ITEMS:
-        key = item["key"]
-        access_level = access_settings.get_tool_access_level(key)
-        is_restricted = access_level != SiteAccessSettings.TOOL_ACCESS_ALL
-        is_blocked = not user_can_access_key(request.user, key, access_settings)
-        is_hidden = access_level == SiteAccessSettings.TOOL_ACCESS_HIDDEN
-        is_hidden_for_user = is_hidden and not user_can_see_key(request.user, key, access_settings)
-        device_target = access_settings.get_tool_device_target(key)
-        blocked_keys[key] = is_blocked
-
-        if is_hidden_for_user:
-            path_bucket = hidden_paths
-        elif is_hidden:
-            path_bucket = hidden_visible_paths
-        elif is_blocked:
-            path_bucket = blocked_paths
-        elif is_restricted:
-            path_bucket = restricted_paths
-        else:
-            path_bucket = None
-
-        for url_name in item.get("url_names", ()):
-            try:
-                path = reverse(url_name)
-            except NoReverseMatch:
-                continue
-            if path_bucket is not None:
-                path_bucket.add(path)
-            if device_target != SiteAccessSettings.TOOL_DEVICE_BOTH:
-                device_target_paths[path] = device_target
+    buckets = _access_control_buckets(access_settings, user_is_staff(request.user))
 
     current_url_name = getattr(getattr(request, "resolver_match", None), "url_name", None)
     current_tool_key = access_key_for_url_name(current_url_name)
     current_item = ACCESS_ITEM_BY_KEY.get(current_tool_key, {})
 
     return {
-        "access_blocked_keys": blocked_keys,
-        "access_blocked_paths": sorted(blocked_paths),
-        "access_restricted_paths": sorted(restricted_paths),
-        "access_hidden_paths": sorted(hidden_paths),
-        "access_hidden_visible_paths": sorted(hidden_visible_paths),
-        "tool_device_target_paths": device_target_paths,
+        **buckets,
         "current_tool_key": current_tool_key or "",
         "current_tool_label": current_item.get("label", ""),
         "current_tool_device_target": access_settings.get_tool_device_target(current_tool_key) if current_tool_key else SiteAccessSettings.TOOL_DEVICE_BOTH,
