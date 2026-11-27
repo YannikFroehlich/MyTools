@@ -22,7 +22,7 @@ from django.views.i18n import set_language
 from django.conf import settings
 from django.contrib.staticfiles.views import serve as staticfiles_serve
 from app.views.media import media_thumbnail, public_media
-from app.views.auth import AccessAwareLoginView, google_oauth_login_view
+from app.views.auth import AccessAwareLoginView, KeycloakAwareLogoutView, google_oauth_login_view
 
 PUBLIC_MEDIA_PATH_PATTERN = r"^media/(?P<path>(?:public|profile_pictures|profile_banners|shortcut_icons|avatar_characters)/.*)$"
 
@@ -63,6 +63,7 @@ urlpatterns = [
     ),
 
     path('accounts/login/', AccessAwareLoginView.as_view(), name='login'),
+    path('accounts/logout/', KeycloakAwareLogoutView.as_view(), name='logout'),
     path('accounts/google/login/', google_oauth_login_view, name='google_oauth_login'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('allauth.urls')),

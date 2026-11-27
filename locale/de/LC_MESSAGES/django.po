@@ -17235,3 +17235,9 @@ msgstr "{name} hat alle deine Schiffe versenkt."
 #~ "Veröffentlicht bedeutet: jeder eingeloggte Nutzer kann den Bereich "
 #~ "öffnen. Unveröffentlicht bedeutet: nur Staff/Admins sehen und öffnen den "
 #~ "Bereich."
+
+msgid "Dein Konto hat keinen Zugriff auf diese MyTools-Instanz."
+msgstr ""
+
+msgid "Mit yfserver-Konto anmelden"
+msgstr ""
