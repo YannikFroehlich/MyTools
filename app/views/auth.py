@@ -1,12 +1,13 @@
 import base64
 from io import BytesIO
+from urllib.parse import urlencode
 
 from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -154,6 +155,28 @@ class AccessAwareLoginView(LoginView):
                     note=_("Login-Versuch wurde abgelehnt."),
                 )
         return super().form_invalid(form)
+
+
+class KeycloakAwareLogoutView(LogoutView):
+    """Also ends the Keycloak session when the user signed in through it."""
+
+    def post(self, request, *args, **kwargs):
+        from ..adapters import KEYCLOAK_SESSION_KEY
+
+        via_keycloak = request.session.get(KEYCLOAK_SESSION_KEY)
+        response = super().post(request, *args, **kwargs)
+        if not (via_keycloak and settings.KEYCLOAK_LOGIN_ENABLED):
+            return response
+        # allauth keeps no raw ID token, so Keycloak may ask once to confirm the logout.
+        query = urlencode(
+            {
+                "client_id": settings.OIDC_CLIENT_ID,
+                "post_logout_redirect_uri": request.build_absolute_uri(reverse("login")),
+            }
+        )
+        return HttpResponseRedirect(
+            f"{settings.OIDC_ISSUER}/protocol/openid-connect/logout?{query}"
+        )
 
 
 @require_POST

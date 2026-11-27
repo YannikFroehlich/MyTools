@@ -158,6 +158,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.openid_connect',
     'app',
 ]
 
@@ -290,6 +291,9 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_LOGIN_ON_GET = False
+# allauth only reads this globally (the per-provider key is ignored): connect the social account to
+# the local account found by verified e-mail, so later logins match by provider uid, not e-mail.
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_ADAPTER = "app.adapters.MyToolsSocialAccountAdapter"
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -299,8 +303,31 @@ SOCIALACCOUNT_PROVIDERS = {
         "OAUTH_PKCE_ENABLED": True,
         "EMAIL_AUTHENTICATION": True,
         "EMAIL_AUTHENTICATION_AUTO_CONNECT": True,
-    }
+    },
+    "openid_connect": {
+        "OAUTH_PKCE_ENABLED": True,
+        "EMAIL_AUTHENTICATION": True,
+        "EMAIL_AUTHENTICATION_AUTO_CONNECT": True,
+    },
 }
+
+# Central sign-in through the Keycloak realm (allauth provider id "keycloak"); on when issuer,
+# client ID and secret are set. OIDC_REQUIRED_GROUP limits it to one Keycloak group (dev: dev-access).
+OIDC_ISSUER = os.getenv("OIDC_ISSUER", "").strip().rstrip("/")
+OIDC_CLIENT_ID = os.getenv("OIDC_CLIENT_ID", "").strip()
+OIDC_CLIENT_SECRET = os.getenv("OIDC_CLIENT_SECRET", "").strip()
+OIDC_REQUIRED_GROUP = os.getenv("OIDC_REQUIRED_GROUP", "").strip()
+KEYCLOAK_LOGIN_ENABLED = bool(OIDC_ISSUER and OIDC_CLIENT_ID and OIDC_CLIENT_SECRET)
+if KEYCLOAK_LOGIN_ENABLED:
+    SOCIALACCOUNT_PROVIDERS["openid_connect"]["APPS"] = [
+        {
+            "provider_id": "keycloak",
+            "name": "yfserver",
+            "client_id": OIDC_CLIENT_ID,
+            "secret": OIDC_CLIENT_SECRET,
+            "settings": {"server_url": OIDC_ISSUER},
+        }
+    ]
 
 if GOOGLE_OAUTH_ENABLED:
     SOCIALACCOUNT_PROVIDERS["google"]["APPS"] = [
@@ -428,4 +455,7 @@ DEFAULT_CSP_POLICY = (
     "frame-ancestors 'none'; "
     "form-action 'self'"
 )
+if KEYCLOAK_LOGIN_ENABLED:
+    # Logout answers with a redirect to Keycloak; browsers apply form-action to that redirect too.
+    DEFAULT_CSP_POLICY += " " + "/".join(OIDC_ISSUER.split("/")[:3])
 CSP_POLICY = os.getenv("CSP_POLICY") or DEFAULT_CSP_POLICY

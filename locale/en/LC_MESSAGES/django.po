@@ -18435,3 +18435,9 @@ msgstr "Werewolf lobby was deleted."
 
 #~ msgid "Login und Registrierung sind aktuell gesperrt."
 #~ msgstr "Login and registration are currently blocked."
+
+msgid "Dein Konto hat keinen Zugriff auf diese MyTools-Instanz."
+msgstr "Your account has no access to this MyTools instance."
+
+msgid "Mit yfserver-Konto anmelden"
+msgstr "Sign in with yfserver account"
