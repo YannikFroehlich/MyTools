@@ -96,6 +96,10 @@ def analytics_settings(request):
     }
 
 
+def title_suffix(request):
+    return {"title_suffix": settings.TITLE_SUFFIX}
+
+
 def google_oauth_settings(request):
     return {
         "google_oauth_enabled": getattr(settings, "GOOGLE_OAUTH_ENABLED", False),

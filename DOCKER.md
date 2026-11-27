@@ -192,7 +192,7 @@ Ablauf: Feature-Branch → Pull Request auf `develop` → auf der Dev-Instanz pr
   `mytools-dev.yfserver.de` → `http://localhost:8003` liegt im Host-Tunnel `lunora-yfsrv1`.
 - `/opt/mytools-dev/.env` stammt aus der produktiven, mit eigenem `SECRET_KEY` und
   `DB_PASSWORD`, Dev-Domain, Dev-`SPOTIFY_REDIRECT_URI`, ohne Tunnel-Token und
-  Analytics-ID, mit `EMAIL_BACKEND_MODE=console` sowie
+  Analytics-ID, mit `EMAIL_BACKEND_MODE=console`, `MYTOOLS_TITLE_SUFFIX=-dev` (Tab-Titel „… • MyTools-dev“) sowie
   `COMPOSE_PROJECT_NAME=mytools-dev` und `COMPOSE_FILE=docker-compose.yml:compose.dev.yml`.
   `docker compose …` in `/opt/mytools-dev` trifft damit immer den Dev-Stack.
 - `mytools-dev-auto-deploy.timer` startet `scripts/auto-deploy.sh` mit diesen Werten:

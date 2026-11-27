@@ -192,6 +192,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'app.context_processors.fontawesome_kit',
                 'app.context_processors.analytics_settings',
+                'app.context_processors.title_suffix',
                 'app.context_processors.google_oauth_settings',
                 'app.context_processors.current_profile',
                 'app.context_processors.access_control_status',
@@ -323,6 +324,9 @@ RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY", "")
 
 GOOGLE_ANALYTICS_ID = os.getenv("GOOGLE_ANALYTICS_ID", "").strip()
 GOOGLE_ANALYTICS_ENABLED = bool(GOOGLE_ANALYTICS_ID) and not IS_TESTING
+
+# Appended to every page title, e.g. "-dev" on the dev instance ("Login • MyTools-dev").
+TITLE_SUFFIX = os.getenv("MYTOOLS_TITLE_SUFFIX", "").strip()
 
 if GOOGLE_ANALYTICS_ID and not GOOGLE_ANALYTICS_ID.startswith("G-"):
     raise ValueError("GOOGLE_ANALYTICS_ID muss eine GA4 Measurement ID sein, z. B. G-XXXXXXXXXX.")
