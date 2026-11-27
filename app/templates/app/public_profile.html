@@ -3,14 +3,7 @@
 {% load i18n %}
 {% load media_performance %}
 
-{% block title %}
-    {% if profile_user.get_full_name %}
-        {{ profile_user.get_full_name }}
-    {% else %}
-        {{ profile_user.username }}
-    {% endif %}
-    • MyTools
-{% endblock %}
+{% block title %}{% if profile_user.get_full_name %}{{ profile_user.get_full_name }}{% else %}{{ profile_user.username }}{% endif %} • MyTools{% endblock %}
 
 
 {% block extra_css %}
