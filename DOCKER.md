@@ -177,3 +177,47 @@ gunzip -c /var/backups/mytools/<datei>.sql.gz | docker compose exec -T db sh -c 
 Gesichert wird nur die Datenbank. Uploads im Volume `mytools_media_volume` sind nicht im Backup.
 
 Bei Cloudflare Tunnel muss Caddy selbst kein Let's-Encrypt-Zertifikat beziehen.
+
+## Dev-Instanz auf yfsrv1 (`develop`)
+
+Seit 27. November 2026 läuft neben der Produktion eine Dev-Instanz unter
+`https://mytools-dev.yfserver.de`, hinter Cloudflare Access (nur freigegebene E-Mail-Adressen).
+Ablauf: Feature-Branch → Pull Request auf `develop` → auf der Dev-Instanz prüfen → Pull Request
+`develop` → `main`.
+
+- Checkout `/opt/mytools-dev` (Branch `develop`). Die Datei `compose.dev.yml` liegt nur auf dem
+  Server und wird nie committet, sonst bricht der Fast-Forward des Auto-Deploys ab. Sie setzt den
+  Projektnamen `mytools-dev`, eigene Containernamen (`mytools_dev_*`), schaltet `cloudflared` per
+  Profil ab und veröffentlicht Caddy auf `127.0.0.1:8003`. Die Route
+  `mytools-dev.yfserver.de` → `http://localhost:8003` liegt im Host-Tunnel `lunora-yfsrv1`.
+- `/opt/mytools-dev/.env` stammt aus der produktiven, mit eigenem `SECRET_KEY` und
+  `DB_PASSWORD`, Dev-Domain, Dev-`SPOTIFY_REDIRECT_URI`, ohne Tunnel-Token und
+  Analytics-ID, mit `EMAIL_BACKEND_MODE=console` sowie
+  `COMPOSE_PROJECT_NAME=mytools-dev` und `COMPOSE_FILE=docker-compose.yml:compose.dev.yml`.
+  `docker compose …` in `/opt/mytools-dev` trifft damit immer den Dev-Stack.
+- `mytools-dev-auto-deploy.timer` startet `scripts/auto-deploy.sh` mit diesen Werten:
+
+  ```ini
+  Environment=MYTOOLS_APP_DIR=/opt/mytools-dev
+  Environment=MYTOOLS_BRANCH=develop
+  Environment=MYTOOLS_BACKUP_DIR=/var/backups/mytools-dev
+  Environment=MYTOOLS_BACKUP_KEEP=3
+  Environment=MYTOOLS_STATE_DIR=/var/lib/mytools-dev-auto-deploy
+  Environment=MYTOOLS_LOCK_FILE=/run/mytools-dev-auto-deploy.lock
+  ExecStart=/bin/bash /opt/mytools-dev/scripts/auto-deploy.sh
+  ```
+
+- `mytools-dev-refresh.timer` startet täglich um 03:00 (Europe/Berlin)
+  `/usr/local/sbin/mytools-dev-refresh` (= `scripts/refresh-dev.sh`): Es kopiert die produktive
+  Datenbank per `pg_dump`/`pg_restore` und das Volume `mytools_media_volume` in den Dev-Stack,
+  wendet die Migrationen von `develop` an, löscht alle `SocialToken` (Dev darf nie mit den
+  Google-Konten der Nutzer arbeiten) und leert Redis. Die Produktion wird nur gelesen; Änderungen
+  auf Dev gehen beim nächsten Abgleich verloren. Das Skript bricht ab, solange die Dev-`.env`
+  nicht `EMAIL_BACKEND_MODE=console` setzt.
+- Google-Login, Spotify und reCAPTCHA funktionieren auf Dev nur, wenn `mytools-dev.yfserver.de`
+  bzw. die Dev-Callback-URLs in den jeweiligen Konsolen eingetragen sind.
+
+```bash
+journalctl -u mytools-dev-auto-deploy.service -n 50 --no-pager
+systemctl start mytools-dev-refresh.service    # Daten sofort aus der Produktion holen
+```
