@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# Pulls origin/main and redeploys the Docker stack when a new commit is there.
+# Pulls origin/$MYTOOLS_BRANCH (default main) and redeploys the Docker stack when a new commit
+# is there. The defaults are production; the dev instance (DOCKER.md, "Dev-Instanz") overrides
+# the MYTOOLS_* variables in its systemd unit.
 # Runs as root from deploy/mytools-auto-deploy.timer (every 2 minutes).
 set -Eeuo pipefail
 
 APP_DIR="${MYTOOLS_APP_DIR:-/opt/mytools}"
+BRANCH="${MYTOOLS_BRANCH:-main}"
 BACKUP_DIR="${MYTOOLS_BACKUP_DIR:-/var/backups/mytools}"
 BACKUP_KEEP="${MYTOOLS_BACKUP_KEEP:-14}"
 STATE_DIR="${MYTOOLS_STATE_DIR:-/var/lib/mytools-auto-deploy}"
@@ -28,8 +31,8 @@ if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
     exit 1
 fi
 
-GIT_TERMINAL_PROMPT=0 git fetch --quiet --prune origin main
-target=$(git rev-parse --verify origin/main)
+GIT_TERMINAL_PROMPT=0 git fetch --quiet --prune origin "${BRANCH}"
+target=$(git rev-parse --verify "origin/${BRANCH}")
 
 if [[ "${target}" == "$(read_state "${SUCCESS_STATE}")" ]]; then
     exit 0
@@ -47,8 +50,8 @@ fail() {
 }
 trap fail ERR
 
-echo "Deploye origin/main ${target:0:12}."
-git merge --ff-only --quiet origin/main
+echo "Deploye origin/${BRANCH} ${target:0:12}."
+git merge --ff-only --quiet "origin/${BRANCH}"
 
 python3 scripts/generate_git_changelog.py --limit 0 \
     || echo "Git-Changelog konnte nicht erzeugt werden; Deployment läuft weiter."
