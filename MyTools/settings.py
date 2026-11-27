@@ -291,6 +291,9 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_LOGIN_ON_GET = False
+# allauth only reads this globally (the per-provider key is ignored): connect the social account to
+# the local account found by verified e-mail, so later logins match by provider uid, not e-mail.
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_ADAPTER = "app.adapters.MyToolsSocialAccountAdapter"
 
 SOCIALACCOUNT_PROVIDERS = {
