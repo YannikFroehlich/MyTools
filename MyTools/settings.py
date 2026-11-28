@@ -157,7 +157,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.openid_connect',
     'app',
 ]
@@ -194,7 +193,7 @@ TEMPLATES = [
                 'app.context_processors.fontawesome_kit',
                 'app.context_processors.analytics_settings',
                 'app.context_processors.title_suffix',
-                'app.context_processors.google_oauth_settings',
+                'app.context_processors.login_settings',
                 'app.context_processors.current_profile',
                 'app.context_processors.access_control_status',
             ],
@@ -276,12 +275,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # ------------------------------------------------------------
-# Google OAuth / django-allauth
+# django-allauth (only provider: Keycloak, see below)
 # ------------------------------------------------------------
-
-GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "").strip()
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "").strip()
-GOOGLE_OAUTH_ENABLED = bool(GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET)
 
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGIN_METHODS = {"username"}
@@ -295,15 +290,9 @@ SOCIALACCOUNT_LOGIN_ON_GET = False
 # the local account found by verified e-mail, so later logins match by provider uid, not e-mail.
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_ADAPTER = "app.adapters.MyToolsSocialAccountAdapter"
+ACCOUNT_ADAPTER = "app.adapters.MyToolsAccountAdapter"
 
 SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "SCOPE": ["profile", "email"],
-        "AUTH_PARAMS": {"access_type": "online"},
-        "OAUTH_PKCE_ENABLED": True,
-        "EMAIL_AUTHENTICATION": True,
-        "EMAIL_AUTHENTICATION_AUTO_CONNECT": True,
-    },
     "openid_connect": {
         "OAUTH_PKCE_ENABLED": True,
         "EMAIL_AUTHENTICATION": True,
@@ -318,6 +307,9 @@ OIDC_CLIENT_ID = os.getenv("OIDC_CLIENT_ID", "").strip()
 OIDC_CLIENT_SECRET = os.getenv("OIDC_CLIENT_SECRET", "").strip()
 OIDC_REQUIRED_GROUP = os.getenv("OIDC_REQUIRED_GROUP", "").strip()
 KEYCLOAK_LOGIN_ENABLED = bool(OIDC_ISSUER and OIDC_CLIENT_ID and OIDC_CLIENT_SECRET)
+# Keycloak only: password login stays open to staff as a break-glass login, sign-up is off
+# (accounts come from Keycloak invites).
+OIDC_ONLY = KEYCLOAK_LOGIN_ENABLED and os.getenv("OIDC_ONLY", "").strip().lower() in {"1", "true", "yes", "on"}
 if KEYCLOAK_LOGIN_ENABLED:
     SOCIALACCOUNT_PROVIDERS["openid_connect"]["APPS"] = [
         {
@@ -326,15 +318,6 @@ if KEYCLOAK_LOGIN_ENABLED:
             "client_id": OIDC_CLIENT_ID,
             "secret": OIDC_CLIENT_SECRET,
             "settings": {"server_url": OIDC_ISSUER},
-        }
-    ]
-
-if GOOGLE_OAUTH_ENABLED:
-    SOCIALACCOUNT_PROVIDERS["google"]["APPS"] = [
-        {
-            "client_id": GOOGLE_OAUTH_CLIENT_ID,
-            "secret": GOOGLE_OAUTH_CLIENT_SECRET,
-            "key": "",
         }
     ]
 

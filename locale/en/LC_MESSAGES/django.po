@@ -18441,3 +18441,9 @@ msgstr "Your account has no access to this MyTools instance."
 
 msgid "Mit yfserver-Konto anmelden"
 msgstr "Sign in with yfserver account"
+
+msgid "Bitte melde dich mit deinem yfserver-Konto an."
+msgstr "Please sign in with your yfserver account."
+
+msgid "Notfall-Login für Administratoren"
+msgstr "Emergency sign-in for administrators"

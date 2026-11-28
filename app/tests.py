@@ -87,23 +87,6 @@ from app.totp_utils import current_totp
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
 
-TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "APPS": [
-            {
-                "client_id": "test-client-id",
-                "secret": "test-client-secret",
-                "key": "",
-            }
-        ],
-        "SCOPE": ["profile", "email"],
-        "AUTH_PARAMS": {"access_type": "online"},
-        "OAUTH_PKCE_ENABLED": True,
-        "EMAIL_AUTHENTICATION": True,
-        "EMAIL_AUTHENTICATION_AUTO_CONNECT": True,
-    }
-}
-
 
 @override_settings(MEDIA_ROOT=TEST_MEDIA_ROOT)
 class BaseTestCase(TestCase):
@@ -962,29 +945,7 @@ class AuthViewTests(BaseTestCase):
 
         self.assertContains(response, "g-recaptcha")
 
-    @override_settings(
-        GOOGLE_OAUTH_ENABLED=True,
-        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
-    )
-    def test_login_page_contains_google_oauth_button_when_configured(self):
-        self.client.logout()
 
-        response = self.client.get(reverse("login"))
-
-        self.assertContains(response, "Mit Google anmelden")
-        self.assertContains(response, "/accounts/google/login/")
-
-    @override_settings(
-        GOOGLE_OAUTH_ENABLED=True,
-        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
-    )
-    def test_signup_page_contains_google_oauth_button_when_configured(self):
-        self.client.logout()
-
-        response = self.client.get(reverse("signup"))
-
-        self.assertContains(response, "Mit Google registrieren")
-        self.assertContains(response, "/accounts/google/login/")
 
     def test_google_social_signup_respects_access_lock(self):
         from app.adapters import MyToolsSocialAccountAdapter
@@ -995,39 +956,7 @@ class AuthViewTests(BaseTestCase):
 
         self.assertFalse(MyToolsSocialAccountAdapter().is_open_for_signup(request, Mock()))
 
-    @override_settings(
-        GOOGLE_OAUTH_ENABLED=True,
-        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
-    )
-    @patch("django_recaptcha.fields.client.submit")
-    def test_google_oauth_login_requires_successful_recaptcha(self, mocked_submit):
-        mocked_submit.return_value = RecaptchaResponse(is_valid=False)
-        self.client.logout()
 
-        with self.assertLogs("django_recaptcha.fields", level="WARNING"):
-            response = self.client.post(reverse("google_oauth_login"), {
-                "process": "login",
-                "g-recaptcha-response": "FAILED",
-            })
-
-        self.assertRedirects(response, reverse("login"), fetch_redirect_response=False)
-
-    @override_settings(
-        GOOGLE_OAUTH_ENABLED=True,
-        SOCIALACCOUNT_PROVIDERS=TEST_GOOGLE_SOCIALACCOUNT_PROVIDERS,
-    )
-    @patch("django_recaptcha.fields.client.submit")
-    def test_google_oauth_login_redirects_to_google_after_recaptcha(self, mocked_submit):
-        self._mock_recaptcha_success(mocked_submit)
-        self.client.logout()
-
-        response = self.client.post(reverse("google_oauth_login"), {
-            "process": "login",
-            "g-recaptcha-response": "PASSED",
-        })
-
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(response["Location"].startswith("https://accounts.google.com/"))
 
     def test_google_social_login_lock_blocks_normal_users_but_allows_staff(self):
         from allauth.core.exceptions import ImmediateHttpResponse
