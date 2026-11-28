@@ -74,7 +74,6 @@ from ..models import Note, SiteAccessSettings
 from ..forms import SignUpForm
 from ..image_optimization import SHORTCUT_ICON_MAX_SIZE, optimize_uploaded_image
 from ..chat_permissions import accessible_chat_rooms_for_user
-from .auth import GoogleOAuthCaptchaForm
 from ..platform_utils import resolve_tools
 from ..voicemod import VoicemodError, parse_voicemod_ports, send_voicemod_action
 env_path = settings.BASE_DIR / ".env"
@@ -360,7 +359,6 @@ def signup(request):
             messages.error(request, _("Registrierungen sind aktuell gesperrt."))
         return render(request, "registration/signup.html", {
             "form": SignUpForm(),
-            "google_captcha_form": GoogleOAuthCaptchaForm(),
             "access_settings": access_settings,
             "access_locked": True,
         }, status=403 if request.method == "POST" else 200)
@@ -378,7 +376,6 @@ def signup(request):
 
     return render(request, "registration/signup.html", {
         "form": form,
-        "google_captcha_form": GoogleOAuthCaptchaForm(),
         "access_settings": access_settings,
         "access_locked": False,
     })

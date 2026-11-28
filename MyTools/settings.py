@@ -157,7 +157,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.openid_connect',
     'app',
 ]
@@ -194,7 +193,7 @@ TEMPLATES = [
                 'app.context_processors.fontawesome_kit',
                 'app.context_processors.analytics_settings',
                 'app.context_processors.title_suffix',
-                'app.context_processors.google_oauth_settings',
+                'app.context_processors.login_settings',
                 'app.context_processors.current_profile',
                 'app.context_processors.access_control_status',
             ],
@@ -276,12 +275,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # ------------------------------------------------------------
-# Google OAuth / django-allauth
+# django-allauth (only provider: Keycloak, see below)
 # ------------------------------------------------------------
-
-GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "").strip()
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "").strip()
-GOOGLE_OAUTH_ENABLED = bool(GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET)
 
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGIN_METHODS = {"username"}
@@ -298,13 +293,6 @@ SOCIALACCOUNT_ADAPTER = "app.adapters.MyToolsSocialAccountAdapter"
 ACCOUNT_ADAPTER = "app.adapters.MyToolsAccountAdapter"
 
 SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "SCOPE": ["profile", "email"],
-        "AUTH_PARAMS": {"access_type": "online"},
-        "OAUTH_PKCE_ENABLED": True,
-        "EMAIL_AUTHENTICATION": True,
-        "EMAIL_AUTHENTICATION_AUTO_CONNECT": True,
-    },
     "openid_connect": {
         "OAUTH_PKCE_ENABLED": True,
         "EMAIL_AUTHENTICATION": True,
@@ -330,15 +318,6 @@ if KEYCLOAK_LOGIN_ENABLED:
             "client_id": OIDC_CLIENT_ID,
             "secret": OIDC_CLIENT_SECRET,
             "settings": {"server_url": OIDC_ISSUER},
-        }
-    ]
-
-if GOOGLE_OAUTH_ENABLED:
-    SOCIALACCOUNT_PROVIDERS["google"]["APPS"] = [
-        {
-            "client_id": GOOGLE_OAUTH_CLIENT_ID,
-            "secret": GOOGLE_OAUTH_CLIENT_SECRET,
-            "key": "",
         }
     ]
 
