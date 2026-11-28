@@ -100,10 +100,10 @@ def title_suffix(request):
     return {"title_suffix": settings.TITLE_SUFFIX}
 
 
-def google_oauth_settings(request):
+def login_settings(request):
     return {
-        "google_oauth_enabled": getattr(settings, "GOOGLE_OAUTH_ENABLED", False),
         "keycloak_login_enabled": getattr(settings, "KEYCLOAK_LOGIN_ENABLED", False),
+        "oidc_only": getattr(settings, "OIDC_ONLY", False),
     }
 
 

@@ -619,13 +619,11 @@ USE_FONTAWESOME_KIT=False
 RECAPTCHA_PUBLIC_KEY=dein_recaptcha_public_key
 RECAPTCHA_PRIVATE_KEY=dein_recaptcha_private_key
 
-GOOGLE_OAUTH_CLIENT_ID=deine_google_oauth_client_id
-GOOGLE_OAUTH_CLIENT_SECRET=dein_google_oauth_client_secret
-
 OIDC_ISSUER=https://auth.yfserver.de/realms/yfserver
 OIDC_CLIENT_ID=mytools
 OIDC_CLIENT_SECRET=dein_keycloak_client_secret
 OIDC_REQUIRED_GROUP=
+OIDC_ONLY=False
 
 GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
 CSP_REPORT_ONLY=True
@@ -646,8 +644,7 @@ CLOUDFLARE_TUNNEL_TOKEN=dein_cloudflare_tunnel_token
 
 Hinweise:
 
-- Google Login wird erst angezeigt, wenn `GOOGLE_OAUTH_CLIENT_ID` und `GOOGLE_OAUTH_CLIENT_SECRET` gesetzt sind. Die OAuth-Redirect-URI lautet lokal z. B. `http://127.0.0.1:8090/accounts/google/login/callback/` und produktiv `https://deine-domain/accounts/google/login/callback/`.
-- „Mit yfserver-Konto anmelden“ (zentraler Login über Keycloak, allauth-Provider `keycloak`) erscheint, sobald `OIDC_ISSUER`, `OIDC_CLIENT_ID` und `OIDC_CLIENT_SECRET` gesetzt sind. Redirect-URI im Keycloak-Client: `https://deine-domain/accounts/oidc/keycloak/login/callback/`. Bestehende Konten werden über die bestätigte E-Mail verknüpft; die Keycloak-Gruppe `admins` setzt `is_staff`/`is_superuser`, `OIDC_REQUIRED_GROUP` beschränkt den Login auf eine Gruppe (Dev-Instanz: `dev-access`). Die MyTools-2FA entfällt auf diesem Weg, weil Keycloak selbst einen zweiten Faktor verlangt; die Login-Sperre gilt weiter. Abmelden beendet auch die Keycloak-Sitzung.
+- „Mit yfserver-Konto anmelden“ (zentraler Login über Keycloak, allauth-Provider `keycloak`) erscheint, sobald `OIDC_ISSUER`, `OIDC_CLIENT_ID` und `OIDC_CLIENT_SECRET` gesetzt sind. Redirect-URI im Keycloak-Client: `https://deine-domain/accounts/oidc/keycloak/login/callback/`. Bestehende Konten werden über die bestätigte E-Mail verknüpft; die Keycloak-Gruppe `admins` setzt `is_staff`/`is_superuser`, `OIDC_REQUIRED_GROUP` beschränkt den Login auf eine Gruppe (Dev-Instanz: `dev-access`). Die MyTools-2FA entfällt auf diesem Weg, weil Keycloak selbst einen zweiten Faktor verlangt; die Login-Sperre gilt weiter. Abmelden beendet auch die Keycloak-Sitzung. Google-Login läuft über Keycloak. `OIDC_ONLY=True` lässt nur noch den zentralen Login zu: Der Passwort-Login bleibt Admins als Notfall-Login, die Registrierung ist aus.
 - `GOOGLE_ANALYTICS_ID` muss eine **GA4 Measurement ID** sein und mit `G-` beginnen.
 - `GENIUS_API_KEY` ist der im Code verwendete Genius-Schlüssel.
 - `CSP_REPORT_ONLY=True` ist der sichere Startmodus für die vorbereitete Content Security Policy.

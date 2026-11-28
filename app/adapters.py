@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 
+from allauth.account.adapter import DefaultAccountAdapter
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
@@ -22,10 +23,18 @@ def keycloak_claims(sociallogin):
     return extra_data.get("userinfo") or extra_data.get("id_token") or {}
 
 
+class MyToolsAccountAdapter(DefaultAccountAdapter):
+    def is_open_for_signup(self, request):
+        """allauth's own /accounts/signup/ follows the site lock and OIDC_ONLY like the MyTools one."""
+        return not (SiteAccessSettings.is_locked() or settings.OIDC_ONLY)
+
+
 class MyToolsSocialAccountAdapter(DefaultSocialAccountAdapter):
     def is_open_for_signup(self, request, sociallogin):
         if SiteAccessSettings.is_locked():
             return False
+        if sociallogin.account.provider == KEYCLOAK_PROVIDER_ID:
+            return True
         return super().is_open_for_signup(request, sociallogin)
 
     def pre_social_login(self, request, sociallogin):
