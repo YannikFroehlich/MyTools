@@ -99,11 +99,17 @@
                         {% translate 'Mit yfserver-Konto anmelden' %}
                     </button>
                 </form>
+                {% if not oidc_only %}
                 <div class="auth-divider" aria-hidden="true">
                     <span>{% translate 'oder' %}</span>
                 </div>
+                {% endif %}
             {% endif %}
 
+            {% if oidc_only %}
+            <details class="auth-break-glass">
+                <summary class="auth-forgot-link">{% translate 'Notfall-Login für Administratoren' %}</summary>
+            {% endif %}
             <form method="post" class="auth-form">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next }}">
@@ -145,16 +151,21 @@
                     {% translate 'Einloggen' %}
                 </button>
 
+                {% if not oidc_only %}
                 <a class="auth-forgot-link" href="{% url 'password_reset' %}">
                     <i class="fa-solid fa-key"></i>
                     {% translate 'Passwort vergessen?' %}
                 </a>
+                {% endif %}
             </form>
-
+            {% if oidc_only %}
+            </details>
+            {% else %}
             <p class="auth-switch">
                 {% translate 'Noch keinen Account?' %}
                 <a href="{% url 'signup' %}">{% translate 'Account erstellen' %}</a>
             </p>
+            {% endif %}
         </section>
     </main>
 

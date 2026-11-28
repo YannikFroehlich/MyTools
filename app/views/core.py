@@ -351,6 +351,9 @@ def signup(request):
     if request.user.is_authenticated:
         return redirect("home")
 
+    if settings.OIDC_ONLY:
+        return redirect("login")
+
     access_settings = SiteAccessSettings.get_solo()
     if access_settings.login_registration_locked:
         if request.method == "POST":

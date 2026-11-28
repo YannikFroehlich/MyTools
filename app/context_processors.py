@@ -104,6 +104,7 @@ def google_oauth_settings(request):
     return {
         "google_oauth_enabled": getattr(settings, "GOOGLE_OAUTH_ENABLED", False),
         "keycloak_login_enabled": getattr(settings, "KEYCLOAK_LOGIN_ENABLED", False),
+        "oidc_only": getattr(settings, "OIDC_ONLY", False),
     }
 
 

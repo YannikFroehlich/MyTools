@@ -295,6 +295,7 @@ SOCIALACCOUNT_LOGIN_ON_GET = False
 # the local account found by verified e-mail, so later logins match by provider uid, not e-mail.
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_ADAPTER = "app.adapters.MyToolsSocialAccountAdapter"
+ACCOUNT_ADAPTER = "app.adapters.MyToolsAccountAdapter"
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
@@ -318,6 +319,9 @@ OIDC_CLIENT_ID = os.getenv("OIDC_CLIENT_ID", "").strip()
 OIDC_CLIENT_SECRET = os.getenv("OIDC_CLIENT_SECRET", "").strip()
 OIDC_REQUIRED_GROUP = os.getenv("OIDC_REQUIRED_GROUP", "").strip()
 KEYCLOAK_LOGIN_ENABLED = bool(OIDC_ISSUER and OIDC_CLIENT_ID and OIDC_CLIENT_SECRET)
+# Keycloak only: password login stays open to staff as a break-glass login, sign-up is off
+# (accounts come from Keycloak invites).
+OIDC_ONLY = KEYCLOAK_LOGIN_ENABLED and os.getenv("OIDC_ONLY", "").strip().lower() in {"1", "true", "yes", "on"}
 if KEYCLOAK_LOGIN_ENABLED:
     SOCIALACCOUNT_PROVIDERS["openid_connect"]["APPS"] = [
         {

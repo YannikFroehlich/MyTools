@@ -8,6 +8,7 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
+from django_recaptcha.client import RecaptchaResponse
 
 from .adapters import KEYCLOAK_SESSION_KEY, MyToolsSocialAccountAdapter
 from .models import SiteAccessSettings, UserTwoFactorSettings
@@ -145,3 +146,42 @@ class KeycloakLoginTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.post(reverse("logout"))
         self.assertRedirects(response, reverse("login"), fetch_redirect_response=False)
+
+
+@override_settings(**KEYCLOAK_SETTINGS, OIDC_ONLY=True)
+@patch("django_recaptcha.fields.client.submit", return_value=RecaptchaResponse(is_valid=True))
+class OIDCOnlyTests(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        self.user = user_model.objects.create_user("ada", "ada@example.com", "pw-123456789")
+        self.admin = user_model.objects.create_user("root", "root@example.com", "pw-123456789", is_staff=True)
+
+    def password_login(self, username):
+        return self.client.post(
+            reverse("login"),
+            {"username": username, "password": "pw-123456789", "g-recaptcha-response": "PASSED"},
+        )
+
+    def test_login_page_offers_password_only_as_break_glass(self, _submit):
+        response = self.client.get(reverse("login"))
+        self.assertContains(response, 'class="auth-break-glass"')
+        self.assertNotContains(response, reverse("signup"))
+        self.assertNotContains(response, reverse("password_reset"))
+
+    def test_password_login_is_left_to_staff(self, _submit):
+        response = self.password_login("ada")
+        codes = [error.code for error in response.context["form"].non_field_errors().as_data()]
+        self.assertEqual(codes, ["oidc_only"])
+        self.assertNotIn("_auth_user_id", self.client.session)
+        self.password_login("root")
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.admin.pk)
+
+    def test_signups_lead_to_login_or_are_closed(self, _submit):
+        self.assertRedirects(self.client.get(reverse("signup")), reverse("login"), fetch_redirect_response=False)
+        response = self.client.get(reverse("account_signup"))
+        self.assertTemplateUsed(response, "account/signup_closed.html")
+
+    def test_keycloak_signup_stays_open(self, _submit):
+        request = RequestFactory().get("/")
+        account = SocialAccount(provider="keycloak", uid="kc-new")
+        self.assertTrue(MyToolsSocialAccountAdapter().is_open_for_signup(request, SocialLogin(account=account)))

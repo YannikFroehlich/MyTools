@@ -67,6 +67,8 @@ class AccessLockedAuthenticationForm(AuthenticationForm):
                 _("Der Login ist aktuell für normale Nutzer gesperrt."),
                 code="login_locked",
             )
+        if settings.OIDC_ONLY and not user.is_staff:
+            raise forms.ValidationError(_("Bitte melde dich mit deinem yfserver-Konto an."), code="oidc_only")
 
 
 class GoogleOAuthCaptchaForm(forms.Form):
