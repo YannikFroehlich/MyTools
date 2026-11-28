@@ -1,0 +1,223 @@
+/* =====================================================================
+   yfserver design system – gemeinsames Aussehen aller yfserver-Seiten.
+   Einbinden: <link rel="stylesheet" href=".../yfserver.css"> + yfserver.js
+   Alle Klassen beginnen mit "yf-", damit nichts mit App-CSS kollidiert.
+   Doku und Beispiele: design/README.md
+   ===================================================================== */
+
+/* Geist (variabel 300–800, latin), selbst gehostet: keine Google-Anfrage, passt zu strengen CSPs */
+@font-face {
+  font-family: Geist; font-style: normal; font-weight: 300 800; font-display: swap;
+  src: url('fonts/geist-latin.woff2') format('woff2');
+}
+
+/* ---------- 1. Tokens ---------- */
+:root {
+  --yf-font: Geist, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* App-Farben: eine Seite setzt --yf-accent auf ihre eigene (z. B. var(--yf-lunora)) */
+  --yf-lunora: #c2a276; --yf-mytools: #3b82f6; --yf-roundrush: #ff916b; --yf-nexora: #14b8a6;
+  --yf-accent: var(--yf-ok);
+
+  /* Hell (Standard) */
+  --yf-bg: #efeee9; --yf-surface: #f8f7f3; --yf-unit: #ffffff;
+  --yf-line: #d8d6cf; --yf-line-strong: #bdbab1;
+  --yf-text: #121212; --yf-muted: #67655f; --yf-faint: #a19e95;
+  --yf-ink: #121212; --yf-on-ink: #efeee9;
+  --yf-ok: #16a34a; --yf-warn: #d97706; --yf-down: #dc2626;
+  --yf-grid: rgba(18, 18, 18, .10); --yf-glow: 55%;
+
+  --yf-radius: 4px; --yf-radius-lg: 14px;
+  --yf-ease: cubic-bezier(.2, .8, .2, 1);
+  color-scheme: light;
+}
+/* Dunkel: per System (data-theme fehlt) oder per Umschalter (data-theme="dark") */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --yf-bg: #080808; --yf-surface: #0e0e0f; --yf-unit: #121213;
+    --yf-line: #232325; --yf-line-strong: #353538;
+    --yf-text: #f0efea; --yf-muted: #8d8c87; --yf-faint: #4f4e4a;
+    --yf-ink: #f0efea; --yf-on-ink: #080808;
+    --yf-ok: #22c55e; --yf-warn: #f59e0b; --yf-down: #ef4444;
+    --yf-grid: rgba(255, 255, 255, .07); --yf-glow: 45%;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --yf-bg: #080808; --yf-surface: #0e0e0f; --yf-unit: #121213;
+  --yf-line: #232325; --yf-line-strong: #353538;
+  --yf-text: #f0efea; --yf-muted: #8d8c87; --yf-faint: #4f4e4a;
+  --yf-ink: #f0efea; --yf-on-ink: #080808;
+  --yf-ok: #22c55e; --yf-warn: #f59e0b; --yf-down: #ef4444;
+  --yf-grid: rgba(255, 255, 255, .07); --yf-glow: 45%;
+  color-scheme: dark;
+}
+
+/* ---------- 2. Basis + Hintergrund (Klasse yf-page auf <body>) ---------- */
+.yf-page { margin: 0; min-height: 100dvh; color: var(--yf-text); font: 15px/1.5 var(--yf-font); font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; background: transparent; }
+html:has(.yf-page) { background: var(--yf-bg); }
+/* :where() hält die Spezifität bei 0, damit Komponenten (.yf-btn …) diese Basis immer überschreiben */
+:where(.yf-page) *, :where(.yf-page) *::before, :where(.yf-page) *::after { box-sizing: border-box; }
+:where(.yf-page) a { color: inherit; }
+/* Ebene 1: weiche Lichter in den App-Farben, wandern ganz langsam */
+.yf-page::before {
+  content: ''; position: fixed; inset: -20vmax; z-index: -2; pointer-events: none; filter: blur(60px);
+  background:
+    radial-gradient(28vmax 24vmax at 30% 26%, color-mix(in srgb, var(--yf-lunora) var(--yf-glow), transparent), transparent 70%),
+    radial-gradient(30vmax 26vmax at 72% 28%, color-mix(in srgb, var(--yf-mytools) var(--yf-glow), transparent), transparent 70%),
+    radial-gradient(26vmax 24vmax at 30% 76%, color-mix(in srgb, var(--yf-roundrush) var(--yf-glow), transparent), transparent 70%),
+    radial-gradient(30vmax 26vmax at 72% 74%, color-mix(in srgb, var(--yf-nexora) var(--yf-glow), transparent), transparent 70%);
+  animation: yf-drift 40s ease-in-out infinite alternate;
+}
+/* Ebene 2: Punktraster (zu den Rändern ausgeblendet) + feines Korn */
+.yf-page::after {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(var(--yf-grid) 1px, transparent 1.3px) 0 0 / 24px 24px;
+  -webkit-mask-image: radial-gradient(120% 80% at 50% 30%, #000 35%, transparent 85%);
+  mask-image: radial-gradient(120% 80% at 50% 30%, #000 35%, transparent 85%);
+}
+@keyframes yf-drift { to { transform: translate3d(3vmax, -2vmax, 0) rotate(6deg) scale(1.05); } }
+
+.yf-wrap { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+.yf-muted { color: var(--yf-muted); }
+.yf-small { font-size: 12.5px; }
+.yf-label { display: block; color: var(--yf-muted); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; }
+.yf-kbd { font: 700 11px/1 var(--yf-font); padding: 3px 6px; border: 1px solid currentColor; border-radius: 3px; opacity: .7; }
+
+/* ---------- 3. Status-LED ---------- */
+.yf-led { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 2px; --c: var(--yf-ok); background: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 70%, transparent); animation: yf-breathe 3.2s ease-in-out infinite; }
+.yf-led.is-warn { --c: var(--yf-warn); }
+.yf-led.is-down { --c: var(--yf-down); animation: yf-alarm 1s steps(1) infinite; }
+@keyframes yf-breathe { 50% { opacity: .35; } }
+@keyframes yf-alarm { 50% { opacity: .25; } }
+
+/* ---------- 4. Kopfzeile, Wortmarke, Buttons ---------- */
+.yf-bar { display: flex; align-items: center; gap: 16px; height: 56px; border-bottom: 1px solid var(--yf-line); }
+.yf-bar > .yf-spacer { flex: 1; }
+.yf-link { text-decoration: none; color: var(--yf-muted); font-weight: 500; font-size: 13px; }
+.yf-link:hover { color: var(--yf-text); }
+.yf-btn { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; text-decoration: none; cursor: pointer; font: 600 13px var(--yf-font); padding: 7px 14px; border-radius: 999px; border: 1px solid var(--yf-ink); background: var(--yf-ink); color: var(--yf-on-ink); }
+.yf-btn.is-ghost { background: none; color: var(--yf-text); }
+.yf-btn.is-accent { background: var(--yf-accent); border-color: var(--yf-accent); color: var(--yf-on-accent, #fff); }
+.yf-wordmark { margin: 0; font-weight: 800; letter-spacing: -.06em; line-height: 1; white-space: nowrap; font-size: clamp(34px, 5.5vw, 64px); }
+.yf-wordmark .dot { color: var(--yf-accent); }
+.yf-wordmark .tld { -webkit-text-stroke: 1px var(--yf-text); color: transparent; font-weight: 700; }
+.yf-wordmark.is-small { font-size: 20px; letter-spacing: -.04em; }
+
+/* ---------- 5. Kennzahlen-Leiste ---------- */
+.yf-strip { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); border-top: 2px solid var(--yf-ink); border-bottom: 1px solid var(--yf-line); }
+.yf-cell { padding: 14px 16px 16px; }
+.yf-cell + .yf-cell { border-left: 1px solid var(--yf-line); }
+.yf-cell .yf-label { margin-bottom: 6px; }
+.yf-big { font-size: 42px; font-weight: 300; line-height: 1; letter-spacing: -.04em; }
+.yf-big .blink { color: var(--yf-faint); animation: yf-alarm 2s steps(1) infinite; }
+.yf-say { font-size: 22px; font-weight: 700; letter-spacing: -.035em; line-height: 1.15; }
+.yf-say em { font-style: normal; color: var(--yf-muted); font-weight: 500; }
+.yf-say em.is-down, .yf-cell .is-down { color: var(--yf-down); }
+
+/* ---------- 6. Hinweis-Banner ---------- */
+.yf-alert { display: flex; align-items: center; gap: 14px; padding: 14px 18px; margin-top: 24px; border: 1px solid color-mix(in srgb, var(--yf-down) 45%, var(--yf-line)); border-left-width: 4px; border-left-color: var(--yf-down); border-radius: var(--yf-radius); background: color-mix(in srgb, var(--yf-down) 8%, var(--yf-unit)); }
+.yf-alert b { font-weight: 650; }
+.yf-alert .yf-small { margin-left: auto; color: var(--yf-muted); white-space: nowrap; }
+.yf-alert.is-warn { border-color: color-mix(in srgb, var(--yf-warn) 45%, var(--yf-line)); border-left-color: var(--yf-warn); background: color-mix(in srgb, var(--yf-warn) 8%, var(--yf-unit)); }
+
+/* ---------- 7. Abschnittskopf + Rack ---------- */
+.yf-section { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 34px 0 12px; color: var(--yf-muted); }
+.yf-section h2 { margin: 0; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--yf-text); }
+.yf-rack { border: 2px solid var(--yf-ink); border-radius: var(--yf-radius); background: color-mix(in srgb, var(--yf-surface) 70%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.2); backdrop-filter: blur(18px) saturate(1.2); }
+
+/* Eine Einheit: <article class="yf-unit" style="--app: …; --on: …"> mit Stretched-Link in .yf-name */
+.yf-unit {
+  --app: var(--yf-accent); --on: #fff;
+  position: relative; isolation: isolate; display: grid; align-items: center;
+  grid-template-columns: 34px 92px minmax(0, 1.25fr) minmax(0, 1fr) auto 34px;
+  min-height: 112px; color: var(--yf-text); background: color-mix(in srgb, var(--yf-unit) 72%, transparent);
+  transition: color .35s var(--yf-ease);
+}
+.yf-unit + .yf-unit { border-top: 1px solid var(--yf-line); }
+.yf-unit::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--app); clip-path: inset(0 100% 0 0); transition: clip-path .45s cubic-bezier(.7, 0, .2, 1); }
+.yf-unit:hover, .yf-unit:focus-within { color: var(--on); }
+.yf-unit:hover::before, .yf-unit:focus-within::before { clip-path: inset(0); }
+.yf-unit:hover .yf-muted, .yf-unit:focus-within .yf-muted { color: color-mix(in srgb, var(--on) 75%, transparent); }
+.yf-ear { align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 14px 0; border-right: 1px solid var(--yf-line); }
+.yf-ear:last-child { border-right: 0; border-left: 1px solid var(--yf-line); }
+.yf-ear i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--yf-line-strong); background: var(--yf-bg); }
+.yf-unit:hover .yf-ear, .yf-unit:focus-within .yf-ear { border-color: transparent; }
+.yf-num { position: absolute; top: 10px; left: 52px; font-size: 11px; font-weight: 600; color: var(--yf-faint); letter-spacing: .04em; }
+.yf-unit:hover .yf-num, .yf-unit:focus-within .yf-num { color: color-mix(in srgb, var(--on) 60%, transparent); }
+.yf-icon { justify-self: center; width: 56px; height: 56px; border-radius: var(--yf-radius-lg); display: grid; place-items: center; overflow: hidden; background: var(--yf-surface); border: 1px solid var(--yf-line); transition: background .35s, border-color .35s, transform .35s var(--yf-ease), filter .35s; }
+.yf-icon img { width: 38px; height: 38px; display: block; }
+.yf-icon.is-full { border: 0; background: none; }
+.yf-icon.is-full img { width: 56px; height: 56px; }
+.yf-unit:hover .yf-icon, .yf-unit:focus-within .yf-icon { background: #fff; border-color: transparent; transform: rotate(-4deg) scale(1.04); }
+.yf-name { padding: 18px 20px 18px 8px; min-width: 0; }
+.yf-name a { display: block; text-decoration: none; font-size: clamp(30px, 4vw, 46px); font-weight: 800; letter-spacing: -.055em; line-height: 1; outline: none; }
+.yf-name a::after { content: ''; position: absolute; inset: 0; } /* ganze Einheit klickbar */
+.yf-name .yf-muted { display: block; margin-top: 8px; font-size: 14px; transition: color .35s; }
+.yf-mid { padding: 0 20px; }
+.yf-mid .yf-small { display: flex; justify-content: space-between; margin-top: 8px; }
+.yf-side { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; padding: 0 20px; }
+.yf-status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.yf-acts { display: flex; align-items: center; gap: 10px; }
+.yf-tag { position: relative; z-index: 1; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; text-decoration: none; padding: 4px 8px; border: 1px solid currentColor; border-radius: 3px; opacity: .8; }
+.yf-tag:hover { opacity: 1; background: var(--on); color: var(--app); border-color: var(--on); }
+.yf-arrow { font-size: 22px; transition: transform .35s var(--yf-ease); }
+.yf-unit:hover .yf-arrow { transform: translate(4px, -4px); }
+
+/* Verfügbarkeit: <span class="yf-uptime"><i></i><i class="is-warn"></i><i class="is-down"></i>…</span> */
+.yf-uptime { display: flex; gap: 2px; height: 26px; align-items: flex-end; }
+.yf-uptime i { flex: 1; height: 100%; background: currentColor; opacity: .22; }
+.yf-uptime i.is-warn { height: 55%; background: var(--yf-warn); opacity: 1; }
+.yf-uptime i.is-down { height: 25%; background: var(--yf-down); opacity: 1; }
+.yf-unit:hover .yf-uptime i:not([class]) { opacity: .45; }
+
+/* Zustand "nicht erreichbar": Warnstreifen, Icon entsättigt, rote Statuszeile, Hover in Rot */
+.yf-unit.is-down { --app: var(--yf-down); --on: #fff; background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--yf-down) 7%, var(--yf-unit)) 0 10px, color-mix(in srgb, var(--yf-unit) 72%, transparent) 10px 20px); }
+.yf-unit.is-down .yf-icon { filter: grayscale(1) opacity(.55); }
+.yf-unit.is-down:hover .yf-icon { filter: none; }
+.yf-unit.is-down .yf-status { color: var(--yf-down); font-weight: 700; }
+.yf-unit.is-down:hover .yf-status { color: var(--on); }
+.yf-unit.is-down .yf-name a { text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: color-mix(in srgb, var(--yf-down) 60%, transparent); }
+
+/* ---------- 8. Fußzeile + Farbumschalter ---------- */
+.yf-foot { border-top: 2px solid var(--yf-ink); margin-top: 64px; }
+.yf-foot .yf-wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 14px; padding-bottom: 22px; flex-wrap: wrap; color: var(--yf-muted); font-size: 12.5px; }
+.yf-seg { display: inline-flex; border: 1px solid var(--yf-ink); border-radius: 3px; overflow: hidden; }
+.yf-seg button { border: 0; background: none; color: var(--yf-text); font: 700 11px var(--yf-font); text-transform: uppercase; letter-spacing: .08em; padding: 6px 10px; cursor: pointer; }
+.yf-seg button + button { border-left: 1px solid var(--yf-ink); }
+.yf-seg button[aria-pressed="true"] { background: var(--yf-ink); color: var(--yf-on-ink); }
+
+/* ---------- 9. Karte + Formulare (für Login-, Einstellungs- und Inhaltsseiten der Apps) ---------- */
+.yf-card { border: 2px solid var(--yf-ink); border-radius: var(--yf-radius); padding: 28px; background: color-mix(in srgb, var(--yf-unit) 80%, transparent); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.yf-card > h1, .yf-card > h2 { margin: 0 0 6px; font-size: 28px; font-weight: 800; letter-spacing: -.045em; line-height: 1.1; }
+.yf-field { display: grid; gap: 6px; margin-top: 16px; }
+.yf-input,
+.yf-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+.yf-form select, .yf-form textarea { width: 100%; font: 400 15px var(--yf-font); color: var(--yf-text); background: var(--yf-unit); border: 1px solid var(--yf-line-strong); border-radius: var(--yf-radius); padding: 10px 12px; }
+.yf-input:focus, .yf-form :is(input, select, textarea):focus { outline: 2px solid var(--yf-accent); outline-offset: 1px; border-color: transparent; }
+.yf-errors { margin: 12px 0 0; padding: 10px 12px; border-left: 3px solid var(--yf-down); background: color-mix(in srgb, var(--yf-down) 8%, var(--yf-unit)); font-size: 14px; }
+.yf-errors ul { margin: 0; padding-left: 18px; }
+.yf-form .errorlist { margin: 4px 0 0; padding: 0; list-style: none; color: var(--yf-down); font-size: 13px; }
+.yf-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: var(--yf-faint); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.yf-divider::before, .yf-divider::after { content: ''; flex: 1; border-top: 1px solid var(--yf-line); }
+.yf-btn.is-block { width: 100%; justify-content: center; padding: 11px 16px; }
+.yf-page :focus-visible { outline: 2px solid var(--yf-accent); outline-offset: 2px; }
+
+/* ---------- 10. Responsiv + Barrierefreiheit ---------- */
+@media (max-width: 860px) {
+  .yf-strip { grid-template-columns: 1fr 1fr; }
+  .yf-cell:nth-child(odd) { border-left: 0; }
+  .yf-cell:nth-child(n+3) { border-top: 1px solid var(--yf-line); }
+  .yf-unit { grid-template-columns: 84px minmax(0, 1fr); min-height: 0; padding: 16px 0; }
+  .yf-icon { align-self: start; }
+  .yf-ear, .yf-mid, .yf-num { display: none; }
+  .yf-name { padding: 0 16px 0 4px; }
+  .yf-side { grid-column: 2; flex-direction: row; justify-content: space-between; align-items: center; padding: 12px 16px 0 4px; }
+  .yf-hide-sm { display: none !important; }
+  .yf-alert { flex-wrap: wrap; }
+  .yf-alert .yf-small { margin-left: 0; }
+}
+@media (hover: none) { .yf-unit .yf-kbd { display: none; } }
+@media (prefers-reduced-motion: reduce) { .yf-page::before, .yf-led, .yf-big .blink { animation: none; } }

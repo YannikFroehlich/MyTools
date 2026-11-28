@@ -18447,3 +18447,18 @@ msgstr "Please sign in with your yfserver account."
 
 msgid "Notfall-Login für Administratoren"
 msgstr "Emergency sign-in for administrators"
+
+msgid "Alle Apps"
+msgstr "All apps"
+
+msgid "Teil von"
+msgstr "part of"
+
+msgid "Farbmodus"
+msgstr "Color mode"
+
+msgid "hell"
+msgstr "light"
+
+msgid "dunkel"
+msgstr "dark"
