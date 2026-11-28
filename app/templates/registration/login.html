@@ -1,158 +1,121 @@
-{% load static %}
-{% load i18n %}
-<!DOCTYPE html>
+{% load static i18n %}<!DOCTYPE html>
+{# Login page in the shared yfserver design (static/yfserver/, source: yfserver-infra/design). #}
 <html lang="{{ LANGUAGE_CODE|default:'de' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>{% translate 'Login' %} • MyTools{{ title_suffix }}</title>
-    <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'app/css/auth.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <link rel="icon" href="{% static 'app/icons/cloud-solid.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'app/icons/pwa-icon-180.png' %}">
+    <link rel="preload" href="{% static 'yfserver/fonts/geist-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{% static 'yfserver/yfserver.css' %}?v=1">
+    <script src="{% static 'yfserver/yfserver.js' %}?v=1"></script>
+    <style>
+        :root { --yf-accent: var(--yf-mytools); --yf-on-accent: #fff; }
+        .auth { min-height: calc(100dvh - 57px - 64px); display: grid; place-items: center; padding: 40px 0; }
+        .auth .yf-card { width: min(440px, 100%); }
+        .app { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+        .app img { width: 40px; height: 40px; border-radius: 10px; }
+        .auth .yf-field > span { color: var(--yf-muted); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; }
+        .auth-captcha { margin-top: 16px; overflow: hidden; }
+        @media (max-width: 420px) { .auth-captcha > * { transform: scale(.86); transform-origin: 0 0; } }
+        .lang select { font: 500 13px var(--yf-font); color: var(--yf-muted); background: none; border: 0; cursor: pointer; }
+        .links { margin: 18px 0 0; display: grid; gap: 6px; font-size: 14px; color: var(--yf-muted); }
+        .links a { color: var(--yf-text); }
+        .yf-foot { margin-top: 0; }
+    </style>
     {% if google_analytics_enabled and google_analytics_id %}
         {% include "app/includes/google_analytics.html" %}
     {% endif %}
-
-    <script>
-        if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.classList.add('auth-dark');
-        }
-    </script>
 </head>
-<body class="auth-page">
-    <form class="auth-language-form" action="{% url 'set_language' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+<body class="yf-page">
+<div class="yf-wrap">
+    <nav class="yf-bar">
+        <span class="yf-wordmark is-small">yfserver<span class="dot">.</span><span class="tld">de</span></span>
+        <span class="yf-spacer"></span>
+        <form class="lang" action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            {% get_current_language as CURRENT_LANGUAGE %}
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+            <select id="auth-language-select-login" name="language" aria-label="{% translate 'Sprache auswählen' %}" onchange="this.form.submit()">
+                {% for language in languages %}
+                    <option value="{{ language.code }}" {% if language.code == CURRENT_LANGUAGE or language.code == CURRENT_LANGUAGE|slice:":2" %}selected{% endif %}>{{ language.name_local }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        <a class="yf-link" href="https://my.yfserver.de">{% translate 'Alle Apps' %}</a>
+    </nav>
 
-        {% get_current_language as CURRENT_LANGUAGE %}
-        {% get_available_languages as LANGUAGES %}
-        {% get_language_info_list for LANGUAGES as languages %}
-
-        <select id="auth-language-select-login" name="language" aria-label="{% translate 'Sprache auswählen' %}" onchange="this.form.submit()">
-            {% for language in languages %}
-                <option value="{{ language.code }}" {% if language.code == CURRENT_LANGUAGE or language.code == CURRENT_LANGUAGE|slice:":2" %}selected{% endif %}>
-                    {{ language.name_local }}
-                </option>
-            {% endfor %}
-        </select>
-    </form>
-
-    <button class="auth-theme-button dark-mode-btn" id="darkmode-button" type="button" aria-label="{% translate 'Dark Mode umschalten' %}">
-        <i class="fa-solid fa-moon icon-moon"></i>
-        <i class="fa-solid fa-sun icon-sun"></i>
-    </button>
-
-    <main class="auth-main">
-        <section class="auth-panel" aria-labelledby="login-title">
-            <div class="auth-brand">
-                <span class="auth-logo" aria-hidden="true">
-                    <i class="fa-solid fa-cloud"></i>
-                </span>
-                <div>
-                    <h1 id="login-title">MyTools</h1>
-                    <p>{% translate 'Melde dich an, um deine Tools zu nutzen.' %}</p>
-                </div>
-            </div>
+    <main class="auth">
+        <section class="yf-card" aria-labelledby="login-title">
+            <div class="app"><img src="{% static 'app/icons/pwa-icon-192.png' %}" alt=""><span class="yf-label">MyTools</span></div>
+            <h1 id="login-title">{% translate 'Login' %}</h1>
+            <p class="yf-muted">{% translate 'Melde dich an, um deine Tools zu nutzen.' %}</p>
 
             {% if access_locked %}
-                <div class="auth-lock-notice">
-                    <i class="fa-solid fa-lock"></i>
-                    <div>
-                        <strong>{% translate 'Login vorübergehend gesperrt' %}</strong>
-                        <p>
-                            {% if access_settings.lock_message %}
-                                {{ access_settings.lock_message }}
-                            {% else %}
-                                {% translate 'Normale Nutzer können sich aktuell nicht einloggen. Admins können sich weiterhin anmelden.' %}
-                            {% endif %}
-                        </p>
-                    </div>
+                <div class="yf-alert is-warn">
+                    <span><b>{% translate 'Login vorübergehend gesperrt' %}</b><br>
+                    <span class="yf-muted">{% if access_settings.lock_message %}{{ access_settings.lock_message }}{% else %}{% translate 'Normale Nutzer können sich aktuell nicht einloggen. Admins können sich weiterhin anmelden.' %}{% endif %}</span></span>
                 </div>
             {% endif %}
 
             {% if messages %}
-                <div class="auth-error-list">
-                    {% for message in messages %}<p>{{ message }}</p>{% endfor %}
-                </div>
+                <div class="yf-errors" role="status">{% for message in messages %}<div>{{ message }}</div>{% endfor %}</div>
             {% endif %}
 
             {% if form.errors %}
-                <div class="auth-error-list">
-                    {% for field in form %}
-                        {% for error in field.errors %}<p>{{ error }}</p>{% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                <div class="yf-errors" role="alert">
+                    {% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}
+                    {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
                 </div>
             {% endif %}
 
             {% if keycloak_login_enabled %}
-                <form method="post" class="auth-form" action="{% url 'openid_connect_login' 'keycloak' %}">
+                <form method="post" action="{% url 'openid_connect_login' 'keycloak' %}">
                     {% csrf_token %}
                     <input type="hidden" name="process" value="login">
                     {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
-                    <button type="submit">
-                        <i class="fa-solid fa-right-to-bracket"></i>
-                        {% translate 'Mit yfserver-Konto anmelden' %}
-                    </button>
+                    <button class="yf-btn is-accent is-block" type="submit">{% translate 'Mit yfserver-Konto anmelden' %}</button>
                 </form>
-                {% if not oidc_only %}
-                <div class="auth-divider" aria-hidden="true">
-                    <span>{% translate 'oder' %}</span>
-                </div>
-                {% endif %}
             {% endif %}
 
             {% if oidc_only %}
-            <details class="auth-break-glass">
-                <summary class="auth-forgot-link">{% translate 'Notfall-Login für Administratoren' %}</summary>
+            <details class="auth-break-glass" {% if form.errors %}open{% endif %}>
+                <summary class="yf-divider">{% translate 'Notfall-Login für Administratoren' %}</summary>
+            {% elif keycloak_login_enabled %}
+            <div class="yf-divider">{% translate 'oder' %}</div>
             {% endif %}
-            <form method="post" class="auth-form">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ next }}">
-                <input type="hidden" name="process" value="login">
 
-                <label for="{{ form.username.id_for_label }}">
-                    <span>{% translate 'Benutzername' %}</span>
-                    {{ form.username }}
-                </label>
+                <form method="post" class="yf-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <input type="hidden" name="process" value="login">
+                    <label class="yf-field" for="{{ form.username.id_for_label }}"><span>{% translate 'Benutzername' %}</span>{{ form.username }}</label>
+                    <label class="yf-field" for="{{ form.password.id_for_label }}"><span>{% translate 'Passwort' %}</span>{{ form.password }}</label>
+                    <div class="auth-captcha">{{ form.captcha }}</div>
+                    <p><button class="yf-btn is-ghost is-block" type="submit">{% translate 'Einloggen' %}</button></p>
+                </form>
 
-                <label for="{{ form.password.id_for_label }}">
-                    <span>{% translate 'Passwort' %}</span>
-                    {{ form.password }}
-                </label>
-
-                <div class="auth-captcha">
-                    {{ form.captcha }}
-                </div>
-
-                <button type="submit">
-                    <i class="fa-solid fa-right-to-bracket"></i>
-                    {% translate 'Einloggen' %}
-                </button>
-
-                {% if not oidc_only %}
-                <a class="auth-forgot-link" href="{% url 'password_reset' %}">
-                    <i class="fa-solid fa-key"></i>
-                    {% translate 'Passwort vergessen?' %}
-                </a>
-                {% endif %}
-            </form>
             {% if oidc_only %}
             </details>
             {% else %}
-            <p class="auth-switch">
-                {% translate 'Noch keinen Account?' %}
-                <a href="{% url 'signup' %}">{% translate 'Account erstellen' %}</a>
-            </p>
+            <div class="links">
+                <a href="{% url 'password_reset' %}">{% translate 'Passwort vergessen?' %}</a>
+                <span>{% translate 'Noch keinen Account?' %} <a href="{% url 'signup' %}">{% translate 'Account erstellen' %}</a></span>
+            </div>
             {% endif %}
         </section>
     </main>
-
-    <script src="{% static 'app/js/base.js' %}?v=20260801-scroll-restoration" defer></script>
-    <script src="{% static 'app/js/auth.js' %}" defer></script>
+</div>
+<footer class="yf-foot">
+    <div class="yf-wrap">
+        <span>MyTools · {% translate 'Teil von' %} yfserver.de</span>
+        <div class="yf-seg" data-yf-theme role="group" aria-label="{% translate 'Farbmodus' %}">
+            <button type="button" data-mode="auto">auto</button><button type="button" data-mode="light">{% translate 'hell' %}</button><button type="button" data-mode="dark">{% translate 'dunkel' %}</button>
+        </div>
+    </div>
+</footer>
 </body>
 </html>
